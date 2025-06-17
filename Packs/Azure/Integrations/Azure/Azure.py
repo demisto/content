@@ -1,14 +1,12 @@
-
-
 import demistomock as demisto
 import urllib3
 import jwt
 import fnmatch
-from urllib.parse import quote
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -62,25 +60,22 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
 ]
-REQUIRED_API_PERMISSIONS = [
-    "GroupMember.ReadWrite.All",
-    "RoleManagement.ReadWrite.Directory"
-]
+REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
 DEFAULT_LIMIT = 50
 PREFIX_URL_AZURE = "https://management.azure.com/subscriptions/"
 PREFIX_URL_MS_GRAPH = "https://graph.microsoft.com/v1.0"
-POLICY_ASSIGNMENT_API_VERSION="2024-05-01"
-POSTGRES_API_VERSION="2017-12-01"
-WEBAPP_API_VERSION="2024-04-01"
-FLEXIBLE_API_VERSION="2023-12-30"
-MONITOR_API_VERSION="2016-03-01"
-DISKS_API_VERSION="2024-03-02"
-ACR_API_VERSION="2023-07-01"
-KEY_VAULT_API_VERSION="2022-07-01"
-SQL_DB_API_VERSION="2021-11-01"
-COSMOS_DB_API_VERSION="2024-11-15"
-PERMISSIONS_VERSION="2022-04-01"
+POLICY_ASSIGNMENT_API_VERSION = "2024-05-01"
+POSTGRES_API_VERSION = "2017-12-01"
+WEBAPP_API_VERSION = "2024-04-01"
+FLEXIBLE_API_VERSION = "2023-12-30"
+MONITOR_API_VERSION = "2016-03-01"
+DISKS_API_VERSION = "2024-03-02"
+ACR_API_VERSION = "2023-07-01"
+KEY_VAULT_API_VERSION = "2022-07-01"
+SQL_DB_API_VERSION = "2021-11-01"
+COSMOS_DB_API_VERSION = "2024-11-15"
+PERMISSIONS_VERSION = "2022-04-01"
 
 """ CLIENT CLASS """
 
@@ -89,15 +84,15 @@ class AzureClient:
     @logger
     def __init__(
         self,
-        app_id: str = '',
-        subscription_id: str = '',
-        resource_group_name: str = '',
+        app_id: str = "",
+        subscription_id: str = "",
+        resource_group_name: str = "",
         verify: bool = False,
         proxy: bool = False,
         tenant_id: str = None,
         enc_key: str = None,
         scope: str = None,
-        headers: dict = None
+        headers: dict = None,
     ):
         if "@" in app_id:
             app_id, refresh_token = app_id.split("@")
@@ -117,22 +112,19 @@ class AzureClient:
                 resource=None,
                 scope=scope,
                 tenant_id=tenant_id,
-                enc_key=enc_key
+                enc_key=enc_key,
             )
             self.ms_client = MicrosoftClient(**ms_client_args)
         else:
             base_client_args = assign_params(
-                base_url=f"{PREFIX_URL_AZURE}",
-                verify="/etc/certs/egress.crt",
-                proxy=proxy,
-                headers=headers
+                base_url=f"{PREFIX_URL_AZURE}", verify="/etc/certs/egress.crt", proxy=proxy, headers=headers
             )
             self.base_client = BaseClient(**base_client_args)
-            
+
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
         self.headers = headers
-        
+
     @logger
     def http_request(
         self,
@@ -142,26 +134,28 @@ class AzureClient:
         params: dict = None,
         data: dict = None,
         resp_type: str = "json",
-        json_data: dict = None
+        json_data: dict = None,
     ) -> requests.Response:
         params = params or {}
         if not params.get("api-version"):
             params["api-version"] = API_VERSION
- 
-        proxies = {
-            "http": "10.181.0.100:11117",
-            "https": "10.181.0.100:11117"
-        }
-       
+
+        proxies = {"http": "10.181.0.100:11117", "https": "10.181.0.100:11117"}
+
         if self.headers:
             self.headers |= {"x-caller-id": get_proxydome_token()}
-            print(self.headers)
             return self.base_client._http_request(  # type: ignore[misc]
-                method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type,
-                headers=self.headers, ok_codes=(200, 201, 202, 204, 206, 404), proxies=proxies
+                method=method,
+                url_suffix=url_suffix,
+                full_url=full_url,
+                json_data=json_data,
+                params=params,
+                resp_type=resp_type,
+                headers=self.headers,
+                ok_codes=(200, 201, 202, 204, 206, 404),
+                proxies=proxies,
             )
 
-        
         return self.ms_client.http_request(
             method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type
         )
@@ -183,17 +177,14 @@ class AzureClient:
                 full_url=(
                     f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
                     f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?"
-                )
+                ),
             )
         except Exception as e:
             if "404" in str(e):
                 raise ValueError(f'Rule {rule_name} under subscription ID "{subscription_id}" \
 and resource group "{resource_group_name}" was not found.')
             raise
-        
-        
-            
-            
+
     @logger
     def storage_account_update_request(self, subscription_id: str, resource_group_name: str, args: dict) -> dict:
         """
@@ -207,49 +198,54 @@ and resource group "{resource_group_name}" was not found.')
             The json response from the API call.
         """
         account_name = args.get("account_name", "")
-        json_data_args : dict = {"sku": {"name": args.get("sku")}, "kind": args.get("kind"),
-                          "location": args.get("location"), "properties": {}}
+        json_data_args: dict = {
+            "sku": {"name": args.get("sku")},
+            "kind": args.get("kind"),
+            "location": args.get("location"),
+            "properties": {},
+        }
         if "tags" in args:
             args_tags_list = args["tags"].split(",")
             tags_obj = {f"tag{i + 1!s}": args_tags_list[i] for i in range(len(args_tags_list))}
             json_data_args["tags"] = tags_obj
-            
-        json_data_args.update({
-            "properties": {
-                "customDomain": {
-                    "name": args.get("custom_domain_name"),
-                    "useSubDomainName": args.get("use_sub_domain_name") == "true" if "use_sub_domain_name" in args else None
-                },
-                "Encryption": {
-                    "keySource": args.get("enc_key_source"),
-                    "keyvaultproperties": {
-                        "keyname": args.get("enc_keyvault_key_name"),
-                        "keyversion": args.get("enc_keyvault_key_version"),
-                        "keyvaulturi": args.get("enc_keyvault_uri")
+
+        json_data_args.update(
+            {
+                "properties": {
+                    "customDomain": {
+                        "name": args.get("custom_domain_name"),
+                        "useSubDomainName": args.get("use_sub_domain_name") == "true" if "use_sub_domain_name" in args else None,
                     },
-                    "requireInfrastructureEncryption": args.get("enc_requireInfrastructureEncryption")
-                },
-                "networkAcls": {
-                    "bypass": args.get("network_ruleset_bypass"),
-                    "defaultAction": args.get("network_ruleset_default_action"),
-                    "ipRules": json.loads(args["network_ruleset_ipRules"])
-                        if "network_ruleset_ipRules" in args else None,
-                    "virtualNetworkRules": json.loads(args["virtual_network_rules"])
-                        if "virtual_network_rules" in args else None
-                },
-                "accessTier": args.get("access_tier"),
-                "supportsHttpsTrafficOnly": args.get("supports_https_traffic_only"),
-                "isHnsEnabled": args.get("is_hns_enabled"),
-                "largeFileSharesState": args.get("large_file_shares_state"),
-                "allowCrossTenantReplication": args.get("allow_cross_tenant_replication"),
-                "allowBlobPublicAccess": args.get("allow_blob_public_access"),
-                "minimumTlsVersion": args.get("minimum_tls_version")
+                    "Encryption": {
+                        "keySource": args.get("enc_key_source"),
+                        "keyvaultproperties": {
+                            "keyname": args.get("enc_keyvault_key_name"),
+                            "keyversion": args.get("enc_keyvault_key_version"),
+                            "keyvaulturi": args.get("enc_keyvault_uri"),
+                        },
+                        "requireInfrastructureEncryption": args.get("enc_requireInfrastructureEncryption"),
+                    },
+                    "networkAcls": {
+                        "bypass": args.get("network_ruleset_bypass"),
+                        "defaultAction": args.get("network_ruleset_default_action"),
+                        "ipRules": json.loads(args["network_ruleset_ipRules"]) if "network_ruleset_ipRules" in args else None,
+                        "virtualNetworkRules": json.loads(args["virtual_network_rules"])
+                        if "virtual_network_rules" in args
+                        else None,
+                    },
+                    "accessTier": args.get("access_tier"),
+                    "supportsHttpsTrafficOnly": args.get("supports_https_traffic_only"),
+                    "isHnsEnabled": args.get("is_hns_enabled"),
+                    "largeFileSharesState": args.get("large_file_shares_state"),
+                    "allowCrossTenantReplication": args.get("allow_cross_tenant_replication"),
+                    "allowBlobPublicAccess": args.get("allow_blob_public_access"),
+                    "minimumTlsVersion": args.get("minimum_tls_version"),
+                }
             }
-        })
-        
-        
+        )
+
         json_data_args = remove_empty_elements(json_data_args)
-        
+
         return self.http_request(
             method="PATCH",
             full_url=(
@@ -262,14 +258,14 @@ and resource group "{resource_group_name}" was not found.')
             json_data=json_data_args,
             resp_type="response",
         )
-        
-    
+
     def storage_blob_service_properties_set_request(
-        self, subscription_id: str,
+        self,
+        subscription_id: str,
         resource_group_name: str,
         account_name: str,
         delete_rentention_policy_enabled: str | None,
-        delete_rentention_policy_days: str | None
+        delete_rentention_policy_days: str | None,
     ) -> dict:
         """
         Updates the delete retention policy settings for the Blob service of a given Azure Storage account.
@@ -283,43 +279,38 @@ and resource group "{resource_group_name}" was not found.')
         Returns:
             dict: The full JSON response from the Azure REST API after applying the update.
         """
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
         )
         data = {
             "properties": {
-                "deleteRetentionPolicy": {
-                    "enabled": delete_rentention_policy_enabled,
-                    "days": delete_rentention_policy_days
-                }
+                "deleteRetentionPolicy": {"enabled": delete_rentention_policy_enabled, "days": delete_rentention_policy_days}
             }
         }
-        params={"api-version": API_VERSION}
+        params = {"api-version": API_VERSION}
         data = remove_empty_elements(data)
         return self.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
 
-    def create_policy_assignment(self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str,
-                                 scope: str):
-        full_url=(
-                f"{PREFIX_URL_AZURE}{scope}"
-                f"/providers/Microsoft.Authorization/policyAssignments/{name}"
-            )
+    def create_policy_assignment(
+        self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
+    ):
+        full_url = f"{PREFIX_URL_AZURE}{scope}" f"/providers/Microsoft.Authorization/policyAssignments/{name}"
         params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
-    
+
         data = {
-            "properties":
-            {
+            "properties": {
                 "policyDefinitionId": policy_definition_id,
                 "displayName": display_name,
                 "parameters": parameters,
-                "description": description
+                "description": description,
             }
         }
         return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
-    
-    def set_postgres_config(self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str,
-                            source: str, value: str):
+
+    def set_postgres_config(
+        self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str, source: str, value: str
+    ):
         """
         Updates the configuration of a specific PostgreSQL server parameter.
         Args:
@@ -333,26 +324,27 @@ and resource group "{resource_group_name}" was not found.')
         Returns:
         dict: The response from the Azure REST API after applying the update.
         """
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DBforPostgreSQL/servers/{server_name}/configurations/{configuration_name}"
         )
         params = {"api-version": POSTGRES_API_VERSION}
-        data = {
-            "properties":
-            {
-                "source": source,
-                "value": value
-            }
-        }
+        data = {"properties": {"source": source, "value": value}}
         data = remove_empty_elements(data)
         return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
 
-    def set_webapp_config(self, name: str, subscription_id: str, resource_group_name: str, http20_enabled: str,
-                          remote_debugging_enabled: str, min_tls_version: str):
+    def set_webapp_config(
+        self,
+        name: str,
+        subscription_id: str,
+        resource_group_name: str,
+        http20_enabled: str,
+        remote_debugging_enabled: str,
+        min_tls_version: str,
+    ):
         """
         Updates the web app configuration settings.
-        
+
         Args:
             name (str): Name of the web app.
             subscription_id (str): Azure subscription ID.
@@ -360,62 +352,59 @@ and resource group "{resource_group_name}" was not found.')
             http20_enabled (str): Whether HTTP/2.0 is enabled for the web app.
             remote_debugging_enabled (str): Whether remote debugging is enabled.
             min_tls_version (str): Minimum TLS version required.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Web/sites/{name}/config/web"
         )
         params = {"api-version": WEBAPP_API_VERSION}
         data = {
-            "properties":
-                {
-                    "http20Enabled": http20_enabled,
-                    "remoteDebuggingEnabled": remote_debugging_enabled,
-                    "minTlsVersion":min_tls_version
-                }
+            "properties": {
+                "http20Enabled": http20_enabled,
+                "remoteDebuggingEnabled": remote_debugging_enabled,
+                "minTlsVersion": min_tls_version,
+            }
         }
         data = remove_empty_elements(data)
         demisto.debug(f"Setting WebApp configuration with {data}.")
         return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
-    
-    
+
     def get_webapp_auth(self, name, subscription_id, resource_group_name):
         """
         Gets the authentication settings of a web app.
-        
+
         Args:
             name (str): Name of the web app.
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the web app.
-            
+
         Returns:
             dict: The authentication settings of the web app.
         """
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
         )
         params = {"api-version": WEBAPP_API_VERSION}
         return self.http_request(method="GET", full_url=full_url, params=params)
-    
-    
+
     def update_webapp_auth(self, name, subscription_id, resource_group_name, current):
         """
         Updates the authentication settings of a web app.
-        
+
         Args:
             name (str): Name of the web app.
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the web app.
             enabled (str): Whether authentication is enabled.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
         )
@@ -429,14 +418,13 @@ and resource group "{resource_group_name}" was not found.')
         data = current
         demisto.debug(f"Updating WebApp auth with {data}.")
         return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
-    
 
-    
-    def flexible_server_param_set(self, server_name: str, configuration_name: str, subscription_id: str,
-                             resource_group_name: str, source: str, value: str):
+    def flexible_server_param_set(
+        self, server_name: str, configuration_name: str, subscription_id: str, resource_group_name: str, source: str, value: str
+    ):
         """
         Updates a parameter of a MySQL flexible server.
-        
+
         Args:
             server_name (str): Name of the MySQL flexible server.
             configuration_name (str): Name of the configuration parameter to update.
@@ -444,71 +432,63 @@ and resource group "{resource_group_name}" was not found.')
             resource_group_name (str): Name of the resource group containing the server.
             source (str): The source of the configuration value.
             value (str): The new value to set for the configuration parameter.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DBforMySQL/flexibleServers/{server_name}/configurations/{configuration_name}"
         )
         params = {"api-version": FLEXIBLE_API_VERSION}
-        data = {
-            "properties":
-            {
-                "source": source,
-                "value": value
-            }
-        }
+        data = {"properties": {"source": source, "value": value}}
         return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
-    
-    
+
     def get_monitor_log_profile(self, subscription_id: str, log_profile_name: str):
         """
         Gets a monitor log profile.
-        
+
         Args:
             subscription_id (str): Azure subscription ID.
             log_profile_name (str): Name of the log profile.
-            
+
         Returns:
             dict: The log profile.
         """
-        full_url=(
-            f"{PREFIX_URL_AZURE}{subscription_id}"
-            f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
-        )
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}" f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
         params = {"api-version": MONITOR_API_VERSION}
         return self.http_request(method="GET", full_url=full_url, params=params)
-        
-    
+
     def monitor_log_profile_update(self, subscription_id: str, log_profile_name: str, current_log_profile: dict):
         """
         Updates a monitor log profile.
-        
+
         Args:
             subscription_id (str): Azure subscription ID.
             log_profile_name (str): Name of the log profile.
             current_log_profile (dict): The current log profile to update.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        full_url=(
-            f"{PREFIX_URL_AZURE}{subscription_id}"
-            f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
-        )
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}" f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
         params = {"api-version": MONITOR_API_VERSION}
         data = current_log_profile
         data = remove_empty_elements(data)
         return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
-    
-    
-    def disk_update(self, subscription_id: str, resource_group_name: str, disk_name: str, public_network_access: str,
-                    network_access_policy: str, data_access_auth_mode: str):
+
+    def disk_update(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        disk_name: str,
+        public_network_access: str,
+        network_access_policy: str,
+        data_access_auth_mode: str,
+    ):
         """
         Updates a disk.
-        
+
         Args:
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the disk.
@@ -516,11 +496,11 @@ and resource group "{resource_group_name}" was not found.')
             public_network_access (str): The public network access state.
             network_access_policy (str): The network access policy.
             data_access_auth_mode (str): The data access authentication mode.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Compute/disks/{disk_name}"
         )
@@ -534,8 +514,7 @@ and resource group "{resource_group_name}" was not found.')
         }
         data = remove_empty_elements(data)
         return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
-    
-    
+
     # def get_webapp(self, subscription_id, resource_group_name, name):
     #     full_url=(
     #         f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -543,13 +522,19 @@ and resource group "{resource_group_name}" was not found.')
     #     )
     #     params = {"api-version": WEBAPP_API_VERSION}
     #     return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
-        
-    
-    def webapp_update(self, subscription_id: str, resource_group_name: str, name: str, identity_type: str | None,
-                      https_only: str | None, client_cert_enabled: str | None):
+
+    def webapp_update(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        name: str,
+        identity_type: str | None,
+        https_only: str | None,
+        client_cert_enabled: str | None,
+    ):
         """
         Updates a web app.
-        
+
         Args:
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the web app.
@@ -557,13 +542,12 @@ and resource group "{resource_group_name}" was not found.')
             identity_type (str): Type of identity to assign to the web app.
             https_only (str): Whether the web app requires HTTPS only.
             client_cert_enabled (str): Whether client certificates are enabled.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        full_url=(
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Web/sites/{name}"
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}" f"/providers/Microsoft.Web/sites/{name}"
         )
         params = {"api-version": WEBAPP_API_VERSION}
         data = {
@@ -573,18 +557,25 @@ and resource group "{resource_group_name}" was not found.')
             "properties": {
                 "clientCertEnabled": client_cert_enabled,
                 "httpsOnly": https_only,
-            }
+            },
         }
         data = remove_empty_elements(data)
         demisto.debug(f"Updating WebApp with {data}.")
         return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
-        
-    
-    def acr_update(self, subscription_id: str, resource_group_name: str, registry_name: str, allow_exports: str,
-              public_network_access: str, anonymous_pull_enabled: str, authentication_as_arm_policy: str):
+
+    def acr_update(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        registry_name: str,
+        allow_exports: str,
+        public_network_access: str,
+        anonymous_pull_enabled: str,
+        authentication_as_arm_policy: str,
+    ):
         """
         Updates an Azure Container Registry.
-        
+
         Args:
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the registry.
@@ -593,11 +584,11 @@ and resource group "{resource_group_name}" was not found.')
             public_network_access (str): The public network access state.
             anonymous_pull_enabled (str): Whether anonymous pulls are enabled.
             authentication_as_arm_policy (str): The authentication as ARM policy status.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.ContainerRegistry/registries/{registry_name}"
         )
@@ -607,187 +598,167 @@ and resource group "{resource_group_name}" was not found.')
                 "publicNetworkAccess": public_network_access,
                 "anonymousPullEnabled": anonymous_pull_enabled,
                 "policies": {
-                    "azureADAuthenticationAsArmPolicy": {
-                        "status": authentication_as_arm_policy
-                    },
-                    "exportPolicy": {
-                        "status": allow_exports
-                    },
-                }
+                    "azureADAuthenticationAsArmPolicy": {"status": authentication_as_arm_policy},
+                    "exportPolicy": {"status": allow_exports},
+                },
             },
         }
         data = remove_empty_elements(data)
         demisto.debug(f"Updating ACR with {data}")
         return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
-        
+
     def postgres_server_update(self, subscription_id: str, resource_group_name: str, server_name: str, ssl_enforcement: str):
         """
         Updates a PostgreSQL server.
-        
+
         Args:
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the server.
             server_name (str): Name of the PostgreSQL server.
             ssl_enforcement (str): The SSL enforcement status.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DBforPostgreSQL/servers/{server_name}"
         )
         params = {"api-version": POSTGRES_API_VERSION}
         data = {
-            "properties": {
-                "sslEnforcement": ssl_enforcement
-            },
+            "properties": {"sslEnforcement": ssl_enforcement},
         }
         data = remove_empty_elements(data)
         return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
 
-    
     def update_key_vault_request(
         self,
         subscription_id: str,
         resource_group_name: str,
         vault_name: str,
         enable_soft_delete: str,
-        enable_purge_protection: str
+        enable_purge_protection: str,
     ) -> dict[str, Any]:
         """
         Updates a Key Vault.
-        
+
         Args:
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the key vault.
             vault_name (str): Name of the key vault.
             enable_soft_delete (str): Whether soft delete is enabled.
             enable_purge_protection (str): Whether purge protection is enabled.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        data = {
-            "properties": {
-                "enableSoftDelete": enable_soft_delete,
-                "enablePurgeProtection": enable_purge_protection
-            }
-        }
+        data = {"properties": {"enableSoftDelete": enable_soft_delete, "enablePurgeProtection": enable_purge_protection}}
         params = {"api-version": KEY_VAULT_API_VERSION}
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.KeyVault/vaults/{vault_name}"
         )
         demisto.debug("Updating key vault.")
         return self.http_request("PATCH", full_url=full_url, json_data=data, params=params)
 
-
-    def sql_db_threat_policy_get(self, server_name: str, db_name: str, subscription_id: str,
-                             resource_group_name: str):
+    def sql_db_threat_policy_get(self, server_name: str, db_name: str, subscription_id: str, resource_group_name: str):
         """
         Gets the threat policy of a SQL database.
-        
+
         Args:
             server_name (str): Name of the SQL server.
             db_name (str): Name of the database.
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the database.
-            
+
         Returns:
             dict: The threat policy of the SQL database.
         """
         params = {"api-version": SQL_DB_API_VERSION}
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
         )
 
         return self.http_request("GET", full_url=full_url, params=params)
 
-
-    def sql_db_threat_policy_update(self, server_name: str, db_name: str, subscription_id: str, current: dict,
-                                    resource_group_name: str):
+    def sql_db_threat_policy_update(
+        self, server_name: str, db_name: str, subscription_id: str, current: dict, resource_group_name: str
+    ):
         """
         Updates the threat policy of a SQL database.
-        
+
         Args:
             server_name (str): Name of the SQL server.
             db_name (str): Name of the database.
             subscription_id (str): Azure subscription ID.
             current (dict): The current threat policy configuration to update.
             resource_group_name (str): Name of the resource group containing the database.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
         data = current
         params = {"api-version": SQL_DB_API_VERSION}
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
         )
         demisto.debug("Updating SQL DB threat policy.")
         return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
-    
-    
+
     def sql_db_tde_set(self, server_name: str, db_name: str, subscription_id: str, state: str, resource_group_name: str):
         """
         Sets the transparent data encryption state of a SQL database.
-        
+
         Args:
             server_name (str): Name of the SQL server.
             db_name (str): Name of the database.
             subscription_id (str): Azure subscription ID.
             state (str): The TDE state to set.
             resource_group_name (str): Name of the resource group containing the database.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        data = {
-            "properties": {
-                "state": state
-            }
-        }
+        data = {"properties": {"state": state}}
         params = {"api-version": SQL_DB_API_VERSION}
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/transparentDataEncryption/current"
         )
         demisto.debug("Setting SQL DB Transparent Data Encryption state.")
         return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
-    
-    
-    def cosmos_db_update(self, subscription_id: str, resource_group_name: str, account_name: str,
-                     disable_key_based_metadata_write_access: str | None):
+
+    def cosmos_db_update(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        account_name: str,
+        disable_key_based_metadata_write_access: str | None,
+    ):
         """
         Updates a Cosmos DB account.
-        
+
         Args:
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the account.
             account_name (str): Name of the Cosmos DB account.
             disable_key_based_metadata_write_access (str): Whether to disable key-based metadata write access.
-            
+
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        data = {
-            "properties": {
-                "disableKeyBasedMetadataWriteAccess": disable_key_based_metadata_write_access
-            }
-        }
+        data = {"properties": {"disableKeyBasedMetadataWriteAccess": disable_key_based_metadata_write_access}}
         data = remove_empty_elements(data)
         params = {"api-version": COSMOS_DB_API_VERSION}
-        full_url=(
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DocumentDB/databaseAccounts/{account_name}"
         )
 
         return self.http_request("PATCH", full_url=full_url, json_data=data, params=params)
-    
-    
+
     def remove_member_from_role(self, role_object_id: str, user_id: str):
         """Removing a member from a specific role.
 
@@ -806,8 +777,7 @@ and resource group "{resource_group_name}" was not found.')
         """
         full_url = f"{PREFIX_URL_MS_GRAPH}/directoryRoles/{role_object_id}/members/{user_id}/$ref"
         self.http_request("DELETE", full_url=full_url)
-        
-    
+
     def remove_member_from_group(self, group_id: str, user_id: str):
         """Remove a single member to a group by sending a DELETE request.
         Args:
@@ -817,22 +787,26 @@ and resource group "{resource_group_name}" was not found.')
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
         #  Using resp_type="text" to avoid parsing error in the calling method.
-        self.http_request(method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text")
-        
+        self.http_request(
+            method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
+        )
 
     def get_role_assignments_call(self, object_id):
         full_url = f"{PREFIX_URL_AZURE}{self.subscription_id}/providers/Microsoft.Authorization/roleAssignments?$filter=principalId eq '{object_id}'"
         params = {"api-version": PERMISSIONS_VERSION}
         return self.http_request(method="GET", full_url=full_url, params=params)
-        
-        
+
     def get_role_permissions(self, role_definition_id):
-        full_url = f"{PREFIX_URL_AZURE}{self.subscription_id}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}"
+        full_url = (
+            f"{PREFIX_URL_AZURE}{self.subscription_id}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}"
+        )
         params = {"api-version": PERMISSIONS_VERSION}
         return self.http_request(method="GET", full_url=full_url, params=params)
-        
-        
+
+
 """ HELPER FUNCTIONS """
+
+
 def format_rule(rule_json: dict | list, security_rule_name: str):
     """
     format the rule and create the commandResult object with it
@@ -856,8 +830,8 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
     return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
 
 
-    
 """ COMMAND FUNCTIONS """
+
 
 @logger
 def start_auth(client: AzureClient) -> CommandResults:
@@ -869,6 +843,7 @@ def start_auth(client: AzureClient) -> CommandResults:
 def complete_auth(client: AzureClient):
     client.ms_client.get_access_token()
     return "✅ Authorization completed successfully."
+
 
 def update_security_rule_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
@@ -960,11 +935,10 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
         rule_name=security_rule_name,
         properties=properties,
         subscription_id=subscription_id,
-        resource_group_name=resource_group_name
+        resource_group_name=resource_group_name,
     )
 
     return format_rule(rule, security_rule_name)
-
 
 
 def storage_account_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults | str:
@@ -994,14 +968,18 @@ def storage_account_update_command(client: AzureClient, params: dict, args: dict
         "Account Name": response.get("name"),
         "Subscription ID": subscription_id,
         "Resource Group": resource_group_name,
-        "Network Ruleset Bypass": response.get("properties", {}).get("networkAcls", {}).get("bypass") if \
-            args.get("network_ruleset_bypass") else None,
-        "Default Action": response.get("properties", {}).get("networkAcls", {}).get("defaultAction") if \
-            args.get("network_ruleset_default_action") else None,
-        "Allow Cross Tenant Replication": response.get("properties", {}).get("allowCrossTenantReplication") if \
-            args.get("allow_cross_tenant_replication") else None,
-        "Supports Https Traffic Only": response.get("properties", {}).get("supportsHttpsTrafficOnly") if \
-            args.get("supports_https_traffic_only") else None,
+        "Network Ruleset Bypass": response.get("properties", {}).get("networkAcls", {}).get("bypass")
+        if args.get("network_ruleset_bypass")
+        else None,
+        "Default Action": response.get("properties", {}).get("networkAcls", {}).get("defaultAction")
+        if args.get("network_ruleset_default_action")
+        else None,
+        "Allow Cross Tenant Replication": response.get("properties", {}).get("allowCrossTenantReplication")
+        if args.get("allow_cross_tenant_replication")
+        else None,
+        "Supports Https Traffic Only": response.get("properties", {}).get("supportsHttpsTrafficOnly")
+        if args.get("supports_https_traffic_only")
+        else None,
     }
 
     return CommandResults(
@@ -1011,13 +989,19 @@ def storage_account_update_command(client: AzureClient, params: dict, args: dict
         readable_output=tableToMarkdown(
             "Azure Storage Account",
             readable_output,
-            ["Account Name", "Subscription ID", "Resource Group", "Network Ruleset Bypass", "Default Action",
-             "Allow Cross Tenant Replication", "Supports Https Traffic Only"],
-            removeNull=True
+            [
+                "Account Name",
+                "Subscription ID",
+                "Resource Group",
+                "Network Ruleset Bypass",
+                "Default Action",
+                "Allow Cross Tenant Replication",
+                "Supports Https Traffic Only",
+            ],
+            removeNull=True,
         ),
         raw_response=response,
     )
-
 
 
 def storage_blob_service_properties_set_command(client: AzureClient, params: dict, args: dict):
@@ -1038,7 +1022,7 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     delete_rentention_policy_enabled = args.get("delete_rentention_policy_enabled")
     delete_rentention_policy_days = args.get("delete_rentention_policy_days")
     account_name = args.get("account_name", "")
-   
+
     response = client.storage_blob_service_properties_set_request(
         subscription_id, resource_group_name, account_name, delete_rentention_policy_enabled, delete_rentention_policy_days
     )
@@ -1046,8 +1030,9 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     readable_output = {
         "Name": response.get("name"),
         "ID": response.get("id"),
-        "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy") if \
-            args.get("delete_rentention_policy_enabled") or args.get("delete_rentention_policy_days") else None
+        "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy")
+        if args.get("delete_rentention_policy_enabled") or args.get("delete_rentention_policy_days")
+        else None,
     }
 
     return CommandResults(
@@ -1058,7 +1043,7 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
             "Updated Azure Storage Blob Service Properties",
             readable_output,
             ["Name", "ID", "Delete Retention Policy"],
-            removeNull=True
+            removeNull=True,
         ),
         raw_response=response,
     )
@@ -1077,7 +1062,7 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
     """
     name = args.get("name", "")
     scope = args.get("scope", "")
-    policy_definition_id : str = args.get("policy_definition_id", "")
+    policy_definition_id: str = args.get("policy_definition_id", "")
     display_name = args.get("display_name", "")
     parameters = json.loads(args.get("parameters", "{}"))
     description = args.get("description", "")
@@ -1089,7 +1074,7 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
             "Display Name": response.get("properties", {}).get("displayName", ""),
             "Description": response.get("properties", {}).get("description", ""),
             "ID": response.get("id"),
-            "Parameters": response.get("properties", {}).get("parameters") if parameters else None
+            "Parameters": response.get("properties", {}).get("parameters") if parameters else None,
         }
     ]
     md = tableToMarkdown(
@@ -1105,7 +1090,8 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
         readable_output=md,
         raw_response=outputs,
     )
-    
+
+
 def set_postgres_config_command(client: AzureClient, params: dict, args: dict):
     """
         Updates a configuration of PostgreSQL server.
@@ -1124,9 +1110,8 @@ def set_postgres_config_command(client: AzureClient, params: dict, args: dict):
     source = args.get("source", "")
     value = args.get("value", "")
     client.set_postgres_config(server_name, subscription_id, resource_group_name, configuration_name, source, value)
-    return CommandResults(
-        readable_output=f"Updated the configuration {configuration_name} of the server {server_name}."
-    )
+    return CommandResults(readable_output=f"Updated the configuration {configuration_name} of the server {server_name}.")
+
 
 def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
     """
@@ -1145,14 +1130,16 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
     http20_enabled = args.get("http20_enabled", "")
     remote_debugging_enabled = args.get("remote_debugging_enabled", "")
     min_tls_version = args.get("min_tls_version", "")
-    response = client.set_webapp_config(name, subscription_id, resource_group_name, http20_enabled, remote_debugging_enabled,
-                                        min_tls_version)
+    response = client.set_webapp_config(
+        name, subscription_id, resource_group_name, http20_enabled, remote_debugging_enabled, min_tls_version
+    )
     outputs = [
         {
             "Name": response.get("name"),
             "Http20 Enabled": response.get("properties", {}).get("http20Enabled", "") if http20_enabled else None,
-            "Remote Debugging Enabled": response.get("properties", {}).get("remoteDebuggingEnabled", "") if \
-                remote_debugging_enabled else None,
+            "Remote Debugging Enabled": response.get("properties", {}).get("remoteDebuggingEnabled", "")
+            if remote_debugging_enabled
+            else None,
             "Min Tls Version": response.get("properties", {}).get("minTlsVersion", "") if min_tls_version else None,
             "ID": response.get("id"),
         }
@@ -1170,6 +1157,7 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
         readable_output=md,
         raw_response=outputs,
     )
+
 
 def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     """
@@ -1194,7 +1182,7 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
         {
             "Name": name,
             "Enabled": response.get("properties", {}).get("enabled", "") if enabled else None,
-            "ID": response.get("id")
+            "ID": response.get("id"),
         }
     ]
     md = tableToMarkdown(
@@ -1210,8 +1198,8 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
         readable_output=md,
         raw_response=outputs,
     )
-    
-    
+
+
 def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, args: dict):
     """
         Updates a configuration of MySQL flexible server.
@@ -1230,11 +1218,9 @@ def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, a
     source = args.get("source", "")
     value = args.get("value", "")
     client.flexible_server_param_set(server_name, configuration_name, subscription_id, resource_group_name, source, value)
-    return CommandResults(
-        readable_output=f"Updated the configuration {configuration_name} of the server {server_name}."
-    )
-    
-    
+    return CommandResults(readable_output=f"Updated the configuration {configuration_name} of the server {server_name}.")
+
+
 def monitor_log_profile_update_command(client: AzureClient, params: dict, args: dict):
     """
         Updates a monitor log profile.
@@ -1252,10 +1238,16 @@ def monitor_log_profile_update_command(client: AzureClient, params: dict, args: 
     retention_policy_days = arg_to_number(args.get("retention_policy_days"))
     retention_policy_enabled = args.get("retention_policy_enabled", "")
     current_log_profile = client.get_monitor_log_profile(subscription_id, log_profile_name)
-    current_log_profile["properties"]["retentionPolicy"]["enabled"] = retention_policy_enabled if retention_policy_enabled \
+    current_log_profile["properties"]["retentionPolicy"]["enabled"] = (
+        retention_policy_enabled
+        if retention_policy_enabled
         else current_log_profile.get("properties", {}).get("retentionPolicy", {}).get("enabled")
-    current_log_profile["properties"]["retentionPolicy"]["days"] = retention_policy_days if retention_policy_days \
+    )
+    current_log_profile["properties"]["retentionPolicy"]["days"] = (
+        retention_policy_days
+        if retention_policy_days
         else current_log_profile.get("properties", {}).get("retentionPolicy", {}).get("days")
+    )
     current_log_profile["location"] = location if location else current_log_profile.get("location")
     response = client.monitor_log_profile_update(subscription_id, log_profile_name, current_log_profile)
     outputs = [
@@ -1263,8 +1255,9 @@ def monitor_log_profile_update_command(client: AzureClient, params: dict, args: 
             "Name": response.get("name"),
             "ID": response.get("id"),
             "Location": response.get("location", "") if location else None,
-            "Retention Policy": response.get("properties", {}).get("retentionPolicy") if (retention_policy_enabled or \
-                retention_policy_days) else None,
+            "Retention Policy": response.get("properties", {}).get("retentionPolicy")
+            if (retention_policy_enabled or retention_policy_days)
+            else None,
         }
     ]
     md = tableToMarkdown(
@@ -1280,8 +1273,8 @@ def monitor_log_profile_update_command(client: AzureClient, params: dict, args: 
         readable_output=md,
         raw_response=outputs,
     )
-    
-    
+
+
 def disk_update_command(client: AzureClient, params: dict, args: dict):
     """
         Updates a disk.
@@ -1299,15 +1292,16 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
     public_network_access = args.get("public_network_access", "")
     network_access_policy = args.get("network_access_policy", "")
     data_access_auth_mode = args.get("data_access_auth_mode", "")
-    response = client.disk_update(subscription_id, resource_group_name, disk_name, public_network_access, network_access_policy,
-                                  data_access_auth_mode)
+    response = client.disk_update(
+        subscription_id, resource_group_name, disk_name, public_network_access, network_access_policy, data_access_auth_mode
+    )
     outputs = [
         {
             "Name": response.get("name"),
             "ID": response.get("id"),
             "Public Network Access": response.get("properties", {}).get("publicNetworkAccess") if public_network_access else None,
             "Network Access Policy": response.get("properties", {}).get("networkAccessPolicy") if network_access_policy else None,
-            "Data Access Auth Mode": response.get("properties", {}).get("dataAccessAuthMode") if data_access_auth_mode else None
+            "Data Access Auth Mode": response.get("properties", {}).get("dataAccessAuthMode") if data_access_auth_mode else None,
         }
     ]
     md = tableToMarkdown(
@@ -1323,11 +1317,12 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
         readable_output=md,
         raw_response=outputs,
     )
-    
+
+
 def webapp_update_command(client: AzureClient, params: dict, args: dict):
     """
     Updates an Azure web application with specified settings.
-    
+
     Args:
         client (AzureClient): The Azure client instance.
         params (dict): Configuration parameters.
@@ -1370,7 +1365,7 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
 def acr_update_command(client: AzureClient, params: dict, args: dict):
     """
     Updates an Azure Container Registry with specified settings.
-    
+
     Args:
         client (AzureClient): The Azure client instance.
         params (dict): Configuration parameters.
@@ -1386,20 +1381,32 @@ def acr_update_command(client: AzureClient, params: dict, args: dict):
     public_network_access = args.get("public_network_access", "")
     anonymous_pull_enabled = args.get("anonymous_pull_enabled", "")
     authentication_as_arm_policy = args.get("authentication_as_arm_policy", "")
-    response = client.acr_update(subscription_id, resource_group_name, registry_name, allow_exports, public_network_access,
-                                 anonymous_pull_enabled, authentication_as_arm_policy)
+    response = client.acr_update(
+        subscription_id,
+        resource_group_name,
+        registry_name,
+        allow_exports,
+        public_network_access,
+        anonymous_pull_enabled,
+        authentication_as_arm_policy,
+    )
     outputs = [
         {
             "Name": response.get("name"),
             "ID": response.get("id"),
             "Public Network Access": response.get("properties", {}).get("publicNetworkAccess") if public_network_access else None,
-            "Anonymous Pull Enabled": response.get("properties", {}).get("anonymousPullEnabled") if anonymous_pull_enabled \
-                else None,
-            "Allow Exports": response.get("properties", {}).get("policies", {}).get("exportPolicy", {}).get("status") if \
-                allow_exports else None,
-            "Authentication As Arm Policy": \
-                response.get("properties", {}).get("policies", {}).get("azureADAuthenticationAsArmPolicy", {}).get("status") \
-                    if authentication_as_arm_policy else None,
+            "Anonymous Pull Enabled": response.get("properties", {}).get("anonymousPullEnabled")
+            if anonymous_pull_enabled
+            else None,
+            "Allow Exports": response.get("properties", {}).get("policies", {}).get("exportPolicy", {}).get("status")
+            if allow_exports
+            else None,
+            "Authentication As Arm Policy": response.get("properties", {})
+            .get("policies", {})
+            .get("azureADAuthenticationAsArmPolicy", {})
+            .get("status")
+            if authentication_as_arm_policy
+            else None,
         }
     ]
     md = tableToMarkdown(
@@ -1415,11 +1422,12 @@ def acr_update_command(client: AzureClient, params: dict, args: dict):
         readable_output=md,
         raw_response=outputs,
     )
-    
+
+
 def postgres_server_update_command(client: AzureClient, params: dict, args: dict):
     """
     Updates a PostgreSQL server with specified SSL enforcement settings.
-    
+
     Args:
         client (AzureClient): The Azure client instance.
         params (dict): Configuration parameters.
@@ -1433,8 +1441,8 @@ def postgres_server_update_command(client: AzureClient, params: dict, args: dict
     server_name = args.get("server_name", "")
     ssl_enforcement = args.get("ssl_enforcement", "")
     response = client.postgres_server_update(subscription_id, resource_group_name, server_name, ssl_enforcement)
-    
-    
+
+
 def update_key_vault_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
         updates a key vault.
@@ -1452,19 +1460,16 @@ def update_key_vault_command(client: AzureClient, params: dict[str, Any], args: 
     enable_soft_delete = args.get("enable_soft_delete", "")
     enable_purge_protection = args.get("enable_purge_protection", "")
     response = client.update_key_vault_request(
-        subscription_id,
-        resource_group_name,
-        vault_name,
-        enable_soft_delete,
-        enable_purge_protection
+        subscription_id, resource_group_name, vault_name, enable_soft_delete, enable_purge_protection
     )
     outputs = [
         {
             "Name": response.get("name"),
             "ID": response.get("id"),
             "Enable Soft Delete": response.get("properties", {}).get("enableSoftDelete") if enable_soft_delete else None,
-            "Enable Purge Protection": response.get("properties", {}).get("enablePurgeProtection") if enable_purge_protection \
-                else None
+            "Enable Purge Protection": response.get("properties", {}).get("enablePurgeProtection")
+            if enable_purge_protection
+            else None,
         }
     ]
     readable_output = tableToMarkdown(
@@ -1483,14 +1488,12 @@ def update_key_vault_command(client: AzureClient, params: dict[str, Any], args: 
         readable_output=readable_output,
         ignore_auto_extract=True,
     )
-    
-    
-def sql_db_threat_policy_update_command(
-    client: AzureClient, params: dict[str, Any], args: Dict[str, Any]
-) -> CommandResults:
+
+
+def sql_db_threat_policy_update_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]) -> CommandResults:
     """
     Updates the threat detection policy for a SQL database.
-    
+
     Args:
         client (AzureClient): The Azure client instance.
         params (dict): Configuration parameters.
@@ -1504,35 +1507,33 @@ def sql_db_threat_policy_update_command(
     email_account_admins = args.get("email_account_admins_enabled", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    
+
     current_db = client.sql_db_threat_policy_get(
-        server_name=server_name,
-        db_name=db_name,
-        subscription_id=subscription_id,
-        resource_group_name=resource_group_name
+        server_name=server_name, db_name=db_name, subscription_id=subscription_id, resource_group_name=resource_group_name
     )
     if isinstance(current_db, str):  # if there is 404, an error message will return
         return CommandResults(readable_output=current_db)
-    
-    current_db["properties"]["emailAccountAdmins"] = email_account_admins or \
-        current_db.get("properties", {}).get("emailAccountAdmins")
+
+    current_db["properties"]["emailAccountAdmins"] = email_account_admins or current_db.get("properties", {}).get(
+        "emailAccountAdmins"
+    )
 
     response = client.sql_db_threat_policy_update(
         server_name=server_name,
         db_name=db_name,
         subscription_id=subscription_id,
         current=current_db,
-        resource_group_name=resource_group_name
+        resource_group_name=resource_group_name,
     )
 
     if isinstance(response, str):  # if there is 404, an error message will return
         return CommandResults(readable_output=response)
-    
+
     outputs = [
         {
             "Name": response.get("name"),
             "ID": response.get("id"),
-            "Email Account Admins": response.get("properties", {}).get("emailAccountAdmins") if email_account_admins else None
+            "Email Account Admins": response.get("properties", {}).get("emailAccountAdmins") if email_account_admins else None,
         }
     ]
     readable_output = tableToMarkdown(
@@ -1542,7 +1543,7 @@ def sql_db_threat_policy_update_command(
         removeNull=True,
         headerTransform=string_to_table_header,
     )
-    
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Azure.SqlDBThreatPolicy",
@@ -1550,13 +1551,12 @@ def sql_db_threat_policy_update_command(
         outputs=response,
         raw_response=response,
     )
-    
-def sql_db_tde_set_command(
-    client: AzureClient, params: dict[str, Any], args: Dict[str, Any]
-) -> CommandResults:
+
+
+def sql_db_tde_set_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]) -> CommandResults:
     """
     Sets the transparent data encryption state for a SQL database.
-    
+
     Args:
         client (AzureClient): The Azure client instance.
         params (dict): Configuration parameters.
@@ -1575,16 +1575,15 @@ def sql_db_tde_set_command(
         db_name=db_name,
         subscription_id=subscription_id,
         state=state,
-        resource_group_name=resource_group_name
+        resource_group_name=resource_group_name,
     )
     # CommandResults don't contain the response because it takes time for the resource to be updated.
     return CommandResults(
         readable_output=f"Updated SQL database {db_name} of the server {server_name}.",
     )
-    
-def cosmosdb_update_command(
-    client: AzureClient, params: dict[str, Any], args: Dict[str, Any]
-) -> CommandResults:
+
+
+def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]) -> CommandResults:
     """
         Updates a Cosmos DB account with specified settings.
     Args:
@@ -1599,9 +1598,10 @@ def cosmosdb_update_command(
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     disable_key_based_metadata_write_access = args.get("disable_key_based_metadata_write_access")
-    response = client.cosmos_db_update(subscription_id, resource_group_name, account_name,
-                                       disable_key_based_metadata_write_access)
-    
+    response = client.cosmos_db_update(
+        subscription_id, resource_group_name, account_name, disable_key_based_metadata_write_access
+    )
+
     return CommandResults(
         readable_output=f"Updated Cosmos DB {account_name}.",
         outputs_prefix="Azure.CosmosDB",
@@ -1609,7 +1609,8 @@ def cosmosdb_update_command(
         outputs=response,
         raw_response=response,
     )
-    
+
+
 def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
     """Remove a member from a group by group id and user id.
 
@@ -1624,8 +1625,8 @@ def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
     user_id = str(args.get("user_id"))
     client.remove_member_from_role(role_object_id, user_id)
     return CommandResults(readable_output=f"User ID {user_id} has been removed from role {role_object_id}")
-    
-    
+
+
 def remove_member_from_group_command(client: AzureClient, args: dict) -> CommandResults:
     """Remove a member from a group by group id and user id.
 
@@ -1674,9 +1675,11 @@ def get_role_definitions_permissions(client: AzureClient, list_role_assignments:
     role_definitions_permissions = []
     for assignment in list_role_assignments:
         role_definition_id = assignment.get("properties", {}).get("roleDefinitionId", "").split("/")[-1]
-        current_role_permissions = client.get_role_permissions(role_definition_id).get("properties", {}).get("permissions")[0].get("actions")
+        current_role_permissions = (
+            client.get_role_permissions(role_definition_id).get("properties", {}).get("permissions")[0].get("actions")
+        )
         role_definitions_permissions.extend(current_role_permissions)
-        
+
     return role_definitions_permissions
 
 
@@ -1685,15 +1688,15 @@ def check_all_permissions(role_permissions: list, api_permissions: list) -> list
     for required_role_permission in REQUIRED_ROLE_PERMISSIONS:
         if not any(fnmatch.fnmatch(required_role_permission, granted) for granted in role_permissions):
             missing_permissions.append(required_role_permission)
-        
+
     # for required_api_permission in REQUIRED_API_PERMISSIONS:
     #     if required_api_permission not in api_permissions:
     #         missing_permissions.append(required_api_permission)
-            
-    return missing_permissions
-    
 
-def test_module(client: AzureClient, token: str = '') -> str:
+    return missing_permissions
+
+
+def test_module(client: AzureClient, token: str = "") -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -1709,31 +1712,30 @@ def test_module(client: AzureClient, token: str = '') -> str:
     list_api_permissions = decoded_token.get("roles", [])
     list_role_assignments = get_role_assignments(client, object_id)
     list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
-    
+
     missing_permissions = check_all_permissions(list_roles_permissions, list_api_permissions)
     if not missing_permissions:
         return "ok"
-    
+
     else:
-        raise Exception(
-            f"Missing the following permissions: {missing_permissions}."
-        )
+        raise Exception(f"Missing the following permissions: {missing_permissions}.")
+
 
 def check_required_permissions(token: str, subscription_id: str, connector_id: str) -> HealthCheckError | None:
     """
     Checks if the current credentials have all required permissions.
-    
+
     This function is used specifically for Cloud On Our Cloud (COOC) health checks
     to verify permissions.
-    
+
     Args:
         token (str): The Azure bearer token
         subscription_id (str): The Azure subscription ID
         connector_id (str): The identifier for the cloud connector
-        
+
     Returns:
         HealthCheckError or None: Error details if missing permissions, None if successful
-        
+
     Raises:
         DemistoException: When permissions check fails and connector_id is not provided
     """
@@ -1756,7 +1758,7 @@ def check_required_permissions(token: str, subscription_id: str, connector_id: s
             )
 
         raise DemistoException(error_message)
-    
+
     if missing_permissions:
         error_message = f"Missing required permissions for Azure integration: {missing_permissions}"
         if connector_id:
@@ -1770,7 +1772,7 @@ def check_required_permissions(token: str, subscription_id: str, connector_id: s
         raise DemistoException(error_message)
 
     return None
-    
+
 
 def health_check(subscription_id: str, connector_id: str) -> HealthCheckError | None:
     """
@@ -1788,7 +1790,7 @@ def health_check(subscription_id: str, connector_id: str) -> HealthCheckError | 
             account_id=subscription_id,
             connector_id=connector_id,
             message="Missing Subscription ID for Azure integration",
-            error_type=ErrorType.INTERNAL_ERROR
+            error_type=ErrorType.INTERNAL_ERROR,
         )
     try:
         credential_data = get_cloud_credentials(CloudTypes.AZURE.value, subscription_id)
@@ -1800,10 +1802,10 @@ def health_check(subscription_id: str, connector_id: str) -> HealthCheckError | 
                 message="Failed to authenticate with Azure",
                 error_type=ErrorType.CONNECTIVITY_ERROR,
             )
-        
+
         demisto.debug("Using token-based credentials for health check")
         return check_required_permissions(token, subscription_id, connector_id)
-    
+
     except Exception as e:
         return HealthCheckError(
             account_id=subscription_id,
@@ -1811,7 +1813,7 @@ def health_check(subscription_id: str, connector_id: str) -> HealthCheckError | 
             message=f"Failed to connect to Azure: {str(e)}",
             error_type=ErrorType.CONNECTIVITY_ERROR,
         )
-            
+
 
 def is_azure(command) -> bool:
     """
@@ -1826,8 +1828,35 @@ def is_azure(command) -> bool:
         # "test-module"
     ]
     return True if command not in msgraph_commands else False
-    
-    
+
+
+def get_azure_client(params, args, command):
+    is_azure_command = is_azure(command)
+    headers = {}
+    token = ""
+    if not params.get("credentials", {}).get("password"):
+        token = get_cloud_credentials(
+            CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id"), ["DEFAULT", "GRAPH"]
+        ).get("access_token")
+        if not token:
+            raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
+        demisto.debug("Using CTS.")
+
+    client = AzureClient(
+        app_id=params.get("app_id", ""),
+        subscription_id=params.get("subscription_id", ""),
+        resource_group_name=params.get("resource_group_name", ""),
+        verify=not params.get("insecure", False),
+        proxy=params.get("proxy", False),
+        tenant_id=params.get("tenant_id"),
+        enc_key=params.get("credentials", {}).get("password"),
+        scope=SCOPE_BY_CONNECTION.get("Client Credentials") if is_azure_command else None,  # the issue!
+        headers=headers,
+    )
+    return client, token
+
+
 def main():
     params = demisto.params()
     command = demisto.command()
@@ -1837,30 +1866,8 @@ def main():
     cloud_info = context.get("CloudIntegrationInfo", {})
     connector_id = cloud_info.get("connectorID")
     demisto.debug(f"{connector_id=}")
-    is_azure_command = is_azure(command)
     skip_proxy()
     try:
-        headers = {}
-        token = ""
-        if not params.get("credentials", {}).get("password"):
-            token = get_cloud_credentials(CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id"), ["DEFAULT","GRAPH"]).get("access_token")
-            if not token:
-                raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
-            headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
-            demisto.debug("Using CTS.")
-            
-        client = AzureClient(
-            app_id=params.get("app_id", ""),
-            subscription_id=params.get("subscription_id", ""),
-            resource_group_name=params.get("resource_group_name", ""),
-            verify=not params.get("insecure", False),
-            proxy=params.get("proxy", False),
-            tenant_id=params.get("tenant_id"),
-            enc_key=params.get("credentials", {}).get("password"),
-            scope=SCOPE_BY_CONNECTION.get("Client Credentials") if is_azure_command else None, # the issue!
-            headers=headers
-        )
-
         commands_with_params_and_args = {
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-storage-account-update": storage_account_update_command,
@@ -1884,6 +1891,9 @@ def main():
             "azure-remove-member-from-role": remove_member_from_role,
             "azure-remove-member-from-group": remove_member_from_group_command,
         }
+        if command != "test-module" or not connector_id:
+            client, token = get_azure_client(params, args, command)
+
         if command == "test-module" and connector_id:
             demisto.debug(f"Running permissions check for the accounts of {connector_id}")
             return_results(run_permissions_check_for_accounts(connector_id, health_check))
@@ -1895,7 +1905,7 @@ def main():
             return_results(commands_with_args[command](client=client, args=args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        
+
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
