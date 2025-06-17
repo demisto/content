@@ -317,6 +317,7 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
     "platform, version, link_type, expected_result",
     [
         ("x2", "", "alertLink", "alerts?action:openAlertDetails="),
+        ("platform", "", "alertLink", "alerts?action:openAlertDetails="),
         ("xsoar", "6.10.0", "incidentLink", "#/Details/"),
         ("xsoar", "8.4.0", "incidentLink", "/Details/"),
     ],
