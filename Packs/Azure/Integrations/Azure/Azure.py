@@ -1696,7 +1696,7 @@ def check_all_permissions(role_permissions: list, api_permissions: list) -> list
     return missing_permissions
 
 
-def test_module(client: AzureClient, token: str = "") -> str:
+def change_name(client: AzureClient, token: str = "") -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -1898,7 +1898,7 @@ def main():
             demisto.debug(f"Running permissions check for the accounts of {connector_id}")
             return_results(run_permissions_check_for_accounts(connector_id, health_check))
         elif command == "test-module":
-            return_results(test_module(client, token))
+            return_results(change_name(client, token))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         elif command in commands_with_args:
