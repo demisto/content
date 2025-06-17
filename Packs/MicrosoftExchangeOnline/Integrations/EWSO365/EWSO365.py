@@ -1626,7 +1626,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                 if item.message_id:
                     current_fetch_ids.add(item.message_id)
                     incident = parse_incident_from_item(item)
-                    demisto.debug(f"appended {incident=}")
                     incidents.append(incident)
 
                     if incident_filter == MODIFIED_FILTER:
@@ -1655,7 +1654,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                 demisto.updateModuleHealth(error_msg, is_error=False)
 
         demisto.debug(f"{APP_NAME} - ending fetch - got {len(incidents)} incidents.")
-        demisto.debug(f"{current_fetch_ids=}, {incidents=}")
         if incident_filter == MODIFIED_FILTER:
             last_incident_run_time = last_modification_time
         else:  # default case - using 'received' time
@@ -1672,7 +1670,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
             f"last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####"
         )
 
-        demisto.debug(f"ids before if len:{len(current_fetch_ids)}, {current_fetch_ids=}, len:{len(excluded_ids)}, {excluded_ids=}")
         # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
         # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
         if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
@@ -1691,13 +1688,11 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         demisto.setLastRun(new_last_run)
 
         if client.mark_as_read:
-            demisto.debug(f"calling mark item as read with {emails_ids=}")
             mark_item_as_read(client, emails_ids)
 
         return incidents
 
     except RateLimitError:
-        demisto.debug("RateLimitError")
         if LAST_RUN_TIME in last_run:
             last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
         if ERROR_COUNTER not in last_run:
