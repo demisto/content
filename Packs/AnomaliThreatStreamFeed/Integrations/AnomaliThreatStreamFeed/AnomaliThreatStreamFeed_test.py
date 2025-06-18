@@ -1,7 +1,7 @@
 from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, EntityRelationship
 import pytest
 from AnomaliThreatStreamFeed import Client
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from typing import Any
 
@@ -11,6 +11,7 @@ THREAT_STREAM = "Anomali ThreatStream Feed"
 
 def mock_client():
     return Client(base_url="https://api.threatstream.com", user_name="user", api_key="key", verify=True)
+
 
 def test_get_indicators_command_success_with_type(mocker):
     """
@@ -392,7 +393,7 @@ def test_get_past_time_basic_interval(mocker):
     """
     from AnomaliThreatStreamFeed import get_past_time
 
-    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=timezone.utc)
+    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=UTC)
     minutes_interval = 60  # one hour ago
     expected_past_time = "2023-08-01T11:00:00.500Z"
 
@@ -503,47 +504,6 @@ def test_calculate_score_various_scenarios(
     assert result == expected_score
 
 
-def test_create_relationships_disabled():
-    """
-    Tests create_relationships when relationship creation is disabled.
-    Verifies that an empty list is returned.
-
-    Given:
-        - create_relationships_param is False.
-        - Any indicator and reliability.
-    When:
-        - Calling create_relationships.
-    Then:
-        Verify that:
-        - An empty list is returned.
-        - No debug messages are logged.
-    """
-    from AnomaliThreatStreamFeed import create_relationships
-
-    indicator = {
-        "id": "125",
-        "type": "email",
-        "confidence": 65,
-        "description": "test ip",
-        "source": "NewSource",
-        "value": "test_email@test.com",
-        "tags": [{"id": "125a", "name": "tag125a"}, {"id": "125b", "name": "tag125b"}],
-        "tlp": "RED",
-        "country": "",
-        "modified_ts": "2023-02-01T12:00:00Z",
-        "org": "currentOrganization",
-        "created_ts": "2022-02-01T12:00:00Z",
-        "expiration_ts": "2024-02-01T12:00:00Z",
-        "target_industry": [],
-        "asn": "",
-        "locations": "California",
-    }
-    reliability = "C - Fairly reliable"
-
-    result = create_relationships(create_relationships_param=False, reliability=reliability, indicator=indicator)
-    assert result == []
-
-
 def test_create_relationships_missing_indicator_type_or_value():
     """
     Tests create_relationships when the indicator type or value is missing.
@@ -565,17 +525,17 @@ def test_create_relationships_missing_indicator_type_or_value():
 
     # Test missing type
     indicator_no_type = {"value": "1.1.1.1", "rdns": ["example.com"]}
-    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator_no_type)
+    result = create_relationships(reliability=reliability, indicator=indicator_no_type)
     assert result == []
 
     # Test missing value
     indicator_no_value = {"type": "ip", "rdns": ["example.com"]}
-    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator_no_value)
+    result = create_relationships(reliability=reliability, indicator=indicator_no_value)
     assert result == []
 
     # Test empty string value
     indicator_empty_value = {"type": "ip", "value": "", "rdns": ["example.com"]}
-    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator_empty_value)
+    result = create_relationships(reliability=reliability, indicator=indicator_empty_value)
     assert result == []
 
 
@@ -631,7 +591,7 @@ def test_create_relationships_single_related_entity():
             "fields": {},
         }
     ]
-    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator)
+    result = create_relationships(reliability=reliability, indicator=indicator)
     assert result == expected_relationships
 
 
@@ -688,7 +648,7 @@ def test_create_relationships_multiple_related_entities():
         }
     ]
 
-    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator)
+    result = create_relationships(reliability=reliability, indicator=indicator)
     assert result == expected_relationships
 
 
@@ -862,7 +822,7 @@ TEST_CASES = [
         "mock_http_responses": [{"objects": [], "meta": {"next": None}}],
         "mock_get_past_time_return": None,
         "mock_parse_indicator_for_fetch_side_effect": [],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [],
         "expected_exception": None,
@@ -933,7 +893,7 @@ TEST_CASES = [
         ],
         "mock_get_past_time_return": "2023-08-01T11:00:00.000Z",
         "mock_parse_indicator_for_fetch_side_effect": {"value": "1.1.1.1", "type": "IP"},
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [{"value": "1.1.1.1", "type": "IP"}],
         "expected_exception": None,
@@ -1043,7 +1003,7 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
             ValueError("Simulated parsing error"),  # First indicator fails parsing
             {"value": "example.com", "type": "DOMAIN"},  # Second indicator parses successfully
         ],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [{"value": "example.com", "type": "DOMAIN"}],  # Only the second one
     }
@@ -1168,55 +1128,318 @@ def test_extract_tag_names_with_tags_not_a_list():
     indicator_dict = {"id": "444", "value": "not_a_list_dict", "tags": {"key": "value"}}
     result_dict = extract_tag_names(indicator_dict)
     assert result_dict == []
-    
+
+
 def test_error_handler_401_raises_demisto_exception():
     """
-    Tests error_handler when the response status code is 401.
-    Verifies that a DemistoException is raised with the correct message.
+    Tests the error_handler function when the API response has a 401 (Unauthorized) status code.
+    Verifies that a DemistoException is raised with a specific message prompting a credentials check.
+
+    Given:
+        - A mocked 'requests.Response' object configured with a 401 HTTP status code.
+        - The mocked response content is set to 'Unauthorized access'.
+    When:
+        - Calling the 'error_handler' method of a mock client with the mocked 401 response.
+    Then:
+        Verify that:
+        - A 'DemistoException' is raised.
+        - The message of the raised 'DemistoException' contains the expected error string,
+          including the THREAT_STREAM constant, and guidance to check credentials along with the 'Unauthorized access' content.
     """
     import requests
     from CommonServerPython import DemistoException
+
     mock_response = requests.Response()
     mock_response.status_code = 401
-    mock_response._content = b'Unauthorized access'
+    mock_response._content = b"Unauthorized access"
 
     try:
         mock_client().error_handler(mock_response)
     except DemistoException as e:
         expected_message_part = f"{THREAT_STREAM} - Got unauthorized from the server. Check the credentials. Unauthorized access"
         assert expected_message_part in str(e), f"Unexpected exception message: {str(e)}"
-        
-        
+
+
 def test_error_handler_404_raises_demisto_exception():
     """
-    Tests error_handler when the response status code is 404.
-    Verifies that a DemistoException is raised with the correct message.
+    Tests the error_handler function when the API response has a 404 (Not Found) status code.
+    Verifies that a DemistoException is raised with a specific 'resource not found' message.
+
+    Given:
+        - A mocked 'requests.Response' object configured with a 404 HTTP status code.
+        - The mocked response content is set to 'Not Found'.
+    When:
+        - Calling the 'error_handler' method of a mock client with the mocked 404 response.
+    Then:
+        Verify that:
+        - A 'DemistoException' is raised.
+        - The message of the raised 'DemistoException' contains the expected specific error string,
+          including the THREAT_STREAM constant and "The resource was not found. Not Found".
     """
     import requests
     from CommonServerPython import DemistoException
+
     mock_response = requests.Response()
     mock_response.status_code = 404
-    mock_response._content = b'Not Found'
+    mock_response._content = b"Not Found"
 
     try:
         mock_client().error_handler(mock_response)
     except DemistoException as e:
         expected_message_part = f"{THREAT_STREAM} - The resource was not found. Not Found"
         assert expected_message_part in str(e), f"Unexpected exception message: {str(e)}"
-        
+
+
 def test_error_handler_generic_error_raises_demisto_exception():
     """
-    Tests error_handler for a generic error (e.g., 500 status code).
-    Verifies that a DemistoException is raised with a generic error message.
+    Tests the error_handler function when a generic HTTP error (e.g., 500 Internal Server Error) occurs.
+    Verifies that a DemistoException is raised with a descriptive error message including the status code and content.
+
+    Given:
+        - A mocked 'requests.Response' object configured with a 500 HTTP status code.
+        - The mocked response content is set to 'Internal Server Error'.
+    When:
+        - Calling the 'error_handler' method of a mock client with the mocked 500 response.
+    Then:
+        Verify that:
+        - A 'DemistoException' is raised.
+        - The message of the raised 'DemistoException' contains the expected format,
+          including the THREAT_STREAM constant, the 500 status code, and the "Internal Server Error" content.
     """
     import requests
     from CommonServerPython import DemistoException
+
     mock_response = requests.Response()
     mock_response.status_code = 500
-    mock_response._content = b'Internal Server Error'
-    
+    mock_response._content = b"Internal Server Error"
+
     try:
         mock_client().error_handler(mock_response)
     except DemistoException as e:
         expected_message_part = f"{THREAT_STREAM} - Error in API call 500 - Internal Server Error"
         assert expected_message_part in str(e), f"Unexpected exception message: {str(e)}"
+
+
+def test_handle_get_pagination_no_initial_indicators():
+    """
+    Tests handle_get_pagination when the initial API response contains no indicators.
+    Verifies that an empty list is returned and no further API calls are made.
+
+    Given:
+        - An initial API response dictionary where the 'objects' key's value is an empty list,
+          and there is no 'next' page.
+    When:
+        - Calling handle_get_pagination with this initial response.
+    Then:
+        Verify that:
+        - An empty list is returned.
+    """
+    from AnomaliThreatStreamFeed import handle_get_pagination
+
+    initial_response = {"objects": [], "meta": {"next": None}}
+    client = mock_client()
+    result = handle_get_pagination(client, initial_response, 10)
+    assert result == []
+
+
+def test_handle_get_pagination_no_pagination_needed():
+    """
+    Tests handle_get_pagination when all indicators are returned in the initial API response,
+    meaning no further pagination is required.
+
+    Given:
+        - An initial API response dictionary containing a list of indicator 'objects'.
+        - The 'meta' field in the initial response indicates there is no 'next' page.
+    When:
+        - Calling handle_get_pagination with this initial response.
+    Then:
+        Verify that:
+        - The function returns all indicators from the initial response.
+    """
+    from AnomaliThreatStreamFeed import handle_get_pagination
+
+    initial_response = {"objects": [{"id": "ind1"}, {"id": "ind2"}], "meta": {"next": None}}
+    initial_limit = 50
+    client = mock_client()
+    result = handle_get_pagination(client, initial_response, initial_limit)
+    assert len(result) == 2
+    assert {"id": "ind1"} in result
+    assert {"id": "ind2"} in result
+
+
+def test_handle_get_pagination_multiple_pages(mocker):
+    """
+    Tests handle_get_pagination's ability to fetch data across multiple API pages
+    until the initial limit is reached or no more pages are available.
+
+    Given:
+        - An initial API response containing one indicator and a 'next' page URL.
+        - An 'initial_limit' set to allow fetching data beyond the first page.
+        - The client's 'http_request' method is mocked to return two sequential responses:
+            1. The first mock response contains indicators for the next page and a subsequent 'next' page URL.
+            2. The second mock response contains indicators for the final page and indicates no further 'next' page.
+    When:
+        - Calling handle_get_pagination with this setup.
+    Then:
+        Verify that:
+        - The returned list of indicators includes those from the initial response and all subsequently fetched pages.
+        - The 'http_request' method is called exactly twice (corresponding to the two entries in the 'side_effect' list,
+          which fulfill the two internal HTTP calls within one loop iteration).
+        - The URLs used in the 'http_request' calls correctly reflect the pagination logic
+          and the decremented 'remaining_limit'.
+    """
+    from AnomaliThreatStreamFeed import handle_get_pagination
+
+    LIMIT_RES_FROM_API = 1000
+
+    initial_response = {"objects": [{"id": "ind1_p1"}], "meta": {"next": "/api/v1/indicators?limit=1000&offset=1000"}}
+    initial_limit = 2500  # Will fetch 1 (initial) + 1 (first page) + 1 (second page)
+    client = mock_client()
+    # Simulate three pages in total (initial + 2 paginated)
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            # First pagination call
+            {"objects": [{"id": "ind1_p2"}], "meta": {"next": "/api/v1/indicators?limit=1000&offset=2000"}},
+            # Second pagination call
+            {"objects": [{"id": "ind1_p3"}], "meta": {"next": None}},
+        ],
+    )
+    result = handle_get_pagination(client, initial_response, initial_limit)
+
+    assert len(result) == 3  # ind1_p1 + ind1_p2 + ind1_p3
+    assert {"id": "ind1_p1"} in result
+    assert {"id": "ind1_p2"} in result
+    assert {"id": "ind1_p3"} in result
+    assert client.http_request.call_count == 2
+
+    call1_url = "v1/indicators?limit=1000&offset=1000".replace("limit=1000", f"limit={initial_limit - LIMIT_RES_FROM_API}")
+    call2_url = "v1/indicators?limit=1000&offset=2000".replace("limit=1000", f"limit={initial_limit - 2*LIMIT_RES_FROM_API}")
+    client.http_request.assert_any_call(method="GET", url_suffix=call1_url)
+    client.http_request.assert_any_call(method="GET", url_suffix=call2_url)
+
+
+def test_handle_get_pagination_no_more_indicators_on_page(mocker):
+    """
+    Tests that pagination correctly breaks when a subsequent API page returns no indicators.
+    This specifically verifies the logic within the 'else' block of the 'if current_page_indicators:' check.
+
+    Given:
+        - An initial API response containing some indicators and a 'next' page URL.
+        - An 'initial_limit' sufficient to attempt fetching the next page.
+        - The client's 'http_request' method is mocked to return an empty list for the 'objects'
+          key for any subsequent pagination requests.
+    When:
+        - Calling handle_get_pagination with this setup.
+    Then:
+        Verify that:
+        - The returned list of indicators contains only the indicators from the initial response.
+        - The 'http_request' method is called once.
+    """
+    from AnomaliThreatStreamFeed import handle_get_pagination
+
+    initial_response = {
+        "objects": [{"id": "ind1_p1"}],  # Initial indicators
+        "meta": {"next": "/api/v1/indicators?limit=1000&offset=1000"},  # Suggests another page
+    }
+    initial_limit = 2000  # Enough limit to try and fetch another page
+
+    # Configure the mock client's http_request to return an empty list for 'objects'
+    # on the first paginated call.
+    client = mock_client()
+    mocker.patch.object(
+        client, "http_request", return_value={"objects": [], "meta": {"next": "/api/v1/indicators?limit=1000&offset=2000"}}
+    )
+
+    result = handle_get_pagination(client, initial_response, initial_limit)
+
+    assert len(result) == 1
+    assert {"id": "ind1_p1"} in result
+    assert client.http_request.call_count == 1
+
+
+def test_handle_fetch_pagination_no_initial_indicators():
+    """
+    Tests handle_fetch_pagination when the initial API response contains no indicators.
+    Verifies that an empty list is returned and no further API calls are made.
+
+    Given:
+        - An initial API response dictionary where the 'objects' key's value is an empty list,
+          and there is no 'next' page.
+    When:
+        - Calling handle_fetch_pagination with this initial response.
+    Then:
+        Verify that:
+        - An empty list is returned.
+    """
+    from AnomaliThreatStreamFeed import handle_fetch_pagination
+
+    initial_response = {"objects": [], "meta": {"next": None}}
+    client = mock_client()
+    result = handle_fetch_pagination(client, initial_response)
+    assert result == []
+
+
+def test_handle_fetch_pagination_no_pagination_needed(mocker):
+    """
+    Tests handle_fetch_pagination when all indicators are returned in the initial API response,
+    meaning no further pagination is required.
+
+    Given:
+        - An initial API response dictionary containing a list of indicator 'objects'.
+        - The 'meta' field in the initial response indicates there is no 'next' page.
+    When:
+        - Calling handle_fetch_pagination with this initial response.
+    Then:
+        Verify that:
+        - The function returns all indicators from the initial response.
+    """
+    from AnomaliThreatStreamFeed import handle_fetch_pagination
+
+    initial_response = {"objects": [{"id": "ind1"}, {"id": "ind2"}], "meta": {"next": None}}
+    client = mock_client()
+    result = handle_fetch_pagination(client, initial_response)
+    assert len(result) == 2
+    assert {"id": "ind1"} in result
+    assert {"id": "ind2"} in result
+
+
+def test_handle_fetch_pagination_multiple_pages(mocker):
+    """
+    Tests handle_fetch_pagination's ability to fetch data across multiple API pages sequentially.
+
+    Given:
+        - An initial API response with indicators and a 'next' page URL.
+        - The client's 'http_request' method is mocked to return two subsequent pages:
+            1. The first paginated response contains indicators and another 'next' page URL.
+            2. The second paginated response contains indicators but no further 'next' page URL.
+    When:
+        - Calling handle_fetch_pagination with this setup.
+    Then:
+        Verify that:
+        - The returned list includes indicators from the initial response and all subsequently fetched pages.
+        - The 'http_request' method is called twice for pagination.
+    """
+    from AnomaliThreatStreamFeed import handle_fetch_pagination
+
+    initial_response = {"objects": [{"id": "initial_ind"}], "meta": {"next": "/api/v1/indicators?offset=1000"}}
+    client = mock_client()
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"objects": [{"id": "page_2_ind"}], "meta": {"next": "/api/v1/indicators?offset=2000"}},
+            {"objects": [{"id": "page_3_ind"}], "meta": {"next": None}},
+        ],
+    )
+
+    result = handle_fetch_pagination(client, initial_response)
+
+    assert len(result) == 3
+    assert {"id": "initial_ind"} in result
+    assert {"id": "page_2_ind"} in result
+    assert {"id": "page_3_ind"} in result
+    assert client.http_request.call_count == 2

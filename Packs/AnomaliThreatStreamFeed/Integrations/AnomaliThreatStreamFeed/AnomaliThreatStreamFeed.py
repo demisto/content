@@ -163,6 +163,55 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
+def handle_get_pagination(client: Client, initial_response: dict[str, Any], initial_limit: int) -> list[dict[str, Any]]:
+    """
+    Handles pagination for retrieving indicators from the feed.
+
+    Args:
+        client (Client): The client object to use for API requests.
+        initial_response (dict[str, Any]): The initial API response containing indicators and pagination info.
+        initial_limit (int): The initial limit set for the API request.
+
+    Returns:
+        list[dict[str, Any]]: A list of all fetched indicators, including those from subsequent pages.
+    """
+    indicators_raw: list[dict[str, Any]] = initial_response.get("objects", [])
+    if not indicators_raw:
+        return []
+
+    remaining_limit = initial_limit - LIMIT_RES_FROM_API
+    next_page = initial_response.get("meta", {}).get("next")
+
+    while next_page and remaining_limit > 0:  # Handles pagination
+        try:
+            if next_page.startswith("/api/"):
+                # /api/ is removed here as it appears in the base_url of the client.
+                url_suffix_for_next_page = next_page[len("/api/") :]
+            else:
+                url_suffix_for_next_page = next_page  # Use as is if it's already relative
+
+            url_suffix_for_next_page = url_suffix_for_next_page.replace("limit=1000", f"limit={remaining_limit}")
+
+            demisto.debug(f"{THREAT_STREAM} - Fetching next page: {url_suffix_for_next_page}")
+            res = client.http_request(method="GET", url_suffix=url_suffix_for_next_page)
+            current_page_indicators = res.get("objects", [])
+
+            if current_page_indicators:
+                indicators_raw.extend(current_page_indicators)
+            else:
+                demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
+                break
+
+            remaining_limit = remaining_limit - LIMIT_RES_FROM_API
+            next_page = res.get("meta", {}).get("next")
+
+        except Exception as e:
+            demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
+            break  # Break pagination on error but process what's already fetched
+
+    return indicators_raw
+
+
 def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Wrapper for retrieving indicators from the feed to the war-room.
@@ -198,31 +247,12 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
                      'threatstream-feed-get-indicators' command.""")
         return CommandResults(readable_output="### No indicators were found.")
 
-    limit = limit - LIMIT_RES_FROM_API  # type: ignore
-    next_page = res.get("meta", {}).get("next")
-    while next_page and limit > 0: # Handles pagination
-        try:
-            if next_page.startswith("/api/"):
-                # /api/ is removed here as it appears in the base_url of the client.
-                url_suffix_for_next_page = next_page[len("/api/") :]
-            else:
-                url_suffix_for_next_page = next_page  # Use as is if it's already relative
-            url_suffix_for_next_page = url_suffix_for_next_page.replace("limit=1000", f"limit={limit}")
-            limit = limit - LIMIT_RES_FROM_API
-            demisto.debug(f"{THREAT_STREAM} - Fetching next page: {url_suffix_for_next_page}")
-            res = client.http_request(method="GET", url_suffix=url_suffix_for_next_page)
-            current_page_indicators = res.get("objects", [])
+    indicators_raw = handle_get_pagination(client, res, limit)  # type: ignore
 
-            if current_page_indicators:
-                indicators_raw.extend(current_page_indicators)
-            else:
-                demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
-                break
-
-            next_page = res.get("meta", {}).get("next")
-        except Exception as e:
-            demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
-            break  # Break pagination on error but process what's already fetched
+    if not indicators_raw:
+        demisto.info(f"""{THREAT_STREAM} - No indicators found for the given criteria in the
+                     'threatstream-feed-get-indicators' command.""")
+        return CommandResults(readable_output="### No indicators were found.")
 
     parsed_indicators = parse_indicators_for_get_command(indicators_raw, sort_by=args.get("sort_by", "Created Time"))
     demisto.debug(f"{THREAT_STREAM}-get-indicators command got {len(parsed_indicators)} indicators.")
@@ -333,10 +363,10 @@ def parse_indicators_for_get_command(indicators, sort_by: str = "Created Time") 
                 ASN=indicator.get("asn"),
             )
         )
-        
+
     if sort_by == "Created Time":
         res.sort(key=lambda x: x.get("Creation") or "", reverse=True)
-    else: # sort_by == "Modified Time":
+    else:  # sort_by == "Modified Time":
         res.sort(key=lambda x: x.get("Modified") or "", reverse=True)
     return res
 
@@ -365,6 +395,54 @@ def get_past_time(minutes_interval):
     now = get_current_utc_time()
     past_time = now - timedelta(minutes=minutes_interval)
     return past_time.replace(tzinfo=None).isoformat(timespec="milliseconds") + "Z"
+
+
+def handle_fetch_pagination(client: Client, initial_response: dict[str, Any]) -> list[dict[str, Any]]:
+    """
+    Handles fetching all indicators from an API feed that supports pagination.
+
+    This function takes the initial API response and iteratively fetches subsequent pages
+    until no more 'next' pages are indicated or an error occurs during pagination.
+
+    Args:
+        client (Client): The client object configured for API requests.
+        initial_response (dict[str, Any]): The response from the initial API call.
+                                            Expected to contain 'objects' (list of indicators)
+                                            and 'meta' (with a 'next' key for pagination).
+
+    Returns:
+        list[dict[str, Any]]: A consolidated list of all raw indicators fetched from
+                              the initial response and all subsequent paginated responses.
+    """
+    all_raw_indicators: list[dict[str, Any]] = initial_response.get("objects", [])
+    next_page = initial_response.get("meta", {}).get("next")
+
+    while next_page:  # Loop continues as long as there's a next page link
+        try:
+            # Determine the URL suffix for the next page
+            if next_page.startswith("/api/"):
+                # /api/ is removed here as it appears in the base_url of the client.
+                url_suffix_for_next_page = next_page[len("/api/") :]
+            else:
+                url_suffix_for_next_page = next_page  # Use as is if it's already relative
+
+            demisto.debug(f"{THREAT_STREAM} - Fetching next page: {url_suffix_for_next_page}")
+            response = client.http_request(method="GET", url_suffix=url_suffix_for_next_page)
+            current_page_indicators = response.get("objects", [])
+
+            if current_page_indicators:
+                all_raw_indicators.extend(current_page_indicators)
+            else:
+                demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
+                break
+
+            next_page = response.get("meta", {}).get("next")  # Get the 'next' link for the subsequent page
+        except Exception as e:
+            # Log the error and break the pagination, but keep already fetched indicators
+            demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
+            break  # Break pagination on error but process what's already fetched
+
+    return all_raw_indicators
 
 
 def fetch_indicators_command(
@@ -421,30 +499,7 @@ def fetch_indicators_command(
 
     demisto.debug(f"{THREAT_STREAM} - Initial API call for fetch-indicators with params: {query}")
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX, params=query)
-    all_raw_indicators: list[dict[str, Any]] = response.get("objects", [])
-    next_page = response.get("meta", {}).get("next")
-
-    while next_page:  # Handles pagination
-        try:
-            if next_page.startswith("/api/"):
-                url_suffix_for_next_page = next_page[len("/api/") :]
-            else:
-                url_suffix_for_next_page = next_page  # Use as is if it's already relative
-
-            demisto.debug(f"{THREAT_STREAM} - Fetching next page: {url_suffix_for_next_page}")
-            response = client.http_request(method="GET", url_suffix=url_suffix_for_next_page)
-            current_page_indicators = response.get("objects", [])
-
-            if current_page_indicators:
-                all_raw_indicators.extend(current_page_indicators)
-            else:
-                demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
-                break
-
-            next_page = response.get("meta", {}).get("next")
-        except Exception as e:
-            demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
-            break  # Break pagination on error but process what's already fetched
+    all_raw_indicators: list[dict[str, Any]] = handle_fetch_pagination(client, response)
 
     if not all_raw_indicators:
         demisto.info(f"{THREAT_STREAM} - No new indicators found since last run or no indicators matching criteria.")
@@ -468,13 +523,12 @@ def fetch_indicators_command(
     return now.strftime(DATE_FORMAT), parsed_indicators_list
 
 
-def create_relationships(create_relationships_param: bool, reliability: str, indicator: dict[str, Any]) -> list[dict[str, Any]]:
+def create_relationships(reliability: str, indicator: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Generates a list of relationship objects for a given indicator.
     Handles single and multiple related entities.
 
     Args:
-        create_relationships_param (bool): Whether to enable relationship creation.
         reliability (str): The reliability score for the relationship source.
         indicator (dict[str, Any]): The raw indicator dictionary.
 
@@ -482,11 +536,6 @@ def create_relationships(create_relationships_param: bool, reliability: str, ind
         list[dict[str, Any]]: A list of relationship dictionaries formatted for Cortex XSOAR.
     """
     relationships: list[dict[str, Any]] = []
-
-    if not create_relationships_param:
-        demisto.debug(f"{THREAT_STREAM} - Skipping relationship creation for indicator {indicator}")
-        return relationships
-
     indicator_type = indicator.get("type")
     indicator_value = indicator.get("value")
 
@@ -538,7 +587,11 @@ def parse_indicator_for_fetch(
         dict[str, Any]: An indicator dictionary formatted for Cortex XSOAR's `createIndicators` API.
     """
     # Calculate relationships first, as they depend on the raw indicator data
-    relationships = create_relationships(create_relationship_param, reliability, indicator)
+    if not create_relationship_param:
+        demisto.debug(f"{THREAT_STREAM} - Skipping relationship creation for indicator {indicator}")
+        relationships = []
+    else:
+        relationships = create_relationships(reliability, indicator)
 
     # indicator_type = indicator.get("type")  # e.g., "ip", "domain", "email", "md5", "url"
     indicator_type = INDICATOR_TYPE.get(str(indicator.get("type")))
