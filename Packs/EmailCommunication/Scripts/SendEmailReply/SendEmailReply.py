@@ -89,7 +89,7 @@ def process_directions(md: str) -> str:
 
 def ensure_markdown_tables_have_spacing(md: str) -> str:
     lines = md.splitlines()
-    new_lines = []
+    new_lines: list[str] = []
     in_table = False
 
     for i, line in enumerate(lines):
@@ -98,22 +98,20 @@ def ensure_markdown_tables_have_spacing(md: str) -> str:
 
         if is_table_line:
             if not in_table:
-                # Add blank line before table if needed
-                if i > 0 and lines[i - 1].strip() != "":
+                # Add blank line before table if previous line is non-empty
+                if new_lines and new_lines[-1].strip() != "":
                     new_lines.append("")
                 in_table = True
             new_lines.append(line)
         else:
             if in_table:
-                # Just ended table, add a blank line if needed
-                if new_lines and new_lines[-1].strip() != "":
-                    new_lines.append("")
+                # Table just ended. Add blank line *only if there’s more non-empty content ahead*.
+                remaining_lines = lines[i:]
+                if any(l.strip() for l in remaining_lines):
+                    if new_lines and new_lines[-1].strip() != "":
+                        new_lines.append("")
                 in_table = False
             new_lines.append(line)
-
-    # If text ends with a table, add blank line after table as well
-    if in_table and new_lines and new_lines[-1].strip() != "":
-        new_lines.append("")
 
     return "\n".join(new_lines)
 
