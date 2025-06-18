@@ -19,7 +19,18 @@ STATUS_MAP = {
     '2': 'Closed',
     '3': 'Closed'
 }
-INCIDENT_ALIAS = 'alert' if is_xsiam() else 'incident'
+
+
+def get_incident_alias():
+    if is_xsiam():
+        return 'alert'
+    elif is_platform():
+        return 'issue'
+    else:
+        return 'incident'
+
+
+INCIDENT_ALIAS = get_incident_alias()
 
 
 def parse_input(csv):
