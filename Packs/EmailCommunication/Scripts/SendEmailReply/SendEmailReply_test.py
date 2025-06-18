@@ -1,7 +1,13 @@
 import pytest
 from CommonServerPython import *
 from freezegun import freeze_time
-from SendEmailReply import get_unique_code
+from SendEmailReply import (
+    get_unique_code,
+    apply_direction,
+    process_directions,
+    ensure_markdown_tables_have_spacing,
+    replace_atlassian_tags,
+)
 
 
 def util_open_file(path):
@@ -1591,3 +1597,71 @@ def test_format_body(mocker):
         '<p><img alt="image" src="data:image/png;base64,c29tZSBiaW5hcnkgZGF0YQ==" /></p>',
     )
     assert result == expected_result
+
+
+def test_apply_direction():
+    # Center alignment
+    assert apply_direction("<-:->This is centered") == '<div style="text-align:center;">This is centered</div>'
+    # Left to right
+    assert apply_direction("<--:>Left to right text") == '<div dir="ltr">Left to right text</div>'
+    # Right to left
+    assert apply_direction("<:-->Right to left text") == '<div dir="rtl">Right to left text</div>'
+    # Leading spaces before tag
+    assert apply_direction("    <--:>Indented LTR") == '<div dir="ltr">Indented LTR</div>'
+    # No tag, should return unchanged
+    assert apply_direction("No special tag here") == "No special tag here"
+
+
+def test_process_directions_all():
+    """
+    Test that all supported direction tags are converted into corresponding
+    <div> elements with the correct text-align style.
+    """
+    input_text = """<-:->Centered
+<--:>Left
+<:-->Right
+Normal text"""
+    expected_output = (
+        '<div style="text-align:center;">Centered</div>\n'
+        '<div style="text-align:left;">Left</div>\n'
+        '<div style="text-align:right;">Right</div>\n'
+        "Normal text"
+    )
+    assert process_directions(input_text) == expected_output
+
+
+def test_ensure_markdown_tables_have_spacing():
+    """
+    Test that a missing blank line before a Markdown table is inserted
+    to ensure proper rendering by the markdown parser.
+    """
+    input_text = "Some intro\n|Header|Header|\n|------|------|\n|A|B|"
+    expected = "Some intro\n\n|Header|Header|\n|------|------|\n|A|B|"
+    output = ensure_markdown_tables_have_spacing(input_text)
+
+    assert expected == output
+
+
+def test_ensure_markdown_tables_no_change_if_already_spaced():
+    """
+    Test that properly formatted tables with spacing are left unchanged.
+    """
+    input_text = "Intro text\n\n|H1|H2|\n|--|--|\n|V1|V2|"
+    output = ensure_markdown_tables_have_spacing(input_text)
+
+    assert input_text == output
+
+
+def test_replace_atlassian_tags_color_and_background():
+    """
+    Test that Atlassian-style {{color}} and {{background}} tags are replaced
+    with corresponding <span> tags using inline styles.
+    """
+    input_text = "{{color:#ff0000}}(Red Text)\n" "{{background:#00ff00}}(Green BG)\n" "Regular text"
+    output = replace_atlassian_tags(input_text)
+
+    assert '<span style="color:#ff0000">Red Text</span>' in output
+    assert '<span style="background:#00ff00">Green BG</span>' in output
+    assert "Regular text" in output
+    assert "{{color" not in output
+    assert "{{background" not in output
