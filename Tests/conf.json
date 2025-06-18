@@ -4053,7 +4053,8 @@
             "scripts": [
                 "FindDuplicateEmailIncidents"
             ],
-            "integrations": "Rasterize"
+            "integrations": "Rasterize",
+            "has_api": false
         },
         {
             "integrations": "HPEArubaClearPass",
@@ -6061,7 +6062,8 @@
         "PAN-OS-panorama-topology-test-pb": "The creds were expired CIAC-13553",
         "OpenPhish Test Playbook": "API issue CIAC-13583",
         "SaasSecurity-Test": "blocked by SCA-8028",
-        "Mail-Listener Test Playbook": " invalid creds CRTX-171878"
+        "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
+        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
