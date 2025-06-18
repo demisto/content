@@ -1118,8 +1118,8 @@ def test_file_events_search_json_query_builds_expected_query(mocker, incydr_file
 
 def test_file_events_search_with_add_to_context_adds_events_without_duplication(mocker, incydr_file_events_mock):
     mock_demisto = mocker.patch("Code42.demisto")
-    v2_events = MOCK_V2_FILE_EVENTS_RESPONSE.file_events
-    context_events = [json.loads(x.json()) for x in v2_events[:3]]
+    v2_events = [json.loads(x.json()) for x in MOCK_V2_FILE_EVENTS_RESPONSE.file_events]
+    context_events = v2_events[:3]
     mock_demisto.incident.return_value = {"CustomFields": {"code42fileeventsversion": "2", "code42fileevents": []}}
     mock_demisto.context.return_value = {"Code42": {"FileEvents": context_events}}
     client = _create_incydr_client(incydr_file_events_mock)
