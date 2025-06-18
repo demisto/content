@@ -4,7 +4,7 @@ import urllib3
 import dateparser
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
+from datetime import datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
