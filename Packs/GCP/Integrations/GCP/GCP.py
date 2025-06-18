@@ -122,6 +122,27 @@ def parse_metadata_items(tags_str: str) -> list[dict[str, str]]:
     return tags
 
 
+def extract_zone_name(zone_input: str | None) -> str:
+    """
+    Extracts the GCP zone name from a full URL or returns it directly if already a zone string.
+
+    Args:
+        zone_input (str): The zone string or full GCP zone URL.
+
+    Returns:
+        str: The zone name, e.g., "us-central1-b".
+
+    Raises:
+        DemistoException: If the zone input is empty or invalid.
+    """
+    if not zone_input or not zone_input.strip():
+        raise DemistoException("The zone argument cannot be empty")
+
+    if "/" in zone_input:
+        return zone_input.strip().split("/")[-1]
+    return zone_input.strip()
+
+
 ##########
 
 
@@ -307,7 +328,7 @@ def compute_instance_metadata_add(creds: Credentials, args: dict[str, Any]) -> C
         CommandResults: Result of the metadata update operation.
     """
     project_id = args.get("project_id")
-    zone = args.get("zone")
+    zone = extract_zone_name(args.get("zone"))
     resource_name = args.get("resource_name")
     metadata_str: str = args.get("metadata", "")
     compute = GCPServices.COMPUTE.build(creds)
@@ -564,7 +585,7 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
         CommandResults: Result of the service account update operation.
     """
     project_id = args.get("project_id")
-    zone = args.get("zone")
+    zone = extract_zone_name(args.get("zone"))
     resource_name = args.get("resource_name")
     service_account_email = args.get("service_account_email", "")
     scopes = argToList(args.get("scopes", []))
@@ -600,7 +621,7 @@ def compute_instance_service_account_remove(creds: Credentials, args: dict[str, 
         CommandResults: Result of the service account removal operation.
     """
     project_id = args.get("project_id")
-    zone = args.get("zone")
+    zone = extract_zone_name(args.get("zone"))
     resource_name = args.get("resource_name")
 
     compute = GCPServices.COMPUTE.build(creds)
@@ -679,7 +700,7 @@ def compute_instance_start(creds: Credentials, args: dict[str, Any]) -> CommandR
         CommandResults: Result of the VM start operation.
     """
     project_id = args.get("project_id")
-    zone = args.get("zone")
+    zone = extract_zone_name(args.get("zone"))
     resource_name = args.get("resource_name")
 
     compute = GCPServices.COMPUTE.build(creds)
@@ -712,7 +733,7 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
         CommandResults: Result of the VM stop operation.
     """
     project_id = args.get("project_id")
-    zone = args.get("zone")
+    zone = extract_zone_name(args.get("zone"))
     resource_name = args.get("resource_name")
 
     compute = GCPServices.COMPUTE.build(creds)
