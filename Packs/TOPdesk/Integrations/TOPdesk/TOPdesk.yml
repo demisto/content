@@ -2179,7 +2179,7 @@ script:
     - description: "A json with the fields that you want to configure: {'asset_name':'testasset'}"
       name: data
       required: true
-    description: Update Asset Fields
+    description: Update Asset Fields.
     name: topdesk-asset-update
   - arguments:
     - description: The caller ID for this incident. For an unregistered caller provide a name. For a list of registered persons or operator IDs run !topdesk-persons-list or !topdesk-operators-list.
