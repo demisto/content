@@ -8,6 +8,24 @@ from time import monotonic, sleep
 import urllib3
 import json
 
+LAST_MIRROR_TIME = "lastMirrorTime"
+
+LAST_EVENT_NUM = "lastEventNum"
+
+MIRROR_DIRECTION_IN = "In"
+
+ID = "id"
+
+DBOT_MIRROR_ID = "dbotMirrorId"
+
+DBOT_MIRROR_INSTANCE = "dbotMirrorInstance"
+
+DBOT_MIRROR_DIRECTION = "dbotMirrorDirection"
+
+ATTACHMENTS = "attachments"
+
+COMMENTS = "comments"
+
 TAKEDOWN_ID = "takedown-id"
 
 """Digital Shadows for Cortex XSOAR."""
@@ -326,11 +344,11 @@ class SearchLightTakedownPoller:
         comments_map = get_object_map(comments)
         attchment_map = get_object_map(attachments)
         for takedown in takedowns:
-            takedown["comments"] = comments_map.get(takedown["id"])
-            takedown["attachments"] = attchment_map.get(takedown["id"])
-            takedown["dbotMirrorDirection"] = "In"
-            takedown["dbotMirrorInstance"] = demisto.integrationInstance()
-            takedown["dbotMirrorId"] = takedown["id"]
+            takedown[COMMENTS] = comments_map.get(takedown[ID])
+            takedown[ATTACHMENTS] = attchment_map.get(takedown[ID])
+            takedown[DBOT_MIRROR_DIRECTION] = MIRROR_DIRECTION_IN
+            takedown[DBOT_MIRROR_INSTANCE] = demisto.integrationInstance()
+            takedown[DBOT_MIRROR_ID] = takedown[ID]
             data.append(takedown)
 
         return data
@@ -442,11 +460,7 @@ def download_attachment(request_handler: Client, args, **kwargs) -> list:
     r.raise_for_status()
 
     path = r.headers.get("Content-Disposition").split(";")[-1].split("=")[-1].replace('"', "")
-    with open(path, "wb") as file:
-        for chunk in r.iter_content(chunk_size=8192):  # Download in chunks
-            file.write(chunk)
-
-    file_entry = fileResult(path, open(path, "rb").read())
+    file_entry = fileResult(path, r.content)
     return file_entry
 
 
@@ -588,10 +602,10 @@ def main() -> None:
         elif command == "get-modified-remote-data":
             last_run_mirroring: Dict[Any, Any] = get_last_mirror_run() or {}
             modified_incidents, next_mirroring_event_num = get_modified_remote_data_command(
-                rq_client, mirroring_last_update=last_run_mirroring.get("lastEventNum", 0)
+                rq_client, mirroring_last_update=last_run_mirroring.get(LAST_EVENT_NUM, 0)
             )
             timestamp = datetime.utcnow().isoformat() + "Z"
-            payload = {"lastMirrorTime": timestamp, "lastEventNum": str(next_mirroring_event_num)}
+            payload = {LAST_MIRROR_TIME: timestamp, LAST_EVENT_NUM: str(next_mirroring_event_num)}
             try:
                 json.dumps(payload)
                 demisto.debug(f"before set last mirror: {payload}")
