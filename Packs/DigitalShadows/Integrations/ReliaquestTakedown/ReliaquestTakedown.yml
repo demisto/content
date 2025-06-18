@@ -128,7 +128,7 @@ script:
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
-fromversion: 6.10.0
+fromversion: 6.9.0
 defaultmapperin: Reliaquest Takedown Mapper
 defaultclassifier: Reliaquest Takedown Classifier
 tests:

@@ -12,7 +12,6 @@ from Packs.DigitalShadows.Integrations.ReliaquestTakedown.ReliaquestTakedown imp
     create_takedown,
     download_attachment,
     connection_test_module,
-    upload_attachment,
     get_modified_remote_data_command,
     get_remote_data_command,
 )
@@ -25,8 +24,7 @@ TEST_URL = "https://test.com/api"
 @pytest.fixture
 def client() -> Client:
     return Client(
-        base_url=TEST_URL, account_id="1234", access_key="HHHQW", secret_key="saddsadsajhhjksa", verify=False,
-        proxy=False
+        base_url=TEST_URL, account_id="1234", access_key="HHHQW", secret_key="saddsadsajhhjksa", verify=False, proxy=False
     )
 
 
@@ -333,8 +331,7 @@ def test_get_modified_remote_data(mocker, client: Client):
 def test_get_remote_data_command(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
-    response = get_remote_data_command(client,
-                                       {"id": "1f1fe26c-b310-415d-9c02-6212a692cbd7", "lastUpdate": "2020-09-22"})
+    response = get_remote_data_command(client, {"id": "1f1fe26c-b310-415d-9c02-6212a692cbd7", "lastUpdate": "2020-09-22"})
     assert response.mirrored_object is not None
 
 
@@ -344,8 +341,7 @@ def test_create_takedown_command_ratelimit(mocker, client: Client):
     try:
         create_takedown(
             client,
-            {"brand_id": "rate_limit", "type": "impersonation",
-             "target": "https://www.digitalshadowsresearch13.com/adobe"},
+            {"brand_id": "rate_limit", "type": "impersonation", "target": "https://www.digitalshadowsresearch13.com/adobe"},
         )
     except Exception:
         pass
