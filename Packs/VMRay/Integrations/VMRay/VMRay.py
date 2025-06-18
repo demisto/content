@@ -42,7 +42,7 @@ SEVERITY_DICT = {
 VERDICT_DICT = {
     "malicious": "Malicious",
     "suspicious": "Suspicious",
-    "clean": "Clean",
+    "clean": "Benign",
     "not_available": "Not Available",
     None: "Not Available",
 }
@@ -51,6 +51,7 @@ DBOTSCORE = {
     "Malicious": 3,
     "Suspicious": 2,
     "Clean": 1,
+    "Benign": 1,
     "Not Available": 0,
 }
 
