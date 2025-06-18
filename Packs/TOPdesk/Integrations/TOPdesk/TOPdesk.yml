@@ -2173,10 +2173,10 @@ script:
         description: Asset freetext field, often the name of the asset.
         type: String
   - arguments:
-    - description: The Unique ID of the Asset
+    - description: The Unique ID of the Asset.
       name: asset_id
       required: true
-    - description: "A json with the fields that you want to configure: {'asset_name':'testasset'}"
+    - description: "A json with the fields that you want to configure: {'asset_name':'testasset'}."
       name: data
       required: true
     description: Update Asset Fields.
