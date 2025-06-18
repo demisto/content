@@ -885,7 +885,7 @@ def test_fetch_incidents(requests_mock, mocker):
     assert requests_mock.request_history[0].headers.get("Authorization") == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].qs.get("stream_type") == ["admin_logs"]
     assert requests_mock.request_history[0].qs.get("created_after") == ["2015-10-21t04:29-8:00"]
-    assert requests_mock.request_history[0].qs.get("event_type") == ["FILE_MARKED_MALICIOUS", "FILE_MARKED_MALICIOUS2"]
+    assert requests_mock.request_history[0].qs.get("event_type") == ["FILE_MARKED_MALICIOUS,FILE_MARKED_MALICIOUS2"]
 
     assert response[0] > "2015-10-21T04:29-8:00"
     assert response[1] == expected_fetch_results

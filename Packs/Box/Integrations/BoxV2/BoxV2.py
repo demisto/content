@@ -683,7 +683,7 @@ class Client(BaseClient):
         self._headers.update({"As-User": validated_as_user})
         return self._http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
-    def list_events(self, as_user: str, stream_type: str, created_after: str = None, limit: int = None, event_type: list = None):
+    def list_events(self, as_user: str, stream_type: str, created_after: str = None, limit: int = None, event_type: str = None):
         """
         Lists the events which have occurred given the as_user argument/parameter. Same endpoint is
         used to also handle the enterprise logs as well.
@@ -692,7 +692,7 @@ class Client(BaseClient):
         :param stream_type: str - Indicates the type of logs to be retrieved.
         :param created_after: str - Is used the return only events created after the given time.
         :param limit: int - The maximum amount of events to return.
-        :param event_type: list - Event types to return.
+        :param event_type: a comma separated list of Event types to return.
         :return: dict - The results for the given logs query.
         """
         url_suffix = "/events/"
@@ -1725,8 +1725,10 @@ def fetch_incidents(
     incidents = []
     if not created_after:
         created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(DATE_FORMAT)
+    event_type_str = ",".join(event_type) if event_type else ""
+    demisto.debug(f"{event_type_str=}")
     results = client.list_events(
-        stream_type="admin_logs", as_user=as_user, limit=max_results, created_after=created_after, event_type=event_type
+        stream_type="admin_logs", as_user=as_user, limit=max_results, created_after=created_after, event_type=event_type_str
     )
     raw_incidents = results.get("entries", [])
     demisto.debug(f"Extracted {len(raw_incidents)} raw incidents from the results.")
@@ -1773,7 +1775,8 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "fetch-incidents":
             as_user = demisto.params().get("as_user", None)
-            event_type = argToList(demisto.params().get("event_type"))
+            event_type = demisto.params().get("event_type")
+            demisto.debug(f"The {event_type=}")
             max_results = arg_to_int(arg=demisto.params().get("max_fetch"), arg_name="max_fetch")
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
