@@ -3338,6 +3338,9 @@ class TestTopology:
         # Because it's panorama, should be; [shared, device-group, template]
         assert len(result) == 3
 
+    def test_panorama_devices(self):
+        assert mock_panorama
+
 
 class TestUtilityFunctions:
     """Tests all the utility fucntions like dataclass_to_dict, etc"""
@@ -8922,3 +8925,70 @@ class TestDynamicUpdateCommands:
                     },
                 }
             }
+
+
+@patch("Panorama.TemplateStack.refreshall")
+@patch("Panorama.Template.refreshall")
+@patch("Panorama.run_op_command")
+def test_pan_os_get_certificate_info_command(
+    patched_run_op_command, template_refreshall, template_stack_refreshall, mocker: MockerFixture, requests_mock: RequestsMock
+):
+    """
+    Test pan-os-get-certificate-expiration command.
+
+    This test validates that:
+    1. The command correctly fetches certificates from Panorama devices
+    2. The command correctly fetches certificates from Firewall devices
+    3. The command correctly fetches predefined certificates
+    4. The command returns appropriate output
+    """
+
+    from Panorama import pan_os_get_certificate_info_command
+
+    def side_effect_func(device, cmd, **kwargs):
+        if cmd == "request certificate show":
+            return load_xml_root_from_test_file("test_data/request_certificate_show.xml")
+        elif cmd == "show config running":
+            return load_xml_root_from_test_file("test_data/show_running_config.xml")
+        elif cmd == "show config pushed-template":
+            return load_xml_root_from_test_file("test_data/show_config_pushed_template.xml")
+        else:
+            return None
+
+    mock_template = MagicMock(spec=Template)
+    mock_template.devices = []
+    template_refreshall.return_value = [mock_template]
+
+    mock_template_stack = MagicMock(spec=TemplateStack)
+    mock_template_stack.devices = [MOCK_FIREWALL_1_SERIAL]
+    template_stack_refreshall.return_value = [mock_template_stack]
+
+    patched_run_op_command.side_effect = side_effect_func
+
+    # # Mock Panorama device
+    mock_panorama = MagicMock(spec=Panorama)
+    mock_panorama.hostname = "panorama.test"
+    mock_panorama_devices = [mock_panorama]
+
+    # # Mock Firewall device
+    mock_firewall = MagicMock(spec=Firewall)
+    mock_firewall.serial = MOCK_FIREWALL_1_SERIAL
+    mock_firewall.parent = MagicMock(get=lambda x: "panorama.test" if x == "hostname" else None)
+    mock_firewall_devices = [mock_firewall]
+
+    # Mock empty topology
+    mock_topology = MagicMock()
+    mock_topology.panorama_devices.return_value = mock_panorama_devices
+    mock_topology.firewall_devices.return_value = mock_firewall_devices
+
+    Panorama.URL = "https://1.1.1.1:443/api/"
+
+    # Define output of http request to "/config/predefined/certificate"
+    with open("test_data/config_predefined_certificate.txt") as f:
+        requests_mock.get(Panorama.URL, text=f.read())
+
+    result = pan_os_get_certificate_info_command(topology=mock_topology, args={"show_expired_only": False})
+
+    assert isinstance(result, CommandResults)
+
+    assert result.outputs == load_json("test_data/get_certificate_info_command.json")
