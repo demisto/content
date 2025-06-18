@@ -1962,12 +1962,12 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     # Determine the search name
     $internet_message_id = $kwargs.internet_message_id
     $search_name = $internet_message_id -replace '[<>]', ''
+    $kql = "internetMessageId: $internet_message_id"
     $demisto.results("search_name: " + $search_name)
-
+    $force = ConvertTo-Boolean $kwargs.force
 
     $search_action_name = "${search_name}_Purge"
-    $kql = "internetMessageId: $internet_message_id"
-    $exchange_location = "All"
+    $exchange_location = $kwargs.exchange_location
     $polling_args = $kwargs
 
     # Step 1: Create and start search if needed
@@ -2060,7 +2060,9 @@ function testPollingCommand([SecurityAndComplianceClient]$client, [hashtable]$kw
     if (-not $kwargs.arg) {
         $polling_args = @{}
         $polling_args += $kwargs
-        $polling_args.arg = "arg-1"
+        $polling_args.argA = "arg-1"
+        $polling_args.argB = "arg-2"
+
         $human_readable = "First run"
     }
     elseif ($kwargs.arg -eq "arg-1") {

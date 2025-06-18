@@ -2570,9 +2570,6 @@ function Main
             "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-block-sender-quick-action" {
-                ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
-            }
             "$script:COMMAND_PREFIX-get-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXOGetTenantAllowBlockListCommand $exo_client $command_arguments
             }
@@ -2580,9 +2577,6 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = EXOCountTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
-                ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items-quick-action" {
                 ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-export-quarantinemessage" {
