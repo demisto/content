@@ -1721,7 +1721,7 @@ def fetch_last_emails(
         assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime).filter(is_read=False)
-
+        demisto.debug(f"{first_fetch_ews_datetime=}")
     qs = qs.filter(is_read=False).only(*[x.name for x in Message.FIELDS if x.name.lower() != "mime_content"])
     if incident_filter == RECEIVED_FILTER:
         qs = qs.filter().order_by("datetime_received")
@@ -1736,6 +1736,7 @@ def fetch_last_emails(
     demisto.debug("Before iterating on queryset")
     demisto.debug(f"Size of the queryset object in fetch-incidents: {sys.getsizeof(qs)}")
     for item in qs:
+        demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
