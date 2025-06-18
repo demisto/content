@@ -31,7 +31,7 @@ configuration:
   name: serviceType
   defaultvalue: all
   type: 15
-  section: Connect
+  section: Collect
   required: true
   options:
   - all

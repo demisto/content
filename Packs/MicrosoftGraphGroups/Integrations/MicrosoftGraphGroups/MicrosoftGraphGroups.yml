@@ -1,7 +1,6 @@
 category: Authentication & Identity Management
 sectionOrder:
 - Connect
-- Collect
 commonfields:
   id: Microsoft Graph Groups
   version: -1
@@ -116,7 +115,7 @@ configuration:
   name: handle_error
   defaultvalue: 'true'
   type: 8
-  section: Collect
+  section: Connect
   required: false
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
