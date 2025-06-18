@@ -884,15 +884,22 @@ def update_remote_incident(
 ) -> str:
     # we will run the mirror-out update only if there is relevant changes
     # (or closingUserId was changed meaning the incident wa reopened) or need to close the remote ticket
+    relevant_keys_delta = OUTGOING_MIRRORED_FIELDS.keys()
+    demisto.debug(f"before omit {relevant_keys_delta=}, {delta=}")
     relevant_keys_delta = OUTGOING_MIRRORED_FIELDS.keys() | {"closingUserId"}
     relevant_keys_delta &= delta.keys()
     # those fields are close incident fields and handled separately in close_incident_in_remote
     relevant_keys_delta -= {"classification", "classificationComment"}
-
+    demisto.debug(f"{relevant_keys_delta=}")
     if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
         if incident_status == IncidentStatus.DONE and close_incident_in_remote(delta, data):
             demisto.debug(f"XSOAR incident closed, closing incident with remote ID {incident_id} in remote system.")
             return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
+        elif incident_status == IncidentStatus.ACTIVE and "classification" in delta:
+            demisto.debug(
+                f"XSOAR incident classification changed, Updating incident with remote ID {incident_id} in remote system."
+            )
+            return str(update_incident_request(client, incident_id, data, delta))
         if relevant_keys_delta:
             demisto.debug(f"Updating incident with remote ID {incident_id} in remote system.")
             return str(update_incident_request(client, incident_id, data, delta))
