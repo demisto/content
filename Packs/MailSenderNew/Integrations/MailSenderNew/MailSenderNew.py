@@ -27,6 +27,54 @@ from itertools import zip_longest
 SERVER: Optional[smtplib.SMTP] = None
 UTF_8 = "utf-8"
 
+def support_utf8_patch(server: SMTP):
+    """
+    Patches the SMTP object authentication methods to support utf-8 credentials.
+
+    smtplib currently only supports ascii characters in credentials.
+    This patch should be removed once support is added by smtplib. (https://github.com/python/cpython/issues/73936)
+    """
+    from smtplib import _MAXCHALLENGE, SMTPException, SMTPAuthenticationError # type: ignore[attr-defined]
+    from email.base64mime import body_encode as encode_base64
+    import hmac
+    # Original lines left as comments for reference
+    def auth(self, mechanism, authobject, *, initial_response_ok=True):
+        mechanism = mechanism.upper()
+        initial_response = (authobject() if initial_response_ok else None)
+        if initial_response is not None:
+            #response = encode_base64(initial_response.encode('ascii'), eol='')
+            response = encode_base64(initial_response.encode('utf-8'), eol='')
+            (code, resp) = self.docmd("AUTH", mechanism + " " + response)
+            self._auth_challenge_count = 1
+        else:
+            (code, resp) = self.docmd("AUTH", mechanism)
+            self._auth_challenge_count = 0
+        while code == 334:
+            self._auth_challenge_count += 1
+            challenge = base64.decodebytes(resp)
+            response = encode_base64(
+                #authobject(challenge).encode('ascii'), eol='')
+                authobject(challenge).encode('utf-8'), eol='')
+            (code, resp) = self.docmd(response)
+            if self._auth_challenge_count > _MAXCHALLENGE:
+                raise SMTPException(
+                    "Server AUTH mechanism infinite loop. Last response: "
+                    + repr((code, resp))
+                )
+        if code in (235, 503):
+            return (code, resp)
+        raise SMTPAuthenticationError(code, resp)
+
+    def auth_cram_md5(self, challenge=None):
+        if challenge is None:
+            return None
+        return self.user + " " + hmac.HMAC(
+            #self.password.encode('ascii'), challenge, 'md5').hexdigest()
+            self.password.encode('utf-8'), challenge, 'md5').hexdigest()
+
+    # Bind the functions as methods of the SMTP instance and replace the originals
+    server.auth = types.MethodType(auth, server) # type: ignore[assignment]
+    server.auth_cram_md5 = types.MethodType(auth_cram_md5, server) # type: ignore[assignment]
 
 def randomword(length):
     """
@@ -323,6 +371,13 @@ def main():
     # Following methods raise exceptions so no need to check for return codes
     # But we do need to catch them
     global SERVER
+
+    # Reload smtplib to undo previous bad patch
+    import importlib
+    importlib.reload(smtplib)
+    from smtplib import SMTP
+
+    demisto.debug(f"Command being run: {demisto.command()}")
     from_email = demisto.getParam("from")
     fqdn = demisto.params().get("fqdn")
     fqdn = (fqdn and fqdn.strip()) or None
@@ -350,7 +405,19 @@ def main():
             SERVER.starttls()  # type: ignore
         user, password = get_user_pass()
         if user:
-            SERVER.login(user, password)  # type: ignore[union-attr]
+            retry_login = False
+            try:
+                demisto.debug("Authenticating with smtp server")
+                SERVER.login(user, password)  # type: ignore[union-attr]
+            except UnicodeEncodeError:
+                demisto.debug("Authentication failed with encode error, applying utf-8 patch")
+                retry_login = True
+                support_utf8_patch(SERVER)
+
+            if retry_login: # retry out of except clause to suppress the previous exception if another one is thrown
+                demisto.debug("Retrying authenticating with smtp server")
+                SERVER.login(user, password)  # type: ignore[union-attr]
+
     except Exception as e:
         # also reset at the bottom finally
         swap_stderr(stderr_org)  # type: ignore[union-attr]
