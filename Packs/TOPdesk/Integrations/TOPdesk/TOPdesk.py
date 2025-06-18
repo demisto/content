@@ -823,7 +823,6 @@ def get_assets_list(
     Return list of incidents got from the API.
     """
 
-    # page_size = args.get("page_size", None)
     page_size = arg_to_number(args.get("page_size", 50))
     start = args.get("start", 0)
     query = args.get("filter", None)
