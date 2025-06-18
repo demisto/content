@@ -1388,6 +1388,19 @@ def test_update_asset(client, requests_mock, command_args, expected_results):
         - The result fits the expected mapping
     """
 
+    command_args = {
+        "asset_id": "d3861991-b025-48fb-b203-2df82856973",
+        "data": {"TestField": "TestValue"},
+    }
+    expected_results = {
+        "outputs": {
+            "data": {
+                "TestField": "TestValue",
+                "unid": "d3861991-b025-48fb-b203-2df828569736",
+            }
+        },
+    }
+
     mock_assets = util_load_json("test_data/topdesk_asset_update.json")
 
     requests_mock.post(

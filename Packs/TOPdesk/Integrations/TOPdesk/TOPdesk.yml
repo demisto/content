@@ -2139,11 +2139,9 @@ script:
   - arguments:
     - description: The offset at which to start listing the operators at. Must be greater or equal to 0. Default is 0.
       name: start
-      required: true
       defaultValue: 0
     - description: The amount of operators to be returned per request. Must be between 1 and 100. Default is 10.
       name: page_size
-      required: true
       defaultValue: 50
     - description: Supports a set of OData filters which can be combined with 'and' and 'or' operators. Filter expressions can also be grouped by parentheses. https://developers.topdesk.com/explorer/?page=assets#/Assets/getAssets.
       name: filter

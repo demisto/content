@@ -93,8 +93,7 @@ class Client(BaseClient):
         allowed_list_type = ["persons", "operators", "branches", "incidents"]
         if list_type not in allowed_list_type:
             raise ValueError(f"Cannot get list of type {list_type}.\n Only {allowed_list_type} are allowed.")
-        else:
-            url_suffix = f"/{list_type}"
+        url_suffix = f"/{list_type}"
         inline_parameters = False
         request_params: dict[str, Any] = {}
         if start:
@@ -257,7 +256,7 @@ class Client(BaseClient):
             return self._http_request(
                 method="POST", url_suffix=f"/assetmgmt/assets/{asset_id}", json_data=data, params=params
             )
-        else:
+
         if not asset_id and data:
             raise DemistoException("Invalid arguments provided.")
 
@@ -824,13 +823,13 @@ def get_assets_list(
     Return list of incidents got from the API.
     """
 
-    page_size = args.get("page_size", None)
+    # page_size = args.get("page_size", None)
     page_size = arg_to_number(args.get("page_size", 50))
     start = args.get("start", 0)
     query = args.get("filter", None)
     search_term = args.get("search_term", None)
     archived = args.get("archived", None)
-    pagination = False
+    # pagination = False
     # If the page size is 0, we will fetch all data
     if page_size == 0:
         pagination = True
@@ -848,14 +847,8 @@ def get_assets_list(
             archived=archived,
             fields=args.get("fields", None),
         )
-        if len(assets["dataSet"]) < 1:
-            break
-        else:
-            assets_list += assets["dataSet"]
-            start += page_size
         assets_list.extend(assets["dataSet"])
         start += page_size
-
         if not pagination or len(assets["dataSet"]) < 1:
             break
 
@@ -903,8 +896,6 @@ def incidents_to_command_results(client: Client, incidents: list[dict[str, Any]]
     )
 
 
-def assets_to_command_results(
-    client: Client, assets: list[dict[str, Any]]
 def assets_to_command_results(assets: list[dict[str, Any]]) -> CommandResults:
     """Receive assets from api and convert to CommandResults.
 
