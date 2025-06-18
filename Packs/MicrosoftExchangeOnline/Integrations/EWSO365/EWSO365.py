@@ -471,7 +471,6 @@ def get_entry_for_file_attachment(item_id, attachment):
         get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline),
         attachment.content,
     )
-
     entry["EntryContext"] = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id, attachment)
     }
@@ -539,6 +538,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
         f'EWS get attachment got item for "{target_email}", '
         f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"'  # noqa: E501
     )
+
     return get_entry_for_object(
         title,
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
