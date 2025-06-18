@@ -1281,4 +1281,4 @@ def test_get_data_without_found_user(mocker: MockerFixture):
     )
 
     assert result[1]
-    assert result[1].get("Status") == "User not found: test_arg test_value."
+    assert result[1].get("Status") == "User not found - userId: test_value."

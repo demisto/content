@@ -499,7 +499,7 @@ def get_data(
     if modules.is_brand_available(get_user_command) and is_valid_args(get_user_command):
         readable_outputs, outputs = cmd(get_user_command, additional_fields)
         if len(outputs) == 1:  # contains only the source key
-            outputs["Status"] = f"User not found: {arg_name} {arg_value}."
+            outputs["Status"] = f"User not found - userId: {arg_value}."
         else:
             outputs["Status"] = "found."
         return readable_outputs, outputs
@@ -625,6 +625,38 @@ def main():
                     users_outputs.append(outputs)
                     users_readables.extend(readable_output)
 
+                #################################
+                ### Running for Cortex XDR - IR (XDR) ###
+                #################################
+                readable_output, outputs = get_data(
+                    modules=modules,
+                    brand_name="Cortex XDR - IR",
+                    command_name="xdr-list-risky-users",
+                    arg_name="user_id",
+                    arg_value=user_name,
+                    cmd=xdr_get_risky_user,
+                    additional_fields=additional_fields,
+                )
+                if readable_output and outputs:
+                    users_outputs.append(outputs)
+                    users_readables.extend(readable_output)
+
+                #################################
+                ### Running for Cortex XDR - IR (Core) ###
+                #################################
+                readable_output, outputs = get_data(
+                    modules=modules,
+                    brand_name="Cortex Core - IR",
+                    command_name="core-list-risky-users",
+                    arg_name="user_id",
+                    arg_value=user_name,
+                    cmd=core_get_risky_user,
+                    additional_fields=additional_fields,
+                )
+                if readable_output and outputs:
+                    users_outputs.append(outputs)
+                    users_readables.extend(readable_output)
+
             else:
                 demisto.debug(f"Skipping commands that do not support domain in user_name: {user_name}")
 
@@ -673,38 +705,6 @@ def main():
                     manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
                     outputs["AdditionalFields"].extend(manager_output)
                 users_outputs.append(outputs)
-
-            #################################
-            ### Running for Cortex XDR - IR (XDR) ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Cortex XDR - IR",
-                command_name="xdr-list-risky-users",
-                arg_name="user_id",
-                arg_value=user_id,
-                cmd=xdr_get_risky_user,
-                additional_fields=additional_fields,
-            )
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
-
-            #################################
-            ### Running for Cortex XDR - IR (Core) ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Cortex Core - IR",
-                command_name="core-list-risky-users",
-                arg_name="user_id",
-                arg_value=user_id,
-                cmd=core_get_risky_user,
-                additional_fields=additional_fields,
-            )
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
 
             #################################
             ### Running for Azure Risky Users	 ###
