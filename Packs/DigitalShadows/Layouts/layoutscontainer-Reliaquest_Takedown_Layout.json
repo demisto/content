@@ -1331,6 +1331,6 @@
 	"id": "Reliaquest Takedown Layout",
 	"name": "Reliaquest Takedown Layout",
 	"system": false,
-	"fromVersion": "6.10.0",
+	"fromVersion": "6.9.0",
 	"version": -1
 }

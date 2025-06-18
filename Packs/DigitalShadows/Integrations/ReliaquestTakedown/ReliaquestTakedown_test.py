@@ -194,12 +194,12 @@ def get_response():
 
 
 def get_takedown_events():
-    get_incidents_list_response = load_test_data("./test_data/get_events.json")
+    get_incidents_list_response = load_test_data("test/get_events.json")
     return get_incidents_list_response
 
 
 def download_attachment_get():
-    path = "test_data/file-sample.pdf"
+    path = "test/file-sample.pdf"
     try:
         with open(path, "rb") as file:
             file_data = file.read()
@@ -208,7 +208,7 @@ def download_attachment_get():
         response._content = file_data
         response.headers = {
             "Content-Type": "application/octet-stream",
-            "Content-Disposition": 'attachment; filename="test_data/file-sample1.pdf"',
+            "Content-Disposition": 'attachment; filename="test/file-sample1.pdf"',
         }
 
         return response
@@ -304,7 +304,7 @@ def test_upload_download_attachment_command(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
     upload_attachment(client,
-                      {"fileId": "test_data/file-sample.pdf", "takedownId": "14718933-7fdf-484b-bd45-a873c8ac2fba"})
+                      {"file_id": "test/file-sample.pdf", "takedown_id": "14718933-7fdf-484b-bd45-a873c8ac2fba"})
 
 
 def test_test_module_command(mocker, client: Client):
