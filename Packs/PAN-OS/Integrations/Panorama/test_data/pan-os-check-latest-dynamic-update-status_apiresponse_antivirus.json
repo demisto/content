@@ -20,24 +20,7 @@
                         "features": "virus",
                         "update-type": "Full",
                         "feature-desc": "Unknown",
-                        "sha256": "abfd7d0db4b4143e91afab219377d09b59337d1af521cd45ad13e4483a366a89"
-                    },
-                    {
-                        "version": "5210-5730",
-                        "app-version": "5210-5730",
-                        "filename": "panup-all-antivirus-5210-5730",
-                        "size": "102",
-                        "size-kb": "104586",
-                        "released-on": "2025/06/09 04:01:58 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "yes",
-                        "current": "no",
-                        "previous": "yes",
-                        "installing": "no",
-                        "features": "virus",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "15fac833220812c1f5fbfaf6f3d1989f36b9494f6ab49d52ce75267bb1a6c448"
+                        "sha256": "fake-sha256-hash"
                     },
                     {
                         "version": "5212-5732",
@@ -54,24 +37,7 @@
                         "features": "virus",
                         "update-type": "Full",
                         "feature-desc": "Unknown",
-                        "sha256": "46769dbb32b9296729784f093168e264e51231ad7feb40c5b196be08c4d8d356"
-                    },
-                    {
-                        "version": "5208-5728",
-                        "app-version": "5208-5728",
-                        "filename": "panup-all-antivirus-5208-5728",
-                        "size": "102",
-                        "size-kb": "104636",
-                        "released-on": "2025/06/07 04:02:47 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "no",
-                        "current": "no",
-                        "previous": "no",
-                        "installing": "no",
-                        "features": "virus",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "2fa0bda46e7477a85a7c4df25c737f7cfd9230b3a5fbcb7ec1b329ebf43445c4"
+                        "sha256": "fake-sha256-hash"
                     },
                     {
                         "version": "5209-5729",
@@ -88,7 +54,7 @@
                         "features": "virus",
                         "update-type": "Full",
                         "feature-desc": "Unknown",
-                        "sha256": "e6d7b41395468b960cc3a903d08edbde2359a0b7db6dfe8fd324221bf5bb3f3c"
+                        "sha256": "fake-sha256-hash"
                     }
                 ]
             }

@@ -6,74 +6,6 @@
                 "@last-updated-at": "2025/06/11 13:34:13 PDT",
                 "entry": [
                     {
-                        "version": "8983-9467",
-                        "app-version": "8983-9467",
-                        "filename": "panupv2-all-contents-8983-9467",
-                        "size": "109",
-                        "size-kb": "112186",
-                        "released-on": "2025/06/02 09:51:41 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "yes",
-                        "current": "no",
-                        "previous": "no",
-                        "installing": "no",
-                        "features": "Apps, Threats",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "0b6812a4b8ff5f13a9644da471b03c3b0f3ff8bfc76b0d97706630906e38f19b"
-                    },
-                    {
-                        "version": "8977-9441",
-                        "app-version": "8977-9441",
-                        "filename": "panupv2-all-contents-8977-9441",
-                        "size": "108",
-                        "size-kb": "111514",
-                        "released-on": "2025/05/13 12:16:36 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "no",
-                        "current": "no",
-                        "previous": "no",
-                        "installing": "no",
-                        "features": "Apps, Threats",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "172acb68590390f072d1a3498f2117edefd982a9d8224e97ec13d8518723f11e"
-                    },
-                    {
-                        "version": "8978-9450",
-                        "app-version": "8978-9450",
-                        "filename": "panupv2-all-contents-8978-9450",
-                        "size": "108",
-                        "size-kb": "111519",
-                        "released-on": "2025/05/15 18:51:37 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "no",
-                        "current": "no",
-                        "previous": "no",
-                        "installing": "no",
-                        "features": "Apps, Threats",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "2526c0f73a99a849805bb24471d7219687043a105bf93f70f70fd5f0162e3740"
-                    },
-                    {
-                        "version": "8976-9438",
-                        "app-version": "8976-9438",
-                        "filename": "panupv2-all-contents-8976-9438",
-                        "size": "108",
-                        "size-kb": "111522",
-                        "released-on": "2025/05/12 12:04:59 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "no",
-                        "current": "no",
-                        "previous": "no",
-                        "installing": "no",
-                        "features": "Apps, Threats",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "a90dfe7cbf61bf43ec4c0c42e62c17f8cb321240834f1fef916e9c57d90d1da8"
-                    },
-                    {
                         "version": "8987-9481",
                         "app-version": "8987-9481",
                         "filename": "panupv2-all-contents-8987-9481",
@@ -88,7 +20,7 @@
                         "features": "Apps, Threats",
                         "update-type": "Full",
                         "feature-desc": "Unknown",
-                        "sha256": "9754a956af75438f05d65fc21cc4a3f47bdb492d7c780e7f1c4e4c6c6530d44d"
+                        "sha256": "fake-sha256-hash"
                     },
                     {
                         "version": "8985-9474",
@@ -105,58 +37,7 @@
                         "features": "Apps, Threats",
                         "update-type": "Full",
                         "feature-desc": "Unknown",
-                        "sha256": "6bd1eeea54097f8f5f8bca12954c46924a4c5512704c555ba086094343301ec3"
-                    },
-                    {
-                        "version": "8982-9465",
-                        "app-version": "8982-9465",
-                        "filename": "panupv2-all-contents-8982-9465",
-                        "size": "109",
-                        "size-kb": "112160",
-                        "released-on": "2025/05/28 14:40:22 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "no",
-                        "current": "no",
-                        "previous": "no",
-                        "installing": "no",
-                        "features": "Apps, Threats",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "c0c1d52b3d2ff10208337e93dd174b9c5a4ac426d993c6d552895105e1668a20"
-                    },
-                    {
-                        "version": "8980-9459",
-                        "app-version": "8980-9459",
-                        "filename": "panupv2-all-contents-8980-9459",
-                        "size": "109",
-                        "size-kb": "112068",
-                        "released-on": "2025/05/20 19:05:28 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "no",
-                        "current": "no",
-                        "previous": "no",
-                        "installing": "no",
-                        "features": "Apps, Threats",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "5a0fd74b1ec45ed2c4f7d976582dfe6cd5f42067326deb72b2c1b3eeec472333"
-                    },
-                    {
-                        "version": "8984-9472",
-                        "app-version": "8984-9472",
-                        "filename": "panupv2-all-contents-8984-9472",
-                        "size": "109",
-                        "size-kb": "112242",
-                        "released-on": "2025/06/03 19:43:41 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "yes",
-                        "current": "no",
-                        "previous": "no",
-                        "installing": "no",
-                        "features": "Apps, Threats",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "cf9f1cdae481e4f5f74f68f09f4176d642eaf6ac65a2525d1333e108994eb9b0"
+                        "sha256": "fake-sha256-hash"
                     },
                     {
                         "version": "8981-9462",
@@ -173,24 +54,7 @@
                         "features": "Apps, Threats",
                         "update-type": "Full",
                         "feature-desc": "Unknown",
-                        "sha256": "11341e514d9da2643d6b960dc4cffc0b398f44b89635884877842c51bb22cdb9"
-                    },
-                    {
-                        "version": "8979-9454",
-                        "app-version": "8979-9454",
-                        "filename": "panupv2-all-contents-8979-9454",
-                        "size": "108",
-                        "size-kb": "111527",
-                        "released-on": "2025/05/19 09:22:03 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "no",
-                        "current": "no",
-                        "previous": "no",
-                        "installing": "no",
-                        "features": "Apps, Threats",
-                        "update-type": "Full",
-                        "feature-desc": "Unknown",
-                        "sha256": "c15dbec16101954300b3906db467887e1a021963920079ebc1bf4f4aec9c2b4b"
+                        "sha256": "fake-sha256-hash"
                     },
                     {
                         "version": "8986-9476",
@@ -207,7 +71,7 @@
                         "features": "Apps, Threats",
                         "update-type": "Full",
                         "feature-desc": "Unknown",
-                        "sha256": "45ae267062c1b7b37a8aeafaac656f0556423b02d5fbf654f94768bfd94ba4ec"
+                        "sha256": "fake-sha256-hash"
                     }
                 ]
             }

@@ -6,23 +6,6 @@
                 "@last-updated-at": "2025/06/11 13:40:40 PDT",
                 "entry": [
                     {
-                        "version": "986014-990006",
-                        "app-version": "986014-990006",
-                        "filename": "panupv3-all-wildfire-986014-990006",
-                        "size": "9",
-                        "size-kb": "9305",
-                        "released-on": "2025/06/10 17:56:50 PDT",
-                        "release-notes": "https://fake-release-note-link",
-                        "downloaded": "yes",
-                        "current": "no",
-                        "previous": "yes",
-                        "installing": "no",
-                        "features": "wildfire",
-                        "update-type": "Full",
-                        "feature-desc": "PAN-OS 10.0 and later",
-                        "sha256": "d38ca5eda959ccd4992a9babc31d13c0b7ed8528c23dbd6fd7c6656926e7d38b"
-                    },
-                    {
                         "version": "986026-990018",
                         "app-version": "986026-990018",
                         "filename": "panupv3-all-wildfire-986026-990018",
@@ -37,7 +20,7 @@
                         "features": "wildfire",
                         "update-type": "Full",
                         "feature-desc": "PAN-OS 10.0 and later",
-                        "sha256": "824a54e3c031b4ed72a093fed0114da2c14afb7625be612cb08175b18c0f7b12"
+                        "sha256": "fake-sha256-hash"
                     },
                     {
                         "version": "986250-990242",
@@ -54,7 +37,7 @@
                         "features": "wildfire",
                         "update-type": "Full",
                         "feature-desc": "PAN-OS 10.0 and later",
-                        "sha256": "7c9abe034298ab393d3d7868f6ce85585de837392651f43b2c46858b78759a28"
+                        "sha256": "fake-sha256-hash"
                     }
                 ]
             }

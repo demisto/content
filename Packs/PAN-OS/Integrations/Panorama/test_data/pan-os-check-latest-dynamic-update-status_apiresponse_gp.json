@@ -19,7 +19,7 @@
                     "features": "GlobalProtectClientlessVPN",
                     "update-type": "Full",
                     "feature-desc": "Unknown",
-                    "sha256": "52ef80beb11d00bffbff7fd13b46ce02224d45cf8a3346d27991e7ad553aaeab"
+                    "sha256": "fake-sha256-hash"
                 }
             }
         }

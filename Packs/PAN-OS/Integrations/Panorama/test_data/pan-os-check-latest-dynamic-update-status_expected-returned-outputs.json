@@ -15,7 +15,7 @@
             "features": "Apps, Threats",
             "update-type": "Full",
             "feature-desc": "Unknown",
-            "sha256": "9754a956af75438f05d65fc21cc4a3f47bdb492d7c780e7f1c4e4c6c6530d44d"
+            "sha256": "fake-sha256-hash"
         },
         "CurrentlyInstalled": {
             "version": "8987-9481",
@@ -32,7 +32,7 @@
             "features": "Apps, Threats",
             "update-type": "Full",
             "feature-desc": "Unknown",
-            "sha256": "9754a956af75438f05d65fc21cc4a3f47bdb492d7c780e7f1c4e4c6c6530d44d"
+            "sha256": "fake-sha256-hash"
         },
         "IsUpToDate": true
     },
@@ -52,7 +52,7 @@
             "features": "virus",
             "update-type": "Full",
             "feature-desc": "Unknown",
-            "sha256": "46769dbb32b9296729784f093168e264e51231ad7feb40c5b196be08c4d8d356"
+            "sha256": "fake-sha256-hash"
         },
         "CurrentlyInstalled": {
             "version": "5211-5731",
@@ -69,7 +69,7 @@
             "features": "virus",
             "update-type": "Full",
             "feature-desc": "Unknown",
-            "sha256": "abfd7d0db4b4143e91afab219377d09b59337d1af521cd45ad13e4483a366a89"
+            "sha256": "fake-sha256-hash"
         },
         "IsUpToDate": false
     },
@@ -89,7 +89,7 @@
             "features": "wildfire",
             "update-type": "Full",
             "feature-desc": "PAN-OS 10.0 and later",
-            "sha256": "7c9abe034298ab393d3d7868f6ce85585de837392651f43b2c46858b78759a28"
+            "sha256": "fake-sha256-hash"
         },
         "CurrentlyInstalled": {
             "version": "986026-990018",
@@ -106,7 +106,7 @@
             "features": "wildfire",
             "update-type": "Full",
             "feature-desc": "PAN-OS 10.0 and later",
-            "sha256": "824a54e3c031b4ed72a093fed0114da2c14afb7625be612cb08175b18c0f7b12"
+            "sha256": "fake-sha256-hash"
         },
         "IsUpToDate": false
     },
@@ -126,7 +126,7 @@
             "features": "GlobalProtectClientlessVPN",
             "update-type": "Full",
             "feature-desc": "Unknown",
-            "sha256": "52ef80beb11d00bffbff7fd13b46ce02224d45cf8a3346d27991e7ad553aaeab"
+            "sha256": "fake-sha256-hash"
         },
         "CurrentlyInstalled": {
             "version": "98-260",
@@ -143,7 +143,7 @@
             "features": "GlobalProtectClientlessVPN",
             "update-type": "Full",
             "feature-desc": "Unknown",
-            "sha256": "52ef80beb11d00bffbff7fd13b46ce02224d45cf8a3346d27991e7ad553aaeab"
+            "sha256": "fake-sha256-hash"
         },
         "IsUpToDate": true
     },
