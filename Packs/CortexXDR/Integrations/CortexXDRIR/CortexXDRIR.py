@@ -512,7 +512,7 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
-        if "reply" not in response or "alerts_ids" not in response["reply"]: 
+        if "reply" not in response or "alerts_ids" not in response["reply"]:
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
         return response["reply"]["alerts_ids"]
 
