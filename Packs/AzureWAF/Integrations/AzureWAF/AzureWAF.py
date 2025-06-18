@@ -554,7 +554,7 @@ def test_module(client, params):
     params = demisto.params()
     if params.get("auth_type") == "Device Code":
         raise Exception(
-            "When using device code flow configuration, "
+            "When using Device Code flow configuration, "
             "Please enable the integration and run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to "
             "log in. You can validate the connection by running `!azure-waf-auth-test`\n"
             "For more details press the (?) button."
