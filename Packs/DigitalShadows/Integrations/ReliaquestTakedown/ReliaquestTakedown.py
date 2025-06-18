@@ -266,10 +266,8 @@ def get_comments_map(comments):
             comment_map[comment[TAKEDOWN_ID]].append(comment)
         else:
             comment_map[comment[TAKEDOWN_ID]] = [comment]
-    sorted_comment_map = {key: sorted(comments, key=lambda x: x['updated'], reverse=True) for key, comments in
-                          comment_map.items()}
 
-    return sorted_comment_map
+    return comment_map
 
 
 def get_attachments_map(attachments):
@@ -279,10 +277,7 @@ def get_attachments_map(attachments):
             attachments_map[attachment[TAKEDOWN_ID]].append(attachment)
         else:
             attachments_map[attachment[TAKEDOWN_ID]] = [attachment]
-    sorted_comment_map = {key: sorted(comments, key=lambda x: x['created'], reverse=True) for key, comments in
-                          attachments_map.items()}
-
-    return sorted_comment_map
+    return attachments_map
 
 
 def flatten_comments(comments):
