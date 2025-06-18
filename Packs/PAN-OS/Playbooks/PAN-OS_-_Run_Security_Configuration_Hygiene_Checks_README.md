@@ -1,20 +1,20 @@
 This playbook executes hygiene check commands using the PAN-OS integration and identifies items configured in a manner that do not meet minimum security best practices.  It looks for the following:
 1. Log Forwarding Profiles
-  i. Profiles without Enhanced Logging enabled
-  ii. Profiles with no match list (rules) configured
-  iii. Profiles that do not include rules to forward Traffic or Threat logs
+    1. Profiles without Enhanced Logging enabled
+    2. Profiles with no match list (rules) configured
+    3. Profiles that do not include rules to forward Traffic or Threat logs
 2. Security Zones with no Log Forwarding Profile assigned
 3. Spyware Profiles that do not:
-  i. Block signatures of Critical and High severity
-  ii. Alert on (or block) signatures of Medium and Low severity
+    1. Block signatures of Critical and High severity
+    2. Alert on (or block) signatures of Medium and Low severity
 4. URL Filtering Profiles do not block the default URL categories blocked in the pre-defined profile
 5. Vulnerability Profiles that do not:
-  i. Block signatures of Critical and High severity
-  ii. Alert on (or block) signatures of Medium and Low severity
+    1. Block signatures of Critical and High severity
+    2. Alert on (or block) signatures of Medium and Low severity
 6. Security Rules that do not:
-  i. Log at Session End
-  ii. Have a Log Forwarding Profile assigned
-  iii. Have Security Profiles assigned for Anti Virus, Spyware, Vulnerability, and URL Filtering (or a group that includes each).
+    1. Log at Session End
+    2. Have a Log Forwarding Profile assigned
+    3. Have Security Profiles assigned for Anti Virus, Spyware, Vulnerability, and URL Filtering (or a group that includes each).
 
 ## Dependencies
 
