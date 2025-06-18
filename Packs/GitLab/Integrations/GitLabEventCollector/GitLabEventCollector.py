@@ -199,7 +199,7 @@ def fetch_events_command(client: Client, params: dict, last_run: dict, event_typ
         (list) the groups and projects events retrieved from the API call.
         (dict) the updated lastRun object.
     """
-    should_fetch_instance_events = event_type_management.get("fetch_instance_audit_events")
+    should_fetch_instance_events = event_type_management.get("instance_events")
     audit_events = []
     if should_fetch_instance_events:
         query_params_url = prepare_query_params(params, last_run.get("audit_events", {}))
@@ -237,7 +237,7 @@ def main() -> None:
         )
 
         events_collection_management = {
-            "audit_events": argToBoolean(params.get("fetch_instance_audit_events", True)),
+            "instance_events": argToBoolean(params.get("fetch_instance_audit_events", True)),
             "groups_ids": argToList(params.get("group_ids", "")),
             "projects_ids": argToList(params.get("project_ids", "")),
         }
