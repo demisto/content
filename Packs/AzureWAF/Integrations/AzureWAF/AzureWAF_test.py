@@ -276,7 +276,7 @@ def test_policy_upsert_request_body_fails(mocker, demisto_args, expected_error_m
     "params, expected_results",
     [
         ({"auth_type": "Device Code"}, "When using Device Code flow configuration"),
-        ({"auth_type": "Authorization Code"}, "When using user Authorization Code flow configuration"),
+        ({"auth_type": "Authorization Code"}, "When using Authorization Code flow configuration"),
     ],
 )
 def test_test_module_command(mocker, params, expected_results):
