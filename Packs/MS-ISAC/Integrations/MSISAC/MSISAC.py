@@ -301,7 +301,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get("apikey", {}).get("credentials", {}).get("sshkey", "")
+    api_key = params.get("apikey", {}).get("credentials", {}).get("sshkey", "") or params.get("apikey", {}).get("password", "")
 
     base_url = urljoin(params["url"], API_ROUTE)
 
