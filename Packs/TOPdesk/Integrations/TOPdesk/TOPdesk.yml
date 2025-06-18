@@ -2161,16 +2161,16 @@ script:
     name: topdesk-assets-list
     outputs:
       - contextPath: TOPdesk.Asset.Archived
-        description: Asset status, archived or not
+        description: Asset status, archived or not.
         type: Boolean
       - contextPath: TOPdesk.Asset.Etag
-        description: Asset entry date
+        description: Asset entry date.
         type: String
       - contextPath: TOPdesk.Asset.Id
-        description: Unique ID of the Asset
+        description: Unique ID of the Asset.
         type: String
       - contextPath: TOPdesk.Asset.Text
-        description: Asset freetext field, often the name of the asset
+        description: Asset freetext field, often the name of the asset.
         type: String
   - arguments:
     - description: The Unique ID of the Asset
