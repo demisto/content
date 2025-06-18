@@ -54,7 +54,7 @@ configuration:
   required: false
 - display: Authorization code
   displaypassword: Authorization code
-  additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
+  additionalinfo: for Authorization code mode - received from the authorization step. see Detailed Instructions (?) section
   hiddenusername: true
   name: auth_code
   type: 9

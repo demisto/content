@@ -562,7 +562,7 @@ def test_module(client, params):
 
     elif params.get("auth_type") == "Authorization Code":
         raise Exception(
-            "When using user auth flow configuration, "
+            "When using Authorization Code flow configuration, "
             "Please enable the integration and run the !azure-waf-auth-test command in order to test it"
         )
 
