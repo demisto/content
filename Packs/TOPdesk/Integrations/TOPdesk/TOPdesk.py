@@ -824,7 +824,7 @@ def get_assets_list(
     """
 
     page_size = arg_to_number(args.get("page_size", 50))
-    start = args.get("start", 0)
+    start = arg_to_number(args.get("start", 0))
     query = args.get("filter", None)
     search_term = args.get("search_term", None)
     archived = args.get("archived", None)
