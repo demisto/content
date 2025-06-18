@@ -1152,7 +1152,7 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f"{params=}, \n {args=}, \n{mirroring_fields}")
+    demisto.debug(f"{args=}, \n{mirroring_fields}")
 
     try:
         if not managed_identities_client_id and not app_id:
