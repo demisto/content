@@ -1185,6 +1185,11 @@ Uploads a file to the specified ticket.
 
 #### Human Readable Output
 
+>### File uploaded successfully to ticket {TICKET ID}.
+>|Download link|Filename|System ID|
+>|---|---|---|
+>| https://{SERVER URL}/api/now/attachment/{System ID}/file | Filename | System ID |
+
 ### servicenow-delete-file
 
 ***
