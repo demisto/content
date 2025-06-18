@@ -1358,26 +1358,7 @@ def test_assets_list(client, requests_mock):
     assert command_results.readable_output == expected_results["readable_output"]
 
 
-@pytest.mark.parametrize(
-    "command_args, expected_results",
-    [
-        (
-            {
-                "asset_id": "d3861991-b025-48fb-b203-2df82856973",
-                "data": {"TestField": "TestValue"},
-            },
-            {
-                "outputs": {
-                    "data": {
-                        "TestField": "TestValue",
-                        "unid": "d3861991-b025-48fb-b203-2df828569736",
-                    }
-                },
-            },
-        ),
-    ],
-)
-def test_update_asset(client, requests_mock, command_args, expected_results):
+def test_update_asset(client, requests_mock):
     """
     Given:
         - TOPdesk client
