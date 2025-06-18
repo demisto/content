@@ -31,7 +31,7 @@
                     "simple": "details"
                 },
                 "SekoiaXDR Alert Status": {
-                    "simple": "alert_status"
+                    "simple": "status.name"
                 },
                 "SekoiaXDR First Seen": {
                     "simple": "first_seen_at"
