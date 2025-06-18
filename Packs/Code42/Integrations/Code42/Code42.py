@@ -486,6 +486,7 @@ def file_events_search_command(client, args):
             return_error(f"Error searching for file events: {err}")
         markdown_table = format_file_events(file_events)
         if add_to_context:
+            file_events = [x.json() for x in file_events]
             context = demisto.context()
             if "Code42" in context and "FileEvents" in context["Code42"]:
                 context_events = context["Code42"]["FileEvents"]
