@@ -1625,7 +1625,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
 
                     if item.id and item.is_read is False:
                         emails_ids.append(item.id)
-                        demisto.debug(f"added email id {item.id=}")
 
                     if len(incidents) >= client.max_fetch:
                         break
@@ -1644,6 +1643,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                 demisto.updateModuleHealth(error_msg, is_error=False)
 
         demisto.debug(f"{APP_NAME} - ending fetch - got {len(incidents)} incidents.")
+
         if incident_filter == MODIFIED_FILTER:
             last_incident_run_time = last_modification_time
         else:  # default case - using 'received' time
@@ -1652,6 +1652,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         # making sure both last fetch time and the time of most recent incident are the same type for comparing.
         if isinstance(last_incident_run_time, EWSDateTime):
             last_incident_run_time = last_incident_run_time.ewsformat()
+
         if isinstance(last_fetch_time, EWSDateTime):
             last_fetch_time = last_fetch_time.ewsformat()
 
