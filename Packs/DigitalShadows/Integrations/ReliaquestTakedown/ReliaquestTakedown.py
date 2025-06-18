@@ -259,25 +259,15 @@ def get_takedown_attachments(request_handler: Client, takedown_ids=[], **kwargs)
 """SearchLightTriagePoller"""
 
 
-def get_comments_map(comments):
-    comment_map: Dict[str, list] = {}
-    for comment in comments:
-        if comment[TAKEDOWN_ID] in comment_map:
-            comment_map[comment[TAKEDOWN_ID]].append(comment)
+def get_object_map(objects):
+    object_map: Dict[str, list] = {}
+    for object in objects:
+        if object[TAKEDOWN_ID] in object_map:
+            object_map[object[TAKEDOWN_ID]].append(object)
         else:
-            comment_map[comment[TAKEDOWN_ID]] = [comment]
+            object_map[object[TAKEDOWN_ID]] = [object]
 
-    return comment_map
-
-
-def get_attachments_map(attachments):
-    attachments_map: Dict[str, list] = {}
-    for attachment in attachments:
-        if attachment[TAKEDOWN_ID] in attachments_map:
-            attachments_map[attachment[TAKEDOWN_ID]].append(attachment)
-        else:
-            attachments_map[attachment[TAKEDOWN_ID]] = [attachment]
-    return attachments_map
+    return object_map
 
 
 def flatten_comments(comments):
@@ -333,8 +323,8 @@ class SearchLightTakedownPoller:
         """
         data = []
 
-        comments_map = get_comments_map(comments)
-        attchment_map = get_attachments_map(attachments)
+        comments_map = get_object_map(comments)
+        attchment_map = get_object_map(attachments)
         for takedown in takedowns:
             takedown["comments"] = comments_map.get(takedown["id"])
             takedown["attachments"] = attchment_map.get(takedown["id"])
