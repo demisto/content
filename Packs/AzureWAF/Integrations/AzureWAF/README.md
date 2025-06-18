@@ -9,7 +9,7 @@ In order to connect to the AzureWAF using either Cortex XSOAR Azure App or the S
 - *Azure Managed Identities*
 - *Client Credentials Flow*.
 
-# Self-Deployed Application
+## Self-Deployed Application
 
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
@@ -67,7 +67,6 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
-
 
 ## Client Credentials Flow Authentication
 
