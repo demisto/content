@@ -43,9 +43,9 @@ args:
     - 'false'
 comment: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
 commonfields:
-  id: get-user-data
+  id: get-user-data-test
   version: -1
-name: get-user-data
+name: get-user-data-test
 outputs:
 - contextPath: UserData.Source
   description: The source that the data was retrieved from.
@@ -64,6 +64,9 @@ outputs:
   type: String
 - contextPath: UserData.AdditionalFields
   description: All the other outputs returned.
+  type: String
+- contextPath: UserData.Status
+  description: Status of the results returned from the command.
   type: String
 script: '-'
 timeout: '0'
