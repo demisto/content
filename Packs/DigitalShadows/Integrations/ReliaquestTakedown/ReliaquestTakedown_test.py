@@ -25,7 +25,8 @@ TEST_URL = "https://test.com/api"
 @pytest.fixture
 def client() -> Client:
     return Client(
-        base_url=TEST_URL, account_id="1234", access_key="HHHQW", secret_key="saddsadsajhhjksa", verify=False, proxy=False
+        base_url=TEST_URL, account_id="1234", access_key="HHHQW", secret_key="saddsadsajhhjksa", verify=False,
+        proxy=False
     )
 
 
@@ -192,12 +193,12 @@ def get_response():
 
 
 def get_takedown_events():
-    get_incidents_list_response = load_test_data("test/get_events.json")
+    get_incidents_list_response = load_test_data("test_data/get_events.json")
     return get_incidents_list_response
 
 
 def download_attachment_get():
-    path = "test/file-sample.pdf"
+    path = "test_data/file-sample.pdf"
     try:
         with open(path, "rb") as file:
             file_data = file.read()
@@ -298,12 +299,6 @@ def test_download_attachment_command(mocker, client: Client):
         pass
 
 
-def test_upload_download_attachment_command(mocker, client: Client):
-    http_mocker = ClientMock()
-    mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
-    upload_attachment(client, {"file_id": "test/file-sample.pdf", "takedown_id": "14718933-7fdf-484b-bd45-a873c8ac2fba"})
-
-
 def test_test_module_command(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
@@ -338,7 +333,8 @@ def test_get_modified_remote_data(mocker, client: Client):
 def test_get_remote_data_command(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
-    response = get_remote_data_command(client, {"id": "1f1fe26c-b310-415d-9c02-6212a692cbd7", "lastUpdate": "2020-09-22"})
+    response = get_remote_data_command(client,
+                                       {"id": "1f1fe26c-b310-415d-9c02-6212a692cbd7", "lastUpdate": "2020-09-22"})
     assert response.mirrored_object is not None
 
 
@@ -348,7 +344,8 @@ def test_create_takedown_command_ratelimit(mocker, client: Client):
     try:
         create_takedown(
             client,
-            {"brand_id": "rate_limit", "type": "impersonation", "target": "https://www.digitalshadowsresearch13.com/adobe"},
+            {"brand_id": "rate_limit", "type": "impersonation",
+             "target": "https://www.digitalshadowsresearch13.com/adobe"},
         )
     except Exception:
         pass
