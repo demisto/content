@@ -23,7 +23,6 @@
         "platform"
     ],
     "supportedModules": [
-        "C1",
-        "C3"
+        "AGENTIC"
     ]
 }
