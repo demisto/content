@@ -17,6 +17,8 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+INTERVAL_SECONDS_EVENTS = 1
+TIMEOUT_EVENTS = 30
 INCIDENT_TYPE_NAME = "Sekoia XDR"
 SEKOIA_INCIDENT_FIELDS = {
     "short_id": "The ID of the alert to edit",
@@ -658,9 +660,6 @@ def fetch_incidents(
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
 
-    # Initialize an empty list of incidents to return
-    # Each incident is a dict with a string as a key
-    incidents: list[dict[str, Any]] = []
     alerts = fetch_alerts_with_pagination(
         client,
         alert_status,
@@ -756,7 +755,7 @@ def fetch_incidents(
         else:
             # If the context is not empty, we will append the new incidents to the existing list
             fetch_cache_list = context_cache["fetch_cache"]
-            fetch_cache_list.append(cached_incidents)
+            fetch_cache_list.extend(cached_incidents)
             context_cache["fetch_cache"] = fetch_cache_list
             set_integration_context(context_cache)
 
@@ -886,11 +885,11 @@ def get_remote_data_command(
             alert_dict = {"alert": alert, "entries": entries}
             if not mirroring_cache:
                 context_cache["mirroring_cache"] = [alert_dict]
-                demisto.debug(f"mirroring cache in the first condition : {context_cache}")
                 set_integration_context(context_cache)
             else:
                 mirroring_cache.append(alert_dict)
-                set_integration_context(mirroring_cache)
+                context_cache["mirroring_cache"] = mirroring_cache
+                set_integration_context(context_cache)
             return None
     else:
         # If the alert id is in the context, we will get the alert from the context
@@ -943,6 +942,7 @@ def get_modified_remote_data_command(client: Client, args):
     modified_alert_ids = []
     cached_context = get_integration_context()
 
+    demisto.debug(f"Inside modified remote data This's context cache : {cached_context}")
     # Start by cached context
     # Check if the context is not empty and contains the mirroring cache
     # If it's not empty, we will add the alert ids to the list
