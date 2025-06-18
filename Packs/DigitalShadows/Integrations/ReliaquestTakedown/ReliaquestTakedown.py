@@ -8,6 +8,8 @@ from time import monotonic, sleep
 import urllib3
 import json
 
+TAKEDOWN_ID = "takedown-id"
+
 """Digital Shadows for Cortex XSOAR."""
 
 """ IMPORTS """
@@ -257,6 +259,32 @@ def get_takedown_attachments(request_handler: Client, takedown_ids=[], **kwargs)
 """SearchLightTriagePoller"""
 
 
+def get_comments_map(comments):
+    comment_map: Dict[str, list] = {}
+    for comment in comments:
+        if comment[TAKEDOWN_ID] in comment_map:
+            comment_map[comment[TAKEDOWN_ID]].append(comment)
+        else:
+            comment_map[comment[TAKEDOWN_ID]] = [comment]
+    sorted_comment_map = {key: sorted(comments, key=lambda x: x['updated'], reverse=True) for key, comments in
+                          comment_map.items()}
+
+    return sorted_comment_map
+
+
+def get_attachments_map(attachments):
+    attachments_map: Dict[str, list] = {}
+    for attachment in attachments:
+        if attachment[TAKEDOWN_ID] in attachments_map:
+            attachments_map[attachment[TAKEDOWN_ID]].append(attachment)
+        else:
+            attachments_map[attachment[TAKEDOWN_ID]] = [attachment]
+    sorted_comment_map = {key: sorted(comments, key=lambda x: x['created'], reverse=True) for key, comments in
+                          attachments_map.items()}
+
+    return sorted_comment_map
+
+
 def flatten_comments(comments):
     comments_flattened = []
     for comment in comments:
@@ -310,8 +338,8 @@ class SearchLightTakedownPoller:
         """
         data = []
 
-        comments_map = {comment["takedown-id"]: comment for comment in comments}
-        attchment_map = {attachment["takedown-id"]: attachment for attachment in attachments}
+        comments_map = get_comments_map(comments)
+        attchment_map = get_attachments_map(attachments)
         for takedown in takedowns:
             takedown["comments"] = comments_map.get(takedown["id"])
             takedown["attachments"] = attchment_map.get(takedown["id"])
@@ -500,7 +528,7 @@ def get_modified_remote_data_command(client, mirroring_last_update):
         mirroring_last_update = int(mirroring_last_update)
     if takedown_events:
         max_event_num = max(max([int(t["event-num"]) for t in takedown_events]), mirroring_last_update)
-        takedown_ids.extend([t["takedown-id"] for t in takedown_events])
+        takedown_ids.extend([t[TAKEDOWN_ID] for t in takedown_events])
 
     return GetModifiedRemoteDataResponse(takedown_ids), max_event_num
 

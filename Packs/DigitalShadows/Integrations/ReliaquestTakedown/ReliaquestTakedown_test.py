@@ -13,7 +13,8 @@ from Packs.DigitalShadows.Integrations.ReliaquestTakedown.ReliaquestTakedown imp
     download_attachment,
     connection_test_module,
     upload_attachment,
-    get_modified_remote_data_command, get_remote_data_command,
+    get_modified_remote_data_command,
+    get_remote_data_command,
 )
 from ReliaquestTakedown import Client
 
@@ -24,8 +25,7 @@ TEST_URL = "https://test.com/api"
 @pytest.fixture
 def client() -> Client:
     return Client(
-        base_url=TEST_URL, account_id="1234", access_key="HHHQW", secret_key="saddsadsajhhjksa", verify=False,
-        proxy=False
+        base_url=TEST_URL, account_id="1234", access_key="HHHQW", secret_key="saddsadsajhhjksa", verify=False, proxy=False
     )
 
 
@@ -44,6 +44,7 @@ def create_comments_get(takedown_id):
         {
             "content": "test comment",
             "created": "2025-03-12T06:21:36.986Z",
+            "updated": "2025-03-12T06:21:36.986Z",
             "id": "c3894680-6d53-40c7-8129-fe896d48ce86",
             "takedown-id": takedown_id,
             "user": {"id": "71ddec65-2bc9-4051-92ed-5d9788d18e2f", "name": "API 'UAQJLB'"},
@@ -98,10 +99,7 @@ def create_takedown_get(limit=None):
         "targets": [{"id": "1b30e52a-f7f0-4cab-aeb5-ec3bfca270ae", "url": "hellotech.com"}],
     }
     if limit:
-        return [
-            takedown_json
-            for _ in range(limit)
-        ]
+        return [takedown_json for _ in range(limit)]
     else:
         return takedown_json
 
@@ -169,7 +167,7 @@ def get_attachment():
         "name": "constellation-brand.eml.msg",
         "length": 738816,
         "contentType": "application/octet-stream",
-        "created": "2024-10-04T20:48:23.620Z"
+        "created": "2024-10-04T20:48:23.620Z",
     }
 
 
@@ -303,8 +301,7 @@ def test_download_attachment_command(mocker, client: Client):
 def test_upload_download_attachment_command(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
-    upload_attachment(client,
-                      {"file_id": "test/file-sample.pdf", "takedown_id": "14718933-7fdf-484b-bd45-a873c8ac2fba"})
+    upload_attachment(client, {"file_id": "test/file-sample.pdf", "takedown_id": "14718933-7fdf-484b-bd45-a873c8ac2fba"})
 
 
 def test_test_module_command(mocker, client: Client):
@@ -341,8 +338,7 @@ def test_get_modified_remote_data(mocker, client: Client):
 def test_get_remote_data_command(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
-    response = get_remote_data_command(client,
-                                       {"id": "1f1fe26c-b310-415d-9c02-6212a692cbd7", "lastUpdate": "2020-09-22"})
+    response = get_remote_data_command(client, {"id": "1f1fe26c-b310-415d-9c02-6212a692cbd7", "lastUpdate": "2020-09-22"})
     assert response.mirrored_object is not None
 
 
@@ -350,9 +346,8 @@ def test_create_takedown_command_ratelimit(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
     try:
-        create_takedown(
-            client, {"brand_id": "rate_limit", "type": "impersonation",
-                     "target": "https://www.digitalshadowsresearch13.com/adobe"}
-        )
+        create_takedown(client, {"brand_id": "rate_limit", "type": "impersonation",
+                                 "target": "https://www.digitalshadowsresearch13.com/adobe"},
+                        )
     except Exception:
         pass
