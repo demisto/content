@@ -18,13 +18,13 @@ To use a self-configured Azure application, you need to add a [new Azure App Reg
 Follow these steps for an Authorization Code configuration:
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
-2. choose the 'Authorization Code' option in the ***Authentication Type*** parameter.
+2. choose the **Authorization Code** option in the ***Authentication Type*** parameter.
 3. Enter your Client/Application ID in the ***Application ID*** parameter. 
 4. Enter your Client Secret in the ***Client Secret*** parameter.
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
 7. Save the instance.
-8. Run the **!azure-waf-generate-login-url** command in the War Room and follow the instruction.
+8. Run the ***!azure-waf-generate-login-url*** command in the War Room and follow the instruction.
 9. Run the ***!azure-waf-auth-test*** command - a 'Success' message should be printed to the War Room.
  
 
@@ -34,7 +34,7 @@ to link Azure SQL Management with Cortex XSOAR.
 
 In order to connect to Azure Web Application Firewall using either the Cortex XSOAR Azure or Self Deployed Azure application:
 1. Fill in the required parameters
-2. Choose the 'Device Code' option in the ***Authentication Type*** parameter.
+2. Choose the **Device Code** option in the ***Authentication Type*** parameter.
 3. Run the ***!azure-waf-auth-start*** command.
 4. Follow the instructions that appear.
 5. Run the ***!azure-waf-auth-complete*** command.
