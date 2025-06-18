@@ -4544,6 +4544,10 @@ def update_remote_system_command(
                 demisto.debug(f"Updating the issue with the following issue fields: {issue_fields}")
                 client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
                 demisto.debug("Updated the fields of the remote system successfully")
+            else:
+                issue_fields = {"fields": delta}
+                demisto.debug("No fields to mirror. Attempting manual request.")
+                client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
 
         else:
             demisto.debug(f"Skipping updating remote incident fields [{remote_id}] as it is neither new nor changed")

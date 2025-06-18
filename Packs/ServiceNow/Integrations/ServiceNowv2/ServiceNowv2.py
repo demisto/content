@@ -2980,13 +2980,13 @@ def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> Com
     demisto.debug(f"Raw ticket data for preview: {ticket_data}")
 
     qa_preview_data = {
-        "id": ticket_data.get("number"),
-        "title": ticket_data.get("short_description"),
-        "description": ticket_data.get("description"),
-        "status": ticket_data.get("state"),
-        "assignee": ticket_data.get("assigned_to"),
-        "creation_date": ticket_data.get("sys_created_on"),
-        "severity": ticket_data.get("priority"),
+        "id": ticket_data.get("number",{}).get('display_value'),
+        "title": ticket_data.get("short_description", {}).get('display_value'),
+        "description": ticket_data.get("description", {}).get('display_value'),
+        "status": ticket_data.get("state",{}).get('display_value'),
+        "assignee": ticket_data.get("assigned_to", {}).get('display_value'),
+        "creation_date": ticket_data.get("sys_created_on", {}).get('display_value'),
+        "severity": ticket_data.get("priority", {}).get('display_value'),
     }
     qa_preview = QuickActionPreview(**qa_preview_data)
 
