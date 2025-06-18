@@ -1160,24 +1160,31 @@ def list_external_websites_command(client: Client, args: Dict[str, Any]) -> Comm
         if hosts
         else "No Results"
     )
-    command_results = CommandResults(
-        outputs_prefix="ASM", outputs_key_field="", raw_response=response, readable_output=human_readable
+
+    command_results = []
+    website_results = CommandResults(
+        outputs_prefix="ASM.ExternalWebsite", outputs_key_field="", raw_response=response, readable_output=human_readable
     )
 
-    outputs = {}
-    if response.get("reply", {}).get("websites", None):
-        outputs["ExternalWebsite"] = response.get("reply", {}).get("websites", None)
-        outputs["ExternalWebsiteReply"] = {}
+    if outputs := response.get("reply", {}).get("websites", None):
+        reply_results = CommandResults(
+            outputs_prefix="ASM.ExternalWebsiteReply", outputs_key_field="", readable_output=None, replace_existing=True
+        )
+        reply_outputs = {}
         if response.get("reply", {}).get("next_page_token", None):
-            outputs["ExternalWebsiteReply"]["NextPageToken"] = response.get("reply", {}).get("next_page_token")
+            reply_outputs["NextPageToken"] = response.get("reply", {}).get("next_page_token")
         if response.get("reply", {}).get("total_count", None):
-            outputs["ExternalWebsiteReply"]["TotalCount"] = response.get("reply", {}).get("total_count")
+            reply_outputs["TotalCount"] = response.get("reply", {}).get("total_count")
         if response.get("reply", {}).get("result_count", None):
-            outputs["ExternalWebsiteReply"]["ResultCount"] = response.get("reply", {}).get("result_count")
-        command_results.outputs = outputs
-    else:
-        outputs = None
-        command_results.outputs = outputs
+            reply_outputs["ResultCount"] = response.get("reply", {}).get("result_count")
+        if reply_outputs:
+            reply_results.outputs = reply_outputs
+            reply_results.raw_response = reply_outputs
+
+        website_results.outputs = outputs
+        command_results.append(website_results)
+        command_results.append(reply_results)
+
     return command_results
 
 
