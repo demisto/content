@@ -1,20 +1,12 @@
 import email
 import hashlib
-import json
-import logging
-import os
 import subprocess
-import sys
-import traceback
-import warnings
 from email import _header_value_parser as parser
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
 from multiprocessing import Process
 from xml.sax import SAXParseException
-
 import chardet
-import dateparser
 import demistomock as demisto  # noqa: F401
 import exchangelib
 from CommonServerPython import *  # noqa: F401

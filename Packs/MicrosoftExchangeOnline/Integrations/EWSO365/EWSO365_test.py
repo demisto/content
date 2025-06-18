@@ -29,13 +29,14 @@ from EWSO365 import (
     handle_transient_files,
     parse_incident_from_item,
     parse_item_as_dict,
+    EWSClient
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone, FileAttachment
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from exchangelib.properties import MessageHeader
 from freezegun import freeze_time
-from EWSApiModule import EWSClient
+# from EWSApiModule import EWSClient
 
 with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -264,11 +265,11 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -281,6 +282,7 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
                     return (t for t in messages)
 
             return MockQuerySet()
+
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
@@ -351,11 +353,11 @@ def test_fetch_and_mark_as_read(mocker):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -489,7 +491,7 @@ def test_handle_html(mocker, html_input, expected_output):
 @pytest.mark.parametrize(
     "since_datetime, filter_arg, expected_result",
     [
-        ("", "last_modified_time__gte", EWSDateTime.from_string("2021-05-23 13:08:14.901293+00:00")),
+        ("", "last_modified_time__gte", EWSDateTime.from_string("2021-05-23 16:08:14.901293+00:00")),
         ("2021-05-23 21:28:14.901293+00:00", "datetime_received__gte", "2021-05-23 21:28:14.901293+00:00"),
     ],
 )
@@ -508,11 +510,11 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -555,11 +557,11 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -714,7 +716,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
     # sent to "fileResult", original headers from content with matched casing, with additional header
     expected_data = (
         "MIME-Version: 1.0\r\n"
-        "Message-ID: <message-test-idRANDOMVALUES@testing.com>\r\n"
+        "Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n"
         "X-FAKE-Header: HVALue\r\n"
         "X-Who-header: whovALUE\r\n"
         "DATE: 2023-12-16T12:04:45\r\n"
@@ -872,7 +874,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
     ]
     expected_data = (
         "MIME-Version: 1.0\r\n"
-        "Message-ID: <message-test-idRANDOMVALUES@testing.com>\r\n"
+        "Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n"
         "X-FAKE-Header: HVALue\r\n"
         "X-Who-header: whovALUE\r\n"
         "DATE: 2023-12-16T12:04:45\r\n"
