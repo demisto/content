@@ -29,7 +29,6 @@ from EWSO365 import (
     handle_transient_files,
     parse_incident_from_item,
     parse_item_as_dict,
-    EWSClient
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone, FileAttachment
 from exchangelib.attachments import AttachmentId, ItemAttachment
