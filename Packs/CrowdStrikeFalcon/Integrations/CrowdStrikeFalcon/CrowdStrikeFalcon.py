@@ -1624,11 +1624,17 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         params["filter"] = f"first_behavior:>'{last_behavior_time}'"
 
     if not LEGACY_VERSION:
-        endpoint_url = "alerts/queries/alerts/v2?filter=product"
-        text_to_encode = ":'epp'+type:'ldt'"
+        # This value similar to the filter argument defaultvalue
+        default_filter = "product:'epp'+type:'ldt'"
+        endpoint_url = "alerts/queries/alerts/v2?filter="
+        
+        text_to_encode = default_filter
         # in the new version we send only the filter_arg argument as encoded string without the params
         if filter_arg:
-            text_to_encode += f"+{filter_arg}"
+            if filter_arg is not default_filter and "product" not in filter_arg and "type" not in filter_arg:
+                text_to_encode += f"+{filter_arg}"
+            else:
+                text_to_encode = filter_arg
         endpoint_url += urllib.parse.quote_plus(text_to_encode)
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
         return http_request("GET", endpoint_url, {"sort": "created_timestamp.asc"})
