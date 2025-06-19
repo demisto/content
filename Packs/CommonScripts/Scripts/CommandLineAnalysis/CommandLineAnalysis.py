@@ -17,7 +17,7 @@ KNOWN_POWERSHELL_COMMANDS_BREAKPOINTS = [
     "powershell",
     "New-Object",
     " ",
-    "Windows.Forms"
+    "Windows.Forms",
 ]
 
 
@@ -227,48 +227,45 @@ SUSPICIOUS_COMMAND_PATTERNS = [
     r"(?i)opacity=0\.0[0-9]?\d*",
 ]
 
+
 def check_for_obfuscation(command_line: str) -> tuple[dict[str, bool], str]:
     """
-        Checks for various obfuscation techniques in a command line string.
-        
-        This function analyzes the given command line string for common obfuscation techniques
-        such as base64 encoding, double encoding, reversed text, and other obfuscation methods.
-        
-        Args:
-            command_line (str): The command line string to analyze.
-            
-        Returns:
-            tuple: A tuple containing two elements:
-                - A dictionary of flags indicating which obfuscation techniques were detected.
-                - The deobfuscated/decoded command line string.
-        """
+    Checks for various obfuscation techniques in a command line string.
+
+    This function analyzes the given command line string for common obfuscation techniques
+    such as base64 encoding, double encoding, reversed text, and other obfuscation methods.
+
+    Args:
+        command_line (str): The command line string to analyze.
+
+    Returns:
+        tuple: A tuple containing two elements:
+            - A dictionary of flags indicating which obfuscation techniques were detected.
+            - The deobfuscated/decoded command line string.
+    """
 
     flags = {
         "base64_encoding": False,
         "obfuscated": False,
         "double_encoding": False,
-        "reversed": False,
+        "reversed_command": False,
     }
 
     parsed_command_line = command_line
 
-    reversed_command_line, flags["reversed"] = reverse_command(parsed_command_line)
+    reversed_command_line, flags["reversed_command"] = reverse_command(parsed_command_line)
 
-    if flags["reversed"]:
-        parsed_command_line = (
-            reversed_command_line  # Use the reversed command line for further analysis
-        )
+    if flags["reversed_command"]:
+        parsed_command_line = reversed_command_line  # Use the reversed command line for further analysis
 
-    decoded_command_line, flags["base64_encoding"], flags["double_encoding"] = (
-        identify_and_decode_base64(parsed_command_line)
-    )
+    decoded_command_line, flags["base64_encoding"], flags["double_encoding"] = identify_and_decode_base64(parsed_command_line)
 
     if flags["double_encoding"] or flags["base64_encoding"]:
         parsed_command_line = decoded_command_line
 
     decoded_command_line, flags["obfuscated"] = encode_hex_and_oct_chars(parsed_command_line)
     decoded_command_line, flags["obfuscated"] = concat_multiple_strings(parsed_command_line)
-    
+
     if flags["obfuscated"]:
         parsed_command_line = decoded_command_line
 
@@ -329,24 +326,24 @@ def concat_multiple_strings(command_line: str):
 
     if re.search(r"\"\s*\+\s*\"", command_line):
         return re.sub(r"\"(.*?)\"\s*\+", r"\1", command_line), True
-    
+
     else:
         return command_line, False
 
 
 def detect_final_powershell_script(data: str) -> bool:
     """
-        Determines if the data contains known PowerShell command patterns.
-        
-        This function checks if the given string contains any known PowerShell commands 
-        that would indicate the data is a PowerShell script and not an encoded payload.
-        
-        Args:
-            data (str): The string to analyze for PowerShell commands.
-            
-        Returns:
-            bool: True if PowerShell commands are detected, False otherwise.
-        """
+    Determines if the data contains known PowerShell command patterns.
+
+    This function checks if the given string contains any known PowerShell commands
+    that would indicate the data is a PowerShell script and not an encoded payload.
+
+    Args:
+        data (str): The string to analyze for PowerShell commands.
+
+    Returns:
+        bool: True if PowerShell commands are detected, False otherwise.
+    """
 
     for command in KNOWN_POWERSHELL_COMMANDS_BREAKPOINTS:
         if command.lower() in data.lower():
@@ -361,21 +358,20 @@ def detect_final_powershell_script(data: str) -> bool:
 def try_decode(data: bytes) -> str:
     """
     Try decoding the data with various encoding methods.
-    
+
     This function attempts to decode binary data using different encodings:
     1. If data starts with 'MZ' (PE file signature), it decodes as UTF-8 after removing null bytes
     2. If data contains null bytes, it tries UTF-16-LE decoding
     3. Otherwise, it uses UTF-8 decoding
-    
+
     Args:
         data (bytes): The binary data to decode
-        
+
     Returns:
         str: The decoded string, or an empty string if decoding fails
     """
 
     try:
-
         if data.startswith(b"MZ"):
             decoded_str = data.replace(b"\x00", b"").decode("utf-8", errors="ignore")
 
@@ -396,14 +392,14 @@ def try_decode(data: bytes) -> str:
 def decode_base64_until_final_script(encoded_str: str) -> tuple[str, int]:
     """
     Decode a base64 string until it reaches the final PowerShell script.
-    
+
     This function iteratively decodes a base64 encoded string until it can no longer be
     decoded or until it identifies a final PowerShell script. It keeps track of how many
     decoding iterations were performed.
-    
+
     Args:
         encoded_str (str): The base64 encoded string to decode
-        
+
     Returns:
         tuple[str, int]: A tuple containing the decoded string and the number of decoding iterations
     """
@@ -411,10 +407,14 @@ def decode_base64_until_final_script(encoded_str: str) -> tuple[str, int]:
     counter = 0
 
     while not detect_final_powershell_script(decoded_str):
+        initial_string = decoded_str
+
         try:
             counter += 1
             decoded_bytes = base64.b64decode(decoded_str)
             decoded_str = try_decode(decoded_bytes)
+            if not decoded_str:
+                return initial_string, counter - 1
 
         except Exception:
             break
@@ -425,17 +425,17 @@ def decode_base64_until_final_script(encoded_str: str) -> tuple[str, int]:
 def is_base64(possible_base64: str | bytes) -> bool:
     """
     Validates if the provided string is a Base64-encoded string.
-    
+
     This function performs multiple checks to determine if a string is valid Base64:
     1. Verifies the string contains only valid Base64 characters (A-Z, a-z, 0-9, +, /, =)
     2. Ensures the length is a multiple of 4 (correct padding)
     3. For strings of length 20 or less, requires that the string contains '+', '/' or '='
        as an additional heuristic to reduce false positives
     4. Attempts strict base64 decoding which validates the content
-    
+
     Args:
         possible_base64 (str | bytes): The string or bytes to validate as Base64
-        
+
     Returns:
         bool: True if the input is valid Base64, False otherwise
     """
@@ -464,36 +464,34 @@ def is_base64(possible_base64: str | bytes) -> bool:
 
 def handle_powershell_base64(command_line: str) -> tuple[str, bool, bool]:
     """
-        Detects and decodes Base64-encoded PowerShell commands.
-        
-        This function searches for PowerShell's -EncodedCommand parameter and decodes
-        any Base64-encoded commands found. It can detect multiple levels of encoding.
-        
-        Args:
-            command_line (str): The PowerShell command line to analyze
-            
-        Returns:
-            tuple[str, bool, bool]: A tuple containing:
-                - The decoded command line
-                - A boolean indicating if encoding was detected
-                - A boolean indicating if double encoding was detected
-        """
-    
+    Detects and decodes Base64-encoded PowerShell commands.
+
+    This function searches for PowerShell's -EncodedCommand parameter and decodes
+    any Base64-encoded commands found. It can detect multiple levels of encoding.
+
+    Args:
+        command_line (str): The PowerShell command line to analyze
+
+    Returns:
+        tuple[str, bool, bool]: A tuple containing:
+            - The decoded command line
+            - A boolean indicating if encoding was detected
+            - A boolean indicating if double encoding was detected
+    """
 
     double_encoded_detected = False
     encoded = False
     num_of_encodings = 0
     result = command_line
     powershell_encoded_base64 = re.compile(
-        r'''
+        r"""
         -(?:e(?:n(?:c(?:o(?:d(?:e(?:d(?:C(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?)?)?)?)?)?)?)?)\s+
         ["']?([A-Za-z0-9+/]{4,}(?:={0,2}))["']?
-        ''',
-        re.IGNORECASE | re.VERBOSE
+        """,
+        re.IGNORECASE | re.VERBOSE,
     )
 
     while matches := powershell_encoded_base64.findall(result):
-
         demisto.debug(f"Detected -encodedCommand matches: {matches}")
 
         valid_matches = [match for match in matches if is_base64(match)]
@@ -527,14 +525,14 @@ def handle_powershell_base64(command_line: str) -> tuple[str, bool, bool]:
 def handle_general_base64(command_line: str) -> tuple[str, bool, bool]:
     """
     Handles the general case of decoding Base64 in a command line.
-    
+
     This function searches for any Base64-encoded strings in the given command line
     and attempts to decode them. It handles multiple encoding layers and keeps track
     of whether double encoding was detected.
-    
+
     Args:
         command_line (str): The command line string to analyze
-        
+
     Returns:
         tuple[str, bool, bool]: A tuple containing:
             - The decoded command line
@@ -582,11 +580,11 @@ def handle_general_base64(command_line: str) -> tuple[str, bool, bool]:
 def identify_and_decode_base64(command_line: str) -> tuple[str, bool, bool]:
     """
     Identifies and decodes all Base64 occurrences in a command line.
-    
+
     This function checks if "powershell" is in the command line and calls the
     appropriate handler function: handle_powershell_base64 for PowerShell commands
     or handle_general_base64 for other command types.
-    
+
     Returns:
         tuple[str, bool, bool]: A tuple containing:
             - The command line with decoded content
@@ -604,35 +602,35 @@ def identify_and_decode_base64(command_line: str) -> tuple[str, bool, bool]:
 def reverse_command(command_line: str) -> tuple[str, bool]:
     """
     Detects if the command line contains a reversed PowerShell string and reverses it.
-    
+
     Args:
         command_line (str): The command line to check for reversed PowerShell strings.
-        
+
     Returns:
         tuple[str, bool]: A tuple containing:
             - The command line, reversed if it contained a reversed PowerShell string
             - A boolean indicating if a reversal was performed
     """
-    
+
     if "llehsrewop" in command_line.lower():
         return command_line[::-1], True
     return command_line, False
 
 
-def check_suspicious_macos_applescript_commands(command_line: str) -> dict[str, list[list[str]]]:
+def check_macOS_suspicious_commands(command_line: str) -> dict[str, list[list[str]]]:
     """
     Checks for suspicious macOS/AppleScript commands by grouping multiple sets
     of required substrings under a category. If all required substrings appear,
     that combination is recorded under its category.
-    
+
     Args:
         command_line (str): The command line to check for suspicious macOS/AppleScript commands.
-        
+
     Returns:
-        dict[str, list[list[str]]]: A dictionary where keys are categories of suspicious behavior 
+        dict[str, list[list[str]]]: A dictionary where keys are categories of suspicious behavior
                                     and values are lists of matched substring combinations.
     """
-    
+
     text = command_line.lower()
 
     # Define categories and the sets of required substrings belonging to each
@@ -669,14 +667,14 @@ def check_suspicious_macos_applescript_commands(command_line: str) -> dict[str, 
 def check_malicious_commands(command_line: str) -> list[str]:
     """
     Checks for known malicious commands or patterns in the given command line.
-    
+
     Args:
         command_line (str): The command line string to analyze.
-        
+
     Returns:
         list[str]: A list of matched malicious commands or patterns found in the command line.
     """
-    
+
     matches: list[str] = []
 
     demisto.debug("Checking for malicious commands.")
@@ -690,10 +688,10 @@ def check_malicious_commands(command_line: str) -> list[str]:
 def check_reconnaissance_temp(command_line: str) -> list[str]:
     """
     Checks for reconnaissance patterns in the given command line.
-    
+
     Args:
         command_line (str): The command line string to analyze.
-        
+
     Returns:
         list[str]: A list of matched reconnaissance patterns found in the command line.
     """
@@ -710,14 +708,14 @@ def check_reconnaissance_temp(command_line: str) -> list[str]:
 def check_windows_temp_paths(command_line: str) -> list[str]:
     """
     Identifies given occurrences of Windows temporary paths in the given command line.
-    
+
     This function scans the command line for common Windows temporary directory paths
     such as %TEMP%, %TMP%, AppData\\Local\\Temp, or Windows\\Temp. Threat actors often
     use these locations to store and execute malicious payloads.
-    
+
     Args:
         command_line (str): The command line string to analyze.
-        
+
     Returns:
         list[str]: A list of matched temporary paths found in the command line.
     """
@@ -734,44 +732,42 @@ def check_windows_temp_paths(command_line: str) -> list[str]:
 def check_suspicious_content(command_line: str) -> list[str]:
     """
     Scans the command line for suspicious content patterns.
-    
+
     This function examines the command line for potentially malicious patterns defined
     in SUSPICIOUS_COMMAND_PATTERNS. These patterns could indicate suspicious activities
     such as obfuscation, encoded commands, or other evasion techniques commonly used
     in malicious scripts.
-    
+
     Args:
         command_line (str): The command line string to analyze.
-        
+
     Returns:
         list[str]: A list of suspicious patterns found in the command line.
     """
-    
 
     demisto.debug("Checking for suspicious content.")
 
     matches: list[str] = []
     for pattern in SUSPICIOUS_COMMAND_PATTERNS:
-        matches.extend(
-            match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE)
-        )
+        matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
     return matches
+
 
 def check_amsi(command_line: str) -> list[str]:
     """
     Detects potential AMSI (Antimalware Scan Interface) bypass techniques in a command line.
-    
+
     This function searches for patterns associated with AMSI bypass attempts, which are
     commonly used by attackers to evade antimalware detection when executing PowerShell code.
-    
+
     Args:
         command_line (str): The command line text to analyze
-        
+
     Returns:
         list[str]: A list of matched AMSI bypass patterns found in the command line
     """
-    
+
     demisto.debug("Checking for amsi patterns.")
 
     matches: list[str] = []
@@ -784,21 +780,19 @@ def check_amsi(command_line: str) -> list[str]:
 def check_mixed_case_powershell(command_line: str) -> list[str]:
     """
     Detects mixed case obfuscation of the word 'powershell' in a command line.
-    
+
     This function searches for variations of the word 'powershell' that use mixed case
     characters (e.g. PoWeRsHeLL), which is a common obfuscation technique used to evade
     detection. Normal legitimate versions of the word are excluded from the results.
-    
+
     Args:
         command_line (str): The command line text to analyze
-        
+
     Returns:
         list[str]: A list of matched obfuscated 'powershell' strings
     """
-    
-    mixed_case_powershell_regex = re.compile(
-        r"\b(?=.*[a-z])(?=.*[A-Z])[pP][oO][wW][eE][rR][sS][hH][eE][lL]{2}(\.exe)?\b"
-    )
+
+    mixed_case_powershell_regex = re.compile(r"\b(?=.*[a-z])(?=.*[A-Z])[pP][oO][wW][eE][rR][sS][hH][eE][lL]{2}(\.exe)?\b")
 
     demisto.debug("Checking for mixed case powershell usage.")
 
@@ -811,17 +805,13 @@ def check_mixed_case_powershell(command_line: str) -> list[str]:
         "powershell.exe",
     }
 
-    return [
-        match.group()
-        for match in mixed_case_powershell_regex.finditer(command_line)
-        if match.group() not in exclusions
-    ]
+    return [match.group() for match in mixed_case_powershell_regex.finditer(command_line) if match.group() not in exclusions]
 
 
 def check_powershell_suspicious_patterns(command_line: str) -> list[str]:
     """
     Detects suspicious PowerShell patterns in a given command line.
-    
+
     This function searches for potentially malicious PowerShell patterns such as:
     - Obfuscation techniques
     - Encoded commands
@@ -829,15 +819,14 @@ def check_powershell_suspicious_patterns(command_line: str) -> list[str]:
     - Hidden window usage
     - Known malicious cmdlets and parameters
     - Script execution with suspicious flags
-    
+
     Args:
         command_line (str): The command line text to analyze
-        
+
     Returns:
         list[str]: A list of matched suspicious PowerShell patterns
     """
-    
-    
+
     demisto.debug("Checking for powershell suspicious patterns.")
 
     matches: list[str] = []
@@ -850,7 +839,7 @@ def check_powershell_suspicious_patterns(command_line: str) -> list[str]:
 def check_credential_dumping(command_line: str) -> list[str]:
     """
     Detects credential dumping attempts from a given command line.
-    
+
     This function searches for patterns that indicate credential dumping activities such as:
     - LSASS dumping techniques
     - Mimikatz commands and parameters
@@ -858,10 +847,10 @@ def check_credential_dumping(command_line: str) -> list[str]:
     - SAM/SYSTEM/SECURITY file access
     - Windows Credential Editor (WCE) usage
     - Other known credential extraction tools and commands
-    
+
     Args:
         command_line (str): The command line text to analyze
-        
+
     Returns:
         list[str]: A list of matched suspicious credential dumping patterns
     """
@@ -870,9 +859,7 @@ def check_credential_dumping(command_line: str) -> list[str]:
 
     matches: list[str] = []
     for pattern in CREDENTIALS_DUMPING:
-        matches.extend(
-            match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE)
-        )
+        matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
 
     return matches
 
@@ -880,7 +867,7 @@ def check_credential_dumping(command_line: str) -> list[str]:
 def check_lateral_movement(command_line: str) -> list[str]:
     """
     Detects techniques and commands commonly used for lateral movement in a network.
-    
+
     This function searches for patterns that indicate lateral movement attempts such as:
     - Remote access tools (PsExec, WMI, WinRM)
     - Remote file copy techniques
@@ -888,14 +875,13 @@ def check_lateral_movement(command_line: str) -> list[str]:
     - Remote scheduled task creation
     - Use of administrative shares
     - Pass-the-hash or pass-the-ticket techniques
-    
+
     Args:
         command_line (str): The command line text to analyze
-        
+
     Returns:
         list[str]: A list of matched suspicious lateral movement patterns
     """
-
 
     demisto.debug("Checking for lateral movement patterns.")
 
@@ -909,7 +895,7 @@ def check_lateral_movement(command_line: str) -> list[str]:
 def check_data_exfiltration(command_line: str) -> list[str]:
     """
     Detects potential data exfiltration techniques from a given command line.
-    
+
     This function searches for patterns that indicate data exfiltration attempts such as:
     - Data compression (zip, rar, tar)
     - Network data transfer commands (curl, wget, scp)
@@ -917,10 +903,10 @@ def check_data_exfiltration(command_line: str) -> list[str]:
     - Data staging before exfiltration
     - DNS/ICMP tunneling techniques
     - Usage of non-standard ports or protocols for data transfer
-    
+
     Args:
         command_line (str): The command line text to analyze
-        
+
     Returns:
         list[str]: A list of matched suspicious data exfiltration patterns
     """
@@ -937,13 +923,13 @@ def check_data_exfiltration(command_line: str) -> list[str]:
 def check_suspicious_mshta(command_line: str) -> list[str]:
     """
     Detects suspicious mshta usage in a given command line.
-    
-    This function searches for patterns that indicate potential abuse of 
+
+    This function searches for patterns that indicate potential abuse of
     Microsoft HTML Application Host (mshta.exe) for malicious purposes.
-    
+
     Args:
         command_line (str): The command line text to analyze
-        
+
     Returns:
         list[str]: A list of matched suspicious mshta patterns
     """
@@ -961,24 +947,24 @@ def check_suspicious_mshta(command_line: str) -> list[str]:
 def check_social_engineering(command_line: str) -> list[str]:
     """
     Detects social engineering tactics in a given command line.
-    
+
     This function searches for patterns that indicate social engineering attempts, such as:
     - Use of checkmark emojis that might be used to suggest legitimacy
     - Comment characters in mshta commands that may be used to trick users
-    
+
     Args:
         command_line (str): The command line text to analyze
-        
+
     Returns:
         list[str]: A list of matched social engineering patterns
     """
-    
+
     checkmark_emojis = [
         "\u2705",  # ✅ Check Mark Button
         "\u2714",  # ✔️ Heavy Check Mark
         "\u2611",  # ☑️ Ballot Box with Check
-        "\u1F5F8",  # 🗸 Light Check Mark
-        "\u1F5F9",  # 🗹 Ballot Box with Bold Check
+        "\u1f5f8",  # 🗸 Light Check Mark
+        "\u1f5f9",  # 🗹 Ballot Box with Bold Check
     ]
 
     demisto.debug("Checking for social engineering patterns in command.")
@@ -994,24 +980,21 @@ def check_social_engineering(command_line: str) -> list[str]:
     return []
 
 
-def check_custom_patterns(
-    command_line: str,
-    custom_patterns: list[str] | None = None) -> list[str]:
-    
+def check_custom_patterns(command_line: str, custom_patterns: list[str] | None = None) -> list[str]:
     """
     Checks for user-defined patterns in a given command line.
-    
+
     This function matches custom regular expression patterns against the command line
     text to identify specific patterns of interest defined by the user.
-    
+
     Args:
         command_line (str): The command line text to analyze
         custom_patterns (list[str] | None, optional): List of regex patterns to match. Defaults to None.
-        
+
     Returns:
         list[str]: A list of matched patterns from the command line
     """
-    
+
     matches: list[str] = []
     if custom_patterns:
         # Ensure custom_patterns is a list
@@ -1025,38 +1008,36 @@ def check_custom_patterns(
 def extract_indicators(command_line: str) -> dict[str, list[str]]:
     """
     Extract various indicators (IP addresses, domains, URLs, etc.) from the command line.
-        
-    This function uses the Demisto extractIndicators command to identify and extract 
+
+    This function uses the Demisto extractIndicators command to identify and extract
     various indicators from the command line text. It filters out reserved IPs and
     special cases like '::'.
-    
+
     Args:
         command_line (str): The command line text to extract indicators from
-        
+
     Returns:
         dict[str, list[str]]: A dictionary mapping indicator types to lists of extracted values
     """
-    
-    
+
     def is_reserved_ip(ip_str: str) -> bool:
         """
         Check if an IP address is reserved (non-global).
-        
+
         Args:
             ip_str (str): The IP address as a string
-            
+
         Returns:
             bool: True if the IP is reserved (not globally routable), False otherwise
         """
-        
+
         try:
             ip_obj = ipaddress.ip_address(ip_str)
             return not ip_obj.is_global
-        
+
         except ValueError:
             return False
-    
-    
+
     extracted_by_type: dict[str, list[str]] = {}
 
     demisto.debug("Attempting to extract indicators from command line.")
@@ -1096,7 +1077,7 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
     """
     Aggregates findings from the analysis and assigns a score (0-100).
     Incorporates bonuses for certain risky combinations.
-    
+
     The scoring algorithm works as follows:
     1. Each detection adds points based on predefined weights (e.g., obfuscation techniques, malicious commands)
     2. Findings are categorized into high-risk and medium-risk groups
@@ -1104,7 +1085,7 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
     4. Multiple medium-risk findings trigger smaller bonus points
     5. A final score is calculated for both original and decoded command lines
     6. The score is normalized to a 0-100 scale, with higher scores indicating more suspicious activity
-    
+
     Returns:
         dict: Contains the calculated scores and detailed findings for both original and decoded command lines
     """
@@ -1119,7 +1100,7 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
         "amsi_techniques": 25,
         "malicious_commands": 25,
         "custom_patterns": 25,
-        "suspicious_macos_applescript_commands": 25,
+        "macOS_suspicious_commands": 25,
         "suspicious_mshta": 25,
         "social_engineering": 25,
         "data_exfiltration": 15,
@@ -1145,7 +1126,7 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
         "powershell_suspicious_patterns",
         "credential_dumping",
         "reversed_command",
-        "suspicious_macos_applescript_commands",
+        "macOS_suspicious_commands",
         "suspicious_mshta",
         "custom_patterns",
         "social_engineering",
@@ -1190,9 +1171,7 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
                 if isinstance(value, list) and len(value) > 0:
                     # Add weight once, report how many instances were found
                     context_score += weights.get(key, 0)
-                    context_findings.append(
-                        f"{key.replace('_', ' ')} detected ({len(value)} instances)"
-                    )
+                    context_findings.append(f"{key.replace('_', ' ')} detected ({len(value)} instances)")
                 else:
                     # Not a list or empty list, just count once
                     context_score += weights.get(key, 0)
@@ -1239,25 +1218,23 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
     return {
         "score": int(round(normalized_score, 0)),
         "findings": findings,
-        "risk": risk,   }
+        "risk": risk,
+    }
 
 
-def analyze_command_line(
-    command_line: str,
-    custom_patterns: list[str] | None = None) -> dict[str, Any]:
-    
+def analyze_command_line(command_line: str, custom_patterns: list[str] | None = None) -> dict[str, Any]:
     """
     Analyzes a command line string for potential security threats and suspicious patterns.
-    
+
     This function performs a comprehensive analysis of the provided command line, checking for
     various indicators of malicious activity including obfuscation techniques, suspicious commands,
     credential dumping attempts, lateral movement, and more.
-    
+
     Args:
         command_line (str): The command line string to analyze.
         custom_patterns (list[str] | None, optional): Additional custom patterns to check for in the command line.
                                                      Defaults to None.
-    
+
     Returns:
         dict[str, Any]: Analysis results containing:
             - original_command: The input command line string
@@ -1298,8 +1275,9 @@ def analyze_command_line(
     for check_name, check in checks.items():
         results["analysis"]["original"][check_name] = check(parsed_command_line)
 
-    results["analysis"]["custom_patterns"] = check_custom_patterns(parsed_command_line,
-                                                                   custom_patterns) if custom_patterns else []
+    results["analysis"]["custom_patterns"] = (
+        check_custom_patterns(parsed_command_line, custom_patterns) if custom_patterns else []
+    )
 
     # Only set "base64_encoding" if we actually decoded something
 
@@ -1309,9 +1287,7 @@ def analyze_command_line(
 
     # Handle macOS
     if "osascript" in parsed_command_line.lower():
-        results["analysis"]["original"]["macOS_suspicious_commands"] = (
-            check_suspicious_macos_applescript_commands(parsed_command_line)
-        )
+        results["analysis"]["original"]["macOS_suspicious_commands"] = check_macOS_suspicious_commands(parsed_command_line)
 
     # results["analysis"]["original"] = original_analysis
     score_details = calculate_score(results)
@@ -1337,7 +1313,7 @@ def main():
     for result in results:
         if result.get("parsed_command", None) != result["original_command"]:
             parsed_command = f"**Decoded Command**: {result['parsed_command']}\n"
-            
+
         else:
             parsed_command = None
 
