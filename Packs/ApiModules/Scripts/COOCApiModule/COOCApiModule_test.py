@@ -177,7 +177,7 @@ def test_health_check_error_to_dict():
     # Verify dictionary structure and values
     assert permission_error_dict["account_id"] == "test-account-id"
     assert permission_error_dict["connector_id"] == "test-connector-id"
-    assert permission_error_dict["message"] == "Permission denied"
+    assert permission_error_dict["message"] == "test-account-id: Permission denied"
     assert permission_error_dict["error"] == ErrorType.PERMISSION_ERROR
     assert permission_error_dict["classification"] == HealthStatus.WARNING
 
