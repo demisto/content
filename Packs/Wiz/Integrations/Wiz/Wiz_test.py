@@ -1214,9 +1214,11 @@ def test_build_incidents_exception(mock_demisto):
     issue = {"id": "test-id"}
 
     with patch("Packs.Wiz.Integrations.Wiz.Wiz.translate_severity", side_effect=Exception("Test error")):
-        result = build_incidents(issue)
-        assert result == {}
-        mock_demisto.error.assert_called()
+        with pytest.raises(Exception) as exc_info:
+            build_incidents(issue)
+
+        # Verify the exception message contains the expected content
+        assert "build_incidents: Error processing issue test-id: Test error" in str(exc_info.value)
 
 
 # ===== VALIDATION TESTS =====

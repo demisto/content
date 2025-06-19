@@ -1658,23 +1658,24 @@ def checkAPIerrors(query, variables):
 
     demisto.info(f"Invoking the API with {json.dumps(data)}")
 
-    result = requests.post(url=URL, json=data, headers=HEADERS)
+    response = requests.post(url=URL, json=data, headers=HEADERS)
+    response_json = response.json()
 
-    demisto.info(f"Result is {result}")
-    demisto.info(f"Result Json is \n{result.json()}")
+    demisto.info(f"Wiz API response status code is {response.status_code}")
+    demisto.debug(f"The response is {response_json}")
 
     error_message = ""
-    if "errors" in result.json():
-        error_message = f"Wiz API error details: {get_error_output(result.json())}"
+    if "errors" in response_json:
+        error_message = f"Wiz API error details: {get_error_output(response_json)}"
 
-    elif "data" in result.json() and "issues" in result.json()["data"] and len(result.json()["data"]["issues"].get("nodes")) == 0:
+    elif "data" in response_json and "issues" in response_json["data"] and len(response_json["data"]["issues"].get("nodes")) == 0:
         demisto.info("No Issue(/s) available to fetch.")
 
     if error_message:
         demisto.error("An error has occurred using:\n" f"\tQuery: {query}\n" f"\tVariables: {variables}\n" f"\t{error_message}")
         demisto.error(error_message)
         raise Exception(f"{error_message}\nCheck 'server.log' instance file to get additional information")
-    return result.json()
+    return response_json
 
 
 def translate_severity(issue):
@@ -1729,16 +1730,7 @@ def build_incidents(issue):
 
     except Exception as e:
         issue_id = issue.get("id", "unknown") if issue else "unknown"
-        demisto.error(f"build_incidents: Error processing issue {issue_id}: {str(e)}")
-
-        import traceback
-
-        demisto.error(f"build_incidents: Traceback: {traceback.format_exc()}")
-
-        issue_str = str(issue)[:500] + "..." if len(str(issue)) > 500 else str(issue)
-        demisto.debug(f"build_incidents: Problematic issue data: {issue_str}")
-
-        return {}
+        raise Exception(f"build_incidents: Error processing issue {issue_id}: {str(e)}")
 
 
 def validate_wiz_enum_parameter(parameter_value, enum_class, parameter_name):
@@ -1756,15 +1748,7 @@ def validate_wiz_enum_parameter(parameter_value, enum_class, parameter_name):
     if not parameter_value:
         return ValidationResponse.create_success()
 
-    # Handle case where parameter_value is a comma-separated string
-    if isinstance(parameter_value, str) and "," in parameter_value:
-        values = [v.strip() for v in parameter_value.split(",")]
-    elif isinstance(parameter_value, str):
-        values = [parameter_value]
-    elif isinstance(parameter_value, list):
-        values = parameter_value
-    else:
-        values = [parameter_value]
+    values = argToList(parameter_value)
 
     valid_values = enum_class.values()
     invalid_values = [v for v in values if v not in valid_values]
@@ -2652,7 +2636,8 @@ def main():
             resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
             resource_name = demisto_args.get(WizInputParam.RESOURCE_NAME)
             resource = get_resource(resource_id=resource_id, resource_name=resource_name)
-            command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource, raw_response=resource)
+            command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", readable_output=resource,
+                                            outputs=resource, raw_response=resource)
             return_results(command_result)
 
         elif command == "wiz-get-resources":

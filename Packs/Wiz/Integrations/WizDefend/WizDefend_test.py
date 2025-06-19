@@ -3669,3 +3669,183 @@ def test_command_validation(demisto_command, example, mocker):
 
     # Otherwise, validation passed
     assert mock_return_results.called, f"Example should have called return_results: {example}"
+
+
+@pytest.mark.parametrize(
+    "input_params,expected_redacted_keys,expected_safe_keys",
+    [
+        # Test case 1: Basic credentials object
+        (
+            {
+                "credentials": {"identifier": "test-client-id", "password": "test-secret"},
+                "auth_endpoint": "https://auth.wiz.io/oauth/token",
+                "api_endpoint": "https://api.wiz.io/graphql",
+                "max_fetch": 100,
+            },
+            [],  # No top-level keys are redacted, only nested keys within credentials dict
+            ["credentials", "auth_endpoint", "api_endpoint", "max_fetch"],
+        ),
+        # Test case 2: Direct sensitive fields
+        (
+            {
+                "client_id": "direct-client-id",
+                "client_secret": "direct-secret",
+                "api_key": "test-api-key",
+                "auth_endpoint": "https://auth.wiz.io/oauth/token",
+                "platform": "AWS",
+            },
+            ["client_id", "client_secret", "api_key"],
+            ["auth_endpoint", "platform"],
+        ),
+        # Test case 3: Mixed sensitive and non-sensitive fields
+        (
+            {
+                "credentials": {"identifier": "test-id", "password": "test-pass"},
+                "service_account_id": "legacy-id",
+                "service_account_secret": "legacy-secret",
+                "token": "auth-token",
+                "type": "GENERATED THREAT",
+                "severity": "CRITICAL",
+                "first_fetch": "2 days",
+            },
+            ["service_account_id", "service_account_secret", "token"],  # Direct sensitive fields
+            ["credentials", "type", "severity", "first_fetch"],  # credentials dict is preserved but filtered
+        ),
+        # Test case 4: Nested dictionaries with mixed content
+        (
+            {
+                "credentials": {"identifier": "test-id", "password": "secret", "endpoint": "https://test.com"},
+                "config": {"timeout": 30, "retries": 3, "secret": "nested-secret"},
+                "platform": "AWS",
+            },
+            [],  # No top-level keys are redacted, only nested keys within dicts
+            ["credentials", "config", "platform"],
+        ),
+        # Test case 5: No sensitive data
+        (
+            {
+                "auth_endpoint": "https://auth.wiz.io/oauth/token",
+                "api_endpoint": "https://api.wiz.io/graphql",
+                "platform": "AWS",
+                "severity": "HIGH",
+                "max_fetch": 500,
+            },
+            [],
+            ["auth_endpoint", "api_endpoint", "platform", "severity", "max_fetch"],
+        ),
+        # Test case 6: Empty dictionary
+        (
+            {},
+            [],
+            [],
+        ),
+    ],
+)
+def test_get_safe_params_for_logging(mocker, input_params, expected_redacted_keys, expected_safe_keys):
+    """Test get_safe_params_for_logging filters sensitive data correctly"""
+    # Mock demisto.params to return our test parameters
+    mocker.patch.object(demisto, "params", return_value=input_params)
+
+    # Call the function
+    result = get_safe_params_for_logging()
+
+    # Verify all expected keys are present
+    expected_all_keys = set(expected_redacted_keys + expected_safe_keys)
+    assert set(result.keys()) == expected_all_keys, f"Expected keys {expected_all_keys}, got {set(result.keys())}"
+
+    # Verify redacted keys have placeholder value
+    for key in expected_redacted_keys:
+        if key in input_params:
+            # For direct sensitive fields (not nested in dictionaries)
+            assert result[key] == "***REDACTED***", f"Expected {key} to be redacted"
+
+    # Verify safe keys retain their original values or are properly filtered dictionaries
+    for key in expected_safe_keys:
+        if key in input_params:
+            if isinstance(input_params[key], dict):
+                # For dictionaries, verify structure is maintained but sensitive nested keys are redacted
+                assert isinstance(result[key], dict), f"Expected {key} to remain a dictionary"
+                for nested_key, nested_value in input_params[key].items():
+                    if nested_key in {"identifier", "password", "secret", "client_id", "client_secret"}:
+                        assert result[key][nested_key] == "***REDACTED***", f"Expected {key}.{nested_key} to be redacted"
+                    else:
+                        assert result[key][nested_key] == nested_value, f"Expected {key}.{nested_key} to retain original value"
+            else:
+                # For non-dictionary values, should be identical
+                assert result[key] == input_params[key], f"Expected {key} to retain original value"
+
+
+def test_get_safe_params_for_logging_with_nested_credentials(mocker):
+    """Test get_safe_params_for_logging handles nested credentials correctly"""
+    test_params = {
+        "credentials": {
+            "identifier": "sensitive-id",
+            "password": "sensitive-password",
+            "endpoint": "https://safe-endpoint.com",
+            "timeout": 30,
+        },
+        "auth_endpoint": "https://auth.wiz.io/oauth/token",
+        "platform": "AWS",
+    }
+
+    # Mock demisto.params
+    mocker.patch.object(demisto, "params", return_value=test_params)
+
+    # Call the function
+    result = get_safe_params_for_logging()
+
+    # Verify structure is maintained
+    assert "credentials" in result
+    assert isinstance(result["credentials"], dict)
+
+    # Verify sensitive nested fields are redacted
+    assert result["credentials"]["identifier"] == "***REDACTED***"
+    assert result["credentials"]["password"] == "***REDACTED***"
+
+    # Verify non-sensitive nested fields are preserved
+    assert result["credentials"]["endpoint"] == "https://safe-endpoint.com"
+    assert result["credentials"]["timeout"] == 30
+
+    # Verify top-level non-sensitive fields are preserved
+    assert result["auth_endpoint"] == "https://auth.wiz.io/oauth/token"
+    assert result["platform"] == "AWS"
+
+
+def test_get_safe_params_for_logging_empty_params(mocker):
+    """Test get_safe_params_for_logging with empty parameters"""
+    # Mock demisto.params to return empty dict
+    mocker.patch.object(demisto, "params", return_value={})
+
+    # Call the function
+    result = get_safe_params_for_logging()
+
+    # Verify result is empty dict
+    assert result == {}
+
+
+def test_get_safe_params_for_logging_preserves_non_dict_values(mocker):
+    """Test get_safe_params_for_logging preserves non-dictionary values correctly"""
+    test_params = {
+        "max_fetch": 100,
+        "platform": "AWS",
+        "enabled": True,
+        "timeout": 30.5,
+        "tags": ["tag1", "tag2"],
+        "secret": "should-be-redacted",
+    }
+
+    # Mock demisto.params
+    mocker.patch.object(demisto, "params", return_value=test_params)
+
+    # Call the function
+    result = get_safe_params_for_logging()
+
+    # Verify non-sensitive values are preserved with correct types
+    assert result["max_fetch"] == 100
+    assert result["platform"] == "AWS"
+    assert result["enabled"] is True
+    assert result["timeout"] == 30.5
+    assert result["tags"] == ["tag1", "tag2"]
+
+    # Verify sensitive value is redacted
+    assert result["secret"] == "***REDACTED***"

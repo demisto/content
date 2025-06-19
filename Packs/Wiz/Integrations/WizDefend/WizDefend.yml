@@ -558,4 +558,4 @@ script:
   type: python
 tests:
 - No tests
-fromversion: 6.10.0
+fromversion: 6.0.0

@@ -1308,7 +1308,6 @@ def fetch_incidents():
     last_run = get_last_run_time()
     api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
 
-    get_fetch_incidents_api_max_fetch(integration_settings_params.get(DemistoParams.MAX_FETCH))
     API_MAX_FETCH = get_fetch_incidents_api_max_fetch(integration_settings_params.get(DemistoParams.MAX_FETCH))
 
     wiz_detections = get_filtered_detections(
@@ -1425,15 +1424,7 @@ def validate_wiz_enum_parameter(parameter_value, enum_class, parameter_name):
     if not parameter_value:
         return ValidationResponse.create_success()
 
-    # Handle case where parameter_value is a comma-separated string
-    if isinstance(parameter_value, str) and "," in parameter_value:
-        values = [v.strip() for v in parameter_value.split(",")]
-    elif isinstance(parameter_value, str):
-        values = [parameter_value]
-    elif isinstance(parameter_value, list):
-        values = parameter_value
-    else:
-        values = [parameter_value]
+    values = argToList(parameter_value)
 
     valid_values = enum_class.values()
     invalid_values = [v for v in values if v not in valid_values]
@@ -3054,6 +3045,56 @@ def clear_threat_comments():
     return None
 
 
+def get_safe_params_for_logging():
+    """
+    Returns integration parameters with sensitive credential information filtered out.
+    This function is safe to use in logging and debugging as it excludes service account
+    credentials and other sensitive information.
+
+    Returns:
+        dict: Filtered parameters dictionary without sensitive data
+    """
+    params = demisto.params()
+
+    # Define sensitive parameter keys that should be excluded from logging
+    sensitive_param_keys = {
+        DemistoParams.CREDENTIALS,  # The entire credentials object
+        DemistoParams.IDENTIFIER,  # Service account ID/Client ID
+        DemistoParams.PASSWORD,  # Service account secret/Client Secret
+        WizApiInputFields.CLIENT_ID,  # Alternative client ID field
+        WizApiInputFields.CLIENT_SECRET,  # Alternative client secret field
+        "service_account_id",  # Legacy field name
+        "service_account_secret",  # Legacy field name
+        "client_id",  # Direct client ID field
+        "client_secret",  # Direct client secret field
+        "access_token",  # Any access tokens
+        "token",  # Generic token field
+        "api_key",  # API keys
+        "secret",  # Generic secret field
+        "password",  # Generic password field
+    }
+
+    safe_params = {}
+
+    for key, value in params.items():
+        if isinstance(value, dict):
+            safe_nested = {}
+            for nested_key, nested_value in value.items():
+                if nested_key in sensitive_param_keys:
+                    safe_nested[nested_key] = "***REDACTED***"
+                else:
+                    safe_nested[nested_key] = nested_value
+            safe_params[key] = safe_nested
+        elif key in sensitive_param_keys:
+            # Replace sensitive values with placeholder
+            safe_params[key] = "***REDACTED***"
+        else:
+            # Keep non-sensitive values as-is
+            safe_params[key] = value
+
+    return safe_params
+
+
 def main():
     params = demisto.params()
     set_authentication_endpoint(params.get(DemistoParams.AUTH_ENDPOINT))
@@ -3061,7 +3102,8 @@ def main():
     try:
         command = demisto.command()
         demisto.info(f"=== Starting {WIZ_DEFEND} integration version {WIZ_VERSION}. Command being called is '{command}' ===")
-        demisto.debug(f"Extracting parameters from integration settings: {params}\n" f"Command arguments: {demisto.args()}\n")
+        demisto.debug(f"Extracting parameters from integration settings: {get_safe_params_for_logging()}\n"
+                      f"Command arguments: {demisto.args()}\n")
 
         if command == "test-module":
             test_module()
