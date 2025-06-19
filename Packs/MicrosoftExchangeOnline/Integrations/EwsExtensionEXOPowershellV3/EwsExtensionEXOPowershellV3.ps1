@@ -1525,7 +1525,7 @@ class ExchangeOnlinePowershellV3Client
         Specifies the Inbox rule that you want to disable.
 
         .EXAMPLE
-        Disable-InboxRule -Identity "MoveAnnouncements" -Mailbox "example@example.com"
+        Disable-InboxRule -Identity "MoveAnnouncements" -Mailbox "Joe@Contoso.com"
 
         .OUTPUTS
         PSObject - Raw response
@@ -1671,7 +1671,7 @@ class ExchangeOnlinePowershellV3Client
         Specifies the rule that you want to remove.
 
         .EXAMPLE
-        Remove-TransportRule -Identity "Redirect messages from example1@example.com to example2@example.com"
+        Remove-TransportRule -Identity "Redirect messages from kim@contoso.com to legal@contoso.com"
 
         .OUTPUTS
         PSObject - Raw response
@@ -1773,7 +1773,7 @@ class ExchangeOnlinePowershellV3Client
         Specifies the mailbox that you want to modify.
 
         .EXAMPLE
-        Set-Mailbox -Identity "John Woods" -DeliverToMailboxAndForward $true -ForwardingSMTPAddress example@example.com
+        Set-Mailbox -Identity "John Woods" -DeliverToMailboxAndForward $true -ForwardingSMTPAddress manuel@contoso.com
 
         .OUTPUTS
         PSObject - Raw response
@@ -2128,45 +2128,6 @@ function EXOReleaseQuarantineMessageCommand
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
 }
-
-
-function EXOReleaseQuarantineMessageQuickActionCommand {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
-        [hashtable]$kwargs
-    )
-
-    $release_kwargs = @{}
-    foreach ($key in $kwargs.Keys) {
-        $release_kwargs[$key] = $kwargs[$key]
-    }
-
-    if (
-        $kwargs.ContainsKey("message_id") -and 
-        $kwargs.message_id -and 
-        (-not $kwargs.ContainsKey("identity") -or -not $kwargs["identity"])
-    ) {
-        # Call EXOGetQuarantineMessageCommand with message_id
-        $get_kwargs = @{
-            message_id = $kwargs.message_id
-            include_messages_from_blocked_sender_address = "true"
-        }
-
-        ($null, $entry_context, $null) = EXOGetQuarantineMessageCommand -client $client -kwargs $get_kwargs
-
-        $results = $entry_context["EWS.GetQuarantineMessage(obj.Identity === val.Identity)"]
-
-        if ($results -and $results.Count -gt 0 -and $results[0].Identity) {
-            $release_kwargs["identity"] = $results[0].Identity
-        } else {
-            throw "No quarantine message found with message_id: $($kwargs.message_id)"
-        }
-    }
-
-    return EXOReleaseQuarantineMessageCommand -client $client -kwargs $release_kwargs
-}
-
 
 function GetJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
     $raw_response = $client.GetJunkRules($kwargs.mailbox)
@@ -2587,9 +2548,6 @@ function Main
             }
             "$script:COMMAND_PREFIX-release-quarantinemessage" {
                 ($human_readable, $entry_context, $raw_response) = EXOReleaseQuarantineMessageCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-release-quarantinemessage-quick-action" {
-                ($human_readable, $entry_context, $raw_response) = EXOReleaseQuarantineMessageQuickActionCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-junk-rules-get" {
                 ($human_readable, $entry_context, $raw_response) = GetJunkRulesCommand $exo_client $command_arguments

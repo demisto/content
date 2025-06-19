@@ -2263,50 +2263,6 @@ script:
     - name: action_type
       description: The type of action to take when releasing the message.
     description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage cmdlet.
-  - name: ews-release-quarantinemessage-quick-action
-    prettyname: Unquarantine Email – Office 365
-    quickaction: true
-    hidden: true
-    arguments:
-    - name: user
-      description: The user associated with the quarantine message.
-    - name: identities
-      description: A comma-separated list of identities of the messages to release.
-      isArray: true
-    - name: identity
-      description: The identity of a single message to release.
-    - name: message_id
-      description: ID of the message.
-    - name: release_to_all
-      defaultValue: true
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Specify whether to release the message to all recipients.
-    - name: allow_sender
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Specify whether to allow the sender.
-    - name: entity_type
-      description: The type of entity being released.
-    - name: force
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Specify whether to force the release.
-    - name: report_false_positive
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Specify whether to report the message as a false positive.
-    - name: action_type
-      description: The type of action to take when releasing the message.
-    description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage cmdlet.
     execution: true
   - name: ews-remove-tenant-allow-block-list-items
     arguments:
@@ -2620,6 +2576,5 @@ script:
   type: powershell
   dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
 fromversion: 5.5.0
-supportsquickactions: true
 tests:
 - playbook-O365-EWS-Extension-Powershell-Online-V3-Test
