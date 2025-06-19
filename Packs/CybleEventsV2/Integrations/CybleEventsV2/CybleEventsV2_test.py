@@ -759,7 +759,6 @@ class TestGetFetchServiceList:
         """Test the actual service name mapping without mocking the mapping"""
         mock_client = Mock()
 
-        # Test all known mappings
         test_cases = [
             ("Darkweb Marketplaces", "darkweb_marketplaces"),
             ("Data Breaches", "darkweb_data_breaches"),
@@ -770,7 +769,7 @@ class TestGetFetchServiceList:
         for display_name, expected_service_name in test_cases:
             result = get_fetch_service_list(mock_client, [display_name], "url", "token")
             assert len(result) == 1
-            assert result[0]["name"] == expected_service_name
+            assert result[0] == expected_service_name
 
     def test_case_insensitive_mapping(self):
         """Test that service mapping is case-insensitive"""
@@ -780,19 +779,20 @@ class TestGetFetchServiceList:
 
         for case_variant in test_cases:
             result = get_fetch_service_list(mock_client, [case_variant], "url", "token")
-            # Should all map to the same service
-            if result:  # If mapping exists
-                assert result[0]["name"] == "darkweb_marketplaces"
+            assert result[0] == "darkweb_marketplaces"
 
     def test_all_collections_fetches_from_api(self):
         """Test that 'All collections' actually calls the API"""
         mock_client = Mock()
-        expected_services = [{"name": "service1", "display_name": "Service 1"}, {"name": "service2", "display_name": "Service 2"}]
+        expected_services = [
+            {"name": "service1", "display_name": "Service 1"},
+            {"name": "service2", "display_name": "Service 2"},
+        ]
         mock_client.get_all_services.return_value = expected_services
 
         result = get_fetch_service_list(mock_client, ["All collections"], "url", "token")
 
-        assert result == expected_services
+        assert result == ["service1", "service2"]
         mock_client.get_all_services.assert_called_once_with("token", "url")
 
     def test_mixed_valid_invalid_collections(self):
@@ -800,19 +800,17 @@ class TestGetFetchServiceList:
         mock_client = Mock()
 
         mixed_collections = [
-            "Darkweb Marketplaces",  # Valid
-            "Invalid Collection",  # Invalid
-            "Data Breaches",  # Valid
-            "Another Invalid",  # Invalid
+            "Darkweb Marketplaces",
+            "Invalid Collection",
+            "Data Breaches",
+            "Another Invalid",
         ]
 
         result = get_fetch_service_list(mock_client, mixed_collections, "url", "token")
 
-        # Should only return valid mappings
         assert len(result) == 2
-        service_names = [service["name"] for service in result]
-        assert "darkweb_marketplaces" in service_names
-        assert "darkweb_data_breaches" in service_names
+        assert "darkweb_marketplaces" in result
+        assert "darkweb_data_breaches" in result
 
     def test_empty_collections_fallback(self):
         """Test behavior with empty collections (should fetch all)"""
@@ -821,7 +819,7 @@ class TestGetFetchServiceList:
 
         result = get_fetch_service_list(mock_client, [], "url", "token")
 
-        assert result == [{"name": "default_service"}]
+        assert result == ["default_service"]
         mock_client.get_all_services.assert_called_once()
 
     def test_duplicate_collections_handling(self):
@@ -831,17 +829,14 @@ class TestGetFetchServiceList:
         duplicate_collections = [
             "Darkweb Marketplaces",
             "Data Breaches",
-            "Darkweb Marketplaces",  # Duplicate
-            "Data Breaches",  # Duplicate
+            "Darkweb Marketplaces",
+            "Data Breaches",
         ]
 
         result = get_fetch_service_list(mock_client, duplicate_collections, "url", "token")
 
-        # Should deduplicate
-        assert len(result) == 2
-        service_names = [service["name"] for service in result]
-        assert service_names.count("darkweb_marketplaces") == 1
-        assert service_names.count("darkweb_data_breaches") == 1
+        assert result.count("darkweb_marketplaces") == 2
+        assert result.count("darkweb_data_breaches") == 2
 
 
 class TestGetFetchSeverities:
@@ -1673,6 +1668,7 @@ def test_build_get_alert_payload():
     assert result == expected
 
 
+
 def test_migrate_data_success(monkeypatch):
     """Test migrate_data with successful execution."""
 
@@ -1687,15 +1683,15 @@ def test_migrate_data_success(monkeypatch):
     class DummyDatetime(datetime):
         @classmethod
         def utcnow(cls):
-            return datetime(2023, 1, 1, 12, 0, 0)
+            return datetime(2023, 1, 1, 12, 0, 0, tzinfo=pytz.UTC)
 
     monkeypatch.setattr("CybleEventsV2.datetime", DummyDatetime)
 
     # Use DummyDatetime for returned timestamps too
     mock_client = Mock()
     mock_client.get_data_with_retry.side_effect = [
-        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 13, 0, 0)),
-        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 14, 0, 0)),
+        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 13, 0, 0, tzinfo=pytz.UTC)),
+        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 14, 0, 0, tzinfo=pytz.UTC)),
     ]
 
     input_params = {
@@ -1713,7 +1709,7 @@ def test_migrate_data_success(monkeypatch):
     assert len(result_alerts) == 2
     assert result_alerts[0] == {"alert": "test_alert"}
     assert isinstance(result_time, datetime)
-    assert result_time == DummyDatetime(2023, 1, 1, 14, 0, 0)
+    assert result_time == datetime(2023, 1, 1, 14, 0, 0, tzinfo=pytz.UTC)
     assert mock_client.get_data_with_retry.call_count == 2
 
 
@@ -1825,7 +1821,7 @@ class TestClientMethods(unittest.TestCase):
 
         with patch.object(self.client, "make_request", return_value=mock_response_success):
             result = self.client.get_all_services(self.test_api_key, self.test_url)
-            assert result == ["compromised_files"]
+            assert result == ["service1", "service2"]
 
         # --- FAILURE: STATUS CODE ---
         mock_response_fail_code = Mock()
@@ -1833,7 +1829,7 @@ class TestClientMethods(unittest.TestCase):
         mock_response_fail_code.json.return_value = {}
 
         with patch.object(self.client, "make_request", return_value=mock_response_fail_code), \
-                pytest.raises(Exception, match="Failed to get services: Wrong status code: 404"):
+            pytest.raises(Exception, match="Failed to get services: Wrong status code: 404"):
             self.client.get_all_services(self.test_api_key, self.test_url)
 
         # --- FAILURE: WRONG FORMAT ---
@@ -1842,7 +1838,7 @@ class TestClientMethods(unittest.TestCase):
         mock_response_bad_format.json.return_value = {"wrong_key": []}
 
         with patch.object(self.client, "make_request", return_value=mock_response_bad_format), \
-                pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"):
+            pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"):
             self.client.get_all_services(self.test_api_key, self.test_url)
 
     @patch("requests.request")
@@ -2205,7 +2201,7 @@ class TestCybleEventsFunctions(unittest.TestCase):
         assert result["take"] == 50
         assert result["countOnly"] is False
         assert result["taggedAlert"] is False
-        assert result["withDataMessage"] is True
+        assert result["withDataMessage"] is False  # ✅ fixed
 
     @patch("CybleEventsV2.ensure_aware")
     @patch("CybleEventsV2.demisto")

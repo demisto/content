@@ -607,6 +607,7 @@ def fetch_subscribed_services(client, method, base_url, token):
             service_name_list.append({"name": subscribed_service["name"]})
     return service_name_list
 
+
 def get_fetch_service_list(client, incident_collections, service_url, token):
     """
     Determines the list of services to fetch based on provided incident collections.
@@ -624,13 +625,13 @@ def get_fetch_service_list(client, incident_collections, service_url, token):
     fetch_services = []
     if len(incident_collections) > 0 and "All collections" not in incident_collections:
         if "Darkweb Marketplaces" in incident_collections:
-            fetch_services.append({"name": "darkweb_marketplaces"})
+            fetch_services.append("darkweb_marketplaces")
         if "Data Breaches" in incident_collections:
-            fetch_services.append({"name": "darkweb_data_breaches"})
+            fetch_services.append("darkweb_data_breaches")
         if "Compromised Endpoints" in incident_collections:
-            fetch_services.append({"name": "stealer_logs"})
+            fetch_services.append("stealer_logs")
         if "Compromised Cards" in incident_collections:
-            fetch_services.append({"name": "compromised_cards"})
+            fetch_services.append("compromised_cards")
     else:
         subscribed_services = client.get_all_services(token, service_url)
         if subscribed_services:
