@@ -1978,6 +1978,22 @@ class TestClientMethods(unittest.TestCase):
         assert result == {"some": "value"}
         mock_request.assert_called_once_with("GET", self.test_url, headers=self.test_headers, params=self.test_payload)
 
+    @patch("CybleEventsV2.return_error")
+    def test_update_alert_success(self, mock_return_error):
+        mock_response = Mock()
+        mock_response.status_code = 200
+
+        with patch.object(self.client, "make_request", return_value=mock_response) as mock_make_request:
+            self.client.update_alert(self.test_payload, self.test_url, self.test_api_key)
+
+            mock_make_request.assert_called_once_with(
+                self.test_url,
+                self.test_api_key,
+                "PUT",
+                json.dumps(self.test_payload)
+            )
+            mock_return_error.assert_not_called()
+
 
 # Test for test_response function
 def test_test_response_success():
@@ -2005,7 +2021,6 @@ def test_test_response_empty_response():
             test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
 
         mock_demisto.error.assert_called()
-
 
 class TestCybleEventsLogical(unittest.TestCase):
     """Logical unit tests for cyble_events function focusing on business logic"""
