@@ -912,12 +912,21 @@ script:
     - name: group_id
       description: 'The ID of the security group.'
       required: true
+    - name: protocol
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+      required: false
+    - name: port
+      description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+      required: false
+    - name: cidr
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
+      required: false
     - name: ip_permissions
-      description: 'The sets of IP permissions to revoke, in JSON format.'
-      required: true
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      required: false
 
-  - name: aws-ec2-security-group-egress-revoke
-    description: 'Revokes one or more egress rules in a security group.'
+  - name: aws-ec2-security-group-ingress-authorize
+    description: 'Adds the specified inbound (ingress) rules to a security group.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -963,9 +972,78 @@ script:
     - name: group_id
       description: 'The ID of the security group.'
       required: true
+    - name: protocol
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
+      required: false
+    - name: port
+      description: 'For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization.'
+      required: false
+    - name: cidr
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
+      required: false
     - name: ip_permissions
-      description: 'The sets of IP permissions to revoke, in JSON format.'
+      description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      required: false
+
+  - name: aws-ec2-security-group-egress-revoke
+    description: 'Removes the specified outbound (egress) rules from the specified security group.'
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
       required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    
+    - name: group_id
+      description: 'The ID of the security group.'
+      required: true
+    - name: protocol
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+      required: false
+    - name: port
+      description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+      required: false
+    - name: cidr
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
+      required: false
+    - name: ip_permissions
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      required: false
 
   - name: aws-ec2-snapshot-permission-modify
     description: 'Adds or removes permission settings for the specified snapshot.'
@@ -1112,6 +1190,7 @@ script:
       - 'false'
     - name: groups
       description:  CSV list. Replaces the security groups of the instance with the specified security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC.
+  
   - name: aws-ec2-image-attribute-modify
     description: 'Modifies the specified attribute of the specified AMI.'
     arguments:
@@ -1192,6 +1271,7 @@ script:
 fromversion: 5.5.0
 tests:
 - No test - No playbook part of this release.
+IsCloudProviderIntegration: true
 sectionOrder:
 - Connect
 - Collect

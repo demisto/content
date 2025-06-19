@@ -12,6 +12,8 @@ import botocore
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
+DEFAULT_PROXYDOME_CERTFICATE_PATH = "/etc/certs/egress.crt"
+DEFAULT_PROXYDOME = "10.181.0.100:11117"
 
 # TODO - Remove >>
 def arg_to_bool_or_none(value):
@@ -29,7 +31,10 @@ def arg_to_bool_or_none(value):
         return None
     else:
         return argToBoolean(value)
-# << 
+
+
+# <<
+
 
 def parse_resource_ids(resource_id: str | None) -> list[str]:
     if resource_id is None:
@@ -100,17 +105,17 @@ class S3:
     @staticmethod
     def put_bucket_versioning_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-            Set the versioning state of an Amazon S3 bucket.
+        Set the versioning state of an Amazon S3 bucket.
 
-            Args:
-                client (BotoClient): The boto3 client for S3 service
-                args (Dict[str, Any]): Command arguments including:
-                    - bucket (str): The name of the bucket
-                    - status (str): The versioning state of the bucket (Enabled or Suspended)
-                    - mfa_delete (str): Specifies whether MFA delete is enabled (Enabled or Disabled)
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the bucket
+                - status (str): The versioning state of the bucket (Enabled or Suspended)
+                - mfa_delete (str): Specifies whether MFA delete is enabled (Enabled or Disabled)
 
-            Returns:
-                CommandResults: Results of the command execution
+        Returns:
+            CommandResults: Results of the command execution
         """
         bucket: str = args.get("bucket", "")
         status: str = args.get("status", "")
@@ -134,7 +139,7 @@ class S3:
                 readable_output=f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}",
             )
 
-   
+
 class IAM:
     service = AWSServices.IAM
 
@@ -217,6 +222,7 @@ class IAM:
                 readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}"
             )
 
+
 class EC2:
     service = AWSServices.EC2
 
@@ -281,9 +287,31 @@ class EC2:
 
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(
-                readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem}"
+                readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem()}"
             )
         raise DemistoException(f"Unexpected response from AWS - \n{response}")
+
+    @staticmethod
+    def modify_snapshot_permission_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies permission for the specified snapshot
+        """
+        group_names = argToList(args.get("groupNames"))
+        user_ids = argToList(args.get("userIds"))
+        if (group_names and user_ids) or not (group_names or user_ids):
+            raise DemistoException('Please provide either "groupNames" or "userIds"')
+
+        accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
+        operation_type = args.get("operationType")
+        response = client.modify_snapshot_attribute(
+            Attribute="createVolumePermission",
+            SnapshotId=args.get("snapshotId"),
+            OperationType=operation_type,
+            **accounts,
+        )
+        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
+            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+        return CommandResults(readable_output=f"Snapshot {args.get('snapshotId')} permissions was successfully updated.")
 
     @staticmethod
     def modify_image_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -332,185 +360,154 @@ class EC2:
         return CommandResults(readable_output="Image attribute successfully modified")
 
     @staticmethod
-    def authorize_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def revoke_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Adds an inbound rule to a security group, allowing inbound traffic based on the specified parameters.
+        Revokes an ingress rule from a security group.
+
+        The command supports two modes:
+        1. Simple mode: using protocol, port, and cidr arguments
+        2. Full mode: using ip_permissions for complex configurations
         """
-        def create_policy_kwargs_dict(args):
-            policy_kwargs_keys = (("fromPort", "FromPort"), ("toPort", "ToPort"))
-            policy_kwargs = {}
-            for args_key, dict_key in policy_kwargs_keys:
-                if key := args.get(args_key):
-                    policy_kwargs.update({dict_key: arg_to_number(key)})
-            policy_kwargs_keys = (
-                ("cidrIp", "CidrIp"),
-                ("ipProtocol", "IpProtocol"),
-                ("sourceSecurityGroupName", "SourceSecurityGroupName"),
-                ("SourceSecurityGroupOwnerId", "SourceSecurityGroupOwnerId"),
-                ("cidrIpv6", "CidrIpv6"),
-            )
-            for args_key, dict_key in policy_kwargs_keys:
-                if args.get(args_key) is not None:
-                    policy_kwargs.update({dict_key: args.get(args_key)})
-            return policy_kwargs
 
-        
-        kwargs = {"GroupId": args.get("groupId")}
-        if IpPermissionsFull := args.get("IpPermissionsFull", None):
-            IpPermissions = json.loads(IpPermissionsFull)
-        else:
-            IpPermissions = []
-            UserIdGroupPairs = []
-            IpPermissions_dict = create_ip_permissions_dict(args)
-            UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
 
-            kwargs.update(create_policy_kwargs_dict(args))
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
 
-            UserIdGroupPairs.append(UserIdGroupPairs_dict)
-            IpPermissions_dict.update({"UserIdGroupPairs": UserIdGroupPairs})  # type: ignore
+        kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
+        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
 
-            IpPermissions.append(IpPermissions_dict)
+        if ip_permissions := args.get("ip_permissions"):
+            try:
+                kwargs["IpPermissions"] = json.loads(ip_permissions)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
 
-        kwargs["IpPermissions"] = IpPermissions
-        response = client.authorize_security_group_ingress(**kwargs)
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.revoke_security_group_ingress(**kwargs)
 
-        if not (response["ResponseMetadata"]["HTTPStatusCode"] == 200 and response["Return"]):
-            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
-        return CommandResults(readable_output="The Security Group ingress rule was created")
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
+                if "UnknownIpPermissions" in response:
+                    raise DemistoException("Security Group ingress rule not found.")
+                return CommandResults(readable_output="The Security Group ingress rule was revoked")
+            else:
+                raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
 
+        except Exception as e:
+            if "InvalidGroup.NotFound" in str(e):
+                raise DemistoException(f"Security group {kwargs['GroupId']} not found")
+            elif "InvalidGroupId.NotFound" in str(e):
+                raise DemistoException(f"Invalid security group ID: {kwargs['GroupId']}")
+            else:
+                raise DemistoException(f"Failed to revoke security group ingress rule: {str(e)}")
 
     @staticmethod
-    def modify_snapshot_permission_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def authorize_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Modifies permission for the specified snapshot
+        Adds an inbound rule to a security group.
+
+        The command supports two modes:
+        1. Simple mode: using protocol, port, and cidr arguments
+        2. Full mode: using ip_permissions for complex configurations
         """
-        group_names = argToList(args.get("groupNames"))
-        user_ids = argToList(args.get("userIds"))
-        if (group_names and user_ids) or not (group_names or user_ids):
-            raise DemistoException('Please provide either "groupNames" or "userIds"')
 
-        accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
 
-        operation_type = args.get("operationType")
-        response = client.modify_snapshot_attribute(
-            Attribute="createVolumePermission",
-            SnapshotId=args.get("snapshotId"),
-            OperationType=operation_type,
-            **accounts,
-        )
-        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
-            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
-        return CommandResults(readable_output=f"Snapshot {args.get('snapshotId')} permissions was successfully updated.")
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
+
+        kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
+        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+
+        if ip_permissions := args.get("ip_permissions"):
+            try:
+                kwargs["IpPermissions"] = json.loads(ip_permissions)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
+
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.authorize_security_group_ingress(**kwargs)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
+                return CommandResults(readable_output="The Security Group ingress rule was authorized")
+            else:
+                raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+
+        except Exception as e:
+            if "InvalidGroup.NotFound" in str(e):
+                raise DemistoException(f"Security group {kwargs['GroupId']} not found")
+            elif "InvalidGroupId.NotFound" in str(e):
+                raise DemistoException(f"Invalid security group ID: {kwargs['GroupId']}")
+            elif "InvalidPermission.Duplicate" in str(e):
+                raise DemistoException("The specified rule already exists in the security group")
+            else:
+                raise DemistoException(f"Failed to authorize security group ingress rule: {str(e)}")
 
     @staticmethod
     def revoke_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Revokes a security group egress rule.
+        Revokes an egress rule from a security group.
+
+        The command supports two modes:
+        1. Simple mode: using protocol, port, and cidr arguments
+        2. Full mode: using ip_permissions for complex configurations
         """
-        
-        def create_ip_permissions_dict(args):
-            IpPermissions_dict: dict[str, Any] = {}
-            UserIdGroupPairs_keys = (("IpPermissionsfromPort", "FromPort"), ("IpPermissionsToPort", "ToPort"))
-            for args_key, dict_key in UserIdGroupPairs_keys:
-                if args.get(args_key) is not None:
-                    IpPermissions_dict.update({dict_key: int(args.get(args_key))})
 
-            if args.get("IpPermissionsIpProtocol") is not None:
-                IpPermissions_dict.update({"IpProtocol": str(args.get("IpPermissionsIpProtocol"))})
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
 
-            if args.get("IpRangesCidrIp") is not None:
-                IpRanges_dict = {"CidrIp": args.get("IpRangesCidrIp")}
-                desc = args.get("IpRangesDesc", "") or args.get("IpRangesDescription", "")
-                if desc:
-                    IpRanges_dict["Description"] = desc
-                IpPermissions_dict.update({"IpRanges": [IpRanges_dict]})  # type: ignore
-            if args.get("Ipv6RangesCidrIp") is not None:
-                Ipv6Ranges_dict = {"CidrIp": args.get("Ipv6RangesCidrIp")}
-                desc = args.get("Ipv6RangesDesc", "") or args.get("Ipv6RangesDescription", "")
-                if desc:
-                    Ipv6Ranges_dict["Description"] = desc
-                IpPermissions_dict.update({"Ipv6Ranges": [Ipv6Ranges_dict]})  # type: ignore
-            if args.get("PrefixListId") is not None:
-                PrefixListIds_dict = {"PrefixListId": args.get("PrefixListId")}
-                desc = args.get("PrefixListIdDesc", "") or args.get("PrefixListIdDescription", "")
-                if desc:
-                    PrefixListIds_dict["Description"] = desc
-                IpPermissions_dict.update({"PrefixListIds": [PrefixListIds_dict]})  # type: ignore
-            return IpPermissions_dict
-        
-        def create_user_id_group_pairs_dict(args):
-            UserIdGroupPairs_dict = {}
-            UserIdGroupPairs_keys = (
-                ("UserIdGroupPairsDescription", "Description"),
-                ("UserIdGroupPairsGroupId", "GroupId"),
-                ("UserIdGroupPairsGroupName", "GroupName"),
-                ("UserIdGroupPairsPeeringStatus", "PeeringStatus"),
-                ("UserIdGroupPairsUserId", "UserId"),
-                ("UserIdGroupPairsVpcId", "VpcId"),
-                ("UserIdGroupPairsVpcPeeringConnectionId", "VpcPeeringConnectionId"),
-            )
-            for args_key, dict_key in UserIdGroupPairs_keys:
-                if args.get(args_key) is not None:
-                    UserIdGroupPairs_dict.update({dict_key: args.get(args_key)})
-            return UserIdGroupPairs_dict
-         
-        kwargs = {"GroupId": args.get("groupId")}
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
 
-        if IpPermissionsFull := args.get("IpPermissionsFull"):
-            IpPermissions = json.loads(IpPermissionsFull)
-            kwargs["IpPermissions"] = IpPermissions
-        else:
-            IpPermissions_dict = create_ip_permissions_dict(args)
-            UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
+        kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
+        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
 
-            IpPermissions_dict["UserIdGroupPairs"] = [UserIdGroupPairs_dict]
-            kwargs["IpPermissions"] = [IpPermissions_dict]
+        if ip_permissions := args.get("ip_permissions"):
+            try:
+                kwargs["IpPermissions"] = json.loads(ip_permissions)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
 
-        response = client.revoke_security_group_egress(**kwargs)
-        if not (response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]):
-            demisto.debug(response.message)
-            raise DemistoException(f"An error has occurred: {response}")
-        if "UnknownIpPermissions" in response:
-            raise DemistoException("Security Group egress rule not found.")
-        demisto.info(f"the response is: {response}")
-        return CommandResults(readable_output="The Security Group egress rule was revoked")
-    
-    
-    @staticmethod
-    def revoke_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        
-        def create_policy_kwargs_dict(args):
-            policy_kwargs_keys = (("fromPort", "FromPort"), ("toPort", "ToPort"))
-            policy_kwargs = {}
-            for args_key, dict_key in policy_kwargs_keys:
-                if key := args.get(args_key):
-                    policy_kwargs.update({dict_key: arg_to_number(key)})
-            policy_kwargs_keys = (
-                ("cidrIp", "CidrIp"),
-                ("ipProtocol", "IpProtocol"),
-                ("sourceSecurityGroupName", "SourceSecurityGroupName"),
-                ("SourceSecurityGroupOwnerId", "SourceSecurityGroupOwnerId"),
-                ("cidrIpv6", "CidrIpv6"),
-            )
-            for args_key, dict_key in policy_kwargs_keys:
-                if args.get(args_key) is not None:
-                    policy_kwargs.update({dict_key: args.get(args_key)})
-            return policy_kwargs
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.revoke_security_group_egress(**kwargs)
 
-        kwargs = {"GroupId": args.get("groupId")}
-        if IpPermissionsFull := args.get("IpPermissionsFull", None):
-            IpPermissions = json.loads(IpPermissionsFull)
-            kwargs["IpPermissions"] = IpPermissions
-        else:
-            kwargs.update(create_policy_kwargs_dict(args))
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
+                if "UnknownIpPermissions" in response:
+                    raise DemistoException("Security Group egress rule not found.")
+                return CommandResults(readable_output="The Security Group egress rule was revoked")
+            else:
+                raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
 
-        response = client.revoke_security_group_ingress(**kwargs)
-        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
-            if "UnknownIpPermissions" in response:
-                raise DemistoException("Security Group ingress rule not found.")
-            return CommandResults(readable_output="The Security Group ingress rule was revoked")
-        else:
-            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+        except Exception as e:
+            if "InvalidGroup.NotFound" in str(e):
+                raise DemistoException(f"Security group {kwargs['GroupId']} not found")
+            elif "InvalidGroupId.NotFound" in str(e):
+                raise DemistoException(f"Invalid security group ID: {kwargs['GroupId']}")
+            else:
+                raise DemistoException(f"Failed to revoke security group egress rule: {str(e)}")
 
 
 class EKS:
@@ -790,7 +787,6 @@ class RDS:
             )
 
 
-
 # CONCURRENCY_LIMIT = 25           # Rate limit by AWS
 # SEMAPHORE = asyncio.Semaphore(CONCURRENCY_LIMIT)
 
@@ -833,12 +829,14 @@ class RDS:
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-put": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
-    # "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
+    # "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
     "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
+    "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
+    "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_command,
@@ -881,21 +879,23 @@ REQUIRED_ACTIONS: set[str] = {
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
 }
+
+
 def check_account_permissions(account_id: str):
-    """_summary_
-    """
-    
+    """_summary_"""
+
 
 def test_module():
     # TODO - Bring back what was here before
     return "ok"
 
+
 def health_check(connector_id: str):
     accounts: list[dict] = get_accounts_by_connector_id(connector_id)
-    account_ids: list[str] = [str(account.get('account_id')) for account in accounts if 'account_id' in account]
+    account_ids: list[str] = [str(account.get("account_id")) for account in accounts if "account_id" in account]
 
     health_check = HealthCheckResult(connector_id)
-    
+
     for account_id in account_ids:
         # TODO - TEST ERROR - REPLACE
         health_check.error(
@@ -906,51 +906,8 @@ def health_check(connector_id: str):
                 error_type=ErrorType.PERMISSION_ERROR,
             )
         )
-        
+
     return health_check.summarize()
-
-def configure_boto_proxy():
-    """
-    Configure boto3 to use the proxy settings from environment variables.
-    """
-    proxy_url = os.environ.get("EGRESSPROXY_URL") or "10.181.0.100:11117"
-
-    ca_path = os.environ.get("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
-    if not proxy_url:
-        demisto.debug("No EGRESSPROXY_URL environment variable found, skipping proxy configuration")
-        return None
-    
-    # Configure proxy settings for boto3
-    proxies = {'https': proxy_url}
-    
-    # Create a custom session with proxy configuration
-    session = botocore.session.get_session()
-    
-    # Set proxy configuration
-    session.set_config_variable('proxies', proxies)
-    
-    # Configure SSL verification if CA path is provided
-    if ca_path and os.path.exists(ca_path):
-        demisto.debug(f"Using CA certificate from {ca_path}")
-        session.set_config_variable('ca_bundle', ca_path)
-    
-    # Return a config object that can be used when creating boto3 clients
-    return botocore.config.Config(
-        proxies=proxies,
-        proxies_config={
-            'proxy_ca_bundle': ca_path if ca_path and os.path.exists(ca_path) else None,
-            'proxy_use_forwarding_for_https': True
-        }
-        # 
-    )
-    
-def print_all_env_vars():
-    demisto.debug("=== All Environment Variables ===")
-    envars = ''
-    for key, value in os.environ.items():
-        envars += f"{key}: {value}"
-        
-    demisto.debug(f"[byosi] - {envars}")
 
 def register_proxydome_header(boto_client: BotoClient):
     """
@@ -961,10 +918,11 @@ def register_proxydome_header(boto_client: BotoClient):
 
     def _add_proxydome_header(request, **kwargs):
         request.headers["x-caller-id"] = proxydome_token
-        
+
     # Register the header injection function to be called before each request
-    event_system.register_last('before-send.*.*', _add_proxydome_header)
-    
+    event_system.register_last("before-send.*.*", _add_proxydome_header)
+
+
 def get_service_client(params: dict, args: dict, command: str, credentials: dict) -> BotoClient:
     """_summary_
 
@@ -982,20 +940,17 @@ def get_service_client(params: dict, args: dict, command: str, credentials: dict
         aws_session_token=credentials.get("session_token"),
         region_name=args.get("region") or params.get("region", ""),
     )
-            
+
     service = AWSServices(command.split("-")[1])
-    
-    client_config = Config(
-        proxies={"https": "10.181.0.100:11117"},
-        proxies_config={'proxy_ca_bundle': '/etc/certs/egress.crt'}
-    )
+
+    client_config = Config(proxies={"https": DEFAULT_PROXYDOME}, proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH})
     client = aws_session.client(service, verify=False, config=client_config)
-    
+
     register_proxydome_header(client)
 
     return client
-        
-    
+
+
 def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
     """_summary_
 
@@ -1008,7 +963,10 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
         CommandResults: _description_
     """
     account_id: str = args.get("account_id", "")
+
     credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if True else {}
+    # TODO - Remove
+    demisto.debug(f"cloud_creds: {json.dumps(credentials, indent=4)}")
     service_client: BotoClient = get_service_client(params, args, command, credentials)
     return COMMANDS_MAPPING[command](service_client, args)
 
@@ -1022,22 +980,17 @@ def main():  # pragma: no cover
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
     skip_proxy()
-    
+
     try:
-        
         if command == "test-module":
             context = demisto.callingContext.get("context", {})
             cloud_info = context.get("CloudIntegrationInfo", {})
-            results = (
-                health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else test_module()
-            )
+            results = health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else test_module()
             return_results(results)
-            
+
         elif command in COMMANDS_MAPPING:
-            return_results(
-                execute_aws_command(command, args, params)
-            )
-            
+            return_results(execute_aws_command(command, args, params))
+
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
