@@ -1,0 +1,29 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Forcepoint DLP Outgoing Mapper",
+    "mapping": {
+        "Forcepoint DLP Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "false_positive": {
+                    "simple": "forcepointdlpfalsepositive"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "status": {
+                    "simple": "sourcestatus"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Forcepoint DLP Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
