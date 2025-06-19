@@ -6,7 +6,6 @@ Enhanced Unit Tests for CybleEventsV2 Integration -
 
 from CommonServerPython import GetModifiedRemoteDataResponse
 
-
 try:
     from CybleEventsV2 import (
         get_alert_by_id,
@@ -18,6 +17,7 @@ try:
         get_event_format,
         time_diff_in_mins,
         build_auth_headers,
+        build_get_alert_payload,
     )
 except ImportError:
     # If direct import fails, these functions need to be defined in your main module
@@ -980,6 +980,7 @@ class TestGetFetchServiceList:
         assert service_names.count("darkweb_data_breaches") == 1
 
 
+
 class TestGetFetchSeverities:
     """Test the actual severity mapping logic"""
 
@@ -1792,6 +1793,22 @@ class TestFormatIncidents:
             assert len(parsed_data) == 100
             assert all(f"field_{i}" in parsed_data for i in range(10))  # Check first 10
 
+def test_build_get_alert_payload():
+    alert_id = "test-alert-id"
+    result = build_get_alert_payload(alert_id)
+
+    expected = {
+        "filters": {"id": [alert_id]},
+        "excludes": {"status": ["FALSE_POSITIVE"]},
+        "orderBy": [{"created_at": "desc"}],
+        "skip": 0,
+        "take": 1,
+        "taggedAlert": False,
+        "withDataMessage": True,
+        "countOnly": False,
+    }
+
+    assert result == expected
 
 
 def test_migrate_data_success(monkeypatch):
