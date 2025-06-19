@@ -19,7 +19,7 @@ configuration:
   type: 9
   section: Connect
 - display: Fetch Instance Audit Events
-  additionalinfo: When checked, the fetch mechanism will fetch events from the audit_events endpoint. That endpoint requires a higher level of authorization, see description for more details.
+  additionalinfo: When enabled, fetch events will pull audit events from the instance. This requires a higher level of authorization. See the Authorization Requirements section for details.
   name: fetch_instance_audit_events
   type: 8
   section: Collect
