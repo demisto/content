@@ -84,7 +84,7 @@ select = [
     "TR100",
     "VC100", "VC101"
 ]
-warning = ["RM108", "PB130", "PB131", "GR107"]
+warning = ["RM108", "PB130", "PB131"]
 
 
 [Custom_Categories]
