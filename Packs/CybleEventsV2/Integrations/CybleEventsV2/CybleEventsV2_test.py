@@ -1867,7 +1867,7 @@ class TestClientMethods(unittest.TestCase):
     def test_insert_data_in_cortex_successful_processing(self):
         test_input_params = {"limit": "10", "hce": False}
 
-        mock_response = {
+        mock_response_with_data = {
             "data": [
                 {"id": 1, "created_at": "2024-01-01T12:00:00Z", "alert": "test1"},
                 {"id": 2, "created_at": "2024-01-01T13:00:00Z", "alert": "test2"},
@@ -1876,17 +1876,21 @@ class TestClientMethods(unittest.TestCase):
             "total": 2,
         }
 
+        mock_response_empty = {
+            "data": [],
+            "status": "success",
+            "total": 0,
+        }
+
         with (
-            patch.object(self.client, "get_data", return_value=mock_response),
+            patch.object(self.client, "get_data", side_effect=[mock_response_with_data, mock_response_empty]),
             patch("CybleEventsV2.parse_date") as mock_parse_date,
             patch("CybleEventsV2.format_incidents") as mock_format_incidents,
             patch("CybleEventsV2.get_event_format") as mock_get_event_format,
             patch("CybleEventsV2.demisto") as mock_demisto,
         ):
             mock_parse_date.return_value = datetime(2024, 1, 1, 13, 0, 0, tzinfo=UTC)
-
             mock_format_incidents.return_value = [{"formatted": "incident1"}, {"formatted": "incident2"}]
-
             mock_get_event_format.side_effect = [{"final": "event1"}, {"final": "event2"}]
 
             mock_demisto.incidents = Mock(return_value=[])
@@ -1901,7 +1905,7 @@ class TestClientMethods(unittest.TestCase):
             assert isinstance(result_incidents, list), "result_incidents should be a list"
             assert isinstance(result_time, datetime), "result_time should be a datetime"
 
-            if len(mock_response.get("data", [])) > 0 and mock_format_incidents.called:
+            if len(mock_response_with_data.get("data", [])) > 0 and mock_format_incidents.called:
                 mock_format_incidents.assert_called()
                 format_call_args = mock_format_incidents.call_args[0][0]
                 assert len(format_call_args) == 2
