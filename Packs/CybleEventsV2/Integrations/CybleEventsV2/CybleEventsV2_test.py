@@ -2011,6 +2011,32 @@ class TestClientMethods(unittest.TestCase):
             )
             mock_return_error.assert_not_called()
 
+    def test_make_request_success():
+
+        client = Client("https://test.com")
+        url = "https://test.com/api"
+        api_key = "dummy"
+        method = "POST"
+        payload_json = '{"key": "value"}'
+        params = {"p": 1}
+
+        mock_response = Mock()
+        mock_response.status_code = 200
+
+        with patch("CybleEventsV2.requests.request", return_value=mock_response) as mock_request:
+            response = client.make_request(url, api_key, method, payload_json, params)
+
+            assert response.status_code == 200
+            mock_request.assert_called_once()
+            called_args = mock_request.call_args[1]
+
+            assert called_args["method"] == method
+            assert called_args["url"] == url
+            assert called_args["data"] == payload_json
+            assert called_args["params"] == params
+            assert "headers" in called_args
+            assert "timeout" in called_args
+
 
 # Test for test_response function
 def test_test_response_success():
