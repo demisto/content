@@ -980,7 +980,7 @@ def test_check_required_permissions_with_connector_id(mocker):
     assert result.account_id == "test-project"
     assert result.connector_id == "test-connector-id"
     assert result.error_type == ErrorType.PERMISSION_ERROR
-    assert "Missing required permissions" in result.message
+    assert "Missing required permission" in result.message
 
 
 def test_check_required_permissions_api_error(mocker):

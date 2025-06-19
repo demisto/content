@@ -833,7 +833,7 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 
 def check_required_permissions(
     creds: Credentials, project_id: str, connector_id: str = None, command: str = ""
-) -> HealthCheckError | None:
+) -> list[HealthCheckError] | HealthCheckError | None:
     """
     Verifies the credentials have all required permissions, using testIamPermissions to check access.
 
@@ -847,7 +847,7 @@ def check_required_permissions(
         command (str, optional): Specific command to check permissions for. If empty, checks all permissions.
 
     Returns:
-        HealthCheckError | None:
+        HealthCheckError | list[HealthCheckError] | None:
             - HealthCheckError if there are permission issues when using connector_id
             - None if permissions are sufficient
 
@@ -891,22 +891,26 @@ def check_required_permissions(
     if missing:
         perm_to_cmds = {perm: [cmd for cmd, perms in REQUIRED_PERMISSIONS.items() if perm in perms] for perm in missing}
         error_lines = [f"- {perm} (required for: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
-        error_message = "Missing required permissions for GCP integration:\n" + "\n".join(error_lines)
-
         if connector_id:
-            return HealthCheckError(
-                account_id=project_id,
-                connector_id=connector_id,
-                message=error_message,
-                error_type=ErrorType.PERMISSION_ERROR,
-            )
-
+            errors = []
+            for error in error_lines:
+                error_message = f"Missing required permission {error}"
+                errors.append(
+                    HealthCheckError(
+                        account_id=project_id,
+                        connector_id=connector_id,
+                        message=error_message,
+                        error_type=ErrorType.PERMISSION_ERROR,
+                    )
+                )
+            return errors
+        error_message = "Missing required permissions for GCP integration:\n" + "\n".join(error_lines)
         raise DemistoException(error_message)
 
     return None
 
 
-def health_check(project_id: str, connector_id: str) -> HealthCheckError | None:
+def health_check(project_id: str, connector_id: str) -> HealthCheckError | list[HealthCheckError] | None:
     """
     Tests connectivity to GCP and checks for required permissions.
 

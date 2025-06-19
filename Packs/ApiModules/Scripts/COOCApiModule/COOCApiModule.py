@@ -45,7 +45,7 @@ class HealthCheckError:
     def __init__(self, account_id: str, connector_id: str, message: str, error_type: ErrorType):
         self.account_id = account_id
         self.connector_id = connector_id
-        self.message = message
+        self.message = f"{account_id}: {message}"
         self.error_type = error_type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
@@ -68,14 +68,17 @@ class HealthCheck:
         self.errors: list[HealthCheckError] = []
         self.connector_id = connector_id
 
-    def error(self, error: HealthCheckError) -> None:
+    def error(self, error: HealthCheckError | list[HealthCheckError]) -> None:
         """
-        Adds a health check error to the results.
+        Adds a health check error or list of errors to the results.
 
         Args:
-            error (HealthCheckError): The error to add to the results.
+            error (HealthCheckError | list[HealthCheckError]): The error(s) to add to the results.
         """
-        self.errors.append(error)
+        if isinstance(error, list):
+            self.errors.extend(error)
+        else:
+            self.errors.append(error)
 
     def summarize(self) -> CommandResults | str:
         """Summarizes the health check results by calculating severity based on error classifications.
@@ -91,50 +94,11 @@ class HealthCheck:
             """
             return EntryType.ERROR if HealthStatus.ERROR in [error.classification for error in self.errors] else EntryType.WARNING
 
-        def _aggregate_error_messages(errors: list[HealthCheckError]) -> str:
-            """
-            Combines multiple error messages into a single string with line breaks.
-            """
-            return "\n".join([error.message for error in errors])
+        if not self.errors:
+            return HealthStatus.OK.value
 
-        def _aggregate_errors() -> list[dict]:
-            """
-            Aggregates errors by account and error type.
-            """
-            # Structure: {account_id: {error_type: [errors]}}
-            aggregated_by_account_and_type: dict[str, dict[ErrorType, list[HealthCheckError]]] = {}
-
-            for error in self.errors:
-                account_id = error.account_id
-                error_type = error.error_type
-
-                # Initialize nested dictionaries if they don't exist
-                if account_id not in aggregated_by_account_and_type:
-                    aggregated_by_account_and_type[account_id] = {}
-
-                if error_type not in aggregated_by_account_and_type[account_id]:
-                    aggregated_by_account_and_type[account_id][error_type] = []
-
-                aggregated_by_account_and_type[account_id][error_type].append(error)
-
-            aggregated_errors = []
-            for account_id, error_types in aggregated_by_account_and_type.items():
-                for error_type, errors in error_types.items():
-                    combined_error = HealthCheckError(
-                        account_id=account_id,
-                        connector_id=self.connector_id,
-                        message=f"{account_id}: {_aggregate_error_messages(errors)}",
-                        error_type=error_type,
-                    )
-                    aggregated_errors.append(combined_error.to_dict())
-
-            return aggregated_errors
-
-        return (
-            CommandResults(entry_type=_calculate_severity(), content_format=EntryFormat.JSON, raw_response=_aggregate_errors())
-            if self.errors
-            else HealthStatus.OK.value
-        )
+        error_list = [error.to_dict() for error in self.errors]
+        return CommandResults(entry_type=_calculate_severity(), content_format=EntryFormat.JSON, raw_response=error_list)
 
 
 def get_connector_id() -> str | None:
@@ -323,7 +287,6 @@ def run_permissions_check_for_accounts(
             if result is not None:
                 health_check_result.error(result)
 
-    # Process the results to get one entry per account with the most severe error
     return health_check_result.summarize()
 
 

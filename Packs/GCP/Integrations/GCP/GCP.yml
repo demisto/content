@@ -1589,7 +1589,6 @@ script:
       required: true
     outputs: []
 
-
   isfetch: false
   runonce: false
   script: '-'
@@ -1597,6 +1596,7 @@ script:
   subtype: python3
   dockerimage: demisto/googleapi-python3:1.0.0.2933170
 fromversion: 6.10.0
+isCloudProviderIntegration: true
 marketplaces:
 - xsoar
 - platform
