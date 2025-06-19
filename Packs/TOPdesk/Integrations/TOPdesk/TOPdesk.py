@@ -1322,7 +1322,9 @@ def update_asset_command(client: Client, args: dict[str, Any]) -> CommandResults
     try:
         response = client.update_asset(args)
         return CommandResults(
+            outputs_prefix=f"{INTEGRATION_NAME}.Asset",
             outputs=response,
+            readable_output="Sucessfully Updated Asset",
         )
     except Exception as e:
         if "Error parsing query" in str(e):
