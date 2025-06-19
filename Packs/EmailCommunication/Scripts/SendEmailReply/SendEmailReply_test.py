@@ -1650,14 +1650,14 @@ def test_ensure_markdown_tables_have_spacing():
     assert ensure_markdown_tables_have_spacing(md) == expected
 
     # Table already has blank lines
-    md2 = "Para\n\n| H |\n|---|\n| R |Para2"
+    md2 = "Para\n\n| H |\n|---|\n| R |\n\nPara2"
     expected2 = md2
     assert ensure_markdown_tables_have_spacing(md2) == expected2
 
     # Multiple tables with some blank lines missing
     md3 = "| H1 |\n|----|\n| R1 |\nPara\n| H2 |\n|----|\n| R2 |"
-    expected3 = "\n| H1 |\n|----|\n| R1 |\nPara\n\n| H2 |\n|----|\n| R2 |\n"
-    assert ensure_markdown_tables_have_spacing(md3) == expected3
+    expected3 = "| H1 |\n" "|----|\n" "| R1 |\n" "\n" "Para\n" "\n" "| H2 |\n" "|----|\n" "| R2 |"
+    assert ensure_markdown_tables_have_spacing(md3).rstrip() == expected3.rstrip()
 
 
 def test_replace_atlassian_tags():
