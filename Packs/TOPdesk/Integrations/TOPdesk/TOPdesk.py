@@ -185,7 +185,7 @@ class Client(BaseClient):
             archived=archived,
             pageStart=start,
             pageSize=page_size,
-            field=fields,
+            fields=fields,
             searchTerm=search_term
         )
         if query:
@@ -828,6 +828,7 @@ def get_assets_list(
     query = args.get("filter", None)
     search_term = args.get("search_term", None)
     archived = args.get("archived", None)
+    fields = args.get("fields", None)
     # If the page size is 0, we will fetch all data
     if page_size == 0:
         pagination = True
@@ -843,7 +844,7 @@ def get_assets_list(
             query=query,
             search_term=search_term,
             archived=archived,
-            fields=args.get("fields", None),
+            fields=fields,
         )
         assets_list.extend(assets["dataSet"])
         start += page_size
