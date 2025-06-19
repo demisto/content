@@ -8,7 +8,6 @@ import pytz
 import urllib3
 import dateparser
 import json
-from dateutil.parser import isoparse
 from collections.abc import Sequence
 
 from dateutil.parser import parse as parse_date
@@ -118,7 +117,7 @@ def get_alert_payload(service, input_params: dict[str, Any], is_update=False):
             "take": input_params["take"],
             "countOnly": False,
             "taggedAlert": False,
-            "withDataMessage": False
+            "withDataMessage": False,
         }
     except Exception as e:
         demisto.error(f"Error in formatting: {e}")
@@ -307,8 +306,7 @@ class Client(BaseClient):
 
         if response.status_code != 200:
             raise Exception(
-                f"Failed to fetch data from {service}. Status code: {response.status_code}, "
-                f"Response text: {response.text}"
+                f"Failed to fetch data from {service}. Status code: {response.status_code}, " f"Response text: {response.text}"
             )
 
         try:
@@ -640,7 +638,6 @@ def get_fetch_service_list(client, incident_collections, service_url, token):
     return fetch_services
 
 
-
 def fetch_subscribed_services_alert(client, method, base_url, token):
     """
     Fetch cyble subscribed services
@@ -669,7 +666,6 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
         )
     except Exception as e:
         return_error(f"Failed to fetch subscribed services: {str(e)}")
-
 
 
 def test_response(client, method, base_url, token):
@@ -709,7 +705,7 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
         demisto.debug("No services found in input_params")
         return [], datetime.utcnow()
 
-    chunkedServices = [services[i: i + MAX_THREADS] for i in range(0, len(services), MAX_THREADS)]
+    chunkedServices = [services[i : i + MAX_THREADS] for i in range(0, len(services), MAX_THREADS)]
     last_fetched = ensure_aware(datetime.utcnow())
 
     all_alerts = []
@@ -735,7 +731,6 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
 
 
 def fetch_few_alerts(client, input_params, services, url, token, is_update=False):
-
     result = []
     input_params["take"] = SAMPLE_ALERTS  # override limit for sample
     demisto.debug(f"[fetch_few_alerts] Updated 'take' to SAMPLE_ALERTS ({SAMPLE_ALERTS})")
@@ -825,8 +820,6 @@ def get_alert_by_id(client, alert_id, token, url):
         raise DemistoException(f"[get_alert_by_id] Error during HTTP request: {str(e)}")
 
 
-
-
 def get_fetch_severities(incident_severity):
     """
     Determines the list of severities to fetch based on provided incident severities.
@@ -911,7 +904,6 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
 
     services = get_fetch_service_list(client, incident_collections, url, token)
     severities = get_fetch_severities(incident_severity)
-
 
     if last_update is None:
         raise ValueError("Missing required parameter: 'last_update' must not be None")
@@ -1075,8 +1067,6 @@ def get_mapping_fields(client, token, url):  # need to be refactored - @TODO
         incident_type_scheme.add_field(field, description)
 
     return GetMappingFieldsResponse([incident_type_scheme])
-
-
 
 
 def cyble_fetch_iocs(client, method, token, args, url):
