@@ -1122,6 +1122,7 @@ class Client(BaseClient):
         """
         body = generate_body(fields, custom_fields)
         query_params = {"sysparm_input_display_value": input_display_value}
+        demisto.debug(f"Body is {body}")
         return self.send_request(f"table/{table_name}/{record_id}", "PATCH", params=query_params, body=body)
 
     def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {}, input_display_value: bool = False):
@@ -3240,8 +3241,13 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
             # These ticket types are closed by changing their state.
             if closure_case == "closed" and ticket_type == INCIDENT:
                 parsed_args.delta["state"] = "7"  # Closing incident ticket.
+                parsed_args.delta["close_code"] = "Resolved by caller"
+                parsed_args.delta[
+                    "close_notes"] = "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
             elif closure_case == "resolved" and ticket_type == INCIDENT:
                 parsed_args.delta["state"] = "6"  # resolving incident ticket.
+                parsed_args.delta["close_code"] = "Resolved by caller"
+                parsed_args.delta["close_notes"] = "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
             if close_custom_state:  # Closing by custom state
                 demisto.debug(f"Closing by custom state = {close_custom_state}")
                 is_custom_close = True
