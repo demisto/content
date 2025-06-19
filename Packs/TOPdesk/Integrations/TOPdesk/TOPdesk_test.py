@@ -1328,18 +1328,28 @@ def test_assets_list(client, requests_mock):
     Then
         - The result fits the expected mapping
     """
-    command_args = {"search_term": "test", "archived": False, "page_size": 1, "start": 0}
+    command_args = {
+        "search_term": "test",
+        "archived": False,
+        "page_size": 1,
+        "start": 0,
+    }
     expected_results = {
-            "outputs": {
-                "archived": True,
-                "text": "test.contoso.com",
-                "etag": "2022-04-11T08:20:42.409         ",
-                "id": "d3861991-b025-48fb-b203-2df828569736",
-                },
-            "readable_output": "### TOPdesk assets\n|Archived|Etag|Id|Text|\n|---|---|---|---|\n| true | 2022-04-11T08:20:42.409          | d3861991-b025-48fb-b203-2df828569736 | test.contoso.com |\n",
-            }
+        "outputs": {
+            "archived": True,
+            "text": "test.contoso.com",
+            "etag": "2022-04-11T08:20:42.409         ",
+            "id": "d3861991-b025-48fb-b203-2df828569736",
+        },
+        "readable_output": "### TOPdesk assets\n|Archived|Etag|Id|Text|\n|---|---|---|---|\n| true | 2022-04-11T08:20:42.409          | d3861991-b025-48fb-b203-2df828569736 | test.contoso.com |\n",
+    }
     mock_assets = util_load_json("test_data/topdesk_asset.json")
-    expected_request_params = {"archived": ["false"], "pagesize": ["1"], "searchterm": ["test"], "pagestart": ["0"]}
+    expected_request_params = {
+        "archived": ["false"],
+        "pagesize": ["1"],
+        "searchterm": ["test"],
+        "pagestart": ["0"],
+    }
 
     mocked_request = requests_mock.get(
         "https://test.com/api/assetmgmt/assets",
