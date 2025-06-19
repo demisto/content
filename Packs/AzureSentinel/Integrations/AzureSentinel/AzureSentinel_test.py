@@ -1711,7 +1711,7 @@ def test_update_remote_system_command(mocker):
         (IncidentStatus.DONE, False, {}, False),  # delta is empty
         (IncidentStatus.DONE, False, {"classification": "FalsePositive"}, False),  # delta have only closing fields
         (IncidentStatus.DONE, False, {"title": "Title"}, True),  # delta have fields except closing fields
-        (IncidentStatus.ACTIVE, True, {}, False),  # delta is empty and close_incident_in_remote is False
+        (IncidentStatus.ACTIVE, False, {}, False),  # delta is empty and close_incident_in_remote is False
         (IncidentStatus.ACTIVE, False, {"title": "Title"}, True),
         (IncidentStatus.PENDING, True, {}, False),
     ],
@@ -1772,14 +1772,14 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, incid
 @pytest.mark.parametrize(
     "delta, data, incident_status, to_open",
     [
-        ({"classification": "FalsePositive"}, {"Status": "Active"}, IncidentStatus.ACTIVE, False),
-        ({"classification": ""}, {"Status": "Closed"}, IncidentStatus.ACTIVE, True),
-        ({"classification": ""}, {"Status": "Closed"}, IncidentStatus.DONE, False),
-        ({"classification": ""}, {"Status": "Active"}, IncidentStatus.ACTIVE, False),
-        ({}, {"Status": "Active"}, IncidentStatus.ACTIVE, False),
+        ({"classification": "FalsePositive"}, {"status": "Active"}, IncidentStatus.ACTIVE, False),
+        ({"classification": ""}, {"status": "Closed"}, IncidentStatus.ACTIVE, True),
+        ({"classification": ""}, {"status": "Closed"}, IncidentStatus.DONE, False),
+        ({"classification": ""}, {"status": "Active"}, IncidentStatus.ACTIVE, False),
+        ({}, {"status": "Active"}, IncidentStatus.ACTIVE, False),
         (
             {"classification": "FalsePositive"},
-            {"classification": "FalsePositive", "Status": "Closed"},
+            {"classification": "FalsePositive", "status": "Closed"},
             IncidentStatus.DONE,
             False,
         ),
