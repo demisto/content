@@ -27,9 +27,6 @@ outputs:
 - contextPath: PFXAnalysis.Certificate_Present
   description: True if a certificate was found in the PFX.
   type: boolean
-- contextPath: PFXAnalysis.Common_Name
-  description: Common Name from the certificate's subject.
-  type: string
 - contextPath: PFXAnalysis.Issuer
   description: Common Name of the certificate's issuer.
   type: string
@@ -45,22 +42,13 @@ outputs:
 - contextPath: PFXAnalysis.Self_Signed
   description: True if the certificate is self-signed.
   type: boolean
-- contextPath: PFXAnalysis.Trusted_Issuer
-  description: True if the certificate's issuer is in the predefined trusted list.
-  type: boolean
-- contextPath: PFXAnalysis.CRL_URIs
-  description: List of CRL Distribution Point URIs.
-  type: string
-- contextPath: PFXAnalysis.OCSP_URIs
-  description: List of OCSP Access Method URIs.
-  type: string
 - contextPath: PFXAnalysis.Suspicious_Keywords_in_CN
   description: True if suspicious keywords were found in the Common Name.
   type: boolean
 - contextPath: PFXAnalysis.Reasons
   description: A list of all identified suspicious reasons.
   type: string
-- contextPath: PFXAnalysis.Is_Suspicious
+- contextPath: PFXAnalysis.is_pfx_suspicious
   description: Overall boolean indicator if the PFX is considered suspicious.
   type: boolean
 scripttarget: 0

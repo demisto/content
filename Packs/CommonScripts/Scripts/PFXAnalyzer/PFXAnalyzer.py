@@ -27,30 +27,6 @@ SUSPICIOUS_KEYWORDS = [
     ]
 ]
 
-TRUSTED_ISSUERS = [
-    issuer.lower()
-    for issuer in [
-        "DigiCert",
-        "GlobalSign",
-        "Entrust",
-        "Sectigo",
-        "Let's Encrypt",
-        "GoDaddy",
-        "Amazon",
-        "Microsoft",
-        "Google Trust",
-        "Apple",
-        "Adobe",
-        "Baltimore",
-        "COMODO",
-        "Thawte",
-        "Symantec",
-        "VeriSign",
-        "IdenTrust",
-        "Cloudflare",
-    ]
-]
-
 
 def get_cn(cert_name_object):
     for attr in cert_name_object:
@@ -76,6 +52,12 @@ def is_self_signed(cert):
 
 def analyze_pfx_file(pfx_data: bytes, pfx_password: Optional[str] = None) -> dict:
     reasons = []
+    extension_missing_flags = {
+        "CRL": False,
+        "AIA": False,
+        "CertPolicy": False,
+    }
+
     pfx_output = {
         "Private Key Present": False,
         "Key Type": "N/A",
@@ -87,11 +69,11 @@ def analyze_pfx_file(pfx_data: bytes, pfx_password: Optional[str] = None) -> dic
         "Validity End": "N/A",
         "Validity Days": "N/A",
         "Self-Signed": False,
-        "Trusted Issuer": False,
         "CRL URIs": [],
         "OCSP URIs": [],
         "Suspicious Keywords in CN": False,
         "Reasons": [],
+        "is_pfx_suspicious": False,
     }
 
     password_bytes = pfx_password.encode("utf-8") if pfx_password else None
@@ -155,31 +137,17 @@ def analyze_pfx_file(pfx_data: bytes, pfx_password: Optional[str] = None) -> dic
             reasons.append("Could not calculate certificate validity duration")
 
         cn = pfx_output["Common Name"]
-        issuer_cn = pfx_output["Issuer"]
 
-        if (
-            cn
-            and any(keyword in str(cn).lower() for keyword in SUSPICIOUS_KEYWORDS)
-            and (not pfx_output["Trusted Issuer"] or pfx_output["Self-Signed"])
-        ):
+        if cn and any(keyword in str(cn).lower() for keyword in SUSPICIOUS_KEYWORDS):
             pfx_output["Suspicious Keywords in CN"] = True
-            reasons.append(f"Suspicious keyword in Common Name (issuer not trusted): '{cn}'")
-
-        if issuer_cn:
-            if str(issuer_cn).lower() not in TRUSTED_ISSUERS:
-                pfx_output["Trusted Issuer"] = False
-                reasons.append(f"Untrusted issuer: '{issuer_cn}'")
-            else:
-                pfx_output["Trusted Issuer"] = True
-        else:
-            reasons.append("Issuer Common Name is missing")
+            reasons.append(f"Suspicious keyword in Common Name: '{cn}'")
 
         try:
             policy_ext = cert.extensions.get_extension_for_oid(ExtensionOID.CERTIFICATE_POLICIES)
             if not getattr(policy_ext.value, "policy_information", []):
                 reasons.append("Certificate Policy extension found but no policy information (unusual)")
         except x509.ExtensionNotFound:
-            reasons.append("Certificate Policy extension not found (can be suspicious for enterprise certs)")
+            extension_missing_flags["CertPolicy"] = True
         except Exception as ex:
             reasons.append(f"Error processing Certificate Policies: {ex}")
 
@@ -199,7 +167,7 @@ def analyze_pfx_file(pfx_data: bytes, pfx_password: Optional[str] = None) -> dic
             else:
                 reasons.append("Unexpected structure in CRL Distribution Points")
         except x509.ExtensionNotFound:
-            reasons.append("CRL Distribution Points extension not found (suspicious for public CAs)")
+            extension_missing_flags["CRL"] = True
         except Exception as ex:
             reasons.append(f"Error processing CRL Distribution Points: {ex}")
 
@@ -219,11 +187,15 @@ def analyze_pfx_file(pfx_data: bytes, pfx_password: Optional[str] = None) -> dic
             else:
                 reasons.append("Unexpected structure in Authority Information Access extension")
         except x509.ExtensionNotFound:
-            reasons.append("Authority Information Access extension not found (suspicious for public CAs)")
+            extension_missing_flags["AIA"] = True
         except Exception as ex:
             reasons.append(f"Error processing OCSP URIs: {ex}")
 
+        if all(extension_missing_flags.values()):
+            reasons.append("Certificate is missing standard extensions: CRL, AIA, and Certificate Policies (suspicious)")
+
     pfx_output["Reasons"] = reasons
+    pfx_output["is_pfx_suspicious"] = len(reasons) > 2
 
     return pfx_output
 
