@@ -15,7 +15,7 @@ Ensure you have the below prerequisites:
 
 See this [doc](https://docs.umbrella.com/deployment-umbrella/docs/setting-up-an-amazon-s3-bucket#prerequisites) for further instructions on how to create a S3 bucket, and how to configure it for your needs.
 
-Alternatively, use a terraform module that provisions all the necessary AWS infrastructure for log ingestion of Cisco Umbrella into XSIAM. See the Terraform module's [README](https://github.com/PaloAltoNetworks/terraform-umbrella-s3-to-xsiam-ingestion-module/tree/main) for setup instructions.
+Alternatively, use a Terraform module to set up the AWS infrastructure needed to ingest Cisco Umbrella logs into Cortex XSIAM. See the Terraform module's [README](https://github.com/PaloAltoNetworks/terraform-umbrella-s3-to-xsiam-ingestion-module/tree/main) for setup instructions.
 
 **On Cisco Umbrella cloud security**
 
