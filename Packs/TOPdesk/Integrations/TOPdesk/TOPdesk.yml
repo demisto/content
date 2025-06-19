@@ -2137,6 +2137,51 @@ script:
       description: TOPdesk incident's external links date.
       type: Date
   - arguments:
+    - description: The offset at which to start listing the assets at. Must be greater or equal to 0. Default is 0.
+      name: start
+      defaultValue: 0
+    - description: The amount of assets to be returned per request. Must be between 1 and 100 or 0 for all assets. Default is 50.
+      name: page_size
+      defaultValue: 50
+    - description: Supports a set of OData filters which can be combined with 'and' and 'or' assets. Filter expressions can also be grouped by parentheses. https://developers.topdesk.com/explorer/?page=assets#/Assets/getAssets.
+      name: filter
+    - description: Search assets by name.
+      name: search_term
+    - description: List only Archived or only Active devices. Leave empty for all.
+      name: archived
+      predefined:
+        - "true"
+        - "false"
+    - name: fields
+      description: Additional fields to include in the response.
+      defaultValue: ''
+      predefined:
+      - 'archived,etag,id,text'
+    description: Get list of assets.
+    name: topdesk-assets-list
+    outputs:
+      - contextPath: TOPdesk.Asset.Archived
+        description: Asset status, archived or not.
+        type: Boolean
+      - contextPath: TOPdesk.Asset.Etag
+        description: Asset entry date.
+        type: String
+      - contextPath: TOPdesk.Asset.Id
+        description: Unique ID of the Asset.
+        type: String
+      - contextPath: TOPdesk.Asset.Text
+        description: Asset freetext field, often the name of the asset.
+        type: String
+  - arguments:
+    - description: The Unique ID of the Asset.
+      name: asset_id
+      required: true
+    - description: "A json with the fields that you want to configure: {'asset_name':'testasset'}."
+      name: data
+      required: true
+    description: Update Asset Fields.
+    name: topdesk-asset-update
+  - arguments:
     - description: The caller ID for this incident. For an unregistered caller provide a name. For a list of registered persons or operator IDs run !topdesk-persons-list or !topdesk-operators-list.
       name: caller
       required: false
@@ -5853,7 +5898,7 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3720084
   isfetch: true
   script: ''
   subtype: python3
