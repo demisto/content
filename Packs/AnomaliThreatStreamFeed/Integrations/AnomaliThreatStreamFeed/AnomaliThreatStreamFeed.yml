@@ -77,7 +77,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Indicator Reputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation. Indicators' verdict are determined by their Dbot score from the api, the default is Unknown.
+  additionalinfo: Indicators from this integration instance will be marked with this reputation. Indicators' verdicts are determined by their Dbot score from the API. The default is Unknown.
   name: feedReputation
   options:
   - None
@@ -114,7 +114,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Use the Anomali ThreatStream Feed Integration to fetch indicators from Anomali ThreatStream.
+description: Use the Anomali ThreatStream Feed Integration to fetch indicators from the Anomali ThreatStream.
 display: Anomali ThreatStream Feed
 name: Anomali ThreatStream Feed
 script:
@@ -122,7 +122,7 @@ script:
   - arguments:
     - name: indicator_type 
       auto: PREDEFINED
-      description: The indicator type to analyze. If not selected we will get indicators from all types.
+      description: The indicator type to analyze. If not selected, indicators from all types are retrieved.
       isArray: false
       required: false
       predefined:

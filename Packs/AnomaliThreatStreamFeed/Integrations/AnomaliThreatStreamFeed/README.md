@@ -5,7 +5,7 @@ Use the Anomali ThreatStream Feed Integration to fetch indicators from Anomali T
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Fetch indicators | Enable this checkbox to automatically pull indicators from Anomali ThreatStream at regular intervals. |  |
+| Fetch indicators | Enable this checkbox to automatically pull indicators from the Anomali ThreatStream at regular intervals. |  |
 | Fetch by | Fetch by the modification or creation time of the indicators. | True |
 | Server URL (e.g., https://www.test.com) | Confirm that the pre-filled URL matches the correct API endpoint for your Anomali ThreatStream instance. | True |
 | Username |  | True |
@@ -13,9 +13,8 @@ Use the Anomali ThreatStream Feed Integration to fetch indicators from Anomali T
 | Feed Fetch Interval |  | False |
 | Confidence Threshold | Will only return indicators above the confidence threshold. | False |
 | Source Reliability | Reliability of the source providing the intelligence data | True |
-| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. Indicator's TLP will override default value. | False |
-| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. Indicators' verdict are determined by their Dbot score from the api, the default is Unknown. | False |
-|  |  | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Indicator's TLP will override the default value. | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. Indicators' verdicts are determined by their Dbot score from the API. The default is Unknown. | False |
 | Indicator Expiration Method | The method by which to expire indicators from this feed for this integration instance. | False |
 | Create relationships |  | False |
 | Trust any certificate (not secure) |  | False |

@@ -384,17 +384,17 @@ def get_current_utc_time():
 def get_past_time(minutes_interval):
     """
     Calculates the time that is now minus the given time interval in minutes,
-    and returns it in ISO 8601 format with milliseconds and 'Z' for UTC.
+    and returns it in ISO 8601 format with milliseconds.
 
     Args:
         minutes_interval (int): The time interval in minutes to go back.
 
     Returns:
-        str: The calculated past time in 'YYYY-MM-DDTHH:MM:SS.sssZ' format. i.e 2023-08-01T11:57:00.080Z
+        str: The calculated past time in 'YYYY-MM-DDTHH:MM:SS.sss' format. i.e., 2023-08-01T11:57:00.080
     """
     now = get_current_utc_time()
     past_time = now - timedelta(minutes=minutes_interval)
-    return past_time.replace(tzinfo=None).isoformat(timespec="milliseconds") + "Z"
+    return past_time.replace(tzinfo=None).isoformat(timespec="milliseconds")
 
 
 def handle_fetch_pagination(client: Client, initial_response: dict[str, Any]) -> list[dict[str, Any]]:
@@ -492,10 +492,9 @@ def fetch_indicators_command(
     )
 
     if order_by == "modified_ts":
-        # TODO will be deleted later - good for tests and demo
         query["modified_ts__gte"] = last_fetch_time
     else:  # order_by == "created_ts"
-        query["created_ts__gte"] = "2021-01-01T09:48:19.629Z"  # last_fetch_time
+        query["created_ts__gte"] = last_fetch_time
 
     demisto.debug(f"{THREAT_STREAM} - Initial API call for fetch-indicators with params: {query}")
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX, params=query)
@@ -619,7 +618,7 @@ def parse_indicator_for_fetch(
         Confidence=str(indicator.get("confidence")),
         Creation=indicator.get("created_ts"),
         Expiration=indicator.get("expires_ts"),
-        Tags=indicator.get("tags"),
+        Tags=extract_tag_names(indicator),
         TrafficLightProtocol=tlp_color,  # Use the configured TLP color
         Location=indicator.get("locations"),
         ASN=indicator.get("asn"),

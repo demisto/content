@@ -395,7 +395,7 @@ def test_get_past_time_basic_interval(mocker):
 
     mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=UTC)
     minutes_interval = 60  # one hour ago
-    expected_past_time = "2023-08-01T11:00:00.500Z"
+    expected_past_time = "2023-08-01T11:00:00.500"
 
     mocker.patch("AnomaliThreatStreamFeed.get_current_utc_time", return_value=mock_now)
 
@@ -677,7 +677,7 @@ def test_parse_indicator_for_fetch_success_scenarios(mocker):
         "description": "Test IP",
         "source": "TestSource",
         "value": "1.1.1.1",
-        "tags": ["tag1", "tag2"],
+        "tags": [{"id": "id1", "name": "tag1"}, {"id": "id2", "name": "tag2"}],
         "tlp": "RED",
         "country": "US",
         "modified_ts": "2023-01-01T12:00:00Z",
@@ -738,7 +738,7 @@ def test_parse_indicator_for_fetch_success_scenarios(mocker):
             "target_industry": ["finance"],
             "asn": "AS12345",
             "locations": "New York",
-            "tags": ["tag1", "tag2"],
+            "tags": [{"id": "id1", "name": "tag1"}, {"id": "id2", "name": "tag2"}],
             "tlp": "RED",
             "country": "US",
             "modified_ts": "2023-01-01T12:00:00Z",
