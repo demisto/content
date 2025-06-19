@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import dateutil.parser
 
 from typing import Any
@@ -372,7 +372,7 @@ class RecoClient(BaseClient):
             raise e
 
     def get_alert_ai_summary(self, alert_id: str) -> dict[str, Any]:
-        """ Get alert AI summary. """
+        """Get alert AI summary."""
         try:
             response = self._http_request(
                 method="GET",
@@ -1036,9 +1036,7 @@ def get_alert_ai_summary(reco_client: RecoClient, alert_id: str) -> CommandResul
     )
 
 
-def enrich_incident(
-    reco_client: RecoClient, single_incident: dict[str, Any]
-) -> dict[str, Any]:
+def enrich_incident(reco_client: RecoClient, single_incident: dict[str, Any]) -> dict[str, Any]:
     alert_as_dict = parse_table_row_to_dict(single_incident.get("cells", {}))
     if RECO_INCIDENT_ID_FIELD in alert_as_dict:
         incident_id: str = str(alert_as_dict[RECO_INCIDENT_ID_FIELD])
@@ -1395,7 +1393,14 @@ def fetch_incidents(
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
-    next_run["lastRun"] = incidents_sorted[0]["occurred"] if incidents_sorted else last_run_time
+    if incidents_sorted:
+        # Use the latest timestamp and add a 1-second buffer
+        last_occurred = incidents_sorted[-1]["occurred"]
+        last_occurred_dt = dateutil.parser.parse(last_occurred)
+        last_occurred_dt_plus_1 = last_occurred_dt + timedelta(seconds=1)
+        next_run["lastRun"] = last_occurred_dt_plus_1.strftime(DEMISTO_OCCURRED_FORMAT)
+    else:
+        next_run["lastRun"] = last_run_time
     next_run["incident_ids"] = existing_incidents + [incident["dbotMirrorId"] for incident in incidents]
 
     return next_run, incidents
