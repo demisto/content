@@ -7,6 +7,7 @@ import demistomock as demisto
 import yaml
 import os
 
+from Packs.Wiz.Integrations.WizDefend import WizDefend
 from Packs.Wiz.Integrations.WizDefend.WizDefend import *
 
 
@@ -947,15 +948,21 @@ def test_apply_all_filters():
     # Test with after_time instead of creation_minutes_back
     validated_values_with_after = copy.deepcopy(validated_values)
     validated_values_with_after.pop("creation_minutes_back")
-    validated_values_with_after["after_time"] = "2022-01-01T00:00:00Z"
+    validated_values_with_after["after"] = "2022-01-01T00:00:00Z"
 
     variables = {}
     result = apply_all_detection_filters(variables, validated_values_with_after)
+    assert "createdAt" not in result["filterBy"]
 
+    validated_values_with_after["before"] = "2022-02-01T00:00:00Z"
+
+    result = apply_all_detection_filters(variables, validated_values_with_after)
     # Check that after_time filter was applied
     assert "createdAt" in result["filterBy"]
     assert "after" in result["filterBy"]["createdAt"]
+    assert "before" in result["filterBy"]["createdAt"]
     assert result["filterBy"]["createdAt"]["after"] == "2022-01-01T00:00:00Z"
+    assert result["filterBy"]["createdAt"]["before"] == "2022-02-01T00:00:00Z"
 
     # Test with minimal filters
     minimal_values = {"severity": ["CRITICAL"]}
@@ -2079,7 +2086,7 @@ def test_fetch_incidents_success(
     assert incident_arg[0]["name"] == "suspicious activity detected - 12345678-1234-1234-1234-d25e16359c19"
 
     # Verify demisto.setLastRun was called with the expected timestamp
-    mock_set_last_run.assert_called_with({"time": "2022-01-02T00:00:00Z"})
+    mock_set_last_run.assert_called_with({'time': '2022-01-02T00:00:00Z', 'endCursor': None, 'after': None, 'before': '2022-01-02T00:00:00Z'})
 
 
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_detections", return_value="API error message")
@@ -2202,6 +2209,166 @@ def test_main_unknown_command(mock_command, mock_set_auth, mock_set_api, mock_re
     # Verify return_error was called with appropriate message
     mock_return_error.assert_called_once()
     assert "Unrecognized command" in mock_return_error.call_args[0][0]
+
+
+@pytest.mark.parametrize(
+    "end_cursor,expected_valid,expected_error",
+    [
+        # Valid base64 strings
+        ("dGVzdA==", True, None),  # "test" in base64
+        ("SGVsbG8gV29ybGQ=", True, None),  # "Hello World" in base64
+        ("", True, None),  # Empty string should be valid
+        (None, True, None),  # None should be valid
+        # Invalid base64 strings
+        ("invalid_base64!", False, "Invalid end_cursor format"),
+        ("not-base64", False, "Invalid end_cursor format"),
+        ("123", False, "Invalid end_cursor format"),
+    ]
+)
+def test_validate_end_cursor(end_cursor, expected_valid, expected_error):
+    """Test validate_end_cursor function with various inputs"""
+    is_valid, error_message = validate_end_cursor(end_cursor)
+
+    assert is_valid == expected_valid
+    if expected_error:
+        assert expected_error in error_message
+    else:
+        assert error_message is None
+
+
+@pytest.mark.parametrize(
+    "after_time,before_time,expected_valid,expected_error",
+    [
+        # Valid timestamps
+        ("2022-01-01T00:00:00Z", "2022-01-02T00:00:00Z", True, None),
+        ("2022-01-01T12:30:45.123Z", "2022-01-02T12:30:45.123Z", True, None),
+        (None, "2022-01-02T00:00:00Z", True, None),  # Only before_time
+        ("2022-01-01T00:00:00Z", None, True, None),  # Only after_time
+        (None, None, True, None),  # Both None
+        # Invalid timestamps
+        ("invalid-date", "2022-01-02T00:00:00Z", False, "Invalid after_time format"),
+        ("2022-01-01T00:00:00Z", "invalid-date", False, "Invalid before_time format"),
+        ("2022-13-01T00:00:00Z", "2022-01-02T00:00:00Z", False, "Invalid after_time format"),
+        ("2022-01-01T25:00:00Z", "2022-01-02T00:00:00Z", False, "Invalid after_time format"),
+    ]
+)
+def test_validate_after_and_before_timestamps(after_time, before_time, expected_valid, expected_error):
+    """Test validate_after_and_before_timestamps function"""
+    is_valid, error_message = validate_after_and_before_timestamps(after_time, before_time)
+
+    assert is_valid == expected_valid
+    if expected_error:
+        assert expected_error in error_message
+    else:
+        assert error_message is None
+
+
+@pytest.mark.parametrize(
+    "variables,before_time,expected_result",
+    [
+        # Test with empty variables
+        ({}, "2022-01-01T00:00:00Z", {"filterBy": {"createdAt": {"before": "2022-01-01T00:00:00Z"}}}),
+        # Test with existing filterBy
+        ({"filterBy": {"severity": ["CRITICAL"]}}, "2022-01-01T00:00:00Z",
+         {"filterBy": {"severity": ["CRITICAL"], "createdAt": {"before": "2022-01-01T00:00:00Z"}}}),
+        # Test with existing createdAt filter
+        ({"filterBy": {"createdAt": {"after": "2021-12-01T00:00:00Z"}}}, "2022-01-01T00:00:00Z",
+         {"filterBy": {"createdAt": {"after": "2021-12-01T00:00:00Z", "before": "2022-01-01T00:00:00Z"}}}),
+        # Test with None before_time (should not modify variables)
+        ({"filterBy": {"severity": ["CRITICAL"]}}, None, {"filterBy": {"severity": ["CRITICAL"]}}),
+        # Test with empty string before_time (should not modify variables)
+        ({"filterBy": {"severity": ["CRITICAL"]}}, "", {"filterBy": {"severity": ["CRITICAL"]}}),
+    ]
+)
+def test_apply_creation_before_time_filter(variables, before_time, expected_result):
+    """Test apply_creation_before_time_filter function"""
+    result = apply_creation_before_time_filter(variables, before_time)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "variables,end_cursor,expected_result",
+    [
+        # Test with empty variables
+        ({}, "dGVzdA==", {"after": "dGVzdA=="}),
+        # Test with existing variables
+        ({"filterBy": {"severity": ["CRITICAL"]}}, "dGVzdA==",
+         {"filterBy": {"severity": ["CRITICAL"]}, "after": "dGVzdA=="}),
+        # Test with None end_cursor (should not modify variables)
+        ({"filterBy": {"severity": ["CRITICAL"]}}, None, {"filterBy": {"severity": ["CRITICAL"]}}),
+        # Test with empty string end_cursor (should not modify variables)
+        ({"filterBy": {"severity": ["CRITICAL"]}}, "", {"filterBy": {"severity": ["CRITICAL"]}}),
+    ]
+)
+def test_apply_end_cursor(variables, end_cursor, expected_result):
+    """Test apply_end_cursor function"""
+    result = apply_end_cursor(variables, end_cursor)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "variables,after_time,expected_result",
+    [
+        # Test with empty variables
+        ({}, "2022-01-01T00:00:00Z", {"filterBy": {"createdAt": {"after": "2022-01-01T00:00:00Z"}}}),
+        # Test with existing filterBy
+        ({"filterBy": {"severity": ["CRITICAL"]}}, "2022-01-01T00:00:00Z",
+         {"filterBy": {"severity": ["CRITICAL"], "createdAt": {"after": "2022-01-01T00:00:00Z"}}}),
+        # Test with existing createdAt filter
+        ({"filterBy": {"createdAt": {"before": "2022-02-01T00:00:00Z"}}}, "2022-01-01T00:00:00Z",
+         {"filterBy": {"createdAt": {"before": "2022-02-01T00:00:00Z", "after": "2022-01-01T00:00:00Z"}}}),
+        # Test with None after_time (should not modify variables)
+        ({"filterBy": {"severity": ["CRITICAL"]}}, None, {"filterBy": {"severity": ["CRITICAL"]}}),
+        # Test with empty string after_time (should not modify variables)
+        ({"filterBy": {"severity": ["CRITICAL"]}}, "", {"filterBy": {"severity": ["CRITICAL"]}}),
+    ]
+)
+def test_apply_creation_after_time_filter(variables, after_time, expected_result):
+    """Test apply_creation_after_time_filter function"""
+    result = apply_creation_after_time_filter(variables, after_time)
+    assert result == expected_result
+
+
+def test_apply_all_detection_filters_with_cursors():
+    """Test apply_all_detection_filters with after, before, and end_cursor parameters"""
+    # Test with all three cursor-related parameters
+    validated_values = {
+        "after": "2022-01-01T00:00:00Z",
+        "before": "2022-01-02T00:00:00Z",
+        "endCursor": "dGVzdA==",
+        "severity": ["CRITICAL"]
+    }
+
+    variables = {}
+    result = apply_all_detection_filters(variables, validated_values)
+
+    # Verify all filters were applied
+    assert "filterBy" in result
+    assert "createdAt" in result["filterBy"]
+    assert result["filterBy"]["createdAt"]["after"] == "2022-01-01T00:00:00Z"
+    assert result["filterBy"]["createdAt"]["before"] == "2022-01-02T00:00:00Z"
+    assert result["after"] == "dGVzdA=="
+    assert result["filterBy"]["severity"]["equals"] == ["CRITICAL"]
+
+
+def test_apply_all_detection_filters_time_conflict():
+    """Test apply_all_detection_filters handles time parameter conflicts correctly"""
+    # Test with creation_minutes_back (should take precedence over after/before)
+    validated_values = {
+        "creation_minutes_back": 30,
+        "severity": ["HIGH"]
+    }
+
+    variables = {}
+    result = apply_all_detection_filters(variables, validated_values)
+
+    # Should use creation_minutes_back filter, not after/before
+    assert "filterBy" in result
+    assert "createdAt" in result["filterBy"]
+    assert "inLast" in result["filterBy"]["createdAt"]
+    assert result["filterBy"]["createdAt"]["inLast"]["amount"] == 30
+    assert "after" not in result["filterBy"]["createdAt"]
+    assert "before" not in result["filterBy"]["createdAt"]
 
 
 # ===== VALIDATION RESPONSE CLASS TESTS =====
@@ -3849,3 +4016,353 @@ def test_get_safe_params_for_logging_preserves_non_dict_values(mocker):
 
     # Verify sensitive value is redacted
     assert result["secret"] == "***REDACTED***"
+
+
+# ===== FETCH INCIDENTS FUNCTION TESTS =====
+
+@pytest.mark.parametrize(
+    "end_cursor,after_time,before_time,last_run_time,expected_continue,expected_after,expected_before,expected_end_cursor",
+    [
+        # Test continuing pagination with end_cursor
+        ("base64_cursor", "2022-01-01T00:00:00Z", "2022-01-02T00:00:00Z", "2021-12-31T00:00:00Z", True, "2022-01-01T00:00:00Z",
+         "2022-01-02T00:00:00Z", "base64_cursor"),
+        # Test fresh fetch without end_cursor
+        (None, None, "2022-01-01T00:00:00Z", "2021-12-31T00:00:00Z", False, "2022-01-01T00:00:00Z", None, None),
+        # Test fresh fetch with no previous before (use last_run_time)
+        (None, None, None, "2021-12-31T00:00:00Z", False, "2021-12-31T00:00:00Z", None, None),
+        # Test continuing pagination without stored_after (edge case)
+        ("base64_cursor", None, "2022-01-02T00:00:00Z", "2021-12-31T00:00:00Z", True, None, "2022-01-02T00:00:00Z",
+         "base64_cursor"),
+    ]
+)
+@freeze_time("2022-01-03T12:00:00Z")
+def test_fetch_incident_pagination_logic(end_cursor, after_time, before_time, last_run_time, expected_continue, expected_after,
+                                         expected_before, expected_end_cursor):
+    """Test FetchIncident pagination logic with various scenarios"""
+
+    # Mock getLastRun to return test data
+    last_run_data = {
+        "endCursor": end_cursor,
+        "after": after_time,
+        "before": before_time,
+        "time": last_run_time
+    }
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data):
+        fetch_manager = FetchIncident()
+
+        # Test should_continue_previous_run
+        assert fetch_manager.should_continue_previous_run() == expected_continue
+
+        # Test get_after_time
+        assert fetch_manager.get_after_time() == expected_after
+
+        # Test get_before_time
+        if expected_before:
+            assert fetch_manager.get_before_time() == expected_before
+        else:
+            # Should return current time for fresh fetch (frozen time)
+            assert fetch_manager.get_before_time() == "2022-01-03T12:00:00Z"
+
+        # Test get_end_cursor
+        assert fetch_manager.get_end_cursor() == expected_end_cursor
+
+
+@freeze_time("2022-01-03T12:00:00Z")
+@patch.object(demisto, "setLastRun")
+def test_fetch_incident_save_pagination_context(mock_set_last_run):
+    """Test FetchIncident._save_pagination_context method"""
+
+    # Mock getLastRun data - use enum values for keys to match the actual code
+    last_run_data = {
+        WizApiResponse.END_CURSOR: None,
+        WizApiVariables.AFTER: "2022-01-01T00:00:00Z",
+        WizApiVariables.BEFORE: "2022-01-02T00:00:00Z",
+        DemistoParams.TIME: "2021-12-31T00:00:00Z"
+    }
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data):
+        # CRITICAL FIX: Set the global variable directly on the module
+        original_cursor = WizDefend.API_END_CURSOR
+        try:
+            WizDefend.API_END_CURSOR = "new_cursor_value"
+
+            fetch_manager = FetchIncident()
+            fetch_manager._save_pagination_context()
+
+            # Verify setLastRun was called with correct data
+            mock_set_last_run.assert_called_once()
+            call_args = mock_set_last_run.call_args[0][0]
+
+            # Use enum constants for assertions to match the code behavior
+            assert call_args[DemistoParams.TIME] == "2022-01-03T12:00:00Z"
+            assert call_args[WizApiResponse.END_CURSOR] == "new_cursor_value"
+            assert call_args[WizApiVariables.AFTER] == "2022-01-02T00:00:00Z"  # Previous before (fresh fetch)
+            assert call_args[WizApiVariables.BEFORE] == "2022-01-03T12:00:00Z"  # Current time (fresh fetch)
+        finally:
+            # Restore original value
+            WizDefend.API_END_CURSOR = original_cursor
+
+
+@freeze_time("2022-01-03T12:00:00Z")
+@patch.object(demisto, "setLastRun")
+def test_fetch_incident_clear_pagination_context(mock_set_last_run):
+    """Test FetchIncident._clear_pagination_context method"""
+
+    # Mock getLastRun data for a fresh fetch scenario (no end_cursor) - use enum keys
+    last_run_data = {
+        WizApiResponse.END_CURSOR: None,  # No cursor = fresh fetch
+        WizApiVariables.AFTER: "2022-01-01T00:00:00Z",
+        WizApiVariables.BEFORE: "2022-01-02T00:00:00Z",
+        DemistoParams.TIME: "2021-12-31T00:00:00Z"
+    }
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data):
+        # Set global variable to None
+        original_cursor = WizDefend.API_END_CURSOR
+        try:
+            WizDefend.API_END_CURSOR = None
+
+            fetch_manager = FetchIncident()
+            fetch_manager._clear_pagination_context()
+
+            # Verify setLastRun was called with cleared data
+            mock_set_last_run.assert_called_once()
+            call_args = mock_set_last_run.call_args[0][0]
+
+            # Use enum constants for assertions
+            assert call_args[DemistoParams.TIME] == "2022-01-03T12:00:00Z"
+            assert call_args[WizApiResponse.END_CURSOR] is None
+            # For fresh fetch: get_after_time() returns stored_before if available, else last_run_time
+            assert call_args[WizApiVariables.AFTER] == "2022-01-02T00:00:00Z"  # stored_before
+            assert call_args[WizApiVariables.BEFORE] == "2022-01-03T12:00:00Z"  # Current time
+        finally:
+            # Restore original value
+            WizDefend.API_END_CURSOR = original_cursor
+
+
+@pytest.mark.parametrize(
+    "api_end_cursor,expect_save_called,expect_clear_called",
+    [
+        ("cursor_value", True, False),
+        (None, False, True),
+        ("", False, True),
+    ]
+)
+@patch("WizDefend.datetime")
+@patch.object(demisto, "setLastRun")
+def test_fetch_incident_handle_post_incident_creation(mock_set_last_run, mock_datetime, api_end_cursor, expect_save_called,
+                                                      expect_clear_called):
+    """Test FetchIncident.handle_post_incident_creation method"""
+    from datetime import datetime
+    import WizDefend
+
+    # Mock datetime.now()
+    mock_now = datetime(2022, 1, 3, 12, 0, 0)
+    mock_datetime.now.return_value = mock_now
+    mock_datetime.strftime = datetime.strftime
+
+    # Set global API_END_CURSOR
+    WizDefend.API_END_CURSOR = api_end_cursor
+
+    # Mock getLastRun data
+    last_run_data = {"endCursor": None, "after": None, "before": None, "time": None}
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data):
+        fetch_manager = FetchIncident()
+        fetch_manager.handle_post_incident_creation()
+
+        # Verify setLastRun was called
+        assert mock_set_last_run.called == (expect_save_called or expect_clear_called)
+
+
+@patch("WizDefend.datetime")
+def test_fetch_incident_log_current_state(mock_datetime):
+    """Test FetchIncident.log_current_state method"""
+    from datetime import datetime
+
+    # Mock datetime.now()
+    mock_now = datetime(2022, 1, 3, 12, 0, 0)
+    mock_datetime.now.return_value = mock_now
+    mock_datetime.strftime = datetime.strftime
+
+    # Test with pagination active
+    last_run_data = {
+        "endCursor": "test_cursor",
+        "after": "2022-01-01T00:00:00Z",
+        "before": "2022-01-02T00:00:00Z",
+        "time": "2021-12-31T00:00:00Z"
+    }
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data):
+        fetch_manager = FetchIncident()
+        # Should not raise any exceptions
+        fetch_manager.log_current_state()
+
+    # Test without pagination
+    last_run_data_no_cursor = {
+        "endCursor": None,
+        "after": None,
+        "before": None,
+        "time": "2021-12-31T00:00:00Z"
+    }
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data_no_cursor):
+        fetch_manager = FetchIncident()
+        # Should not raise any exceptions
+        fetch_manager.log_current_state()
+
+
+@pytest.mark.parametrize(
+    "api_end_cursor_value,should_update",
+    [
+        ("new_cursor_123", True),
+        (None, False),
+        ("", False),
+    ]
+)
+@freeze_time("2022-01-03T12:00:00Z")
+@patch.object(demisto, "setLastRun")
+def test_api_cursor_always_updated_when_needed(mock_set_last_run, api_end_cursor_value, should_update):
+    """Test that API_END_CURSOR is always updated when needed"""
+
+    # Mock getLastRun data - use enum values for keys
+    last_run_data = {
+        WizApiResponse.END_CURSOR: "old_cursor",
+        WizApiVariables.AFTER: "2022-01-01T00:00:00Z",
+        WizApiVariables.BEFORE: "2022-01-02T00:00:00Z",
+        DemistoParams.TIME: "2021-12-31T00:00:00Z"
+    }
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data):
+        # CRITICAL FIX: Set the global variable directly on the module
+        original_cursor = WizDefend.API_END_CURSOR
+        try:
+            WizDefend.API_END_CURSOR = api_end_cursor_value
+
+            fetch_manager = FetchIncident()
+            fetch_manager.handle_post_incident_creation()
+
+            mock_set_last_run.assert_called_once()
+            call_args = mock_set_last_run.call_args[0][0]
+
+            if should_update:
+                # Should save pagination context with new cursor
+                assert call_args[WizApiResponse.END_CURSOR] == api_end_cursor_value
+            else:
+                # Should clear pagination context
+                assert call_args[WizApiResponse.END_CURSOR] is None
+        finally:
+            # Restore original value
+            WizDefend.API_END_CURSOR = original_cursor
+
+
+# ===== FETCHINCIDENT CLASS TESTS =====
+
+@freeze_time("2022-01-03T12:00:00Z")
+def test_fetch_incident_initialization():
+    """Test FetchIncident class initialization"""
+
+    # Mock getLastRun data
+    last_run_data = {
+        "endCursor": "test_cursor",
+        "after": "2022-01-01T00:00:00Z",
+        "before": "2022-01-02T00:00:00Z",
+        "time": "2021-12-31T00:00:00Z"
+    }
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data):
+        fetch_manager = FetchIncident()
+
+        # Verify initialization
+        assert fetch_manager.end_cursor == "test_cursor"
+        assert fetch_manager.stored_after == "2022-01-01T00:00:00Z"
+        assert fetch_manager.stored_before == "2022-01-02T00:00:00Z"
+        assert fetch_manager.last_run_time == "2021-12-31T00:00:00Z"
+        assert fetch_manager.api_start_run_time == "2022-01-03T12:00:00Z"
+
+
+@freeze_time("2022-01-03T12:00:00Z")
+def test_fetch_incident_initialization_empty_last_run():
+    """Test FetchIncident class initialization with empty last run"""
+
+    # Mock empty getLastRun data
+    last_run_data = {}
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data):
+        fetch_manager = FetchIncident()
+
+        # Verify initialization with None values
+        assert fetch_manager.end_cursor is None
+        assert fetch_manager.stored_after is None
+        assert fetch_manager.stored_before is None
+        assert fetch_manager.last_run_time is None
+        assert fetch_manager.api_start_run_time == "2022-01-03T12:00:00Z"
+
+
+@pytest.mark.parametrize(
+    "last_run_data,expected_methods_result",
+    [
+        # Test case 1: No pagination scenario (no end_cursor = fresh fetch)
+        (
+                {
+                    "endCursor": None,  # Use string keys to match your existing test pattern
+                    "after": None,
+                    "before": "2022-01-01T00:00:00Z",
+                    "time": "2021-12-31T00:00:00Z"
+                },
+                {
+                    "should_continue": False,
+                    "get_after": "2022-01-01T00:00:00Z",  # Uses stored_before for fresh fetch
+                    "get_end_cursor": None
+                }
+        ),
+        # Test case 2: Active pagination scenario (has end_cursor = continue pagination)
+        (
+                {
+                    "endCursor": "test_cursor",  # Use string keys to match your existing test pattern
+                    "after": "2022-01-01T00:00:00Z",
+                    "before": "2022-01-02T00:00:00Z",
+                    "time": "2021-12-31T00:00:00Z"
+                },
+                {
+                    "should_continue": True,
+                    "get_after": "2022-01-01T00:00:00Z",  # Uses stored_after for pagination
+                    "get_end_cursor": "test_cursor"
+                }
+        ),
+        # Test case 3: Edge case - no stored_before, should fall back to last_run_time
+        (
+                {
+                    "endCursor": None,  # Use string keys to match your existing test pattern
+                    "after": None,
+                    "before": None,
+                    "time": "2021-12-31T00:00:00Z"
+                },
+                {
+                    "should_continue": False,
+                    "get_after": "2021-12-31T00:00:00Z",  # Falls back to last_run_time
+                    "get_end_cursor": None
+                }
+        ),
+    ]
+)
+@freeze_time("2022-01-03T12:00:00Z")
+def test_fetch_incident_all_methods(last_run_data, expected_methods_result):
+    """Test FetchIncident all methods integration"""
+
+    with patch.object(demisto, "getLastRun", return_value=last_run_data):
+        fetch_manager = FetchIncident()
+
+        # Test all the methods
+        assert fetch_manager.should_continue_previous_run() == expected_methods_result["should_continue"]
+        assert fetch_manager.get_after_time() == expected_methods_result["get_after"]
+        assert fetch_manager.get_end_cursor() == expected_methods_result["get_end_cursor"]
+
+        # Test get_before_time logic
+        if expected_methods_result["should_continue"]:
+            # Continuing pagination - should use stored_before
+            assert fetch_manager.get_before_time() == last_run_data.get("before")
+        else:
+            # Fresh fetch - should use current time (frozen time)
+            assert fetch_manager.get_before_time() == "2022-01-03T12:00:00Z"

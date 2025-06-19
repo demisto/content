@@ -16,6 +16,7 @@ DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 WIZ_API_LIMIT = 250
 API_MIN_FETCH = 10
 API_MAX_FETCH = 1000
+API_END_CURSOR = ""
 MAX_DAYS_FIRST_FETCH_DETECTIONS = 2
 FETCH_INTERVAL_MINIMUM_MIN = 10
 FETCH_INTERVAL_MAXIMUM_MIN = 600
@@ -100,12 +101,12 @@ class DemistoParams:
 class WizApiVariables:
     FIRST = "first"
     AFTER = "after"
+    BEFORE = "before"
     FILTER_BY = "filterBy"
     FILTER_SCOPE = "filterScope"
     ORDER_BY = "orderBy"
     STATUS = "status"
     CREATED_AT = "createdAt"
-    AFTER_TIME = "after"
     FIELD = "field"
     DIRECTION = "direction"
     TYPE = "type"
@@ -1000,6 +1001,159 @@ PULL_THREAT_ISSUE_VARIABLES = {
 }
 
 
+class FetchIncident:
+    """
+    Class to manage fetch incidents functionality with pagination support using last run only
+    """
+
+    def __init__(self):
+        """Initialize FetchIncident with last run data"""
+        self.last_run_data = demisto.getLastRun()
+        self.api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
+
+        # Extract pagination values from last run using enums
+        self.end_cursor = self.last_run_data.get(WizApiResponse.END_CURSOR)
+        self.stored_after = self.last_run_data.get(WizApiVariables.AFTER)
+        self.stored_before = self.last_run_data.get(WizApiVariables.BEFORE)
+        self.last_run_time = self.last_run_data.get(DemistoParams.TIME)
+
+        demisto.debug(f"FetchIncident initialized - {WizApiResponse.END_CURSOR}: {self.end_cursor}, "
+                      f"{WizApiVariables.AFTER}: {self.stored_after}, {WizApiVariables.BEFORE}: {self.stored_before}")
+
+    def should_continue_previous_run(self):
+        """
+        Determines if we should continue the previous pagination run based on end_cursor existence
+
+        Returns:
+            bool: True if we should continue previous run, False for fresh run
+        """
+        should_continue = bool(self.end_cursor)
+        demisto.debug(f"Should continue previous run: {should_continue}")
+        return should_continue
+
+    def get_after_time(self):
+        """
+        Get the appropriate after_time for the API call
+        - If end_cursor is not null: use stored after from last run
+        - If end_cursor is null: use previous stored before as after
+
+        Returns:
+            str: The after_time to use in the API call
+        """
+        if self.should_continue_previous_run():
+            # Continuing pagination - use stored after time
+            after_time = self.stored_after
+            demisto.info(f"Continuing pagination - using stored after_time: {after_time}")
+        else:
+            # Fresh fetch - use previous stored before as after
+            after_time = self.stored_before if self.stored_before else self.last_run_time
+            demisto.info(f"Starting fresh fetch - using previous before as after_time: {after_time}")
+
+        return after_time
+
+    def get_before_time(self):
+        """
+        Get the appropriate before_time for the API call
+        - If end_cursor is not null: use stored before from last run
+        - If end_cursor is null: use current time (now)
+
+        Returns:
+            str: The before_time to use in the API call
+        """
+        if self.should_continue_previous_run():
+            # Continuing pagination - use stored before time
+            before_time = self.stored_before
+            demisto.debug(f"Continuing pagination - using stored before_time: {before_time}")
+        else:
+            # Fresh fetch - use current time as before
+            before_time = self.api_start_run_time
+            demisto.debug(f"Fresh fetch - using current time as before_time: {before_time}")
+
+        return before_time
+
+    def get_end_cursor(self):
+        """
+        Get the pagination cursor for continuing from previous fetch
+
+        Returns:
+            str or None: The cursor to use for pagination, None if fresh fetch
+        """
+        if self.should_continue_previous_run():
+            demisto.debug(f"Using pagination cursor: {self.end_cursor}")
+            return self.end_cursor
+        else:
+            demisto.debug("No pagination cursor - fresh fetch")
+            return None
+
+    def _save_pagination_context(self):
+        """
+        Save pagination context when there are more pages to fetch
+        """
+        global API_END_CURSOR
+
+        demisto.info(f"End cursor found: {API_END_CURSOR}, saving pagination context")
+
+        # Create last run data with pagination context using enums
+        last_run_data = {
+            DemistoParams.TIME: self.api_start_run_time,
+            WizApiResponse.END_CURSOR: API_END_CURSOR,
+            WizApiVariables.AFTER: self.get_after_time(),  # Current API after value
+            WizApiVariables.BEFORE: self.get_before_time()  # Current API before value
+        }
+
+        # Save using setLastRun
+        demisto.setLastRun(last_run_data)
+
+        demisto.info("Pagination in progress - saved context to last run")
+        demisto.debug(
+            f"Saved pagination context - {WizApiResponse.END_CURSOR}: {API_END_CURSOR}, {WizApiVariables.AFTER}: {self.get_after_time()}, {WizApiVariables.BEFORE}: {self.get_before_time()}")
+
+    def _clear_pagination_context(self):
+        """
+        Clear pagination context when no more pages to fetch
+        """
+        demisto.info("No end cursor found, clearing pagination context")
+
+        # Create last run data without pagination context using enums
+        last_run_data = {
+            DemistoParams.TIME: self.api_start_run_time,
+            WizApiResponse.END_CURSOR: None,
+            WizApiVariables.AFTER: self.get_after_time(),  # Current API after value (will be previous before)
+            WizApiVariables.BEFORE: self.api_start_run_time  # Current time
+        }
+
+        # Save using setLastRun
+        demisto.setLastRun(last_run_data)
+
+        demisto.info(f"Pagination complete - cleared context and updated last run to {self.api_start_run_time}")
+
+    def handle_post_incident_creation(self):
+        """
+        Handle post-incident creation logic based on global API_END_CURSOR.
+        Decides about pagination context and last run time based on API_END_CURSOR.
+
+        Returns:
+            None
+        """
+        global API_END_CURSOR
+
+        if API_END_CURSOR:
+            self._save_pagination_context()
+        else:
+            self._clear_pagination_context()
+
+    def log_current_state(self):
+        """
+        Log current state for debugging
+        """
+        if self.end_cursor:
+            status = f"Pagination in progress - {WizApiResponse.END_CURSOR}: {self.end_cursor}, {WizApiVariables.AFTER}: {self.stored_after}, {WizApiVariables.BEFORE}: {self.stored_before}"
+        else:
+            status = "No active pagination"
+
+        demisto.info(f"State: {status} - Last run time: {self.last_run_time}, API start time: {self.api_start_run_time}")
+
+
 def set_authentication_endpoint(auth_endpoint):
     global AUTH_E
     AUTH_E = auth_endpoint
@@ -1048,6 +1202,7 @@ def get_token():
 
 
 def get_entries(query, variables, wiz_type):
+    global API_END_CURSOR
     if not TOKEN:
         get_token()
 
@@ -1072,11 +1227,14 @@ def get_entries(query, variables, wiz_type):
             raise Exception(f"{error_message}\nCheck 'server.log' instance file to get additional information")
 
         if WizApiResponse.NODES in response_json[WizApiResponse.DATA][wiz_type]:
-            return response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES], response_json[WizApiResponse.DATA][
-                wiz_type
-            ][WizApiResponse.PAGE_INFO]
+            new_entries = response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES]
+            page_info = response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.PAGE_INFO]
+            API_END_CURSOR = page_info.get(WizApiResponse.END_CURSOR)
         else:
-            return response_json[WizApiResponse.DATA][wiz_type], None
+            new_entries = response_json[WizApiResponse.DATA][wiz_type]
+            page_info = None
+
+        return new_entries, page_info
 
     except Exception as e:
         error_message = f"Received an error while performing an API call.\nError info: {str(e)}"
@@ -1110,6 +1268,7 @@ def query_api(query, variables, wiz_type, paginate=True):
         demisto.debug(f"Successfully pulled {len(entries)} {wiz_type}")
 
         variables[WizApiVariables.AFTER] = page_info[WizApiResponse.END_CURSOR]
+
         new_entries, page_info = get_entries(query, variables, wiz_type)
         if new_entries is not None:
             entries += new_entries
@@ -1304,10 +1463,11 @@ def fetch_incidents():
     """
     global API_MAX_FETCH
 
-    integration_settings_params = extract_params_from_integration_settings(advanced_params=True)
-    last_run = get_last_run_time()
-    api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
+    fetch_manager = FetchIncident()
+    fetch_manager.log_current_state()
 
+    # Get integration settings
+    integration_settings_params = extract_params_from_integration_settings(advanced_params=True)
     API_MAX_FETCH = get_fetch_incidents_api_max_fetch(integration_settings_params.get(DemistoParams.MAX_FETCH))
 
     wiz_detections = get_filtered_detections(
@@ -1316,7 +1476,10 @@ def fetch_incidents():
         severity=integration_settings_params[WizInputParam.SEVERITY],
         detection_origin=integration_settings_params[WizInputParam.ORIGIN],
         detection_cloud_account_or_cloud_organization=integration_settings_params[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG],
-        after_time=last_run,
+        after_time=fetch_manager.get_after_time(),
+        before_time=fetch_manager.get_before_time(),
+        end_cursor=fetch_manager.get_end_cursor(),
+        max_fetch=API_MAX_FETCH,
     )
 
     if isinstance(wiz_detections, str):
@@ -1330,12 +1493,14 @@ def fetch_incidents():
         incidents.append(incident)
 
     demisto.incidents(incidents)
-    demisto.setLastRun({DemistoParams.TIME: api_start_run_time})
+
+    fetch_manager.handle_post_incident_creation()
 
     if incidents:
-        demisto.info(f"Successfully fetched and created {len(incidents)} incidents - Set last run time to {api_start_run_time}.")
+        demisto.info(f"Successfully fetched and created {len(incidents)} incidents")
+        fetch_manager.log_current_state()
     else:
-        demisto.info(f"No new incidents to fetch - Set last run time to {api_start_run_time}.")
+        demisto.info(f"No new incidents to fetch")
 
 
 def get_fetch_timestamp(first_fetch_param):
@@ -1868,6 +2033,109 @@ def validate_project(project):
     return ValidationResponse.create_success(project)
 
 
+def validate_end_cursor(end_cursor):
+    """
+    Validates if the end_cursor is a valid base64 string
+    
+    Args:
+        end_cursor (str): The end cursor to validate
+        
+    Returns:
+        tuple: (is_valid (bool), error_message (str or None))
+    """
+    if not end_cursor:
+        return True, None
+    
+    try:
+        import base64
+        # Try to decode the base64 string
+        base64.b64decode(end_cursor, validate=True)
+        return True, None
+    except Exception as e:
+        error_msg = f"Invalid end_cursor format: {end_cursor}. Must be a valid base64 string. Error: {str(e)}"
+        demisto.error(error_msg)
+        return False, error_msg
+
+
+def validate_after_and_before_timestamps(after_time, before_time):
+    """
+    Validates after_time and before_time parameters
+    
+    Args:
+        after_time (str): The after timestamp
+        before_time (str): The before timestamp
+        
+    Returns:
+        tuple: (is_valid (bool), error_message (str or None))
+    """
+    if not after_time and not before_time:
+        return True, None
+    
+    def parse_timestamp(timestamp_str):
+        """Helper function to parse timestamp in multiple formats"""
+        if not timestamp_str:
+            return None
+            
+        # Try parsing with milliseconds first (e.g., "2025-06-18T20:59:59.999Z")
+        try:
+            return datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            pass
+        
+        # Try parsing without milliseconds (DEMISTO format: "2025-06-18T20:59:59Z")
+        try:
+            return datetime.strptime(timestamp_str, DEMISTO_OCCURRED_FORMAT)
+        except ValueError:
+            pass
+            
+        # Try parsing ISO format without Z
+        try:
+            return datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+        except ValueError:
+            pass
+            
+        return None
+        
+    # Check if both are provided and not null
+    if after_time and before_time:
+        after_dt = parse_timestamp(after_time)
+        before_dt = parse_timestamp(before_time)
+        
+        if after_dt is None:
+            error_msg = f"Invalid after_time format: {after_time}. Expected ISO format like '2025-06-18T20:59:59.999Z' or '2025-06-18T20:59:59Z'"
+            demisto.error(error_msg)
+            return False, error_msg
+            
+        if before_dt is None:
+            error_msg = f"Invalid before_time format: {before_time}. Expected ISO format like '2025-06-18T20:59:59.999Z' or '2025-06-18T20:59:59Z'"
+            demisto.error(error_msg)
+            return False, error_msg
+        
+        # Ensure before_time is greater than or equal to after_time
+        if before_dt < after_dt:
+            error_msg = f"before_time ({before_time}) must be greater than or equal to after_time ({after_time})"
+            demisto.error(error_msg)
+            return False, error_msg
+    
+    # Individual validation for after_time
+    if after_time:
+        after_dt = parse_timestamp(after_time)
+        if after_dt is None:
+            error_msg = f"Invalid after_time format: {after_time}. Expected ISO format like '2025-06-18T20:59:59.999Z' or '2025-06-18T20:59:59Z'"
+            demisto.error(error_msg)
+            return False, error_msg
+    
+    # Individual validation for before_time
+    if before_time:
+        before_dt = parse_timestamp(before_time)
+        if before_dt is None:
+            error_msg = f"Invalid before_time format: {before_time}. Expected ISO format like '2025-06-18T20:59:59.999Z' or '2025-06-18T20:59:59Z'"
+            demisto.error(error_msg)
+            return False, error_msg
+    
+    return True, None
+
+
 def validate_all_detection_parameters(parameters_dict):
     """
     Validates all parameters in a centralized function
@@ -1896,7 +2164,15 @@ def validate_all_detection_parameters(parameters_dict):
     matched_rule = parameters_dict.get(WizInputParam.RULE_MATCH_ID)
     rule_match_name = parameters_dict.get(WizInputParam.RULE_MATCH_NAME)
     project_id = parameters_dict.get(WizInputParam.PROJECT_ID)
-    after_time = parameters_dict.get(DemistoParams.AFTER_TIME)
+    after_time = parameters_dict.get(WizApiVariables.AFTER)
+    before_time = parameters_dict.get(WizApiVariables.BEFORE)
+    end_cursor = parameters_dict.get(WizApiResponse.END_CURSOR)
+
+    # Validate end_cursor if provided
+    if end_cursor:
+        is_valid, error_message = validate_end_cursor(end_cursor)
+        if not is_valid:
+            return False, error_message, None
 
     # Check for conflicting time parameters
     if creation_minutes_back and after_time:
@@ -1927,6 +2203,11 @@ def validate_all_detection_parameters(parameters_dict):
             error_msg = "You should pass at least one of the following parameters:\n" + "\n".join(param_list)
             demisto.error(error_msg)
             return False, error_msg, None
+
+    if after_time or before_time:
+        is_valid, error_message = validate_after_and_before_timestamps(after_time, before_time)
+        if not is_valid:
+            return False, error_message, None
 
     # Validate detection_id if provided
     if detection_id:
@@ -2002,7 +2283,8 @@ def validate_all_detection_parameters(parameters_dict):
 
     validated_values[WizInputParam.RULE_MATCH_NAME] = rule_match_name
     validated_values[WizInputParam.PROJECT_ID] = project_id
-    validated_values[DemistoParams.AFTER_TIME] = after_time
+    validated_values[WizApiVariables.AFTER] = after_time
+    validated_values[WizApiResponse.END_CURSOR] = end_cursor
 
     return True, None, validated_values
 
@@ -2160,6 +2442,31 @@ def apply_wiz_filter(variables, filter_value, api_field, equals_wrapper=True, is
     return variables
 
 
+def apply_creation_before_time_filter(variables, before_time):
+    """
+    Adds a creation before time filter to the query variables
+
+    Args:
+        variables (dict): The query variables
+        before_time (str): The time to filter before
+
+    Returns:
+        dict: Updated variables with the filter
+    """
+    if not before_time:
+        return variables
+
+    if WizApiVariables.FILTER_BY not in variables:
+        variables[WizApiVariables.FILTER_BY] = {}
+
+    if WizApiVariables.CREATED_AT not in variables[WizApiVariables.FILTER_BY]:
+        variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT] = {}
+
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT][WizApiVariables.BEFORE] = before_time
+
+    return variables
+
+
 def apply_rule_match_id_filter(variables, matched_rule_id):
     """
     Adds the matched rule ID filter to the query variables
@@ -2247,7 +2554,10 @@ def apply_creation_after_time_filter(variables, after_time):
     if WizApiVariables.FILTER_BY not in variables:
         variables[WizApiVariables.FILTER_BY] = {}
 
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT] = {WizApiVariables.AFTER: after_time}
+    if WizApiVariables.CREATED_AT not in variables[WizApiVariables.FILTER_BY]:
+        variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT] = {}
+
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT][WizApiVariables.AFTER] = after_time
 
     return variables
 
@@ -2401,6 +2711,26 @@ def apply_project_id_filter(variables, project_id, is_detection=True):
     return variables
 
 
+def apply_end_cursor(variables, end_cursor):
+    """
+    Adds the end cursor for pagination to the query variables
+    
+    Args:
+        variables (dict): The query variables
+        end_cursor (str): The pagination cursor (base64 encoded)
+        
+    Returns:
+        dict: Updated variables with the pagination cursor
+    """
+    if not end_cursor:
+        return variables
+        
+    # Set the pagination cursor using the 'after' parameter
+    variables[WizApiVariables.AFTER] = end_cursor
+    
+    return variables
+
+
 def apply_all_detection_filters(variables, validated_values):
     """
     Applies all filters to the query variables in a centralized function
@@ -2413,10 +2743,17 @@ def apply_all_detection_filters(variables, validated_values):
         dict: Updated query variables with all filters applied
     """
     # Apply time filter based on which parameter is present
-    if validated_values.get(DemistoParams.AFTER_TIME):
-        variables = apply_creation_after_time_filter(variables, validated_values.get(DemistoParams.AFTER_TIME))
+    if validated_values.get(WizApiVariables.AFTER) and validated_values.get(WizApiVariables.BEFORE):
+        variables = apply_creation_after_time_filter(variables, validated_values.get(WizApiVariables.AFTER))
+        variables = apply_creation_before_time_filter(variables, validated_values.get(WizApiVariables.BEFORE))
+
+        # Apply end_cursor for pagination if provided
+        if validated_values.get(WizApiResponse.END_CURSOR):
+            variables = apply_end_cursor(variables, validated_values.get(WizApiResponse.END_CURSOR))
+
     elif validated_values.get(WizInputParam.CREATION_MINUTES_BACK):
         variables = apply_creation_in_last_filter(variables, validated_values.get(WizInputParam.CREATION_MINUTES_BACK))
+    
 
     # Apply other filters
     variables = apply_detection_id_filter(variables, validated_values.get(WizInputParam.DETECTION_ID))
@@ -2476,12 +2813,15 @@ def get_filtered_detections(
     rule_match_name=None,
     project_id=None,
     after_time=None,
+    before_time=None,
+    end_cursor=None,
+    max_fetch=None,
     add_detection_url=True,
     api_limit=WIZ_API_LIMIT,
     paginate=True,
 ):
     """
-    Retrieves Filtered Detections
+    Retrieves Filtered Detections with enhanced pagination support
 
     Args:
         detection_id (str or list): Detection ID or list of detection IDs
@@ -2496,11 +2836,23 @@ def get_filtered_detections(
         rule_match_id (str): Matched rule ID
         rule_match_name (str): Matched rule name
         project_id (str): Project ID
-        after_time (str): Timestamp for filtering detections created after this time (used for fetch incidents)
+        after_time (str): Start time for filtering (ISO format) - used for fetch incidents
+        before_time (str): End time for filtering (ISO format) - optional, used for pagination
+        end_cursor (str): Pagination cursor from previous request
+        max_fetch (int): Maximum number of detections to fetch (overrides api_limit when provided)
+        add_detection_url (bool): Whether to add detection URL to each detection
+        api_limit (int): API limit for backward compatibility (default: WIZ_API_LIMIT)
+        paginate (bool): Whether to enable pagination
+        return_page_info (bool): Whether to return page info along with detections
 
     Returns:
-        list/str: List of detections or error message
+        list/tuple/str:
+            - If return_page_info=False: List of detections or error message (backward compatible)
+            - If return_page_info=True: Tuple of (detections_list, page_info_dict) or (error_message, {})
     """
+    # Determine effective api_limit (max_fetch takes precedence for pagination scenarios)
+    effective_api_limit = max_fetch if max_fetch is not None else api_limit
+
     # Create parameters dictionary
     parameters_dict = {
         WizInputParam.DETECTION_ID: detection_id,
@@ -2515,7 +2867,9 @@ def get_filtered_detections(
         WizInputParam.RULE_MATCH_ID: rule_match_id,
         WizInputParam.RULE_MATCH_NAME: rule_match_name,
         WizInputParam.PROJECT_ID: project_id,
-        DemistoParams.AFTER_TIME: after_time,
+        WizApiVariables.AFTER: after_time,
+        WizApiVariables.BEFORE: before_time,
+        WizApiResponse.END_CURSOR: end_cursor,
     }
 
     log_input_parameters(parameters_dict)
