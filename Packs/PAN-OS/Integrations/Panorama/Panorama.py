@@ -14671,15 +14671,15 @@ def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> Comma
                 response_pushed = run_op_command(device, SHOW_CONFIG_RUNNING)
 
                 # Process pushed certificates
-                if response_pushed and hasattr(response_pushed, "get") and response_pushed.get("status") == "success":
-                    template_config = response_pushed.find(".//template")
+                if response_pushed is not None and hasattr(response_pushed, "get") and response_pushed.get("status") == "success":
+                    template_config = response_pushed.find(".//template")                    
                     template_stack_config = response_pushed.find(".//template-stack")
                     if template_config.find(".//certificate"):
                         certificate = template_config.find(".//certificate")
                         devices_using_certificate = [
                             template.devices for template in templates if hasattr(template, "devices") if template.devices
                         ]
-                    elif template_stack_config.find(".//certificate"):
+                    elif template_stack_config.find(".//certificate") is not None:
                         certificate = template_stack_config.find(".//certificate")
                         devices_using_certificate = [
                             template_stack.devices
@@ -14688,7 +14688,7 @@ def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> Comma
                             if template_stack.devices
                         ]
 
-                    pushed_certs = certificate.findall(".//entry") if certificate else []
+                    pushed_certs = certificate.findall(".//entry") if certificate is not None else []
                     demisto.debug(f"Found {len(pushed_certs)} pushed certificates")
 
                     consolidate_all_certificates(
@@ -14719,7 +14719,7 @@ def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> Comma
                 response_local = run_op_command(device, SHOW_LOCAL_CERTS)
 
                 # Process local certificates
-                if response_local and hasattr(response_local, "get") and response_local.get("status") == "success":
+                if response_local is not None and hasattr(response_local, "get") and response_local.get("status") == "success":
                     local_certs = response_local.findall(".//entry")
                     demisto.debug(f"Found {len(local_certs)} local certificates")
 
@@ -14731,7 +14731,7 @@ def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> Comma
         if response_predefined and response_predefined.status_code == 200:
             root = ET.fromstring(response_predefined.text)
             certificate = root.find(".//certificate")
-            predefined_certs = certificate.findall(".//entry") if certificate else []
+            predefined_certs = certificate.findall(".//entry") if certificate is not None else []
             demisto.debug(f"Found {len(predefined_certs)} predefined certificates")
 
             consolidate_all_certificates(predefined_certs, "Predefined", URL.replace("https://", "").split(":")[0])
