@@ -8495,6 +8495,7 @@ def test_show_jobs_id_not_found(patched_run_op_command):
     with pytest.raises(DemistoException, match="The given ID 23 is not found in all devices of the topology."):
         UniversalCommand.show_jobs(topology=MockTopology(), id=23)
 
+
 @patch("Panorama.TemplateStack.refreshall")
 @patch("Panorama.Template.refreshall")
 @patch("Panorama.run_op_command")
