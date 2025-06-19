@@ -608,33 +608,31 @@ script:
       - 'IndexedItemsOnly'
       - 'UnindexedItemsOnly'
       - 'BothIndexedAndUnindexedItems'
-
-    - name: search_action_name
-      description: The name of the compliance search action.
-      hidden: true
-    - name: polling
-      description: TODO.
-      auto: PREDEFINED
-      predefined:
-      - true
-      - false
-      defaultValue: false
-    - name: continue_polling
-      description: test.
-      defaultValue: false
-      hidden: true
-    - description: Whether to print the results in the War Room. Default is "false".
-      name: results
-      auto: PREDEFINED
-      defaultValue: 'false'
-      predefined:
-      - 'true'
-      - 'false'
-      
-
+    # - name: search_action_name
+    #   description: The name of the compliance search action.
+    #   hidden: true
+    # - name: polling
+    #   description: TODO.
+    #   auto: PREDEFINED
+    #   predefined:
+    #   - true
+    #   - false
+    #   defaultValue: false
+    # - name: continue_polling
+    #   description: test.
+    #   defaultValue: false
+    #   hidden: true
+    # - description: Whether to print the results in the War Room. Default is "false".
+    #   name: results
+    #   auto: PREDEFINED
+    #   defaultValue: 'false'
+    #   predefined:
+    #   - 'true'
+    #   - 'false'
+    
     description: After you create a content search using the o365-sc-new-search command and run it using the o365-sc-start-search command, you assign a search action to the search using the o365-sc-new-search-action command.
     name: o365-sc-new-search-action
-    polling: true
+    # polling: true
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
       description: Security and compliance search action type. Either "Purge" or "Preview".
@@ -736,17 +734,17 @@ script:
     - description: The name of the compliance search action.
       name: search_action_name
       required: true
-    - name: polling
-      description: TODO.
-      auto: PREDEFINED
-      predefined:
-      - true
-      - false
-      defaultValue: false
-    - name: continue_polling
-      description: test.
-      defaultValue: false
-      hidden: true
+    # - name: polling
+    #   description: TODO.
+    #   auto: PREDEFINED
+    #   predefined:
+    #   - true
+    #   - false
+    #   defaultValue: false
+    # - name: continue_polling
+    #   description: test.
+    #   defaultValue: false
+    #   hidden: true
     description: Removes a compliance search action by searching for the action name in the Security & Compliance Center.
     name: o365-sc-remove-search-action
   - description: Lists compliance search actions from the Security & Compliance Center.
@@ -1262,7 +1260,7 @@ script:
       - 'false'
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
-  - name: o365-sc-search-and-delete-email
+  - name: o365-sc-search-and-delete-email-quick-action
     prettyname: Search And Delete Email - Office 365
     # hidden: true
     quickaction: true
@@ -1302,13 +1300,12 @@ script:
       description: Case hold policy name.
       type: String
 
-  - name: o365-sc-test-polling
-    polling: true
-    description: test polling.
-    arguments:
-    - name: arg
-      description: test arg.
-
+  # - name: o365-sc-test-polling
+  #   polling: true
+  #   description: test polling.
+  #   arguments:
+  #   - name: arg
+  #     description: test arg.
 
   dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
   runonce: true

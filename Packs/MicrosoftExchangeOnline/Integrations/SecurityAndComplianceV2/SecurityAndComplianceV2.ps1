@@ -2206,15 +2206,15 @@ function Main {
             "$script:COMMAND_PREFIX-case-hold-policy-set" {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-search-and-delete-email" {
+            "$script:COMMAND_PREFIX-search-and-delete-email-quick-action" {
                 ($human_readable, $entry_context, $raw_response, $polling_args) = SearchAndDeleteEmailCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-recovery-email" {
                 ($human_readable, $entry_context, $raw_response) = RecoveryEmailCommand $cs_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-test-polling" {
-                ($human_readable, $entry_context, $raw_response, $polling_args) = testPollingCommand $cs_client $command_arguments
-            }
+            # "$script:COMMAND_PREFIX-test-polling" {
+            #     ($human_readable, $entry_context, $raw_response, $polling_args) = testPollingCommand $cs_client $command_arguments
+            # }
         }
 
         # Updating integration context if access token changed
