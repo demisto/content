@@ -130,7 +130,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "154"
+      - "145"
       "yes":
       - "83"
     separatecontext: false
@@ -172,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 170,
-          "y": 925
+          "y": 816
         }
       }
     note: false
@@ -388,7 +388,7 @@ tasks:
       id: 43eecccd-496b-4de9-9c9e-c186a8c29a62
       version: -1
       name: Get scan events
-      description: Returns additional alert data, including event and connection details.
+      description: Returns additional alert data, including connection details and scanning events.
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
@@ -1234,8 +1234,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 414,
-          "y": 369
+          "x": -83,
+          "y": 368
         }
       }
     note: false
@@ -1260,7 +1260,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "154"
     scriptarguments:
       host_id:
         simple: ${Endpoint.ID}
@@ -1270,8 +1270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 414,
-          "y": 801
+          "x": 640,
+          "y": 949
         }
       }
     note: false
@@ -1503,7 +1503,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "145"
       "yes":
       - "152"
     separatecontext: false
@@ -1526,8 +1526,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -81,
-          "y": 370
+          "x": 421,
+          "y": 368
         }
       }
     note: false
@@ -1573,8 +1573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -81,
-          "y": 517
+          "x": 421,
+          "y": 516
         }
       }
     note: false
@@ -1618,8 +1618,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -81,
-          "y": 671
+          "x": 421,
+          "y": 670
         }
       }
     note: false
@@ -2885,8 +2885,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 414,
-          "y": 517
+          "x": -83,
+          "y": 516
         }
       }
     note: false
@@ -2911,7 +2911,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "145"
+      - "2"
     scriptarguments:
       hostname:
         simple: ${alert.agentid}
@@ -2921,8 +2921,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 414,
-          "y": 671
+          "x": -83,
+          "y": 670
         }
       }
     note: false
@@ -3488,7 +3488,6 @@ view: |-
       "149_163_yes": 0.48,
       "149_165_#default#": 0.11,
       "151_152_yes": 0.43,
-      "151_2_#default#": 0.35,
       "154_196_yes": 0.53,
       "160_1_#default#": 0.11,
       "166_159_#default#": 0.25,
@@ -3506,7 +3505,7 @@ view: |-
       "187_159_#default#": 0.39,
       "190_159_#default#": 0.54,
       "190_186_yes": 0.42,
-      "2_154_#default#": 0.29,
+      "2_145_#default#": 0.41,
       "2_83_yes": 0.24,
       "81_82_yes": 0.43,
       "81_86_#default#": 0.55,
