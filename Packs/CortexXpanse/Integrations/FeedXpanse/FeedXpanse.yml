@@ -113,7 +113,17 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Use this feed to retrieve the discovered IPs/Domains/Certificates from Cortex Xpanse asset database.
+- display: Indicator types to fetch
+  name: indicatorTypes
+  type: 16
+  required: true
+  options:
+  - IP
+  - Domain
+  - Certificate
+  additionalinfo: 'Indicator types to fetch.'
+  section: Collect
+description: Use this feed to retrieve the discovered IPs/domains/certificates from the Cortex Xpanse asset database.
 display: 'Xpanse Feed'
 name: Xpanse Feed
 script:
