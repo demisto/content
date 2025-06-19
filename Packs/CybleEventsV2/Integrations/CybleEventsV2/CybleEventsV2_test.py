@@ -3,6 +3,23 @@ Enhanced Unit Tests for CybleEventsV2 Integration -
 
 """
 
+
+from CommonServerPython import GetRemoteDataResponse, GetMappingFieldsResponse, CommandResults, DemistoException
+from CybleEventsV2 import (
+    Client,
+    get_remote_data_command,
+    manual_fetch,
+    alert_input_structure,
+    update_remote_system,
+    get_mapping_fields,
+    fetch_subscribed_services_alert,
+    fetch_subscribed_services,
+    cyble_fetch_iocs,
+    set_request,
+    DEFAULT_TAKE_LIMIT,
+    DEFAULT_STATUSES,
+    ensure_aware,
+)
 from CommonServerPython import GetModifiedRemoteDataResponse
 
 try:
@@ -65,24 +82,6 @@ demisto_mock.error = Mock()
 demisto_mock.params = Mock()
 
 # Import your modules
-from CybleEventsV2 import (
-    Client,
-    get_remote_data_command,
-    manual_fetch,
-    alert_input_structure,
-    scheduled_fetch,
-    update_remote_system,
-    get_mapping_fields,
-    fetch_subscribed_services_alert,
-    fetch_subscribed_services,
-    cyble_fetch_iocs,
-    set_request,
-    DEFAULT_TAKE_LIMIT,
-    DEFAULT_STATUSES,
-    ensure_aware,
-)
-
-from CommonServerPython import GetRemoteDataResponse, GetMappingFieldsResponse, CommandResults, DemistoException
 
 
 # UTC = pytz.UTC
@@ -334,111 +333,6 @@ class TestManualFetch:
         assert call_args["take"] == DEFAULT_TAKE_LIMIT
 
 
-class TestScheduledFetch:
-    """Test scheduled_fetch function"""
-
-    @freeze_time("2023-04-19T12:00:00Z")
-    @patch("CybleEventsV2.migrate_data")
-    @patch("demistomock.params")
-    @patch("demistomock.debug")
-    def test_scheduled_fetch_no_last_run(self, mock_debug, mock_params, mock_migrate_data):
-        """Test scheduled_fetch with no previous last_run"""
-        mock_params.return_value = {"first_fetch_timestamp": 7}
-        mock_migrate_data.return_value = ([{"alert": "data"}], datetime.utcnow())
-
-        args = {"order_by": "desc"}
-        last_run = {}
-
-        scheduled_fetch(
-            None,  # mock_client
-            "POST",
-            "token",
-            "https://test.com",
-            args,
-            last_run,
-            False,
-            [],
-            [],
-        )
-
-        mock_debug.assert_called()
-        mock_migrate_data.assert_called_once()
-
-        call_args = mock_migrate_data.call_args[0][1]
-        assert "gte" in call_args
-        assert "lte" in call_args
-        assert call_args["order_by"] == "desc"
-        assert call_args["limit"] == 500  # Updated to match returned value
-        assert call_args["status"] == DEFAULT_STATUSES
-
-    @patch("demistomock.debug")
-    @patch("demistomock.params")
-    @patch("CybleEventsV2.migrate_data")
-    def test_scheduled_fetch_with_last_run(self, mock_migrate_data, mock_params, mock_debug):
-        """Test scheduled_fetch with existing last_run"""
-        mock_params.return_value = {"first_fetch_timestamp": 1}
-        mock_migrate_data.return_value = ([{"alert": "data"}], datetime.utcnow())
-
-        args = {"order_by": "asc"}
-        last_run = {"event_pull_start_date": "2023-04-18T10:00:00Z"}
-
-        scheduled_fetch(None, "POST", "token", "https://test.com", args, last_run, False, [], [])
-
-        call_args = mock_migrate_data.call_args[0][1]
-        assert isinstance(call_args["gte"], datetime)
-
-    @patch("demistomock.debug")
-    @patch("demistomock.params")
-    @patch("CybleEventsV2.migrate_data")
-    def test_scheduled_fetch_with_incident_collections(self, mock_migrate_data, mock_params, mock_debug):
-        """Test scheduled_fetch with specific incident collections"""
-        mock_params.return_value = {"first_fetch_timestamp": 1}
-        mock_migrate_data.return_value = ([{"alert": "data"}], datetime.utcnow())
-
-        args = {}
-        last_run = {}
-        incident_collections = ["Darkweb Marketplaces", "Data Breaches", "Compromised Endpoints", "Compromised Cards"]
-
-        scheduled_fetch(None, "POST", "token", "https://test.com", args, last_run, False, incident_collections, [])
-
-        call_args = mock_migrate_data.call_args[0][1]
-        expected_services = ["darkweb_marketplaces", "darkweb_data_breaches", "stealer_logs", "compromised_cards"]
-        assert set(call_args["services"]) == set(expected_services)
-
-    @patch("demistomock.debug")
-    @patch("demistomock.params")
-    @patch("CybleEventsV2.migrate_data")
-    def test_scheduled_fetch_with_severities(self, mock_migrate_data, mock_params, mock_debug):
-        """Test scheduled_fetch with specific severities"""
-        mock_params.return_value = {"first_fetch_timestamp": 1}
-        mock_migrate_data.return_value = ([{"alert": "data"}], datetime.utcnow())
-
-        args = {}
-        last_run = {}
-        incident_severity = ["High", "Medium"]
-
-        with patch.dict("CybleEventsV2.SEVERITIES", {"High": "HIGH", "Medium": "MEDIUM"}):
-            scheduled_fetch(None, "POST", "token", "https://test.com", args, last_run, False, [], incident_severity)
-
-        call_args = mock_migrate_data.call_args[0][1]
-        assert "HIGH" in call_args["severity"]
-        assert "MEDIUM" in call_args["severity"]
-
-    @patch("demistomock.debug")
-    @patch("demistomock.params")
-    @patch("CybleEventsV2.migrate_data")
-    def test_scheduled_fetch_tuple_last_fetched(self, mock_migrate_data, mock_params, mock_debug):
-        """Test scheduled_fetch when migrate_data returns tuple for last_fetched"""
-        mock_params.return_value = {"first_fetch_timestamp": 1}
-        tuple_datetime = (datetime.utcnow(), "extra_data")
-        mock_migrate_data.return_value = ([{"alert": "data"}], tuple_datetime)
-
-        args = {}
-        last_run = {}
-
-        scheduled_fetch(None, "POST", "token", "https://test.com", args, last_run, False, [], [])
-
-        mock_debug.assert_called()
 
 
 def test_alert_input_structure():
@@ -823,33 +717,6 @@ def edge_case_ioc_response():
 class TestIntegrationScenarios:
     """Integration tests for complex scenarios"""
 
-    @patch("demistomock.params")
-    @patch("CybleEventsV2.migrate_data")
-    def test_full_scheduled_fetch_workflow(self, mock_migrate_data, mock_params, mock_client):
-        """Test complete scheduled fetch workflow"""
-        mock_params.return_value = {"first_fetch_timestamp": 7, "max_fetch": 100}
-
-        # Mock successful migration
-        sample_alerts = [{"id": "alert-1", "service": "compromised_cards"}, {"id": "alert-2", "service": "stealer_logs"}]
-        mock_migrate_data.return_value = (sample_alerts, datetime.utcnow())
-
-        args = {"order_by": "desc"}
-        last_run = {}
-        incident_collections = ["Compromised Cards"]
-        incident_severity = ["High", "Medium"]
-
-        # Call scheduled fetch (result not used directly)
-        scheduled_fetch(
-            mock_client, "POST", "token", "https://test.com", args, last_run, False, incident_collections, incident_severity
-        )
-
-        # Verify the complete workflow
-        mock_migrate_data.assert_called_once()
-        call_args = mock_migrate_data.call_args[0][1]
-
-        assert call_args["order_by"] == "desc"
-        assert "compromised_cards" in call_args["services"]
-        assert len(call_args["severity"]) >= 1
 
     @patch("CybleEventsV2.set_request")
     def test_complete_ioc_fetch_workflow(self, mock_set_request, mock_client, sample_ioc_response):
@@ -1030,11 +897,15 @@ class TestGetFetchSeverities:
 
 def test_build_auth_headers():
     token = "abc123"
-    expected = {"Authorization": "Bearer abc123", "Content-Type": "application/json"}
+    expected = {
+        "Authorization": "Bearer abc123",
+        "Content-Type": "application/json"
+    }
     assert build_auth_headers(token) == expected
 
 
 class TestGetModifiedRemoteDataCommandCore:
+
     def test_successful_execution_flow(self):
         client = Mock()
         client.get_ids_with_retry.return_value = ["incident-001", "incident-002"]
@@ -1071,12 +942,10 @@ class TestGetModifiedRemoteDataCommandCore:
                 self.accessed_keys.append(key)
                 return super().__getitem__(key)
 
-        spy_args = SpyDict(
-            {
-                "last_update": "2024-01-01T00:00:00Z",
-                "lastUpdate": "2024-01-01T00:00:00Z",
-            }
-        )
+        spy_args = SpyDict({
+            "last_update": "2024-01-01T00:00:00Z",
+            "lastUpdate": "2024-01-01T00:00:00Z",
+        })
 
         with (
             patch("CybleEventsV2.get_fetch_service_list", return_value=["service1"]),
@@ -1153,7 +1022,6 @@ class TestGetModifiedRemoteDataCommandCore:
 
     def test_inspect_function_source(self):
         import inspect
-
         try:
             source = inspect.getsource(get_modified_remote_data_command)
             assert "return" in source
@@ -1380,7 +1248,8 @@ class TestFetchFewAlerts:
 
         with patch("CybleEventsV2.return_error") as mock_return_error, patch("CybleEventsV2.demisto"):
             fetch_few_alerts(
-                self.client, self.base_input_params.copy(), ["threat_intel", "compromised_cards"], self.url, self.token
+                self.client, self.base_input_params.copy(),
+                ["threat_intel", "compromised_cards"], self.url, self.token
             )
 
             # Expect 2 error calls — one per service
@@ -1388,7 +1257,7 @@ class TestFetchFewAlerts:
 
             expected_calls = [
                 call("[fetch_few_alerts] Failed to fetch data from service threat_intel: Service unavailable"),
-                call("[fetch_few_alerts] Failed to fetch data from service compromised_cards: Service unavailable"),
+                call("[fetch_few_alerts] Failed to fetch data from service compromised_cards: Service unavailable")
             ]
 
             mock_return_error.assert_has_calls(expected_calls, any_order=False)
@@ -1963,10 +1832,8 @@ class TestClientMethods(unittest.TestCase):
         mock_response_fail_code.status_code = 404
         mock_response_fail_code.json.return_value = {}
 
-        with (
-            patch.object(self.client, "make_request", return_value=mock_response_fail_code),
-            pytest.raises(Exception, match="Failed to get services: Wrong status code: 404"),
-        ):
+        with patch.object(self.client, "make_request", return_value=mock_response_fail_code), \
+                pytest.raises(Exception, match="Failed to get services: Wrong status code: 404"):
             self.client.get_all_services(self.test_api_key, self.test_url)
 
         # --- FAILURE: WRONG FORMAT ---
@@ -1974,10 +1841,8 @@ class TestClientMethods(unittest.TestCase):
         mock_response_bad_format.status_code = 200
         mock_response_bad_format.json.return_value = {"wrong_key": []}
 
-        with (
-            patch.object(self.client, "make_request", return_value=mock_response_bad_format),
-            pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"),
-        ):
+        with patch.object(self.client, "make_request", return_value=mock_response_bad_format), \
+                pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"):
             self.client.get_all_services(self.test_api_key, self.test_url)
 
     @patch("requests.request")
@@ -1999,7 +1864,12 @@ class TestClientMethods(unittest.TestCase):
         with patch.object(self.client, "make_request", return_value=mock_response) as mock_make_request:
             self.client.update_alert(self.test_payload, self.test_url, self.test_api_key)
 
-            mock_make_request.assert_called_once_with(self.test_url, self.test_api_key, "PUT", json.dumps(self.test_payload))
+            mock_make_request.assert_called_once_with(
+                self.test_url,
+                self.test_api_key,
+                "PUT",
+                json.dumps(self.test_payload)
+            )
             mock_return_error.assert_not_called()
 
     @patch("CybleEventsV2.requests.request")
@@ -2029,7 +1899,10 @@ class TestClientMethods(unittest.TestCase):
 
     @patch("CybleEventsV2.demisto")
     @patch("CybleEventsV2.time_diff_in_mins", return_value=60)
-    @patch("CybleEventsV2.parse_date", side_effect=[datetime(2024, 1, 1, 12, 0, 0), datetime(2024, 1, 1, 13, 0, 0)])
+    @patch("CybleEventsV2.parse_date", side_effect=[
+        datetime(2024, 1, 1, 12, 0, 0),
+        datetime(2024, 1, 1, 13, 0, 0)
+    ])
     def test_get_data_with_retry_success(self, mock_parse, mock_diff, mock_demisto):
         input_params = {"gte": "2024-01-01T12:00:00Z", "lte": "2024-01-01T13:00:00Z"}
         service = self.test_service
@@ -2038,10 +1911,9 @@ class TestClientMethods(unittest.TestCase):
         mock_inserted_alerts = [{"id": "abc"}]
         mock_time = datetime(2024, 1, 1, 13, 0, 0)
 
-        with (
-            patch.object(self.client, "get_data", return_value=mock_response),
-            patch.object(self.client, "insert_data_in_cortex", return_value=(mock_inserted_alerts, mock_time)),
-        ):
+        with patch.object(self.client, "get_data", return_value=mock_response), \
+                patch.object(self.client, "insert_data_in_cortex", return_value=(mock_inserted_alerts, mock_time)):
+
             result_alerts, result_time = self.client.get_data_with_retry(service, input_params)
 
             assert result_alerts == mock_inserted_alerts
@@ -2049,12 +1921,17 @@ class TestClientMethods(unittest.TestCase):
 
     @patch("CybleEventsV2.demisto")
     @patch("CybleEventsV2.time_diff_in_mins", return_value=60)
-    @patch("CybleEventsV2.parse_date", side_effect=[datetime(2024, 1, 1, 10, 0, 0), datetime(2024, 1, 1, 11, 0, 0)])
+    @patch("CybleEventsV2.parse_date", side_effect=[
+        datetime(2024, 1, 1, 10, 0, 0),
+        datetime(2024, 1, 1, 11, 0, 0)
+    ])
     def test_get_ids_with_retry_success(self, mock_parse, mock_diff, mock_demisto):
         input_params = {"gte": "2024-01-01T10:00:00Z", "lte": "2024-01-01T11:00:00Z"}
         service = self.test_service
 
-        mock_response = {"data": [{"id": "id1"}, {"id": "id2"}]}
+        mock_response = {
+            "data": [{"id": "id1"}, {"id": "id2"}]
+        }
 
         with patch.object(self.client, "get_data", return_value=mock_response):
             result_ids = self.client.get_ids_with_retry(service, input_params)
@@ -2128,98 +2005,6 @@ class TestCybleEventsLogical(unittest.TestCase):
             self.mock_client, self.base_args, self.token, self.url, self.collections, self.severities
         )
 
-    @patch("CybleEventsV2.migrate_data")
-    @patch("CybleEventsV2.get_fetch_severities")
-    @patch("CybleEventsV2.get_fetch_service_list")
-    @patch("CybleEventsV2.datetime")
-    @patch("CybleEventsV2.timedelta")
-    def test_scheduled_fetch_new_instance_uses_first_fetch_timestamp(
-        self, mock_timedelta, mock_datetime, mock_get_services, mock_get_severities, mock_migrate_data
-    ):
-        with patch("CybleEventsV2.demisto") as mock_demisto:
-            mock_demisto.params.return_value = {"first_fetch_timestamp": 7}
-
-            # Add timezone attribute to the mocked datetime
-            mock_datetime.timezone = timezone
-
-            mock_now = datetime(2024, 1, 8, 12, 0, 0, tzinfo=UTC)
-            mock_datetime.utcnow.return_value = mock_now
-            mock_timedelta.return_value = timedelta(days=7)
-
-            mock_services = [{"name": "service1", "id": "svc1"}]
-            mock_get_services.return_value = mock_services
-            mock_get_severities.return_value = ["high", "medium"]
-
-            mock_alerts = [{"id": 1, "alert": "test"}]
-            mock_latest_time = datetime(2024, 1, 8, 13, 0, 0, tzinfo=UTC)
-            mock_migrate_data.return_value = (mock_alerts, mock_latest_time)
-
-            result = cyble_events(
-                self.mock_client,
-                self.method,
-                self.token,
-                self.url,
-                self.base_args,
-                {},
-                True,
-                self.collections,
-                self.severities,
-                skip=False,
-            )
-
-            alerts, new_last_run = result
-
-            assert alerts == mock_alerts
-            assert "event_pull_start_date" in new_last_run
-
-            mock_timedelta.assert_called_with(days=7)
-
-            migrate_call_args = mock_migrate_data.call_args[0][1]
-            assert "gte" in migrate_call_args
-
-    @patch("CybleEventsV2.migrate_data")
-    @patch("CybleEventsV2.get_fetch_severities")
-    @patch("CybleEventsV2.get_fetch_service_list")
-    @patch("CybleEventsV2.datetime")
-    def test_scheduled_fetch_existing_instance_uses_last_run(
-        self, mock_datetime, mock_get_services, mock_get_severities, mock_migrate_data
-    ):
-        # Add timezone attribute to mocked datetime
-        mock_datetime.timezone = timezone
-
-        mock_now = datetime(2024, 1, 10, 12, 0, 0, tzinfo=UTC)
-        mock_datetime.utcnow.return_value = mock_now
-
-        mock_services = [{"name": "service1"}]
-        mock_get_services.return_value = mock_services
-        mock_get_severities.return_value = ["high"]
-
-        mock_alerts = [{"id": 2, "alert": "existing"}]
-        mock_latest_time = datetime(2024, 1, 10, 14, 0, 0, tzinfo=UTC)
-        mock_migrate_data.return_value = (mock_alerts, mock_latest_time)
-
-        last_run_with_date = {"event_pull_start_date": "2024-01-05T00:00:00Z"}
-
-        result = cyble_events(
-            self.mock_client,
-            self.method,
-            self.token,
-            self.url,
-            self.base_args,
-            last_run_with_date,
-            True,
-            self.collections,
-            self.severities,
-            skip=False,
-        )
-
-        alerts, new_last_run = result
-
-        assert alerts == mock_alerts
-        assert new_last_run["event_pull_start_date"] == mock_latest_time.astimezone().isoformat()
-
-        migrate_call_args = mock_migrate_data.call_args[0][1]
-        assert migrate_call_args["gte"] == "2024-01-05T00:00:00Z"
 
     @patch("CybleEventsV2.migrate_data")
     @patch("CybleEventsV2.get_fetch_severities")

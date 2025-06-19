@@ -105,7 +105,7 @@ def get_alert_payload(service, input_params: dict[str, Any], is_update=False):
 
         return {
             "filters": {
-                "service": [service],
+                "service": service if isinstance(service, list) else [service],
                 timestamp_field: {  # Use dynamic field based on `is_update`
                     "gte": ensure_aware(datetime.fromisoformat(input_params["gte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
                     "lte": ensure_aware(datetime.fromisoformat(input_params["lte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
@@ -118,7 +118,7 @@ def get_alert_payload(service, input_params: dict[str, Any], is_update=False):
             "take": input_params["take"],
             "countOnly": False,
             "taggedAlert": False,
-            "withDataMessage": True,
+            "withDataMessage": False
         }
     except Exception as e:
         demisto.error(f"Error in formatting: {e}")
@@ -291,10 +291,9 @@ class Client(BaseClient):
         :return: The JSON response from the request as a dictionary,
          or an empty dictionary if the request fails
         """
-
         payload = get_alert_payload(service, input_params, is_update)
-        payload_json = json.dumps(payload)
 
+        payload_json = json.dumps(payload)
         url = input_params.get("url")
         alerts_api_key = input_params.get("api_key")
 
@@ -308,7 +307,8 @@ class Client(BaseClient):
 
         if response.status_code != 200:
             raise Exception(
-                f"Failed to fetch data from {service}. Status code: {response.status_code}, " f"Response text: {response.text}"
+                f"Failed to fetch data from {service}. Status code: {response.status_code}, "
+                f"Response text: {response.text}"
             )
 
         try:
@@ -332,7 +332,9 @@ class Client(BaseClient):
             response = response.json()
 
             if "data" in response and isinstance(response["data"], Sequence):
-                return ["compromised_files"]
+                demisto.debug(f"Received services: {json.dumps(response['data'], indent=2)}")
+                return response["data"]
+
             else:
                 raise Exception("Wrong Format for services response")
         except Exception as e:
@@ -451,6 +453,7 @@ class Client(BaseClient):
         Recursively splits time ranges and fetches data, inserting it into Cortex.
         Returns a tuple of (alerts, latest_created_time).
         """
+
         gte = parse_date(input_params["gte"])
         lte = parse_date(input_params["lte"])
 
@@ -473,6 +476,7 @@ class Client(BaseClient):
                 que.extend([[current_gte, mid_datetime], [mid_datetime + timedelta(microseconds=1), current_lte]])
             else:
                 demisto.debug(f"Unable to fetch data for gte: {current_gte} to lte: {current_lte}")
+        demisto.debug(f"ids:{ids}")
 
         return ids
 
@@ -596,11 +600,75 @@ def fetch_subscribed_services(client, method, base_url, token):
 
     Returns: subscribed service list
     """
-    subscribed_services, service_name_list = client.get_all_services(token), []
+    subscribed_services = client.get_all_services(token, base_url)
+    service_name_list = []
     if subscribed_services:
         for subscribed_service in subscribed_services:
             service_name_list.append({"name": subscribed_service["name"]})
     return service_name_list
+
+def get_fetch_service_list(client, incident_collections, service_url, token):
+    """
+    Determines the list of services to fetch based on provided incident collections.
+
+    Args:
+        client: An instance of the client to communicate with the server.
+        incident_collections: A list of incident collection names to filter the services.
+        service_url: The base URL for the server.
+        token: The API access token.
+
+    If specific incident collections are provided (excluding "All collections"),
+    it appends corresponding service names to `fetch_services`. Otherwise, it fetches
+    all services using the client.
+    """
+    fetch_services = []
+    if len(incident_collections) > 0 and "All collections" not in incident_collections:
+        if "Darkweb Marketplaces" in incident_collections:
+            fetch_services.append({"name": "darkweb_marketplaces"})
+        if "Data Breaches" in incident_collections:
+            fetch_services.append({"name": "darkweb_data_breaches"})
+        if "Compromised Endpoints" in incident_collections:
+            fetch_services.append({"name": "stealer_logs"})
+        if "Compromised Cards" in incident_collections:
+            fetch_services.append({"name": "compromised_cards"})
+    else:
+        subscribed_services = client.get_all_services(token, service_url)
+        if subscribed_services:
+            fetch_services = [service["name"] for service in subscribed_services]
+
+    return fetch_services
+
+
+
+def fetch_subscribed_services_alert(client, method, base_url, token):
+    """
+    Fetch cyble subscribed services
+    Args:
+        client: instance of client to communicate with server
+        method: Requests method to be used
+        base_url: base url for the server
+        token: server access token
+
+    Returns: subscribed service list
+
+    """
+    try:
+        subscribed_services = client.get_all_services(token, base_url)
+        service_name_list = []
+
+        for subscribed_service in subscribed_services:
+            service_name_list.append({"name": subscribed_service["name"]})
+
+        markdown = tableToMarkdown("Alerts Group Details:", service_name_list)
+        return CommandResults(
+            readable_output=markdown,
+            outputs_prefix="CybleEvents.ServiceList",
+            raw_response=service_name_list,
+            outputs=service_name_list,
+        )
+    except Exception as e:
+        return_error(f"Failed to fetch subscribed services: {str(e)}")
+
 
 
 def test_response(client, method, base_url, token):
@@ -640,8 +708,9 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
         demisto.debug("No services found in input_params")
         return [], datetime.utcnow()
 
-    chunkedServices = [services[i : i + MAX_THREADS] for i in range(0, len(services), MAX_THREADS)]
-    last_fetched = datetime.utcnow()
+    chunkedServices = [services[i: i + MAX_THREADS] for i in range(0, len(services), MAX_THREADS)]
+    last_fetched = ensure_aware(datetime.utcnow())
+
     all_alerts = []
 
     try:
@@ -653,7 +722,7 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
                     alerts, fetched_time = future.result()
                     all_alerts.extend(alerts)
                     if isinstance(fetched_time, datetime):
-                        last_fetched = max(last_fetched, fetched_time)
+                        last_fetched = max(last_fetched, ensure_aware(fetched_time))
                 except Exception as inner_e:
                     demisto.error(f"[migrate_data] Error in future: {str(inner_e)}")
                     return_error(f"[migrate_data] Failed to process service thread: {str(inner_e)}")
@@ -665,14 +734,12 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
 
 
 def fetch_few_alerts(client, input_params, services, url, token, is_update=False):
-    demisto.debug("[fetch_few_alerts] Starting fetch")
 
     result = []
     input_params["take"] = SAMPLE_ALERTS  # override limit for sample
     demisto.debug(f"[fetch_few_alerts] Updated 'take' to SAMPLE_ALERTS ({SAMPLE_ALERTS})")
 
     for service in services:
-        demisto.debug(f"[fetch_few_alerts] Fetching from service: {service}")
         try:
             # Append transport details only for internal use by get_data
             input_params_with_context = input_params.copy()
@@ -680,6 +747,7 @@ def fetch_few_alerts(client, input_params, services, url, token, is_update=False
             input_params_with_context["api_key"] = token
 
             response = client.get_data(service, input_params_with_context, is_update=is_update)
+
             if "data" in response and isinstance(response["data"], Sequence):
                 demisto.debug(f"[fetch_few_alerts] Received {len(response['data'])} alerts")
 
@@ -756,33 +824,6 @@ def get_alert_by_id(client, alert_id, token, url):
         raise DemistoException(f"[get_alert_by_id] Error during HTTP request: {str(e)}")
 
 
-def get_fetch_service_list(client, incident_collections, service_url, token):
-    """
-    Determines the list of services to fetch based on provided incident collections.
-
-    Args:
-        client: An instance of the client to communicate with the server.
-        incident_collections: A list of incident collection names to filter the services.
-        service_url: The base URL for the server.
-        token: The API access token.
-
-    If specific incident collections are provided (excluding "All collections"),
-    it appends corresponding service names to `fetch_services`. Otherwise, it fetches
-    all services using the client.
-    """
-    fetch_services = []
-    if len(incident_collections) > 0 and "All collections" not in incident_collections:
-        if "Darkweb Marketplaces" in incident_collections:
-            fetch_services.append({"name": "darkweb_marketplaces"})
-        if "Data Breaches" in incident_collections:
-            fetch_services.append({"name": "darkweb_data_breaches"})
-        if "Compromised Endpoints" in incident_collections:
-            fetch_services.append({"name": "stealer_logs"})
-        if "Compromised Cards" in incident_collections:
-            fetch_services.append({"name": "compromised_cards"})
-    else:
-        fetch_services = client.get_all_services(token, service_url)
-    return fetch_services
 
 
 def get_fetch_severities(incident_severity):
@@ -870,6 +911,7 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
     services = get_fetch_service_list(client, incident_collections, url, token)
     severities = get_fetch_severities(incident_severity)
 
+
     if last_update is None:
         raise ValueError("Missing required parameter: 'last_update' must not be None")
 
@@ -886,7 +928,6 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
         "gte": last_update.isoformat(),
         "lte": datetime.utcnow().replace(tzinfo=pytz.UTC).isoformat(),
     }
-
     ids = client.get_ids_with_retry(service=services, input_params=input_params, is_update=True)
 
     if isinstance(ids, list):
@@ -943,7 +984,6 @@ def manual_fetch(client, args, token, url, incident_collections, incident_severi
         raise DemistoException(f"[manual_fetch] Invalid date format: {e}")
 
     services = get_fetch_service_list(client, incident_collections, url, token) or []
-    demisto.debug(f"[manual_fetch] Services to fetch: {services}")
 
     # Build the payload to be passed to the API, excluding transport-related values
     api_input_params = {
@@ -958,79 +998,6 @@ def manual_fetch(client, args, token, url, incident_collections, incident_severi
     alerts = fetch_few_alerts(client, api_input_params, services, url, token, is_update=False) or []
 
     return alerts
-
-
-def scheduled_fetch(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity):
-    demisto.debug("[scheduled_fetch] Started with migrate_data")
-
-    try:
-        order_by = args.get("order_by", "asc")
-        initial_interval = demisto.params().get("first_fetch_timestamp", 1)
-
-        # Parse gte from last_run or fallback
-        gte = last_run.get("event_pull_start_date")
-        if not gte:
-            gte = (datetime.utcnow() - timedelta(days=int(initial_interval))).astimezone()
-        else:
-            try:
-                gte = isoparse(gte)
-            except Exception as e:
-                demisto.error(f"[scheduled_fetch] Failed to parse gte: {gte} - Error: {str(e)}")
-                raise
-
-        # Set lte
-        lte = datetime.utcnow().astimezone()
-
-        input_params = {
-            "gte": gte,
-            "lte": lte,
-            "order_by": order_by,
-            "limit": MAX_ALERTS,
-            "status": DEFAULT_STATUSES,
-            "services": [],
-        }
-
-        # Handle collections
-        if incident_collections and "All collections" not in incident_collections:
-            if "Darkweb Marketplaces" in incident_collections:
-                input_params["services"].append("darkweb_marketplaces")
-            if "Data Breaches" in incident_collections:
-                input_params["services"].append("darkweb_data_breaches")
-            if "Compromised Endpoints" in incident_collections:
-                input_params["services"].append("stealer_logs")
-            if "Compromised Cards" in incident_collections:
-                input_params["services"].append("compromised_cards")
-
-        # Handle severities
-        if incident_severity and "All severities" not in incident_severity:
-            sev_values = []
-            for sev in incident_severity:
-                sev_val = SEVERITIES.get(sev)
-                if sev_val:
-                    sev_values.append(sev_val)
-                else:
-                    demisto.debug(f"[scheduled_fetch] Unknown severity: {sev}")
-            input_params["severity"] = sev_values
-
-        alerts, last_fetched = migrate_data(client, input_params, False)
-
-        # Handle tuple return (if legacy behavior)
-        if isinstance(last_fetched, tuple):
-            last_fetched = last_fetched[0]
-
-        if not isinstance(last_fetched, datetime):
-            demisto.error("[scheduled_fetch] Invalid last_fetched timestamp")
-            raise ValueError("Invalid last_fetched returned from migrate_data")
-
-        # Set new last run
-        new_last_run = {"event_pull_start_date": last_fetched.strftime("%Y-%m-%dT%H:%M:%S.%fZ")}
-
-        demisto.debug(f"[scheduled_fetch] Completed migrate_data. New last_run: {new_last_run}")
-        return new_last_run
-
-    except Exception as e:
-        demisto.error(f"[scheduled_fetch] Exception occurred: {str(e)}")
-        raise
 
 
 def update_remote_system(client, method, token, args, url):
@@ -1109,34 +1076,6 @@ def get_mapping_fields(client, token, url):  # need to be refactored - @TODO
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def fetch_subscribed_services_alert(client, method, base_url, token):
-    """
-    Fetch cyble subscribed services
-    Args:
-        client: instance of client to communicate with server
-        method: Requests method to be used
-        base_url: base url for the server
-        token: server access token
-
-    Returns: subscribed service list
-
-    """
-    try:
-        subscribed_services = client.get_all_services(token, base_url)
-        service_name_list = []
-
-        for subscribed_service in subscribed_services:
-            service_name_list.append({"name": subscribed_service["name"]})
-
-        markdown = tableToMarkdown("Alerts Group Details:", service_name_list)
-        return CommandResults(
-            readable_output=markdown,
-            outputs_prefix="CybleEvents.ServiceList",
-            raw_response=service_name_list,
-            outputs=service_name_list,
-        )
-    except Exception as e:
-        return_error(f"Failed to fetch subscribed services: {str(e)}")
 
 
 def cyble_fetch_iocs(client, method, token, args, url):
@@ -1314,7 +1253,7 @@ def main():
         elif demisto.command() == "cyble-vision-fetch-alerts":
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
             lst_alerts = cyble_events(
-                client, "POST", token, url, args, {}, hide_cvv_expiry, incident_collections, incident_severity, False
+                client, "POST", token, url, args, {}, hide_cvv_expiry, incident_collections, incident_severity, True
             )
             return_results(
                 CommandResults(
