@@ -1734,19 +1734,19 @@ def test_update_remote_incident(mocker, incident_status, close_incident_in_remot
 @pytest.mark.parametrize(
     "delta, data, close_ticket_param, to_close",
     [
-        ({"classification": "FalsePositive"}, {}, True, True),
-        ({"classification": "FalsePositive"}, {}, False, False),
-        ({}, {}, True, False),
-        ({}, {}, False, False),
+        ({"classification": "FalsePositive"}, {}, True, IncidentStatus.DONE, True),
+        ({"classification": "FalsePositive"}, {}, False, IncidentStatus.DONE, False),
+        ({}, {}, True, IncidentStatus.DONE, False),
+        ({}, {}, False, IncidentStatus.DONE, False),
         # Closing after classification is already present in the data.
-        ({}, {"classification": "FalsePositive"}, True, True),
+        ({}, {"classification": "FalsePositive"}, True, IncidentStatus.DONE, True),
         # Closing after reopened, before data update
-        ({}, {"classification": "FalsePositive", "status": "Closed"}, True, True),
+        ({}, {"classification": "FalsePositive", "status": "Closed"}, True, IncidentStatus.DONE, True),
         # Closing after reopened, after data update
-        ({}, {"classification": "FalsePositive", "status": "Active"}, True, True),
+        ({}, {"classification": "FalsePositive", "status": "Active"}, True, IncidentStatus.DONE, True),
     ],
 )
-def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_close):
+def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, incident_status, to_close):
     """
     Given
         - one of the close parameters
@@ -1756,7 +1756,7 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
         - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
     """
     mocker.patch.object(demisto, "params", return_value={"close_ticket": close_ticket_param})
-    assert close_incident_in_remote(delta, data) == to_close
+    assert close_incident_in_remote(delta, data, incident_status) == to_close
 
 
 @pytest.mark.parametrize(

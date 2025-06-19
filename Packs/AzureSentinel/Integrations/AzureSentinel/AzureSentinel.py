@@ -903,15 +903,15 @@ def update_remote_incident(
     relevant_keys_delta &= delta.keys()
     # those fields are close incident fields and handled separately in close_incident_in_remote
     relevant_keys_delta -= {"classification", "classificationComment"}
-
     if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
-        if (
-            relevant_keys_delta
-            or (open_ticket := (open_incident_in_remote(delta, data, incident_status)))
-            or (close_ticket := (close_incident_in_remote(delta, data, incident_status)))
-        ):
-            demisto.debug(f"Updating incident with remote ID {incident_id} in remote system {open_ticket=}, {close_ticket=}.")
-            return str(update_incident_request(client, incident_id, data, delta, close_ticket, open_ticket))
+        reopen_ticket = open_incident_in_remote(delta, data, incident_status)
+        close_ticket = close_incident_in_remote(delta, data, incident_status)
+        if relevant_keys_delta or reopen_ticket or close_ticket:
+            demisto.debug(
+                f"Updating incident with remote ID {incident_id} in "
+                f"remote system {reopen_ticket=}, {close_ticket=}, {relevant_keys_delta=}."
+            )
+            return str(update_incident_request(client, incident_id, data, delta, close_ticket, reopen_ticket))
         else:
             demisto.debug(f"No relevant changes detected for the incident with remote ID {incident_id}, not updating.")
 
