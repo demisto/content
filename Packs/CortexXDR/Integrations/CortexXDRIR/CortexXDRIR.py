@@ -503,7 +503,7 @@ class Client(CoreClient):
                 "alert_id_list": alerts_ids,
             }
         }
-        update_data = assign_params(severity=severity, status=status, comment=comment) 
+        update_data = assign_params(severity=severity, status=status, comment=comment)
         request_data["request_data"]["update_data"] = update_data
         response = self._http_request(
             method="POST",
