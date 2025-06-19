@@ -1958,6 +1958,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     $description = "Search And Delete Email"
     $entry_context = @{}
     $demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
+    $polling_first_run = $kwargs.polling_first_run
 
     # Determine the search name
     $internet_message_id = $kwargs.internet_message_id

@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: SecurityAndComplianceV2
+  id: SecurityAndComplianceV2-dev
   version: -1
 configuration:
 - display: Certificate Password
@@ -104,8 +104,8 @@ configuration:
   advanced: true
   required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search v2
-name: SecurityAndComplianceV2
+display: O365 - Security And Compliance - Content Search v2-dev
+name: SecurityAndComplianceV2-dev
 script:
   commands:
   - description: OAuth2.0 - Start authorization.
@@ -1263,8 +1263,9 @@ script:
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
   - name: o365-sc-search-and-delete-email
+    prettyname: Search And Delete Email - Office 365
     # hidden: true
-    # quickaction: true
+    quickaction: true
     polling: true
     description: Deletes an email for all recipients.
     arguments:
@@ -1274,7 +1275,7 @@ script:
       prettyname: Internet message ID
       auto: PREDEFINED
       prettypredefined:
-        Issue Internet message ID: ${issue.xdmemailmessage_id}
+        Issue Internet message ID: ${issue.xdmemailmessageid}
     - name: exchange_location
       description: Comma-separated list of mailboxes or groups. Use "All" to target everyone (may be slow).
       isArray: true
@@ -1292,8 +1293,9 @@ script:
     - name: search_completed
       description: todo.
       # hidden: true
-    - name: First_poling
+    - name: polling_first_run
       description: todo.
+      defaultValue: true
       # hidden: true
     outputs:
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
