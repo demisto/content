@@ -308,15 +308,13 @@ class Client(BaseClient):
 
         if response.status_code != 200:
             raise Exception(
-                f"Failed to fetch data from {service}. Status code: {response.status_code}, "
-                f"Response text: {response.text}"
+                f"Failed to fetch data from {service}. Status code: {response.status_code}, " f"Response text: {response.text}"
             )
 
         try:
             return response.json()
         except ValueError as json_error:
             raise Exception(f"Invalid JSON response from {service}: {str(json_error)}")
-
 
     def get_all_services(self, api_key, url):
         """
@@ -495,7 +493,6 @@ class Client(BaseClient):
                 return_error(f"[update_alert] Unexpected status code: {response.status_code}, response: {response.text}")
         except Exception as e:
             return_error(f"[update_alert] Exception while updating alert: {str(e)}")
-
 
 
 def validate_iocs_input(args):
@@ -990,7 +987,7 @@ def scheduled_fetch(client, method, token, url, args, last_run, hide_cvv_expiry,
             "order_by": order_by,
             "limit": MAX_ALERTS,
             "status": DEFAULT_STATUSES,
-            "services": []
+            "services": [],
         }
 
         # Handle collections
@@ -1026,9 +1023,7 @@ def scheduled_fetch(client, method, token, url, args, last_run, hide_cvv_expiry,
             raise ValueError("Invalid last_fetched returned from migrate_data")
 
         # Set new last run
-        new_last_run = {
-            "event_pull_start_date": last_fetched.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        }
+        new_last_run = {"event_pull_start_date": last_fetched.strftime("%Y-%m-%dT%H:%M:%S.%fZ")}
 
         demisto.debug(f"[scheduled_fetch] Completed migrate_data. New last_run: {new_last_run}")
         return new_last_run

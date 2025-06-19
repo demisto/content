@@ -3,7 +3,6 @@ Enhanced Unit Tests for CybleEventsV2 Integration -
 
 """
 
-
 from CommonServerPython import GetModifiedRemoteDataResponse
 
 try:
@@ -212,7 +211,6 @@ class TestGetRemoteDataCommand:
         assert result.entries == []
         mock_debug.assert_called()
 
-
     @patch("demistomock.debug")
     @patch("CybleEventsV2.return_error")
     def test_get_remote_data_invalid_args(self, mock_return_error, mock_debug):
@@ -227,7 +225,6 @@ class TestGetRemoteDataCommand:
 
         assert result is None
         mock_return_error.assert_called()
-
 
     @patch("demistomock.debug")
     @patch("demistomock.error")
@@ -980,7 +977,6 @@ class TestGetFetchServiceList:
         assert service_names.count("darkweb_data_breaches") == 1
 
 
-
 class TestGetFetchSeverities:
     """Test the actual severity mapping logic"""
 
@@ -1034,15 +1030,11 @@ class TestGetFetchSeverities:
 
 def test_build_auth_headers():
     token = "abc123"
-    expected = {
-        "Authorization": "Bearer abc123",
-        "Content-Type": "application/json"
-    }
+    expected = {"Authorization": "Bearer abc123", "Content-Type": "application/json"}
     assert build_auth_headers(token) == expected
 
 
 class TestGetModifiedRemoteDataCommandCore:
-
     def test_successful_execution_flow(self):
         client = Mock()
         client.get_ids_with_retry.return_value = ["incident-001", "incident-002"]
@@ -1079,10 +1071,12 @@ class TestGetModifiedRemoteDataCommandCore:
                 self.accessed_keys.append(key)
                 return super().__getitem__(key)
 
-        spy_args = SpyDict({
-            "last_update": "2024-01-01T00:00:00Z",
-            "lastUpdate": "2024-01-01T00:00:00Z",
-        })
+        spy_args = SpyDict(
+            {
+                "last_update": "2024-01-01T00:00:00Z",
+                "lastUpdate": "2024-01-01T00:00:00Z",
+            }
+        )
 
         with (
             patch("CybleEventsV2.get_fetch_service_list", return_value=["service1"]),
@@ -1096,7 +1090,6 @@ class TestGetModifiedRemoteDataCommandCore:
             result = get_modified_remote_data_command(client, "test_url", "test_token", spy_args, False, ["service1"], ["High"])
             assert isinstance(result, GetModifiedRemoteDataResponse)
             assert result.modified_incident_ids == ["test-incident"]
-
 
     def test_minimal_args_approach(self):
         client = Mock()
@@ -1160,6 +1153,7 @@ class TestGetModifiedRemoteDataCommandCore:
 
     def test_inspect_function_source(self):
         import inspect
+
         try:
             source = inspect.getsource(get_modified_remote_data_command)
             assert "return" in source
@@ -1257,7 +1251,6 @@ class TestGetAlertById:
         # Should return the first alert
         assert result["title"] == "First Alert"
         assert result["severity"] == "high"
-
 
     def test_malformed_response_handling(self, mock_client):
         """Test handling of malformed API responses"""
@@ -1387,8 +1380,7 @@ class TestFetchFewAlerts:
 
         with patch("CybleEventsV2.return_error") as mock_return_error, patch("CybleEventsV2.demisto"):
             fetch_few_alerts(
-                self.client, self.base_input_params.copy(),
-                ["threat_intel", "compromised_cards"], self.url, self.token
+                self.client, self.base_input_params.copy(), ["threat_intel", "compromised_cards"], self.url, self.token
             )
 
             # Expect 2 error calls — one per service
@@ -1396,7 +1388,7 @@ class TestFetchFewAlerts:
 
             expected_calls = [
                 call("[fetch_few_alerts] Failed to fetch data from service threat_intel: Service unavailable"),
-                call("[fetch_few_alerts] Failed to fetch data from service compromised_cards: Service unavailable")
+                call("[fetch_few_alerts] Failed to fetch data from service compromised_cards: Service unavailable"),
             ]
 
             mock_return_error.assert_has_calls(expected_calls, any_order=False)
@@ -1793,6 +1785,7 @@ class TestFormatIncidents:
             assert len(parsed_data) == 100
             assert all(f"field_{i}" in parsed_data for i in range(10))  # Check first 10
 
+
 def test_build_get_alert_payload():
     alert_id = "test-alert-id"
     result = build_get_alert_payload(alert_id)
@@ -1853,7 +1846,6 @@ def test_migrate_data_success(monkeypatch):
     assert isinstance(result_time, datetime)
     assert result_time == DummyDatetime(2023, 1, 1, 14, 0, 0)
     assert mock_client.get_data_with_retry.call_count == 2
-
 
 
 # Test validate_iocs_input function
@@ -1971,8 +1963,10 @@ class TestClientMethods(unittest.TestCase):
         mock_response_fail_code.status_code = 404
         mock_response_fail_code.json.return_value = {}
 
-        with patch.object(self.client, "make_request", return_value=mock_response_fail_code), \
-            pytest.raises(Exception, match="Failed to get services: Wrong status code: 404"):
+        with (
+            patch.object(self.client, "make_request", return_value=mock_response_fail_code),
+            pytest.raises(Exception, match="Failed to get services: Wrong status code: 404"),
+        ):
             self.client.get_all_services(self.test_api_key, self.test_url)
 
         # --- FAILURE: WRONG FORMAT ---
@@ -1980,8 +1974,10 @@ class TestClientMethods(unittest.TestCase):
         mock_response_bad_format.status_code = 200
         mock_response_bad_format.json.return_value = {"wrong_key": []}
 
-        with patch.object(self.client, "make_request", return_value=mock_response_bad_format), \
-            pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"):
+        with (
+            patch.object(self.client, "make_request", return_value=mock_response_bad_format),
+            pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"),
+        ):
             self.client.get_all_services(self.test_api_key, self.test_url)
 
     @patch("requests.request")
@@ -2003,12 +1999,7 @@ class TestClientMethods(unittest.TestCase):
         with patch.object(self.client, "make_request", return_value=mock_response) as mock_make_request:
             self.client.update_alert(self.test_payload, self.test_url, self.test_api_key)
 
-            mock_make_request.assert_called_once_with(
-                self.test_url,
-                self.test_api_key,
-                "PUT",
-                json.dumps(self.test_payload)
-            )
+            mock_make_request.assert_called_once_with(self.test_url, self.test_api_key, "PUT", json.dumps(self.test_payload))
             mock_return_error.assert_not_called()
 
     @patch("CybleEventsV2.requests.request")
@@ -2038,10 +2029,7 @@ class TestClientMethods(unittest.TestCase):
 
     @patch("CybleEventsV2.demisto")
     @patch("CybleEventsV2.time_diff_in_mins", return_value=60)
-    @patch("CybleEventsV2.parse_date", side_effect=[
-        datetime(2024, 1, 1, 12, 0, 0),
-        datetime(2024, 1, 1, 13, 0, 0)
-    ])
+    @patch("CybleEventsV2.parse_date", side_effect=[datetime(2024, 1, 1, 12, 0, 0), datetime(2024, 1, 1, 13, 0, 0)])
     def test_get_data_with_retry_success(self, mock_parse, mock_diff, mock_demisto):
         input_params = {"gte": "2024-01-01T12:00:00Z", "lte": "2024-01-01T13:00:00Z"}
         service = self.test_service
@@ -2050,9 +2038,10 @@ class TestClientMethods(unittest.TestCase):
         mock_inserted_alerts = [{"id": "abc"}]
         mock_time = datetime(2024, 1, 1, 13, 0, 0)
 
-        with patch.object(self.client, "get_data", return_value=mock_response), \
-             patch.object(self.client, "insert_data_in_cortex", return_value=(mock_inserted_alerts, mock_time)):
-
+        with (
+            patch.object(self.client, "get_data", return_value=mock_response),
+            patch.object(self.client, "insert_data_in_cortex", return_value=(mock_inserted_alerts, mock_time)),
+        ):
             result_alerts, result_time = self.client.get_data_with_retry(service, input_params)
 
             assert result_alerts == mock_inserted_alerts
@@ -2060,17 +2049,12 @@ class TestClientMethods(unittest.TestCase):
 
     @patch("CybleEventsV2.demisto")
     @patch("CybleEventsV2.time_diff_in_mins", return_value=60)
-    @patch("CybleEventsV2.parse_date", side_effect=[
-        datetime(2024, 1, 1, 10, 0, 0),
-        datetime(2024, 1, 1, 11, 0, 0)
-    ])
+    @patch("CybleEventsV2.parse_date", side_effect=[datetime(2024, 1, 1, 10, 0, 0), datetime(2024, 1, 1, 11, 0, 0)])
     def test_get_ids_with_retry_success(self, mock_parse, mock_diff, mock_demisto):
         input_params = {"gte": "2024-01-01T10:00:00Z", "lte": "2024-01-01T11:00:00Z"}
         service = self.test_service
 
-        mock_response = {
-            "data": [{"id": "id1"}, {"id": "id2"}]
-        }
+        mock_response = {"data": [{"id": "id1"}, {"id": "id2"}]}
 
         with patch.object(self.client, "get_data", return_value=mock_response):
             result_ids = self.client.get_ids_with_retry(service, input_params)
@@ -2104,6 +2088,7 @@ def test_test_response_empty_response():
             test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
 
         mock_demisto.error.assert_called()
+
 
 class TestCybleEventsLogical(unittest.TestCase):
     """Logical unit tests for cyble_events function focusing on business logic"""
