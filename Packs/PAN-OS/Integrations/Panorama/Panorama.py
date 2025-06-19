@@ -14627,7 +14627,7 @@ def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> Comma
         else:
             return "Valid"
 
-    def consolidate_all_certificates(cert_list, cert_type, device: str, devices_using_certificate: Optional[List] = None):
+    def consolidate_all_certificates(cert_list: List, cert_type: str, device: str, devices_using_certificate: Optional[List] = None):
         if cert_type == "Pushed":
             location = "Panorama"
         elif cert_type == "Local":
@@ -15965,6 +15965,9 @@ def main():  # pragma: no cover
             return_results(pan_os_update_master_key_command(args))
         elif command == "pan-os-get-master-key-details":
             return_results(pan_os_get_master_key_details_command())
+        elif command == "pan-os-get-certificate-info":
+            topology = get_topology()
+            return_results(pan_os_get_certificate_info_command(topology, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as err:
