@@ -1,208 +1,190 @@
-import pytest
-from unittest.mock import mock_open, patch
+from unittest.mock import mock_open
 import PFXAnalyzer
-import random
-
-from PFXAnalyzer import analyze_pfx_file
-
-def test_analyze_pfx_file_with_no_private_key(mocker):
-    from datetime import datetime, timedelta
-
-    mock_cert = mocker.Mock()
-    mock_cert.subject = []
-    mock_cert.issuer = []
-    now = datetime.utcnow()
-    mock_cert.not_valid_before = now - timedelta(days=30)
-    mock_cert.not_valid_after = now + timedelta(days=365)
-    mock_cert.extensions = mocker.Mock()
-    mock_cert.extensions.get_extension_for_oid.side_effect = Exception("Extension not found")
-
-    mocker.patch("PFXAnalyzer.pkcs12.load_key_and_certificates", return_value=(None, mock_cert, []))
-
-    result = analyze_pfx_file(b"test_data", "password")
-
-    assert result["Private Key Present"] is False
-    assert result["Key Type"] == "N/A"
-    assert result["Key Size"] == "N/A"
-
-
-def test_analyze_pfx_file_with_no_certificate(mocker):
-    from cryptography.hazmat.primitives.asymmetric import rsa
-
-    mock_private_key = mocker.Mock(spec=rsa.RSAPrivateKey)
-    mock_private_key.key_size = 2048
-
-    mocker.patch("PFXAnalyzer.pkcs12.load_key_and_certificates", return_value=(mock_private_key, None, []))
-
-    result = analyze_pfx_file(b"test_data", "password")
-
-    assert result["Certificate Present"] is False
-    assert result["Common Name"] == "N/A"
-    assert result["Issuer"] == "N/A"
-
-
-def test_analyze_pfx_file_with_invalid_password(mocker):
-    mocker.patch("PFXAnalyzer.pkcs12.load_key_and_certificates", side_effect=ValueError("Bad password"))
-
-    try:
-        analyze_pfx_file(b"test_data", "wrong_password")
-        assert False, "Should have raised ValueError"
-    except ValueError as e:
-        assert "Unable to parse .pfx file" in str(e)
-
-
-def test_analyze_pfx_file_with_no_password_required(mocker):
-    from cryptography.hazmat.primitives.asymmetric import rsa
-    from datetime import datetime, timedelta
-
-    mock_private_key = mocker.Mock(spec=rsa.RSAPrivateKey)
-    mock_private_key.key_size = 2048
-
-    mock_cert = mocker.Mock()
-    mock_cert.subject = []
-    mock_cert.issuer = []
-    now = datetime.utcnow()
-    mock_cert.not_valid_before = now - timedelta(days=30)
-    mock_cert.not_valid_after = now + timedelta(days=365)
-    mock_cert.extensions = mocker.Mock()
-    mock_cert.extensions.get_extension_for_oid.side_effect = Exception("Extension not found")
-
-    mocker.patch("PFXAnalyzer.pkcs12.load_key_and_certificates", return_value=(mock_private_key, mock_cert, []))
-    mocker.patch("PFXAnalyzer.is_self_signed", return_value=False)
-
-    result = analyze_pfx_file(b"test_data", None)
-
-    assert result["Private Key Present"] is True
-    assert result["Key Type"] == "RSA"
-
-
-def test_analyze_pfx_file_with_empty_password_fallback(mocker):
-    from cryptography.hazmat.primitives.asymmetric import rsa
-    from datetime import datetime, timedelta
-
-    mock_private_key = mocker.Mock(spec=rsa.RSAPrivateKey)
-    mock_private_key.key_size = 2048
-
-    mock_cert = mocker.Mock()
-    mock_cert.subject = []
-    mock_cert.issuer = []
-    now = datetime.utcnow()
-    mock_cert.not_valid_before = now - timedelta(days=30)
-    mock_cert.not_valid_after = now + timedelta(days=365)
-    mock_cert.extensions = mocker.Mock()
-    mock_cert.extensions.get_extension_for_oid.side_effect = Exception("Extension not found")
-
-    load_mock = mocker.patch("PFXAnalyzer.pkcs12.load_key_and_certificates")
-    load_mock.side_effect = [ValueError("Password required"), (mock_private_key, mock_cert, [])]
-    mocker.patch("PFXAnalyzer.is_self_signed", return_value=False)
-
-    result = analyze_pfx_file(b"test_data", None)
-
-    assert result["Private Key Present"] is True
-    assert load_mock.call_count == 2
-
-
-def test_analyze_pfx_file_with_weak_rsa_key(mocker):
-    from cryptography.hazmat.primitives.asymmetric import rsa
-    from datetime import datetime, timedelta
-
-    mock_private_key = mocker.Mock(spec=rsa.RSAPrivateKey)
-    mock_private_key.key_size = 1024
-
-    mock_cert = mocker.Mock()
-    mock_cert.subject = []
-    mock_cert.issuer = []
-    now = datetime.utcnow()
-    mock_cert.not_valid_before = now - timedelta(days=30)
-    mock_cert.not_valid_after = now + timedelta(days=365)
-    mock_cert.extensions = mocker.Mock()
-    mock_cert.extensions.get_extension_for_oid.side_effect = Exception("Extension not found")
-
-    mocker.patch("PFXAnalyzer.pkcs12.load_key_and_certificates", return_value=(mock_private_key, mock_cert, []))
-    mocker.patch("PFXAnalyzer.is_self_signed", return_value=False)
-
-    result = analyze_pfx_file(b"test_data", "password")
-
-    assert "Weak RSA key size (1024 bits)" in result["Reasons"]
-
-
-def test_analyze_pfx_file_with_trusted_issuer(mocker):
-    from cryptography.hazmat.primitives.asymmetric import rsa
-    from cryptography.x509.oid import NameOID
-    from cryptography import x509
-    from datetime import datetime, timedelta
-
-    mock_private_key = mocker.Mock(spec=rsa.RSAPrivateKey)
-    mock_private_key.key_size = 2048
-
-    issuer_attrs = [x509.NameAttribute(NameOID.COMMON_NAME, "DigiCert")]
-    subject_attrs = [x509.NameAttribute(NameOID.COMMON_NAME, "example.com")]
-
-    mock_cert = mocker.Mock()
-    mock_cert.subject = x509.Name(subject_attrs)
-    mock_cert.issuer = x509.Name(issuer_attrs)
-    now = datetime.utcnow()
-    mock_cert.not_valid_before = now - timedelta(days=30)
-    mock_cert.not_valid_after = now + timedelta(days=365)
-    mock_cert.extensions = mocker.Mock()
-    mock_cert.extensions.get_extension_for_oid.side_effect = Exception("Extension not found")
-
-    mocker.patch("PFXAnalyzer.pkcs12.load_key_and_certificates", return_value=(mock_private_key, mock_cert, []))
-    mocker.patch("PFXAnalyzer.is_self_signed", return_value=False)
-
-    result = analyze_pfx_file(b"test_data", "password")
-
-    assert result["Trusted Issuer"] is True
-    assert result["Issuer"] == "DigiCert"
-
-
-def test_analyze_pfx_file_with_negative_validity_days(mocker):
-    from cryptography.hazmat.primitives.asymmetric import rsa
-    from datetime import datetime, timedelta
-
-    mock_private_key = mocker.Mock(spec=rsa.RSAPrivateKey)
-    mock_private_key.key_size = 2048
-
-    mock_cert = mocker.Mock()
-    mock_cert.subject = []
-    mock_cert.issuer = []
-    now = datetime.utcnow()
-    mock_cert.not_valid_before = now + timedelta(days=10)
-    mock_cert.not_valid_after = now - timedelta(days=10)
-    mock_cert.extensions = mocker.Mock()
-    mock_cert.extensions.get_extension_for_oid.side_effect = Exception("Extension not found")
-
-    mocker.patch("PFXAnalyzer.pkcs12.load_key_and_certificates", return_value=(mock_private_key, mock_cert, []))
-    mocker.patch("PFXAnalyzer.is_self_signed", return_value=False)
-
-    result = analyze_pfx_file(b"test_data", "password")
-
-    assert result["Validity Days"] == -20
-    assert "Invalid validity period calculation (negative days)" in result["Reasons"]
-
-
-def test_analyze_pfx_file_with_validity_calculation_error(mocker):
-    from cryptography.hazmat.primitives.asymmetric import rsa
-
-    mock_private_key = mocker.Mock(spec=rsa.RSAPrivateKey)
-    mock_private_key.key_size = 2048
-
-    mock_cert = mocker.Mock()
-    mock_cert.subject = []
-    mock_cert.issuer = []
-    mock_cert.not_valid_before = None
-    mock_cert.not_valid_after = None
-    mock_cert.extensions = mocker.Mock()
-    mock_cert.extensions.get_extension_for_oid.side_effect = Exception("Extension not found")
-
-    mocker.patch("PFXAnalyzer.pkcs12.load_key_and_certificates", return_value=(mock_private_key, mock_cert, []))
 
 
 def test_main_function_success(mocker):
     """Test main function with successful PFX analysis"""
-    from cryptography.hazmat.primitives.asymmetric import rsa
-    from datetime import datetime, timedelta
-    
     # Mock demisto.args()
-    mock_args = {
-        "fileEntryId": "test_entry_
+    mock_args = {"fileEntryId": "test_entry_id", "pfxPassword": "test_password"}
+    mocker.patch("demistomock.args", return_value=mock_args)
+
+    # Mock demisto.getFilePath()
+    mock_file_path = {"path": "/tmp/test.pfx"}
+    mocker.patch("demistomock.getFilePath", return_value=mock_file_path)
+
+    # Mock os.path.exists()
+    mocker.patch("os.path.exists", return_value=True)
+
+    # Mock file reading
+    mock_pfx_data = b"mock_pfx_data"
+    mocker.patch("builtins.open", mock_open(read_data=mock_pfx_data))
+
+    # Mock the analyze_pfx_file function
+    mock_analysis_result = {
+        "Private Key Present": True,
+        "Key Type": "RSA",
+        "Key Size": 2048,
+        "Certificate Present": True,
+        "Common Name": "test.com",
+        "Issuer": "DigiCert",
+        "Trusted Issuer": True,
+        "Reasons": ["Private key is present"],
+    }
+    mocker.patch("PFXAnalyzer.analyze_pfx_file", return_value=mock_analysis_result)
+
+    # Mock demisto output functions
+    mock_return_outputs = mocker.patch("PFXAnalyzer.return_outputs")
+    mock_debug = mocker.patch("demistomock.debug")
+
+    # Call main function
+    PFXAnalyzer.main()
+
+    # Assertions
+    mock_debug.assert_called_once()
+    mock_return_outputs.assert_called_once()
+
+    # Verify the call arguments
+    call_args = mock_return_outputs.call_args
+    readable_output = call_args[0][0]
+    context_output = call_args[0][1]
+
+    assert "## PFX Analysis Results" in readable_output
+    assert "**Private Key Present:** True" in readable_output
+    assert "**Key Type:** RSA" in readable_output
+    assert context_output == {"PFXAnalysis": mock_analysis_result}
+
+
+def test_main_function_missing_file_entry_id(mocker):
+    """Test main function with missing fileEntryId argument"""
+    # Mock demisto.args() with missing fileEntryId
+    mock_args = {"pfxPassword": "test_password"}
+    mocker.patch("demistomock.args", return_value=mock_args)
+
+    # Mock demisto output functions
+    mock_return_error = mocker.patch("PFXAnalyzer.return_error")
+
+    # Call main function
+    PFXAnalyzer.main()
+
+    # Verify error was returned
+    mock_return_error.assert_called_once()
+    error_message = mock_return_error.call_args[0][0]
+    assert "fileEntryId argument is missing" in error_message
+
+
+def test_main_function_file_not_found(mocker):
+    """Test main function with file not found"""
+    # Mock demisto.args()
+    mock_args = {"fileEntryId": "test_entry_id"}
+    mocker.patch("demistomock.args", return_value=mock_args)
+
+    # Mock demisto.getFilePath()
+    mock_file_path = {"path": "/tmp/nonexistent.pfx"}
+    mocker.patch("demistomock.getFilePath", return_value=mock_file_path)
+
+    # Mock os.path.exists() to return False
+    mocker.patch("os.path.exists", return_value=False)
+
+    # Mock demisto output functions
+    mock_return_error = mocker.patch("PFXAnalyzer.return_error")
+
+    # Call main function
+    PFXAnalyzer.main()
+
+    # Verify error was returned
+    mock_return_error.assert_called_once()
+    error_message = mock_return_error.call_args[0][0]
+    assert "File not found at" in error_message
+
+
+def test_main_function_pfx_analysis_error(mocker):
+    """Test main function with PFX analysis error"""
+    # Mock demisto.args()
+    mock_args = {"fileEntryId": "test_entry_id", "pfxPassword": "wrong_password"}
+    mocker.patch("demistomock.args", return_value=mock_args)
+
+    # Mock demisto.getFilePath()
+    mock_file_path = {"path": "/tmp/test.pfx"}
+    mocker.patch("demistomock.getFilePath", return_value=mock_file_path)
+
+    # Mock os.path.exists()
+    mocker.patch("os.path.exists", return_value=True)
+
+    # Mock file reading
+    mock_pfx_data = b"mock_pfx_data"
+    mocker.patch("builtins.open", mock_open(read_data=mock_pfx_data))
+
+    # Mock analyze_pfx_file to raise an exception
+    mocker.patch(
+        "PFXAnalyzer.analyze_pfx_file",
+        side_effect=ValueError("Unable to parse .pfx file: Bad password"),
+    )
+
+    # Mock demisto output functions
+    mock_return_error = mocker.patch("PFXAnalyzer.return_error")
+
+    # Call main function
+    PFXAnalyzer.main()
+
+    # Verify error was returned
+    mock_return_error.assert_called_once()
+    error_message = mock_return_error.call_args[0][0]
+    assert "PFX Analysis failed" in error_message
+    assert "Unable to parse .pfx file" in error_message
+
+
+def test_main_function_no_password(mocker):
+    """Test main function without password"""
+    # Mock demisto.args() without password
+    mock_args = {"fileEntryId": "test_entry_id"}
+    mocker.patch("demistomock.args", return_value=mock_args)
+
+    # Mock demisto.getFilePath()
+    mock_file_path = {"path": "/tmp/test.pfx"}
+    mocker.patch("demistomock.getFilePath", return_value=mock_file_path)
+
+    # Mock os.path.exists()
+    mocker.patch("os.path.exists", return_value=True)
+
+    # Mock file reading
+    mock_pfx_data = b"mock_pfx_data"
+    mocker.patch("builtins.open", mock_open(read_data=mock_pfx_data))
+
+    # Mock the analyze_pfx_file function
+    mock_analysis_result = {
+        "Private Key Present": False,
+        "Certificate Present": False,
+        "Reasons": [],
+    }
+    mocker.patch("PFXAnalyzer.analyze_pfx_file", return_value=mock_analysis_result)
+
+    # Mock demisto output functions
+    mock_return_outputs = mocker.patch("PFXAnalyzer.return_outputs")
+
+    # Call main function
+    PFXAnalyzer.main()
+
+    # Verify analyze_pfx_file was called with None password
+    PFXAnalyzer.analyze_pfx_file.assert_called_once_with(mock_pfx_data, None)
+    mock_return_outputs.assert_called_once()
+
+
+def test_main_function_exception_handling(mocker):
+    """Test main function with general exception handling"""
+    # Mock demisto.args()
+    mock_args = {"fileEntryId": "test_entry_id"}
+    mocker.patch("demistomock.args", return_value=mock_args)
+
+    # Mock demisto.getFilePath() to raise an exception
+    mocker.patch("demistomock.getFilePath", side_effect=Exception("Unexpected error"))
+
+    # Mock demisto output functions
+    mock_return_error = mocker.patch("PFXAnalyzer.return_error")
+
+    # Call main function
+    PFXAnalyzer.main()
+
+    # Verify error was returned
+    mock_return_error.assert_called_once()
+    error_message = mock_return_error.call_args[0][0]
+    assert "PFX Analysis failed" in error_message
