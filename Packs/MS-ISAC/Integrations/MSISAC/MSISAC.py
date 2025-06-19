@@ -300,8 +300,17 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
                         "dbotMirrorId": f"{event_id}",
                     }
                 )
+                demisto.debug(f"Albert Event: {event_id} has been fetched.")
                 if event_s_time > latest_event_s_time:
                     latest_event_s_time = event_s_time
+
+            else:
+                demisto.debug(f"""
+                    Albert Event: {event_id} was not fetched.
+                    Event S_Time: {event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                    Fetch Start Time: {fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                    Fetch End Time: {datetime.now().strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                    """)
 
     else:
         demisto.debug(f"Here is the event data that was returned: {retrieve_events_data}")
