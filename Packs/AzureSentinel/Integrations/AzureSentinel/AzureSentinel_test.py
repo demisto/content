@@ -54,6 +54,7 @@ from AzureSentinel import (
     update_remote_system_command,
     update_threat_indicator_command,
     validate_required_arguments_for_alert_rule,
+    open_incident_in_remote,
 )
 from CommonServerPython import CommandResults, IncidentStatus, pascalToSpace, tableToMarkdown
 
@@ -1732,7 +1733,7 @@ def test_update_remote_incident(mocker, incident_status, close_incident_in_remot
 
 
 @pytest.mark.parametrize(
-    "delta, data, close_ticket_param, to_close",
+    "delta, data, close_ticket_param, incident_status, to_close",
     [
         ({"classification": "FalsePositive"}, {}, True, IncidentStatus.DONE, True),
         ({"classification": "FalsePositive"}, {}, False, IncidentStatus.DONE, False),
@@ -1744,6 +1745,15 @@ def test_update_remote_incident(mocker, incident_status, close_incident_in_remot
         ({}, {"classification": "FalsePositive", "status": "Closed"}, True, IncidentStatus.DONE, True),
         # Closing after reopened, after data update
         ({}, {"classification": "FalsePositive", "status": "Active"}, True, IncidentStatus.DONE, True),
+    ],
+    ids=[
+        "1#-close_incident_close_ticket_param_is_true",
+        "2#-close_incident_close_ticket_param_is_false",
+        "3#-close_incident_without_classification_close_ticket_param_is_true",
+        "4#-close_incident_without_classification_close_ticket_param_is_false",
+        "5#-close_incident_classification_already_in_data",
+        "6#-close_incident_after_reopen_before_data_update",
+        "7#-close_incident_after_reopen_after_data_update",
     ],
 )
 def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, incident_status, to_close):
@@ -1757,6 +1767,42 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, incid
     """
     mocker.patch.object(demisto, "params", return_value={"close_ticket": close_ticket_param})
     assert close_incident_in_remote(delta, data, incident_status) == to_close
+
+
+@pytest.mark.parametrize(
+    "delta, data, incident_status, to_open",
+    [
+        ({"classification": "FalsePositive"}, {"Status": "Active"}, IncidentStatus.ACTIVE, False),
+        ({"classification": ""}, {"Status": "Closed"}, IncidentStatus.ACTIVE, True),
+        ({"classification": ""}, {"Status": "Closed"}, IncidentStatus.DONE, False),
+        ({"classification": ""}, {"Status": "Active"}, IncidentStatus.ACTIVE, False),
+        ({}, {"Status": "Active"}, IncidentStatus.ACTIVE, False),
+        (
+            {"classification": "FalsePositive"},
+            {"classification": "FalsePositive", "Status": "Closed"},
+            IncidentStatus.DONE,
+            False,
+        ),
+    ],
+    ids=[
+        "1#-the_incident_is_open_classification_changed",
+        "2#-the_incident_is_reopened",
+        "3#-the_incident_is_close_classification_removed",
+        "4#-the_incident_is_open_classification_removed",
+        "5#-the_incident_is_open",
+        "6#-the_incident_is_close_classification_changed",
+    ],
+)
+def test_open_incident_in_remote(mocker, delta, data, incident_status, to_open):
+    """
+    Given
+        - one of the open parameters
+    When
+        - outgoing mirroring triggered by a change in the incident
+    Then
+        - returns true if the incident was reopened in XSOAR.
+    """
+    assert open_incident_in_remote(delta, data, incident_status) == to_open
 
 
 @pytest.mark.parametrize(
