@@ -25,7 +25,7 @@ sendgrid = "^6.11"
 slack_sdk = "^3.31.0"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "3c1db5ed709d46ca36043dd9b65dcc71dec64413"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "30d9c915f9a793939e2decb2405a5dbc7709d676"}
 pytest = ">=7.1.2"
 requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
