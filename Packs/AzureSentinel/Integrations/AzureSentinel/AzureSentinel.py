@@ -841,7 +841,7 @@ def update_incident_request(
         delta (Dict[str, Any]): the delta of the changes in the incident's data
         close_ticket (bool, optional): whether to close the ticket or not (defined by the close_incident_in_remote).
                                        Defaults to False.
-        open_ticket (bool, optional): whether to open the ticket or not (defined by the close_incident_in_remote).
+        open_ticket (bool, optional): whether to open the ticket or not (defined by the open_incident_in_remote).
                                        Defaults to False.
 
     Returns:
