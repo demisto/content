@@ -47,10 +47,10 @@ class HealthCheckError:
         self.connector_id = connector_id
         self.message = f"{account_id}: {message}"
         self.error_type = error_type
+        # Determine classification based on error type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
     def to_dict(self) -> dict:
-        # Determine classification based on error type
 
         return {
             "account_id": self.account_id,
@@ -152,7 +152,6 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         raise ValueError(f"Missing {name} for {cloud_type}")
 
     cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
-    demisto.info(f"Cloud credentials request context: {cloud_info_context}")
 
     request_data = {
         "connector_id": cloud_info_context.get("connectorID"),
@@ -165,33 +164,21 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         request_data["scopes"] = scopes
 
     demisto.info(f"Request data for credentials retrieval: {request_data}")
-
-    response = demisto._platformAPICall(path=GET_CTS_ACCOUNTS_TOKEN, method="POST", data={"request_data": request_data})
-
-    status_code = response.get("status")
-    if status_code != 200:
-        error_detail = response.get("data", "No error message provided")
-        raise DemistoException(
-            f"Failed to get credentials from CTS for {cloud_type}. Status code: {status_code}. Error: {error_detail}"
-        )
-
+    response = None
     try:
+        response = demisto._platformAPICall(path=GET_CTS_ACCOUNTS_TOKEN, method="POST", data={"request_data": request_data})
         res_json = json.loads(response["data"])
         credentials = res_json.get("data")
         if not credentials:
             raise KeyError("Did not receive any credentials from CTS.")
         expiration_time = credentials.get("expiration_time")
-        demisto.info(f"Received credentials. Expiration time: {expiration_time}")
+        demisto.info(f"{account_id}: Received credentials. Expiration time: {expiration_time}")
         return credentials
-    except (
-        json.JSONDecodeError,
-        KeyError,
-        TypeError,
-    ) as e:
-        raise DemistoException(f"Failed to parse credentials from CTS response for {cloud_type}.") from e
+    except Exception as e:
+        raise DemistoException(f"Failed to get credentials from CTS for {cloud_type}, {response=}.") from e
 
 
-def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> list:
+def get_accounts_by_connector_id(connector_id: str, max_results: int = 29) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
     Args:
@@ -239,7 +226,6 @@ def _check_account_permissions(
     if not account_id:
         demisto.debug(f"Account without ID found for connector {connector_id}: {account}")
         return None
-
     try:
         return permission_check_func(account_id, connector_id)
     except Exception as e:
@@ -269,7 +255,7 @@ def run_permissions_check_for_accounts(
         DemistoException: If the account retrieval fails.
     """
     accounts = get_accounts_by_connector_id(connector_id)
-    demisto.debug(f"Fetched the following accounts: {accounts}")
+    demisto.debug(f"Processing {len(accounts)} accounts")
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")

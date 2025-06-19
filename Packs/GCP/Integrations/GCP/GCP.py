@@ -854,9 +854,11 @@ def check_required_permissions(
     Raises:
         DemistoException: If required permissions are missing and not using connector_id.
     """
-    permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
-    # Filter out permissions that can't be tested with testIamPermissions
-    # Currently, cloudidentity permissions can't be checked this way
+    permissions = REQUIRED_PERMISSIONS.get(
+        command,
+        list(frozenset().union(*REQUIRED_PERMISSIONS.values()))
+    )
+
     untestable_permissions = [p for p in permissions if p.startswith("cloudidentity.")]
     testable_permissions = list(set(permissions) - set(untestable_permissions))
 
@@ -892,20 +894,19 @@ def check_required_permissions(
         perm_to_cmds = {perm: [cmd for cmd, perms in REQUIRED_PERMISSIONS.items() if perm in perms] for perm in missing}
         error_lines = [f"- {perm} (required for: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
         if connector_id:
-            errors = []
-            for error in error_lines:
-                error_message = f"Missing required permission {error}"
-                errors.append(
-                    HealthCheckError(
-                        account_id=project_id,
-                        connector_id=connector_id,
-                        message=error_message,
-                        error_type=ErrorType.PERMISSION_ERROR,
-                    )
+            return [
+                HealthCheckError(
+                    account_id=project_id,
+                    connector_id=connector_id,
+                    message=f"Missing required permission {line}",
+                    error_type=ErrorType.PERMISSION_ERROR,
                 )
-            return errors
-        error_message = "Missing required permissions for GCP integration:\n" + "\n".join(error_lines)
-        raise DemistoException(error_message)
+                for line in error_lines
+            ]
+
+        raise DemistoException(
+            "Missing required permissions for GCP integration:\n" + "\n".join(error_lines)
+        )
 
     return None
 
@@ -944,13 +945,13 @@ def health_check(project_id: str, connector_id: str) -> HealthCheckError | list[
             )
 
         creds = Credentials(token=token)
-        demisto.debug("Using token-based credentials for health check")
+        demisto.debug(f"{project_id}: Using token-based credentials for health check")
         return check_required_permissions(creds, project_id, connector_id)
     except Exception as e:
         return HealthCheckError(
             account_id=project_id,
             connector_id=connector_id,
-            message=f"Failed to connect to GCP: {str(e)}",
+            message=str(e),
             error_type=ErrorType.CONNECTIVITY_ERROR,
         )
 
@@ -1026,7 +1027,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
             raise DemistoException("Failed to retrieve GCP access token - token is missing from credentials")
 
         creds = Credentials(token=token)
-        demisto.debug("Using token-based credentials")
+        demisto.debug(f"{project_id}: Using token-based credentials")
         return creds
     except Exception as e:
         raise DemistoException(f"Failed to authenticate with GCP: {str(e)}")
