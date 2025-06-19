@@ -2023,16 +2023,18 @@ class TestClientMethods(unittest.TestCase):
 
         response = self.client.make_request(self.test_url, self.test_api_key, method, payload_json, params)
 
-        self.assertEqual(response.status_code, 200)
+        assert response.status_code == 200
         mock_request.assert_called_once()
-        called_args = mock_request.call_args[1]
 
-        self.assertEqual(called_args["method"], method)
-        self.assertEqual(called_args["url"], self.test_url)
-        self.assertEqual(called_args["data"], payload_json)
-        self.assertEqual(called_args["params"], params)
-        self.assertIn("headers", called_args)
-        self.assertIn("timeout", called_args)
+        called_pos_args = mock_request.call_args[0]
+        called_kwargs = mock_request.call_args[1]
+
+        assert called_pos_args[0] == method
+        assert called_pos_args[1] == self.test_url
+        assert called_kwargs["data"] == payload_json
+        assert called_kwargs["params"] == params
+        assert "headers" in called_kwargs
+        assert "timeout" in called_kwargs
 
 
 # Test for test_response function
