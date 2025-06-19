@@ -2036,6 +2036,47 @@ class TestClientMethods(unittest.TestCase):
         assert "headers" in called_kwargs
         assert "timeout" in called_kwargs
 
+    @patch("CybleEventsV2.demisto")
+    @patch("CybleEventsV2.time_diff_in_mins", return_value=60)
+    @patch("CybleEventsV2.parse_date", side_effect=[
+        datetime(2024, 1, 1, 12, 0, 0),
+        datetime(2024, 1, 1, 13, 0, 0)
+    ])
+    def test_get_data_with_retry_success(self, mock_parse, mock_diff, mock_demisto):
+        input_params = {"gte": "2024-01-01T12:00:00Z", "lte": "2024-01-01T13:00:00Z"}
+        service = self.test_service
+
+        mock_response = {"data": ["some"]}
+        mock_inserted_alerts = [{"id": "abc"}]
+        mock_time = datetime(2024, 1, 1, 13, 0, 0)
+
+        with patch.object(self.client, "get_data", return_value=mock_response), \
+             patch.object(self.client, "insert_data_in_cortex", return_value=(mock_inserted_alerts, mock_time)):
+
+            result_alerts, result_time = self.client.get_data_with_retry(service, input_params)
+
+            assert result_alerts == mock_inserted_alerts
+            assert isinstance(result_time, datetime)
+
+    @patch("CybleEventsV2.demisto")
+    @patch("CybleEventsV2.time_diff_in_mins", return_value=60)
+    @patch("CybleEventsV2.parse_date", side_effect=[
+        datetime(2024, 1, 1, 10, 0, 0),
+        datetime(2024, 1, 1, 11, 0, 0)
+    ])
+    def test_get_ids_with_retry_success(self, mock_parse, mock_diff, mock_demisto):
+        input_params = {"gte": "2024-01-01T10:00:00Z", "lte": "2024-01-01T11:00:00Z"}
+        service = self.test_service
+
+        mock_response = {
+            "data": [{"id": "id1"}, {"id": "id2"}]
+        }
+
+        with patch.object(self.client, "get_data", return_value=mock_response):
+            result_ids = self.client.get_ids_with_retry(service, input_params)
+
+            assert result_ids == ["id1", "id2"]
+
 
 # Test for test_response function
 def test_test_response_success():
