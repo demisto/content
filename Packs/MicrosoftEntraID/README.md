@@ -36,7 +36,8 @@ See the table below that lists these additional log types, along the relevant ma
   | [Azure WAF Resource Logs](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#resource-logs)    | [Azure WAF](https://cortex.marketplace.pan.dev/marketplace/details/AzureWAF/)                                |
   | [Azure AKS Resource Logs](https://learn.microsoft.com/en-us/azure/aks/monitor-aks-reference#resource-logs)                                    | [Azure Kubernetes Services](https://cortex.marketplace.pan.dev/marketplace/details/AzureKubernetesServices/) |
   | [Azure App Service Resource Logs](https://learn.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs#overview-of-logging-types) | [Azure App Service](https://cortex.marketplace.pan.dev/marketplace/details/AzureAppService/)                 |
-  | [Azure DevOps](https://learn.microsoft.com/en-us/azure/devops/organizations/audit/auditing-events?view=azure-devops#areas)                    | [Azure DevOps](https://cortex.marketplace.pan.dev/marketplace/details/AzureDevOps/)                      |
+  | [Azure DevOps](https://learn.microsoft.com/en-us/azure/devops/organizations/audit/auditing-events?view=azure-devops#areas)                    | [Azure DevOps](https://cortex.marketplace.pan.dev/marketplace/details/AzureDevOps/)                          |
+  | [Azure Flow Logs](https://learn.microsoft.com/en-us/azure/network-watcher/)                                                                   | [Azure Flow Logs](https://cortex.marketplace.pan.dev/marketplace/details/AzureFlowLogs/)                     |
 
 ***
 
