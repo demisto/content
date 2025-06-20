@@ -64,594 +64,74 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 11. azure-sc-get-alert
 12. azure-get-secure-score
 
-### 1. azure-sc-list-alert
+### azure-sc-list-alert
 
 ***
-
 Lists alerts for the subscription according to the specified filters.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-list-alert`
-
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional |
-| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Optional |
-| filter | OData filter | Optional |
-| select | OData select | Optional |
-| expand | OData expand | Optional |
-| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSecurityCenter.Alert.AlertDisplayName | string | Alert display name |
-| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred |
-| AzureSecurityCenter.Alert.DetectedTimeUtc | date | Time the vendor detected the incident |
-| AzureSecurityCenter.Alert.ReportedSeverity | string | Estimated severity of this alert |
-| AzureSecurityCenter.Alert.State | string | Alert state (Active, Dismissed, etc.) |
-| AzureSecurityCenter.Alert.ID | string | Alert ID |
-
-##### Command Example
-
-`!azure-sc-list-alert`
-
-##### Context Example
-
-```
-{
-    "AzureSecurityCenter.Alert": [
-        {
-            "ActionTaken": "Undefined",
-            "CompromisedEntity": "alerts",
-            "Description": "Azure security center has detected incoming traffic from IP addresses, which have been identified as IP addresses that should be blocked by the Adaptive Network Hardening control",
-            "DetectedTime": "2019-10-27T00:00:00Z",
-            "DisplayName": "Traffic from unrecommended IP addresses was detected",
-            "ID": "2518301663999999999_d1521d81-f4c1-40ae-b224-01456637790c",
-            "ReportedSeverity": "Information",
-            "State": "Active"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-
-### Azure Security Center - List Alerts
-
-| **DisplayName** | **CompromisedEntity** | **DetectedTime** | **ReportedSeverity** | **State** | **ActionTaken** | **Description** | **ID** |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Traffic from unrecommended IP addresses was detected | alerts | 2019-10-27T00:00:00Z | Information | Active | Undefined | Azure security center has detected incoming traffic from IP addresses, which have been identified as IP addresses that should be blocked by the Adaptive Network Hardening control | 2518301663999999999_d1521d81-f4c1-40ae-b224-01456637790c |
-
-### 2. azure-sc-update-atp
-
-***
-
-Updates Advanced Threat Detection settings.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-update-atp`
-
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | Resource group name | Required |
-| setting_name | Name of the Advanced Threat Detection setting, default is 'current'. | Optional |
-| storage_account | Storage name in your Azure account | Required |
-| is_enabled | Indicates whether Advanced Threat Protection is enabled. | Required |
-| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSecurityCenter.AdvancedThreatProtection.ID | string | Resource ID |
-| AzureSecurityCenter.AdvancedThreatProtection.Name | string | Resource Name |
-| AzureSecurityCenter.AdvancedThreatProtection.IsEnabled | string | Indicates whether Advanced Threat Protection is enabled |
-
-##### Command Example
-
-`!azure-sc-update-atp resource_group_name=recouce_name`
-
-### 3. azure-sc-get-atp
-
-***
-
-Returns the Advanced Threat Protection setting.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-get-atp`
-
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | Name of the resource group. | Required |
-| setting_name | Name of Advanced Threat Detection setting, default setting's name is 'current'. | Optional |
-| storage_account | Name of a storage in your azure account. | Required |
-| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSecurityCenter.AdvancedThreatProtection.ID | string | Resource ID |
-| AzureSecurityCenter.AdvancedThreatProtection.Name | string | Resource name |
-| AzureSecurityCenter.AdvancedThreatProtection.IsEnabled | string | Indicates whether Advanced Threat Protection is enabled |
-
-##### Command Example
-
-`!azure-sc-get-atp resource_group_name=resource_group storage_account=st_acc1`
-
-### 4. azure-sc-update-aps
-
-***
-
-Updates a specific auto provisioning setting.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-update-aps`
-
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| setting_name | Name of the auto provisioning setting, default setting's name is 'default' | Required |
-| auto_provision | Describes the type of security agent provisioning action to take (On or Off) | Required |
-| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSecurityCenter.AutoProvisioningSetting.Name | string | Setting display name |
-| AzureSecurityCenter.AutoProvisioningSetting.AutoProvision | string | Display the type of security agent provisioning action to take (On or Off) |
-| AzureSecurityCenter.AutoProvisioningSetting.ID | string | Setting resource ID |
-
-##### Command Example
-
-`!azure-sc-update-aps setting_name=default auto_provision=Off`
-
-##### Context Example
-
-```
-{
-    "AzureSecurityCenter.AutoProvisioningSetting": [
-        {
-            "AutoProvision": null,
-            "ID": "/subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default",
-            "Name": "default"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-
-### Azure Security Center - Update Auto Provisioning Setting
-
-| **Name** | **ID** |
-| --- | --- |
-| default | /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default |
-
-### 5. azure-sc-get-aps
-
-***
-
-Returns details of a specific auto provisioning setting.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-get-aps`
-
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| setting_name | Name of the auto provisioning setting | Required |
-| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSecurityCenter.AutoProvisioningSetting.Name | string | Setting display name |
-| AzureSecurityCenter.AutoProvisioningSetting.AutoProvision | string | Display the type of security agent provisioning action to take (On or Off) |
-| AzureSecurityCenter.AutoProvisioningSetting.ID | string | Set resource ID |
-
-##### Command Example
-
-`!azure-sc-get-aps setting_name=default`
-
-##### Context Example
-
-```
-{
-    "AzureSecurityCenter.AutoProvisioningSetting": [
-        {
-            "AutoProvision": "Off",
-            "ID": "/subscriptions/0xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default",
-            "Name": "default"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-
-### Azure Security Center - Get Auto Provisioning Setting
-
-| **Name** | **AutoProvision** | **ID** |
-| --- | --- | --- |
-| default | Off | /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default |
-
-### 6. azure-sc-list-aps
-
-***
-
-Lists auto provisioning settings in the subscription.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-list-aps`
-
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSecurityCenter.AutoProvisioningSetting.Name | string | Setting display name |
-| AzureSecurityCenter.AutoProvisioningSetting.AutoProvision | string | Display the type of security agent provisioning action to take (On or Off) |
-| AzureSecurityCenter.AutoProvisioningSetting.ID | string | Setting resource ID |
-
-##### Command Example
-
-`!azure-sc-list-aps`
-
-##### Context Example
-
-```
-{
-    "AzureSecurityCenter.AutoProvisioningSetting": [
-        {
-            "AutoProvision": "Off",
-            "ID": "/subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default",
-            "Name": "default"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-
-### Azure Security Center - List Auto Provisioning Settings
-
-| **Name** | **AutoProvision** | **ID** |
-| --- | --- | --- |
-| default | Off | /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default |
-
-### 7. azure-sc-list-jit
-
-***
-
-Lists all policies for protecting resources using Just-in-Time access control.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-list-jit`
-
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location. | Optional |
-| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional |
-| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSecurityCenter.JITPolicy.Name | string | Poliyc display name |
-| AzureSecurityCenter.JITPolicy.Rules | string | CSV list of access rules for Microsoft.Compute/virtualMachines resource, in the format (VMName: allowPort1,...) |
-| AzureSecurityCenter.JITPolicy.Location | string | Location where the resource is stored |
-| AzureSecurityCenter.JITPolicy.Kind | string | Policy resource type |
-
-##### Command Example
-
-`!azure-sc-list-jit`
-
-### 8. azure-sc-list-storage
-
-***
-
-Lists all the storage accounts available under the subscription.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-list-storage`
-
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSecurityCenter.Storage.Name | string | Name of the storage account |
-| AzureSecurityCenter.Storage.ResourceGroupName | string | Names of the attached resource group |
-| AzureSecurityCenter.Storage.Location | string | The geo-location where the resource resides |
-
-##### Command Example
-
-`!azure-sc-list-storage`
-
-##### Context Example
-
-```
-{
-    "AzureSecurityCenter.Storage": [
-        {
-            "ID": "/subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Storage/storageAccounts/cs20f907ea4bc8bx4c11x9d7",
-            "Location": "eastus",
-            "Name": "cs20f907ea4bc8bx4c11x9d7",
-            "ResourceGroupName": "cloud-shell-storage-eastus"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-
-### Azure Security Center - List Storage Accounts
-
-| **Name** | **ResourceGroupName** | **Location** |
-| --- | --- | --- |
-| cs20f907ea4bc8bx4c11x9d7 | cloud-shell-storage-eastus | eastus |
-| useastrgdiag204 | us-east-rg | eastus |
-| demistodevops | cloud-shell-storage-eastus | westeurope |
-
-### 9. azure-list-subscriptions
-
-***
-
-List available subscriptions for this application.
-
-##### Base Command
-
-`azure-list-subscriptions`
-
-##### Input
-
-There are no input arguments for this command.
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.Subscription.ID | String | Subscription ID |
-| Azure.Subscription.Name | String | Subscription Name |
-| Azure.Subscription.Enabled | String | Subscription state |
-
-##### Command Example
-
-`!azure-list-subscriptions`
-
-##### Context Example
-
-```
-{
-    "Azure.Subscription": [
-        {
-            "ID": "/subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx",
-            "Name": "Pay-As-You-Go",
-            "State": "Enabled"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-
-### Azure Security Center - Subscriptions
-
-| **ID** | **Name** | **State** |
-| --- | --- | --- |
-| /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx | Pay-As-You-Go | Enabled |
-
-### List of Subscriptions
-
-| **ID** | **Name** | **State** |
-| --- | --- | --- |
-| /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx | Pay-As-You-Go | Enabled |
-
-### 10. azure-sc-list-location
-
-***
-
-The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-list-location`
-
-##### Input
-
-There are no input arguments for this command.
-
-##### Context Output
-
-There are no context output for this command.
-
-##### Command Example
-
-`!azure-sc-list-location`
-
-##### Context Example
-
-```
-{
-    "AzureSecurityCenter.Location": [
-        {
-            "HomeRegionName": "centralus",
-            "ID": "/subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/locations/centralus",
-            "Name": "centralus"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-
-### Azure Security Center - List Locations
-
-| **HomeRegionName** | **Name** | **ID** |
-| --- | --- | --- |
-| centralus | centralus | /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/locations/centralus |
-
-### 11. azure-sc-get-alert
-
-***
-
-Get an alert that is associated a resource group or a subscription.
-
-*Require Subscription ID*
-
-##### Base Command
-
-`azure-sc-get-alert`
-
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional |
-| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Required |
-| alert_id | The alert ID. | Optional |
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. |
-| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. |
-| AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. |
-| AzureSecurityCenter.Alert.ReportedTime | date | The time the incident was reported to Microsoft.Security, in UTC. |
-| AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of the alert. |
-| AzureSecurityCenter.Alert.State | string | The alert state (Active, Dismissed, etc.). |
-| AzureSecurityCenter.Alert.ConfidenceScore | string | Level of confidence for the alert. |
-| AzureSecurityCenter.Alert.ActionTaken | string | The action that was taken as a response to the alert (Active, Blocked etc.). |
-| AzureSecurityCenter.Alert.CanBeInvestigated | string | Whether this alert can be investigated using Azure Security Center. |
-| AzureSecurityCenter.Alert.RemediationSteps | string | Recommended steps to remediate the incident. |
-| AzureSecurityCenter.Alert.VendorName | string | Name of the vendor that discovered the incident. |
-| AzureSecurityCenter.Alert.AssociatedResource | string | Azure resource ID of the associated resource. |
-| AzureSecurityCenter.Alert.AlertName | string | Name of the alert type. |
-| AzureSecurityCenter.Alert.InstanceID | string | Instance ID of the alert. |
-| AzureSecurityCenter.Alert.ID | string | The alert ID. |
-| AzureSecurityCenter.Alert.SubscriptionID | string | Azure subscription ID of the resource that had the security alert or the subscription ID of the workspace that this resource reports to. |
-| AzureSecurityCenter.Alert.Description | string | Description and explanation of the incident. |
-| AzureSecurityCenter.Alert.ExtendedProperties | string | Changing set of properties depending on the alert type. |
-| AzureSecurityCenter.Alert.Entities | string | Objects that are related to the alert. |
-
-##### Command Example
-
-`!azure-sc-get-alert asc_location="location" alert_id="alert_id"`
-
-## Additional Information
-
-For more information regarding roles, see [the microsoft documentation.](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
-
-### 12. azure-get-secure-score
-
-***
-Retrieve the Secure Score for the provided subscription and score name
 
 #### Base Command
 
-`azure-get-secure-score`
+`azure-sc-list-alert`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| secure_score_name | description. Possible values are: . Default is ascScore. | Optional |
-| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. Possible values are: . | Optional |
+| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Optional | 
+| filter | OData filter. | Optional | 
+| select | OData select. | Optional | 
+| expand | OData expand. | Optional | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Securescore.displayName | String | The initiative’s name. |
-| Azure.Securescore.score.max | String | The max score of the Securescore. |
-| Azure.Securescore.score.current | String | The current score of the Securescore. |
-| Azure.Securescore.score.percentage | String | The Ratio of the current score divided by the maximum. |
-| Azure.Securescore.weight | String | The relative weight for each subscription. |
+| AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. | 
+| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. | 
+| AzureSecurityCenter.Alert.Description | string | Description of the suspicious activity that was detected. | 
+| AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. | 
+| AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of this alert. | 
+| AzureSecurityCenter.Alert.State | string | The alert state \(Active, Dismissed, etc.\). | 
+| AzureSecurityCenter.Alert.ID | string | The alert ID. | 
 
-#### Command Example
+### azure-sc-get-alert
 
-```!azure-get-secure-score```
+***
+Gets an alert that is associated with a resource group or a subscription. The subscription_id argument is required in case it was not defined in the integration's configuration.
 
-#### Context Example
+#### Base Command
 
-```json
-{
-    "Azure": {
-        "Securescore": {
-            "displayName": "ASC score",
-            "score": {
-                "current": 14.51,
-                "max": 58,
-                "percentage": 0.2502
-            },
-            "weight": 199
-        }
-    }
-}
-```
+`azure-sc-get-alert`
 
-#### Human Readable Output
+#### Input
 
->### Azure Security Center - Secure Score
->
->|displayName|score|weight|
->|---|---|---|
->| ASC score | max: 58<br/>current: 14.51<br/>percentage: 0.2502 | 199 |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Required | 
+| alert_id | The alert ID. | Optional | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
 
-### 13. azure-sc-update-alert
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. | 
+| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. | 
+| AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. | 
+| AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of the alert. | 
+| AzureSecurityCenter.Alert.State | string | The alert state \(Active, Dismissed, etc.\). | 
+| AzureSecurityCenter.Alert.RemediationSteps | string | Recommended steps to remediate the incident. | 
+| AzureSecurityCenter.Alert.VendorName | string | Name of the vendor that discovered the incident. | 
+| AzureSecurityCenter.Alert.AlertName | string | Name of the alert type. | 
+| AzureSecurityCenter.Alert.ID | string | The alert ID. | 
+| AzureSecurityCenter.Alert.Description | string | Description of the incident and what it means. | 
+| AzureSecurityCenter.Alert.ExtendedProperties | string | Changing set of properties depending on the alert type. | 
+| AzureSecurityCenter.Alert.Entities | string | Objects that are related to the alert. | 
+
+### azure-sc-update-alert
 
 ***
 Update an alert's state.
@@ -664,18 +144,256 @@ Update an alert's state.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional |
-| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Required |
-| alert_id | The alert ID. | Required |
-| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional |
-| alert_update_action_type | The update action type. Possible values are: dismiss. | Required |
+| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Required | 
+| alert_id | The alert ID. | Required | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+| alert_update_action_type | The update action type. Possible values are: activate, dismiss, in_progress, resolve. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSecurityCenter.Alert.ActionTaken | string | The action that was taken on the alert. |
-| AzureSecurityCenter.Alert.ID | string | The alert ID. |
+| AzureSecurityCenter.Alert.ID | string | The alert ID. | 
+
+### azure-sc-update-atp
+
+***
+Updates Advanced Threat Detection settings.
+
+#### Base Command
+
+`azure-sc-update-atp`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | Resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| setting_name | Name of the Advanced Threat Detection setting. Default is current. | Optional | 
+| storage_account | The storage name in your Azure account. | Required | 
+| is_enabled | Indicates whether Advanced Threat Protection is enabled. | Required | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AdvancedThreatProtection.ID | string | The resource ID. | 
+| AzureSecurityCenter.AdvancedThreatProtection.Name | string | The name of the resource. | 
+| AzureSecurityCenter.AdvancedThreatProtection.IsEnabled | string | Indicates whether the Advanced Threat Protection is enabled. | 
+
+### azure-sc-get-atp
+
+***
+Returns the Advanced Threat Protection setting.
+
+#### Base Command
+
+`azure-sc-get-atp`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | Name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| setting_name | Name of the Advanced Threat Detection setting. The default setting's name is 'current'. Default is current. | Optional | 
+| storage_account | Name of a storage in your azure account. | Required | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AdvancedThreatProtection.ID | string | The resource ID. | 
+| AzureSecurityCenter.AdvancedThreatProtection.Name | string | The name of the resource. | 
+| AzureSecurityCenter.AdvancedThreatProtection.IsEnabled | string | Indicates whether the Advanced Threat Protection is enabled. | 
+
+### azure-sc-update-aps
+
+***
+Updates a specific auto provisioning setting.
+
+#### Base Command
+
+`azure-sc-update-aps`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| setting_name | Name of the auto provisioning setting. The default setting's name is 'default'. Default is default. | Required | 
+| auto_provision | Describes the type of security agent provisioning action to take (On or Off). | Required | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AutoProvisioningSetting.Name | string | The setting display name. | 
+| AzureSecurityCenter.AutoProvisioningSetting.AutoProvision | string | Displays the type of security agent provisioning action to take \(On or Off\). | 
+| AzureSecurityCenter.AutoProvisioningSetting.ID | string | The setting resource ID. | 
+
+### azure-sc-get-aps
+
+***
+Returns details of a specific auto provisioning setting.
+
+#### Base Command
+
+`azure-sc-get-aps`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| setting_name | Name of the auto provisioning setting. Default is default. | Required | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AutoProvisioningSetting.Name | string | The setting display name. | 
+| AzureSecurityCenter.AutoProvisioningSetting.AutoProvision | string | Displays the type of security agent provisioning action to take \(On or Off\). | 
+| AzureSecurityCenter.AutoProvisioningSetting.ID | string | The setting resource ID. | 
+
+### azure-sc-list-aps
+
+***
+Lists auto provisioning settings in the subscription.
+
+#### Base Command
+
+`azure-sc-list-aps`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AutoProvisioningSetting.Name | string | The setting display name. | 
+| AzureSecurityCenter.AutoProvisioningSetting.AutoProvision | string | Displays the type of security agent provisioning action to take \(On or Off\). | 
+| AzureSecurityCenter.AutoProvisioningSetting.ID | string | The setting resource ID. | 
+
+### azure-sc-list-jit
+
+***
+Lists all policies for protecting resources using Just-in-Time access control.
+
+#### Base Command
+
+`azure-sc-list-jit`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.JITPolicy.Name | string | The display name of the policy. | 
+| AzureSecurityCenter.JITPolicy.Rules | string | A CSV list of access rules for Microsoft.Compute/virtualMachines resource, in the format \(VMName: allowPort1,...\) | 
+| AzureSecurityCenter.JITPolicy.Location | string | The location where the resource is stored. | 
+| AzureSecurityCenter.JITPolicy.Kind | string | The resource type of the policy. | 
+
+### azure-sc-list-storage
+
+***
+Lists all the storage accounts available under the subscription.
+
+#### Base Command
+
+`azure-sc-list-storage`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.Storage.Name | string | Name of the storage account. | 
+| AzureSecurityCenter.Storage.ResourceGroupName | string | Name of the attached resource group. | 
+| AzureSecurityCenter.Storage.Location | string | The geo-location where the resource resides. | 
+
+### azure-list-subscriptions
+
+***
+Lists available subscriptions for this application.
+
+#### Base Command
+
+`azure-list-subscriptions`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Subscription.ID | String | The ID of the subscription. | 
+| Azure.Subscription.Name | String | The name of the subscription. | 
+| Azure.Subscription.Enabled | String | The state of the subscription. | 
+
+### azure-sc-list-location
+
+***
+The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
+
+#### Base Command
+
+`azure-sc-list-location`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### azure-get-secure-score
+
+***
+Retrieve the Secure Score for the provided subscription and score name.
+
+#### Base Command
+
+`azure-get-secure-score`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| secure_score_name | description. Possible values are: . Default is ascScore. | Optional | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. Possible values are: . | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Securescore.displayName | String | The initiative’s name. | 
+| Azure.Securescore.score.max | String | The max score of the Securescore. | 
+| Azure.Securescore.score.current | String | The current score of the Securescore. | 
+| Azure.Securescore.score.percentage | String | The Ratio of the current score divided by the maximum. | 
+| Azure.Securescore.weight | String | The relative weight for each subscription. | 
 
 ### azure-sc-auth-reset
 
@@ -688,12 +406,12 @@ Run this command if for some reason you need to rerun the authentication process
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
 There is no context output for this command.
-
 ### azure-resource-group-list
 
 ***
@@ -707,15 +425,15 @@ List all resource groups for a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional |
-| limit | Limit on the number of resource groups to return. Default is 50. | Optional |
-| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional |
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. | Optional | 
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.ResourceGroupName.name | String | Resource group name. |
-| Azure.ResourceGroupName.location | String | Resource group location. |
-| Azure.ResourceGroupName.tags | Unknown | Resource group tags. |
-| Azure.ResourceGroupName.properties.provisioningState | unknown | Resource group provisioning state. |
+| Azure.ResourceGroupName.name | String | Resource group name. | 
+| Azure.ResourceGroupName.location | String | Resource group location. | 
+| Azure.ResourceGroupName.tags | Unknown | Resource group tags. | 
+| Azure.ResourceGroupName.properties.provisioningState | unknown | Resource group provisioning state. | 
