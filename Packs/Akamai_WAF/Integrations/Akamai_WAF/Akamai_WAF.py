@@ -2203,6 +2203,7 @@ class Client(BaseClient):
             group_id: integer,required. Uniquely identifies the group that can access the product.
 
         Returns:
+            A dictionary includes a list of properties that are part of the group.
             <Response [200]>
         """
 
