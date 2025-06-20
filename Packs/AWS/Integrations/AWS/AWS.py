@@ -221,7 +221,36 @@ class IAM:
             return CommandResults(
                 readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}"
             )
+    
+    @staticmethod
+    def put_role_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds or updates an inline policy document that is embedded in the specified IAM role.
+    
+        Args:
+            client (BotoClient): The boto3 client for IAM service
+            args (Dict[str, Any]): Command arguments including policy_document, policy_name, and role_name
+            
+        Returns:
+            CommandResults: Results of the operation with success/failure message
+        """
+        policy_document: str = args.get('policy_document', '')
+        policy_name: str = args.get('policy_name', '')
+        role_name: str = args.get('role_name', '')
+        kwargs = {
+            "PolicyDocument": policy_document,
+            "PolicyName": policy_name,
+            "RoleName": role_name
+        }
 
+        try:
+            response = client.put_user_policy(**kwargs)
+            human_readable = f"Policy '{policy_name}' was successfully added to role '{role_name}'"
+            return CommandResults(raw_response=response, readable_output=human_readable)
+        except Exception as e:
+            raise DemistoException(
+                f"Failed to add policy '{policy_name}' to role '{role_name}'. Error: {str(e)}"
+            )
 
 class EC2:
     service = AWSServices.EC2
@@ -829,15 +858,20 @@ class RDS:
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-put": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
+    
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
+    "aws-iam-role-policy-put": IAM.put_role_policy_command,
+    
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
     # "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
     "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
+    
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
+    
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
@@ -881,22 +915,18 @@ REQUIRED_ACTIONS: set[str] = {
 }
 
 
-def check_account_permissions(account_id: str):
+def check_account_permissions(account_id: str) -> HealthCheckError | None:
     """_summary_"""
-
-
-def test_module():
-    # TODO - Bring back what was here before
-    return "ok"
-
+    pass
 
 def health_check(connector_id: str):
     accounts: list[dict] = get_accounts_by_connector_id(connector_id)
     account_ids: list[str] = [str(account.get("account_id")) for account in accounts if "account_id" in account]
 
-    health_check = HealthCheckResult(connector_id)
+    health_check = HealthCheck(connector_id)
 
     for account_id in account_ids:
+        check_account_permissions(account_id)
         # TODO - TEST ERROR - REPLACE
         health_check.error(
             HealthCheckError(
@@ -909,9 +939,16 @@ def health_check(connector_id: str):
 
     return health_check.summarize()
 
-def register_proxydome_header(boto_client: BotoClient):
+
+def register_proxydome_header(boto_client: BotoClient) -> None:
     """
-    TODO
+    Register ProxyDome authentication header for all AWS API requests.
+
+    This function adds the ProxyDome caller ID header to every boto3 request
+    by registering an event handler that injects the header before sending requests.
+
+    Args:
+        boto_client (BotoClient): The boto3 client to configure with ProxyDome headers
     """
     event_system = boto_client.meta.events
     proxydome_token: str = get_proxydome_token()
@@ -924,26 +961,30 @@ def register_proxydome_header(boto_client: BotoClient):
 
 
 def get_service_client(params: dict, args: dict, command: str, credentials: dict) -> BotoClient:
-    """_summary_
+    """
+    Create and configure a boto3 client for the specified AWS service.
 
     Args:
-        params (dict): _description_
-        args (dict): _description_
-        credentials (dict): _description_
+        params (dict): Integration configuration parameters
+        args (dict): Command arguments containing region information
+        command (str): AWS command name used to determine the service type
+        credentials (dict): AWS credentials (access key, secret key, session token)
 
     Returns:
-        BotoClient: _description_
+        BotoClient: Configured boto3 client with ProxyDome headers and proxy settings
     """
     aws_session: Session = Session(
         aws_access_key_id=credentials.get("key") or params.get("access_key_id"),
-        aws_secret_access_key=credentials.get("access_token") or params.get("secret_access_key").get("password"),
+        aws_secret_access_key=credentials.get("access_token") or params.get("secret_access_key", {}).get("password"),
         aws_session_token=credentials.get("session_token"),
         region_name=args.get("region") or params.get("region", ""),
     )
 
     service = AWSServices(command.split("-")[1])
 
-    client_config = Config(proxies={"https": DEFAULT_PROXYDOME}, proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH})
+    client_config = Config(
+        proxies={"https": DEFAULT_PROXYDOME}, 
+        proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH})
     client = aws_session.client(service, verify=False, config=client_config)
 
     register_proxydome_header(client)
@@ -952,21 +993,22 @@ def get_service_client(params: dict, args: dict, command: str, credentials: dict
 
 
 def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
-    """_summary_
+    """
+    Execute an AWS command by retrieving credentials, creating a service client, 
+    and routing to the appropriate service handler.
 
     Args:
-        command (str): _description_
-        args (dict): _description_
-        params (dict): _description_
+        command (str): The AWS command to execute (e.g., "aws-s3-public-access-block-put")
+        args (dict): Command arguments including account_id, region, and service-specific parameters
+        params (dict): Integration configuration parameters
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Command execution results with outputs and status
     """
     account_id: str = args.get("account_id", "")
 
     credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if True else {}
-    # TODO - Remove
-    demisto.debug(f"cloud_creds: {json.dumps(credentials, indent=4)}")
+    demisto.debug(f"cloud_creds: {json.dumps(credentials, indent=4)}")  # TODO - Remove
     service_client: BotoClient = get_service_client(params, args, command, credentials)
     return COMMANDS_MAPPING[command](service_client, args)
 
@@ -985,7 +1027,7 @@ def main():  # pragma: no cover
         if command == "test-module":
             context = demisto.callingContext.get("context", {})
             cloud_info = context.get("CloudIntegrationInfo", {})
-            results = health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else test_module()
+            results = health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else None
             return_results(results)
 
         elif command in COMMANDS_MAPPING:

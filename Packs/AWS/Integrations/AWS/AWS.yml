@@ -433,65 +433,6 @@ script:
       description: Specifies whether IAM users are prevented from setting a new password via the Amazon Web Services Management Console after their password has expired.
       type: boolean
 
-  - name: aws-ec2-instance-metadata-options-modify
-    description: Modify the EC2 instance metadata parameters on a running or stopped instance.
-    arguments:
-    - description: The AWS account ID.
-      name: account_id
-      required: true
-    - description: The AWS region.
-      name: region
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
-    - description: The ID of the instance.
-      name: instance_id
-      required: true
-    - description: Indicates whether IMDSv2 is required.
-      auto: PREDEFINED
-      name: http_tokens
-      predefined:
-      - 'optional'
-      - 'required'
-    - description: Enables or disables the HTTP metadata endpoint on your instances.
-      name: http_endpoint
-      auto: PREDEFINED
-      predefined:
-      - 'disabled'
-      - 'enabled'
-
   - name: aws-iam-account-password-policy-update
     description: Create or Update AWS account password policy.
     execution: true
@@ -542,6 +483,60 @@ script:
       - 'true'
       - 'false'
 
+  - name: aws-iam-role-policy-put
+    description: Adds or updates an inline policy document that is embedded in the specified IAM role.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    
+    - name: role_name
+      description: 'The name of the role to associate the policy with. This parameter allows (through its regex pattern ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-'
+      required: true
+    - name: policy_name
+      description: 'The name of the policy document. This parameter allows (through its regex pattern ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-'
+      required: true
+    - name: policy_document
+      description: 'The policy document in JSON format. Must be a valid IAM policy document that defines the permissions for the role.'
+      required: true
+      
   - name: aws-eks-cluster-config-update
     description: 'Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call.'
     arguments:
@@ -1261,6 +1256,65 @@ script:
     - name: description
       description: 'A new description for the AMI.'
       required: false
+
+  - name: aws-ec2-instance-metadata-options-modify
+    description: Modify the EC2 instance metadata parameters on a running or stopped instance.
+    arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - description: The ID of the instance.
+      name: instance_id
+      required: true
+    - description: Indicates whether IMDSv2 is required.
+      auto: PREDEFINED
+      name: http_tokens
+      predefined:
+      - 'optional'
+      - 'required'
+    - description: Enables or disables the HTTP metadata endpoint on your instances.
+      name: http_endpoint
+      auto: PREDEFINED
+      predefined:
+      - 'disabled'
+      - 'enabled'
 
   isfetch: false
   runonce: false
