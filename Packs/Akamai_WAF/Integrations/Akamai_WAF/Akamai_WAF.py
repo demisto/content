@@ -6636,7 +6636,7 @@ def toggle_datastream_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
 
-    raw_response: dict = client.activate_datastream(stream_id=stream_id, option=option)
+    raw_response: dict = client.toggle_datastream(stream_id=stream_id, option=option)
 
     title = f'{INTEGRATION_NAME} - Activate DataStream command'
 
