@@ -28,3 +28,10 @@ Use the abuse.ch SSL Blacklist feed integration to fetch indicators from the fee
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
+
+#### Create an API Key
+1. Sign up for an abuse.ch account by using an existing account that you may already have on X, LinkedIn, Google or Github. Just log in with the authentication provider of your choice here: https://auth.abuse.ch/
+2. Once you've logged in to abuse.ch, add at least one more way to log in. This helps ensure you can always access abuse.ch platforms, even if one of your login methods stops working.
+3. Click the **Save profile** button. In the **Optional** section, you can now create an Auth-Key. This is your personal authentication key that you can use to query any abuse.ch APIs.
+
+If you already have a profile, you only need to follow step 3. There’s nothing further to do for your authentication set up.
