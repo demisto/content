@@ -921,12 +921,12 @@ def fix_time_field(detection: dict, time_key: str):
 
 def detection_to_incident_context(detection, detection_type, start_time_key: str = "start_time", is_fetch_events: bool = False):
     """
-    Creates an incident context of an IDP/Mobile/ODS detection.
+    Creates an incident context from multiple detection types.
 
     :type detection: ``dict``
     :param detection: Single detection object.
 
-    :return: Incident context representation of an IDP/Mobile detection.
+    :return: The incident context for the detection.
     :rtype ``dict``
     """
     add_mirroring_fields(detection)
@@ -2513,7 +2513,7 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
-        # for endpoint (in the new version) ,idp/ods/ofp/mobile detections/ngsiem detection/third party detection
+        # for endpoint (in the new version)
         elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
                                IncidentType.ON_DEMAND,
                                IncidentType.NGSIEM,
@@ -2831,7 +2831,7 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
             elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
                                    IncidentType.NGSIEM,
                                    IncidentType.THIRD_PARTY):
-                # todo: check if this flow match to THIRD_PARTY and NGSIEM
+                # todo: debug and check if this flow match to THIRD_PARTY and NGSIEM
                 result = update_remote_for_multiple_detection_types(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"IDP/Mobile/NGSIEM/Thirs Party Detection updated successfully. Result: {result}")
