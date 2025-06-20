@@ -2296,6 +2296,7 @@ class Client(BaseClient):
         Args:
 
         Returns:
+            A dictionary that includes the list of the "client list".
             <Response [200]>
         """
 
