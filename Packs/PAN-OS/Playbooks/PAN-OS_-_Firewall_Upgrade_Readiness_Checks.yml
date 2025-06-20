@@ -1,0 +1,2385 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: "This playbook uses the PAN-OS integration to check NGFW device conditions that can affect its readiness to perform a PAN-OS upgrade.  Included checks examine the following:\n1. Available disk space for the target version (base image + release image)\n2. Presence of any uncommitted configuration changes\n3. Whether device has an active Support license\n4. Whether NTP is configured and synced\n5. Whether the latest App/Threat dynamic update is installed\n6. For devices in HA groups, check that devices in the group have:\n    1. App/Threat, AntiVirus, and GlobalProtect Client are at the same level and compatible for HA failover\n    2. Running configuration synchronized among peers."
+id: PAN-OS - Firewall Upgrade Readiness Checks
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - targetDevice
+  - panosIntegrationInstance
+  - targetVersion
+  name: General (Inputs group)
+inputs:
+- description: Serial Number of the firewall to upgrade
+  key: targetDevice
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Name of the Palo Alto Networks PAN-OS Integration Instance to execute commands [Optional unless multiple instances are configured]
+  key: panosIntegrationInstance
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The target PAN-OS version to check upgrade readiness for.
+  key: targetVersion
+  playbookInputQuery:
+  required: true
+  value: {}
+name: PAN-OS - Firewall Upgrade Readiness Checks
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - ReadinessChecks
+outputs:
+- contextPath: ReadinessChecks
+  description: List of upgrade readiness checks performed and their result (Passed/Failed).
+  type: unknown
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '110'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 3bb6c16d-db64-492b-82bd-9da1b667703f
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 3bb6c16d-db64-492b-82bd-9da1b667703f
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 442,\n    \"y\": -1504\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets information from all PAN-OS systems in the topology.
+      id: 9673bab0-fdc6-4875-801d-c8021bcc73f4
+      iscommand: false
+      name: HA Peers Synced Check
+      type: title
+      version: -1
+    taskid: 9673bab0-fdc6-4875-801d-c8021bcc73f4
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 200\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmd:
+        simple: <show><ntp></ntp></show>
+      extend-context:
+        simple: CommandNTPCheck=.=>val
+      ignore-outputs:
+        simple: 'true'
+      target:
+        complex:
+          root: inputs
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: incident.netopspanosintegrationtype
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Panorama
+              rhsB: {}
+              then:
+                iscontext: true
+                value:
+                  simple: inputs.targetDevice
+            operator: If-Then-Else
+      type:
+        simple: op
+      using:
+        simple: ${PANOSIntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Runs any command supported in the API.
+      id: 56c72cfb-5e56-45c7-b98b-1adfe4f76e40
+      iscommand: true
+      name: Get NTP Status
+      script: '|||pan-os'
+      type: regular
+      version: -1
+    taskid: 56c72cfb-5e56-45c7-b98b-1adfe4f76e40
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 340\n  }\n}"
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: CommandNTPCheck.response.result.synched
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: LOCAL
+                root: CommandNTPCheck.response.result
+          operator: isExists
+          right:
+            value: {}
+      label: ERROR - NTP Not Synched
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      ERROR - NTP Not Synched:
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if NTP is configured and synchronized.
+      id: cf09868f-4606-462c-9d00-dd46fe0ef19b
+      iscommand: false
+      name: Determine NTP Sync Status
+      type: condition
+      version: -1
+    taskid: cf09868f-4606-462c-9d00-dd46fe0ef19b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 530\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"NTP Synchronized\",\n\"CheckResult\":\"Passed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: f82ab366-f8c8-4e6d-bb3a-a69aa4a29aa0
+      iscommand: false
+      name: Store NTP Check Result - Success
+      script: Set
+      type: regular
+      version: -1
+    taskid: f82ab366-f8c8-4e6d-bb3a-a69aa4a29aa0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 860\n  }\n}"
+  '6':
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"NTP Synchronized\",\n\"CheckResult\":\"Failed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: fc0dcf8b-308a-4873-87f2-aa1532f35f89
+      iscommand: false
+      name: Store NTP Check Result - Fail
+      script: Set
+      type: regular
+      version: -1
+    taskid: fc0dcf8b-308a-4873-87f2-aa1532f35f89
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1100,\n    \"y\": 710\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 7cef3a04-05be-433e-8afd-b4fc29444cad
+      iscommand: false
+      name: NTP Sync Check
+      type: title
+      version: -1
+      description: ''
+    taskid: 7cef3a04-05be-433e-8afd-b4fc29444cad
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 200\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 96822301-5eb9-4259-893f-f7f85a32bf2e
+      iscommand: false
+      name: Active Support License Check
+      type: title
+      version: -1
+      description: ''
+    taskid: 96822301-5eb9-4259-893f-f7f85a32bf2e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '39'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 9415cb73-933e-4b3a-80ab-d45b7e3a1674
+      iscommand: false
+      name: Uncommitted Configuration Changes Check
+      type: title
+      version: -1
+      description: ''
+    taskid: 9415cb73-933e-4b3a-80ab-d45b7e3a1674
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 207\n  }\n}"
+  '10':
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '108'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e84a213e-3495-4c90-b07f-d1a981a55857
+      iscommand: false
+      name: Latest App/Threat Content Check
+      type: title
+      version: -1
+      description: ''
+    taskid: e84a213e-3495-4c90-b07f-d1a981a55857
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 200\n  }\n}"
+  '12':
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '44'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e98c192d-6e74-4bd2-8a3e-776e44590ff6
+      iscommand: false
+      name: Image Storage Disk Space Check
+      type: title
+      version: -1
+      description: ''
+    taskid: e98c192d-6e74-4bd2-8a3e-776e44590ff6
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 207\n  }\n}"
+  '13':
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '107'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 8d7995f1-d462-41e3-864d-2762a8461529
+      iscommand: false
+      name: Format & Store Results
+      type: title
+      version: -1
+      description: ''
+    taskid: 8d7995f1-d462-41e3-864d-2762a8461529
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 2537\n  }\n}"
+  '21':
+    continueonerrortype: ''
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmd:
+        simple: <request><support><check></check></support></request>
+      extend-context:
+        simple: CommandSupportCheck=.=>val
+      ignore-outputs:
+        simple: 'true'
+      target:
+        complex:
+          root: inputs
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: incident.netopspanosintegrationtype
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Panorama
+              rhsB: {}
+              then:
+                iscontext: true
+                value:
+                  simple: inputs.targetDevice
+            operator: If-Then-Else
+      type:
+        simple: op
+      using:
+        simple: ${PANOSIntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Runs any command supported in the API.
+      id: 6cbcf27b-e6df-4984-b57a-ffbc20b119f7
+      iscommand: true
+      name: Get Support Status
+      script: '|||pan-os'
+      type: regular
+      version: -1
+    taskid: 6cbcf27b-e6df-4984-b57a-ffbc20b119f7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 340\n  }\n}"
+  '22':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: CommandSupportCheck.response.result.SupportInfoResponse.Support.ExpiryDate
+                    operator: isExists
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: CommandSupportCheck.response.result.SupportInfoResponse.Support.ExpiryDate
+                    operator: AfterRelativeDate
+                    right:
+                      value:
+                        simple: Today
+                root: CommandSupportCheck.response.result.SupportInfoResponse.Support.ExpiryDate
+          operator: isNotExists
+          right:
+            value: {}
+      label: Error - No Active Support
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '24'
+      Error - No Active Support:
+      - '23'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether an active support license is present.
+      id: 49d5b4ce-236a-49b2-ad43-275de1c5703b
+      iscommand: false
+      name: Determine Support Status
+      type: condition
+      version: -1
+    taskid: 49d5b4ce-236a-49b2-ad43-275de1c5703b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 510\n  }\n}"
+  '23':
+    continueonerrortype: ''
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '25'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Active Support License\",\n\"CheckResult\":\"Failed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: e0c62a7f-fafd-4d2a-a7d4-30b2e14bfaad
+      iscommand: false
+      name: Store Support Check Result - Fail
+      script: Set
+      type: regular
+      version: -1
+    taskid: e0c62a7f-fafd-4d2a-a7d4-30b2e14bfaad
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 160,\n    \"y\": 710\n  }\n}"
+  '24':
+    continueonerrortype: ''
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '25'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Active Support License\",\n\"CheckResult\":\"Passed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: e2819b7d-dd20-48d9-948f-995c71bf8540
+      iscommand: false
+      name: Store Support Check Result - Success
+      script: Set
+      type: regular
+      version: -1
+    taskid: e2819b7d-dd20-48d9-948f-995c71bf8540
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 880\n  }\n}"
+  '25':
+    continueonerrortype: ''
+    id: '25'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 517ac792-25f6-4889-8180-933f7d0df880
+      iscommand: false
+      name: Active Support License Check Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 517ac792-25f6-4889-8180-933f7d0df880
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2185\n  }\n}"
+  '26':
+    continueonerrortype: ''
+    id: '26'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 498c48a8-fa73-49bf-8f69-a7f7e7429b24
+      iscommand: false
+      name: NTP Sync Check Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 498c48a8-fa73-49bf-8f69-a7f7e7429b24
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 2185\n  }\n}"
+  '27':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.deviceHAStatus
+          operator: isEqualString
+          right:
+            value:
+              simple: active
+      label: yes
+    continueonerrortype: ''
+    id: '27'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '35'
+      yes:
+      - '28'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Determine if the device is a member of an HA group.
+      id: 38ba9019-885e-49d9-affa-59c00d972731
+      iscommand: false
+      name: Is the Device To Check HA Active (or Standalone)?
+      type: condition
+      version: -1
+    taskid: 38ba9019-885e-49d9-affa-59c00d972731
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 340\n  }\n}"
+  '28':
+    continueonerrortype: ''
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmd:
+        simple: <show><high-availability><state></state></high-availability></show>
+      extend-context:
+        simple: CommandHAState=.=>val
+      ignore-outputs:
+        simple: 'true'
+      target:
+        complex:
+          root: inputs
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: incident.netopspanosintegrationtype
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Panorama
+              rhsB: {}
+              then:
+                iscontext: true
+                value:
+                  simple: inputs.targetDevice
+            operator: If-Then-Else
+      type:
+        simple: op
+      using:
+        simple: ${PANOSIntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Runs any command supported in the API.
+      id: d6a7131a-ee34-4eda-bdae-385746706524
+      iscommand: true
+      name: Get Full HA Configuration
+      script: '|||pan-os'
+      type: regular
+      version: -1
+    taskid: d6a7131a-ee34-4eda-bdae-385746706524
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 510\n  }\n}"
+  '29':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: CommandHAState.response.result.group.local-info.app-compat
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Match
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: CommandHAState.response.result.group.local-info.av-compat
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Match
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: CommandHAState.response.result.group.local-info.threat-compat
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Match
+                root: CommandHAState.response.result.group.local-info
+          operator: isNotExists
+          right:
+            value: {}
+      label: Error - App/AV/Threat Mismatch
+    continueonerrortype: ''
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '31'
+      Error - App/AV/Threat Mismatch:
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Determine if App / AV / Threat content is compatible between HA members for proper failover.
+      id: ab9500a4-de39-4a51-bd78-93d3912b4641
+      iscommand: false
+      name: App/AV/Threat Compatible?
+      type: condition
+      version: -1
+    taskid: ab9500a4-de39-4a51-bd78-93d3912b4641
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 710\n  }\n}"
+  '30':
+    continueonerrortype: ''
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '32'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"HA Compatibility - App/Av/Threat Content\",\n\"CheckResult\":\"Failed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 376d5cdd-dc90-4e06-a90b-9066cea69ab8
+      iscommand: false
+      name: Store App/Av/Threat Compat Check Result - Fail
+      script: Set
+      type: regular
+      version: -1
+    taskid: 376d5cdd-dc90-4e06-a90b-9066cea69ab8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2610,\n    \"y\": 880\n  }\n}"
+  '31':
+    continueonerrortype: ''
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '32'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"HA Compatibility - App/Av/Threat Content\",\n\"CheckResult\":\"Passed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: d9eabac1-ef9a-41dd-b201-f640bd7b49d0
+      iscommand: false
+      name: Store App/Av/Threat Compat Check Result - Success
+      script: Set
+      type: regular
+      version: -1
+    taskid: d9eabac1-ef9a-41dd-b201-f640bd7b49d0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 1040\n  }\n}"
+  '32':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: CommandHAState.response.result.group.local-info.gpclient-compat
+          operator: isNotEqualString
+          right:
+            value:
+              simple: Match
+      label: Error - GP Client Mismatch
+    continueonerrortype: ''
+    id: '32'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '34'
+      Error - GP Client Mismatch:
+      - '33'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check that the active GlobalProtect client is compatible between HA members for proper failover.
+      id: 6f559753-8498-4121-b350-ab2aa95ebef9
+      iscommand: false
+      name: GP Client Compatible?
+      type: condition
+      version: -1
+    taskid: 6f559753-8498-4121-b350-ab2aa95ebef9
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 1240\n  }\n}"
+  '33':
+    continueonerrortype: ''
+    id: '33'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '36'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"HA Compatibility - GP Client\",\n\"CheckResult\":\"Failed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 41072c5e-7f6b-4d0b-a612-e1bcf9a7052a
+      iscommand: false
+      name: Store GP Client Compat Check Result - Fail
+      script: Set
+      type: regular
+      version: -1
+    taskid: 41072c5e-7f6b-4d0b-a612-e1bcf9a7052a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2610,\n    \"y\": 1410\n  }\n}"
+  '34':
+    continueonerrortype: ''
+    id: '34'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '36'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"HA Compatibility - GP Client\",\n\"CheckResult\":\"Passed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: ba782dfc-08e9-485e-aa57-6a9eedbb51c1
+      iscommand: false
+      name: Store GP Client Compat Check Result - Success
+      script: Set
+      type: regular
+      version: -1
+    taskid: ba782dfc-08e9-485e-aa57-6a9eedbb51c1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 1535\n  }\n}"
+  '35':
+    continueonerrortype: ''
+    id: '35'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e16fda54-1714-4c9c-871a-3e6a62509878
+      iscommand: false
+      name: HA Peers Synched Check Done
+      type: title
+      version: -1
+      description: ''
+    taskid: e16fda54-1714-4c9c-871a-3e6a62509878
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 3140,\n    \"y\": 2210\n  }\n}"
+  '36':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: CommandHAState.response.result.group.running-sync
+          operator: isNotEqualString
+          right:
+            value:
+              simple: synchronized
+      label: Error - Running Config Not Synced
+    continueonerrortype: ''
+    id: '36'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '38'
+      Error - Running Config Not Synced:
+      - '37'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check that running configuration is synchronized.
+      id: 0368db99-2dee-460c-9a38-c94fd98084a7
+      iscommand: false
+      name: Running Config Synced?
+      type: condition
+      version: -1
+    taskid: 0368db99-2dee-460c-9a38-c94fd98084a7
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 1720\n  }\n}"
+  '37':
+    continueonerrortype: ''
+    id: '37'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '35'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"HA Compatibility - Running Config Sync\",\n\"CheckResult\":\"Failed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 50712dc1-7100-446d-a713-07c14408b667
+      iscommand: false
+      name: Store Running Config Sync Check Result - Fail
+      script: Set
+      type: regular
+      version: -1
+    taskid: 50712dc1-7100-446d-a713-07c14408b667
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2610,\n    \"y\": 1900\n  }\n}"
+  '38':
+    continueonerrortype: ''
+    id: '38'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '35'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"HA Compatibility - Running Config Sync\",\n\"CheckResult\":\"Passed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: f29e3c60-c29f-41c7-9fba-22aa0e471cc2
+      iscommand: false
+      name: Store Running Config Sync Check Result - Success
+      script: Set
+      type: regular
+      version: -1
+    taskid: f29e3c60-c29f-41c7-9fba-22aa0e471cc2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 2035\n  }\n}"
+  '39':
+    continueonerrortype: ''
+    id: '39'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '40'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmd:
+        simple: <check><full-commit-required></full-commit-required></check>
+      extend-context:
+        simple: CommandFullCommitRequired=.=>val
+      ignore-outputs:
+        simple: 'true'
+      target:
+        complex:
+          root: inputs
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: incident.netopspanosintegrationtype
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Panorama
+              rhsB: {}
+              then:
+                iscontext: true
+                value:
+                  simple: inputs.targetDevice
+            operator: If-Then-Else
+      type:
+        simple: op
+      using:
+        simple: ${PANOSIntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Runs any command supported in the API.
+      id: 9aeef70f-b7ea-4009-b64c-8c100c994357
+      iscommand: true
+      name: Get Full Commit Required Info
+      script: '|||pan-os'
+      type: regular
+      version: -1
+    taskid: 9aeef70f-b7ea-4009-b64c-8c100c994357
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 347\n  }\n}"
+  '40':
+    continueonerrortype: ''
+    id: '40'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '41'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmd:
+        simple: <check><pending-changes></pending-changes></check>
+      extend-context:
+        simple: CommandPendingChanges=.=>val
+      ignore-outputs:
+        simple: 'true'
+      target:
+        complex:
+          root: inputs
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: incident.netopspanosintegrationtype
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Panorama
+              rhsB: {}
+              then:
+                iscontext: true
+                value:
+                  simple: inputs.targetDevice
+            operator: If-Then-Else
+      type:
+        simple: op
+      using:
+        simple: ${PANOSIntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Runs any command supported in the API.
+      id: fea3421b-9f42-4e0c-a5cc-f946ec88399e
+      iscommand: true
+      name: Get Pending Changes Info
+      script: '|||pan-os'
+      type: regular
+      version: -1
+    taskid: fea3421b-9f42-4e0c-a5cc-f946ec88399e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 517\n  }\n}"
+  '41':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CommandFullCommitRequired.response.result
+          operator: isNotEqualString
+          right:
+            value:
+              simple: no
+        - left:
+            iscontext: true
+            value:
+              simple: CommandPendingChanges.response.result
+          operator: isNotEqualString
+          right:
+            value:
+              simple: no
+      label: Error - Pending Changes
+    continueonerrortype: ''
+    id: '41'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '43'
+      Error - Pending Changes:
+      - '42'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if there are any pending configuration changes not committed.
+      id: fe940cc1-7bc5-4dfe-aa66-b93795e1b224
+      iscommand: false
+      name: Are Any Pending Changes / Full Commit Needed?
+      type: condition
+      version: -1
+    taskid: fe940cc1-7bc5-4dfe-aa66-b93795e1b224
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 717\n  }\n}"
+  '42':
+    continueonerrortype: ''
+    id: '42'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '68'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Pending Configuration Changes\",\n\"CheckResult\":\"Failed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: cc9282fb-2100-4585-b76c-afb99740858f
+      iscommand: false
+      name: Store Pending Changes Check Result - Fail
+      script: Set
+      type: regular
+      version: -1
+    taskid: cc9282fb-2100-4585-b76c-afb99740858f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -642,\n    \"y\": 897\n  }\n}"
+  '43':
+    continueonerrortype: ''
+    id: '43'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '68'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Pending Configuration Changes\",\n\"CheckResult\":\"Passed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 538bec52-73bc-4ae5-b5ea-5ce3352f32d6
+      iscommand: false
+      name: Store Pending Changes Check Result - Success
+      script: Set
+      type: regular
+      version: -1
+    taskid: 538bec52-73bc-4ae5-b5ea-5ce3352f32d6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 1047\n  }\n}"
+  '44':
+    continueonerrortype: ''
+    id: '44'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '45'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      newer_images_only:
+        simple: yes
+      panos_instance_name:
+        simple: ${PANOSIntegrationInstance}
+      target:
+        simple: ${inputs.targetDevice}
+      using:
+        simple: ${PANOSIntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: This script is a wrapper for the 'pano-os-platform-get-available-software' command, adding options to return only images newer than is currently installed to minimize amount of context data generated.
+      id: 87ac5e41-17ab-4bfb-8634-ca17bc6e3583
+      iscommand: false
+      name: Get Available Software
+      script: NetOps-GetAvailablePANOSSoftware
+      type: regular
+      version: -1
+    taskid: 87ac5e41-17ab-4bfb-8634-ca17bc6e3583
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 347\n  }\n}"
+  '45':
+    continueonerrortype: ''
+    id: '45'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '69'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: BaseImage
+      value:
+        complex:
+          root: inputs.targetVersion
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: .
+            operator: split
+          - args:
+              from:
+                value:
+                  simple: '0'
+              to:
+                value:
+                  simple: '2'
+            operator: slice
+          - args:
+              separator:
+                value:
+                  simple: .
+            operator: join
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '.0'
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 2ca3254b-74d5-47ee-8d35-43723e7c47f8
+      iscommand: false
+      name: Set Base Software Version
+      script: Set
+      type: regular
+      version: -1
+    taskid: 2ca3254b-74d5-47ee-8d35-43723e7c47f8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 517\n  }\n}"
+  '46':
+    continueonerrortype: ''
+    id: '46'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '105'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ImageStorageNeeded
+      value:
+        complex:
+          accessor: size
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PANOS.SoftwareVersions.Summary.version
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: BaseImage
+            - left:
+                iscontext: true
+                value:
+                  simple: PANOS.SoftwareVersions.Summary.version
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.targetVersion
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: PANOS.SoftwareVersions.Summary.downloaded
+              operator: isNotEqualString
+              right:
+                value:
+                  simple: 'True'
+          root: PANOS.SoftwareVersions.Summary
+          transformers:
+          - operator: SumList
+          - args:
+              delimiter:
+                value:
+                  simple: .
+            operator: splitAndTrim
+          - operator: FirstArrayElement
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: ffeb3538-c93e-4b2a-88ce-7e1b163aa721
+      iscommand: false
+      name: Calculate Storage for Needed Downloads (Base + Target Version)
+      script: Set
+      type: regular
+      version: -1
+    taskid: ffeb3538-c93e-4b2a-88ce-7e1b163aa721
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 897\n  }\n}"
+  '64':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ImageStorageNeeded
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: Avail
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.DiskSpace.FileSystems.MountedOn
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: /opt/panrepo
+                root: PANOS.DiskSpace.FileSystems
+      label: Error - Insufficient Space
+    continueonerrortype: ''
+    id: '64'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '66'
+      Error - Insufficient Space:
+      - '65'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check that the system disk has enough free space to download the required image(s).
+      id: a76f89b8-d6f4-4499-b208-8f0260a62fa2
+      iscommand: false
+      name: Is Sufficient Disk Space Free?
+      type: condition
+      version: -1
+    taskid: a76f89b8-d6f4-4499-b208-8f0260a62fa2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1277\n  }\n}"
+  '65':
+    continueonerrortype: ''
+    id: '65'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '67'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Image Storage Disk Space\",\n\"CheckResult\":\"Failed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: ea34f5f0-1cf0-4850-9b47-65b7fc04b56a
+      iscommand: false
+      name: Store Image Disk Space Check Result - Fail
+      script: Set
+      type: regular
+      version: -1
+    taskid: ea34f5f0-1cf0-4850-9b47-65b7fc04b56a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1582\n  }\n}"
+  '66':
+    continueonerrortype: ''
+    id: '66'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '67'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Image Storage Disk Space\",\n\"CheckResult\":\"Passed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 1f3bd138-f619-4b84-93d2-c4202dc996af
+      iscommand: false
+      name: Store Image Storage Space Check Result - Success
+      script: Set
+      type: regular
+      version: -1
+    taskid: 1f3bd138-f619-4b84-93d2-c4202dc996af
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1442,\n    \"y\": 1447\n  }\n}"
+  '67':
+    continueonerrortype: ''
+    id: '67'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c75fd01e-1ead-4a1e-89fb-e809efc456bd
+      iscommand: false
+      name: Image Storage Disk Space Check Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c75fd01e-1ead-4a1e-89fb-e809efc456bd
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 2192\n  }\n}"
+  '68':
+    continueonerrortype: ''
+    id: '68'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: dc742ded-ee4e-415f-8f6a-0794ea01559f
+      iscommand: false
+      name: Uncommitted Configuration Changes Check Done
+      type: title
+      version: -1
+      description: ''
+    taskid: dc742ded-ee4e-415f-8f6a-0794ea01559f
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 2192\n  }\n}"
+  '69':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.SoftwareVersions.Summary.version
+                    operator: isEqualString
+                    right:
+                      iscontext: true
+                      value:
+                        simple: inputs.targetVersion
+                  - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.SoftwareVersions.Summary.version
+                    operator: isEqualString
+                    right:
+                      iscontext: true
+                      value:
+                        simple: BaseVersion
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.SoftwareVersions.Summary.downloaded
+                    operator: isFalse
+                root: PANOS.SoftwareVersions.Summary
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: yes
+    continueonerrortype: ''
+    id: '69'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '66'
+      yes:
+      - '46'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if software image(s) need to be downloaded or if they are already present on the system, meaning no additional disk space is needed.
+      id: 4b94ce28-4b0e-4e5a-b977-dd38de5aa7d4
+      iscommand: false
+      name: Does Software Need To Be Downloaded?
+      type: condition
+      version: -1
+    taskid: 4b94ce28-4b0e-4e5a-b977-dd38de5aa7d4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 707\n  }\n}"
+  '73':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.DynamicUpdates.Content.IsUpToDate
+          operator: isFalse
+          right:
+            value: {}
+      label: Error - Not Latest Version
+    continueonerrortype: ''
+    id: '73'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '74'
+      Error - Not Latest Version:
+      - '75'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check that the latest available App/Threat content is installed.
+      id: 5c0bd159-edb5-495d-8e86-9b77912f9c3c
+      iscommand: false
+      name: Is The Latest Available Content Installed?
+      type: condition
+      version: -1
+    taskid: 5c0bd159-edb5-495d-8e86-9b77912f9c3c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 510\n  }\n}"
+  '74':
+    continueonerrortype: ''
+    id: '74'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '76'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Latest Content Major Version Installed\",\n\"CheckResult\":\"Passed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 13fc9400-5ff4-49a5-838f-716bc59d5831
+      iscommand: false
+      name: Store Content Check Result - Success
+      script: Set
+      type: regular
+      version: -1
+    taskid: 13fc9400-5ff4-49a5-838f-716bc59d5831
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 880\n  }\n}"
+  '75':
+    continueonerrortype: ''
+    id: '75'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '76'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Latest Content Major Version Installed\",\n\"CheckResult\":\"Failed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: ffe52cce-2501-4b04-bba5-7259c9f5798c
+      iscommand: false
+      name: Store Content Check Result - Fail
+      script: Set
+      type: regular
+      version: -1
+    taskid: ffe52cce-2501-4b04-bba5-7259c9f5798c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1865,\n    \"y\": 700\n  }\n}"
+  '76':
+    continueonerrortype: ''
+    id: '76'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 15d602d7-107f-42f0-8967-db5153c21e0e
+      iscommand: false
+      name: Content Version Check Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 15d602d7-107f-42f0-8967-db5153c21e0e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 2185\n  }\n}"
+  '91':
+    continueonerrortype: ''
+    id: '91'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+      - '9'
+      - '7'
+      - '10'
+      - '1'
+      - '8'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 819a3be4-d75d-42c1-8a40-b27a9718d555
+      iscommand: false
+      name: Execute Readiness Checks
+      type: title
+      version: -1
+      description: ''
+    taskid: 819a3be4-d75d-42c1-8a40-b27a9718d555
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 447,\n    \"y\": -58\n  }\n}"
+  '96':
+    continueonerrortype: ''
+    id: '96'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 64133786-66c8-428a-8aaf-b31b85cd6786
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 64133786-66c8-428a-8aaf-b31b85cd6786
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 2869\n  }\n}"
+  '100':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.sw_version
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              simple: inputs.targetVersion
+      label: yes
+    continueonerrortype: ''
+    id: '100'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '101'
+      yes:
+      - '102'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if the target device is already running the desired PAN-OS version.  If so, no upgrade is needed.
+      id: 7026fb2e-2579-47d5-83e1-aed19e8fcd88
+      iscommand: false
+      name: Is Target Device Already Running Requested Version?
+      type: condition
+      version: -1
+    taskid: 7026fb2e-2579-47d5-83e1-aed19e8fcd88
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 447,\n    \"y\": -595\n  }\n}"
+  '101':
+    continueonerrortype: ''
+    id: '101'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '91'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Target Version Already Installed\",\n\"CheckResult\":\"Passed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: edefbf71-a99d-4108-97ac-d487a26bfe59
+      iscommand: false
+      name: Store Running Version Check - Success
+      script: Set
+      type: regular
+      version: -1
+    taskid: edefbf71-a99d-4108-97ac-d487a26bfe59
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 447,\n    \"y\": -260\n  }\n}"
+  '102':
+    continueonerrortype: ''
+    id: '102'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: ReadinessChecks
+      value:
+        simple: "{\"CheckName\":\"Target Version Already Installed\",\n\"CheckResult\":\"Failed\"}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 25abcd1a-f6e3-4e80-9daa-a882cf1bcd44
+      iscommand: false
+      name: Store Running Version Check - Fail
+      script: Set
+      type: regular
+      version: -1
+    taskid: 25abcd1a-f6e3-4e80-9daa-a882cf1bcd44
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": -410\n  }\n}"
+  '105':
+    continueonerrortype: ''
+    id: '105'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '64'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      disk_space_units:
+        simple: M
+      panos_instance_name:
+        simple: ${PANOSIntegrationInstance}
+      target:
+        complex:
+          root: inputs
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: incident.netopspanosintegrationtype
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Panorama
+              rhsB: {}
+              then:
+                iscontext: true
+                value:
+                  simple: inputs.targetDevice
+            operator: If-Then-Else
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: This script fetches disk space info from the target device and returns all information or a subset as specified in command arguments.
+      id: ca4edea3-c7c6-4a23-a1ab-1c849143853b
+      iscommand: false
+      name: Get Disk Space Info
+      script: NetOps-GetDeviceDiskSpace
+      type: regular
+      version: -1
+    taskid: ca4edea3-c7c6-4a23-a1ab-1c849143853b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1087\n  }\n}"
+  '106':
+    continueonerrortype: ''
+    id: '106'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '100'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.targetDevice}
+      using:
+        simple: ${PANOSIntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets information from all PAN-OS systems in the topology.
+      id: a4b06898-265c-4372-b04d-d2c3b78c74d5
+      iscommand: true
+      name: Get Version Currently Running On Device
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      version: -1
+    taskid: a4b06898-265c-4372-b04d-d2c3b78c74d5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 442,\n    \"y\": -803\n  }\n}"
+  '107':
+    continueonerrortype: ''
+    id: '107'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '96'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      headers:
+        simple: CheckName, CheckResult
+      title:
+        simple: Upgrade Readiness Check Result for Device ${PANOS.ShowSystemInfo.Summary.hostid} to Version ${inputs.targetVersion}.
+      value:
+        simple: ${ReadinessChecks}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Accepts a json object and returns a markdown. Supports clickable links.
+      id: b96ef1c2-f49f-440e-b966-aaa8bd94e24d
+      iscommand: false
+      name: Generate Readiness Checks Result Table
+      script: JsonToTable
+      type: regular
+      version: -1
+    taskid: b96ef1c2-f49f-440e-b966-aaa8bd94e24d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 2692\n  }\n}"
+  '108':
+    continueonerrortype: ''
+    id: '108'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '73'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.targetDevice}
+      using:
+        simple: ${PANOSIntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+      id: 3c5e1ab5-a5ab-459c-816d-a8111285976b
+      iscommand: true
+      name: Get Dynamic Update Status
+      script: '|||pan-os-check-dynamic-updates-status'
+      type: regular
+      version: -1
+    taskid: 3c5e1ab5-a5ab-459c-816d-a8111285976b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 340\n  }\n}"
+  '109':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                root: Modules
+                transformers:
+                - operator: count
+          operator: greaterThan
+          right:
+            value:
+              simple: '1'
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.panosIntegrationInstance
+          operator: isEmpty
+      label: None Specified Multiple Configured
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.panosIntegrationInstance
+          operator: isNotEmpty
+      label: Use Provided Instance
+    continueonerrortype: ''
+    id: '109'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '113'
+      None Specified Multiple Configured:
+      - '111'
+      Use Provided Instance:
+      - '112'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brand:
+        simple: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks how many PAN-OS (Panorama) instances are configured on the system.  If more than one and no specific one was selected using playbook inputs, return an error.
+      id: e6f5a125-8e89-4fc7-bfbd-e3f556ab6e64
+      iscommand: false
+      name: Check Panorama Integration Instances
+      type: condition
+      version: -1
+    taskid: e6f5a125-8e89-4fc7-bfbd-e3f556ab6e64
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 442,\n    \"y\": -1211\n  }\n}"
+  '110':
+    continueonerrortype: ''
+    id: '110'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '109'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brand:
+        simple: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns integration instances configured in Cortex XSOAR. You can filter by instance status and/or brand name (vendor).
+      id: 84b63c38-b6c2-407a-b9ba-103cd10bb1b1
+      iscommand: false
+      name: Get Configured 'Panorama' Integration Instances
+      script: GetInstances
+      type: regular
+      version: -1
+    taskid: 84b63c38-b6c2-407a-b9ba-103cd10bb1b1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 442,\n    \"y\": -1370\n  }\n}"
+  '111':
+    continueonerrortype: ''
+    id: '111'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: More than one instance of the PAN-OS (Panorama) integration is configured but none was specified in the Playbook input.  Please select an instance to use and try again.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message.
+      id: fa8ed374-2202-4df3-80c3-3aa371c636b0
+      iscommand: false
+      name: Error - Need PAN-OS Integration Instance Selection
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: fa8ed374-2202-4df3-80c3-3aa371c636b0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 121,\n    \"y\": -1065\n  }\n}"
+  '112':
+    continueonerrortype: ''
+    id: '112'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '106'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: PANOSIntegrationInstance
+      value:
+        simple: ${inputs.panosIntegrationInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: c88c7931-95c9-4aae-80a7-b9a21c7af1a2
+      iscommand: false
+      name: Store Provided PAN-OS Instance Name
+      script: Set
+      type: regular
+      version: -1
+    taskid: c88c7931-95c9-4aae-80a7-b9a21c7af1a2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 782,\n    \"y\": -1065\n  }\n}"
+  '113':
+    continueonerrortype: ''
+    id: '113'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '106'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: PANOSIntegrationInstance
+      value:
+        simple: ${Modules.name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 6d79df2b-89eb-413f-aeb7-2531544fe574
+      iscommand: false
+      name: Use Single Configured PAN-OS Instance
+      script: Set
+      type: regular
+      version: -1
+    taskid: 6d79df2b-89eb-413f-aeb7-2531544fe574
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 442,\n    \"y\": -965\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"69_66_#default#\": 0.28\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4433,\n      \"width\": 4963,\n      \"x\": -1442,\n      \"y\": -1504\n    }\n  }\n}"
+fromversion: 6.10.0
+tests:
+- palo_alto_panorama_test_pb
+- PAN-OS-panorama-topology-test-pb
+- PAN-OS-firewall-topology-test-pb
