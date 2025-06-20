@@ -2140,6 +2140,7 @@ class Client(BaseClient):
         Returns the latest versions of the stream configurations for all groups within the account.
 
         Returns:
+            A list of dictionaries that each dictionary includes a datastream.
             <Response [200]>
         """
         url_suffix = '/datastream-config-api/v2/log/streams'
