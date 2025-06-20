@@ -2162,6 +2162,7 @@ class Client(BaseClient):
             stream.
 
         Returns:
+            A dictionary that includes detailed information of a datastream.
             <Response [200]>
         """
 
