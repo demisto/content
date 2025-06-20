@@ -1,0 +1,21 @@
+{
+    "name": "Augur Security",
+    "description": "Leverage Augur Security's preemptive threat intelligence to provide actionable IOC enrichment and orchestration. Augur's daily indicators returns a list of CIDRs that are unique to Augur Security's ML based predictions of malicious actor's network.  The file, host and ip endpoints can be used by playbook to enrich IOCs.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Bowei Chi",
+    "url": "https://www.augursecurity.com",
+    "email": "support@augursecurity.com",
+    "created": "2025-06-19T17:14:19Z",
+    "categories": ["Data Enrichment & Threat Intelligence"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "nafooesi"
+    ]
+}
