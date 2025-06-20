@@ -2049,14 +2049,14 @@ Returns the latest versions of the stream configurations for all groups within t
 | --- | --- | --- |
 | Akamai.DataStreams | unknown | Akamai DataStreams. | 
 
-### akamai-activate-datastream
+### akamai-toggle-datastream
 
 ***
 Activate/Deactivate the latest version of a DataStream.
 
 #### Base Command
 
-`akamai-activate-datastream`
+`akamai-toggle-datastream`
 
 #### Input
 
