@@ -2127,6 +2127,7 @@ class Client(BaseClient):
         List properties or includes via Identify and Access Managment (IDAM) API
 
         Returns:
+            A list of dictionaries that each dictionary includes an Ion property
             <Response [200]>
         """
 
