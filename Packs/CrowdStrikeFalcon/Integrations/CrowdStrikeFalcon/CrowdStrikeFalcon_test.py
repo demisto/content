@@ -1890,8 +1890,14 @@ class TestFetch:
             The `first_behavior_time` doesn't change and an `offset` of 2 is added.
 
         """
-        from CrowdStrikeFalcon import fetch_items
-
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+        
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10Z"})
+        set_last_run_per_type(
+            last_run_object, index=LastRunIndex.INCIDENTS, data={"time": "2020-09-04T09:22:10Z"})
+        
         mocker.patch.object(demisto, "params", return_value={})
         mocker.patch.object(
             demisto,
@@ -1905,16 +1911,7 @@ class TestFetch:
             },
         )
         fetch_items()
-        assert demisto.setLastRun.mock_calls[0][1][0] == [
-            {"time": "2020-09-04T09:16:10Z"},
-            {"time": "2020-09-04T09:22:10Z"},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-        ]
+        assert demisto.setLastRun.mock_calls[0][1][0] == last_run_object
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -4118,6 +4115,8 @@ def test_find_incident_type():
 
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
     assert find_incident_type(input_data.remote_detection_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
+    assert find_incident_type(input_data.remote_ngsiem_detection_id) == IncidentType.NGSIEM
+    assert find_incident_type(input_data.remote_third_party_detection_id) == IncidentType.THIRD_PARTY
     assert find_incident_type("") is None
 
 
@@ -4250,6 +4249,32 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
     assert mirrored_data == detection_entity
     assert detection_type == "Detection"
     assert updated_object == {"incident_type": "detection", "status": "new", "severity": 90}
+    
+    
+def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
+    """
+    Given
+        - an endpoint ngsiem detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
+
+    detection_entity = input_data.response_ngsiem_detection.copy()
+    mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": [detection_entity.copy()]})
+    mocker.patch.object(demisto, "debug", return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
+        input_data.remote_ngsiem_detection_id
+    )
+
+    assert mirrored_data == detection_entity
+    assert detection_type == "ngsiem"
+    assert updated_object == {"incident_type": "ngsiem_detection", "status": mirrored_data["status"],
+                              "severity": mirrored_data["severity"], "tactic": mirrored_data["tactic"],
+                              "technique": mirrored_data["technique"], "composite_id": mirrored_data["composite_id"],
+                              "display_name": mirrored_data["display_name"], "tags": mirrored_data["tags"]}
 
 
 @pytest.mark.parametrize("updated_object, entry_content, close_incident", input_data.set_xsoar_incident_entries_args)
@@ -6230,7 +6255,7 @@ class TestCSFalconResolveIdentityDetectionCommand:
 
 class TestIOAFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
-    # last run objects for each incident type, for IOA, that is the 5th position
+    # last run objects for each incident type, for IOA, that is the 6th position
     @pytest.mark.parametrize(
         "fetch_query, error_message",
         [
@@ -6573,7 +6598,7 @@ class TestIOAFetch:
 
 class TestIOMFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
-    # last run objects for each incident type, for IOM, that is the 4th position
+    # last run objects for each incident type, for IOM, that is the 7th position
     def test_validate_iom_fetch_query(self):
         """
         Given:
@@ -7734,11 +7759,12 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
     if command == "fetch-incidents":
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOM, data={"IOM ID:": 7})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOA, data={"IOA ID:": 8})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.THIRD_PARTY_DETECTIONS, data={"THIRD PARTY ID:": 9})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_DETECTIONS, data={"NGSIEM ID:": 10})
+  
 
     # Create a copy to avoid reference issues
     last_run_identifiers_copy = list(last_run_identifiers)
-
-    # last_run_identifiers = ["Detection", "Incident", "IDP", "Mobile", "ODS", "OFP"]
 
     mocker.patch("CrowdStrikeFalcon.demisto.getLastRun", return_value=last_run_identifiers_copy)
     mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
