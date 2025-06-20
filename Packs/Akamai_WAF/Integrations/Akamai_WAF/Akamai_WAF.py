@@ -2182,6 +2182,7 @@ class Client(BaseClient):
             contract_id: Uniquely identifies the contract that belongs to a group.
 
         Returns:
+            A dictionary that includes a list of dictionaries of groups.
             <Response [200]>
         """
         url_suffix = 'datastream-config-api/v2/log/groups'
