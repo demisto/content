@@ -1808,7 +1808,7 @@ def main() -> None:
                 before = dateparser.parse(before_str)
             if after_str:
                 after = dateparser.parse(after_str)
-            limit = int(demisto.args().get("limit", "1000"))
+            limit = int(demisto.args().get("limit") or "1000")
             result = get_apps_command(reco_client, before=before, after=after, limit=limit)
             return_results(result)
         elif command == "reco-set-app-authorization-status":
