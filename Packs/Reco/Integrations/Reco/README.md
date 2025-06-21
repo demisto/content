@@ -483,3 +483,50 @@ Get alert AI summary
 | **Path**                   | **Type** | **Description**   |
 |----------------------------| --- |-------------------|
 | Reco.AlertSummary.markdown         | String | The alert summary |
+
+### reco-set-app-authorization-status
+
+***
+Set authorization status for an application in Reco.
+
+#### Base Command
+
+`reco-set-app-authorization-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| app_id | Application ID to update authorization status for. | Required |
+| authorization_status | Authorization status to set for the application. Possible values are: AUTH_STATUS_UNSPECIFIED, AUTH_STATUS_TO_REVIEW, AUTH_STATUS_SANCTIONED, AUTH_STATUS_UNSANCTIONED, AUTH_STATUS_ACCEPTED_RISK, AUTH_STATUS_EVALUATING, AUTH_STATUS_UNDER_INVESTIGATION, AUTH_STATUS_INVESTIGATED, AUTH_STATUS_CLOUD_INVENTORY, AUTH_STATUS_SYSTEM_SANCTIONED. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.AppAuthorization.app_id | String | The application ID that was updated |
+| Reco.AppAuthorization.authorization_status | String | The authorization status that was set |
+| Reco.AppAuthorization.updated | Boolean | Whether the update was successful |
+| Reco.AppAuthorization.rows_affected | Number | Number of rows affected by the update operation |
+
+#### Command example
+```
+!reco-set-app-authorization-status app_id="microsoft.com" authorization_status="AUTH_STATUS_SANCTIONED"
+```
+#### Context Example
+```json
+{
+    "Reco": {
+        "AppAuthorization": {
+            "app_id": "microsoft.com",
+            "authorization_status": "AUTH_STATUS_SANCTIONED",
+            "updated": true,
+            "rows_affected": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>App microsoft.com authorization status updated successfully to AUTH_STATUS_SANCTIONED
