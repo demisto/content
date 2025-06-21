@@ -182,8 +182,8 @@ script:
   - name: aws-s3-bucket-acl-put
     description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs.
     arguments:
-    - description: The AWS account ID.
-      name: account_id
+    - name: account_id
+      description: The AWS account ID.
       required: true
     - name: region
       description: The AWS region.
@@ -222,6 +222,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+    
     - name: acl
       description: 'The canned ACL to apply to the bucket.'
       required: true
@@ -278,8 +279,9 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - description: 'The name of the bucket for which to set the logging parameters.'
-      name: bucket
+    
+    - name: bucket
+      description: 'The name of the bucket for which to set the logging parameters.'
       required: true
     - name: target_bucket
       description: 'The name of the bucket where server access logs should be delivered. If this is NOT provided, logging will be disabled.'
@@ -394,6 +396,7 @@ script:
     - name: policy
       description: 'The bucket policy to apply as a JSON string.'
       required: true
+
 
   - name: aws-iam-account-password-policy-get
     description: Get AWS account password policy.
@@ -536,7 +539,8 @@ script:
     - name: policy_document
       description: 'The policy document in JSON format. Must be a valid IAM policy document that defines the permissions for the role.'
       required: true
-      
+
+
   - name: aws-eks-cluster-config-update
     description: 'Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call.'
     arguments:
@@ -589,6 +593,7 @@ script:
     - name: resources_vpc_config
       description: "A JSON representation of the VPC configuration used by the cluster control plane. e.g. \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
+
 
   - name: aws-rds-db-cluster-modify
     description: Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
@@ -860,6 +865,7 @@ script:
       description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
       required: false
 
+
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
     arguments:
@@ -1040,7 +1046,7 @@ script:
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
 
-  - name: aws-ec2-snapshot-permission-modify
+  - name: aws-ec2-snapshot-attribute-modify
     description: 'Adds or removes permission settings for the specified snapshot.'
     arguments:
     - name: account_id

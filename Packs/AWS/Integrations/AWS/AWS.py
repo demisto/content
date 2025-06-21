@@ -139,6 +139,83 @@ class S3:
                 readable_output=f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}",
             )
 
+    @staticmethod
+    def put_bucket_logging_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Enables/configures logging for an S3 bucket.
+        
+        Args:
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the bucket to configure logging for
+                - bucket-logging-status (str, optional): JSON string containing logging configuration
+                - target-bucket (str, optional): The target bucket where logs will be stored
+                - target_prefix (str, optional): The prefix for log objects in the target bucket
+
+        Returns:
+            CommandResults: Results of the command execution
+        """
+        bucket = args.get("bucket")
+        if not bucket:
+            return CommandResults(readable_output="Error: 'bucket' parameter is required")
+
+        try:
+            
+            if target_bucket := args.get("target_bucket"):
+                # Build logging configuration.
+                bucket_logging_status = {
+                    "LoggingEnabled": {
+                        "TargetBucket": target_bucket,
+                        "TargetPrefix": args.get("target_prefix", "")
+                    }
+                }
+            else:
+                # If neither full config nor target bucket provided, disable logging
+                bucket_logging_status = {}
+
+            response = client.put_bucket_logging(Bucket=bucket, BucketLoggingStatus=bucket_logging_status)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                if bucket_logging_status.get("LoggingEnabled"):
+                    target_bucket = bucket_logging_status["LoggingEnabled"].get("TargetBucket", "")
+                    target_prefix = bucket_logging_status["LoggingEnabled"].get("TargetPrefix", "")
+                    return CommandResults(
+                        readable_output=f"Successfully enabled logging for bucket '{bucket}'. Logs will be stored in '{target_bucket}/{target_prefix}'."
+                    )
+                else:
+                    return CommandResults(readable_output=f"Successfully disabled logging for bucket '{bucket}'")
+
+            return CommandResults(
+                entry_type=EntryType.WARNING,
+                readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}",
+            )
+
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR, readable_output=f"Failed to configure logging for bucket '{bucket}'. Error: {str(e)}"
+            )
+   
+    @staticmethod
+    def put_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Set the Access Control List (ACL) permissions for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the bucket
+                - acl (str): The canned ACL to apply (e.g., 'private', 'public-read', 'public-read-write')
+
+        Returns:
+            CommandResults: Results of the operation with success/failure message
+        """
+        acl, bucket = args.get("acl"), args.get("bucket")
+        response = client.put_bucket_acl(Bucket=bucket, ACL=acl)
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+            return CommandResults(f"Successfully updated ACL for bucket {bucket} to '{acl}'")
+        return CommandResults(
+            f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+        )
+
 
 class IAM:
     service = AWSServices.IAM
@@ -252,6 +329,7 @@ class IAM:
                 f"Failed to add policy '{policy_name}' to role '{role_name}'. Error: {str(e)}"
             )
 
+
 class EC2:
     service = AWSServices.EC2
 
@@ -321,26 +399,46 @@ class EC2:
         raise DemistoException(f"Unexpected response from AWS - \n{response}")
 
     @staticmethod
-    def modify_snapshot_permission_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def modify_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Modifies permission for the specified snapshot
-        """
-        group_names = argToList(args.get("groupNames"))
-        user_ids = argToList(args.get("userIds"))
-        if (group_names and user_ids) or not (group_names or user_ids):
-            raise DemistoException('Please provide either "groupNames" or "userIds"')
+        Adds or removes permission settings for the specified snapshot.
 
-        accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
-        operation_type = args.get("operationType")
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - snapshot_id (str): The ID of the snapshot
+                - attribute (str): The snapshot attribute to modify
+                - operation_type (str): The operation to perform (add or remove)
+                - user_ids (str, optional): Comma-separated list of AWS account IDs
+                - group (str, optional): The group to add/remove (e.g., 'all')
+        
+        Returns:
+            CommandResults: Results of the operation with success message
+        """
+        # Parse user IDs from comma-separated string
+        user_ids_list = None
+        if user_ids := args.get("user_ids"):
+            user_ids_list = [uid.strip() for uid in user_ids.split(",") if uid.strip()]
+
+        # Parse group parameter
+        group_names_list = None
+        if group := args.get("group"):
+            group_names_list = [group.strip()]
+
+        # Build accounts parameter using assign_params to handle None values
+        accounts = assign_params(GroupNames=group_names_list, UserIds=user_ids_list)
+        
         response = client.modify_snapshot_attribute(
-            Attribute="createVolumePermission",
-            SnapshotId=args.get("snapshotId"),
-            OperationType=operation_type,
+            Attribute=args.get("attribute"),
+            SnapshotId=args.get("snapshot_id"),
+            OperationType=args.get("operation_type"),
             **accounts,
         )
+        
         if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
             raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
-        return CommandResults(readable_output=f"Snapshot {args.get('snapshotId')} permissions was successfully updated.")
+        
+        return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions was successfully updated.")
 
     @staticmethod
     def modify_image_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -858,6 +956,7 @@ class RDS:
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-put": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
+    "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
     
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
@@ -865,10 +964,11 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
-    # "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
+    "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
     "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
+    "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
     
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     
@@ -918,6 +1018,7 @@ REQUIRED_ACTIONS: set[str] = {
 def check_account_permissions(account_id: str) -> HealthCheckError | None:
     """_summary_"""
     pass
+
 
 def health_check(connector_id: str):
     accounts: list[dict] = get_accounts_by_connector_id(connector_id)
