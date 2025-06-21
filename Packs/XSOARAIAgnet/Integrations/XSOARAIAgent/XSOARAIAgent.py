@@ -1,12 +1,5 @@
-import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-import os
-import warnings
-import contextlib
-import requests
-from urllib3.exceptions import InsecureRequestWarning
-import httpx
 from langchain_openai import ChatOpenAI
 from langchain.agents import (
     create_openai_functions_agent,
@@ -20,36 +13,13 @@ from langchain_neo4j import (
     GraphCypherQAChain,
 )
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 """ CONSTANTS """
-# HTTPX_CLIENT = httpx.Client(verify=False)
 NEO4J_URI = ""
 NEO4J_USERNAME = ""
 NEO4J_PASSWORD = ""
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-TOOLS = [
-    Tool(
-        name="Graph",
-        func=content_cypher_chain.invoke,
-        description="""Useful for requests to run integration commands or scripts. 
-        Use the entire prompt as input to the tool. 
-        For instance, if the prompt is "Provide details about incident ID 23 in ServiceNow?",
-        the input should be "Provide details about incident ID 23 in ServiceNow?".
-        """,
-    ),
-    Tool(
-        name="Question",
-        func=content_questoin_chain.invoke,
-        description="""Useful for answering questions about integrations,
-        scripts, incident types, incident fields, layouts, classifiers, mappers.
-        Use the entire prompt as input to the tool. For instance, 
-        if the prompt is "How to configure the Virus Total integration?", 
-        the input should be "How to configure the Virus Total integration?".
-        """,
-    ),
-]
+XSOAR_AGENT_PROMPT = hub.pull("hwchase17/openai-functions-agent")
 CYPHER_GENERATION_TEMPLATE = """
 Task:
 Generate Cypher query for a Neo4j graph database.
@@ -169,7 +139,7 @@ the query results. Always use the data in the query results.
 Helpful Answer:
 """
 
-""" CLIENT CLASS """
+""" AGENT CLASS """
 
 
 class Agent:
@@ -179,8 +149,49 @@ class Agent:
     def __init__(self, model, api_key):
         self.model = model
         self.api_key = api_key
+        self.tools = [
+            Tool(
+                name="ExecuteCommand",
+                func=self.generate_execute_cypher_chain().invoke,
+                description="""Useful for requests to run integration commands or scripts. 
+                Use the entire prompt as input to the tool. 
+                For instance, if the prompt is "Provide details about incident ID 23 in ServiceNow?",
+                the input should be "Provide details about incident ID 23 in ServiceNow?".
+                """,
+            ),
+            Tool(
+                name="Question",
+                func=self.generate_question_cypher_chain().invoke,
+                description="""Useful for answering questions about integrations,
+                scripts, incident types, incident fields, layouts, classifiers, mappers.
+                Use the entire prompt as input to the tool. For instance,
+                if the prompt is "How to configure the Virus Total integration?",
+                the input should be "How to configure the Virus Total integration?".
+                """,
+            ),
+            Tool(
+                name="CreateIncident",
+                func=self.create_incident(),
+                description="""Useful for answering questions about integrations,
+                scripts, incident types, incident fields, layouts, classifiers, mappers.
+                Use the entire prompt as input to the tool. For instance,
+                if the prompt is "How to configure the Virus Total integration?",
+                the input should be "How to configure the Virus Total integration?".
+                """,
+            ),
+            Tool(
+                name="CreateIndicator",
+                func=self.create_indicator(),
+                description="""Useful for answering questions about integrations,
+                scripts, incident types, incident fields, layouts, classifiers, mappers.
+                Use the entire prompt as input to the tool. For instance,
+                if the prompt is "How to configure the Virus Total integration?",
+                the input should be "How to configure the Virus Total integration?".
+                """,
+            ),
+        ]
 
-    def generate_cypher_chain(self, graph: Neo4jGraph):
+    def generate_execute_cypher_chain(self) -> GraphCypherQAChain:
         cypher_generation_prompt = PromptTemplate(
             input_variables=["schema", "question"], template=CYPHER_GENERATION_TEMPLATE
         )
@@ -191,7 +202,7 @@ class Agent:
         cypher_chain = GraphCypherQAChain.from_llm(
             cypher_llm=ChatOpenAI(model=self.model, temperature=0),
             qa_llm=ChatOpenAI(model=self.model, temperature=0),
-            graph=graph,
+            graph=connect_to_graph(),
             verbose=True,
             qa_prompt=qa_generation_prompt,
             cypher_prompt=cypher_generation_prompt,
@@ -202,12 +213,40 @@ class Agent:
 
         return cypher_chain
 
+    def generate_question_cypher_chain(self) -> GraphCypherQAChain:
+        ...
+
+    def create_incident(self) -> ...:
+        ...
+
+    def create_indicator(self) -> ...:
+        ...
+
     def test(self):
         ...
 
     def execute(self, query: str):
-        demisto.debug(f'Executing {query} with model {self.model}')
-        return ""
+        demisto.debug(f'The Agent will execute query: {query} with model: {self.model}')
+
+        chat_model = ChatOpenAI(
+            model=self.model,
+            temperature=0,
+        )
+        xsoar_rag_agent = create_openai_functions_agent(
+            llm=chat_model,
+            prompt=XSOAR_AGENT_PROMPT,
+            tools=self.tools,
+        )
+        xsoar_rag_agent_executor = AgentExecutor(
+            agent=xsoar_rag_agent,
+            tools=self.tools,
+            return_intermediate_steps=True,
+            verbose=True,
+        )
+
+        execution = xsoar_rag_agent_executor.invoke({"input": query})
+
+        return execution.get("command"), execution.get("arguments")
 
 
 """ HELPER FUNCTIONS """
@@ -249,31 +288,12 @@ def test_module(agent: Agent) -> str:
 def xsoar_ai_agent_execute_command(agent: Agent, args: dict[str, Any]) -> CommandResults:
     query = args.get("query")
 
-    chat_model = ChatOpenAI(
-        model=HOSPITAL_AGENT_MODEL,
-        temperature=0,
-        http_client=HTTPX_CLIENT
-    )
+    command, args = agent.execute(query)
 
-    hospital_rag_agent = create_openai_functions_agent(
-        llm=chat_model,
-        prompt=hospital_agent_prompt,
-        tools=tools,
-    )
-
-    hospital_rag_agent_executor = AgentExecutor(
-        agent=hospital_rag_agent,
-        tools=tools,
-        return_intermediate_steps=True,
-        verbose=True,
-    )
-
-    # Call the Client function and get the raw response
-    result = agent.execute(query)
+    demisto.executeCommand(command, args)
 
     return CommandResults(
-        outputs_prefix="XSOARAIAgent.Outputs",
-        outputs=result,
+        readable_output="Command executed successfully.",
     )
 
 
