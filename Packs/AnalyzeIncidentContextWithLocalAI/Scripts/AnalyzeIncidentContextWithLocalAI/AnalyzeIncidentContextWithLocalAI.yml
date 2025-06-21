@@ -45,7 +45,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: aidockerimage
+dockerimage: nikosxsoarlab/aidockerimage:latest
 enabled: true
 engineinfo: {}
 name: AnalyzeIncidentContextWithLocalAI
