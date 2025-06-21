@@ -802,7 +802,6 @@ def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> No
     assert res.outputs.get("email_account") == "charles@corp.com"
 
 
-
 def test_get_app_discovery_with_filters(requests_mock, reco_client: RecoClient) -> None:
     """Test the get_app_discovery method with date filters."""
     raw_result = get_random_assets_user_has_access_to_response()
@@ -825,8 +824,9 @@ def test_get_app_discovery_error(capfd, requests_mock, reco_client: RecoClient) 
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json={}, status_code=200)
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/count", json={}, status_code=500)
 
-    with capfd.disabled(), pytest.raises(Exception):
-        reco_client.get_app_discovery()
+    apps = reco_client.get_app_discovery()
+    assert len(apps) == 0
+
 
 def test_set_app_authorization_status(requests_mock, reco_client: RecoClient) -> None:
     """Test setting app authorization status."""
@@ -873,6 +873,21 @@ def test_set_app_authorization_status_error(capfd, requests_mock, reco_client: R
         f"{DUMMY_RECO_API_DNS_NAME}/app-risk-management/insert-risk-management-app",
         json={},
         status_code=500,
+    )
+
+    with capfd.disabled(), pytest.raises(Exception):
+        reco_client.set_app_authorization_status(app_id, authorization_status)
+
+
+def test_set_app_authorization_status_error_2(capfd, requests_mock, reco_client: RecoClient) -> None:
+    """Test error handling in set_app_authorization_status."""
+    app_id = "test.com"
+    authorization_status = "AUTH_STATUS_SANCTIONED"
+
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/app-risk-management/insert-risk-management-app",
+        json={},
+        status_code=200,
     )
 
     with capfd.disabled(), pytest.raises(Exception):

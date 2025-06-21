@@ -924,7 +924,7 @@ class RecoClient(BaseClient):
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
             total_count = count_response.get("getTableResponse", {}).get("totalNumberOfResults", 0)
-            demisto.info(f"Total number of apps: {total_count}")
+            demisto.debug(f"Total number of apps: {total_count}")
         except Exception as e:
             demisto.error(f"Failed to get app count: {str(e)}")
             total_count = 0
@@ -1808,7 +1808,7 @@ def main() -> None:
                 before = dateparser.parse(before_str)
             if after_str:
                 after = dateparser.parse(after_str)
-            limit = int(demisto.args().get("limit", "1000"))
+            limit = int(demisto.args().get("limit") or "1000")
             result = get_apps_command(reco_client, before=before, after=after, limit=limit)
             return_results(result)
         elif command == "reco-set-app-authorization-status":
