@@ -924,7 +924,7 @@ class RecoClient(BaseClient):
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
             total_count = count_response.get("getTableResponse", {}).get("totalNumberOfResults", 0)
-            demisto.info(f"Total number of apps: {total_count}")
+            demisto.debug(f"Total number of apps: {total_count}")
         except Exception as e:
             demisto.error(f"Failed to get app count: {str(e)}")
             total_count = 0
