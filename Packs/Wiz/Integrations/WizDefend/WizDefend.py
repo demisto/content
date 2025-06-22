@@ -1018,34 +1018,7 @@ class FetchIncident:
         self.last_run_time = self.get_last_run_time()
 
         self._validate_and_reset_params()
-        self.print_debug_values()
 
-    def print_debug_values(self):
-        """
-        Print debug values that will be used in the function execution.
-        This function should be called at the beginning to show the values
-        we're going to use before emv_cursor and last_run processing.
-        """
-        # Get the values that will be used in the function
-        after_value = self.get_api_after_parameter()
-        before_value = self.get_api_before_parameter()
-        end_cursor_value = self.get_api_cursor_parameter()
-
-        # Create one comprehensive debug message
-        debug_message = (
-            "=== DEBUG: Values to be used in function execution ===\n"
-            f"after (get_after_time): {after_value}\n"
-            f"before (get_before_time): {before_value}\n"
-            f"end_cursor (get_end_cursor): {end_cursor_value}\n"
-            f"last_run_time: {self.last_run_time}\n"
-            f"stored_after: {self.stored_after}\n"
-            f"stored_before: {self.stored_before}\n"
-            f"end_cursor (raw): {self.end_cursor}\n"
-            f"should_continue_previous_run: {self.should_continue_previous_run()}\n"
-            f"api_start_run_time: {self.api_start_run_time}\n"
-            "=== END DEBUG VALUES ==="
-        )
-        demisto.info(debug_message)
 
     def get_last_run_time(self):
         """
@@ -1102,13 +1075,13 @@ class FetchIncident:
             # Calculate safe_after_str as api_start_run_time - incidentFetchInterval
             try:
                 demisto_params = demisto.params()
-                fetch_interval_str = demisto_params.get(DemistoParams.INCIDENT_FETCH_INTERVAL, FETCH_INTERVAL_MINIMUM_MIN)
+                fetch_interval_str = demisto_params.get(DemistoParams.INCIDENT_FETCH_INTERVAL, str(FETCH_INTERVAL_MINIMUM_MIN))
 
                 # Validate the fetch interval using existing validation
                 validation_response = validate_fetch_interval(fetch_interval_str)
                 if not validation_response.is_valid:
                     demisto.error(f"Invalid fetch interval, using default: {validation_response.error_message}")
-                    fetch_interval_minutes = fetch_interval_str  # Default fallback
+                    fetch_interval_minutes = FETCH_INTERVAL_MINIMUM_MIN
                 else:
                     fetch_interval_minutes = validation_response.minutes_value
 
