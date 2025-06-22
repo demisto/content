@@ -2636,8 +2636,9 @@ def main():
             resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
             resource_name = demisto_args.get(WizInputParam.RESOURCE_NAME)
             resource = get_resource(resource_id=resource_id, resource_name=resource_name)
-            command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", readable_output=resource,
-                                            outputs=resource, raw_response=resource)
+            command_result = CommandResults(
+                outputs_prefix="Wiz.Manager.Resource", readable_output=resource, outputs=resource, raw_response=resource
+            )
             return_results(command_result)
 
         elif command == "wiz-get-resources":

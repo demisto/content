@@ -16,7 +16,7 @@ DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 WIZ_API_LIMIT = 250
 API_MIN_FETCH = 10
 API_MAX_FETCH = 1000
-API_END_CURSOR = ""
+API_END_CURSOR: Optional[str] = ""
 MAX_DAYS_FIRST_FETCH_DETECTIONS = 2
 FETCH_INTERVAL_MINIMUM_MIN = 10
 FETCH_INTERVAL_MAXIMUM_MIN = 600
@@ -1020,7 +1020,6 @@ class FetchIncident:
         self._validate_and_reset_params()
         self.print_debug_values()
 
-
     def print_debug_values(self):
         """
         Print debug values that will be used in the function execution.
@@ -1047,7 +1046,6 @@ class FetchIncident:
             "=== END DEBUG VALUES ==="
         )
         demisto.info(debug_message)
-
 
     def get_last_run_time(self):
         """
@@ -1082,7 +1080,8 @@ class FetchIncident:
                 last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
         except Exception as e:
             demisto.error(
-                f"Error parsing last run time: {str(e)}. Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as fetch time.")
+                f"Error parsing last run time: {str(e)}. Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as fetch time."
+            )
             max_days_ago = datetime.now() - timedelta(days=MAX_DAYS_FIRST_FETCH_DETECTIONS)
             last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
 
@@ -1104,8 +1103,10 @@ class FetchIncident:
         self.stored_after = safe_after_str
         self.stored_before = self.api_start_run_time  # Current time as before
 
-        demisto.info(f"Reset fetch incidents parameter complete - "
-                     f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None")
+        demisto.info(
+            f"Reset fetch incidents parameter complete - "
+            f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None"
+        )
 
     def _validate_and_reset_params(self):
         """
@@ -1133,7 +1134,7 @@ class FetchIncident:
         timestamp_fields = [
             ("stored_after", self.stored_after),
             ("stored_before", self.stored_before),
-            ("last_run_time", self.last_run_time)
+            ("last_run_time", self.last_run_time),
         ]
 
         for field_name, timestamp in timestamp_fields:
@@ -1142,8 +1143,7 @@ class FetchIncident:
                 reset_reason.append(f"invalid {field_name} format: {timestamp}")
 
         # Validate time ordering (before >= after)
-        if (self.stored_after and self.stored_before and
-            not self._is_valid_time_ordering(self.stored_after, self.stored_before)):
+        if self.stored_after and self.stored_before and not self._is_valid_time_ordering(self.stored_after, self.stored_before):
             needs_reset = True
             reset_reason.append(f"invalid time ordering: before ({self.stored_before}) < after ({self.stored_after})")
 
@@ -1156,8 +1156,10 @@ class FetchIncident:
             reason = "; ".join(reset_reason)
             self.reset_params(reason)
         else:
-            demisto.info(f"Using fetch incidents parameters: - "
-                         f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None")
+            demisto.info(
+                f"Using fetch incidents parameters: - "
+                f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None"
+            )
 
     def _is_legacy_format(self):
         """
@@ -1168,17 +1170,14 @@ class FetchIncident:
         """
         # Legacy format: has 'time' but missing the new pagination fields
         has_time = self.last_run_time is not None
-        missing_new_fields = (
-            self.stored_after is None and
-            self.stored_before is None and
-            self.end_cursor is None
-        )
+        missing_new_fields = self.stored_after is None and self.stored_before is None and self.end_cursor is None
 
         is_legacy = has_time and missing_new_fields
 
         if is_legacy:
-            demisto.info(f"Legacy format detected - last_run_time: {self.last_run_time}, "
-                         f"missing after/before/endCursor fields")
+            demisto.info(
+                f"Legacy format detected - last_run_time: {self.last_run_time}, " f"missing after/before/endCursor fields"
+            )
 
         return is_legacy
 
@@ -1307,7 +1306,7 @@ class FetchIncident:
 
         except Exception as e:
             log_and_return_error(f"Error validating after_time {after_time}: {str(e)}")
-            return
+            return None
 
     def get_api_cursor_parameter(self):
         """
@@ -1319,12 +1318,11 @@ class FetchIncident:
         return self.end_cursor
 
     def _save_pagination_context(self):
-
         last_run_data = {
             DemistoParams.TIME: self.api_start_run_time,
             WizApiResponse.END_CURSOR: API_END_CURSOR,
             WizApiVariables.AFTER: self.stored_after,
-            WizApiVariables.BEFORE: self.stored_after
+            WizApiVariables.BEFORE: self.stored_after,
         }
 
         # Save using setLastRun
@@ -1343,7 +1341,7 @@ class FetchIncident:
             DemistoParams.TIME: self.api_start_run_time,
             WizApiResponse.END_CURSOR: None,
             WizApiVariables.AFTER: self.stored_before,
-            WizApiVariables.BEFORE: self.api_start_run_time
+            WizApiVariables.BEFORE: self.api_start_run_time,
         }
 
         # Save using setLastRun
@@ -1369,7 +1367,10 @@ class FetchIncident:
         Log current state for debugging
         """
         if self.end_cursor:
-            status = f"Pagination in progress - {WizApiResponse.END_CURSOR}: {self.end_cursor}, {WizApiVariables.AFTER}: {self.stored_after}, {WizApiVariables.BEFORE}: {self.stored_before}"
+            status = (
+                f"Pagination in progress - {WizApiResponse.END_CURSOR}: {self.end_cursor}, "
+                f"{WizApiVariables.AFTER}: {self.stored_after}, {WizApiVariables.BEFORE}: {self.stored_before}"
+            )
         else:
             status = "No active pagination"
 
@@ -1427,7 +1428,7 @@ def set_api_end_cursor(page_info):
     global API_END_CURSOR
 
     if page_info.get(WizApiResponse.HAS_NEXT_PAGE):
-        API_END_CURSOR = page_info.get(WizApiResponse.END_CURSOR,"")
+        API_END_CURSOR = page_info.get(WizApiResponse.END_CURSOR, "")
     else:
         API_END_CURSOR = None
 
@@ -1691,7 +1692,7 @@ def fetch_incidents():
     if incidents:
         demisto.info(f"Successfully fetched and created {len(incidents)} incidents")
     else:
-        demisto.info(f"No new incidents to fetch")
+        demisto.info("No new incidents to fetch")
 
 
 def get_fetch_timestamp(first_fetch_param):
@@ -2147,7 +2148,9 @@ def validate_severity(severity):
         # Validate each severity in the list
         invalid_severities = [s for s in severity_list if s not in valid_severities_set]
         if invalid_severities:
-            error_msg = f"Invalid severities: {', '.join(invalid_severities)}. Valid severities are: {', '.join(severity_hierarchy)}."
+            error_msg = (
+                f"Invalid severities: {', '.join(invalid_severities)}. Valid severities are: {', '.join(severity_hierarchy)}."
+            )
             demisto.error(error_msg)
             return ValidationResponse.create_error(error_msg)
 
@@ -2164,7 +2167,7 @@ def validate_severity(severity):
 
     # Return severity and all higher levels for single selection
     severity_index = severity_hierarchy.index(severity)
-    response.severity_list = severity_hierarchy[:severity_index + 1]
+    response.severity_list = severity_hierarchy[: severity_index + 1]
     return response
 
 
@@ -2233,18 +2236,19 @@ def validate_project(project):
 def validate_end_cursor(end_cursor):
     """
     Validates if the end_cursor is a valid base64 string
-    
+
     Args:
         end_cursor (str): The end cursor to validate
-        
+
     Returns:
         tuple: (is_valid (bool), error_message (str or None))
     """
     if not end_cursor:
         return True, None
-    
+
     try:
         import base64
+
         base64.b64decode(end_cursor, validate=True)
         return True, None
     except Exception as e:
@@ -2256,79 +2260,81 @@ def validate_end_cursor(end_cursor):
 def validate_after_and_before_timestamps(after_time, before_time):
     """
     Validates after_time and before_time parameters
-    
+
     Args:
         after_time (str): The after timestamp
         before_time (str): The before timestamp
-        
+
     Returns:
         tuple: (is_valid (bool), error_message (str or None))
     """
     if not after_time and not before_time:
         return True, None
-    
+
     def parse_timestamp(timestamp_str):
         """Helper function to parse timestamp in multiple formats"""
         if not timestamp_str:
             return None
-            
+
         # Try parsing with milliseconds first (e.g., "2025-06-18T20:59:59.999Z")
         try:
             return datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
         except ValueError:
             pass
-        
+
         # Try parsing without milliseconds (DEMISTO format: "2025-06-18T20:59:59Z")
         try:
             return datetime.strptime(timestamp_str, DEMISTO_OCCURRED_FORMAT)
         except ValueError:
             pass
-            
+
         # Try parsing ISO format without Z
         try:
-            return datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+            return datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
         except ValueError:
             pass
-            
+
         return None
-        
+
     # Check if both are provided and not null
+    error_time_format_msg = "Expected ISO format like '2025-06-18T20:59:59.999Z' or '2025-06-18T20:59:59Z'"
+
     if after_time and before_time:
         after_dt = parse_timestamp(after_time)
         before_dt = parse_timestamp(before_time)
-        
+
         if after_dt is None:
-            error_msg = f"Invalid after_time format: {after_time}. Expected ISO format like '2025-06-18T20:59:59.999Z' or '2025-06-18T20:59:59Z'"
+            error_msg = f"Invalid after_time format: {after_time}. {error_time_format_msg}"
             demisto.error(error_msg)
             return False, error_msg
-            
+
         if before_dt is None:
-            error_msg = f"Invalid before_time format: {before_time}. Expected ISO format like '2025-06-18T20:59:59.999Z' or '2025-06-18T20:59:59Z'"
+            error_msg = f"Invalid before_time format: {before_time}. {error_time_format_msg}"
             demisto.error(error_msg)
             return False, error_msg
-        
+
         # Ensure before_time is greater than or equal to after_time
         if before_dt < after_dt:
             error_msg = f"before_time ({before_time}) must be greater than or equal to after_time ({after_time})"
             demisto.error(error_msg)
             return False, error_msg
-    
+
     # Individual validation for after_time
     if after_time:
         after_dt = parse_timestamp(after_time)
         if after_dt is None:
-            error_msg = f"Invalid after_time format: {after_time}. Expected ISO format like '2025-06-18T20:59:59.999Z' or '2025-06-18T20:59:59Z'"
+            error_msg = f"Invalid after_time format: {after_time}. {error_time_format_msg}"
             demisto.error(error_msg)
             return False, error_msg
-    
+
     # Individual validation for before_time
     if before_time:
         before_dt = parse_timestamp(before_time)
         if before_dt is None:
-            error_msg = f"Invalid before_time format: {before_time}. Expected ISO format like '2025-06-18T20:59:59.999Z' or '2025-06-18T20:59:59Z'"
+            error_msg = f"Invalid before_time format: {before_time}. {error_time_format_msg}"
             demisto.error(error_msg)
             return False, error_msg
-    
+
     return True, None
 
 
@@ -2911,20 +2917,20 @@ def apply_project_id_filter(variables, project_id, is_detection=True):
 def apply_end_cursor(variables, end_cursor):
     """
     Adds the end cursor for pagination to the query variables
-    
+
     Args:
         variables (dict): The query variables
         end_cursor (str): The pagination cursor (base64 encoded)
-        
+
     Returns:
         dict: Updated variables with the pagination cursor
     """
     if not end_cursor:
         return variables
-        
+
     # Set the pagination cursor using the 'after' parameter
     variables[WizApiVariables.AFTER] = end_cursor
-    
+
     return variables
 
 
@@ -2950,7 +2956,6 @@ def apply_all_detection_filters(variables, validated_values):
 
     elif validated_values.get(WizInputParam.CREATION_MINUTES_BACK):
         variables = apply_creation_in_last_filter(variables, validated_values.get(WizInputParam.CREATION_MINUTES_BACK))
-    
 
     # Apply other filters
     variables = apply_detection_id_filter(variables, validated_values.get(WizInputParam.DETECTION_ID))
@@ -3593,7 +3598,7 @@ def clear_threat_comments():
     return None
 
 
-def get_safe_params_for_logging():
+def get_safe_params_for_logging() -> Dict[str, Any]:
     """
     Returns integration parameters with sensitive credential information filtered out.
     This function is safe to use in logging and debugging as it excludes service account
@@ -3622,11 +3627,11 @@ def get_safe_params_for_logging():
         "password",  # Generic password field
     }
 
-    safe_params = {}
+    safe_params: Dict[str, Any] = {}
 
     for key, value in params.items():
         if isinstance(value, dict):
-            safe_nested = {}
+            safe_nested: Dict[str, Any] = {}
             for nested_key, nested_value in value.items():
                 if nested_key in sensitive_param_keys:
                     safe_nested[nested_key] = "***REDACTED***"
@@ -3650,8 +3655,10 @@ def main():
     try:
         command = demisto.command()
         demisto.info(f"=== Starting {WIZ_DEFEND} integration version {WIZ_VERSION}. Command being called is '{command}' ===")
-        demisto.debug(f"Extracting parameters from integration settings: {get_safe_params_for_logging()}\n"
-                      f"Command arguments: {demisto.args()}\n")
+        demisto.debug(
+            f"Extracting parameters from integration settings: {get_safe_params_for_logging()}\n"
+            f"Command arguments: {demisto.args()}\n"
+        )
 
         if command == "test-module":
             test_module()
