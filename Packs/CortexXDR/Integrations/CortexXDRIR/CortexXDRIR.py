@@ -507,7 +507,7 @@ class Client(CoreClient):
         request_data["request_data"]["update_data"] = update_data
         response = self._http_request(
             method="POST",
-            url_suffix="/alerts/update_alerts",
+            url_suffix="/alerts/update_alerts", 
             json_data=request_data,
             headers=self.headers, 
             timeout=self.timeout,
