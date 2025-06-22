@@ -2,7 +2,7 @@ import demistomock as demisto
 import urllib3
 import jwt
 import fnmatch
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
@@ -81,7 +81,6 @@ PERMISSIONS_VERSION = "2022-04-01"
 
 
 class AzureClient:
-    @logger
     def __init__(
         self,
         app_id: str = "",
@@ -113,6 +112,7 @@ class AzureClient:
                 scope=scope,
                 tenant_id=tenant_id,
                 enc_key=enc_key,
+                ok_codes=(200, 201, 202, 204),
             )
             self.ms_client = MicrosoftClient(**ms_client_args)
         else:
@@ -125,14 +125,12 @@ class AzureClient:
         self.resource_group_name = resource_group_name
         self.headers = headers
 
-    @logger
     def http_request(
         self,
         method: str,
         url_suffix: str = None,
         full_url: str = None,
         params: dict = None,
-        data: dict = None,
         resp_type: str = "json",
         json_data: dict = None,
     ) -> requests.Response:
@@ -159,25 +157,24 @@ class AzureClient:
         return self.ms_client.http_request(
             method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type
         )
+       
 
-    @logger
     def create_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str):
         return self.http_request(
             "PUT",
             full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}\
 /providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?",
-            data={"properties": properties},
+            json_data={"properties": properties},
         )
 
-    @logger
+
     def get_rule(self, security_group: str, rule_name: str, subscription_id: str, resource_group_name: str):
         try:
             return self.http_request(
                 "GET",
-                full_url=(
-                    f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?"
-                ),
+                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/\
+resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
+networkSecurityGroups/{security_group}/securityRules/{rule_name}?",
             )
         except Exception as e:
             if "404" in str(e):
@@ -185,8 +182,8 @@ class AzureClient:
 and resource group "{resource_group_name}" was not found.')
             raise
 
-    @logger
-    def storage_account_update_request(self, subscription_id: str, resource_group_name: str, args: dict) -> dict:
+
+    def storage_account_update_request(self, subscription_id: str, resource_group_name: str, args: dict):
         """
             Send the user arguments for the create/update account in the request body to the API.
         Args:
@@ -245,8 +242,7 @@ and resource group "{resource_group_name}" was not found.')
         )
 
         json_data_args = remove_empty_elements(json_data_args)
-
-        return self.http_request(
+        response =  self.http_request(
             method="PATCH",
             full_url=(
                 f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -258,6 +254,11 @@ and resource group "{resource_group_name}" was not found.')
             json_data=json_data_args,
             resp_type="response",
         )
+        if response.status_code == 404:
+            raise DemistoException(f"Storage account {account_name} not found in resource group {resource_group_name}.")
+
+        return response
+        
 
     def storage_blob_service_properties_set_request(
         self,
@@ -266,7 +267,7 @@ and resource group "{resource_group_name}" was not found.')
         account_name: str,
         delete_rentention_policy_enabled: str | None,
         delete_rentention_policy_days: str | None,
-    ) -> dict:
+    ):
         """
         Updates the delete retention policy settings for the Blob service of a given Azure Storage account.
         Args:
@@ -292,10 +293,11 @@ and resource group "{resource_group_name}" was not found.')
         data = remove_empty_elements(data)
         return self.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
 
+
     def create_policy_assignment(
-        self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
+        self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope_prefix: str
     ):
-        full_url = f"{PREFIX_URL_AZURE}{scope}" f"/providers/Microsoft.Authorization/policyAssignments/{name}"
+        full_url = f"{scope_prefix}/providers/Microsoft.Authorization/policyAssignments/{name}"
         params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
 
         data = {
@@ -372,7 +374,7 @@ and resource group "{resource_group_name}" was not found.')
         demisto.debug(f"Setting WebApp configuration with {data}.")
         return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
 
-    def get_webapp_auth(self, name, subscription_id, resource_group_name):
+    def get_webapp_auth(self, name: str, subscription_id: str, resource_group_name: str):
         """
         Gets the authentication settings of a web app.
 
@@ -384,14 +386,20 @@ and resource group "{resource_group_name}" was not found.')
         Returns:
             dict: The authentication settings of the web app.
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
-        )
-        params = {"api-version": WEBAPP_API_VERSION}
-        return self.http_request(method="GET", full_url=full_url, params=params)
+        try:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
+            )
+            params = {"api-version": WEBAPP_API_VERSION}
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            if "404" in str(e):
+                raise ValueError(f'Web App auth {name} under subscription ID "{subscription_id}" \
+and resource group "{resource_group_name}" was not found.')
+            raise
 
-    def update_webapp_auth(self, name, subscription_id, resource_group_name, current):
+    def update_webapp_auth(self, name: str, subscription_id: str, resource_group_name: str, current: dict):
         """
         Updates the authentication settings of a web app.
 
@@ -455,9 +463,15 @@ and resource group "{resource_group_name}" was not found.')
         Returns:
             dict: The log profile.
         """
-        full_url = f"{PREFIX_URL_AZURE}{subscription_id}" f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
-        params = {"api-version": MONITOR_API_VERSION}
-        return self.http_request(method="GET", full_url=full_url, params=params)
+        try:
+            full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
+            params = {"api-version": MONITOR_API_VERSION}
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            if "404" in str(e):
+                raise ValueError(f'Log Profile {log_profile_name} under subscription ID "{subscription_id}" \
+was not found.')
+            raise
 
     def monitor_log_profile_update(self, subscription_id: str, log_profile_name: str, current_log_profile: dict):
         """
@@ -471,7 +485,7 @@ and resource group "{resource_group_name}" was not found.')
         Returns:
             dict: The response from the Azure REST API after applying the update.
         """
-        full_url = f"{PREFIX_URL_AZURE}{subscription_id}" f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
         params = {"api-version": MONITOR_API_VERSION}
         data = current_log_profile
         data = remove_empty_elements(data)
@@ -515,14 +529,6 @@ and resource group "{resource_group_name}" was not found.')
         data = remove_empty_elements(data)
         return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
 
-    # def get_webapp(self, subscription_id, resource_group_name, name):
-    #     full_url=(
-    #         f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-    #         f"/providers/Microsoft.Web/sites/{name}"
-    #     )
-    #     params = {"api-version": WEBAPP_API_VERSION}
-    #     return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
-
     def webapp_update(
         self,
         subscription_id: str,
@@ -547,7 +553,7 @@ and resource group "{resource_group_name}" was not found.')
             dict: The response from the Azure REST API after applying the update.
         """
         full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}" f"/providers/Microsoft.Web/sites/{name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}"
         )
         params = {"api-version": WEBAPP_API_VERSION}
         data = {
@@ -835,19 +841,6 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
 
 """ COMMAND FUNCTIONS """
 
-
-@logger
-def start_auth(client: AzureClient) -> CommandResults:
-    result = client.ms_client.start_auth("!azure-nsg-auth-complete")
-    return CommandResults(readable_output=result)
-
-
-@logger
-def complete_auth(client: AzureClient):
-    client.ms_client.get_access_token()
-    return "✅ Authorization completed successfully."
-
-
 def update_security_rule_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Update an existing rule.
@@ -932,7 +925,9 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
             updated_properties["sourceAddressPrefix"] = "*" if source == "Any" else source
 
     properties.update(updated_properties)
-    properties.update({"access": access})
+    if access:
+        properties.update({"access": access})
+        
     rule = client.create_rule(
         security_group=security_group_name,
         rule_name=security_rule_name,
@@ -1064,12 +1059,21 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
         CommandResults: The command results in MD table and context data.
     """
     name = args.get("name", "")
-    scope = args.get("scope", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    scope_level = args.get("scope_level")
+    scope_prefix = f"{PREFIX_URL_AZURE}{subscription_id}"
+    if scope_level == "resource group":
+        if resource_group_name:
+            scope_prefix = scope_prefix + f"/resourceGroups/{resource_group_name}"
+        else:
+            raise ValueError("Resource group name is required when scope level is 'resource group'.")
+        
     policy_definition_id: str = args.get("policy_definition_id", "")
     display_name = args.get("display_name", "")
     parameters = json.loads(args.get("parameters", "{}"))
     description = args.get("description", "")
-    response = client.create_policy_assignment(name, policy_definition_id, display_name, parameters, description, scope)
+    response = client.create_policy_assignment(name, policy_definition_id, display_name, parameters, description, scope_prefix)
     outputs = [
         {
             "Name": response.get("name"),
@@ -1178,6 +1182,7 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     enabled = args.get("enabled")
     current = client.get_webapp_auth(name, subscription_id, resource_group_name)
+
     current["properties"]["enabled"] = enabled if enabled else current.get("properties", {}).get("enabled")
     response = client.update_webapp_auth(name, subscription_id, resource_group_name, current)
     demisto.debug("Updated webapp auth settings.")
@@ -1910,7 +1915,8 @@ def main():
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

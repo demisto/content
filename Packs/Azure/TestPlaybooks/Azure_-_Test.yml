@@ -1,15 +1,15 @@
 id: ce23f9da-22de-4749-8f45-e5f0187207f6
-version: 6
+version: 49
 vcShouldKeepItemLegacyProdMachine: false
 name: Azure - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1808a847-97bf-402d-8d79-fef3218aa24f
+    taskid: 6505ab49-c45f-455f-8608-0a775e5192a7
     type: start
     task:
-      id: 1808a847-97bf-402d-8d79-fef3218aa24f
+      id: 6505ab49-c45f-455f-8608-0a775e5192a7
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 951461ac-389f-46eb-a2ef-df8942e44655
+    taskid: 3cff8070-133d-45ad-9815-0b72a54b9d18
     type: regular
     task:
-      id: 951461ac-389f-46eb-a2ef-df8942e44655
+      id: 3cff8070-133d-45ad-9815-0b72a54b9d18
       version: -1
       name: 'Get Storage Account asset '
       description: Get asset information.
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 5358d52b-8e82-4aea-8e2d-17cc62bc4586
+    taskid: c7b62967-e476-4867-a566-4b4557165360
     type: regular
     task:
-      id: 5358d52b-8e82-4aea-8e2d-17cc62bc4586
+      id: c7b62967-e476-4867-a566-4b4557165360
       version: -1
       name: az storage account update
       description: Updates a specific account storage.
@@ -88,12 +88,18 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      account_name:
+        simple: ${Core.CoreAsset.xdm__asset__name}
       allow_cross_tenant_replication:
         simple: "false"
       network_ruleset_bypass:
         simple: AzureServices
       network_ruleset_default_action:
         simple: Deny
+      resource_group_name:
+        simple: ${Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.resourceGroup}
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
       supports_https_traffic_only:
         simple: "true"
     separatecontext: false
@@ -114,10 +120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 579d5aad-4c5e-4baf-82ce-e2a24f6acdd7
+    taskid: 4e58b3f1-d06a-4d13-bde1-4340b2c90630
     type: regular
     task:
-      id: 579d5aad-4c5e-4baf-82ce-e2a24f6acdd7
+      id: 4e58b3f1-d06a-4d13-bde1-4340b2c90630
       version: -1
       name: az storage account blob-service-properties update
       description: Sets properties for the blob service in a specific account storage.
@@ -130,10 +136,16 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
+      account_name:
+        simple: ${Core.CoreAsset.xdm__asset__name}
       delete_rentention_policy_days:
         simple: "30"
       delete_rentention_policy_enabled:
         simple: "true"
+      resource_group_name:
+        simple: ${Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.resourceGroup}
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -152,10 +164,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f874ff0c-aff3-4890-87aa-248b57efcf89
+    taskid: 799a97ce-48b2-418e-8d55-cbc4490b79d7
     type: regular
     task:
-      id: f874ff0c-aff3-4890-87aa-248b57efcf89
+      id: 799a97ce-48b2-418e-8d55-cbc4490b79d7
       version: -1
       name: Get PostgreSQL server asset details
       description: Updates an existing server.
@@ -171,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 451,
-          "y": 901
+          "x": 450,
+          "y": 7618
         }
       }
     note: false
@@ -184,10 +196,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 03517298-13ab-4b85-8d88-69200102444e
+    taskid: cbe4fd86-1a5c-437d-84ba-928ffac7d377
     type: regular
     task:
-      id: 03517298-13ab-4b85-8d88-69200102444e
+      id: cbe4fd86-1a5c-437d-84ba-928ffac7d377
       version: -1
       name: az postgres server configuration set
       description: Updates a configuration of a server.
@@ -209,8 +221,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 995
+          "x": 451,
+          "y": 7740
         }
       }
     note: false
@@ -222,10 +234,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 08f60117-cff2-43a0-8e60-d27730d5b3b3
+    taskid: 4ce5a466-608a-449e-8965-f11837dcc27f
     type: regular
     task:
-      id: 08f60117-cff2-43a0-8e60-d27730d5b3b3
+      id: 4ce5a466-608a-449e-8965-f11837dcc27f
       version: -1
       name: az postgres server update
       description: Updates an existing server.
@@ -234,9 +246,6 @@ tasks:
       iscommand: true
       brand: Azure
       playbooktaskmissingcomponent: null
-    nexttasks:
-      '#none#':
-      - "7"
     scriptarguments:
       ssl_enforcement:
         simple: Enabled
@@ -246,7 +255,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1091
+          "y": 7850
         }
       }
     note: false
@@ -258,19 +267,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 07ad099d-d2e9-4559-8e2f-bbdf027cdca6
+    taskid: e6f18195-a438-4ba0-ae67-2ab61e021878
     type: regular
     task:
-      id: 07ad099d-d2e9-4559-8e2f-bbdf027cdca6
+      id: e6f18195-a438-4ba0-ae67-2ab61e021878
       version: -1
       name: Get Disk asset details
+      description: Get asset information.
+      script: '|||core-get-asset-details'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "8"
+    scriptarguments:
+      asset_id:
+        simple: 2f0062fbb7cfcb5391d0aacf2aad46986cd3c76814fc3a055929de30c19ca406
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -289,10 +303,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3eb0acfb-ad3a-460a-801c-8792935c59a9
+    taskid: 27df0094-0836-473e-96d6-650f40f0a81b
     type: regular
     task:
-      id: 3eb0acfb-ad3a-460a-801c-8792935c59a9
+      id: 27df0094-0836-473e-96d6-650f40f0a81b
       version: -1
       name: az disk update
       description: Updates a disk.
@@ -307,10 +321,16 @@ tasks:
     scriptarguments:
       data_access_auth_mode:
         simple: AzureActiveDirectory
+      disk_name:
+        simple: ${Core.CoreAsset.[1].xdm__asset__name}
       network_access_policy:
         simple: DenyAll
       public_network_access:
         simple: Disabled
+      resource_group_name:
+        simple: ${Core.CoreAsset.[1].xdm__asset__raw_fields.Platform Discovery.resourceGroup}
+      subscription_id:
+        simple: ${Core.CoreAsset.[1].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -329,19 +349,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f11f998c-21c4-4b4f-81c0-c5eaf38fc601
+    taskid: 632b23bb-7206-4c2f-9152-4a36f5369b56
     type: regular
     task:
-      id: f11f998c-21c4-4b4f-81c0-c5eaf38fc601
+      id: 632b23bb-7206-4c2f-9152-4a36f5369b56
       version: -1
       name: Get NSG asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cortex Core - Platform
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "10"
+    scriptarguments:
+      asset_id:
+        simple: 2d5174bbf5a0726bdd44aab6b54158bce219d6443194501aa54c2ab71b610a15
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -360,10 +385,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 43369adf-3071-4d80-8885-04610155e456
+    taskid: 9ef013b0-99f9-46c6-9019-9d9a416a240f
     type: regular
     task:
-      id: 43369adf-3071-4d80-8885-04610155e456
+      id: 9ef013b0-99f9-46c6-9019-9d9a416a240f
       version: -1
       name: az network nsg rule update
       description: Update a security rule. If one does not exist, it will be created.
@@ -378,6 +403,14 @@ tasks:
     scriptarguments:
       access:
         simple: Deny
+      resource_group_name:
+        simple: crm-rg-01
+      security_group_name:
+        simple: ${Core.CoreAsset.[2].xdm__asset__name}
+      security_rule_name:
+        simple: SSH
+      subscription_id:
+        simple: ${Core.CoreAsset.[2].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -396,19 +429,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ed349ccd-327d-47f4-81f0-41f59a1494c7
+    taskid: 6345d0e9-54da-40d0-89d0-d0fe312580d1
     type: regular
     task:
-      id: ed349ccd-327d-47f4-81f0-41f59a1494c7
+      id: 6345d0e9-54da-40d0-89d0-d0fe312580d1
       version: -1
       name: Get Webapp asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cortex Core - Platform
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "12"
+    scriptarguments:
+      asset_id:
+        simple: 54a28cd96f4e7dfd0359b77f255bc87d201b67ed7b321a4ecd21970a77af118d
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -427,10 +465,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 10e72375-c871-43db-8e39-93653bd9fa3f
+    taskid: c7ec20e0-5dba-4d50-bfde-9f95e9fd6370
     type: regular
     task:
-      id: 10e72375-c871-43db-8e39-93653bd9fa3f
+      id: c7ec20e0-5dba-4d50-bfde-9f95e9fd6370
       version: -1
       name: az webapp config set
       description: Updates the configuration settings of an existing Azure Web App.
@@ -447,8 +485,14 @@ tasks:
         simple: "true"
       min_tls_version:
         simple: "1.2"
+      name:
+        simple: ${Core.CoreAsset.[3].xdm__asset__name}
       remote_debugging_enabled:
         simple: "false"
+      resource_group_name:
+        simple: crm-rg-01
+      subscription_id:
+        simple: ${Core.CoreAsset.[3].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -467,10 +511,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 2f76d6ce-c9f6-42bf-8ec4-a003de8599b4
+    taskid: eb3061a3-0984-406e-a47f-f395ec35ef0f
     type: regular
     task:
-      id: 2f76d6ce-c9f6-42bf-8ec4-a003de8599b4
+      id: eb3061a3-0984-406e-a47f-f395ec35ef0f
       version: -1
       name: az webapp auth update
       description: Updates the authentication and authorization settings of an existing
@@ -486,6 +530,12 @@ tasks:
     scriptarguments:
       enabled:
         simple: "true"
+      name:
+        simple: ${Core.CoreAsset.[3].xdm__asset__name}
+      resource_group_name:
+        simple: crm-rg-01
+      subscription_id:
+        simple: ${Core.CoreAsset.[3].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -504,10 +554,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b5f00535-670b-421d-8ad7-ac6d15f539ab
+    taskid: b153f4d3-4e76-414c-aa4f-7bea9ee21c2f
     type: regular
     task:
-      id: b5f00535-670b-421d-8ad7-ac6d15f539ab
+      id: b153f4d3-4e76-414c-aa4f-7bea9ee21c2f
       version: -1
       name: az webapp identity assign
       description: Updates an Azure Web App.
@@ -522,6 +572,12 @@ tasks:
     scriptarguments:
       identity_type:
         simple: SystemAssigned
+      name:
+        simple: ${Core.CoreAsset.[3].xdm__asset__name}
+      resource_group_name:
+        simple: crm-rg-01
+      subscription_id:
+        simple: ${Core.CoreAsset.[3].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -540,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 2cb23737-defb-4531-8712-8b02a8c5fc9e
+    taskid: c38a7527-8fed-49e7-b28c-f0a7eadc7d66
     type: regular
     task:
-      id: 2cb23737-defb-4531-8712-8b02a8c5fc9e
+      id: c38a7527-8fed-49e7-b28c-f0a7eadc7d66
       version: -1
       name: az webapp update
       description: Updates an Azure Web App.
@@ -560,6 +616,12 @@ tasks:
         simple: "true"
       https_only:
         simple: "true"
+      name:
+        simple: ${Core.CoreAsset.[3].xdm__asset__name}
+      resource_group_name:
+        simple: crm-rg-01
+      subscription_id:
+        simple: ${Core.CoreAsset.[3].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -578,25 +640,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 36e69c6f-bbb5-4a1b-830b-b096a48cdb8f
+    taskid: a0b8adf0-5e39-4a78-9b60-b881cc2b4e9e
     type: regular
     task:
-      id: 36e69c6f-bbb5-4a1b-830b-b096a48cdb8f
+      id: a0b8adf0-5e39-4a78-9b60-b881cc2b4e9e
       version: -1
       name: Get FunctionApp asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cortex Core - Platform
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "19"
+    scriptarguments:
+      asset_id:
+        simple: 290f09d1d2e31d000d1d29ab0a8e290aa9173b984f49f06f7d4bf9eb84579ca0
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 451,
+          "x": 450,
           "y": 3206
         }
       }
@@ -609,10 +676,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 5e2f07b7-ed12-455a-803c-fd3fc78581ca
+    taskid: cd69899f-c496-4d4b-862f-74b35a91ed87
     type: regular
     task:
-      id: 5e2f07b7-ed12-455a-803c-fd3fc78581ca
+      id: cd69899f-c496-4d4b-862f-74b35a91ed87
       version: -1
       name: az functionapp identity assign
       description: Updates an Azure Web App.
@@ -627,6 +694,12 @@ tasks:
     scriptarguments:
       identity_type:
         simple: SystemAssigned
+      name:
+        simple: ${Core.CoreAsset.[4].xdm__asset__name}
+      resource_group_name:
+        simple: crm-rg-01
+      subscription_id:
+        simple: ${Core.CoreAsset.[4].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -645,10 +718,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: e3217168-bec3-401f-8c98-8bf37752df8f
+    taskid: b3fe877c-be16-46fa-9fa6-fd1ad6fc4c04
     type: regular
     task:
-      id: e3217168-bec3-401f-8c98-8bf37752df8f
+      id: b3fe877c-be16-46fa-9fa6-fd1ad6fc4c04
       version: -1
       name: az functionapp update
       description: Updates an Azure Web App.
@@ -665,6 +738,12 @@ tasks:
         simple: "true"
       https_only:
         simple: "true"
+      name:
+        simple: ${Core.CoreAsset.[4].xdm__asset__name}
+      resource_group_name:
+        simple: crm-rg-01
+      subscription_id:
+        simple: ${Core.CoreAsset.[4].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -683,10 +762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: caebab54-af4d-4083-846f-62c8168b8ce2
+    taskid: b2d4089c-f4d6-4dd4-b502-3029da757839
     type: regular
     task:
-      id: caebab54-af4d-4083-846f-62c8168b8ce2
+      id: b2d4089c-f4d6-4dd4-b502-3029da757839
       version: -1
       name: az functionapp config set
       description: Updates the configuration settings of an existing Azure Web App.
@@ -703,6 +782,12 @@ tasks:
         simple: "true"
       min_tls_version:
         simple: "1.2"
+      name:
+        simple: ${Core.CoreAsset.[4].xdm__asset__name}
+      resource_group_name:
+        simple: crm-rg-01
+      subscription_id:
+        simple: ${Core.CoreAsset.[4].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -721,19 +806,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 51152e18-0a1a-4c23-83da-9e90d9359067
+    taskid: ed0da242-03f3-48e7-941f-21bc49c1ae03
     type: regular
     task:
-      id: 51152e18-0a1a-4c23-83da-9e90d9359067
+      id: ed0da242-03f3-48e7-941f-21bc49c1ae03
       version: -1
       name: Get LogicApp asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cortex Core - Platform
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "21"
+    scriptarguments:
+      asset_id:
+        simple: c3507e5cf13352af88fdc802b0bf70735bc2252c54aaf71bd6b7b9bff247eabd
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -752,10 +842,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: febb5f46-ec44-4339-889a-3507177e1fe0
+    taskid: 5c9a8474-43d9-4cce-b6e3-d6d9b02a9f40
     type: regular
     task:
-      id: febb5f46-ec44-4339-889a-3507177e1fe0
+      id: 5c9a8474-43d9-4cce-b6e3-d6d9b02a9f40
       version: -1
       name: az logicapp update
       description: Updates an Azure Web App.
@@ -770,6 +860,12 @@ tasks:
     scriptarguments:
       https_only:
         simple: "true"
+      name:
+        simple: ${Core.CoreAsset.[5].xdm__asset__name}
+      resource_group_name:
+        simple: ${Core.CoreAsset.[5].xdm__asset__raw_fields.Platform Discovery.properties.resourceGroup}
+      subscription_id:
+        simple: ${Core.CoreAsset.[5].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -788,10 +884,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 6172cc6c-c309-48b7-8ba2-91d8da5cfc3e
+    taskid: 73a32415-b3b3-4466-8f8f-f1805e2b402e
     type: regular
     task:
-      id: 6172cc6c-c309-48b7-8ba2-91d8da5cfc3e
+      id: 73a32415-b3b3-4466-8f8f-f1805e2b402e
       version: -1
       name: az resource update
       description: Updates a specific account storage.
@@ -802,10 +898,16 @@ tasks:
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
+      account_name:
+        simple: ${Core.CoreAsset.xdm__asset__name}
       allow_blob_public_access:
         simple: "false"
+      resource_group_name:
+        simple: ${Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.resourceGroup}
+      subscription_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -824,19 +926,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 203b3b4d-fc03-44b4-8b4b-f3e601ef7498
+    taskid: 04cad89f-7188-4da0-98df-9f32d41fd0c9
     type: regular
     task:
-      id: 203b3b4d-fc03-44b4-8b4b-f3e601ef7498
+      id: 04cad89f-7188-4da0-98df-9f32d41fd0c9
       version: -1
       name: Get MySQL flexible server asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cortex Core - Platform
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "24"
+    scriptarguments:
+      asset_id:
+        simple: adba4c1df3a1bf92aff4467005402e8d696c5326056b5b4fe2989610aea1ab29
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -855,10 +962,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 95a8b2cc-3ba6-4e86-8172-041256b4ee97
+    taskid: 06b5a4e5-88b4-40d5-9073-7e8d6b14655a
     type: regular
     task:
-      id: 95a8b2cc-3ba6-4e86-8172-041256b4ee97
+      id: 06b5a4e5-88b4-40d5-9073-7e8d6b14655a
       version: -1
       name: az mysql flexible-server parameter set
       description: Updates a configuration of a server.
@@ -873,8 +980,14 @@ tasks:
     scriptarguments:
       configuration_name:
         simple: require_secure_transport
+      resource_group_name:
+        simple: crm-rg-01
+      server_name:
+        simple: ${Core.CoreAsset.[6].xdm__asset__name}
       source:
         simple: user-override
+      subscription_id:
+        simple: ${Core.CoreAsset.[6].xdm__asset__realm}
       value:
         simple: "on"
     separatecontext: false
@@ -895,19 +1008,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 37664aa0-9a1d-46f1-85fb-66574d8bb10d
+    taskid: ffd27d1b-8690-45a1-8634-a5f67e108270
     type: regular
     task:
-      id: 37664aa0-9a1d-46f1-85fb-66574d8bb10d
+      id: ffd27d1b-8690-45a1-8634-a5f67e108270
       version: -1
       name: Get Log Profile asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cortex Core - Platform
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "26"
+    scriptarguments:
+      asset_id:
+        simple: ba27565efab44c1cfd992822d763b3a78d13142c3e380cc567a0dd4ffb6ae664
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -926,10 +1044,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 2e36f9d1-17f1-4762-89bb-5b353abc32aa
+    taskid: 28eac8e3-3004-486e-a710-7e5903f58e38
     type: regular
     task:
-      id: 2e36f9d1-17f1-4762-89bb-5b353abc32aa
+      id: 28eac8e3-3004-486e-a710-7e5903f58e38
       version: -1
       name: az monitor log-profiles update
       description: Updates a log profile in Azure Monitoring REST API.
@@ -940,14 +1058,18 @@ tasks:
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
-      - "27"
+      - "35"
     scriptarguments:
       location:
         simple: global
+      log_profile_name:
+        simple: ${Core.CoreAsset.[7].xdm__asset__name}
       retention_policy_days:
         simple: "365"
       retention_policy_enabled:
         simple: "true"
+      subscription_id:
+        simple: ${Core.CoreAsset.[7].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -966,10 +1088,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 35435ee8-dd94-4fa3-84e5-5aac93cf49cd
+    taskid: f87245f4-1df8-4ec5-8c97-7cf6dd057511
     type: regular
     task:
-      id: 35435ee8-dd94-4fa3-84e5-5aac93cf49cd
+      id: f87245f4-1df8-4ec5-8c97-7cf6dd057511
       version: -1
       name: Get Container Registry asset details
       type: regular
@@ -984,8 +1106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 451,
-          "y": 5494
+          "x": 450,
+          "y": 7020
         }
       }
     note: false
@@ -997,10 +1119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 10b217df-9368-4b85-8960-ad15c0b89707
+    taskid: 3db13780-d3e6-4ff0-8256-9387c3551fe2
     type: regular
     task:
-      id: 10b217df-9368-4b85-8960-ad15c0b89707
+      id: 3db13780-d3e6-4ff0-8256-9387c3551fe2
       version: -1
       name: az acr update
       description: Updates a container registry.
@@ -1024,8 +1146,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 451,
-          "y": 5591
+          "x": 450,
+          "y": 7121
         }
       }
     note: false
@@ -1037,10 +1159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 8386fd46-6fac-4e4d-8c58-1e15a7b1df09
+    taskid: 024aed23-62a5-4da6-818c-42080fad059c
     type: regular
     task:
-      id: 8386fd46-6fac-4e4d-8c58-1e15a7b1df09
+      id: 024aed23-62a5-4da6-818c-42080fad059c
       version: -1
       name: az acr config authentication-as-arm update
       description: Updates a container registry.
@@ -1051,7 +1173,7 @@ tasks:
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
-      - "30"
+      - "4"
     scriptarguments:
       authentication_as_arm_policy:
         simple: disabled
@@ -1061,7 +1183,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 5689
+          "y": 7229
         }
       }
     note: false
@@ -1073,19 +1195,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 5da28261-4514-4bc3-8bd0-efd6e74ed582
+    taskid: 0c7dbd2f-25f4-4656-b57f-8368e21782d4
     type: regular
     task:
-      id: 5da28261-4514-4bc3-8bd0-efd6e74ed582
+      id: 0c7dbd2f-25f4-4656-b57f-8368e21782d4
       version: -1
       name: Get Key Vault asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cortex Core - Platform
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
+    scriptarguments:
+      asset_id:
+        simple: 4a436b8082f9ffebee379d30722e194e405e380a611b1156ad35c8ad3bf0614f
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1104,10 +1231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 7fd5c3a5-c024-4068-8792-c0e59eda8ce0
+    taskid: 4fde2fcc-29f7-4523-a1ab-409940790148
     type: regular
     task:
-      id: 7fd5c3a5-c024-4068-8792-c0e59eda8ce0
+      id: 4fde2fcc-29f7-4523-a1ab-409940790148
       version: -1
       name: az keyvault update
       description: Updates a key vault in the specified subscription.
@@ -1124,6 +1251,12 @@ tasks:
         simple: "true"
       enable_soft_delete:
         simple: "true"
+      resource_group_name:
+        simple: ${Core.CoreAsset.[9].xdm__asset__raw_fields.Platform Discovery.resourceGroup}
+      subscription_id:
+        simple: ${Core.CoreAsset.[9].xdm__asset__realm}
+      vault_name:
+        simple: ${Core.CoreAsset.[9].xdm__asset__name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1142,19 +1275,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: f762587e-5553-4da2-883c-eb8b98d53306
+    taskid: 03361fdb-006d-49f4-9a00-c9b2d1e29771
     type: regular
     task:
-      id: f762587e-5553-4da2-883c-eb8b98d53306
+      id: 03361fdb-006d-49f4-9a00-c9b2d1e29771
       version: -1
       name: Get SQL DB asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cortex Core - Platform
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "33"
+    scriptarguments:
+      asset_id:
+        simple: 377d96283a7a7ea15366405f7fc1b84f26fa766f77adaa7a895b7d7a10fcd5ed
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1173,10 +1311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: bd7c6a8e-8b76-4150-80b2-718cb5c9fb78
+    taskid: 7969df8a-546c-4b2a-82b4-d34481659843
     type: regular
     task:
-      id: bd7c6a8e-8b76-4150-80b2-718cb5c9fb78
+      id: 7969df8a-546c-4b2a-82b4-d34481659843
       version: -1
       name: az sql db threat-policy update
       description: Updates the database's threat detection policy.
@@ -1189,8 +1327,16 @@ tasks:
       '#none#':
       - "34"
     scriptarguments:
+      db_name:
+        simple: sqldatabase
       email_account_admins_enabled:
         simple: "true"
+      resource_group_name:
+        simple: crm-rg-01
+      server_name:
+        simple: ${Core.CoreAsset.[10].xdm__asset__name}
+      subscription_id:
+        simple: ${Core.CoreAsset.[10].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1209,10 +1355,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 99ab5541-2b32-489f-88b3-9a3236d0091d
+    taskid: 1e436dd0-95ab-4e0c-8135-969977086a85
     type: regular
     task:
-      id: 99ab5541-2b32-489f-88b3-9a3236d0091d
+      id: 1e436dd0-95ab-4e0c-8135-969977086a85
       version: -1
       name: az sql db tde set
       description: Updates a logical database's transparent data encryption configuration.
@@ -1223,10 +1369,18 @@ tasks:
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
-      - "35"
+      - "27"
     scriptarguments:
+      db_name:
+        simple: sqldatabase
+      resource_group_name:
+        simple: crm-rg-01
+      server_name:
+        simple: ${Core.CoreAsset.[10].xdm__asset__name}
       state:
         simple: Enabled
+      subscription_id:
+        simple: ${Core.CoreAsset.[10].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1245,26 +1399,31 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 0e4c26c0-c2cf-4657-8dc4-281e09923eae
+    taskid: 4720b4d0-04f7-45b0-b114-1c4d04c29c20
     type: regular
     task:
-      id: 0e4c26c0-c2cf-4657-8dc4-281e09923eae
+      id: 4720b4d0-04f7-45b0-b114-1c4d04c29c20
       version: -1
       name: Get CosmosDB asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cortex Core - Platform
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "36"
+    scriptarguments:
+      asset_id:
+        simple: 692f2256b8e552783c8157d89f8687e9f3abfe5f1ee4c190599cdb6365ebbc7f
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 7214
+          "y": 5284
         }
       }
     note: false
@@ -1276,10 +1435,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 46dec440-0e72-470d-86fa-21850ff12db6
+    taskid: 0c97fbcb-5fd9-431b-a7de-ac71eca4c044
     type: regular
     task:
-      id: 46dec440-0e72-470d-86fa-21850ff12db6
+      id: 0c97fbcb-5fd9-431b-a7de-ac71eca4c044
       version: -1
       name: az cosmosdb update
       description: Updates the properties of an existing Azure Cosmos DB database
@@ -1289,16 +1448,25 @@ tasks:
       iscommand: true
       brand: Azure
       playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "30"
     scriptarguments:
+      account_name:
+        simple: ${Core.CoreAsset.[8].xdm__asset__name}
       disable_key_based_metadata_write_access:
         simple: "true"
+      resource_group_name:
+        simple: crm-rg-01
+      subscription_id:
+        simple: ${Core.CoreAsset.[8].xdm__asset__realm}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 7308
+          "y": 5380
         }
       }
     note: false
@@ -1313,7 +1481,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7328,
+        "height": 7870,
         "width": 381,
         "x": 450,
         "y": 50

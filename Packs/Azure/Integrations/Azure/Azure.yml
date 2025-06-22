@@ -486,9 +486,19 @@ script:
     - name: name
       required: true
       description: Name of the policy assignment.
-    - name: scope
+    - name: resource_group_name
       type: string
-      description: The scope of the policy assignment.
+      description: The resource group name.
+    - name: subscription_id
+      type: string
+      description: Subscription ID.
+    - name: scope_level
+      type: string
+      description: The scope level of the assignment.
+      auto: PREDEFINED
+      predefined:
+      - 'resource group'
+      - 'subscription'
     - name: policy_definition_id
       required: false
       type: string
@@ -1802,6 +1812,7 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/crypto:1.0.0.3174650
+IsCloudProviderIntegration: true
 fromversion: 6.1.0
 marketplaces:
 - xsoar
