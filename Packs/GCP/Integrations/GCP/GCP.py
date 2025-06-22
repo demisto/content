@@ -854,10 +854,7 @@ def check_required_permissions(
     Raises:
         DemistoException: If required permissions are missing and not using connector_id.
     """
-    permissions = REQUIRED_PERMISSIONS.get(
-        command,
-        list(frozenset().union(*REQUIRED_PERMISSIONS.values()))
-    )
+    permissions = REQUIRED_PERMISSIONS.get(command, list(frozenset().union(*REQUIRED_PERMISSIONS.values())))
 
     untestable_permissions = [p for p in permissions if p.startswith("cloudidentity.")]
     testable_permissions = list(set(permissions) - set(untestable_permissions))
@@ -904,9 +901,7 @@ def check_required_permissions(
                 for line in error_lines
             ]
 
-        raise DemistoException(
-            "Missing required permissions for GCP integration:\n" + "\n".join(error_lines)
-        )
+        raise DemistoException("Missing required permissions for GCP integration:\n" + "\n".join(error_lines))
 
     return None
 

@@ -51,7 +51,6 @@ class HealthCheckError:
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
     def to_dict(self) -> dict:
-
         return {
             "account_id": self.account_id,
             "connector_id": self.connector_id,
@@ -184,7 +183,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         return credentials
     except Exception as e:
         demisto.debug(f"Error while retrieving credentials: {str(e)}. Response: {response}")
-        raise DemistoException(f"Failed to get credentials from CTS: {str(e)}.")
+        raise DemistoException(f"Failed to get credentials from CTS: {str(e)}. Response: {response}")
 
 
 def get_accounts_by_connector_id(connector_id: str, max_results: int = 5) -> list:
