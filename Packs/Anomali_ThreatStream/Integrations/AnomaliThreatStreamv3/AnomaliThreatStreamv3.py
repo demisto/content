@@ -2554,7 +2554,6 @@ def file_name_to_valid_string(file_name):
         return emoji.demojize(file_name)  # type: ignore
     return file_name
 
-
 def submit_report(
     client: Client,
     submission_type,
@@ -2562,17 +2561,19 @@ def submit_report(
     import_indicators=True,
     submission_classification="private",
     report_platform="WINDOWS7",
-    premium_sandbox="false",
+    sandbox_type="Anomali",
     detail=None,
 ):
     """
     Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
     """
     import_indicators = argToBoolean(import_indicators)
+    sandbox_flag = f"use_{sandbox_type.lower()}_sandbox"
+
     data = {
         "report_radio-classification": submission_classification,
         "report_radio-platform": report_platform,
-        "use_premium_sandbox": premium_sandbox,
+        sandbox_flag: True,
         "import_indicators": import_indicators,
     }
     if detail:
@@ -2829,6 +2830,7 @@ def main():
     api_key = params.get("credentials", {}).get("password")
     server_url = params.get("url", "").strip("/")
     reliability = params.get("integrationReliability", DBotScoreReliability.B)
+
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)

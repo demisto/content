@@ -81,6 +81,17 @@ configuration:
   required: false
   type: 15
   section: Collect
+- defaultvalue: Anomali
+  display: Sandbox Type
+  name: sandbox_type
+  options:
+  - Premium
+  - Polyswarm
+  - Anomali
+  - VMray
+  required: false
+  type: 15
+  section: Collect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
