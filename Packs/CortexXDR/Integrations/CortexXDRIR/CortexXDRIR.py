@@ -508,7 +508,7 @@ class Client(CoreClient):
         response = self._http_request(
             method="POST",
             url_suffix="/alerts/update_alerts",
-            json_data=request_data, 
+            json_data=request_data,
             headers=self.headers,
             timeout=self.timeout,
         )
