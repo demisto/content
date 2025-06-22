@@ -509,7 +509,7 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/alerts/update_alerts",
             json_data=request_data,
-            headers=self.headers, 
+            headers=self.headers,
             timeout=self.timeout,
         )
         if "reply" not in response or "alerts_ids" not in response["reply"]:
