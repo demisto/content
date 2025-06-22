@@ -526,7 +526,7 @@ def get_headers(params: dict) -> dict:
     auth_key = auth_key.encode("utf-8")
     api_key_hash: str = hashlib.sha256(auth_key).hexdigest()
 
-    if argToBoolean(params.get("prevent_only", False)): 
+    if argToBoolean(params.get("prevent_only", False)):
         api_key_hash = api_key
 
     headers: dict = {
