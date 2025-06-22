@@ -231,6 +231,9 @@ script:
     description: Update an alert's state.
     name: azure-sc-update-alert
     outputs:
+    - contextPath: AzureSecurityCenter.Alert.ActionTaken
+      description: The action that was taken on the alert.
+      type: string
     - contextPath: AzureSecurityCenter.Alert.ID
       description: The alert ID.
       type: string
