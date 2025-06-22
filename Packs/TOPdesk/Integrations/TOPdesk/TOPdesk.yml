@@ -76,6 +76,7 @@ configuration:
   - marketplacev2
   - platform
   required: false
+  section: Collect
   advanced: true
 - defaultvalue: work_notes
   display: Work Note Entry Tag
@@ -97,6 +98,7 @@ configuration:
   name: file_tag
   type: 0
   required: false
+  section: Collect
   advanced: true
 - additionalinfo: When selected, closing the TOPdesk ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
