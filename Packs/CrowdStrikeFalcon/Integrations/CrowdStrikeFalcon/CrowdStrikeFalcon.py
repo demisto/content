@@ -1624,18 +1624,12 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         params["filter"] = f"first_behavior:>'{last_behavior_time}'"
 
     if not LEGACY_VERSION:
-        # This value similar to the filter argument defaultvalue
-        default_filter = "product:'epp'+type:'ldt'"
         endpoint_url = "alerts/queries/alerts/v2?filter="
-        
-        text_to_encode = default_filter
+        # This value is similar to the default value of the filter argument in the YAML file
+        if not filter_arg:
+            filter_arg ="product:'epp'+type:'ldt'"
         # in the new version we send only the filter_arg argument as encoded string without the params
-        if filter_arg:
-            if filter_arg is not default_filter and "product" not in filter_arg and "type" not in filter_arg:
-                text_to_encode += f"+{filter_arg}"
-            else:
-                text_to_encode = filter_arg
-        endpoint_url += urllib.parse.quote_plus(text_to_encode)
+        endpoint_url += urllib.parse.quote_plus(filter_arg)
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
         return http_request("GET", endpoint_url, {"sort": "created_timestamp.asc"})
     else:
@@ -2513,11 +2507,13 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
-        # for endpoint (in the new version)
-        elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
-                               IncidentType.ON_DEMAND,
-                               IncidentType.NGSIEM,
-                               IncidentType.THIRD_PARTY):
+        # for endpoint in the new version
+        elif incident_type in (
+            IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
+            IncidentType.ON_DEMAND,
+            IncidentType.NGSIEM,
+            IncidentType.THIRD_PARTY,
+        ):
             mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
                 demisto.debug(f"Update {detection_type} detection {remote_incident_id} with fields: {updated_object}")
@@ -2790,7 +2786,6 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'thirdparty'"
         ).get("resources", [])
-  
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
@@ -2827,11 +2822,12 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Detection updated successfully. Result: {result}")
-            
-            elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
-                                   IncidentType.NGSIEM,
-                                   IncidentType.THIRD_PARTY):
-                # todo: debug and check if this flow match to THIRD_PARTY and NGSIEM
+
+            elif incident_type in (
+                IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
+                IncidentType.NGSIEM,
+                IncidentType.THIRD_PARTY,
+            ):
                 result = update_remote_for_multiple_detection_types(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"IDP/Mobile/NGSIEM/Thirs Party Detection updated successfully. Result: {result}")
@@ -3622,10 +3618,8 @@ def fetch_detections_by_product_type(
                 detections.append(detection_to_context)
         detections = (
             truncate_long_time_str(detections, "occurred")
-            if product_type in {IncidentType.ON_DEMAND.value,
-                                IncidentType.OFP.value,
-                                IncidentType.NGSIEM,
-                                IncidentType.THIRD_PARTY}
+            if product_type
+            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
@@ -4703,9 +4697,7 @@ def search_detections_command():
     detections_ids = argToList(d_args.get("ids"))
     extended_data = argToBoolean(d_args.get("extended_data", False))
     if not detections_ids:
-        filter_arg = d_args.get("filter")
-        if not filter_arg:
-            return_error("Command Error: Please provide at least one argument.")
+        filter_arg = d_args.get("filter", "product:'epp'+type:'ldt'")
         detections_ids = get_detections(filter_arg=filter_arg).get("resources")
     raw_res = get_detections_entities(detections_ids)
     entries = []

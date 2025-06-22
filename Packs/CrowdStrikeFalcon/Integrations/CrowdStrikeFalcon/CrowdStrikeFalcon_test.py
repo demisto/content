@@ -1891,13 +1891,11 @@ class TestFetch:
 
         """
         from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
-        
+
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
-        set_last_run_per_type(
-            last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10Z"})
-        set_last_run_per_type(
-            last_run_object, index=LastRunIndex.INCIDENTS, data={"time": "2020-09-04T09:22:10Z"})
-        
+        set_last_run_per_type(last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10Z"})
+        set_last_run_per_type(last_run_object, index=LastRunIndex.INCIDENTS, data={"time": "2020-09-04T09:22:10Z"})
+
         mocker.patch.object(demisto, "params", return_value={})
         mocker.patch.object(
             demisto,
@@ -4249,8 +4247,8 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
     assert mirrored_data == detection_entity
     assert detection_type == "Detection"
     assert updated_object == {"incident_type": "detection", "status": "new", "severity": 90}
-    
-    
+
+
 def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
     """
     Given
@@ -4271,10 +4269,16 @@ def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
 
     assert mirrored_data == detection_entity
     assert detection_type == "ngsiem"
-    assert updated_object == {"incident_type": "ngsiem_detection", "status": mirrored_data["status"],
-                              "severity": mirrored_data["severity"], "tactic": mirrored_data["tactic"],
-                              "technique": mirrored_data["technique"], "composite_id": mirrored_data["composite_id"],
-                              "display_name": mirrored_data["display_name"], "tags": mirrored_data["tags"]}
+    assert updated_object == {
+        "incident_type": "ngsiem_detection",
+        "status": mirrored_data["status"],
+        "severity": mirrored_data["severity"],
+        "tactic": mirrored_data["tactic"],
+        "technique": mirrored_data["technique"],
+        "composite_id": mirrored_data["composite_id"],
+        "display_name": mirrored_data["display_name"],
+        "tags": mirrored_data["tags"],
+    }
 
 
 @pytest.mark.parametrize("updated_object, entry_content, close_incident", input_data.set_xsoar_incident_entries_args)
@@ -7303,19 +7307,26 @@ def test_error_handler():
 
 
 @pytest.mark.parametrize(
-    "Legacy_version, url_suffix, expected_len",
+    "Legacy_version, url_suffix, expected_len, filter_args",
     [
         (
             False,
-            "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
+            "alerts/queries/alerts/v2?filter=product%3A%27ngsiem%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
             3,
+            "product:'ngsiem'+created_timestamp:>'2024-06-19T15:25:00Z'"
         ),
-        (True, "/detects/queries/detects/v1", 3),
+        (
+            False,
+            "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27",
+            3,
+            None
+            ),
+        (True, "/detects/queries/detects/v1", 3, "product:'epp'+type:'ldt'"),
     ],
 )
-def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expected_len):
+def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expected_len, filter_args):
     """
-        Given:
+    Given:
         - The `Legacy_version` flag
     When:
         - Invoking `get_fetch_detections` with various input parameters
@@ -7324,10 +7335,15 @@ def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expe
 
     Test Scenarios:
         1. When `Legacy_version` is False, the `url_suffix` should be:
-           "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
-           since all parameters are part of the URL and are URL-encoded, and the expected len should be 2 since no parameters
-           are passed.
-        2. When `Legacy_version` is True, the `url_suffix` should be:
+           "alerts/queries/alerts/v2?filter=product%3A%27ngsiem%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
+           since all parameters are part of the URL and are URL-encoded, aand the expected len is 3 since all the
+           provided parameters are passed under 'parameters'
+        2. When `Legacy_version` is False, the `url_suffix` should be:
+           "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%"
+           filter
+           since all parameters are part of the URL and are URL-encoded, and the expected len is 3 since all the
+           provided parameters are passed under 'parameters'
+        3. When `Legacy_version` is True, the `url_suffix` should be:
            "/detects/queries/detects/v1" and the expected len is 3 since all the
            provided parameters are passed under 'parameters'.
     """
@@ -7337,8 +7353,7 @@ def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expe
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
 
     get_detections(
-        last_behavior_time="2024-06-19T15:25:00Z", behavior_id=123, filter_arg="created_timestamp:>'2024-06-19T15:25:00Z'"
-    )
+        last_behavior_time="2024-06-19T15:25:00Z", behavior_id=123, filter_arg=filter_args)
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert len(http_request_mocker.call_args_list[0][0]) == expected_len
 
@@ -7761,7 +7776,6 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOA, data={"IOA ID:": 8})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.THIRD_PARTY_DETECTIONS, data={"THIRD PARTY ID:": 9})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_DETECTIONS, data={"NGSIEM ID:": 10})
-  
 
     # Create a copy to avoid reference issues
     last_run_identifiers_copy = list(last_run_identifiers)
