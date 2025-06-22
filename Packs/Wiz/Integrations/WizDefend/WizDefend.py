@@ -1330,6 +1330,14 @@ class FetchIncident:
 
         demisto.debug(f"Fetch incidents didn't complete - set last run data to {json.dumps(last_run_data)}")
 
+    def save_last_run_time(self):
+        last_run_data = self.last_run_data.copy()
+        last_run_data[DemistoParams.TIME] = self.api_start_run_time
+
+        # Save using setLastRun
+        demisto.setLastRun(last_run_data)
+
+
     def _clear_pagination_context(self):
         """
         Clear pagination context when no more pages to fetch
@@ -1474,8 +1482,8 @@ def get_entries(query, variables, wiz_type):
         return_error(error_message)
 
 
-def query_detections(variables, paginate=True):
-    return query_api(PULL_DETECTIONS_QUERY, variables, WizApiResponse.DETECTIONS, paginate=paginate)
+def query_detections(variables, paginate=True, max_fetch=API_MAX_FETCH):
+    return query_api(PULL_DETECTIONS_QUERY, variables, WizApiResponse.DETECTIONS, paginate=paginate, max_fetch=max_fetch)
 
 
 def query_issues(variables, paginate=True):
@@ -1490,7 +1498,7 @@ def query_single_issue(issue_id):
     return query_issues(issue_variables, paginate=False)
 
 
-def query_api(query, variables, wiz_type, paginate=True):
+def query_api(query, variables, wiz_type, paginate=True, max_fetch=API_MAX_FETCH):
     entries, page_info = get_entries(query, variables, wiz_type)
     if not entries:
         demisto.info(f"No {wiz_type}(/s) available to fetch.")
@@ -1504,9 +1512,9 @@ def query_api(query, variables, wiz_type, paginate=True):
         new_entries, page_info = get_entries(query, variables, wiz_type)
         if new_entries is not None:
             entries += new_entries
-        if len(entries) >= API_MAX_FETCH:
+        if len(entries) >= max_fetch:
             demisto.info(
-                f"Reached the maximum fetch limit of {API_MAX_FETCH} detections.\n"
+                f"Reached the maximum fetch limit of {max_fetch} detections.\n"
                 f"Some detections will not be processed in this fetch cycle.\n"
                 f"Consider adjusting the filters to get relevant logs"
             )
@@ -1659,40 +1667,45 @@ def fetch_incidents():
     fetch_manager = FetchIncident()
     fetch_manager.log_current_state()
 
-    # Get integration settings
-    integration_settings_params = extract_params_from_integration_settings(advanced_params=True)
-    API_MAX_FETCH = get_fetch_incidents_api_max_fetch(integration_settings_params.get(DemistoParams.MAX_FETCH))
+    try:
 
-    wiz_detections = get_filtered_detections(
-        detection_type=integration_settings_params[WizInputParam.TYPE],
-        detection_platform=integration_settings_params[WizInputParam.PLATFORM],
-        severity=integration_settings_params[WizInputParam.SEVERITY],
-        detection_origin=integration_settings_params[WizInputParam.ORIGIN],
-        detection_cloud_account_or_cloud_organization=integration_settings_params[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG],
-        after_time=fetch_manager.get_api_after_parameter(),
-        before_time=fetch_manager.get_api_before_parameter(),
-        end_cursor=fetch_manager.get_api_cursor_parameter(),
-        max_fetch=API_MAX_FETCH,
-    )
+        # Get integration settings
+        integration_settings_params = extract_params_from_integration_settings(advanced_params=True)
+        API_MAX_FETCH = get_fetch_incidents_api_max_fetch(integration_settings_params.get(DemistoParams.MAX_FETCH))
 
-    if isinstance(wiz_detections, str):
-        demisto.error(f"Error fetching detections: {wiz_detections}")
-        return
+        wiz_detections = get_filtered_detections(
+            detection_type=integration_settings_params[WizInputParam.TYPE],
+            detection_platform=integration_settings_params[WizInputParam.PLATFORM],
+            severity=integration_settings_params[WizInputParam.SEVERITY],
+            detection_origin=integration_settings_params[WizInputParam.ORIGIN],
+            detection_cloud_account_or_cloud_organization=integration_settings_params[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG],
+            after_time=fetch_manager.get_api_after_parameter(),
+            before_time=fetch_manager.get_api_before_parameter(),
+            end_cursor=fetch_manager.get_api_cursor_parameter(),
+            max_fetch=API_MAX_FETCH,
+        )
 
-    # Build incidents from detections
-    incidents = []
-    for detection in wiz_detections:
-        incident = build_incidents(detection=detection)
-        incidents.append(incident)
+        if isinstance(wiz_detections, str):
+            demisto.error(f"Error fetching detections: {wiz_detections}")
+            return
 
-    demisto.incidents(incidents)
+        # Build incidents from detections
+        incidents = []
+        for detection in wiz_detections:
+            incident = build_incidents(detection=detection)
+            incidents.append(incident)
 
-    fetch_manager.handle_post_incident_creation()
+        demisto.incidents(incidents)
 
-    if incidents:
-        demisto.info(f"Successfully fetched and created {len(incidents)} incidents")
-    else:
-        demisto.info("No new incidents to fetch")
+        fetch_manager.handle_post_incident_creation()
+
+        if incidents:
+            demisto.info(f"Successfully fetched and created {len(incidents)} incidents")
+        else:
+            demisto.info("No new incidents to fetch")
+    except Exception as e:
+        fetch_manager.save_last_run_time()
+        return log_and_return_error(f"Error fetching incidents: {e}")
 
 
 def get_fetch_timestamp(first_fetch_param):
@@ -3079,10 +3092,10 @@ def get_filtered_detections(
         return error_message
 
     detection_variables = PULL_DETECTIONS_VARIABLES.copy()
-    detection_variables[WizApiVariables.FIRST] = max_fetch if max_fetch is not None else api_limit
+    detection_variables[WizApiVariables.FIRST] = api_limit
     detection_variables = apply_all_detection_filters(detection_variables, validated_values)
 
-    wiz_detections = query_detections(variables=detection_variables, paginate=paginate)
+    wiz_detections = query_detections(variables=detection_variables, paginate=paginate, max_fetch=max_fetch)
 
     if add_detection_url:
         for detection in wiz_detections:
