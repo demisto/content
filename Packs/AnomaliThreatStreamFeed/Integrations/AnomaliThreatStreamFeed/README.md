@@ -1,4 +1,4 @@
-Use the Anomali ThreatStream Feed Integration to fetch indicators from Anomali ThreatStream.
+Use the Anomali ThreatStream Feed Integration to fetch indicators from the Anomali ThreatStream.
 
 ## Configure Anomali ThreatStream Feed in Cortex
 
@@ -37,7 +37,7 @@ Gets indicators from the feed. This command is mainly used for testing and debug
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_type | The indicator type to analyze. If not selected we will get indicators from all types. Possible values are: domain, ip, md5, url, email. | Optional | 
+| indicator_type | The indicator type to analyze. If not selected, indicators from all types are retrieved. Possible values are: domain, ip, md5, url, email. | Optional | 
 | limit | Maximum number of objects to return (default is 10). | Optional | 
 | sort_by | Sort the records in descending order according to the Created or Modified Time. Possible values are: Created Time, Modified Time. | Optional | 
 
