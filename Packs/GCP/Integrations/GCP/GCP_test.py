@@ -951,7 +951,7 @@ def test_check_required_permissions_with_connector_id(mocker):
     """
     Given: GCP credentials with connector_id and missing permissions
     When: check_required_permissions is called with connector_id
-    Then: The function should return a HealthCheckError instead of raising an exception
+    Then: The function should return a list of HealthCheckError instead of raising an exception
     """
     from GCP import check_required_permissions, REQUIRED_PERMISSIONS, HealthCheckError, ErrorType
 
@@ -961,7 +961,6 @@ def test_check_required_permissions_with_connector_id(mocker):
 
     # Mock response from testIamPermissions - some permissions are missing
     granted_permissions = testable_permissions[:-2]  # All except the last two
-
     mock_response = {"permissions": granted_permissions}
 
     # Use MagicMock for resource manager
@@ -975,12 +974,17 @@ def test_check_required_permissions_with_connector_id(mocker):
     # Execute the function with connector_id
     result = check_required_permissions(mock_creds, "test-project", connector_id="test-connector-id")
 
-    # Verify that the result is a HealthCheckError
-    assert isinstance(result, HealthCheckError)
-    assert result.account_id == "test-project"
-    assert result.connector_id == "test-connector-id"
-    assert result.error_type == ErrorType.PERMISSION_ERROR
-    assert "Missing required permission" in result.message
+    # Verify that the result is a list of HealthCheckError objects
+    assert isinstance(result, list)
+    assert len(result) > 0
+    assert all(isinstance(error, HealthCheckError) for error in result)
+
+    # Verify the properties of the first error
+    first_error = result[0]
+    assert first_error.account_id == "test-project"
+    assert first_error.connector_id == "test-connector-id"
+    assert first_error.error_type == ErrorType.PERMISSION_ERROR
+    assert "Missing required permission" in first_error.message
 
 
 def test_check_required_permissions_api_error(mocker):

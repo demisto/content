@@ -906,14 +906,14 @@ def check_required_permissions(
     return None
 
 
-def health_check(project_id: str, connector_id: str) -> HealthCheckError | list[HealthCheckError] | None:
-    """
-    Tests connectivity to GCP and checks for required permissions.
+def health_check(shared_creds: dict, project_id: str, connector_id: str) -> HealthCheckError | list[HealthCheckError] | None:
+    """Tests connectivity to GCP and checks for required permissions.
 
     This function is specifically used for COOC (Connect on our Cloud) health checks
     to verify connectivity and permissions.
 
     Args:
+        shared_creds (dict): Pre-fetched cloud credentials (format varies by provider).
         project_id (str): The GCP project ID to check against.
         connector_id (str): The connector ID for the Cloud integration.
 
@@ -929,8 +929,7 @@ def health_check(project_id: str, connector_id: str) -> HealthCheckError | list[
         )
 
     try:
-        credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
-        token = credential_data.get("access_token")
+        token = shared_creds.get("access_token")
         if not token:
             return HealthCheckError(
                 account_id=project_id,
@@ -940,7 +939,7 @@ def health_check(project_id: str, connector_id: str) -> HealthCheckError | list[
             )
 
         creds = Credentials(token=token)
-        demisto.debug(f"{project_id}: Using token-based credentials for health check")
+        demisto.debug(f"{project_id}: Using pre-fetched credentials for health check")
         return check_required_permissions(creds, project_id, connector_id)
     except Exception as e:
         return HealthCheckError(
@@ -1068,7 +1067,7 @@ def main():  # pragma: no cover
 
         if command == "test-module" and (connector_id := get_connector_id()):
             demisto.debug(f"Running health check for connector ID: {connector_id}")
-            return_results(run_permissions_check_for_accounts(connector_id, health_check))
+            return_results(run_permissions_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
 
         elif command in command_map:
             creds = get_credentials(args, params)

@@ -182,11 +182,11 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         demisto.info(f"{account_id}: Received credentials. Expiration time: {expiration_time}")
         return credentials
     except Exception as e:
-        demisto.debug(f"Error while retrieving credentials: {str(e)}. Response: {response}")
+        demisto.debug(f"{account_id}: Error while retrieving credentials: {str(e)}. Response: {response}")
         raise DemistoException(f"Failed to get credentials from CTS: {str(e)}. Response: {response}")
 
 
-def get_accounts_by_connector_id(connector_id: str, max_results: int = 5) -> list:
+def get_accounts_by_connector_id(connector_id: str, max_results: int | None = None) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
     Args:
@@ -219,14 +219,16 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = 5) -> lis
 
 
 def _check_account_permissions(
-    account: dict, connector_id: str, permission_check_func: Callable[[str, str], HealthCheckError]
+    account: dict, connector_id: str, shared_creds: dict, permission_check_func: Callable[[dict, str, str], HealthCheckError]
 ) -> HealthCheckError | None:
-    """
-    Helper function to check permissions for a single account.
+    """Helper function to check permissions for a single account.
+
     Args:
         account (dict): Account information.
         connector_id (str): The connector ID.
+        shared_creds (dict): Pre-fetched credentials to reuse across all accounts.
         permission_check_func (callable): Function that implements the permission check.
+
     Returns:
         Any: Result of the permission check.
     """
@@ -234,8 +236,9 @@ def _check_account_permissions(
     if not account_id:
         demisto.debug(f"Account without ID found for connector {connector_id}: {account}")
         return None
+
     try:
-        return permission_check_func(account_id, connector_id)
+        return permission_check_func(shared_creds, account_id, connector_id)
     except Exception as e:
         demisto.error(f"Error checking permissions for account {account_id}: {str(e)}")
         return HealthCheckError(
@@ -247,32 +250,55 @@ def _check_account_permissions(
 
 
 def run_permissions_check_for_accounts(
-    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: None | int = 5
+    connector_id: str, cloud_type: str, permission_check_func: Callable[[dict, str, str], Any], max_workers: None | int = 5
 ) -> str | CommandResults:
-    """
-    Runs a permission check function for each account associated with a connector concurrently.
+    """Runs a permission check function for each account associated with a connector concurrently.
+
     Args:
         connector_id (str): The ID of the connector to fetch accounts for.
+        cloud_type (str): The cloud provider type (AWS, GCP, AZURE, OCI).
         permission_check_func (callable): Function that implements the permission check.
-                                         Should accept account_id and connector_id parameters
-                                         and return a HealthCheck.
-        max_workers (int, optional): Maximum number of worker threads. Defaults to 10.
+            Should accept shared_creds, account_id and connector_id parameters
+            and return a HealthCheck.
+        max_workers (int, optional): Maximum number of worker threads. Defaults to 5.
+
     Returns:
         Either "ok" string or CommandResults with appropriate EntryType
+
     Raises:
         DemistoException: If the account retrieval fails.
     """
     accounts = get_accounts_by_connector_id(connector_id)
-    demisto.debug(f"Processing {len(accounts)} accounts")
+    demisto.debug(f"Processing {len(accounts)} accounts for {cloud_type}")
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
         return HealthStatus.OK.value
 
     health_check_result = HealthCheck(connector_id)
+    # Get credentials once for all accounts since they share the same creds
+    try:
+        account_id = next((a["account_id"] for a in accounts if a.get("account_id")), None)
+        if not account_id:
+            raise DemistoException("No valid account_id found in accounts")
+        shared_creds = get_cloud_credentials(cloud_type, account_id)
+        demisto.debug(f"Retrieved shared {cloud_type} credentials for all accounts")
+    except Exception as e:
+        error_msg = f"Failed to retrieve {cloud_type} credentials for connector {connector_id}: {str(e)}"
+        demisto.error(error_msg)
+        health_check_result.error(
+            HealthCheckError(
+                account_id="",  # No specific account since this is a connector-level error TODO - verify work
+                connector_id=connector_id,
+                message=error_msg,
+                error_type=ErrorType.CONNECTIVITY_ERROR,
+            )
+        )
+        return health_check_result.summarize()
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_account = {
-            executor.submit(_check_account_permissions, account, connector_id, permission_check_func): account
+            executor.submit(_check_account_permissions, account, connector_id, shared_creds, permission_check_func): account
             for account in accounts
         }
 
