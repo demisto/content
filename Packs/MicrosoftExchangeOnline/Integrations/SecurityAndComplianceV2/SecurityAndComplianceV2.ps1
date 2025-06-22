@@ -1995,28 +1995,26 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     $polling_args.search_name = $search_name
 
     $demisto.results("search_name: $search_name")
-    $demisto.results("polling_first_run: $polling_first_run")
-    $demisto.results("force: $force")
+
 
     if ($polling_first_run) {
         $demisto.results("Running first run logic")
         try {
             $demisto.results("Attempting to create new search: $search_name")
             $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "Stop")
-
-            $demisto.results("NewSearch returned: " + ($search | ConvertTo-Json -Depth 5))
+            $demisto.results("NewSearch")
             $client.StartSearch($search_name)
             $demisto.results("StartSearch")
             $polling_args.polling_first_run = $false
             return "$script:INTEGRATION_NAME - New search created and started.", $entry_context, $search, $polling_args
         } catch {
-            $demisto.results("Caught exception: $($_.Exception.Message)")
+            # $demisto.results("Caught exception: $($_.Exception.Message)")
 
             if ($_.Exception.Message -notmatch "already exists") {
                 throw $_
             }
-
             $demisto.results("Search already exists.")
+            
             if ($force) {
                 $random_suffix = [System.Guid]::NewGuid().ToString("N").Substring(0, 6)
                 $search_name = "$search_name-$random_suffix"
@@ -2032,7 +2030,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
 
             $search = $client.GetSearch($search_name)
             $status = $search.Status
-            $demisto.results("Existing search status: $status")
+            $demisto.results("GetSearch status: " + $search.Status)
 
             switch ($status) {
                 "NotStarted" {
@@ -2046,6 +2044,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 "Completed" {
                     try {
                         $action = $client.GetSearchAction($search_action_name)
+                        $demisto.results("GetSearchAction status: " + $action.Status)
                         switch ($action.Status) {
                             $null {
                                 break
@@ -2093,6 +2092,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     $demisto.results("Polling logic started for search_name: $search_name")
 
     $search = $client.GetSearch($search_name)
+    $demisto.results("GetSearch status: " + $action.Status)
     switch ($search.Status) {
         "NotStarted" {
             $demisto.results("Search was not started. Starting now.")
@@ -2107,6 +2107,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
             $demisto.results("Search completed. Checking action status...")
             try {
                 $action = $client.GetSearchAction($search_action_name)
+                $demisto.results("GetSearchAction status: " + $action.Status)
                 switch ($action.Status) {
                     $null {
                         $demisto.results("No action found. Creating purge action.")
