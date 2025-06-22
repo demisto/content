@@ -1217,7 +1217,7 @@ script:
           <p>Dear recipient</p>
           <p>Our security team has identified and removed a potentially malicious email that was previously delivered to your inbox.</p>
           <p><strong>Email Details:</strong><br>
-          - Delivery Time: ${issue.xdmemailreceived}<br>
+          - Delivery Time: ${issue.timestamp}<br>
           - Sender: ${issue.xdmemailsender}</p>
           <p>This message was deemed suspicious or malicious and has been automatically deleted to protect your account and our organization.</p>
           <p><strong>Important:</strong><br>
