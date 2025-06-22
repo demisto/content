@@ -12,7 +12,7 @@ from AzureSentinel import (
     AzureSentinelClient,
     append_tags_threat_indicator_command,
     build_threat_indicator_data,
-    close_incident_in_remote,
+    should_close_incident_in_remote,
     create_and_update_alert_rule_command,
     create_data_for_alert_rule,
     create_incident_command,
@@ -54,7 +54,7 @@ from AzureSentinel import (
     update_remote_system_command,
     update_threat_indicator_command,
     validate_required_arguments_for_alert_rule,
-    open_incident_in_remote,
+    should_open_incident_in_remote,
 )
 from CommonServerPython import CommandResults, IncidentStatus, pascalToSpace, tableToMarkdown
 
@@ -1705,28 +1705,28 @@ def test_update_remote_system_command(mocker):
 
 
 @pytest.mark.parametrize(
-    "incident_status, close_incident_in_remote, delta, expected_update_call",
+    "incident_status, should_close_incident_in_remote, delta, expected_update_call",
     [
         (IncidentStatus.DONE, True, {}, True),
         (IncidentStatus.DONE, False, {}, False),  # delta is empty
         (IncidentStatus.DONE, False, {"classification": "FalsePositive"}, False),  # delta have only closing fields
         (IncidentStatus.DONE, False, {"title": "Title"}, True),  # delta have fields except closing fields
-        (IncidentStatus.ACTIVE, False, {}, False),  # delta is empty and close_incident_in_remote is False
+        (IncidentStatus.ACTIVE, False, {}, False),  # delta is empty and should_close_incident_in_remote is False
         (IncidentStatus.ACTIVE, False, {"title": "Title"}, True),
         (IncidentStatus.PENDING, True, {}, False),
     ],
 )
-def test_update_remote_incident(mocker, incident_status, close_incident_in_remote, delta, expected_update_call):
+def test_update_remote_incident(mocker, incident_status, should_close_incident_in_remote, delta, expected_update_call):
     """
     Given
         - incident status
     When
         - running update_remote_incident
     Then
-        - ensure the function call only when the incident status is DONE and close_incident_in_remote is True
+        - ensure the function call only when the incident status is DONE and should_close_incident_in_remote is True
           or when the incident status is ACTIVE
     """
-    mocker.patch("AzureSentinel.close_incident_in_remote", return_value=close_incident_in_remote)
+    mocker.patch("AzureSentinel.should_close_incident_in_remote", return_value=should_close_incident_in_remote)
     mock_update_status = mocker.patch("AzureSentinel.update_incident_request")
     update_remote_incident(mock_client(), {}, delta, incident_status, "incident-1")
     assert mock_update_status.called == expected_update_call
@@ -1756,7 +1756,7 @@ def test_update_remote_incident(mocker, incident_status, close_incident_in_remot
         "7#-close_incident_after_reopen_after_data_update",
     ],
 )
-def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, incident_status, to_close):
+def test_should_close_incident_in_remote(mocker, delta, data, close_ticket_param, incident_status, to_close):
     """
     Given
         - one of the close parameters
@@ -1766,7 +1766,7 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, incid
         - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
     """
     mocker.patch.object(demisto, "params", return_value={"close_ticket": close_ticket_param})
-    assert close_incident_in_remote(delta, data, incident_status) == to_close
+    assert should_close_incident_in_remote(delta, data, incident_status) == to_close
 
 
 @pytest.mark.parametrize(
@@ -1793,16 +1793,26 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, incid
         "6#-the_incident_is_close_classification_changed",
     ],
 )
-def test_open_incident_in_remote(mocker, delta, data, incident_status, to_open):
+def test_should_open_incident_in_remote(delta, data, incident_status, to_open):
     """
     Given
-        - one of the open parameters
+        - case 1: The incident is open and the classification was changed.
+        - case 2: The incident is re-opened.
+        - case 3: The incident is closed and the classification was changed.
+        - case 4: The incident is open and the classification was changed.
+        - case 5: The incident is open and the classification was not changed.
+        - case 6: The incident is close and the classification was changed.
     When
         - outgoing mirroring triggered by a change in the incident
     Then
-        - returns true if the incident was reopened in XSOAR.
+        - case 1: We expect to process the incident, so its ID exists in the expected result.
+        - case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
+        - case 3: We expect to process the incident, so its ID exists in the expected result.
+        - case 4: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
+        - case 5: We expect to process the incident, so its ID exists in the expected result.
+        - case 6: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
     """
-    assert open_incident_in_remote(delta, data, incident_status) == to_open
+    assert should_open_incident_in_remote(delta, data, incident_status) == to_open
 
 
 @pytest.mark.parametrize(
