@@ -640,8 +640,8 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
-                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
-
+                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion, [string]$error_action = $null) {
+                        
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearch")
         # Import and Execute command
@@ -655,6 +655,10 @@ class SecurityAndComplianceClient {
             "PublicFolderLocation" = $public_folder_location
             "SharePointLocation" = $share_point_location
             "SharePointLocationExclusion" = $share_point_location_exclusion
+            # "ErrorAction" = $error_action
+        }
+        if ($error_action) {
+            $cmd_params.ErrorAction = $error_action
         }
         $response = New-ComplianceSearch @cmd_params
         # Close session to remote
@@ -1528,9 +1532,9 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if (!$kwargs.search_name -or $kwargs.search_name -eq "") {
         $kwargs.search_name = "XSOAR-$(New-Guid)"
     }
-    # Raw response
-    $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
-                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+    # Raw response 
+        $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
+                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion, "")
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
     $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($kwargs.search_name)' created"
@@ -1964,111 +1968,188 @@ function Get-ShortHash($inputString, $length = 12) {
 
 
 function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    $demisto.results("=== Starting SearchAndDeleteEmailCommand ===")
     $demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
+
     $description = "Search And Delete Email"
     $entry_context = @{}
+
     $exchange_location = ArgToList $kwargs.exchange_location
-    $polling_first_run = $kwargs.polling_first_run
+    $polling_first_run = ConvertTo-Boolean $kwargs.polling_first_run
     $force = ConvertTo-Boolean $kwargs.force
-    $kql = "internetMessageId: $internet_message_id"
-    
     $internet_message_id = $kwargs.internet_message_id
-    $polling_args = $kwargs
+    $kql = "internetMessageId: $internet_message_id"
 
-    # Determine the search name
-
-    $search_name = $internet_message_id -replace '[<>]', ''
-    if ($kwargs.exchange_location -ne "All") {
-        $search_name = $search_name + ":" + ($exchange_location -join ",")
+    $search_name = if ($kwargs.search_name) {
+        $kwargs.search_name
+    } else {
+        $name = $internet_message_id -replace '[<>]', ''
+        if ($kwargs.exchange_location -ne "All") {
+            $name += ":" + ($exchange_location -join ",")
+        }
+        $name
     }
-    $demisto.results("search_name: " + $search_name)
-    $search_action_name = "${search_name}_Purge"
-    
 
-    # Step 1: Create and start search if needed
-    if (-not $kwargs.search_completed) {
+    $search_action_name = "${search_name}_Purge"
+    $polling_args = $kwargs
+    $polling_args.search_name = $search_name
+
+    $demisto.results("search_name: $search_name")
+    $demisto.results("polling_first_run: $polling_first_run")
+    $demisto.results("force: $force")
+
+    if ($polling_first_run) {
+        $demisto.results("Running first run logic")
         try {
+            $demisto.results("Attempting to create new search: $search_name")
+            $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "Stop")
+
+            $demisto.results("NewSearch returned: " + ($search | ConvertTo-Json -Depth 5))
+            $client.StartSearch($search_name)
+            $demisto.results("StartSearch")
+            $polling_args.polling_first_run = $false
+            return "$script:INTEGRATION_NAME - New search created and started.", $entry_context, $search, $polling_args
+        } catch {
+            $demisto.results("Caught exception: $($_.Exception.Message)")
+
+            if ($_.Exception.Message -notmatch "already exists") {
+                throw $_
+            }
+
+            $demisto.results("Search already exists.")
+            if ($force) {
+                $random_suffix = [System.Guid]::NewGuid().ToString("N").Substring(0, 6)
+                $search_name = "$search_name-$random_suffix"
+                $polling_args.search_name = $search_name
+                $search_action_name = "${search_name}_Purge"
+                $demisto.results("Force is true - creating new search with name: $search_name")
+
+                $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "")
+                $client.StartSearch($search_name)
+                $polling_args.polling_first_run = $false
+                return "$script:INTEGRATION_NAME - Forced search created and started.", $entry_context, $search, $polling_args
+            }
+
             $search = $client.GetSearch($search_name)
             $status = $search.Status
-            $demisto.results("Search status: $status")
+            $demisto.results("Existing search status: $status")
 
-            if (-not $status) {
-                $polling_args.already_exist = $false
-                $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @())
-                $client.StartSearch($search_name)
-                $human_readable = "$script:INTEGRATION_NAME - Search created and started."
-                $polling_args.polling_first_run = $false
-                return $human_readable, $entry_context, $search, $polling_args
-            } elseif ($status -eq "Starting") {
-                $human_readable = "$script:INTEGRATION_NAME - Search is starting."
-                $polling_args.polling_first_run = $false
-                return $human_readable, $entry_context, $search, $polling_args
-            } elseif ($status -eq "NotStarted") {
-                $client.StartSearch($search_name)
-                $human_readable = "$script:INTEGRATION_NAME - Search started (was NotStarted)."
-                $polling_args.polling_first_run = $false
-                return $human_readable, $entry_context, $search, $polling_args
-            } elseif ($status -eq "Completed") {
-                if ($polling_first_run) 
-                {
-                    $polling_args.search_completed = $true
+            switch ($status) {
+                "NotStarted" {
+                    $client.StartSearch($search_name)
+                    $polling_args.polling_first_run = $false
+                    return "$script:INTEGRATION_NAME - Search was not started. Now started.", $entry_context, $search, $polling_args
+                }
+                "Starting" {
+                    return "$script:INTEGRATION_NAME - Search already starting from previous run.", $entry_context, $search, $polling_args
+                }
+                "Completed" {
+                    try {
+                        $action = $client.GetSearchAction($search_action_name)
+                        switch ($action.Status) {
+                            $null {
+                                break
+                            }
+                            "InProgress" {
+                                return "$script:INTEGRATION_NAME - Deletion in progress from previous run.", $entry_context, $action, $polling_args
+                            }
+                            "Starting" {
+                                return "$script:INTEGRATION_NAME - Deletion starting from previous run.", $entry_context, $action, $polling_args
+                            }
+                            "Completed" {
+                                return "$script:INTEGRATION_NAME - Already deleted. Run again with force=true to retry.", $entry_context
+                            }
+                        }
+                    } catch {
+                        $demisto.results("No purge action found. Creating one.")
+                    }
+
+                    $action = $client.NewSearchAction(
+                        $search_name,
+                        "Purge",
+                        "SoftDelete",
+                        $kwargs.share_point_archive_format,
+                        $kwargs.format,
+                        $kwargs.include_sharepoint_document_versions,
+                        $kwargs.notify_email,
+                        $kwargs.notify_email_cc,
+                        $kwargs.scenario,
+                        $kwargs.scope
+                    )
+                    $polling_args.polling_first_run = $false
+                    return "$script:INTEGRATION_NAME - Search action created.", $entry_context, $action, $polling_args
+                }
+                default {
+                    throw "Unhandled search status: $status"
                 }
             }
-        } catch {
-            $demisto.results("Failed to get/start search: ")
-            throw
         }
     }
 
-    # Step 2: Execute search action (deletion)
-    try {
-        $demisto.results("Running GetSearchAction with name: $search_action_name")
-        $action = $client.GetSearchAction($search_action_name)
-    } catch {
-        $demisto.results("SearchAction not found, creating new one.")
-        $action = $client.NewSearchAction(
-            $search_name,
-            "Purge",
-            "SoftDelete",
-            $kwargs.share_point_archive_format,
-            $kwargs.format,
-            $kwargs.include_sharepoint_document_versions,
-            $kwargs.notify_email,
-            $kwargs.notify_email_cc,
-            $kwargs.scenario,
-            $kwargs.scope
-        )
-        $human_readable = "$script:INTEGRATION_NAME : New search action created."
-        return $human_readable, $entry_context, $action, $polling_args
-    }
+    ### ---------------------------
+    ### Polling Loop
+    ### ---------------------------
 
-    $status = $action.Status
-    $demisto.results("SearchAction status : $status")
+    $demisto.results("Polling logic started for search_name: $search_name")
 
-    if ($status -eq "Starting" -or $status -eq "InProgress") {
-        $human_readable = "$script:INTEGRATION_NAME : Deletion in progress."
-        return $human_readable, $entry_context, $action, $polling_args
-    } elseif ($status -eq "Completed") {
-        $human_readable = "$script:INTEGRATION_NAME : Deletion completed."
-        return $human_readable, $entry_context, $action
-    } elseif (-not $status) {
-        $demisto.results("SearchAction not running yet. Starting deletion.")
-        $action = $client.NewSearchAction(
-            $search_name,
-            "Purge",
-            "SoftDelete",
-            $kwargs.share_point_archive_format,
-            $kwargs.format,
-            $kwargs.include_sharepoint_document_versions,
-            $kwargs.notify_email,
-            $kwargs.notify_email_cc,
-            $kwargs.scenario,
-            $kwargs.scope
-        )
-        $human_readable = "$script:INTEGRATION_NAME : New search action created (status was null)."
-        return $human_readable, $entry_context, $action, $polling_args
+    $search = $client.GetSearch($search_name)
+    switch ($search.Status) {
+        "NotStarted" {
+            $demisto.results("Search was not started. Starting now.")
+            $client.StartSearch($search_name)
+            return "$script:INTEGRATION_NAME - Search started during polling.", $entry_context, $search, $polling_args
+        }
+        "Starting" {
+            $demisto.results("Search still in starting phase. Retrying later.")
+            return "$script:INTEGRATION_NAME - Search is still starting.", $entry_context, $search, $polling_args
+        }
+        "Completed" {
+            $demisto.results("Search completed. Checking action status...")
+            try {
+                $action = $client.GetSearchAction($search_action_name)
+                switch ($action.Status) {
+                    $null {
+                        $demisto.results("No action found. Creating purge action.")
+                        break
+                    }
+                    "NotStarted" {
+                        $demisto.results("Action not started. Creating purge action.")
+                        break
+                    }
+                    "InProgress" {
+                        return "$script:INTEGRATION_NAME - Deletion in progress.", $entry_context, $action, $polling_args
+                    }
+                    "Starting" {
+                        return "$script:INTEGRATION_NAME - Deletion starting.", $entry_context, $action, $polling_args
+                    }
+                    "Completed" {
+                        return "$script:INTEGRATION_NAME - Deletion completed successfully.", $entry_context
+                    }
+                }
+            } catch {
+                $demisto.results("Action not found or failed. Creating new purge action.")
+            }
+
+            $action = $client.NewSearchAction(
+                $search_name,
+                "Purge",
+                "SoftDelete",
+                $kwargs.share_point_archive_format,
+                $kwargs.format,
+                $kwargs.include_sharepoint_document_versions,
+                $kwargs.notify_email,
+                $kwargs.notify_email_cc,
+                $kwargs.scenario,
+                $kwargs.scope
+            )
+            return "$script:INTEGRATION_NAME - Purge action created in polling.", $entry_context, $action, $polling_args
+        }
+        default {
+            throw "Unhandled search status in polling: $($search.Status)"
+        }
     }
 }
+
 
 
 function testPollingCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
