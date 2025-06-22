@@ -1015,98 +1015,322 @@ class FetchIncident:
         self.end_cursor = self.last_run_data.get(WizApiResponse.END_CURSOR)
         self.stored_after = self.last_run_data.get(WizApiVariables.AFTER)
         self.stored_before = self.last_run_data.get(WizApiVariables.BEFORE)
-        self.last_run_time = self.last_run_data.get(DemistoParams.TIME)
+        self.last_run_time = self.get_last_run_time()
 
-        demisto.debug(f"FetchIncident initialized - {WizApiResponse.END_CURSOR}: {self.end_cursor}, "
-                      f"{WizApiVariables.AFTER}: {self.stored_after}, {WizApiVariables.BEFORE}: {self.stored_before}")
+        self._validate_and_reset_params()
+        self.print_debug_values()
 
-    def should_continue_previous_run(self):
+
+    def print_debug_values(self):
         """
-        Determines if we should continue the previous pagination run based on end_cursor existence
+        Print debug values that will be used in the function execution.
+        This function should be called at the beginning to show the values
+        we're going to use before emv_cursor and last_run processing.
+        """
+        # Get the values that will be used in the function
+        after_value = self.get_api_after_parameter()
+        before_value = self.get_api_before_parameter()
+        end_cursor_value = self.get_api_cursor_parameter()
+
+        # Create one comprehensive debug message
+        debug_message = (
+            "=== DEBUG: Values to be used in function execution ===\n"
+            f"after (get_after_time): {after_value}\n"
+            f"before (get_before_time): {before_value}\n"
+            f"end_cursor (get_end_cursor): {end_cursor_value}\n"
+            f"last_run_time: {self.last_run_time}\n"
+            f"stored_after: {self.stored_after}\n"
+            f"stored_before: {self.stored_before}\n"
+            f"end_cursor (raw): {self.end_cursor}\n"
+            f"should_continue_previous_run: {self.should_continue_previous_run()}\n"
+            f"api_start_run_time: {self.api_start_run_time}\n"
+            "=== END DEBUG VALUES ==="
+        )
+        demisto.info(debug_message)
+
+
+    def get_last_run_time(self):
+        """
+        Gets the last run time for fetch incidents.
+        If the last run time is more than MAX_DAYS_FIRST_FETCH_DETECTIONS days ago,
+        it returns MAX_DAYS_FIRST_FETCH_DETECTIONS days ago instead.
 
         Returns:
-            bool: True if we should continue previous run, False for fresh run
+            str: ISO formatted timestamp string for the last run time
         """
-        should_continue = bool(self.end_cursor)
-        demisto.debug(f"Should continue previous run: {should_continue}")
-        return should_continue
+        demisto_params = demisto.params()
 
-    def get_after_time(self):
+        last_run = demisto.getLastRun().get(DemistoParams.TIME)
+
+        if not last_run:
+            demisto.info("First Time Fetch")
+            first_fetch_param = demisto_params.get(DemistoParams.FIRST_FETCH, DEFAULT_FETCH_BACK).strip()
+            last_run = get_fetch_timestamp(first_fetch_param)
+            return last_run
+
+        # Check if last_run is older than MAX_DAYS_FIRST_FETCH_DETECTIONS
+        try:
+            last_run_datetime = datetime.strptime(last_run, DEMISTO_OCCURRED_FORMAT)
+            max_days_ago = datetime.now() - timedelta(days=MAX_DAYS_FIRST_FETCH_DETECTIONS)
+
+            if last_run_datetime < max_days_ago:
+                demisto.info(
+                    f"Last run time ({last_run}) is more than {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago. "
+                    f"Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as the fetch time."
+                )
+
+                last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
+        except Exception as e:
+            demisto.error(
+                f"Error parsing last run time: {str(e)}. Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as fetch time.")
+            max_days_ago = datetime.now() - timedelta(days=MAX_DAYS_FIRST_FETCH_DETECTIONS)
+            last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
+
+        return last_run
+
+    def reset_params(self, reason="Invalid parameters detected"):
         """
-        Get the appropriate after_time for the API call
-        - If end_cursor is not null: use stored after from last run
-        - If end_cursor is null: use previous stored before as after
+        Reset pagination parameters to safe defaults
+
+        Args:
+            reason (str): Reason for reset (for logging)
+        """
+        demisto.info(f"Resetting fetch parameters: {reason}")
+
+        safe_after_str = self.last_run_time if self.last_run_time else self.api_start_run_time
+
+        # Reset to safe values
+        self.end_cursor = None
+        self.stored_after = safe_after_str
+        self.stored_before = self.api_start_run_time  # Current time as before
+
+        demisto.info(f"Reset fetch incidents parameter complete - "
+                     f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None")
+
+    def _validate_and_reset_params(self):
+        """
+        Validate stored parameters and reset if invalid
+        """
+        needs_reset = False
+        reset_reason = []
+
+        if self._is_legacy_format():
+            needs_reset = True
+            reset_reason.append("migrating from legacy format (only 'time' field)")
+
+        # Check for None values that should have timestamps when pagination is active
+        if self.end_cursor is not None:
+            # If end_cursor exists, both stored_after and stored_before must exist
+            if self.stored_after is None:
+                needs_reset = True
+                reset_reason.append("stored_after is None but endCursor exists")
+
+            if self.stored_before is None:
+                needs_reset = True
+                reset_reason.append("stored_before is None but endCursor exists")
+
+        # Validate timestamp formats
+        timestamp_fields = [
+            ("stored_after", self.stored_after),
+            ("stored_before", self.stored_before),
+            ("last_run_time", self.last_run_time)
+        ]
+
+        for field_name, timestamp in timestamp_fields:
+            if timestamp and not self._is_valid_timestamp(timestamp):
+                needs_reset = True
+                reset_reason.append(f"invalid {field_name} format: {timestamp}")
+
+        # Validate time ordering (before >= after)
+        if (self.stored_after and self.stored_before and
+            not self._is_valid_time_ordering(self.stored_after, self.stored_before)):
+            needs_reset = True
+            reset_reason.append(f"invalid time ordering: before ({self.stored_before}) < after ({self.stored_after})")
+
+        # Validate after time is not too old
+        if self.stored_after and self._is_after_time_too_old(self.stored_after):
+            needs_reset = True
+            reset_reason.append(f"after time too old: {self.stored_after}")
+
+        if needs_reset:
+            reason = "; ".join(reset_reason)
+            self.reset_params(reason)
+        else:
+            demisto.info(f"Using fetch incidents parameters: - "
+                         f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None")
+
+    def _is_legacy_format(self):
+        """
+        Check if this is legacy format (existing customer with only 'time' field)
 
         Returns:
-            str: The after_time to use in the API call
+            bool: True if legacy format detected
+        """
+        # Legacy format: has 'time' but missing the new pagination fields
+        has_time = self.last_run_time is not None
+        missing_new_fields = (
+            self.stored_after is None and
+            self.stored_before is None and
+            self.end_cursor is None
+        )
+
+        is_legacy = has_time and missing_new_fields
+
+        if is_legacy:
+            demisto.info(f"Legacy format detected - last_run_time: {self.last_run_time}, "
+                         f"missing after/before/endCursor fields")
+
+        return is_legacy
+
+    def _is_valid_timestamp(self, timestamp):
+        """
+        Check if timestamp is in valid format
+
+        Args:
+            timestamp (str): Timestamp to validate
+
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        try:
+            datetime.strptime(timestamp, DEMISTO_OCCURRED_FORMAT)
+            return True
+        except Exception:
+            return False
+
+    def _is_valid_time_ordering(self, after_time, before_time):
+        """
+        Check if before_time >= after_time
+
+        Args:
+            after_time (str): After timestamp
+            before_time (str): Before timestamp
+
+        Returns:
+            bool: True if ordering is valid, False otherwise
+        """
+        try:
+            after_datetime = datetime.strptime(after_time, DEMISTO_OCCURRED_FORMAT)
+            before_datetime = datetime.strptime(before_time, DEMISTO_OCCURRED_FORMAT)
+            return before_datetime >= after_datetime
+        except Exception:
+            return False
+
+    def _is_after_time_too_old(self, after_time):
+        """
+        Check if after_time exceeds maximum fetch interval
+
+        Args:
+            after_time (str): After timestamp to check
+
+        Returns:
+            bool: True if too old, False otherwise
+        """
+        try:
+            after_datetime = datetime.strptime(after_time, DEMISTO_OCCURRED_FORMAT)
+            current_datetime = datetime.strptime(self.api_start_run_time, DEMISTO_OCCURRED_FORMAT)
+            max_interval = timedelta(minutes=FETCH_INTERVAL_MAXIMUM_MIN)
+            time_difference = current_datetime - after_datetime
+            return time_difference > max_interval
+        except Exception:
+            return True  # If we can't parse, consider it invalid
+
+    # Simplified getter methods since validation is done in init
+    def get_api_after_parameter(self):
+        """
+        Get the 'after' parameter value for the GraphQL API call.
         """
         if self.should_continue_previous_run():
             # Continuing pagination - use stored after time
             after_time = self.stored_after
-            demisto.info(f"Continuing pagination - using stored after_time: {after_time}")
         else:
-            # Fresh fetch - use previous stored before as after
-            after_time = self.stored_before if self.stored_before else self.last_run_time
-            demisto.info(f"Starting fresh fetch - using previous before as after_time: {after_time}")
+            # Fresh fetch - use stored_after (which is set correctly by reset or previous run)
+            after_time = self.stored_after if self.stored_after else self.last_run_time
 
         return after_time
 
-    def get_before_time(self):
+    def get_api_before_parameter(self):
         """
-        Get the appropriate before_time for the API call
-        - If end_cursor is not null: use stored before from last run
-        - If end_cursor is null: use current time (now)
-
-        Returns:
-            str: The before_time to use in the API call
+        Get the 'before' parameter value for the GraphQL API call.
         """
         if self.should_continue_previous_run():
-            # Continuing pagination - use stored before time
             before_time = self.stored_before
-            demisto.debug(f"Continuing pagination - using stored before_time: {before_time}")
         else:
-            # Fresh fetch - use current time as before
             before_time = self.api_start_run_time
-            demisto.debug(f"Fresh fetch - using current time as before_time: {before_time}")
 
         return before_time
 
-    def get_end_cursor(self):
+    def should_continue_previous_run(self):
         """
-        Get the pagination cursor for continuing from previous fetch
+        Determines if this is a continuation of a previous paginated fetch.
+
+        Returns:
+            bool: True if we should continue previous run, False for fresh run
+        """
+        return bool(self.end_cursor)
+
+    def _validate_and_adjust_after_time(self, after_time):
+        """
+        Validate that after_time is not older than FETCH_INTERVAL_MAXIMUM_MIN minutes
+        and adjust if necessary
+
+        Args:
+            after_time (str): The after time to validate
+
+        Returns:
+            str: The validated/adjusted after time
+        """
+        if not after_time:
+            return self.api_start_run_time
+
+        try:
+            # Parse the after_time
+            after_datetime = datetime.strptime(after_time, DEMISTO_OCCURRED_FORMAT)
+            current_datetime = datetime.strptime(self.api_start_run_time, DEMISTO_OCCURRED_FORMAT)
+
+            # Calculate maximum allowed time difference
+            max_interval = timedelta(minutes=FETCH_INTERVAL_MAXIMUM_MIN)
+            time_difference = current_datetime - after_datetime
+
+            if time_difference > max_interval:
+                # After time is too old, adjust to maximum allowed
+                adjusted_after = current_datetime - max_interval
+                adjusted_after_str = adjusted_after.strftime(DEMISTO_OCCURRED_FORMAT)
+
+                demisto.info(
+                    f"After time {after_time} exceeds maximum fetch interval of {FETCH_INTERVAL_MAXIMUM_MIN} minutes. "
+                    f"Adjusting to {adjusted_after_str}"
+                )
+                return adjusted_after_str
+
+            return after_time
+
+        except Exception as e:
+            log_and_return_error(f"Error validating after_time {after_time}: {str(e)}")
+            return
+
+    def get_api_cursor_parameter(self):
+        """
+        Get the cursor parameter value for the GraphQL API call.
 
         Returns:
             str or None: The cursor to use for pagination, None if fresh fetch
         """
-        if self.should_continue_previous_run():
-            demisto.debug(f"Using pagination cursor: {self.end_cursor}")
-            return self.end_cursor
-        else:
-            demisto.debug("No pagination cursor - fresh fetch")
-            return None
+        return self.end_cursor
 
     def _save_pagination_context(self):
-        """
-        Save pagination context when there are more pages to fetch
-        """
-        global API_END_CURSOR
 
-        demisto.info(f"End cursor found: {API_END_CURSOR}, saving pagination context")
-
-        # Create last run data with pagination context using enums
         last_run_data = {
             DemistoParams.TIME: self.api_start_run_time,
             WizApiResponse.END_CURSOR: API_END_CURSOR,
-            WizApiVariables.AFTER: self.get_after_time(),  # Current API after value
-            WizApiVariables.BEFORE: self.get_before_time()  # Current API before value
+            WizApiVariables.AFTER: self.stored_after,
+            WizApiVariables.BEFORE: self.stored_after
         }
 
         # Save using setLastRun
         demisto.setLastRun(last_run_data)
 
-        demisto.info("Pagination in progress - saved context to last run")
-        demisto.debug(
-            f"Saved pagination context - {WizApiResponse.END_CURSOR}: {API_END_CURSOR}, {WizApiVariables.AFTER}: {self.get_after_time()}, {WizApiVariables.BEFORE}: {self.get_before_time()}")
+        demisto.debug(f"Fetch incidents didn't complete - set last run data to {json.dumps(last_run_data)}")
 
     def _clear_pagination_context(self):
         """
@@ -1118,14 +1342,14 @@ class FetchIncident:
         last_run_data = {
             DemistoParams.TIME: self.api_start_run_time,
             WizApiResponse.END_CURSOR: None,
-            WizApiVariables.AFTER: self.get_after_time(),  # Current API after value (will be previous before)
-            WizApiVariables.BEFORE: self.api_start_run_time  # Current time
+            WizApiVariables.AFTER: self.stored_before,
+            WizApiVariables.BEFORE: self.api_start_run_time
         }
 
         # Save using setLastRun
         demisto.setLastRun(last_run_data)
 
-        demisto.info(f"Pagination complete - cleared context and updated last run to {self.api_start_run_time}")
+        demisto.info(f"Fetch incidents completed - set last run data to {json.dumps(last_run_data)}")
 
     def handle_post_incident_creation(self):
         """
@@ -1135,9 +1359,7 @@ class FetchIncident:
         Returns:
             None
         """
-        global API_END_CURSOR
-
-        if API_END_CURSOR:
+        if self.should_continue_previous_run():
             self._save_pagination_context()
         else:
             self._clear_pagination_context()
@@ -1201,8 +1423,16 @@ def get_token():
     return TOKEN
 
 
-def get_entries(query, variables, wiz_type):
+def set_api_end_cursor(page_info):
     global API_END_CURSOR
+
+    if page_info.get(WizApiResponse.HAS_NEXT_PAGE):
+        API_END_CURSOR = page_info.get(WizApiResponse.END_CURSOR,"")
+    else:
+        API_END_CURSOR = None
+
+
+def get_entries(query, variables, wiz_type):
     if not TOKEN:
         get_token()
 
@@ -1229,10 +1459,11 @@ def get_entries(query, variables, wiz_type):
         if WizApiResponse.NODES in response_json[WizApiResponse.DATA][wiz_type]:
             new_entries = response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES]
             page_info = response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.PAGE_INFO]
-            API_END_CURSOR = page_info.get(WizApiResponse.END_CURSOR)
         else:
             new_entries = response_json[WizApiResponse.DATA][wiz_type]
             page_info = None
+
+        set_api_end_cursor(page_info)
 
         return new_entries, page_info
 
@@ -1320,45 +1551,6 @@ def build_incidents(detection):
         DemistoParams.SEVERITY: translate_severity(detection),
         DemistoParams.MIRROR_ID: str(detection[WizApiVariables.ID]),
     }
-
-
-def get_last_run_time():
-    """
-    Gets the last run time for fetch incidents.
-    If the last run time is more than MAX_DAYS_FIRST_FETCH_DETECTIONS days ago,
-    it returns MAX_DAYS_FIRST_FETCH_DETECTIONS days ago instead.
-
-    Returns:
-        str: ISO formatted timestamp string for the last run time
-    """
-    demisto_params = demisto.params()
-
-    last_run = demisto.getLastRun().get(DemistoParams.TIME)
-
-    if not last_run:
-        demisto.info("First Time Fetch")
-        first_fetch_param = demisto_params.get(DemistoParams.FIRST_FETCH, DEFAULT_FETCH_BACK).strip()
-        last_run = get_fetch_timestamp(first_fetch_param)
-        return last_run
-
-    # Check if last_run is older than MAX_DAYS_FIRST_FETCH_DETECTIONS
-    try:
-        last_run_datetime = datetime.strptime(last_run, DEMISTO_OCCURRED_FORMAT)
-        max_days_ago = datetime.now() - timedelta(days=MAX_DAYS_FIRST_FETCH_DETECTIONS)
-
-        if last_run_datetime < max_days_ago:
-            demisto.info(
-                f"Last run time ({last_run}) is more than {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago. "
-                f"Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as the fetch time."
-            )
-
-            last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
-    except Exception as e:
-        demisto.error(f"Error parsing last run time: {str(e)}. Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as fetch time.")
-        max_days_ago = datetime.now() - timedelta(days=MAX_DAYS_FIRST_FETCH_DETECTIONS)
-        last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
-
-    return last_run
 
 
 def extract_params_from_integration_settings(advanced_params=False):
@@ -1476,9 +1668,9 @@ def fetch_incidents():
         severity=integration_settings_params[WizInputParam.SEVERITY],
         detection_origin=integration_settings_params[WizInputParam.ORIGIN],
         detection_cloud_account_or_cloud_organization=integration_settings_params[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG],
-        after_time=fetch_manager.get_after_time(),
-        before_time=fetch_manager.get_before_time(),
-        end_cursor=fetch_manager.get_end_cursor(),
+        after_time=fetch_manager.get_api_after_parameter(),
+        before_time=fetch_manager.get_api_before_parameter(),
+        end_cursor=fetch_manager.get_api_cursor_parameter(),
         max_fetch=API_MAX_FETCH,
     )
 
@@ -1498,7 +1690,6 @@ def fetch_incidents():
 
     if incidents:
         demisto.info(f"Successfully fetched and created {len(incidents)} incidents")
-        fetch_manager.log_current_state()
     else:
         demisto.info(f"No new incidents to fetch")
 
@@ -1926,7 +2117,9 @@ def validate_severity(severity):
     Validates if the severity parameter is valid
 
     Args:
-        severity (str): The severity level to validate
+        severity (str or list): The severity level(s) to validate. Can be:
+                               - Single severity string (returns that severity + all higher levels)
+                               - List of severity strings (returns only specified severities)
 
     Returns:
         ValidationResponse: Response with validation results and severity list
@@ -1936,30 +2129,42 @@ def validate_severity(severity):
     if not severity:
         return response
 
-    severity = severity.upper()
-    valid_severities = [WizSeverity.CRITICAL, WizSeverity.HIGH, WizSeverity.MEDIUM, WizSeverity.LOW, WizSeverity.INFORMATIONAL]
+    # Define severity hierarchy (highest to lowest)
+    severity_hierarchy = [
+        WizSeverity.CRITICAL,
+        WizSeverity.HIGH,
+        WizSeverity.MEDIUM,
+        WizSeverity.LOW,
+        WizSeverity.INFORMATIONAL,
+    ]
 
-    if severity not in valid_severities:
-        error_msg = f"Invalid severity: {severity}. Valid severities are: {', '.join(valid_severities)}."
+    valid_severities_set = set(severity_hierarchy)
+
+    # Handle list of severities (multi-selection)
+    if isinstance(severity, list):
+        severity_list = [s.upper() for s in severity if s]  # Filter out empty strings
+
+        # Validate each severity in the list
+        invalid_severities = [s for s in severity_list if s not in valid_severities_set]
+        if invalid_severities:
+            error_msg = f"Invalid severities: {', '.join(invalid_severities)}. Valid severities are: {', '.join(severity_hierarchy)}."
+            demisto.error(error_msg)
+            return ValidationResponse.create_error(error_msg)
+
+        response.severity_list = severity_list
+        return response
+
+    # Handle single severity string (backward compatibility - includes higher levels)
+    severity = severity.upper()
+
+    if severity not in valid_severities_set:
+        error_msg = f"Invalid severity: {severity}. Valid severities are: {', '.join(severity_hierarchy)}."
         demisto.error(error_msg)
         return ValidationResponse.create_error(error_msg)
 
-    # Return severity list based on selected level (inclusive of higher levels)
-    severity_map = {
-        WizSeverity.CRITICAL: [WizSeverity.CRITICAL],
-        WizSeverity.HIGH: [WizSeverity.CRITICAL, WizSeverity.HIGH],
-        WizSeverity.MEDIUM: [WizSeverity.CRITICAL, WizSeverity.HIGH, WizSeverity.MEDIUM],
-        WizSeverity.LOW: [WizSeverity.CRITICAL, WizSeverity.HIGH, WizSeverity.MEDIUM, WizSeverity.LOW],
-        WizSeverity.INFORMATIONAL: [
-            WizSeverity.CRITICAL,
-            WizSeverity.HIGH,
-            WizSeverity.MEDIUM,
-            WizSeverity.LOW,
-            WizSeverity.INFORMATIONAL,
-        ],
-    }
-
-    response.severity_list = severity_map[severity]
+    # Return severity and all higher levels for single selection
+    severity_index = severity_hierarchy.index(severity)
+    response.severity_list = severity_hierarchy[:severity_index + 1]
     return response
 
 
@@ -1978,15 +2183,7 @@ def validate_status(status):
     if not status:
         return response
 
-    # Handle case where status is a comma-separated string
-    if isinstance(status, str) and "," in status:
-        statuses = [s.strip() for s in status.split(",")]
-    elif isinstance(status, str):
-        statuses = [status.upper()]  # Convert to uppercase for comparison
-    elif isinstance(status, list):
-        statuses = [s.upper() for s in status]  # Convert all to uppercase
-    else:
-        statuses = [str(status).upper()]  # Convert non-string to string and uppercase
+    statuses = argToList(status, transform=lambda s: str(s).upper())
 
     valid_statuses = [WizStatus.OPEN, WizStatus.IN_PROGRESS, WizStatus.REJECTED, WizStatus.RESOLVED]
 
@@ -2048,7 +2245,6 @@ def validate_end_cursor(end_cursor):
     
     try:
         import base64
-        # Try to decode the base64 string
         base64.b64decode(end_cursor, validate=True)
         return True, None
     except Exception as e:
@@ -2173,6 +2369,7 @@ def validate_all_detection_parameters(parameters_dict):
         is_valid, error_message = validate_end_cursor(end_cursor)
         if not is_valid:
             return False, error_message, None
+        validated_values[WizApiResponse.END_CURSOR] = end_cursor
 
     # Check for conflicting time parameters
     if creation_minutes_back and after_time:
@@ -2208,6 +2405,8 @@ def validate_all_detection_parameters(parameters_dict):
         is_valid, error_message = validate_after_and_before_timestamps(after_time, before_time)
         if not is_valid:
             return False, error_message, None
+        validated_values[WizApiVariables.AFTER] = after_time
+        validated_values[WizApiVariables.BEFORE] = before_time
 
     # Validate detection_id if provided
     if detection_id:
@@ -2283,8 +2482,6 @@ def validate_all_detection_parameters(parameters_dict):
 
     validated_values[WizInputParam.RULE_MATCH_NAME] = rule_match_name
     validated_values[WizInputParam.PROJECT_ID] = project_id
-    validated_values[WizApiVariables.AFTER] = after_time
-    validated_values[WizApiResponse.END_CURSOR] = end_cursor
 
     return True, None, validated_values
 
@@ -2850,9 +3047,6 @@ def get_filtered_detections(
             - If return_page_info=False: List of detections or error message (backward compatible)
             - If return_page_info=True: Tuple of (detections_list, page_info_dict) or (error_message, {})
     """
-    # Determine effective api_limit (max_fetch takes precedence for pagination scenarios)
-    effective_api_limit = max_fetch if max_fetch is not None else api_limit
-
     # Create parameters dictionary
     parameters_dict = {
         WizInputParam.DETECTION_ID: detection_id,
@@ -2880,7 +3074,7 @@ def get_filtered_detections(
         return error_message
 
     detection_variables = PULL_DETECTIONS_VARIABLES.copy()
-    detection_variables[WizApiVariables.FIRST] = api_limit
+    detection_variables[WizApiVariables.FIRST] = max_fetch if max_fetch is not None else api_limit
     detection_variables = apply_all_detection_filters(detection_variables, validated_values)
 
     wiz_detections = query_detections(variables=detection_variables, paginate=paginate)

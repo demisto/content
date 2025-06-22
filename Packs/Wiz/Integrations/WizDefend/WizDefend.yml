@@ -52,16 +52,15 @@ configuration:
   section: Collect
 - name: severity
   additionalinfo: 'The system will fetch detections of the selected severity level and all higher severity levels.'
-  display: Minimum detection severity to fetch.
+  display: Detection severities to fetch.
   options:
-  - None
   - Critical
   - High
   - Medium
   - Low
-  defaultvalue: High
-  type: 15
-  required: false
+  defaultvalue: High,Critical
+  type: 16
+  required: true
   section: Collect
 - name: type
   display: Type of detections to fetch.
