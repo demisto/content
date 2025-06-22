@@ -1096,17 +1096,41 @@ class FetchIncident:
         """
         demisto.info(f"Resetting fetch parameters: {reason}")
 
-        safe_after_str = self.last_run_time if self.last_run_time else self.api_start_run_time
+        if self.last_run_time:
+            safe_after_str = self.last_run_time
+        else:
+            # Calculate safe_after_str as api_start_run_time - incidentFetchInterval
+            try:
+                demisto_params = demisto.params()
+                fetch_interval_str = demisto_params.get(DemistoParams.INCIDENT_FETCH_INTERVAL, FETCH_INTERVAL_MINIMUM_MIN)
+
+                # Validate the fetch interval using existing validation
+                validation_response = validate_fetch_interval(fetch_interval_str)
+                if not validation_response.is_valid:
+                    demisto.error(f"Invalid fetch interval, using default: {validation_response.error_message}")
+                    fetch_interval_minutes = fetch_interval_str  # Default fallback
+                else:
+                    fetch_interval_minutes = validation_response.minutes_value
+
+                # Calculate safe_after_str as current time minus fetch interval
+                api_start_datetime = datetime.strptime(self.api_start_run_time, DEMISTO_OCCURRED_FORMAT)
+                safe_after_datetime = api_start_datetime - timedelta(minutes=fetch_interval_minutes)
+                safe_after_str = safe_after_datetime.strftime(DEMISTO_OCCURRED_FORMAT)
+
+                demisto.debug(
+                    f"Calculated safe_after_str using fetch interval of {fetch_interval_minutes} minutes: {safe_after_str}")
+
+            except Exception as e:
+                demisto.error(f"Error calculating safe_after_str with fetch interval: {str(e)}. Using api_start_run_time")
+                safe_after_str = self.api_start_run_time
 
         # Reset to safe values
         self.end_cursor = None
         self.stored_after = safe_after_str
         self.stored_before = self.api_start_run_time  # Current time as before
 
-        demisto.info(
-            f"Reset fetch incidents parameter complete - "
-            f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None"
-        )
+        demisto.info(f"Reset fetch incidents parameter complete - "
+                     f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None")
 
     def _validate_and_reset_params(self):
         """
