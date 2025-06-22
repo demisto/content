@@ -167,7 +167,15 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
     response = None
     try:
         response = demisto._platformAPICall(path=GET_CTS_ACCOUNTS_TOKEN, method="POST", data={"request_data": request_data})
-        res_json = json.loads(response["data"])
+        raw_data = response.get("data")
+        if not raw_data:
+            raise ValueError(f"No 'data' field in CTS response: {response}")
+        if isinstance(raw_data, str):
+            res_json = json.loads(raw_data)
+        elif isinstance(raw_data, dict):
+            res_json = raw_data
+        else:
+            raise ValueError(f"Unexpected type for response['data']: {type(raw_data)}")
         credentials = res_json.get("data")
         if not credentials:
             raise KeyError("Did not receive any credentials from CTS.")
@@ -175,10 +183,11 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         demisto.info(f"{account_id}: Received credentials. Expiration time: {expiration_time}")
         return credentials
     except Exception as e:
-        raise DemistoException(f"Failed to get credentials from CTS for {cloud_type}, {response=}.") from e
+        demisto.debug(f"Error while retrieving credentials: {str(e)}. Response: {response}")
+        raise DemistoException(f"Failed to get credentials from CTS: {str(e)}.")
 
 
-def get_accounts_by_connector_id(connector_id: str, max_results: int = 29) -> list:
+def get_accounts_by_connector_id(connector_id: str, max_results: int = 5) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
     Args:
@@ -239,7 +248,7 @@ def _check_account_permissions(
 
 
 def run_permissions_check_for_accounts(
-    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: None | int = 10
+    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: None | int = 5
 ) -> str | CommandResults:
     """
     Runs a permission check function for each account associated with a connector concurrently.
