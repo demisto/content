@@ -415,28 +415,30 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected
     assert len(return_results_mocker.call_args[0][0].outputs) == expected_incidents_length
 
 
-def test_query_argument_with_unicode_escape(mocker):
+def test_query_argument_with_unicode_escape(mocker, special_char):
     """
     Given:
-       - Case A: A query to search incidents with unicode escape
+       - A query to search incidents with unicode escape
 
     When:
-       - Executing the SearchIncidentsV2 command
+       - Executing the SearchIncidentsV2 command and check arg validation.
 
     Then:
-       - Case A: Make sure the query format is correct.
+       - Make sure the query format is correct and is_valid_args method is not failed.
     """
     import SearchIncidentsV2
 
+    special_chars = ["\n", "\t", "\\", '"', "'", "\7", "\r", "\\x", "\\X", "\\N", "\\u", "\\U"]
+    args_array = [
+        {"query": f"`(username:'user{special_char}sername') and (name:'name_1' or name:'name_2')`"}
+        for special_char in special_chars
+    ]
     mocker.patch.object(SearchIncidentsV2, "execute_command", side_effect=execute_get_incidents_command_side_effect(1))
 
-    mocker.patch.object(
-        demisto, "args", return_value={"query": "`(username:'user\\username') and (name:'name_1' or name:'name_2')`"}
-    )
+    mocker.patch.object(demisto, "args", side_effect=args_array)
     return_results_mocker = mocker.patch.object(SearchIncidentsV2, "return_results")
     mocker.patch("SearchIncidentsV2.get_demisto_version", return_value={})
-
-    SearchIncidentsV2.main()
-
-    assert return_results_mocker.called
-    assert len(return_results_mocker.call_args[0][0].outputs) == 100
+    for _ in special_chars:
+        SearchIncidentsV2.main()
+        assert return_results_mocker.called
+        assert len(return_results_mocker.call_args[0][0].outputs) == 1

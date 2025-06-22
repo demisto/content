@@ -3,7 +3,6 @@ from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-special = ["n", "t", "\\", '"', "'", "7", "r"]
 DEFAULT_LIMIT = 100
 DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
