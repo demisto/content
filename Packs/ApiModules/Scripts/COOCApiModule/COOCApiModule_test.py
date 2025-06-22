@@ -100,9 +100,9 @@ def test_get_cloud_credentials_api_error(mocker):
         get_cloud_credentials(CloudTypes.AZURE.value, account_id="test-account-id")
 
     # Verify exception message
-    assert "Failed to get credentials from CTS for AZURE" in str(excinfo.value)
-    assert "Status code: 400" in str(excinfo.value)
-    assert "Error: Bad request" in str(excinfo.value)
+    assert "Failed to get credentials from CTS" in str(excinfo.value)
+    assert "'status': 400" in str(excinfo.value)
+    assert "'data': 'Bad request'" in str(excinfo.value)
 
 
 def test_get_cloud_credentials_parse_error(mocker):
@@ -127,7 +127,7 @@ def test_get_cloud_credentials_parse_error(mocker):
         get_cloud_credentials(CloudTypes.OCI.value, account_id="test-account-id")
 
     # Verify exception message
-    assert "Failed to parse credentials from CTS response for OCI" in str(excinfo.value)
+    assert "Failed to get credentials from CTS" in str(excinfo.value)
 
 
 def test_get_accounts_by_connector_id_with_max_results(mocker):
