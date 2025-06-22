@@ -321,7 +321,7 @@ def test_create_user_with_additional_fields():
         },
         "Email": "full@test.com",
         "ID": "123",
-        "RiskLevel ": "Low",
+        "RiskLevel": "Low",
         "Source": "FullTestSource",
         "Username": "fulluser",
     }
@@ -356,7 +356,7 @@ def test_create_user_without_additional_fields():
     expected = {
         "Email": "full@test.com",
         "ID": "123",
-        "RiskLevel ": "Low",
+        "RiskLevel": "Low",
         "Source": "FullTestSource",
         "Username": "fulluser",
     }
@@ -1055,7 +1055,7 @@ class TestGetUserData:
         outputs_key_field = "PaloAltoNetworksXDR"
         command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name})
         mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
-        expected_account = {"ID": "xdr_user", "RiskLevel ": "HIGH", "Source": "Cortex XDR - IR", "Username": "xdr_user"}
+        expected_account = {"ID": "xdr_user", "RiskLevel": "HIGH", "Source": "Cortex XDR - IR", "Username": "xdr_user"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1084,7 +1084,7 @@ class TestGetUserData:
         user_name = "azure_user"
         command = Command("Azure Risky Users", "azure-risky-user-get", {"user_id": user_name})
         mock_outputs = {"id": "azure_user", "riskLevel": "HIGH"}
-        expected_account = {"ID": "azure_user", "RiskLevel ": "HIGH", "Source": "Azure Risky Users", "Username": "azure_user"}
+        expected_account = {"ID": "azure_user", "RiskLevel": "HIGH", "Source": "Azure Risky Users", "Username": "azure_user"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1258,7 +1258,7 @@ def test_get_data_with_found_user(mocker: MockerFixture):
     )
 
     assert result[1]
-    assert result[1].get("Status") == "found."
+    assert result[1].get("Status") == "found"
 
 
 def test_get_data_without_found_user(mocker: MockerFixture):

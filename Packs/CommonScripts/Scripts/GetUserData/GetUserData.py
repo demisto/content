@@ -501,7 +501,7 @@ def get_data(
         if len(outputs) == 1:  # contains only the source key
             outputs["Status"] = f"User not found - userId: {arg_value}."
         else:
-            outputs["Status"] = "found."
+            outputs["Status"] = "found"
         return readable_outputs, outputs
     return [], {}
 
