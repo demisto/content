@@ -126,7 +126,7 @@ def create_user(
         "ID": id,
         "Username": username,
         "Email": email_address,
-        "RiskLevel ": risk_level,
+        "RiskLevel": risk_level,
     }
     if additional_fields:
         user["AdditionalFields"] = kwargs  # type: ignore
@@ -625,40 +625,40 @@ def main():
                     users_outputs.append(outputs)
                     users_readables.extend(readable_output)
 
-                #################################
-                ### Running for Cortex XDR - IR (XDR) ###
-                #################################
-                readable_output, outputs = get_data(
-                    modules=modules,
-                    brand_name="Cortex XDR - IR",
-                    command_name="xdr-list-risky-users",
-                    arg_name="user_id",
-                    arg_value=user_name,
-                    cmd=xdr_get_risky_user,
-                    additional_fields=additional_fields,
-                )
-                if readable_output and outputs:
-                    users_outputs.append(outputs)
-                    users_readables.extend(readable_output)
-
-                #################################
-                ### Running for Cortex XDR - IR (Core) ###
-                #################################
-                readable_output, outputs = get_data(
-                    modules=modules,
-                    brand_name="Cortex Core - IR",
-                    command_name="core-list-risky-users",
-                    arg_name="user_id",
-                    arg_value=user_name,
-                    cmd=core_get_risky_user,
-                    additional_fields=additional_fields,
-                )
-                if readable_output and outputs:
-                    users_outputs.append(outputs)
-                    users_readables.extend(readable_output)
-
             else:
                 demisto.debug(f"Skipping commands that do not support domain in user_name: {user_name}")
+
+            #################################
+            ### Running for Cortex XDR - IR (XDR) ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="Cortex XDR - IR",
+                command_name="xdr-list-risky-users",
+                arg_name="user_id",
+                arg_value=user_name,
+                cmd=xdr_get_risky_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.append(outputs)
+                users_readables.extend(readable_output)
+
+            #################################
+            ### Running for Cortex XDR - IR (Core) ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="Cortex Core - IR",
+                command_name="core-list-risky-users",
+                arg_name="user_id",
+                arg_value=user_name,
+                cmd=core_get_risky_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.append(outputs)
+                users_readables.extend(readable_output)
 
         #################################
         ### Running for Users IDs ###
@@ -711,7 +711,7 @@ def main():
             #################################
             readable_output, outputs = get_data(
                 modules=modules,
-                brand_name="Azure Risky Users",
+                brand_name="AzureRiskyUsers",
                 command_name="azure-risky-user-get",
                 arg_name="id",
                 arg_value=user_id,
