@@ -278,7 +278,7 @@ There is no context output for this command.
 ### core-api-file-delete
 
 ***
-Delete a file from Cortex XSOAR by entry_id.
+Delete a war room (investigation) file entry.
 
 #### Base Command
 
@@ -297,7 +297,7 @@ There is no context output for this command.
 ### core-api-file-attachment-delete
 
 ***
-Delete the attachment from the incident and from the Cortex XSOAR server.
+Delete a file attachment from an incident — specifically from the incident’s file attachments (not from the war room).
 
 #### Base Command
 
