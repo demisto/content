@@ -129,14 +129,16 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
         return after
 
     def authenticate(self):
+        demisto.debug(f"Starting authentication. verify={self.request.verify}")
         credentials = base64.b64encode(f"{self.credentials.identifier}:{self.credentials.password}".encode()).decode()
         request = IntegrationHTTPRequest(
             method=Method.POST,
             url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/platformtoken",  # type: ignore[arg-type]
             headers={"Authorization": f"Basic {credentials}"},
             data={"grant_type": "client_credentials", "scope": "siem"},
-            verify=not self.request.verify,
+            verify=self.request.verify,
         )
+
 
         response = self.call(request)
         if response.ok:
@@ -203,6 +205,7 @@ def main(command: str, demisto_params: dict):
 
     try:
         if command == "test-module":
+            demisto.debug(f"Starting test-module execution. {demisto_params=}")
             get_events.run()
             demisto.results("ok")
 
