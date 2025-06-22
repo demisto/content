@@ -51,11 +51,8 @@ class AWSServices(StrEnum):
     RDS = "rds"
     EKS = "eks"
     LAMBDA = "lambda"
+    CloudTrail = "cloudtrail"
 
-
-# =================== #
-# Helpers
-# =================== #
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
     def default(self, obj):
@@ -914,6 +911,87 @@ class RDS:
             )
 
 
+class CloudTrail:
+    service = AWSServices.CloudTrail
+
+    @staticmethod
+    def start_logging_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Starts the recording of AWS API calls and log file delivery for a trail.
+        """
+        name = args.get('name')
+        
+        try:
+            response = client.start_logging(Name=name)
+            
+            return CommandResults(
+                readable_output=f"Successfully started logging for CloudTrail: {name}",
+                raw_response=response
+            )
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Error starting logging for CloudTrail {name}: {str(e)}"
+            )
+
+
+    @staticmethod
+    def update_trail_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Updates trail settings that control what events you are logging, and how to handle log files.
+        Changes to a trail do not require stopping the CloudTrail service.
+
+        Args:
+            client (BotoClient): The boto3 client for CloudTrail service
+            args (Dict[str, Any]): Command arguments including trail name and configuration options
+
+        Returns:
+            CommandResults: Results of the operation with update information
+        """
+        try:
+            kwargs = {
+                "Name": args.get("name"),
+                "S3BucketName": args.get("s3_bucket_name"),
+                "S3KeyPrefix": args.get("s3_key_prefix"),
+                "SnsTopicName": args.get("sns_topic_name"),
+                "IncludeGlobalServiceEvents": arg_to_bool_or_none(args.get("include_global_service_events")),
+                "IsMultiRegionTrail": arg_to_bool_or_none(args.get("is_multi_region_trail")),
+                "EnableLogFileValidation": arg_to_bool_or_none(args.get("enable_log_file_validation")),
+                "CloudWatchLogsLogGroupArn": args.get("cloud_watch_logs_log_group_arn"),
+                "CloudWatchLogsRoleArn": args.get("cloud_watch_logs_role_arn"),
+                "KMSKeyId": args.get("kms_key_id"),
+            }
+            
+            remove_nulls_from_dictionary(kwargs)
+            
+            response = client.update_trail(**kwargs)
+            
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                trail_data = response.get("Trail", {})
+                readable_output = f"Successfully updated CloudTrail: {args.get('name')}"
+                
+                if trail_data:
+                    readable_output += "\n\nUpdated Trail Details:"
+                    readable_output += tableToMarkdown("", trail_data)
+                
+                return CommandResults(
+                    readable_output=readable_output,
+                    outputs_prefix="AWS.CloudTrail.Trail",
+                    outputs=trail_data,
+                    outputs_key_field="TrailARN",
+                    raw_response=response
+                )
+            else:
+                return CommandResults(
+                    entry_type=EntryType.ERROR,
+                    readable_output=f"Failed to update CloudTrail. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                )
+                
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Error updating CloudTrail {args.get('name')}: {str(e)}"
+            )        
 # CONCURRENCY_LIMIT = 25           # Rate limit by AWS
 # SEMAPHORE = asyncio.Semaphore(CONCURRENCY_LIMIT)
 
