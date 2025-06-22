@@ -7706,6 +7706,9 @@ script:
     - contextPath: PANOS.ShowSystemInfo.Result.url_filtering_version
       description: The URL filtering content version.
       type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.global_protect_client_package_version
+      description: The GlobalProtect client package version.
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.advanced_routing
       description: Advanced routing feature.
       type: String
@@ -8095,6 +8098,13 @@ script:
       description: A comma-separated list of severities that must be in alert/default or higher mode.
       isArray: true
       name: minimum_alert_severities
+    - auto: PREDEFINED
+      defaultValue: 'no'
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
     description: Checks the configured vulnerability profiles to ensure at least one meets best practices.
     name: pan-os-hygiene-check-vulnerability-profiles
     outputs:
@@ -8154,6 +8164,13 @@ script:
     - defaultValue: medium,low
       description: A CSV list of severities that must be in alert/default or higher mode.
       name: minimum_alert_severities
+    - auto: PREDEFINED
+      defaultValue: 'no'
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
     description: Checks the configured anti-spyware profiles to ensure at least one meets best practices.
     name: pan-os-hygiene-check-spyware-profiles
     outputs:
@@ -8187,7 +8204,14 @@ script:
   - arguments:
     - description: The string to filter to only check a given device.
       name: device_filter_string
-    description: Checks the configured URL filtering profiles to ensure at least one meets best practices.
+    - auto: PREDEFINED
+      defaultValue: 'no'
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Checks the configured URL filtering profiles to ensure at least one meets best practices of blocking the following URL categories - abused-drugs, adult, command-and-control, compromised-websites, gambling, grayware, hacking, malware, phishing, questionable, ransomware, scanning-activity, weapons.
     name: pan-os-hygiene-check-url-filtering-profiles
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
@@ -9804,7 +9828,7 @@ script:
       type: Number
       required: true
       isArray: false
-  dockerimage: demisto/pan-os-python:1.0.0.3273320
+  dockerimage: demisto/pan-os-python:1.0.0.3545654
   isfetch: true
   runonce: false
   script: ''

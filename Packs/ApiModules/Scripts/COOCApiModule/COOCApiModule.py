@@ -45,13 +45,12 @@ class HealthCheckError:
     def __init__(self, account_id: str, connector_id: str, message: str, error_type: ErrorType):
         self.account_id = account_id
         self.connector_id = connector_id
-        self.message = message
+        self.message = f"{account_id}: {message}"
         self.error_type = error_type
+        # Determine classification based on error type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
     def to_dict(self) -> dict:
-        # Determine classification based on error type
-
         return {
             "account_id": self.account_id,
             "connector_id": self.connector_id,
@@ -68,14 +67,17 @@ class HealthCheck:
         self.errors: list[HealthCheckError] = []
         self.connector_id = connector_id
 
-    def error(self, error: HealthCheckError) -> None:
+    def error(self, error: HealthCheckError | list[HealthCheckError]) -> None:
         """
-        Adds a health check error to the results.
+        Adds a health check error or list of errors to the results.
 
         Args:
-            error (HealthCheckError): The error to add to the results.
+            error (HealthCheckError | list[HealthCheckError]): The error(s) to add to the results.
         """
-        self.errors.append(error)
+        if isinstance(error, list):
+            self.errors.extend(error)
+        else:
+            self.errors.append(error)
 
     def summarize(self) -> CommandResults | str:
         """Summarizes the health check results by calculating severity based on error classifications.
@@ -91,50 +93,11 @@ class HealthCheck:
             """
             return EntryType.ERROR if HealthStatus.ERROR in [error.classification for error in self.errors] else EntryType.WARNING
 
-        def _aggregate_error_messages(errors: list[HealthCheckError]) -> str:
-            """
-            Combines multiple error messages into a single string with line breaks.
-            """
-            return "\n".join([error.message for error in errors])
+        if not self.errors:
+            return HealthStatus.OK.value
 
-        def _aggregate_errors() -> list[dict]:
-            """
-            Aggregates errors by account and error type.
-            """
-            # Structure: {account_id: {error_type: [errors]}}
-            aggregated_by_account_and_type: dict[str, dict[ErrorType, list[HealthCheckError]]] = {}
-
-            for error in self.errors:
-                account_id = error.account_id
-                error_type = error.error_type
-
-                # Initialize nested dictionaries if they don't exist
-                if account_id not in aggregated_by_account_and_type:
-                    aggregated_by_account_and_type[account_id] = {}
-
-                if error_type not in aggregated_by_account_and_type[account_id]:
-                    aggregated_by_account_and_type[account_id][error_type] = []
-
-                aggregated_by_account_and_type[account_id][error_type].append(error)
-
-            aggregated_errors = []
-            for account_id, error_types in aggregated_by_account_and_type.items():
-                for error_type, errors in error_types.items():
-                    combined_error = HealthCheckError(
-                        account_id=account_id,
-                        connector_id=self.connector_id,
-                        message=f"{account_id}: {_aggregate_error_messages(errors)}",
-                        error_type=error_type,
-                    )
-                    aggregated_errors.append(combined_error.to_dict())
-
-            return aggregated_errors
-
-        return (
-            CommandResults(entry_type=_calculate_severity(), content_format=EntryFormat.JSON, raw_response=_aggregate_errors())
-            if self.errors
-            else HealthStatus.OK.value
-        )
+        error_list = [error.to_dict() for error in self.errors]
+        return CommandResults(entry_type=_calculate_severity(), content_format=EntryFormat.JSON, raw_response=error_list)
 
 
 def get_connector_id() -> str | None:
@@ -188,7 +151,6 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         raise ValueError(f"Missing {name} for {cloud_type}")
 
     cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
-    demisto.info(f"Cloud credentials request context: {cloud_info_context}")
 
     request_data = {
         "connector_id": cloud_info_context.get("connectorID"),
@@ -201,33 +163,30 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         request_data["scopes"] = scopes
 
     demisto.info(f"Request data for credentials retrieval: {request_data}")
-
-    response = demisto._platformAPICall(path=GET_CTS_ACCOUNTS_TOKEN, method="POST", data={"request_data": request_data})
-
-    status_code = response.get("status")
-    if status_code != 200:
-        error_detail = response.get("data", "No error message provided")
-        raise DemistoException(
-            f"Failed to get credentials from CTS for {cloud_type}. Status code: {status_code}. Error: {error_detail}"
-        )
-
+    response = None
     try:
-        res_json = json.loads(response["data"])
+        response = demisto._platformAPICall(path=GET_CTS_ACCOUNTS_TOKEN, method="POST", data={"request_data": request_data})
+        raw_data = response.get("data")
+        if not raw_data:
+            raise ValueError(f"No 'data' field in CTS response: {response}")
+        if isinstance(raw_data, str):
+            res_json = json.loads(raw_data)
+        elif isinstance(raw_data, dict):
+            res_json = raw_data
+        else:
+            raise ValueError(f"Unexpected type for response['data']: {type(raw_data)}")
         credentials = res_json.get("data")
         if not credentials:
             raise KeyError("Did not receive any credentials from CTS.")
         expiration_time = credentials.get("expiration_time")
-        demisto.info(f"Received credentials. Expiration time: {expiration_time}")
+        demisto.info(f"{account_id}: Received credentials. Expiration time: {expiration_time}")
         return credentials
-    except (
-        json.JSONDecodeError,
-        KeyError,
-        TypeError,
-    ) as e:
-        raise DemistoException(f"Failed to parse credentials from CTS response for {cloud_type}.") from e
+    except Exception as e:
+        demisto.debug(f"{account_id}: Error while retrieving credentials: {str(e)}. Response: {response}")
+        raise DemistoException(f"Failed to get credentials from CTS: {str(e)}. Response: {response}")
 
 
-def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> list:
+def get_accounts_by_connector_id(connector_id: str, max_results: int | None = None) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
     Args:
@@ -260,14 +219,16 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
 
 
 def _check_account_permissions(
-    account: dict, connector_id: str, permission_check_func: Callable[[str, str], HealthCheckError]
+    account: dict, connector_id: str, shared_creds: dict, permission_check_func: Callable[[dict, str, str], HealthCheckError]
 ) -> HealthCheckError | None:
-    """
-    Helper function to check permissions for a single account.
+    """Helper function to check permissions for a single account.
+
     Args:
         account (dict): Account information.
         connector_id (str): The connector ID.
+        shared_creds (dict): Pre-fetched credentials to reuse across all accounts.
         permission_check_func (callable): Function that implements the permission check.
+
     Returns:
         Any: Result of the permission check.
     """
@@ -277,7 +238,7 @@ def _check_account_permissions(
         return None
 
     try:
-        return permission_check_func(account_id, connector_id)
+        return permission_check_func(shared_creds, account_id, connector_id)
     except Exception as e:
         demisto.error(f"Error checking permissions for account {account_id}: {str(e)}")
         return HealthCheckError(
@@ -289,32 +250,55 @@ def _check_account_permissions(
 
 
 def run_permissions_check_for_accounts(
-    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: None | int = 10
+    connector_id: str, cloud_type: str, permission_check_func: Callable[[dict, str, str], Any], max_workers: None | int = 5
 ) -> str | CommandResults:
-    """
-    Runs a permission check function for each account associated with a connector concurrently.
+    """Runs a permission check function for each account associated with a connector concurrently.
+
     Args:
         connector_id (str): The ID of the connector to fetch accounts for.
+        cloud_type (str): The cloud provider type (AWS, GCP, AZURE, OCI).
         permission_check_func (callable): Function that implements the permission check.
-                                         Should accept account_id and connector_id parameters
-                                         and return a HealthCheck.
-        max_workers (int, optional): Maximum number of worker threads. Defaults to 10.
+            Should accept shared_creds, account_id and connector_id parameters
+            and return a HealthCheck.
+        max_workers (int, optional): Maximum number of worker threads. Defaults to 5.
+
     Returns:
         Either "ok" string or CommandResults with appropriate EntryType
+
     Raises:
         DemistoException: If the account retrieval fails.
     """
     accounts = get_accounts_by_connector_id(connector_id)
-    demisto.debug(f"Fetched the following accounts: {accounts}")
+    demisto.debug(f"Processing {len(accounts)} accounts for {cloud_type}")
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
         return HealthStatus.OK.value
 
     health_check_result = HealthCheck(connector_id)
+    # Get credentials once for all accounts since they share the same creds
+    try:
+        account_id = next((a["account_id"] for a in accounts if a.get("account_id")), None)
+        if not account_id:
+            raise DemistoException("No valid account_id found in accounts")
+        shared_creds = get_cloud_credentials(cloud_type, account_id)
+        demisto.debug(f"Retrieved shared {cloud_type} credentials for all accounts")
+    except Exception as e:
+        error_msg = f"Failed to retrieve {cloud_type} credentials for connector {connector_id}: {str(e)}"
+        demisto.error(error_msg)
+        health_check_result.error(
+            HealthCheckError(
+                account_id="",  # No specific account since this is a connector-level error TODO - verify work
+                connector_id=connector_id,
+                message=error_msg,
+                error_type=ErrorType.CONNECTIVITY_ERROR,
+            )
+        )
+        return health_check_result.summarize()
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_account = {
-            executor.submit(_check_account_permissions, account, connector_id, permission_check_func): account
+            executor.submit(_check_account_permissions, account, connector_id, shared_creds, permission_check_func): account
             for account in accounts
         }
 
@@ -323,7 +307,6 @@ def run_permissions_check_for_accounts(
             if result is not None:
                 health_check_result.error(result)
 
-    # Process the results to get one entry per account with the most severe error
     return health_check_result.summarize()
 
 
