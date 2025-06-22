@@ -186,7 +186,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         raise DemistoException(f"Failed to get credentials from CTS: {str(e)}. Response: {response}")
 
 
-def get_accounts_by_connector_id(connector_id: str, max_results: int = 5) -> list:
+def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
     Args:
