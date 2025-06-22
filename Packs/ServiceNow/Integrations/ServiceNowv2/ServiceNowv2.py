@@ -3234,17 +3234,17 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     demisto.debug(f"state will change to= {parsed_args.delta.get('state')}")
     if parsed_args.incident_changed:
         demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
-        if parsed_args.inc_status == IncidentStatus.DONE:
+        if (parsed_args.inc_status == IncidentStatus.DONE) or ('state' in parsed_args.delta):
             demisto.debug("Closing incident by closure case")
-            if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
+            if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta["state"] == "3":
                 parsed_args.delta["state"] = "3"
             # These ticket types are closed by changing their state.
-            if closure_case == "closed" and ticket_type == INCIDENT:
+            if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta["state"] == "7" :
                 parsed_args.delta["state"] = "7"  # Closing incident ticket.
                 parsed_args.delta["close_code"] = "Resolved by caller"
                 parsed_args.delta[
                     "close_notes"] = "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
-            elif closure_case == "resolved" and ticket_type == INCIDENT:
+            elif (closure_case == "resolved" and ticket_type == INCIDENT) or parsed_args.delta["state"] == "6":
                 parsed_args.delta["state"] = "6"  # resolving incident ticket.
                 parsed_args.delta["close_code"] = "Resolved by caller"
                 parsed_args.delta["close_notes"] = "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
