@@ -1954,22 +1954,36 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
+function Get-ShortHash($inputString, $length = 12) {
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($inputString)
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    $hashBytes = $sha256.ComputeHash($bytes)
+    $hashString = -join ($hashBytes | ForEach-Object { $_.ToString("x2") })
+    return $hashString.Substring(0, $length)
+}
+
+
 function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    $demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
     $description = "Search And Delete Email"
     $entry_context = @{}
-    $demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
+    $exchange_location = ArgToList $kwargs.exchange_location
     $polling_first_run = $kwargs.polling_first_run
+    $force = ConvertTo-Boolean $kwargs.force
+    $kql = "internetMessageId: $internet_message_id"
+    
+    $internet_message_id = $kwargs.internet_message_id
+    $polling_args = $kwargs
 
     # Determine the search name
-    $internet_message_id = $kwargs.internet_message_id
-    $search_name = $internet_message_id -replace '[<>]', ''
-    $kql = "internetMessageId: $internet_message_id"
-    $demisto.results("search_name: " + $search_name)
-    $force = ConvertTo-Boolean $kwargs.force
 
+    $search_name = $internet_message_id -replace '[<>]', ''
+    if ($kwargs.exchange_location -ne "All") {
+        $search_name = $search_name + ":" + ($exchange_location -join ",")
+    }
+    $demisto.results("search_name: " + $search_name)
     $search_action_name = "${search_name}_Purge"
-    $exchange_location = $kwargs.exchange_location
-    $polling_args = $kwargs
+    
 
     # Step 1: Create and start search if needed
     if (-not $kwargs.search_completed) {
@@ -1983,16 +1997,22 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @())
                 $client.StartSearch($search_name)
                 $human_readable = "$script:INTEGRATION_NAME - Search created and started."
+                $polling_args.polling_first_run = $false
                 return $human_readable, $entry_context, $search, $polling_args
             } elseif ($status -eq "Starting") {
                 $human_readable = "$script:INTEGRATION_NAME - Search is starting."
+                $polling_args.polling_first_run = $false
                 return $human_readable, $entry_context, $search, $polling_args
             } elseif ($status -eq "NotStarted") {
                 $client.StartSearch($search_name)
                 $human_readable = "$script:INTEGRATION_NAME - Search started (was NotStarted)."
+                $polling_args.polling_first_run = $false
                 return $human_readable, $entry_context, $search, $polling_args
             } elseif ($status -eq "Completed") {
-                $polling_args.search_completed = $true
+                if ($polling_first_run) 
+                {
+                    $polling_args.search_completed = $true
+                }
             }
         } catch {
             $demisto.results("Failed to get/start search: ")
@@ -2212,9 +2232,9 @@ function Main {
             "$script:COMMAND_PREFIX-recovery-email" {
                 ($human_readable, $entry_context, $raw_response) = RecoveryEmailCommand $cs_client $command_arguments
             }
-            # "$script:COMMAND_PREFIX-test-polling" {
-            #     ($human_readable, $entry_context, $raw_response, $polling_args) = testPollingCommand $cs_client $command_arguments
-            # }
+            "$script:COMMAND_PREFIX-test-polling" {
+                ($human_readable, $entry_context, $raw_response, $polling_args) = testPollingCommand $cs_client $command_arguments
+            }
         }
 
         # Updating integration context if access token changed

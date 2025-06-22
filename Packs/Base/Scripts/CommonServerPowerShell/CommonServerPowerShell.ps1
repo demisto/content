@@ -599,7 +599,7 @@ function ReturnPollingOutputs(
         PollingCommand = $CommandName;
         NextRun        = '20';
         PollingArgs          = $PollingArgs
-        Timeout = '180';
+        Timeout = '240';
         PollingItemsRemaining = 0;
     }
     # Return 'readable_output' only if needed
