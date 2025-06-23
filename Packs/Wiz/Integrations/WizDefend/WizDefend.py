@@ -21,6 +21,8 @@ MAX_DAYS_FIRST_FETCH_DETECTIONS = 2
 FETCH_INTERVAL_MINIMUM_MIN = 10
 FETCH_INTERVAL_MAXIMUM_MIN = 600
 DEFAULT_FETCH_BACK = "12 hours"
+MAX_FETCH_BUFFER = 15  # Percentage buffer for fetch interval calculations
+
 
 # Threats
 THREATS_DAYS_MIN = 1
@@ -1214,6 +1216,46 @@ class FetchIncident:
         except Exception:
             return False
 
+    def _get_max_fetch_interval_minutes(self):
+        """
+        Calculate the maximum fetch interval based on first_fetch setting + buffer
+
+        Returns:
+            int: Maximum allowed fetch interval in minutes
+        """
+        try:
+            demisto_params = demisto.params()
+            first_fetch_param = demisto_params.get(DemistoParams.FIRST_FETCH, DEFAULT_FETCH_BACK).strip()
+
+            # Parse first_fetch parameter to get minutes
+            import dateparser
+
+            first_fetch_time = dateparser.parse(f"{first_fetch_param} ago")
+
+            if first_fetch_time:
+                current_time = datetime.now()
+                time_delta = current_time - first_fetch_time
+                first_fetch_minutes = int(time_delta.total_seconds() / 60)
+
+                # Use the global buffer parameter
+                buffer_multiplier = 1 + (MAX_FETCH_BUFFER / 100)  # Convert 15 to 1.15
+                max_minutes = int(first_fetch_minutes * buffer_multiplier)
+
+                max_minutes = max(max_minutes, FETCH_INTERVAL_MINIMUM_MIN)
+
+                demisto.debug(
+                    f"Calculated max fetch interval: {first_fetch_minutes} minutes "
+                    f"+ {MAX_FETCH_BUFFER}% buffer = {max_minutes} minutes (from first_fetch: '{first_fetch_param}')"
+                )
+
+                return max_minutes
+
+        except Exception as e:
+            demisto.debug(f"Error calculating first_fetch interval: {str(e)}. Using default maximum.")
+
+        # Fallback to original maximum
+        return FETCH_INTERVAL_MAXIMUM_MIN
+
     def _is_after_time_too_old(self, after_time):
         """
         Check if after_time exceeds maximum fetch interval
@@ -1227,13 +1269,25 @@ class FetchIncident:
         try:
             after_datetime = datetime.strptime(after_time, DEMISTO_OCCURRED_FORMAT)
             current_datetime = datetime.strptime(self.api_start_run_time, DEMISTO_OCCURRED_FORMAT)
-            max_interval = timedelta(minutes=FETCH_INTERVAL_MAXIMUM_MIN)
+
+            # Use dynamic maximum based on first_fetch + 15%
+            max_interval_minutes = self._get_max_fetch_interval_minutes()
+            max_interval = timedelta(minutes=max_interval_minutes)
             time_difference = current_datetime - after_datetime
-            return time_difference > max_interval
+
+            is_too_old = time_difference > max_interval
+
+            if is_too_old:
+                demisto.info(
+                    f"After time {after_time} exceeds maximum interval of {max_interval_minutes} minutes "
+                    f"(difference: {int(time_difference.total_seconds() / 60)} minutes)"
+                )
+
+            return is_too_old
+
         except Exception:
             return True  # If we can't parse, consider it invalid
 
-    # Simplified getter methods since validation is done in init
     def get_api_after_parameter(self):
         """
         Get the 'after' parameter value for the GraphQL API call.
