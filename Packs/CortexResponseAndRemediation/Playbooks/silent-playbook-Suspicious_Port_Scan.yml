@@ -1444,7 +1444,7 @@ tasks:
     task:
       id: 4dfb8c0e-ca97-4263-a2c2-2e218f895d4a
       version: -1
-      name: Found suspicious of unique ports to connections?
+      name: Found suspicious ratio of unique ports to connections?
       description: Checks if a suspicious ratio of unique ports to connections is found.
       type: condition
       iscommand: false
@@ -1458,6 +1458,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousRatio
+            iscontext: true
       - - operator: InRange
           left:
             value:
@@ -3126,7 +3131,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 642,
+          "x": 640,
           "y": 3794
         }
       }
@@ -3298,7 +3303,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 644,
+          "x": 640,
           "y": 3646
         }
       }
