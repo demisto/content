@@ -350,17 +350,17 @@ class HuntingQueryBuilder:
             'DeviceEvents | where ActionType == "ScheduledTaskCreated" and InitiatingProcessAccountSid != "S-1-5-18" and'  # noqa: E501
         )
         REGISTRY_ENTRY_QUERY_PREFIX = 'DeviceRegistryEvents | where ActionType == "RegistryValueSet" and'
-        STARTUP_FOLDER_CHANGES_QUERY_PREFIX = r'''DeviceFileEvents | where FolderPath contains @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" and ActionType == "FileCreated" and'''  # noqa: E501
-        NEW_SERVICE_CREATED_QUERY_PREFIX = r'''DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType == "RegistryKeyCreated" and'''  # noqa: E501
-        SERVICE_UPDATED_QUERY_PREFIX = r'''DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType has_any ("RegistryValueSet","RegistryKeyCreated") and'''  # noqa: E501
+        STARTUP_FOLDER_CHANGES_QUERY_PREFIX = r"""DeviceFileEvents | where FolderPath contains @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" and ActionType == "FileCreated" and"""  # noqa: E501
+        NEW_SERVICE_CREATED_QUERY_PREFIX = r"""DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType == "RegistryKeyCreated" and"""  # noqa: E501
+        SERVICE_UPDATED_QUERY_PREFIX = r"""DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType has_any ("RegistryValueSet","RegistryKeyCreated") and"""  # noqa: E501
         FILE_REPLACED_QUERY_PREFIX = (
-            r'''DeviceFileEvents | where FolderPath contains @"C:\Program Files" and ActionType == "FileModified" and'''  # noqa: E501
+            r"""DeviceFileEvents | where FolderPath contains @"C:\Program Files" and ActionType == "FileModified" and"""  # noqa: E501
         )
         NEW_USER_QUERY_PREFIX = 'DeviceEvents | where ActionType == "UserAccountCreated" and'
         NEW_GROUP_QUERY_PREFIX = 'DeviceEvents | where ActionType == "SecurityGroupCreated" and'
         GROUP_USER_CHANGE_QUERY_PREFIX = 'DeviceEvents | where ActionType == "UserAccountAddedToLocalGroup" and'
-        LOCAL_FIREWALL_CHANGE_QUERY_PREFIX = r'''DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy" and'''  # noqa: E501
-        HOST_FILE_CHANGE_QUERY_PREFIX = r'''DeviceFileEvents | where FolderPath contains @"C:\Windows\System32\drivers\etc\hosts" and ActionType == "FileModified" and'''  # noqa: E501
+        LOCAL_FIREWALL_CHANGE_QUERY_PREFIX = r"""DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy" and"""  # noqa: E501
+        HOST_FILE_CHANGE_QUERY_PREFIX = r"""DeviceFileEvents | where FolderPath contains @"C:\Windows\System32\drivers\etc\hosts" and ActionType == "FileModified" and"""  # noqa: E501
 
         """QUERY SUFFIX"""
         SCHEDULE_JOB_QUERY_SUFFIX = "\n| project Timestamp, DeviceName, InitiatingProcessAccountDomain, InitiatingProcessAccountName, AdditionalFields\n| limit {}"  # noqa: E501
@@ -941,7 +941,7 @@ class HuntingQueryBuilder:
             return query
 
     class Tampering:
-        QUERY_PREFIX = r'''let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic(['sense', 'windefend', 'mssecflt']); let service2 = dynamic(['sense', 'windefend', 'mssecflt', 'healthservice']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic(['reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender"', 'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Advanced Threat Protection"']); let regparams2 = dynamic(['ForceDefenderPassiveMode', 'DisableAntiSpyware']); let regparams3 = dynamic(['sense', 'windefend']); let regparams4 = dynamic(['demand', 'disabled']); let timeframe = 1d; DeviceProcessEvents''' # noqa: E501
+        QUERY_PREFIX = r"""let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic(['sense', 'windefend', 'mssecflt']); let service2 = dynamic(['sense', 'windefend', 'mssecflt', 'healthservice']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic(['reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender"', 'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Advanced Threat Protection"']); let regparams2 = dynamic(['ForceDefenderPassiveMode', 'DisableAntiSpyware']); let regparams3 = dynamic(['sense', 'windefend']); let regparams4 = dynamic(['demand', 'disabled']); let timeframe = 1d; DeviceProcessEvents"""  # noqa: E501
         QUERY_SUFFIX = "\n| where InitiatingProcessFileName in~ (includeProc) | where (InitiatingProcessCommandLine has_any(action) and InitiatingProcessCommandLine has_any (service2) and InitiatingProcessParentFileName != 'cscript.exe') or (InitiatingProcessCommandLine has_any (params1) and InitiatingProcessCommandLine has 'Set-MpPreference' and InitiatingProcessCommandLine has '$true') or (InitiatingProcessCommandLine has_any (params2) and InitiatingProcessCommandLine has \"/IM\") or (InitiatingProcessCommandLine has_any (regparams1) and InitiatingProcessCommandLine has_any (regparams2) and InitiatingProcessCommandLine has '/d 1') or (InitiatingProcessCommandLine has_any(\"start\") and InitiatingProcessCommandLine has \"config\" and InitiatingProcessCommandLine has_any (regparams3) and InitiatingProcessCommandLine has_any (regparams4))| extend Account = iff(isnotempty(InitiatingProcessAccountUpn), InitiatingProcessAccountUpn, InitiatingProcessAccountName), Computer = DeviceName| project Timestamp, Computer, Account, AccountDomain, ProcessName = InitiatingProcessFileName, ProcessNameFullPath = FolderPath, Activity = ActionType, CommandLine = InitiatingProcessCommandLine, InitiatingProcessParentFileName\n| limit {}"  # noqa: E501
 
         def __init__(
