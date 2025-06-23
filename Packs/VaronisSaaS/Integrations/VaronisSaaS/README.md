@@ -111,7 +111,7 @@ Get alerts from Varonis DA
 | Varonis.Alert.Rule.Category.Name | String | Alert category. <br/>Options are: <br/>- Reconnaissance<br/>- Intrusion<br/>- Exploitation<br/>- Privilege Escalation <br/>- Lateral Movement                                                                                        |
 | Varonis.Alert.Location.CountryName | String | Name of the country from which the event occurred                                                                                                                                                                                    |
 | Varonis.Alert.Location.SubdivisionName | String | Name of the state or regional subdivision from which the event occurred                                                                                                                                                              |
-| Varonis.Alert.Status.Name | String | Alert state. Options are:<br/>- New<br/>- Under investigation<br/>- Closed<br/>- Action Required<br/>- Auto-Resolved                                                                                                                 |
+| Varonis.Alert.Status.Name | String | Alert state. Options are:<br/>- New<br/>- Under investigation<br/>- Closed                                                                                                                 |
 | Varonis.Alert.CloseReason.Name | String | Reason the alert was closed. Options are:<br/>- Other<br/>- Benign activity<br/>- True positive<br/>- Environment misconfiguration<br/>- Alert recently customized<br/>- Inaccurate alert logic<br/>- Authorized activity                                        |
 | Varonis.Alert.Location.BlacklistedLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred                                                                                           |
 | Varonis.Alert.Location.AbnormalLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user                                                                     |
@@ -337,7 +337,7 @@ Update alert status
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | Requested alerts. | Required |
-| status | Alert new status. Possible values are: New, Under Investigation, Action Required, Auto-Resolved. | Required |
+| status | Alert new status. Possible values are: New, Under Investigation. | Required |
 | note | Note. | Optional |
 
 #### Context Output
@@ -346,7 +346,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!varonis-update-alert-status alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E status="Action Required" note="Waiting for feedback from security team"```
+```!varonis-update-alert-status alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E status="Under Investigation" note="Waiting for feedback from security team"```
 
 ### varonis-close-alert
 
