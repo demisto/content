@@ -3,6 +3,7 @@ This integration was integrated and tested with version 2.5 of Cortex Xpanse.
 
 ## Configure Xpanse Feed in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
@@ -12,11 +13,15 @@ This integration was integrated and tested with version 2.5 of Cortex Xpanse.
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+|  |  | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 | Tags | Supports CSV values. | False |
+|  |  | False |
 | Feed Fetch Interval |  | False |
+| Indicators types to fetch | Indicator types to fetch. | True |
+
 
 ## Commands
 
