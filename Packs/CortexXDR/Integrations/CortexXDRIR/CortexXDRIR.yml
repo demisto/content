@@ -124,7 +124,7 @@ configuration:
   defaultvalue: '10'
 - display: Only fetch starred incidents
   name: starred
-  type: 8
+  type: 8 
   section: Collect
   advanced: true
   required: false
