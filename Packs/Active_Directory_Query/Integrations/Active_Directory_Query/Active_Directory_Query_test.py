@@ -578,7 +578,7 @@ def test_search__fail_on_empty_args(mocker):
 
     with pytest.raises(Exception) as err:
         Active_Directory_Query.search_users("dc=test,dc=test_1", page_size=20)
-    assert err.value.args[0] == "Got empty values for arguments: ['name']. Remove those values or uncheck the *Error on empty arguments* parameter"  # noqa: E501
+    assert err.value.args[0] == "Got empty values for arguments: ['name']. Remove those values or uncheck the *Error on empty arguments* parameter\n"  # noqa: E501
 
 def test_search_attributes_to_exclude(mocker):
     """
