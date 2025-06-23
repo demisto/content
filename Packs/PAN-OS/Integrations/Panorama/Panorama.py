@@ -14662,7 +14662,7 @@ def extract_certificates_from_running_config(device) -> Tuple[List, List]:
     Process pushed certificates from Panorama response and consolidate them.
 
     Args:
-        device: Firewall or Panorama device object
+        device: Panorama device object
 
     Returns:
         Tuple[List, List]: Tuple containing pushed certificates and target devices
@@ -14725,7 +14725,7 @@ def extract_certificate_from_pushed_template(device) -> List:
     Extract certificate entries from pushed template configuration.
 
     Args:
-        device: The device object to query
+        device: Firewall device object
 
     Returns:
         List of pushed certificate entries
@@ -14747,7 +14747,7 @@ def extract_local_certificates(device) -> List:
     Extract local certificate entries from device.
 
     Args:
-        device: The device object to query
+        device: Firewall device object
 
     Returns:
         List of local certificate entries
