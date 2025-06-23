@@ -32,7 +32,6 @@ def arg_to_bool_or_none(value):
     else:
         return argToBoolean(value)
 
-
 # <<
 
 
@@ -909,7 +908,6 @@ class RDS:
                 entry_type=EntryType.ERROR,
                 readable_output=f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}",
             )
-
 
 class CloudTrail:
     service = AWSServices.CloudTrail
