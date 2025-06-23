@@ -34,9 +34,9 @@ class HealthStatus(str):
 
 
 class ErrorType(str):
-    CONNECTIVITY_ERROR = "ConnectivityError"
-    PERMISSION_ERROR = "PermissionError"
-    INTERNAL_ERROR = "InternalError"
+    CONNECTIVITY_ERROR = "Connectivity Error"
+    PERMISSION_ERROR = "Permission Error"
+    INTERNAL_ERROR = "Internal Error"
 
 
 class HealthCheckError:
@@ -46,9 +46,7 @@ class HealthCheckError:
         self.message = f"{account_id}: {message}"
         self.error_type = error_type
         # Determine classification based on error type
-        self.classification = (
-            HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
-        )
+        self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
     def to_dict(self) -> dict:
         return {
@@ -204,21 +202,24 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = No
     """
     all_accounts = []
     next_token = ""
-    while True:
-        params = {"entity_type": "connector", "entity_id": connector_id}
-        if next_token:
-            params["next_token"] = next_token
+    try:
+        while True:
+            params = {"entity_type": "connector", "entity_id": connector_id}
+            if next_token:
+                params["next_token"] = next_token
 
-        result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
-        res_json = json.loads(result["data"])
-        accounts = res_json.get("values", [])
-        all_accounts.extend(accounts)
-        next_token = res_json.get("next_token", "")
+            result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
+            res_json = json.loads(result["data"])
+            accounts = res_json.get("values", [])
+            all_accounts.extend(accounts)
+            next_token = res_json.get("next_token", "")
 
-        demisto.debug(f"Fetched {len(accounts)} accounts")
+            demisto.debug(f"Fetched {len(accounts)} accounts")
 
-        if not next_token or (max_results and len(all_accounts) >= max_results):
-            break
+            if not next_token or (max_results and len(all_accounts) >= max_results):
+                break
+    except Exception as e:
+        demisto.error(f"Failed to fetch accounts for connector {connector_id}: {str(e)}")
 
     if max_results:
         return all_accounts[:max_results]

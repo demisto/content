@@ -1047,9 +1047,8 @@ def check_required_permissions(
             if missing:
                 for perm in missing:
                     commands = _get_commands_for_requirement(perm, "permissions")
-                    message = f"Permission '{perm}' (required for: {commands})"
+                    message = f"'{perm}' missing for {commands}"
                     errors.append(message)
-
         except Exception as e:
             error_message = f"Failed to test permissions for GCP integration: {str(e)}"
             if connector_id:
@@ -1064,21 +1063,21 @@ def check_required_permissions(
 
     for api in validate_apis_enabled(creds, project_id, apis):
         commands = _get_commands_for_requirement(api, "apis")
-        message = (
-            f"API '{api}' disabled (required for: {commands}). " f"Enable: gcloud services enable {api} --project={project_id}"
-        )
+        message = f"API '{api}' disabled, required for {commands}"
         errors.append(message)
 
     if errors:
-        msg = "Missing required permissions/API for GCP integration:\n" + "\n-".join(errors)
         if connector_id:
-            return HealthCheckError(
-                account_id=project_id,
-                connector_id=connector_id,
-                message=msg,
-                error_type=ErrorType.PERMISSION_ERROR,
-            )
-        raise DemistoException(msg)
+            return [
+                HealthCheckError(
+                    account_id=project_id,
+                    connector_id=connector_id,
+                    message=error,
+                    error_type=ErrorType.PERMISSION_ERROR,
+                )
+                for error in errors
+            ]
+        raise DemistoException("Missing required permissions/API for GCP integration:\n-" + "\n-".join(errors))
 
     return None
 

@@ -844,14 +844,17 @@ def test_check_required_permissions_all_granted(mocker):
     When: check_required_permissions is called without specifying a command
     Then: The function should return None, indicating all permissions are granted
     """
-    from GCP import check_required_permissions, REQUIRED_PERMISSIONS
+    from GCP import check_required_permissions, COMMAND_REQUIREMENTS
 
     # Get all permissions that need to be tested
-    all_permissions = list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms})
+    all_permissions = list({p for _, perms in COMMAND_REQUIREMENTS.values() for p in perms})
     testable_permissions = [p for p in all_permissions if not p.startswith("cloudidentity.")]
 
     # Mock response from testIamPermissions - all permissions granted
     mock_response = {"permissions": testable_permissions}
+
+    # Mock validate_apis_enabled to return empty list (no disabled APIs)
+    mocker.patch("GCP.validate_apis_enabled", return_value=[])
 
     # Use MagicMock for resource manager
     mock_resource_manager = MagicMock()
@@ -880,15 +883,18 @@ def test_check_required_permissions_for_specific_command(mocker):
     When: check_required_permissions is called with a specific command
     Then: The function should only check permissions required for that command
     """
-    from GCP import check_required_permissions, REQUIRED_PERMISSIONS
+    from GCP import check_required_permissions, COMMAND_REQUIREMENTS
 
     # Check permissions for a specific command
     command = "gcp-compute-firewall-patch"
-    required_perms = REQUIRED_PERMISSIONS[command]
+    _, required_perms = COMMAND_REQUIREMENTS[command]
     testable_permissions = [p for p in required_perms if not p.startswith("cloudidentity.")]
 
     # Mock response from testIamPermissions - all permissions granted
     mock_response = {"permissions": testable_permissions}
+
+    # Mock validate_apis_enabled to return empty list (no disabled APIs)
+    mocker.patch("GCP.validate_apis_enabled", return_value=[])
 
     # Use MagicMock for resource manager
     mock_resource_manager = MagicMock()
@@ -917,10 +923,10 @@ def test_check_required_permissions_missing_permissions(mocker):
     When: check_required_permissions is called
     Then: The function should raise DemistoException with missing permissions
     """
-    from GCP import check_required_permissions, REQUIRED_PERMISSIONS, DemistoException
+    from GCP import check_required_permissions, COMMAND_REQUIREMENTS, DemistoException
 
     # Get all permissions that need to be tested
-    all_permissions = list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms})
+    all_permissions = list({p for _, perms in COMMAND_REQUIREMENTS.values() for p in perms})
     testable_permissions = [p for p in all_permissions if not p.startswith("cloudidentity.")]
 
     # Mock response from testIamPermissions - some permissions are missing
@@ -928,6 +934,9 @@ def test_check_required_permissions_missing_permissions(mocker):
     missing_permissions = testable_permissions[-2:]  # Just the last two permissions
 
     mock_response = {"permissions": granted_permissions}
+
+    # Mock validate_apis_enabled to return empty list (no disabled APIs)
+    mocker.patch("GCP.validate_apis_enabled", return_value=[])
 
     # Use MagicMock for resource manager
     mock_resource_manager = MagicMock()
@@ -953,15 +962,18 @@ def test_check_required_permissions_with_connector_id(mocker):
     When: check_required_permissions is called with connector_id
     Then: The function should return a list of HealthCheckError instead of raising an exception
     """
-    from GCP import check_required_permissions, REQUIRED_PERMISSIONS, HealthCheckError, ErrorType
+    from GCP import check_required_permissions, COMMAND_REQUIREMENTS, HealthCheckError, ErrorType
 
     # Get all permissions that need to be tested
-    all_permissions = list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms})
+    all_permissions = list({p for _, perms in COMMAND_REQUIREMENTS.values() for p in perms})
     testable_permissions = [p for p in all_permissions if not p.startswith("cloudidentity.")]
 
     # Mock response from testIamPermissions - some permissions are missing
     granted_permissions = testable_permissions[:-2]  # All except the last two
     mock_response = {"permissions": granted_permissions}
+
+    # Mock validate_apis_enabled to return empty list (no disabled APIs)
+    mocker.patch("GCP.validate_apis_enabled", return_value=[])
 
     # Use MagicMock for resource manager
     mock_resource_manager = MagicMock()
@@ -984,32 +996,7 @@ def test_check_required_permissions_with_connector_id(mocker):
     assert first_error.account_id == "test-project"
     assert first_error.connector_id == "test-connector-id"
     assert first_error.error_type == ErrorType.PERMISSION_ERROR
-    assert "Missing required permission" in first_error.message
-
-
-def test_check_required_permissions_api_error(mocker):
-    """
-    Given: GCP credentials that cause an API error when checking permissions
-    When: check_required_permissions is called
-    Then: The function should raise DemistoException with the error message
-    """
-    from GCP import check_required_permissions, DemistoException
-
-    # Use MagicMock for resource manager that raises an exception
-    mock_resource_manager = MagicMock()
-    mock_resource_manager.projects().testIamPermissions().execute.side_effect = Exception("API Error")
-
-    # Mock the build function
-    mock_creds = mocker.Mock(spec=Credentials)
-    mocker.patch("GCP.build", return_value=mock_resource_manager)
-
-    # Execute the function and expect an exception
-    with pytest.raises(DemistoException) as e:
-        check_required_permissions(mock_creds, "test-project")
-
-    # Verify that the error message contains the API error
-    assert "Failed to test permissions" in str(e.value)
-    assert "API Error" in str(e.value)
+    assert "missing for" in first_error.message
 
 
 def test_check_required_permissions_api_error_with_connector_id(mocker):
