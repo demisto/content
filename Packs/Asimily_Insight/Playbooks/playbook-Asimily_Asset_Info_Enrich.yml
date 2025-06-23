@@ -43,7 +43,7 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      macAddr:
+      mac_addr:
         simple: ${incident.asimilydevicemacaddress}
     separatecontext: false
     skipunavailable: false

@@ -564,13 +564,24 @@ def process_params_and_args(params: dict[str, Any], args: dict[str, Any], comman
     """
     updated_args = args.copy()
 
-    if "asimilyDeviceId" in updated_args:
+    if "asimily_device_id" in updated_args:
         if command == "asimily-get-asset-details":
-            updated_args["deviceId"] = updated_args.pop("asimilyDeviceId")  # asset API expects different key
+            updated_args["deviceId"] = updated_args.pop("asimily_device_id")  # asset API expects different key
         else:
-            updated_args["deviceInfoId"] = updated_args.pop("asimilyDeviceId")
+            updated_args["deviceInfoId"] = updated_args.pop("asimily_device_id")
 
     if command != "fetch-incidents":
+        # transform XSOAR parameters into Asimily filter names
+        if "mac_addr" in updated_args:
+            updated_args["macAddr"] = updated_args.pop("mac_addr")
+        if "ip_addr" in updated_args:
+            updated_args["ipAddr"] = updated_args.pop("ip_addr")
+        if "device_family" in updated_args:
+            updated_args["deviceFamily"] = updated_args.pop("device_family")
+        if "device_tag" in updated_args:
+            updated_args["deviceTag"] = updated_args.pop("device_tag")
+        if "cve_score" in updated_args:
+            updated_args["cveScore"] = updated_args.pop("cve_score")
         return updated_args
 
     if "fetchonlydevicefamilies" in params:

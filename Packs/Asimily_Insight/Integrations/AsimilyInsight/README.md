@@ -20,6 +20,7 @@ This integration utilizes the Asimily Insight RESTful APIs to provide seamless a
     | **Parameter** | **Description** | **Required/Default** | **Type** |
     | --- | --- | --- | -- |
     | Name | XSOAR Integration Instance Name | True | String |
+    | Asimily Portal URL | this will be in the following format: `https://customer-portal.asimily.com`.  | True | String |
     | API User Name | The Asimily Insight API username | True | String |
     | Password | The password of the Asimily Insight API user | True | String |
     | Trust any certificate (not secure) |  | Default False | Boolean |
@@ -35,7 +36,17 @@ This integration utilizes the Asimily Insight RESTful APIs to provide seamless a
 
 4. Click **Test** to validate the URL, API username, API password and connection.
 
-> When modifying fetch-incident filters (Device Family, Device Tags, Anomaly Criticality, CVE Score), it's highly recommended to **reset the "last run" timestamp** (In Advanced Settings) in the Configuration Page. This action guarantees that events for any newly included devices are properly fetched.
+#### Resetting the "Last Run" Timestamp
+
+If you modify any of the fetch filters (*Device Family Filter*, *Device Tags Filter*, *Fetch Anomaly Criticality*, *Fetch CVE Score*), this means there may be new devices included to fetch incidents or there will be new incidents included for existing devices. It is strongly recommended to **Reset the "last run" timestamp**. 
+
+To reset:
+
+1. Go to the integration instance configuration.
+2. Navigate to **Collect > Advanced Settings**.
+3. Click **Reset** under the "Last Run" section.
+
+This ensures that incidents related to newly included devices and updated filters are correctly fetched.
 
 ![Reset Fetch Incident Last Run Timestamp](../../doc_files/Reset_last_run_timestamp.png)
 
@@ -87,10 +98,10 @@ Fetch assets details from Asimily Insight. You can add argument filters.
 
 | **Argument** | **Description** | **Required** | **Support List** |
 | --- | --- | --- | --- |
-| macAddr | The MAC Address of Asimily Asset | Optional | No |
-| ipAddr | The IP Address of Asimily Asset | Optional | No |
+| mac_addr | The MAC Address of Asimily Asset | Optional | No |
+| ip_addr | The IP Address of Asimily Asset | Optional | No |
 | facility | The Facility of Asimily Asset | Optional | No |
-| asimilyDeviceId | Asimily Insight given ID for devices | Optional | No |
+| asimily_device_id | Asimily Insight given ID for devices | Optional | No |
 | limit | Maximum amount of items to fetch. | Optional | No |
 
 
@@ -155,11 +166,11 @@ Fetch anomaly alerts from Asimily Insight. You can add argument filters.
 
 | **Argument Name** | **Description** | **Required** | **Support List** |
 | --- | --- | --- | --- |
-| macAddr | The MAC Address of Asimily Asset | Optional | No |
-| ipAddr | The IP Address of Asimily Asset | Optional | No |
-| asimilyDeviceId | Asimily Insight given ID for devices | Optional | No |
-| deviceFamily |  | Optional | Yes |
-| deviceTag | | Optional | Yes |
+| mac_addr | The MAC Address of Asimily Asset | Optional | No |
+| ip_addr | The IP Address of Asimily Asset | Optional | No |
+| asimily_device_id | Asimily Insight given ID for devices | Optional | No |
+| device_family |  | Optional | Yes |
+| device_tag | | Optional | Yes |
 | criticality | Anomaly Alert Criticality Filter. Options: High Only, Medium and High, All | Optional | No |
 | limit | Maximum amount of items to fetch. (Fetch will stop after device anomalies reached the limit) | Optional | No |
 
@@ -206,12 +217,12 @@ Fetch device CVEs from Asimily Insight. You can add argument filters.
 
 | **Argument Name** | **Description** | **Required** | **Support List** |
 | --- | --- | --- | --- |
-| macAddr | The MAC Address of Asimily Asset | Optional | No |
-| ipAddr | The IP Address of Asimily Asset | Optional | No |
-| asimilyDeviceId | Asimily Insight given ID for devices | Optional | No |
-| deviceFamily |  | Optional | Yes |
-| deviceTag | | Optional | Yes |
-| cveScore | CVE Score Filter. Options: High Only, Medium and High, All (Score limit: High=7.5, Medium=3.5) | Optional | No |
+| mac_addr | The MAC Address of Asimily Asset | Optional | No |
+| ip_addr | The IP Address of Asimily Asset | Optional | No |
+| asimily_device_id | Asimily Insight given ID for devices | Optional | No |
+| device_family |  | Optional | Yes |
+| device_tag | | Optional | Yes |
+| cve_score | CVE Score Filter. Options: High Only, Medium and High, All (Score limit: High=7.5, Medium=3.5) | Optional | No |
 | limit | Maximum amount of items to fetch. (Fetch will stop after device CVEs reached the limit) | Optional | No |
 
 #### Context Output

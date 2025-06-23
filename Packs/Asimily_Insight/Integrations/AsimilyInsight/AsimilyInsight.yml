@@ -134,13 +134,13 @@ script:
   commands:
   - arguments:
     - description: The MAC Address of Asimily Asset.
-      name: macAddr
+      name: mac_addr
     - description: The IP Address of Asimily Asset.
-      name: ipAddr
+      name: ip_addr
     - description: The Facility of Asimily Asset.
       name: facility
     - description: The device ID of Asimily asset.
-      name: asimilyDeviceId
+      name: asimily_device_id
     - defaultValue: "100"
       description: Maximum amount of items to fetch.
       name: limit
@@ -272,16 +272,16 @@ script:
       type: boolean
   - arguments:
     - description: The MAC Address of Asimily Asset.
-      name: macAddr
+      name: mac_addr
     - description: The IP Address of Asimily Asset.
-      name: ipAddr
+      name: ip_addr
     - description: Query only Asimily Assets with these tags.
       isArray: true
-      name: deviceTag
+      name: device_tag
     - auto: PREDEFINED
       description: Query only Asimily Assets with these device families.
       isArray: true
-      name: deviceFamily
+      name: device_family
       predefined:
       - All
       - Imaging Devices
@@ -302,7 +302,7 @@ script:
       - High Only
       - Medium and High
     - description: The device ID of Asimily asset.
-      name: asimilyDeviceId
+      name: asimily_device_id
     - defaultValue: "1000"
       description: Maximum amount of items to fetch.
       name: limit
@@ -377,16 +377,16 @@ script:
       type: unknown
   - arguments:
     - description: The MAC Address of Asimily Asset.
-      name: macAddr
+      name: mac_addr
     - description: The IP Address of Asimily Asset.
-      name: ipAddr
+      name: ip_addr
     - description: Query only Asimily Assets with these tags.
       isArray: true
-      name: deviceTag
+      name: device_tag
     - auto: PREDEFINED
       description: Query only Asimily Assets with these device families.
       isArray: true
-      name: deviceFamily
+      name: device_family
       predefined:
       - All
       - Imaging Devices
@@ -401,13 +401,13 @@ script:
       - OT Devices
     - auto: PREDEFINED
       description: 'The Asimily assigned criticality level of CVEs based on CVE scores. Options include: Low(<3.5), Medium(<7.5), High(>=7.5).'
-      name: cveScore
+      name: cve_score
       predefined:
       - All
       - High Only
       - Medium and High
     - description: The device ID of Asimily asset.
-      name: asimilyDeviceId
+      name: asimily_device_id
     - defaultValue: "1000"
       description: 'Maximum amount of items to fetch. '
       name: limit
