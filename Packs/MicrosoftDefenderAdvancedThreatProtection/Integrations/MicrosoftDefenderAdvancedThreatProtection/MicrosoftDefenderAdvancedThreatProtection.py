@@ -188,7 +188,6 @@ class HuntingQueryBuilder:
         insert_pos = query.find("|")
         if insert_pos == -1:
             return f"{query} | where {time_range_query}"
-
         return f"{query[:insert_pos]}| where {time_range_query} {query[insert_pos:]}"
 
     @staticmethod
