@@ -1,4 +1,4 @@
-Default playbook for Asimily Anomaly and CVE incidents. It enriches incidents by running asimily-get-assetdetails to fetch related asset information.
+Default playbook for Asimily Anomaly and CVE incidents. It enriches incidents by running asimily-get-asset-details to fetch related asset information.
 
 ## Dependencies
 
@@ -18,7 +18,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* asimily-get-assetdetails
+* asimily-get-asset-details
 
 ## Playbook Inputs
 

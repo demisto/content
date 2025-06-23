@@ -145,9 +145,9 @@ script:
       description: Maximum amount of items to fetch.
       name: limit
     description: Fetch Asimily Asset information.
-    name: asimily-get-assetdetails
+    name: asimily-get-asset-details
     outputs:
-    - contextPath: AsimilyInsight.Asset.asimilydevicemacaddress
+    - contextPath: AsimilyInsight.Asset.asimilydeviceid
       description: Asimily Device ID.
       type: number
     - contextPath: AsimilyInsight.Asset.asimilydeviceipv4address
@@ -385,6 +385,7 @@ script:
       name: deviceTag
     - auto: PREDEFINED
       description: Query only Asimily Assets with these device families.
+      isArray: true
       name: deviceFamily
       predefined:
       - All

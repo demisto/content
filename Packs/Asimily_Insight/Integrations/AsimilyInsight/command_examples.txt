@@ -1,7 +1,7 @@
-!asimily-get-assetdetails asimilyDeviceId=163062
-!asimily-get-assetdetails facility=40Gfacility
-!asimily-get-assetdetails macAddr=64:51:06:3C:0C:74
-!asimily-get-assetdetails ipAddr=0.0.0.0
+!asimily-get-asset-details asimilyDeviceId=163062
+!asimily-get-asset-details facility=40Gfacility
+!asimily-get-asset-details macAddr=64:51:06:3C:0C:74
+!asimily-get-asset-details ipAddr=0.0.0.0
 !asimily-get-asset-anomalies asimilyDeviceId=841377
 !asimily-get-asset-anomalies macAddr=5C:88:16:A1:EB:1C
 !asimily-get-asset-anomalies ipAddr=0.0.0.0

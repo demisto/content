@@ -1,4 +1,4 @@
-The script will be used for extracting asset information from context data from incidents. If playbook is applied to call `asimily-get-assetdetails` for incidents to retrieve asset details, fetched information will be saved in incident's context data under `Asimily`->`Asset`.
+The script will be used for extracting asset information from context data from incidents. If playbook is applied to call `asimily-get-asset-details` for incidents to retrieve asset details, fetched information will be saved in incident's context data under `Asimily`->`Asset`.
 
 ## Permissions
 

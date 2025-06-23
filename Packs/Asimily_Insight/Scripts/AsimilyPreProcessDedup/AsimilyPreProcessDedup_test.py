@@ -1,6 +1,10 @@
 import demistomock as demisto  # noqa: F401
 import pytest
-from AsimilyPreProcessDedup import main
+
+
+@pytest.fixture(autouse=True)
+def patch_missing_modules(mocker):
+    mocker.patch.dict("sys.modules", {"DemistoClassApiModule": mocker.MagicMock()})
 
 
 @pytest.mark.parametrize(
@@ -41,7 +45,9 @@ from AsimilyPreProcessDedup import main
 def test_main(mocker, incident, existing_incidents, expected):
     mocker.patch("demistomock.incidents", return_value=[incident])
     mocker.patch("demistomock.executeCommand", return_value=[{"Contents": {"data": existing_incidents}}])
-    mock_results = mocker.patch("demistomock.results")
+    mock_results = mocker.patch("AsimilyPreProcessDedup.return_results")
+
+    from AsimilyPreProcessDedup import main
 
     main()
 

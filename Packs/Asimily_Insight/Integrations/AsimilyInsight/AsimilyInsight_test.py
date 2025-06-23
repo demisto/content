@@ -25,7 +25,7 @@ def mock_context_data():
 
 
 def test_get_asset_details_command(mocker, mock_params):
-    mocker.patch("AsimilyInsight.demisto.command", return_value="asimily-get-assetdetails")
+    mocker.patch("AsimilyInsight.demisto.command", return_value="asimily-get-asset-details")
     mocker.patch("AsimilyInsight.demisto.args", return_value={"limit": "1"})
     mocker.patch("AsimilyInsight.demisto.params", return_value=mock_params)
 
@@ -105,7 +105,7 @@ def test_fetch_incidents_command(mocker, mock_params):
 
 
 def test_get_asset_details_command_with_empty_response(mocker, mock_params):
-    mocker.patch("AsimilyInsight.demisto.command", return_value="asimily-get-assetdetails")
+    mocker.patch("AsimilyInsight.demisto.command", return_value="asimily-get-asset-details")
     mocker.patch("AsimilyInsight.demisto.args", return_value={})
     mocker.patch("AsimilyInsight.demisto.params", return_value=mock_params)
 
@@ -161,7 +161,7 @@ def test_create_filter_json_basic_fields(mocker):
         "deviceRangeId": 10,
         "cvesLastUpdatedSince": "2023-01-01",
         "anomaliesLastUpdatedSince": "2024-01-01",
-        "limit": 100
+        "limit": 100,
     }
 
     result = create_filter_json(input_dict)
@@ -182,7 +182,11 @@ def test_create_filter_json_with_criticality(mocker):
 
 
 def test_create_filter_json_invalid_criticality_and_cvescore_variants(mocker):
-    from AsimilyInsight import create_filter_json, ASIMILY_INSIGHT_FETCH_DEVICE_ANOMALIES_API, ASIMILY_INSIGHT_FETCH_DEVICE_CVES_API
+    from AsimilyInsight import (
+        create_filter_json,
+        ASIMILY_INSIGHT_FETCH_DEVICE_ANOMALIES_API,
+        ASIMILY_INSIGHT_FETCH_DEVICE_CVES_API,
+    )
 
     mock_debug = mocker.patch("AsimilyInsight.print_debug_msg")
 
@@ -223,10 +227,10 @@ def test_create_filter_json_all_limit_and_argtolist_behavior(mocker):
     # Case 1: 'All' values and 'limit' should be skipped, even though argToList("All") is called
     input_dict_all_skipped = {
         "deviceTag": "All",
-        "deviceFamily": "All",                # triggers argToList("All")
+        "deviceFamily": "All",  # triggers argToList("All")
         "cveScore": "All",
         "criticality": "All",
-        "limit": 50
+        "limit": 50,
     }
     result1 = create_filter_json(input_dict_all_skipped, api=ASIMILY_INSIGHT_FETCH_DEVICE_CVES_API)
     assert result1 == {"filters": {}}
@@ -262,11 +266,7 @@ def test_create_filter_json_all_limit_and_argtolist_behavior(mocker):
     mock_debug.reset_mock()
 
     # Case 3: deviceFamily/deviceTag as strings — argToList SHOULD be called
-    input_dict_str = {
-        "deviceFamily": "X-Ray",
-        "deviceTag": "critical",
-        "ipAddr": "192.168.0.1"
-    }
+    input_dict_str = {"deviceFamily": "X-Ray", "deviceTag": "critical", "ipAddr": "192.168.0.1"}
     result3 = create_filter_json(input_dict_str)
     assert "deviceFamily" in result3["filters"]
     assert "deviceTag" in result3["filters"]
@@ -284,8 +284,8 @@ def test_get_asset_applications_by_mac_addr_realistic_response(mocker):
             "ipAddr": "10.0.0.1",
             "applications": [
                 {"application": "endpoint security", "version": "*"},
-                {"application": "Wireless_Access", "version": "*"}
-            ]
+                {"application": "Wireless_Access", "version": "*"},
+            ],
         }
     ]
 
@@ -366,12 +366,11 @@ def test_test_module_general_exception(mocker, mock_params):
 
 
 def test_get_asset_cves_call(mocker):
-    from AsimilyInsight import Client, ASIMILY_INSIGHT_FETCH_DEVICE_CVES_API, CVES_API_SORT_DEVICE_ID, MAX_FETCH_PAGE_LIMIT
+    from AsimilyInsight import Client, ASIMILY_INSIGHT_FETCH_DEVICE_CVES_API, CVES_API_SORT_DEVICE_ID
 
     # Mock internals
     mock_create_filter = mocker.patch("AsimilyInsight.create_filter_json", return_value={"filters": {"dummy": "yes"}})
     mock_add_cve_filter = mocker.patch("AsimilyInsight.add_non_fixed_cve_filter")
-    mock_debug = mocker.patch("AsimilyInsight.print_debug_msg")
 
     mock_response = {"content": "test-cve-data"}
     mock_request = mocker.patch("AsimilyInsight.BaseClient._http_request", return_value=mock_response)

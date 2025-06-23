@@ -52,8 +52,8 @@ tasks:
       description: Fetch Asimily Asset information
       id: 43e91be8-7bcb-469f-a87b-8bced0dc9eed
       iscommand: true
-      name: asimily-get-assetdetails
-      script: Asimily Insight|||asimily-get-assetdetails
+      name: asimily-get-asset-details
+      script: Asimily Insight|||asimily-get-asset-details
       type: regular
       version: -1
     taskid: 43e91be8-7bcb-469f-a87b-8bced0dc9eed
@@ -82,4 +82,4 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
-description: Default playbook for Asimily Anomaly and CVE incidents. It enriches incidents by running asimily-get-assetdetails to fetch related asset information.
+description: Default playbook for Asimily Anomaly and CVE incidents. It enriches incidents by running asimily-get-asset-details to fetch related asset information.

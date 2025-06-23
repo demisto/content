@@ -9,11 +9,11 @@ def main():  # pragma: no cover
         mirror_id = incident.get("dbotMirrorId")
 
         if not incident_type or not mirror_id:
-            demisto.results(True)  # Keep it if missing either value
+            return_results(True)  # Keep it if missing either value
             return
 
         if incident_type not in ["Asimily Anomaly", "Asimily CVE"]:
-            demisto.results(True)
+            return_results(True)
             return
 
         query = f'dbotMirrorId:"{mirror_id}" and type:"{incident_type}"'
@@ -22,9 +22,9 @@ def main():  # pragma: no cover
         incidents = result[0].get("Contents", {}).get("data", []) if result and isinstance(result, list) else []
 
         if incidents:
-            demisto.results(False)  # Drop
+            return_results(False)  # Drop
         else:
-            demisto.results(True)  # Keep
+            return_results(True)  # Keep
     except Exception as ex:
         return_error(f"Failed to execute AsimilyPreProcessDedup. Error: {str(ex)}")
 

@@ -565,7 +565,7 @@ def process_params_and_args(params: dict[str, Any], args: dict[str, Any], comman
     updated_args = args.copy()
 
     if "asimilyDeviceId" in updated_args:
-        if command == "asimily-get-assetdetails":
+        if command == "asimily-get-asset-details":
             updated_args["deviceId"] = updated_args.pop("asimilyDeviceId")  # asset API expects different key
         else:
             updated_args["deviceInfoId"] = updated_args.pop("asimilyDeviceId")
@@ -839,9 +839,10 @@ def get_asset_anomalies_command(client: Client, args, if_from_fetch_incident):
             outputs_prefix="AsimilyInsight.Anomaly",
             outputs_key_field=["asimilydeviceid", "asimilyanomalyname"],
             outputs=asimily_anomaly_list,
+            raw_response=asimily_anomaly_list,
             ignore_auto_extract=True,
         )
-        return_results(results)
+        return results
 
     # return incident list for incident creation
     return anomaly_incidents, last_device_id, total_elements
@@ -904,9 +905,10 @@ def get_asset_cves_command(client: Client, args, if_from_fetch_incident):
             outputs_prefix="AsimilyInsight.CVE",
             outputs_key_field=["asimilydeviceid", "asimilycvename"],
             outputs=asimily_cve_list,
+            raw_response=asimily_cve_list,
             ignore_auto_extract=True,
         )
-        return_results(results)
+        return results
 
     # return incident list for incident creation
     return cves_incidents, last_device_id, total_elements
@@ -959,10 +961,11 @@ def get_asset_details_command(client: Client, args) -> CommandResults:
         readable_output=f"{msg}\n\n{human_readable_output}",
         outputs_prefix="AsimilyInsight.Asset",
         outputs_key_field="asimilydeviceid",
-        outputs=incidents,
+        outputs=asimily_asset_list,
+        raw_response=asimily_asset_list,
         ignore_auto_extract=True,
     )
-    return_results(results)
+    return results
 
 
 def update_next_run(last_run: dict, updated: dict, flags: dict) -> dict:
@@ -1041,8 +1044,7 @@ def fetch_asimily_incidents(client: Client, args, params):
             flags["last_anomaly_deviceid"] = 0
             flags["last_anom_syncstart"] = flags["cur_anom_syncstart"]
             flags["cur_anom_syncstart"] = datetime.utcnow()
-
-    if flags["trigger_cves_fetch"]:
+    elif flags["trigger_cves_fetch"]:
         updated_args["deviceRangeId"] = flags["last_cve_deviceid"]
         if flags["last_cve_syncstart"]:
             updated_args["cvesLastUpdatedSince"] = flags["last_cve_syncstart"]
@@ -1095,14 +1097,14 @@ def main() -> None:
         elif command == "fetch-incidents":
             fetch_asimily_incidents(client, processed_args, params)
 
-        elif command == "asimily-get-assetdetails":
-            get_asset_details_command(client, processed_args)
+        elif command == "asimily-get-asset-details":
+            return_results(get_asset_details_command(client, processed_args))
 
         elif command == "asimily-get-asset-anomalies":
-            get_asset_anomalies_command(client, processed_args, False)
+            return_results(get_asset_anomalies_command(client, processed_args, False))
 
         elif command == "asimily-get-asset-vulnerabilities":
-            get_asset_cves_command(client, processed_args, False)
+            return_results(get_asset_cves_command(client, processed_args, False))
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
