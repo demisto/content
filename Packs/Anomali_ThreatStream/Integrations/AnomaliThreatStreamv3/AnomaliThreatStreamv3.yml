@@ -2704,12 +2704,14 @@ script:
       name: submission_value
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether the premium sandbox should be used for detonation.
-      name: premium_sandbox
+      defaultValue: 'Anomali'
+      description: The type of sandbox.
+      name: sandbox
       predefined:
-      - 'false'
-      - 'true'
+      - 'Anomali'
+      - 'Premium'
+      - 'Polyswarm'
+      - 'VMRay'
     - description: A comma-separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI.
       name: detail
     - default: true
@@ -3123,12 +3125,14 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      defaultValue: default
+      defaultValue: 'Anomali'
       description: The type of sandbox.
-      name: sandbox_type
+      name: sandbox
       predefined:
-      - default
-      - premium
+      - 'Anomali'
+      - 'Premium'
+      - 'Polyswarm'
+      - 'VMRay'
     - defaultValue: '50'
       description: The maximum number of results to return from ThreatStream.
       name: limit

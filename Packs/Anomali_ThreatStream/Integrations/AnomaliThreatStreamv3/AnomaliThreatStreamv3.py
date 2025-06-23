@@ -2494,7 +2494,7 @@ def update_model(
     return get_iocs_by_model(client, model, model_id, limit="50")
 
 
-def get_supported_platforms(client: Client, sandbox_type="default", limit=None, all_results=None):
+def get_supported_platforms(client: Client, sandbox="Anomali", limit=None, all_results=None):
     """
     Returns list of supported platforms for premium sandbox or default sandbox.
     """
@@ -2561,19 +2561,19 @@ def submit_report(
     import_indicators=True,
     submission_classification="private",
     report_platform="WINDOWS7",
-    sandbox_type="Anomali",
+    sandbox="Anomali",
     detail=None,
 ):
     """
     Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
     """
     import_indicators = argToBoolean(import_indicators)
-    sandbox_flag = f"use_{sandbox_type.lower()}_sandbox"
+    use_sandbox = f"use_{sandbox.lower()}_sandbox"
 
     data = {
         "report_radio-classification": submission_classification,
         "report_radio-platform": report_platform,
-        sandbox_flag: True,
+        use_sandbox: True,
         "import_indicators": import_indicators,
     }
     if detail:
