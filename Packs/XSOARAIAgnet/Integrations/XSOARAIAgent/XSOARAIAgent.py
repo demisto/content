@@ -12,14 +12,17 @@ from langchain_neo4j import (
     Neo4jGraph,
     GraphCypherQAChain,
 )
+import httpx
+import contextlib
+from urllib3.exceptions import InsecureRequestWarning
 
 
 """ CONSTANTS """
-NEO4J_URI = ""
-NEO4J_USERNAME = ""
-NEO4J_PASSWORD = ""
+NEO4J_URI = "bolt://127.0.0.1/:7687"
+NEO4J_USERNAME = "neo4j"
+NEO4J_PASSWORD = "contentgraph"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-XSOAR_AGENT_PROMPT = hub.pull("hwchase17/openai-functions-agent")
+HTTPX_CLIENT = httpx.Client(verify=False)
 CYPHER_GENERATION_TEMPLATE = """
 Task:
 Generate Cypher query for a Neo4j graph database.
@@ -39,66 +42,36 @@ the generated Cypher statement. Make sure the direction of the relationship is
 correct in your queries. Make sure you alias both entities and relationships
 properly. Do not run any queries that would add to or delete from
 the database. Make sure to alias all statements that follow as with
-statement (e.g. WITH v as visit, c.billing_amount as billing_amount)
+statement (e.g. WITH i as integration, i.name as integration_name)
 If you need to divide numbers, make sure to
 filter the denominator to be non zero.
 
 Examples:
-# Who is the oldest patient and how old are they?
-MATCH (p:Patient)
-RETURN p.name AS oldest_patient,
-       duration.between(date(p.dob), date()).years AS age
-ORDER BY age DESC
+# Which integration has the most commands?
+MATCH (i:Integration)-[r:HAS_COMMAND]->(c:Command)
+RETURN i.name as integration_name, count(c) as command_count
+ORDER by command_count desc
 LIMIT 1
 
-# Which physician has billed the least to Cigna
-MATCH (p:Payer)<-[c:COVERED_BY]-(v:Visit)-[t:TREATS]-(phy:Physician)
-WHERE p.name = 'Cigna'
-RETURN phy.name AS physician_name, SUM(c.billing_amount) AS total_billed
-ORDER BY total_billed
-LIMIT 1
+# How many packs depends on the Base pack?
+MATCH (p:Pack)-[d:DEPENDS_ON]->(m:Pack {name: "Base"})
+RETURN count(p)
 
-# Which state had the largest percent increase in Cigna visits
-# from 2022 to 2023?
-MATCH (h:Hospital)<-[:AT]-(v:Visit)-[:COVERED_BY]->(p:Payer)
-WHERE p.name = 'Cigna' AND v.admission_date >= '2022-01-01' AND
-v.admission_date < '2024-01-01'
-WITH h.state_name AS state, COUNT(v) AS visit_count,
-     SUM(CASE WHEN v.admission_date >= '2022-01-01' AND
-     v.admission_date < '2023-01-01' THEN 1 ELSE 0 END) AS count_2022,
-     SUM(CASE WHEN v.admission_date >= '2023-01-01' AND
-     v.admission_date < '2024-01-01' THEN 1 ELSE 0 END) AS count_2023
-WITH state, visit_count, count_2022, count_2023,
-     (toFloat(count_2023) - toFloat(count_2022)) / toFloat(count_2022) * 100
-     AS percent_increase
-RETURN state, percent_increase
-ORDER BY percent_increase DESC
-LIMIT 1
+# How many integrations can fetch incidents?
+MATCH (i:Integration)
+WHERE i.is_fetch
+RETURN count(i) as integration_count
 
-# How many non-emergency patients in North Carolina have written reviews?
-MATCH (r:Review)<-[:WRITES]-(v:Visit)-[:AT]->(h:Hospital)
-WHERE h.state_name = 'NC' and v.admission_type <> 'Emergency'
-RETURN count(*)
-
-String category values:
-Test results are one of: 'Inconclusive', 'Normal', 'Abnormal'
-Visit statuses are one of: 'OPEN', 'DISCHARGED'
-Admission Types are one of: 'Elective', 'Emergency', 'Urgent'
-Payer names are one of: 'Cigna', 'Blue Cross', 'UnitedHealthcare', 'Medicare',
-'Aetna'
-
-A visit is considered open if its status is 'OPEN' and the discharge date is
-missing.
-Use abbreviations when
-filtering on hospital states (e.g. "Texas" is "TX",
-"Colorado" is "CO", "North Carolina" is "NC",
-"Florida" is "FL", "Georgia" is "GA", etc.)
+# What is the number of deprecated integrations?
+MATCH (i:Integration)
+WHERE i.deprecated
+RETURN count(i)
 
 Make sure to use IS NULL or IS NOT NULL when analyzing missing properties.
 Never return embedding properties in your queries. You must never include the
 statement "GROUP BY" in your query. Make sure to alias all statements that
-follow as with statement (e.g. WITH v as visit, c.billing_amount as
-billing_amount)
+follow as with statement (e.g. WITH i as integration, c.name as
+integration_name)
 If you need to divide numbers, make sure to filter the denominator to be non
 zero.
 
@@ -126,13 +99,6 @@ If the information is not empty, you must provide an answer using the
 results. If the question involves a time duration, assume the query
 results are in units of days unless otherwise specified.
 
-When names are provided in the query results, such as hospital names,
-beware of any names that have commas or other punctuation in them.
-For instance, 'Jones, Brown and Murray' is a single hospital name,
-not multiple hospitals. Make sure you return any list of names in
-a way that isn't ambiguous and allows someone to tell what the full
-names are.
-
 Never say you don't have the right information if there is data in
 the query results. Always use the data in the query results.
 
@@ -151,15 +117,6 @@ class Agent:
         self.api_key = api_key
         self.tools = [
             Tool(
-                name="ExecuteCommand",
-                func=self.generate_execute_cypher_chain().invoke,
-                description="""Useful for requests to run integration commands or scripts. 
-                Use the entire prompt as input to the tool. 
-                For instance, if the prompt is "Provide details about incident ID 23 in ServiceNow?",
-                the input should be "Provide details about incident ID 23 in ServiceNow?".
-                """,
-            ),
-            Tool(
                 name="Question",
                 func=self.generate_question_cypher_chain().invoke,
                 description="""Useful for answering questions about integrations,
@@ -170,28 +127,35 @@ class Agent:
                 """,
             ),
             Tool(
+                name="ExecuteCommand",
+                func=self.execute_command,
+                description="""Useful for requests to run integration commands or scripts. 
+                Use the entire prompt as input to the tool. 
+                For instance, if the prompt is "Provide details about incident ID 23 in ServiceNow?",
+                the input should be "Provide details about incident ID 23 in ServiceNow?".
+                """,
+            ),
+            Tool(
                 name="CreateIncident",
-                func=self.create_incident(),
-                description="""Useful for answering questions about integrations,
-                scripts, incident types, incident fields, layouts, classifiers, mappers.
+                func=self.create_incident,
+                description="""Useful for requests to create an incident.
                 Use the entire prompt as input to the tool. For instance,
-                if the prompt is "How to configure the Virus Total integration?",
-                the input should be "How to configure the Virus Total integration?".
+                if the prompt is "Create an incident of type demo-incident",
+                the input should be "Create an incident of type demo-incident".
                 """,
             ),
             Tool(
                 name="CreateIndicator",
-                func=self.create_indicator(),
-                description="""Useful for answering questions about integrations,
-                scripts, incident types, incident fields, layouts, classifiers, mappers.
+                func=self.create_indicator,
+                description="""Usefully for requests to create an indicator.
                 Use the entire prompt as input to the tool. For instance,
-                if the prompt is "How to configure the Virus Total integration?",
-                the input should be "How to configure the Virus Total integration?".
+                if the prompt is "Create an incident of type domain with the value 1.1.1.1?",
+                the input should be "Create an incident of type domain with the value 1.1.1.1?".
                 """,
             ),
         ]
 
-    def generate_execute_cypher_chain(self) -> GraphCypherQAChain:
+    def generate_question_cypher_chain(self) -> GraphCypherQAChain:
         cypher_generation_prompt = PromptTemplate(
             input_variables=["schema", "question"], template=CYPHER_GENERATION_TEMPLATE
         )
@@ -199,9 +163,9 @@ class Agent:
             input_variables=["context", "question"], template=QA_GENERATION_TEMPLATE
         )
 
-        cypher_chain = GraphCypherQAChain.from_llm(
-            cypher_llm=ChatOpenAI(model=self.model, temperature=0),
-            qa_llm=ChatOpenAI(model=self.model, temperature=0),
+        return GraphCypherQAChain.from_llm(
+            cypher_llm=ChatOpenAI(model=self.model, api_key=self.api_key, http_client=HTTPX_CLIENT, temperature=0),
+            qa_llm=ChatOpenAI(model=self.model, api_key=self.api_key, http_client=HTTPX_CLIENT, temperature=0),
             graph=connect_to_graph(),
             verbose=True,
             qa_prompt=qa_generation_prompt,
@@ -211,25 +175,35 @@ class Agent:
             allow_dangerous_requests=True,
         )
 
-        return cypher_chain
+    @staticmethod
+    def execute_command(query: str) -> ...:
+        demisto.debug(f"called execute command with: {query=}")
+        demisto.debug("Executing command")
+        return f"Command {query} was executed successfully.\n"
 
-    def generate_question_cypher_chain(self) -> GraphCypherQAChain:
-        ...
+    @staticmethod
+    def create_incident(query: str) -> ...:
+        demisto.debug(f"called create incident with: {query=}")
+        demisto.debug("Generating incident")
+        new_incident = demisto.createIncidents([{"name": "xsoar ai incident"}])
+        return new_incident
 
-    def create_incident(self) -> ...:
-        ...
-
-    def create_indicator(self) -> ...:
-        ...
+    @staticmethod
+    def create_indicator(query: str) -> ...:
+        demisto.debug(f"called create indicator with: {query=}")
+        demisto.debug("Generating indicator")
+        return f"New indicator with id {randint(0, 999)} was created.\n"
 
     def test(self):
         ...
 
-    def execute(self, query: str):
+    def execute(self, query: str) -> dict[str, Any]:
         demisto.debug(f'The Agent will execute query: {query} with model: {self.model}')
 
         chat_model = ChatOpenAI(
             model=self.model,
+            api_key=self.api_key,
+            http_client=HTTPX_CLIENT,
             temperature=0,
         )
         xsoar_rag_agent = create_openai_functions_agent(
@@ -243,10 +217,12 @@ class Agent:
             return_intermediate_steps=True,
             verbose=True,
         )
+        demisto.debug("hey success")
 
-        execution = xsoar_rag_agent_executor.invoke({"input": query})
+        name = query
+        execution = xsoar_rag_agent_executor.invoke({"input": name})
 
-        return execution.get("command"), execution.get("arguments")
+        return execution
 
 
 """ HELPER FUNCTIONS """
@@ -263,6 +239,46 @@ def connect_to_graph():
 
     return graph
 
+
+# Disable SSL
+
+
+old_merge_environment_settings = requests.Session.merge_environment_settings
+
+
+@contextlib.contextmanager
+def no_ssl_verification():
+    opened_adapters = set()
+
+    def merge_environment_settings(self, url, proxies, stream, verify, cert):
+        # Verification happens only once per connection so we need to close
+        # all the opened adapters once we're done. Otherwise, the effects of
+        # verify=False persist beyond the end of this context manager.
+        opened_adapters.add(self.get_adapter(url))
+
+        settings = old_merge_environment_settings(self, url, proxies, stream, verify, cert)
+        settings['verify'] = False
+
+        return settings
+
+    requests.Session.merge_environment_settings = merge_environment_settings
+
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', InsecureRequestWarning)
+            yield
+    finally:
+        requests.Session.merge_environment_settings = old_merge_environment_settings
+
+        for adapter in opened_adapters:
+            try:
+                adapter.close()
+            except:
+                pass
+
+
+with no_ssl_verification():
+    XSOAR_AGENT_PROMPT = hub.pull("hwchase17/openai-functions-agent")
 
 """ COMMAND FUNCTIONS """
 
@@ -288,12 +304,10 @@ def test_module(agent: Agent) -> str:
 def xsoar_ai_agent_execute_command(agent: Agent, args: dict[str, Any]) -> CommandResults:
     query = args.get("query")
 
-    command, args = agent.execute(query)
-
-    demisto.executeCommand(command, args)
+    result = agent.execute(query)
 
     return CommandResults(
-        readable_output="Command executed successfully.",
+        readable_output=tableToMarkdown("Result", result),
     )
 
 
