@@ -9834,8 +9834,6 @@ script:
     - description: Show only expired certificates.
       name: show_expired_only
       type: Boolean
-      required: false
-      isArray: false
     outputs:
     - contextPath: Panorama.Certificate.name
       type: String
