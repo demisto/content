@@ -2,6 +2,9 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Cofense Triage v3
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: Server URL to connect to Cofense Triage.
   display: Server URL
