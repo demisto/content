@@ -1712,17 +1712,17 @@ def fetch_last_emails(
     log_memory()
     if since_datetime:
         if incident_filter == MODIFIED_FILTER:
-            qs = qs.filter(last_modified_time__gte=since_datetime).filter(is_read=False)
+            qs = qs.filter(last_modified_time__gte=since_datetime)
         else:  # default to "received" time
-            qs = qs.filter(datetime_received__gte=since_datetime).filter(is_read=False)
+            qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         tz = EWSTimeZone("UTC")
         first_fetch_datetime = dateparser.parse(FETCH_TIME)
         assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
-        qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime).filter(is_read=False)
+        qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
         demisto.debug(f"{first_fetch_ews_datetime=}")
-    qs = qs.filter(is_read=False).only(*[x.name for x in Message.FIELDS if x.name.lower() != "mime_content"])
+    qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name.lower() != "mime_content"])
     if incident_filter == RECEIVED_FILTER:
         qs = qs.filter().order_by("datetime_received")
     else:
