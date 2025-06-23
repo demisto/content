@@ -37,7 +37,8 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 
 In order to use the CrowdStrike Falcon integration, the API client must have the following scope and permissions:
 
-- Real Time Response - Read and Write
+- Real Time Response - Read and Write|
+- Real Time Response Admin - Write
 - Alerts - Read and Write
 - IOC Manager - Read and Write
 - IOCs - Read and Write
