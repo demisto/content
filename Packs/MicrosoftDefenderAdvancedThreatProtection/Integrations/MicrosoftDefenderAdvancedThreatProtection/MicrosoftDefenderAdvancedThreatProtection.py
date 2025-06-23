@@ -189,9 +189,7 @@ class HuntingQueryBuilder:
         if insert_pos == -1:
             return f"{query} | where {time_range_query}"
 
-        after = query[insert_pos:]
-        before = query[:insert_pos]
-        return f"{before}| where {time_range_query} {after}"
+        return f"{query[:insert_pos]}| where {time_range_query} {query[insert_pos:]}"
 
     @staticmethod
     def get_filter_values(list_values: list | str | None) -> str | None:
