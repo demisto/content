@@ -380,6 +380,14 @@ Search for details of specific detections, either using a filter query, or by pr
 
 #### Command Example
 
+`!cs-falcon-search-detection filter="product:'idp'"`
+
+`!cs-falcon-search-detection filter="product:'mobile'"`
+
+`!cs-falcon-search-detection filter="product:'ngsiem'"`
+
+`!cs-falcon-search-detection filter="product:'thirdparty'"`
+
 `!cs-falcon-search-detection ids=ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347,ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902`
 
 #### Context Example
@@ -3859,7 +3867,7 @@ There is no context output for this command.
 ### get-remote-data
 
 ***
-Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
+Gets remote data from a remote incident or detection. When executing manually, this method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -3879,7 +3887,7 @@ There is no context output for this command.
 ### get-modified-remote-data
 
 ***
-Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
+Gets the list of incidents and detections that were modified since the last update time. When executing manually, this method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -3898,7 +3906,7 @@ There is no context output for this command.
 ### update-remote-system
 
 ***
-Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
+Updates the remote incident or detection with local incident or detection changes. When executing manually, this method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
