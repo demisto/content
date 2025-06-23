@@ -25,6 +25,7 @@ VERIFY_CERTIFICATE = not bool(params.get("unsecure"))
 FETCH_LIMIT = int(params.get("fetch_limit")) if params.get("fetch_limit") else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 MIRROR_LIMIT = 1000
+SPLUNK_INDEXING_TIME = 60
 PROBLEMATIC_CHARACTERS = [".", "(", ")", "[", "]"]
 REPLACE_WITH = "_"
 REPLACE_FLAG = params.get("replaceKeys", False)
@@ -1846,7 +1847,7 @@ def get_modified_remote_data_command(
     remote_args = GetModifiedRemoteDataArgs(args)
     demisto.debug(f"Original last_update before 1 minute reduction: {get_last_update_in_splunk_time(remote_args.last_update)}")
     # Subtract 1 minute (60 seconds) to allow indexing
-    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update) - 60
+    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update) - SPLUNK_INDEXING_TIME
     incident_review_search = (
         "|`incident_review` "
         "| eval last_modified_timestamp=_time "
