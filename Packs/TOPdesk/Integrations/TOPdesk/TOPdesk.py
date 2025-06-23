@@ -157,7 +157,7 @@ class Client(BaseClient):
         fields: str | None = None,
         search_term: str | None = None,
         archived: bool | None = None,
-    ) -> list[dict[str, Any]]:
+    ) -> dict[str, Any]:
         """Get list of objects that support start, page_size and query arguments.
 
         Args:
@@ -823,7 +823,7 @@ def get_assets_list(
     Return list of incidents got from the API.
     """
 
-    page_size = arg_to_number(args.get("page_size", 50))
+    page_size = int(arg_to_number(args.get("page_size", 50)))
     start = arg_to_number(args.get("start", 0))
     query = args.get("filter", None)
     search_term = args.get("search_term", None)
