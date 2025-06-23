@@ -1,6 +1,6 @@
 [MODEL: dataset="abnormal_security_email_protection_raw"]
 alter
-	attachmentNames = arraystring(json_extract_scalar_array(attachmentNames, "$"), ","),
+	`attachmentNames` = arraystring(json_extract_scalar_array(attachmentNames, "$"), ","),
 	ccEmails = json_extract_scalar_array(ccEmails, "$"),
 	summaryInsights = arraystring(json_extract_scalar_array(summaryInsights, "$"), ","),
     toAddresses = arrayfilter(if(json_extract_array(toAddresses, "$")=null, split(toAddresses, ","), json_extract_scalar_array(toAddresses, "$")), "@element" != ""),
