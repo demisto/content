@@ -1,7 +1,7 @@
 {
   "trigger_id": "87c26ac436f447a19c69b2ffab5154f3",
   "trigger_name": "Remediation playbook for AWS EC2 misconfigurations",
-  "playbook_id": "AWS EC2 Instance Misconfiguration - Remediate & Notify",
+  "playbook_id": "AWS EC2 Instance Misconfiguration - Remediate and Notify",
   "suggestion_reason": "Recommended for AWS EC2 Instance Misconfiguration Issues",
   "description": "This trigger is responsible for handling AWS EC2 Instance Misconfiguration Issues",
   "alerts_filter": {

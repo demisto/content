@@ -1,5 +1,3 @@
-# Cloud Security Posture Management Playbooks
-
 ## Overview
 
 This content pack helps fix common cloud misconfigurations automatically with analyst approval. It currently supports AWS, with planned support for Azure and GCP. The pack also includes a versatile and cloud-agnostic playbook for creating tickets and sending notifications through ServiceNow, Jira, Slack, and Microsoft Teams.

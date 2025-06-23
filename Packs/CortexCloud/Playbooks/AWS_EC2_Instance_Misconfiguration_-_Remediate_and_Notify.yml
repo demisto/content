@@ -1,5 +1,5 @@
 id: AWS EC2 Instance Misconfiguration - Remediate and Notify
-version: 1
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: AWS EC2 Instance Misconfiguration - Remediate and Notify
 description: |-
@@ -12,6 +12,7 @@ description: |-
 
   - AWS EC2 instances not configured with Instance Metadata Service v2 (IMDSv2).
 starttaskid: "0"
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"

@@ -1,5 +1,5 @@
 id: AWS S3 Bucket Publicly Accessible - Remediate and Notify
-version: 6
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: AWS S3 Bucket Publicly Accessible - Remediate and Notify
 description: |-
@@ -13,6 +13,7 @@ description: |-
   - AWS S3 bucket publicly readable
   - AWS S3 bucket publicly writable.
 starttaskid: "0"
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
