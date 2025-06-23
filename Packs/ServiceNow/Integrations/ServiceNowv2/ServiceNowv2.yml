@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: ServiceNow v2
+  id: ServiceNow v2_copy
   version: -1
 configuration:
 - display: ServiceNow URL, in the format https://company.service-now.com/
@@ -293,6 +293,16 @@ configuration:
   - platform
   required: false
   section: Collect
+- display: Mirrored ServiceNow Ticket Close Code
+  name: close_code
+  type: 0
+  advanced: true
+  additionalinfo: Define how to close the mirrored tickets in ServiceNow with a close code. Enter here the close code.
+  hidden:
+    - marketplacev2
+    - platform
+  required: false
+  section: Collect
 - defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
@@ -339,8 +349,8 @@ configuration:
   required: false
   section: Collect
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
-display: ServiceNow v2
-name: ServiceNow v2
+display: ServiceNow v2_copy
+name: ServiceNow v2_copy
 script:
   commands:
   - arguments:

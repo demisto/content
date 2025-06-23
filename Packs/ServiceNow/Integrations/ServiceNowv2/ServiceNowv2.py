@@ -3133,7 +3133,8 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     demisto.debug(f"closure case= {closure_case}")
     is_custom_close = False
     close_custom_state = params.get("close_custom_state", None)
-    demisto.debug(f"state will change to= {parsed_args.delta.get('state')}")
+    close_code = params.get("close_code", None) # This field can be mandatory by a SNOW policy.
+
     if parsed_args.incident_changed:
         demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
         if parsed_args.inc_status == IncidentStatus.DONE:
@@ -3149,6 +3150,9 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 demisto.debug(f"Closing by custom state = {close_custom_state}")
                 is_custom_close = True
                 parsed_args.delta["state"] = close_custom_state
+            if close_code: # Closing with a close code
+                demisto.debug(f"Closing the ticket with the close code: {close_code}")
+                parsed_args.delta["close_code"] = close_code
 
         fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
         demisto.debug(f"all fields= {fields}")
