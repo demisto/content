@@ -132,7 +132,7 @@ configuration:
   display: Starred incidents fetch window
   name: starred_incidents_fetch_window
   type: 0
-  section: Collect 
+  section: Collect
   required: false
   additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
   advanced: true
