@@ -189,14 +189,30 @@ class Code42Client(BaseClient):
 
     # Alert methods
 
-    def fetch_alerts(self, start_time, event_severity_filter):
+    def fetch_alerts(self, start_query_time, last_fetch_timestamp, event_severity_filter, fetched_incidents):
         all_sessions = self.incydr_sdk.sessions.v1.iter_all(
-            start_time=start_time, severities=_get_severity_filter_value(event_severity_filter)
+            start_time=start_query_time,
+            severities=_get_severity_filter_value(event_severity_filter),
+            states=["OPEN", "OPEN_NEW_DATA"],
         )
         res = []
-        for page in all_sessions:
-            res.append(self._process_alert(page))
-        return res
+        # handle last fetch timestamp being something other than int
+        try:
+            last_fetch_timestamp = int(last_fetch_timestamp)
+        except (ValueError, TypeError):
+            last_fetch_timestamp = 0
+        next_last_fetch_timestamp = last_fetch_timestamp
+        for session in all_sessions:
+            if session.first_observed >= last_fetch_timestamp and session.session_id not in fetched_incidents:
+                res.append(self._process_alert(session))
+        for session in res:
+            if session.first_observed > next_last_fetch_timestamp:
+                next_last_fetch_timestamp = session.first_observed
+                fetched_incidents = []
+            if session.first_observed == next_last_fetch_timestamp:
+                fetched_incidents.append(session.session_id)
+
+        return res, next_last_fetch_timestamp, fetched_incidents
 
     def get_alert_details(self, alert_id):
         try:
@@ -308,7 +324,8 @@ class Code42Client(BaseClient):
                 pass
         alert.rule_names = ", ".join(rule_name_list)
         alert.beginTimeIso = datetime.fromtimestamp(alert.begin_time / 1000).replace(tzinfo=timezone.utc).isoformat()
-        alert.alertUrl = f"{self._base_url}/app/#/alerts/review-alerts/{alert.session_id}"
+        console_url = self._base_url.replace("https://api", "https://console")
+        alert.alertUrl = f"{console_url}/app/#/alerts/review-alerts/{alert.session_id}"
         return alert
 
 
@@ -808,10 +825,16 @@ class Code42SecurityIncidentFetcher:
         if remaining_incidents_from_last_run:
             return remaining_incidents_from_last_run
         start_query_time = self._get_start_query_time()
-        alerts = self._fetch_alerts(start_query_time)
+        fetched_incidents = (
+            self._last_run.get("incidents_at_last_fetch_timestamp")
+            if "incidents_at_last_fetch_timestamp" in self._last_run
+            else []
+        )
+        alerts, save_time, fetched_incidents = self._client.fetch_alerts(
+            start_query_time, self._try_get_last_fetch_time(), self._event_severity_filter, fetched_incidents
+        )
         incidents = [self._create_incident_from_alert(a) for a in alerts]
-        save_time = datetime.now(timezone.utc).timestamp()
-        next_run = {"last_fetch": save_time}
+        next_run = {"last_fetch": save_time, "incidents_at_last_fetch_timestamp": fetched_incidents}
         return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit :]
 
     def _fetch_remaining_incidents_from_last_run(self):
@@ -828,20 +851,19 @@ class Code42SecurityIncidentFetcher:
         return None
 
     def _get_start_query_time(self):
-        start_query_time = self._try_get_last_fetch_time()
-
-        # Handle first time fetch, fetch incidents retroactively
-        if not start_query_time:
-            start_query_time, _ = parse_date_range(self._first_fetch_time, to_timestamp=True, utc=True)
-            start_query_time /= 1000
-
-        return start_query_time * 1000
+        last_fetch_time = self._try_get_last_fetch_time()
+        start_query_time, _ = parse_date_range(self._first_fetch_time, to_timestamp=True, utc=True)
+        last_fetch_time = last_fetch_time * 1000 if last_fetch_time else start_query_time
+        # if the last fetch was before the time we'd otherwise use, use last fetch to avoid missing anything
+        if last_fetch_time < start_query_time:
+            return last_fetch_time
+        return start_query_time
 
     def _try_get_last_fetch_time(self):
         return self._last_run.get("last_fetch")
 
-    def _fetch_alerts(self, start_query_time):
-        return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
+    def _filter_fetched_incident_dict(self, incidents, filter_datetime):
+        return {key: value for key, value in incidents.items() if datetime.fromisoformat(value) > filter_datetime}
 
     def _create_incident_from_alert(self, alert):
         details = alert.dict()

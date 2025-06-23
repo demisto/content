@@ -179,7 +179,7 @@ MOCK_USER_RISK_PROFILE_RESPONSE = Actor.parse_file("test_data/risk_profile_respo
 
 MOCK_CODE42_ALERT_CONTEXT = [
     {
-        "ID": "sessionid-abc-123",
+        "ID": "sessionid-abc-1",
         "Name": "document file(s) shared via link from corporate Box",
         "Description": "example rule name",
         "Occurred": "2024-09-11T19:26:00.680000+00:00",
@@ -568,8 +568,8 @@ def test_client_remove_from_matter_when_no_membership_raises_invalid_legal_hold_
 
 def test_alert_get_command(incydr_sessions_mock):
     client = _create_incydr_client(incydr_sessions_mock)
-    cmd_res = alert_get_command(client, {"id": "sessionid-abc-123"})
-    assert cmd_res.raw_response["sessionId"] == "sessionid-abc-123"
+    cmd_res = alert_get_command(client, {"id": "sessionid-abc-1"})
+    assert cmd_res.raw_response["sessionId"] == "sessionid-abc-1"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
     assert cmd_res.outputs_key_field == "ID"
@@ -586,8 +586,8 @@ def test_alert_get_command_when_no_alert_found(mocker, incydr_sdk_mock):
 
 def test_alert_update_state_command(incydr_sessions_mock):
     client = _create_incydr_client(incydr_sessions_mock)
-    cmd_res = alert_update_state_command(client, {"id": "rule-id-abc-123", "state": "OPEN"})
-    assert cmd_res.raw_response["sessionId"] == "sessionid-abc-123"
+    cmd_res = alert_update_state_command(client, {"id": "rule-id-abc-1", "state": "OPEN"})
+    assert cmd_res.raw_response["sessionId"] == "sessionid-abc-1"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
     assert cmd_res.outputs_key_field == "ID"
@@ -596,7 +596,7 @@ def test_alert_update_state_command(incydr_sessions_mock):
 def test_alert_resolve_command(incydr_sessions_mock):
     client = _create_incydr_client(incydr_sessions_mock)
     cmd_res = alert_update_state_command(client, {"id": "rule-id-abc-123"})
-    assert cmd_res.raw_response["sessionId"] == "sessionid-abc-123"
+    assert cmd_res.raw_response["sessionId"] == "sessionid-abc-1"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
     assert cmd_res.outputs_key_field == "ID"
@@ -867,7 +867,7 @@ def test_fetch_incidents_handles_single_severity(incydr_sessions_mock):
         event_severity_filter="High",
         fetch_limit=10,
         include_files=True,
-        integration_context=None,
+        integration_context={},
     )
     assert incydr_sessions_mock.sessions.v1.iter_all.call_args[1]["severities"] == 3
 
@@ -881,7 +881,7 @@ def test_fetch_incidents_handles_multi_severity(incydr_sessions_mock):
         event_severity_filter=["High", "Low"],
         fetch_limit=10,
         include_files=True,
-        integration_context=None,
+        integration_context={},
     )
     call_args = incydr_sessions_mock.sessions.v1.iter_all.call_args[1]["severities"]
     assert 1 in call_args
@@ -897,7 +897,7 @@ def test_fetch_when_include_files_includes_files(incydr_sessions_mock):
         event_severity_filter=["High", "Low"],
         fetch_limit=10,
         include_files=True,
-        integration_context=None,
+        integration_context={},
     )
     for i in incidents:
         _json = json.loads(i["rawJSON"])
@@ -913,7 +913,7 @@ def test_fetch_when_not_include_files_excludes_files(incydr_sessions_mock):
         event_severity_filter=["High", "Low"],
         fetch_limit=10,
         include_files=False,
-        integration_context=None,
+        integration_context={},
     )
     for i in incidents:
         _json = json.loads(i["rawJSON"])
@@ -929,7 +929,7 @@ def test_fetch_incidents_first_run(incydr_sessions_mock):
         event_severity_filter=None,
         fetch_limit=10,
         include_files=True,
-        integration_context=None,
+        integration_context={},
     )
     assert len(incidents) == 3
     assert next_run["last_fetch"]
@@ -946,7 +946,7 @@ def test_fetch_incidents_next_run(incydr_sessions_mock):
         event_severity_filter=None,
         fetch_limit=10,
         include_files=True,
-        integration_context=None,
+        integration_context={},
     )
     assert len(incidents) == 3
     assert next_run["last_fetch"]
@@ -963,7 +963,7 @@ def test_fetch_incidents_fetch_limit(incydr_sessions_mock):
         event_severity_filter=None,
         fetch_limit=2,
         include_files=True,
-        integration_context=None,
+        integration_context={},
     )
     assert len(incidents) == 2
     assert next_run["last_fetch"]
@@ -971,7 +971,7 @@ def test_fetch_incidents_fetch_limit(incydr_sessions_mock):
     # Run again to get the last incident
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
-        last_run={"last_fetch": mock_timestamp},
+        last_run={"last_fetch": mock_timestamp, "incidents_at_last_fetch_timestamp": []},
         first_fetch_time=MOCK_FETCH_TIME,
         event_severity_filter=None,
         fetch_limit=2,
@@ -981,6 +981,67 @@ def test_fetch_incidents_fetch_limit(incydr_sessions_mock):
     assert len(incidents) == 1
     assert next_run["last_fetch"]
     assert not remaining_incidents
+
+
+def test_fetch_incidents_sets_fetched_incidents_in_context(incydr_sessions_mock):
+    client = _create_incydr_client(incydr_sessions_mock)
+    next_run, incidents, remaining_incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=None,
+        fetch_limit=10,
+        include_files=True,
+        integration_context={},
+    )
+    assert len(next_run["incidents_at_last_fetch_timestamp"]) == 2
+    assert "sessionid-abc-2" in next_run["incidents_at_last_fetch_timestamp"]
+    assert "sessionid-abc-3" in next_run["incidents_at_last_fetch_timestamp"]
+
+
+def test_fetch_incidents_deduplicates(incydr_sessions_mock):
+    client = _create_incydr_client(incydr_sessions_mock)
+    next_run, incidents, remaining_incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None, "incidents_at_last_fetch_timestamp": ["sessionid-abc-1"]},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=None,
+        fetch_limit=10,
+        include_files=True,
+        integration_context={},
+    )
+    assert len(incidents) == 2
+
+
+def test_fetch_incidents_deduplicates_when_incidents_in_another_order(incydr_sessions_mock):
+    incydr_sessions_mock.sessions.v1.iter_all.return_value = iter(
+        [MOCK_SESSION_RESPONSE_3, MOCK_SESSION_RESPONSE_2, MOCK_SESSION_RESPONSE]
+    )
+    client = _create_incydr_client(incydr_sessions_mock)
+    next_run, incidents, remaining_incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None, "incidents_at_last_fetch_timestamp": ["sessionid-abc-1"]},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=None,
+        fetch_limit=10,
+        include_files=True,
+        integration_context={},
+    )
+    assert len(incidents) == 2
+
+
+def test_fetch_incidents_prunes_fetched_incidents_in_context(incydr_sessions_mock):
+    client = _create_incydr_client(incydr_sessions_mock)
+    next_run, incidents, remaining_incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None, "incidents_at_last_fetch_timestamp": ["sessionid-abc-1"]},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=None,
+        fetch_limit=10,
+        include_files=True,
+        integration_context={},
+    )
+    assert len(next_run["incidents_at_last_fetch_timestamp"]) == 2
 
 
 def test_file_events_search_command_returns_only_table_when_add_to_context_false(mocker, incydr_file_events_mock):
