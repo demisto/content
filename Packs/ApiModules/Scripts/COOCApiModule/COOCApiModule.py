@@ -43,7 +43,7 @@ class HealthCheckError:
     def __init__(self, account_id: str, connector_id: str, message: str, error_type: str):
         self.account_id = account_id
         self.connector_id = connector_id
-        self.message = f"{account_id}: {message}"
+        self.message = f"[{account_id}] {message}"
         self.error_type = error_type
         # Determine classification based on error type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
@@ -290,7 +290,7 @@ def run_permissions_check_for_accounts(
         if not account_id:
             raise DemistoException("No valid account_id found in accounts")
 
-        shared_creds = get_cloud_credentials(cloud_type, account_id)
+        shared_creds = get_cloud_credentials(cloud_type, account_id) # todo need to add expiration
         demisto.debug(f"Retrieved shared {cloud_type} credentials for all accounts")
 
     except Exception as e:
