@@ -415,7 +415,7 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected
     assert len(return_results_mocker.call_args[0][0].outputs) == expected_incidents_length
 
 
-def test_query_argument_with_unicode_escape(mocker, special_char):
+def test_query_argument_with_unicode_escape(mocker):
     """
     Given:
        - A query to search incidents with unicode escape
