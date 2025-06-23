@@ -1627,7 +1627,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         endpoint_url = "alerts/queries/alerts/v2?filter="
         # This value is similar to the default value of the filter argument in the YAML file
         if not filter_arg:
-            filter_arg ="product:'epp'+type:'ldt'"
+            filter_arg = "product:'epp'+type:'ldt'"
         # in the new version we send only the filter_arg argument as encoded string without the params
         endpoint_url += urllib.parse.quote_plus(filter_arg)
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")

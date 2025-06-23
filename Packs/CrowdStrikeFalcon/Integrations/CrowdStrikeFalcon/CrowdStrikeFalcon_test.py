@@ -7313,14 +7313,9 @@ def test_error_handler():
             False,
             "alerts/queries/alerts/v2?filter=product%3A%27ngsiem%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
             3,
-            "product:'ngsiem'+created_timestamp:>'2024-06-19T15:25:00Z'"
+            "product:'ngsiem'+created_timestamp:>'2024-06-19T15:25:00Z'",
         ),
-        (
-            False,
-            "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27",
-            3,
-            None
-            ),
+        (False, "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27", 3, None),
         (True, "/detects/queries/detects/v1", 3, "product:'epp'+type:'ldt'"),
     ],
 )
@@ -7352,8 +7347,7 @@ def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expe
     mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", Legacy_version)
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
 
-    get_detections(
-        last_behavior_time="2024-06-19T15:25:00Z", behavior_id=123, filter_arg=filter_args)
+    get_detections(last_behavior_time="2024-06-19T15:25:00Z", behavior_id=123, filter_arg=filter_args)
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert len(http_request_mocker.call_args_list[0][0]) == expected_len
 
