@@ -6,7 +6,7 @@ Caution: If you do not provide a reviewer email, the playbook will automatically
 This playbook can fix the following misconfigurations.
 
 - AWS S3 bucket publicly readable
-- AWS S3 bucket publicly writable
+- AWS S3 bucket publicly writable.
 
 ## Dependencies
 
@@ -14,23 +14,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-- Create Ticket and Notify
+* Create Ticket and Notify
 
 ### Integrations
 
-- AWS
-- Cortex Core - IR
+* AWS
+* Cortex Core - Platform
 
 ### Scripts
 
-- IsIntegrationAvailable
-- Print
+* IsIntegrationAvailable
+* Print
 
 ### Commands
 
-- aws-s3-public-access-block-update
-- core-get-asset-details
-- setIssueStatus
+* aws-s3-public-access-block-update
+* core-get-asset-details
+* setIssueStatus
 
 ## Playbook Inputs
 
@@ -55,4 +55,4 @@ There are no outputs for this playbook.
 
 ---
 
-![AWS S3 Bucket Publicly Accessible - Remediate & Notify](../doc_files/AWS_S3_Bucket_Publicly_Accessible_-_Remediate_&_Notify.png)
+![AWS S3 Bucket Publicly Accessible - Remediate and Notify](../doc_files/AWS_S3_Bucket_Publicly_Accessible_-_Remediate_and_Notify.png)

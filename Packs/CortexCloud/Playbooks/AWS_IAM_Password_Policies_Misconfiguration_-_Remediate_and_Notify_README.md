@@ -1,4 +1,5 @@
-This playbook helps you fix cloud security misconfigurations related to your AWS IAM password policy. It also makes it easy to involve your team by creating tickets and sending notifications through your chosen services. You have the flexibility to fully automate the fix or include an analyst review and approval step before any changes are made. Ticketing and notifications are handled by a sub-playbook, which you need to set up with your preferred integrations. To get started, provide inputs to select your desired ticketing and notification channels. If you want an analyst to approve the fix, you need to provide their email address. The playbook will send them the issue details and wait for their decision before applying any changes.
+This playbook helps you fix cloud security misconfigurations related to your AWS IAM password policy. It also makes it easy to involve your team by creating tickets and sending notifications through your chosen services.
+You have the flexibility to fully automate the fix or include an analyst review and approval step before any changes are made. Ticketing and notifications are handled by a sub-playbook, which you need to set up with your preferred integrations. To get started, provide inputs to select your desired ticketing and notification channels. If you want an analyst to approve the fix, you need to provide their email address. The playbook will send them the issue details and wait for their decision before applying any changes.
 
 Caution: If you do not provide a reviewer email, the playbook will automatically apply the fix without an approval step.
 
@@ -20,23 +21,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-- Create Ticket and Notify
+* Create Ticket and Notify
 
 ### Integrations
 
-- AWS
-- Cortex Core - IR
+* AWS
+* Cortex Core - Platform
 
 ### Scripts
 
-- IsIntegrationAvailable
-- Print
+* IsIntegrationAvailable
+* Print
 
 ### Commands
 
-- aws-iam-account-password-policy-update
-- core-get-asset-details
-- setIssueStatus
+* aws-iam-account-password-policy-update
+* core-get-asset-details
+* setIssueStatus
 
 ## Playbook Inputs
 
@@ -61,4 +62,4 @@ There are no outputs for this playbook.
 
 ---
 
-![AWS IAM Password Policies Misconfiguration - Remediate & Notify](../doc_files/AWS_IAM_Password_Policies_Misconfiguration_-_Remediate_&_Notify.png)
+![AWS IAM Password Policies Misconfiguration - Remediate and Notify](../doc_files/AWS_IAM_Password_Policies_Misconfiguration_-_Remediate_and_Notify.png)

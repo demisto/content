@@ -53,8 +53,8 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Ticket.Id | Jira Ticket ID | string |
-| ServiceNow.Ticket.ID | Service Now Ticket ID | string |
+| Ticket.Id | Jira Ticket ID. | string |
+| ServiceNow.Ticket.ID | Service Now Ticket ID. | string |
 
 ## Playbook Image
 
