@@ -1,6 +1,5 @@
 id: AWS EC2 Instance Misconfiguration - Remediate and Notify
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: AWS EC2 Instance Misconfiguration - Remediate and Notify
 description: |-
   This playbook helps you fix cloud security misconfigurations on your AWS EC2 Instances. It also makes it easy to involve your team by creating tickets and sending notifications through your chosen services.
@@ -24,7 +23,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -57,7 +56,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Cortex Core - Platform
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "29"
@@ -91,7 +89,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -116,12 +114,10 @@ tasks:
       id: b2013b65-442d-4c47-8ce1-df8ce10a01b6
       version: -1
       name: Send email for review consent
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       Approve:
       - "23"
@@ -155,18 +151,12 @@ tasks:
       subject:
         simple: Detected Issue - ${issue.details}
       body:
-        simple: "A cloud misconfiguration has been detected and requires your review.<br><br>\n<b>Issue
-          ID</b>: ${issue.id}<br>\n<b>Issue Details</b>: ${issue.details}<br>\n<b>Resource</b>:
-          ${Core.CoreAsset.xdm__asset__name}<br>\n<b>Cloud Provider</b>: ${Core.CoreAsset.xdm__asset__provider}<br>\n<b>Misconfiguration
-          Type</b>: CSPM<br>\n<b>Severity Level</b>: ${issue.severity}<br>\n<b>Region</b>:
-          ${Core.CoreAsset.xdm__asset__cloud__region}<br>\n<b>Issue URL</b>: ${demistoUrls.workPlan}<br><br>\nPlease
-          select <b>Approve</b> to approve the recommended remediation in the issue
-          work plan, or \n<b>Reject</b> to reject and handle it manually.<br><br>"
+        simple: "A cloud misconfiguration has been detected and requires your review.<br><br>\n<b>Issue ID</b>: ${issue.id}<br>\n<b>Issue Details</b>: ${issue.details}<br>\n<b>Resource</b>: ${Core.CoreAsset.xdm__asset__name}<br>\n<b>Cloud Provider</b>: ${Core.CoreAsset.xdm__asset__provider}<br>\n<b>Misconfiguration Type</b>: CSPM<br>\n<b>Severity Level</b>: ${issue.severity}<br>\n<b>Region</b>: ${Core.CoreAsset.xdm__asset__cloud__region}<br>\n<b>Issue URL</b>: ${demistoUrls.workPlan}<br><br>\nPlease select <b>Approve</b> to approve the recommended remediation in the issue work plan, or \n<b>Reject</b> to reject and handle it manually.<br><br>"
       methods:
       - email
       format: html
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -193,7 +183,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "10"
@@ -265,7 +254,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "30"
@@ -305,7 +293,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "10"
@@ -336,13 +323,11 @@ tasks:
       id: 9adf7c3a-85d2-4b2e-80bf-75650e1647d3
       version: -1
       name: 'Update AWS EC2 Instance Metadata Service '
-      description: Modify the EC2 instance metadata parameters on a running or stopped
-        instance.
+      description: Modify the EC2 instance metadata parameters on a running or stopped instance.
       script: AWS|||aws-ec2-instance-metadata-options-modify
       type: regular
       iscommand: true
       brand: AWS
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
@@ -381,13 +366,11 @@ tasks:
       id: 9f38ee05-a92d-42a5-8f29-63e47a56028e
       version: -1
       name: Is AWS integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       "no":
       - "31"
@@ -424,7 +407,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "23"
@@ -471,22 +453,11 @@ tasks:
       id: c6036384-e5e2-4c59-87e4-53e80485fddc
       version: -1
       name: Create Ticket and Notify
-      description: 'This playbook automates the dispatching of issues through ServiceNow
-        v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or
-        email. With this playbook you can choose to create or update a ticket using
-        Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or
-        by sending an Email. It gives you the flexibility to create a ticket only
-        and skip the notification step, skip the creation of a ticket and notify only,
-        or choose to create a ticket and notify stakeholders. The playbook checks
-        for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations
-        to perform the ticketing and notification actions. If none of these integrations
-        are found in your account, then the playbook sends an email with the issue
-        details to the selected issue owner. '
+      description: 'This playbook automates the dispatching of issues through ServiceNow v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or email. With this playbook you can choose to create or update a ticket using Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or by sending an Email. It gives you the flexibility to create a ticket only and skip the notification step, skip the creation of a ticket and notify only, or choose to create a ticket and notify stakeholders. The playbook checks for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations to perform the ticketing and notification actions. If none of these integrations are found in your account, then the playbook sends an email with the issue details to the selected issue owner. '
       playbookName: Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "14"
@@ -540,22 +511,11 @@ tasks:
       id: 21cf1730-4a5f-4129-8caa-fa3a62e441c9
       version: -1
       name: Update Ticket and Notify
-      description: 'This playbook automates the dispatching of issues through ServiceNow
-        v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or
-        email. With this playbook you can choose to create or update a ticket using
-        Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or
-        by sending an Email. It gives you the flexibility to create a ticket only
-        and skip the notification step, skip the creation of a ticket and notify only,
-        or choose to create a ticket and notify stakeholders. The playbook checks
-        for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations
-        to perform the ticketing and notification actions. If none of these integrations
-        are found in your account, then the playbook sends an email with the issue
-        details to the selected issue owner. '
+      description: 'This playbook automates the dispatching of issues through ServiceNow v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or email. With this playbook you can choose to create or update a ticket using Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or by sending an Email. It gives you the flexibility to create a ticket only and skip the notification step, skip the creation of a ticket and notify only, or choose to create a ticket and notify stakeholders. The playbook checks for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations to perform the ticketing and notification actions. If none of these integrations are found in your account, then the playbook sends an email with the issue details to the selected issue owner. '
       playbookName: Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "20"
@@ -613,7 +573,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "10"
@@ -632,15 +591,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
-        simple: This playbook needs the AWS dependency pack to run remediation commands.
-          Please reply 'Yes' to confirm it's integrated, or 'No' to end the playbook.
+        simple: This playbook needs the AWS dependency pack to run remediation commands. Please reply 'Yes' to confirm it's integrated, or 'No' to end the playbook.
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -662,13 +620,11 @@ tasks:
       id: 557cbf84-8557-4f3b-834a-461bcfa60e9c
       version: -1
       name: Is AWS integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       "no":
       - "10"
@@ -729,7 +685,7 @@ inputs:
     - Both
 
     Note: If you leave this empty, no issue ticket will be generated, and the playbook will skip this step.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Preferred notification platform
   value: {}
   required: false
@@ -739,7 +695,7 @@ inputs:
     - Slack
 
     Note: If you leave this blank, no notification message will be sent and the playbook will skip this step.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Notification email recipients
   value: {}
   required: false
@@ -747,7 +703,7 @@ inputs:
     Provide the email address to send email notifications.
 
     Note: If you leave this blank, no email notification will be sent and the playbook will skip this step.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Reviewer email address
   value: {}
   required: false
@@ -755,22 +711,22 @@ inputs:
     Provide the designated reviewer's email address to request approval for executing the remediation command.
 
     Note: If you leave this blank, no email notification will be sent for reviewer approval, and the playbook will skip directly to execute the remediation command.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Jira Project Key
   value: {}
   required: false
   description: Provide Jira project key where the issue will be created.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Teams Channel Name
   value: {}
   required: false
   description: Provide Microsoft Teams channel name to which to send messages.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Slack Channel Name
   value: {}
   required: false
   description: Provide Slack channel name to which to send messages.
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - Preferred ticketing platform
@@ -787,6 +743,5 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-sourceplaybookid: AWS EC2 Instance Misconfiguration - Remediate and Notify
-dirtyInputs: true
-adopted: true
+tests:
+- No tests (auto formatted)

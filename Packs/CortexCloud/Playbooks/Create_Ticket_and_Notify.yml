@@ -1,17 +1,7 @@
 id: Create Ticket and Notify
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Create Ticket and Notify
-description: This playbook automates the handling of issues, sending them through
-  ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams,
-  or email. You have the flexibility to create or update a ticket using Jira or ServiceNow,
-  to notify other teams using Slack or Microsoft Teams, or to send an email. You can
-  choose to only create or update a ticket and skip the notification, skip creating
-  or updating a ticket and send only a notification, or both create or update a ticket
-  and notify relevant parties. This playbook requires existing integrations with Jira,
-  ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these
-  integrations are found in your account, the playbook will send an email with the
-  issue details directly to the selected issue owner.
+description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will send an email with the issue details directly to the selected issue owner.
 starttaskid: "0"
 fromversion: 6.10.0
 tasks:
@@ -25,7 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "30"
@@ -53,10 +43,10 @@ tasks:
       id: d4c92572-e7c7-4bb6-854b-af7b9b8dab73
       version: -1
       name: Use ServiceNow for Issue ticket
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "32"
@@ -174,7 +164,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -199,10 +189,10 @@ tasks:
       id: 3d669cbb-9b68-4fa5-842f-c13da7b3d93c
       version: -1
       name: Notify using Microsoft Teams?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "40"
@@ -294,7 +284,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "32"
@@ -346,7 +335,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -397,7 +385,6 @@ tasks:
       type: condition
       iscommand: false
       brand: Builtin
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "15"
@@ -468,7 +455,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -499,7 +486,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -527,10 +514,10 @@ tasks:
       id: 24153736-6038-4d0d-8122-d200e3c84480
       version: -1
       name: Use Jira for Issue ticket
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "31"
@@ -650,7 +637,6 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
@@ -697,7 +683,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -730,7 +716,6 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -778,7 +763,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "40"
@@ -816,10 +800,10 @@ tasks:
       id: abbdba9e-4bd1-4319-81ba-5c476c099e88
       version: -1
       name: Notify using Slack?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "34"
@@ -911,7 +895,6 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -954,7 +937,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "40"
@@ -1002,7 +984,6 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
@@ -1046,7 +1027,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "32"
@@ -1089,7 +1069,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -1145,7 +1124,7 @@ inputs:
     - Both
 
     Note: If you leave this empty, no issue ticket will be generated, and the playbook will skip this step.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Preferred notification platform
   value: {}
   required: false
@@ -1155,7 +1134,7 @@ inputs:
     - Slack
 
     Note: If you leave this blank, no notification message will be sent and the playbook will skip this step.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Notification email recipients
   value: {}
   required: false
@@ -1163,46 +1142,42 @@ inputs:
     Provide the email address to send email notifications.
 
     Note: If you leave this blank, no email notification will be sent and the playbook will skip this step.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: System Input - Asset details
   value: {}
   required: false
-  description: 'Note: No input is required here; issue asset details will be automatically
-    pulled from the remediation playbook.'
-  playbookInputQuery: null
+  description: 'Note: No input is required here; issue asset details will be automatically pulled from the remediation playbook.'
+  playbookInputQuery:
 - key: System Input - Issue State
   value: {}
   required: false
-  description: 'Note: No input is required here; issue state value will be automatically
-    entered from the remediation playbook.'
-  playbookInputQuery: null
+  description: 'Note: No input is required here; issue state value will be automatically entered from the remediation playbook.'
+  playbookInputQuery:
 - key: System Input -ServiceNow Ticket ID
   value: {}
   required: false
-  description: 'Note: No input is required here; ServiceNow ticket ID will be automatically
-    pulled from the remediation playbook.'
-  playbookInputQuery: null
+  description: 'Note: No input is required here; ServiceNow ticket ID will be automatically pulled from the remediation playbook.'
+  playbookInputQuery:
 - key: System Input -Jira Ticket ID
   value: {}
   required: false
-  description: 'Note: No input is required here; Jira ticket ID will be automatically
-    pulled from the remediation playbook.'
-  playbookInputQuery: null
+  description: 'Note: No input is required here; Jira ticket ID will be automatically pulled from the remediation playbook.'
+  playbookInputQuery:
 - key: Jira Project Key
   value: {}
   required: false
   description: Provide Jira project key where the issue will be created.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Teams Channel Name
   value: {}
   required: false
   description: Provide Microsoft Teams channel name to which to send messages.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Slack Channel Name
   value: {}
   required: false
   description: Provide Slack channel name to which to send messages.
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - Preferred ticketing platform
@@ -1230,5 +1205,5 @@ outputs:
 - contextPath: ServiceNow.Ticket.ID
   description: Service Now Ticket ID.
   type: string
-dirtyInputs: true
-adopted: true
+tests:
+- No tests (auto formatted)
