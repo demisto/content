@@ -11,64 +11,128 @@ urllib3.disable_warnings()
 
 
 class GCPServices(Enum):
-    COMPUTE = ("compute", "v1")
-    STORAGE = ("storage", "v1")
-    CONTAINER = ("container", "v1")
-    RESOURCE_MANAGER = ("cloudresourcemanager", "v3")
-    IAM_V1 = ("iam", "v1")
-    IAM_V2 = ("iam", "v2")
-    CLOUD_IDENTITY = ("cloudidentity", "v1")
+    """
+    Enumeration of Google Cloud Platform services with API details.
 
-    def __init__(self, api_name: str, version: str):
+    Each service contains:
+    - API name: The service name used in Google API client
+    - Version: The API version to use
+    - API endpoint: The full endpoint URL for service enablement checks
+
+    Example:
+        compute_service = GCPServices.COMPUTE
+        client = compute_service.build(credentials)
+        api_endpoint = compute_service.api_endpoint
+    """
+
+    COMPUTE = ("compute", "v1", "compute.googleapis.com")
+    STORAGE = ("storage", "v1", "storage.googleapis.com")
+    CONTAINER = ("container", "v1", "container.googleapis.com")
+    RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
+    IAM_V1 = ("iam", "v1", "iam.googleapis.com")
+    IAM_V2 = ("iam", "v2", "iam.googleapis.com")
+    CLOUD_IDENTITY = ("cloudidentity", "v1", "cloudidentity.googleapis.com")
+    SERVICE_USAGE = ("serviceusage", "v1", "serviceusage.googleapis.com")
+
+    def __init__(self, api_name: str, version: str, api_endpoint: str):
+        """
+        Initialize GCP service configuration.
+
+        Args:
+            api_name (str): The Google API service name (e.g., 'compute').
+            version (str): The API version (e.g., 'v1').
+            api_endpoint (str): The full API endpoint for enablement checks (e.g., 'compute.googleapis.com').
+        """
         self._api_name = api_name
         self._version = version
+        self._api_endpoint = api_endpoint
 
     @property
-    def api_name(self):
+    def api_name(self) -> str:
+        """Get the Google API service name."""
         return self._api_name
 
     @property
-    def version(self):
+    def version(self) -> str:
+        """Get the API version."""
         return self._version
 
+    @property
+    def api_endpoint(self) -> str:
+        """Get the full API endpoint for service enablement checks."""
+        return self._api_endpoint
+
     def build(self, credentials, **kwargs):
+        """
+        Build a Google API client for this service.
+
+        Args:
+            credentials: Google Cloud credentials object.
+            **kwargs: Additional arguments passed to the Google API client builder.
+
+        Returns:
+            Google API client instance for this service.
+        """
         return build(self.api_name, self.version, credentials=credentials, **kwargs)
 
 
-REQUIRED_PERMISSIONS: dict[str, list[str]] = {
-    # Compute Engine commands
-    "gcp-compute-firewall-patch": [
-        "compute.firewalls.update",
-        "compute.firewalls.get",
-        "compute.firewalls.list",
-        "compute.networks.updatePolicy",
-        "compute.networks.list",
-    ],
-    "gcp-compute-subnet-update": [
-        "compute.subnetworks.setPrivateIpGoogleAccess",
-        "compute.subnetworks.update",
-        "compute.subnetworks.get",
-        "compute.subnetworks.list",
-    ],
-    "gcp-compute-instance-metadata-add": ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list"],
-    "gcp-compute-instance-service-account-set": ["compute.instances.setServiceAccount", "compute.instances.get"],
-    "gcp-compute-instance-service-account-remove": ["compute.instances.setServiceAccount", "compute.instances.get"],
-    "gcp-compute-instance-start": ["compute.instances.start"],
-    "gcp-compute-instance-stop": ["compute.instances.stop"],
-    # Storage commands
-    "gcp-storage-bucket-policy-delete": ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
-    "gcp-storage-bucket-metadata-update": ["storage.buckets.update"],
-    # Container (GKE) commands
-    "gcp-container-cluster-security-update": ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
-    # IAM commands
-    "gcp-iam-project-policy-binding-remove": ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
-    # "gcp-iam-project-deny-policy-create": ["iam.denypolicies.create"],
-    # "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
-    # Admin Directory commands
-    # "gcp-iam-group-membership-delete": ["cloudidentity.groups.memberships.delete"],
-    # "gcp-admin-user-update": ["admin.directory.user.update"],
-    # "gcp-admin-user-password-reset": ["admin.directory.user.security"],
-    # "gcp-admin-user-signout": ["admin.directory.user.security"],
+# Command requirements mapping: (GCP_Service_Enum, [Required_Permissions])
+COMMAND_REQUIREMENTS = {
+    "gcp-compute-firewall-patch": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.update",
+            "compute.firewalls.get",
+            "compute.firewalls.list",
+            "compute.networks.updatePolicy",
+            "compute.networks.list",
+        ],
+    ),
+    "gcp-compute-subnet-update": (
+        GCPServices.COMPUTE,
+        [
+            "compute.subnetworks.setPrivateIpGoogleAccess",
+            "compute.subnetworks.update",
+            "compute.subnetworks.get",
+            "compute.subnetworks.list",
+        ],
+    ),
+    "gcp-compute-instance-metadata-add": (
+        GCPServices.COMPUTE,
+        ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list"],
+    ),
+    "gcp-compute-instance-service-account-set": (
+        GCPServices.COMPUTE,
+        ["compute.instances.setServiceAccount", "compute.instances.get"],
+    ),
+    "gcp-compute-instance-service-account-remove": (
+        GCPServices.COMPUTE,
+        ["compute.instances.setServiceAccount", "compute.instances.get"],
+    ),
+    "gcp-compute-instance-start": (GCPServices.COMPUTE, ["compute.instances.start"]),
+    "gcp-compute-instance-stop": (GCPServices.COMPUTE, ["compute.instances.stop"]),
+    "gcp-storage-bucket-policy-delete": (GCPServices.STORAGE, ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"]),
+    "gcp-storage-bucket-metadata-update": (GCPServices.STORAGE, ["storage.buckets.update"]),
+    "gcp-container-cluster-security-update": (
+        GCPServices.CONTAINER,
+        ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
+    ),
+    "gcp-iam-project-policy-binding-remove": (
+        GCPServices.RESOURCE_MANAGER,
+        ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
+    ),
+    # "gcp-iam-project-deny-policy-create": (
+    #     GCPServices.IAM_V2,
+    #     ["iam.denypolicies.create"]
+    # ),
+    # "gcp-iam-service-account-delete": (
+    #     GCPServices.IAM_V1,
+    #     ["iam.serviceAccounts.delete"]
+    # ),
+    # "gcp-iam-group-membership-delete": (
+    #     GCPServices.CLOUD_IDENTITY,
+    #     ["cloudidentity.groups.memberships.delete"]
+    # ),
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
@@ -831,38 +895,143 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #     return CommandResults(readable_output=hr)
 
 
+def _get_commands_for_requirement(requirement: str, req_type: str) -> str:
+    """
+    Find which commands require a specific API or permission.
+
+    Args:
+        requirement (str): The API endpoint or permission to search for.
+        req_type (str): Either 'apis' or 'permissions' to specify search type.
+
+    Returns:
+        str: Comma-separated list of command names that require the specified resource.
+             Returns 'unknown commands' if no matches found.
+    """
+    commands = [
+        cmd
+        for cmd, (service, permissions) in COMMAND_REQUIREMENTS.items()
+        if (req_type == "apis" and requirement == service.api_endpoint)
+        or (req_type == "permissions" and requirement in permissions)
+    ]
+    return ", ".join(commands) if commands else "unknown commands"
+
+
+def validate_apis_enabled(creds: Credentials, project_id: str, apis: list[str]) -> list[str]:
+    """
+    Check if required Google Cloud APIs are enabled for the project.
+
+    Uses the Service Usage API to verify that each required API is enabled.
+    If the Service Usage API itself is unavailable, returns empty list to skip validation.
+
+    Args:
+        creds (Credentials): GCP credentials for API access.
+        project_id (str): The GCP project ID to check.
+        apis (list[str]): List of API endpoints to validate (e.g., ['compute.googleapis.com']).
+
+    Returns:
+        list[str]: List of API endpoints that are disabled and need to be enabled.
+                  Returns empty list if Service Usage API is unavailable.
+    """
+    try:
+        service_usage = GCPServices.SERVICE_USAGE.build(creds)
+        disabled = []
+
+        for api in apis:
+            try:
+                response = (
+                    service_usage.services()  # pylint: disable=E1101
+                    .get(name=f"projects/{project_id}/services/{api}")
+                    .execute()
+                )
+                if response.get("state") != "ENABLED":
+                    disabled.append(api)
+            except Exception as e:
+                demisto.debug(f"API check failed for {api}: {str(e)}")
+                disabled.append(api)  # Assume disabled if check fails
+
+        return disabled
+    except Exception as e:
+        demisto.debug(f"Service Usage API unavailable: {str(e)}")
+        return []  # Skip validation if Service Usage API not accessible
+
+
+def _get_requirements(command: str = "") -> tuple[list[str], list[str]]:
+    """
+    Extract API endpoints and permissions for a command or all commands.
+
+    Uses frozenset union pattern to efficiently get unique values across all commands
+    when no specific command is provided.
+
+    Args:
+        command (str, optional): Specific command name. If empty, returns requirements for all commands.
+
+    Returns:
+        tuple[list[str], list[str]]: Tuple containing:
+            - List of required API endpoints
+            - List of required IAM permissions
+    """
+    # Get service and permissions using the same pattern
+    service, permissions = COMMAND_REQUIREMENTS.get(
+        command, (None, list(frozenset().union(*[perms for _, perms in COMMAND_REQUIREMENTS.values()])))
+    )
+
+    # Get APIs using the same pattern
+    apis = (
+        [service.api_endpoint]
+        if service
+        else list(frozenset().union(*[[svc.api_endpoint] for svc, _ in COMMAND_REQUIREMENTS.values()]))
+    )
+
+    return apis, permissions
+
+
 def check_required_permissions(
     creds: Credentials, project_id: str, connector_id: str = None, command: str = ""
 ) -> list[HealthCheckError] | HealthCheckError | None:
     """
-    Verifies the credentials have all required permissions, using testIamPermissions to check access.
+    Comprehensive validation of GCP APIs and IAM permissions for commands.
 
-    This function takes a set of GCP credentials and verifies they have the necessary permissions
-    to execute either a specific command or all supported commands in the integration.
+    Validation order:
+    1. IAM Permissions: Tests IAM permissions using Resource Manager's testIamPermissions API
+    2. API Enablement: Verifies required Google Cloud APIs are enabled using Service Usage API
+
+    Special handling:
+    - Cloud Identity permissions are skipped (cannot be tested via API)
+    - Service Usage API failures are logged but don't block execution
+    - Provides actionable error messages with gcloud commands for remediation
 
     Args:
         creds (Credentials): GCP credentials to test.
-        project_id (str): The GCP project ID to check permissions against.
-        connector_id (str, optional): The connector ID for Cloud integration health checks.
-        command (str, optional): Specific command to check permissions for. If empty, checks all permissions.
+        project_id (str): The GCP project ID to validate against.
+        connector_id (str, optional): Connector ID for COOC health checks.
+                                    If provided, returns HealthCheckError objects.
+                                    If None, raises DemistoException on failures.
+        command (str, optional): Specific command to validate.
+                               If empty, validates all integration commands.
 
     Returns:
-        HealthCheckError | list[HealthCheckError] | None:
-            - HealthCheckError if there are permission issues when using connector_id
-            - None if permissions are sufficient
+        For COOC context (connector_id provided):
+            - None: All validations passed
+            - HealthCheckError: Single validation error
+            - list[HealthCheckError]: Multiple validation errors
+
+        For integration context (no connector_id):
+            - None: All validations passed
+            - Raises DemistoException: On any validation failure
 
     Raises:
-        DemistoException: If required permissions are missing and not using connector_id.
+        DemistoException: When validation fails and not in COOC context.
     """
-    permissions = REQUIRED_PERMISSIONS.get(command, list(frozenset().union(*REQUIRED_PERMISSIONS.values())))
+    apis, permissions = _get_requirements(command)
+    errors = []
 
+    # 1. First validate IAM permissions
     untestable_permissions = [p for p in permissions if p.startswith("cloudidentity.")]
     testable_permissions = list(set(permissions) - set(untestable_permissions))
 
     if untestable_permissions:
         demisto.info(f"The following permissions cannot be verified and will be assumed granted: {untestable_permissions}")
 
-    missing = set()
     if testable_permissions:
         try:
             resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
@@ -875,6 +1044,12 @@ def check_required_permissions(
             )
             granted = set(response.get("permissions", []))
             missing = set(testable_permissions) - granted
+            if missing:
+                for perm in missing:
+                    commands = _get_commands_for_requirement(perm, "permissions")
+                    message = f"Permission '{perm}' (required for: {commands})"
+                    errors.append(message)
+
         except Exception as e:
             error_message = f"Failed to test permissions for GCP integration: {str(e)}"
             if connector_id:
@@ -887,21 +1062,23 @@ def check_required_permissions(
 
             raise DemistoException(error_message)
 
-    if missing:
-        perm_to_cmds = {perm: [cmd for cmd, perms in REQUIRED_PERMISSIONS.items() if perm in perms] for perm in missing}
-        error_lines = [f"- {perm} (required for: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
-        if connector_id:
-            return [
-                HealthCheckError(
-                    account_id=project_id,
-                    connector_id=connector_id,
-                    message=f"Missing required permission {line}",
-                    error_type=ErrorType.PERMISSION_ERROR,
-                )
-                for line in error_lines
-            ]
+    for api in validate_apis_enabled(creds, project_id, apis):
+        commands = _get_commands_for_requirement(api, "apis")
+        message = (
+            f"API '{api}' disabled (required for: {commands}). " f"Enable: gcloud services enable {api} --project={project_id}"
+        )
+        errors.append(message)
 
-        raise DemistoException("Missing required permissions for GCP integration:\n" + "\n".join(error_lines))
+    if errors:
+        msg = "Missing required permissions/API for GCP integration:\n" + "\n-".join(errors)
+        if connector_id:
+            return HealthCheckError(
+                account_id=project_id,
+                connector_id=connector_id,
+                message=msg,
+                error_type=ErrorType.PERMISSION_ERROR,
+            )
+        raise DemistoException(msg)
 
     return None
 
