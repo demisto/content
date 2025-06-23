@@ -25,7 +25,6 @@ REQUIRED_PERMISSIONS = (
     "Policy.ReadWrite.ConditionalAccess",
     "Policy.Read.All",
     "Application.Read.All",
-    "Application.Read.All"
 )
 
 
