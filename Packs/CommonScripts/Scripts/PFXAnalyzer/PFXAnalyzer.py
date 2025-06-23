@@ -229,7 +229,13 @@ def main():
             else:
                 readable_output += f"**{key}:** {value}\n"
 
-        return_outputs(readable_output, {"PFXAnalysis": analysis_results})
+        return_results(
+            CommandResults(
+                readable_output=readable_output,
+                outputs=analysis_results,
+                output_prefix="PFXAnalysis",
+            )
+        )
 
     except Exception as e:
         return_error(f"PFX Analysis failed: {str(e)}")
