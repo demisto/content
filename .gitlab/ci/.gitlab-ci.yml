@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: test_fix_incident_to_alert_duplicate_playbooks
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: test_fix_incident_to_alert_duplicate_playbooks
     project: "${CI_PROJECT_NAMESPACE}/infra"
