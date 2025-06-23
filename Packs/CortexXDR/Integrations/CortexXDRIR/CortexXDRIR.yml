@@ -127,7 +127,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-  required: false 
+  required: false
 - defaultvalue: 3 days
   display: Starred incidents fetch window
   name: starred_incidents_fetch_window
