@@ -1983,11 +1983,14 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     $search_name = if ($kwargs.search_name) {
         $kwargs.search_name
     } else {
-        $name = $internet_message_id -replace '[<>]', ''
+        $baseName = $internet_message_id -replace '[<>]', ''
+    
         if ($kwargs.exchange_location -ne "All") {
-            $name += ":" + ($exchange_location -join ",")
+            $combined = $baseName + ":" + ($exchange_location -join ",")
+            Get-ShortHash $combined
+        } else {
+            $baseName
         }
-        $name
     }
 
     $search_action_name = "${search_name}_Purge"
@@ -2092,7 +2095,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     $demisto.results("Polling logic started for search_name: $search_name")
 
     $search = $client.GetSearch($search_name)
-    $demisto.results("GetSearch status: " + $action.Status)
+    $demisto.results("GetSearch status: " + $search.Status)
     switch ($search.Status) {
         "NotStarted" {
             $demisto.results("Search was not started. Starting now.")

@@ -580,12 +580,14 @@ function ReturnPollingOutputs(
     [object]$RawResponse,
     [string]$CommandName,
     [object]$PollingArgs,
-    [Parameter(Mandatory=$false)]
-    [bool]$RemoveSelfRefs = $true
+    [Parameter(Mandatory = $false)]
+    [bool]$RemoveSelfRefs = $true,
+    [Parameter(Mandatory = $false)]
+    [string]$NextRun = "30",
+    [Parameter(Mandatory = $false)]
+    [string]$Timeout = "600"
 ) {
-    # $Demisto.results("start ReturnPollingOutputs")
     if ($RemoveSelfRefs) {
-        # Remove circular references before converting to json.
         $RawResponse = Remove-SelfReferences $RawResponse
         $Outputs = Remove-SelfReferences $Outputs
     }

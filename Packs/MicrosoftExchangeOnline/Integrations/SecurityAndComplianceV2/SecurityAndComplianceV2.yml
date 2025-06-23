@@ -1288,16 +1288,13 @@ script:
       predefined:
       - 'false'
       - 'true'
-    - name: search_completed
-      description: todo.
-      # hidden: true
     - name: polling_first_run
-      description: todo.
+      description: for polling only.
       defaultValue: true
-      # hidden: true
+      hidden: true
     - name: search_name
       description: for polling only.
-      # hidden: true
+      hidden: true
     outputs:
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
       description: Case hold policy name.
