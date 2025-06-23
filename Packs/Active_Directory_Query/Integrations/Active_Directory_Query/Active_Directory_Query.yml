@@ -26,6 +26,14 @@ configuration:
   required: true
   section: Connect
   displaypassword: Password
+- display: Error on empty arguments
+  additionalinfo: If checked, will raise an error on empty arguments in the ad-get-user command.
+  name: fail_on_empty_args
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
 - display: NTLM authentication
   name: ntlm
   type: 8
