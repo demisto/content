@@ -203,7 +203,6 @@ def analyze_pfx_file(pfx_data: bytes, pfx_password: Optional[str] = None) -> dic
 def main():
     try:
         args = demisto.args()
-        demisto.debug(f"Script started with args: {args}")
         file_entry_id = args.get("fileEntryId")
         pfx_password = args.get("pfxPassword")
 
