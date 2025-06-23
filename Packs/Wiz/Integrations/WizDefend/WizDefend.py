@@ -1019,7 +1019,6 @@ class FetchIncident:
 
         self._validate_and_reset_params()
 
-
     def get_last_run_time(self):
         """
         Gets the last run time for fetch incidents.
@@ -1091,7 +1090,8 @@ class FetchIncident:
                 safe_after_str = safe_after_datetime.strftime(DEMISTO_OCCURRED_FORMAT)
 
                 demisto.debug(
-                    f"Calculated safe_after_str using fetch interval of {fetch_interval_minutes} minutes: {safe_after_str}")
+                    f"Calculated safe_after_str using fetch interval of {fetch_interval_minutes} minutes: {safe_after_str}"
+                )
 
             except Exception as e:
                 demisto.error(f"Error calculating safe_after_str with fetch interval: {str(e)}. Using api_start_run_time")
@@ -1102,8 +1102,10 @@ class FetchIncident:
         self.stored_after = safe_after_str
         self.stored_before = self.api_start_run_time  # Current time as before
 
-        demisto.info(f"Reset fetch incidents parameter complete - "
-                     f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None")
+        demisto.info(
+            f"Reset fetch incidents parameter complete - "
+            f"after: {self.stored_after}, before: {self.stored_before}, endCursor: None"
+        )
 
     def _validate_and_reset_params(self):
         """
@@ -1333,7 +1335,6 @@ class FetchIncident:
 
         # Save using setLastRun
         demisto.setLastRun(last_run_data)
-
 
     def _clear_pagination_context(self):
         """
@@ -1665,7 +1666,6 @@ def fetch_incidents():
     fetch_manager.log_current_state()
 
     try:
-
         # Get integration settings
         integration_settings_params = extract_params_from_integration_settings(advanced_params=True)
         API_MAX_FETCH = get_fetch_incidents_api_max_fetch(integration_settings_params.get(DemistoParams.MAX_FETCH))
@@ -1684,7 +1684,7 @@ def fetch_incidents():
 
         if isinstance(wiz_detections, str):
             demisto.error(f"Error fetching detections: {wiz_detections}")
-            return
+            return None
 
         # Build incidents from detections
         incidents = []

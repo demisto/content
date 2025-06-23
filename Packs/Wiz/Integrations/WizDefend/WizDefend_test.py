@@ -4824,88 +4824,75 @@ def test_fetch_incident_api_variables(after, before, end_cursor, need_reset):
 @pytest.mark.parametrize(
     "last_run_time,fetch_interval_param,validation_success,validation_minutes,exception_during_calc,expected_stored_after,should_log_error,error_message_contains",
     [
-        # Case 1: Existing last_run_time - gets adjusted due to 2-day limit in get_last_run_time
         (
-                "2025-06-20T10:00:00Z",  # last_run_time exists but will be adjusted
-                "15",  # fetch_interval_param
-                True,  # validation_success
-                15,  # validation_minutes
-                False,  # exception_during_calc
-                "2025-06-20T15:10:08Z",  # expected_stored_after (adjusted by get_last_run_time to 2 days ago)
-                False,  # should_log_error
-                None  # error_message_contains
+            "2025-06-20T10:00:00Z",  # last_run_time exists but will be adjusted
+            "15",  # fetch_interval_param
+            True,  # validation_success
+            15,  # validation_minutes
+            False,  # exception_during_calc
+            "2025-06-20T15:10:08Z",  # expected_stored_after (adjusted by get_last_run_time to 2 days ago)
+            False,  # should_log_error
+            None,  # error_message_contains
         ),
-
-        # Case 2: None last_run_time, valid fetch interval (15 minutes)
         (
-                None,  # last_run_time is None
-                "15",  # fetch_interval_param
-                True,  # validation_success
-                15,  # validation_minutes
-                False,  # exception_during_calc
-                "2025-06-22T14:55:08Z",  # expected_stored_after (current time - 15 min)
-                False,  # should_log_error
-                None  # error_message_contains
+            None,  # last_run_time is None
+            "15",  # fetch_interval_param
+            True,  # validation_success
+            15,  # validation_minutes
+            False,  # exception_during_calc
+            "2025-06-22T14:55:08Z",  # expected_stored_after (current time - 15 min)
+            False,  # should_log_error
+            None,  # error_message_contains
         ),
-
-        # Case 3: None last_run_time, valid fetch interval (30 minutes)
         (
-                None,  # last_run_time is None
-                "30",  # fetch_interval_param
-                True,  # validation_success
-                30,  # validation_minutes
-                False,  # exception_during_calc
-                "2025-06-22T14:40:08Z",  # expected_stored_after (current time - 30 min)
-                False,  # should_log_error
-                None  # error_message_contains
+            None,  # last_run_time is None
+            "30",  # fetch_interval_param
+            True,  # validation_success
+            30,  # validation_minutes
+            False,  # exception_during_calc
+            "2025-06-22T14:40:08Z",  # expected_stored_after (current time - 30 min)
+            False,  # should_log_error
+            None,  # error_message_contains
         ),
-
-        # Case 4: None last_run_time, invalid fetch interval (validation fails)
         (
-                None,  # last_run_time is None
-                "5",  # fetch_interval_param (below minimum)
-                False,  # validation_success (validation fails)
-                None,  # validation_minutes (not set when validation fails)
-                False,  # exception_during_calc
-                "2025-06-22T15:00:08Z",  # expected_stored_after (current time - 10 min default)
-                True,  # should_log_error
-                "Invalid fetch interval, using default"  # error_message_contains
+            None,  # last_run_time is None
+            "5",  # fetch_interval_param (below minimum)
+            False,  # validation_success (validation fails)
+            None,  # validation_minutes (not set when validation fails)
+            False,  # exception_during_calc
+            "2025-06-22T15:00:08Z",  # expected_stored_after (current time - 10 min default)
+            True,  # should_log_error
+            "Invalid fetch interval, using default",  # error_message_contains
         ),
-
-        # Case 5: None last_run_time, missing fetch interval parameter (uses default)
         (
-                None,  # last_run_time is None
-                None,  # fetch_interval_param is missing (None)
-                True,  # validation_success
-                10,  # validation_minutes (default FETCH_INTERVAL_MINIMUM_MIN)
-                False,  # exception_during_calc
-                "2025-06-22T15:00:08Z",  # expected_stored_after (current time - 10 min)
-                False,  # should_log_error
-                None  # error_message_contains
+            None,  # last_run_time is None
+            None,  # fetch_interval_param is missing (None)
+            True,  # validation_success
+            10,  # validation_minutes (default FETCH_INTERVAL_MINIMUM_MIN)
+            False,  # exception_during_calc
+            "2025-06-22T15:00:08Z",  # expected_stored_after (current time - 10 min)
+            False,  # should_log_error
+            None,  # error_message_contains
         ),
-
-        # Case 6: None last_run_time, exception during calculation
         (
-                None,  # last_run_time is None
-                "20",  # fetch_interval_param
-                True,  # validation_success
-                20,  # validation_minutes
-                True,  # exception_during_calc
-                "2025-06-22T15:10:08Z",  # expected_stored_after (fallback to api_start_run_time)
-                True,  # should_log_error
-                "Error calculating safe_after_str with fetch interval"  # error_message_contains
+            None,  # last_run_time is None
+            "20",  # fetch_interval_param
+            True,  # validation_success
+            20,  # validation_minutes
+            True,  # exception_during_calc
+            "2025-06-22T15:10:08Z",  # expected_stored_after (fallback to api_start_run_time)
+            True,  # should_log_error
+            "Error calculating safe_after_str with fetch interval",  # error_message_contains
         ),
-
-        # Case 7: None last_run_time, empty fetch interval parameter
         (
-                None,  # last_run_time is None
-                "",  # fetch_interval_param is empty string
-                False,  # validation_success (empty string fails validation)
-                None,  # validation_minutes
-                False,  # exception_during_calc
-                "2025-06-22T15:00:08Z",  # expected_stored_after (current time - 10 min default)
-                True,  # should_log_error
-                "Invalid fetch interval, using default"  # error_message_contains
+            None,  # last_run_time is None
+            "",  # fetch_interval_param is empty string
+            False,  # validation_success (empty string fails validation)
+            None,  # validation_minutes
+            False,  # exception_during_calc
+            "2025-06-22T15:00:08Z",  # expected_stored_after (current time - 10 min default)
+            True,  # should_log_error
+            "Invalid fetch interval, using default",  # error_message_contains
         ),
     ],
     ids=[
@@ -4915,31 +4902,33 @@ def test_fetch_incident_api_variables(after, before, end_cursor, need_reset):
         "none_last_run_invalid_fetch_interval",
         "none_last_run_missing_fetch_interval",
         "none_last_run_exception_during_calc",
-        "none_last_run_empty_fetch_interval"
-    ]
+        "none_last_run_empty_fetch_interval",
+    ],
 )
 def test_reset_params_comprehensive(
-    last_run_time, fetch_interval_param, validation_success, validation_minutes,
-    exception_during_calc, expected_stored_after, should_log_error, error_message_contains
+    last_run_time,
+    fetch_interval_param,
+    validation_success,
+    validation_minutes,
+    exception_during_calc,
+    expected_stored_after,
+    should_log_error,
+    error_message_contains,
 ):
     """Comprehensive test for reset_params method covering all scenarios"""
 
     api_start_run_time = "2025-06-22T15:10:08Z"
 
-    with patch.object(demisto, "getLastRun") as mock_get_last_run, \
-        patch.object(demisto, "params") as mock_params, \
-        patch.object(demisto, "error") as mock_error, \
-        patch.object(demisto, "info") as mock_info, \
-        patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_fetch_timestamp") as mock_get_fetch_timestamp, \
-        patch("Packs.Wiz.Integrations.WizDefend.WizDefend.validate_fetch_interval") as mock_validate_fetch_interval:
-
+    with (
+        patch.object(demisto, "getLastRun") as mock_get_last_run,
+        patch.object(demisto, "params") as mock_params,
+        patch.object(demisto, "error") as mock_error,
+        patch.object(demisto, "info") as mock_info,
+        patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_fetch_timestamp") as mock_get_fetch_timestamp,
+        patch("Packs.Wiz.Integrations.WizDefend.WizDefend.validate_fetch_interval") as mock_validate_fetch_interval,
+    ):
         # Setup last run data
-        last_run_data = {
-            DemistoParams.TIME: last_run_time,
-            "endCursor": None,
-            "after": None,
-            "before": None
-        }
+        last_run_data = {DemistoParams.TIME: last_run_time, "endCursor": None, "after": None, "before": None}
         mock_get_last_run.return_value = last_run_data
 
         # Setup params - handle None case for missing parameter
