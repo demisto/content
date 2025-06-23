@@ -44,8 +44,15 @@ IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
 THIRD_PARTY_DETECTION_FETCH_TYPE = "Third Party Detection"
 
-
 ENDPOINT_DETECTION = "detection"
+
+SUPPORTED_DETECTIONS_TYPES = [
+    IDP_DETECTION_FETCH_TYPE,
+    ON_DEMAND_SCANS_DETECTION_TYPE,
+    OFP_DETECTION_TYPE,
+    NGSIEM_DETECTION_FETCH_TYPE,
+    THIRD_PARTY_DETECTION_FETCH_TYPE
+    ]
 
 PARAMS = demisto.params()
 PROXY = PARAMS.get("proxy", False)
@@ -936,13 +943,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         fix_time_field(detection, start_time_key)
 
     incident_context = {"occurred": detection.get(start_time_key), "rawJSON": json.dumps(detection)}
-    if detection_type in (
-        IDP_DETECTION_FETCH_TYPE,
-        ON_DEMAND_SCANS_DETECTION_TYPE,
-        OFP_DETECTION_TYPE,
-        NGSIEM_DETECTION_FETCH_TYPE,
-        THIRD_PARTY_DETECTION_FETCH_TYPE,
-    ):
+    if detection_type in SUPPORTED_DETECTIONS_TYPES:
         incident_context["name"] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context["last_updated"] = detection.get("updated_timestamp")
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
@@ -1625,11 +1626,9 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
 
     if not LEGACY_VERSION:
         endpoint_url = "alerts/queries/alerts/v2?filter="
-        # This value is similar to the default value of the filter argument in the YAML file
-        if not filter_arg:
-            filter_arg = "product:'epp'+type:'ldt'"
-        # in the new version we send only the filter_arg argument as encoded string without the params
-        endpoint_url += urllib.parse.quote_plus(filter_arg)
+        if filter_arg:
+            # in the new version we send only the filter_arg argument as encoded string without the params
+            endpoint_url += urllib.parse.quote_plus(filter_arg)
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
         return http_request("GET", endpoint_url, {"sort": "created_timestamp.asc"})
     else:
@@ -4697,6 +4696,7 @@ def search_detections_command():
     detections_ids = argToList(d_args.get("ids"))
     extended_data = argToBoolean(d_args.get("extended_data", False))
     if not detections_ids:
+        # This value is similar to the default value of the filter argument in the YAML file
         filter_arg = d_args.get("filter", "product:'epp'+type:'ldt'")
         detections_ids = get_detections(filter_arg=filter_arg).get("resources")
     raw_res = get_detections_entities(detections_ids)

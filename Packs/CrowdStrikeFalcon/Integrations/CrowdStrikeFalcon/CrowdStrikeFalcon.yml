@@ -482,7 +482,7 @@ script:
         For example, filter="device.hostname:'CS-SE-TG-W7-01'"
         For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
       name: filter
-      defaultvalue: 'product:'epp'+type:'ldt''
+      defaultValue: "product:'epp'+type:'ldt'"
     - auto: PREDEFINED
       description: Whether to get additional data such as device and behaviors processed.
       name: extended_data

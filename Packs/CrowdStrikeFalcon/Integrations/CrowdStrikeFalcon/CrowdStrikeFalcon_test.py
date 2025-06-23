@@ -7315,7 +7315,7 @@ def test_error_handler():
             3,
             "product:'ngsiem'+created_timestamp:>'2024-06-19T15:25:00Z'",
         ),
-        (False, "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27", 3, None),
+        (False, "alerts/queries/alerts/v2?filter=", 3, None),
         (True, "/detects/queries/detects/v1", 3, "product:'epp'+type:'ldt'"),
     ],
 )
