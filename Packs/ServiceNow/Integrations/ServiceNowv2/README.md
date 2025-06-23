@@ -1181,7 +1181,7 @@ Uploads a file to the specified ticket.
 
 #### Command Example
 
-``````
+```!servicenow-upload-file id=id file_id=123@456 file_name=test_file```
 
 #### Human Readable Output
 
