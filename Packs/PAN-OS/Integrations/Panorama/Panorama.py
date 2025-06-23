@@ -14603,20 +14603,24 @@ def pan_os_get_master_key_details_command() -> CommandResults:
         readable_output=human_readable,
     )
 
-def expiration_status_check(cert_expiration: datetime) -> str:
-        now = datetime.now()
-        if cert_expiration < now:
-            return "Expired"
-        elif cert_expiration < now + timedelta(days=30):
-            return "Expiring in 30 days"
-        elif cert_expiration < now + timedelta(days=60):
-            return "Expiring in 60 days"
-        elif cert_expiration < now + timedelta(days=90):
-            return "Expiring in 90 days"
-        else:
-            return "Valid"
 
-def compile_certificate_details(cert_list: List, cert_type: str, device: str, devices_using_certificate: Optional[List] = None) -> List[dict]:
+def expiration_status_check(cert_expiration: datetime) -> str:
+    now = datetime.now()
+    if cert_expiration < now:
+        return "Expired"
+    elif cert_expiration < now + timedelta(days=30):
+        return "Expiring in 30 days"
+    elif cert_expiration < now + timedelta(days=60):
+        return "Expiring in 60 days"
+    elif cert_expiration < now + timedelta(days=90):
+        return "Expiring in 90 days"
+    else:
+        return "Valid"
+
+
+def compile_certificate_details(
+    cert_list: List, cert_type: str, device: str, devices_using_certificate: Optional[List] = None
+) -> List[dict]:
     cert_details = []
     if cert_type == "Pushed":
         location = "Panorama"
@@ -14649,47 +14653,46 @@ def compile_certificate_details(cert_list: List, cert_type: str, device: str, de
         if devices_using_certificate:
             cert_details_dict.update({"devices_using_certificate": devices_using_certificate})
         cert_details.append(cert_details_dict)
-        
+
     return cert_details
+
 
 def extract_certificates_from_running_config(device) -> Tuple[List, List]:
     """
     Process pushed certificates from Panorama response and consolidate them.
-    
+
     Args:
         device: Firewall or Panorama device object
-                
+
     Returns:
         Tuple[List, List]: Tuple containing pushed certificates and target devices
-        
+
     Raises:
         AttributeError: If XML elements don't have expected attributes
     """
     templates = Template.refreshall(device)
     template_stacks = TemplateStack.refreshall(device)
     response_pushed = run_op_command(device, SHOW_CONFIG_RUNNING)
-    
+
     if not (response_pushed is not None and hasattr(response_pushed, "get") and response_pushed.get("status") == "success"):
         demisto.debug("Response is not valid or status is not success")
         return [], []
-    
+
     try:
         template_config = response_pushed.find(".//template")
         template_stack_config = response_pushed.find(".//template-stack")
-        
+
         devices_using_certificate: List = []
         certificate: Optional[ET.Element] = None
-        
+
         # Check template configuration first
         if template_config is not None:
             certificate = template_config.find(".//certificate")
             if certificate is not None:
                 devices_using_certificate = [
-                    template.devices 
-                    for template in templates 
-                    if hasattr(template, "devices") and template.devices
+                    template.devices for template in templates if hasattr(template, "devices") and template.devices
                 ]
-        
+
         # Check template stack configuration if no certificate found in template
         if certificate is None and template_stack_config is not None:
             certificate = template_stack_config.find(".//certificate")
@@ -14699,30 +14702,31 @@ def extract_certificates_from_running_config(device) -> Tuple[List, List]:
                     for template_stack in template_stacks
                     if hasattr(template_stack, "devices") and template_stack.devices
                 ]
-        
+
         # Process found certificates
         pushed_certs: List[ET.Element] = []
         if certificate is not None:
             pushed_certs = certificate.findall(".//entry")
-        
+
         demisto.debug(f"Found {len(pushed_certs)} pushed certificates")
-        
+
         # Get the first device group safely
         target_devices = devices_using_certificate[0] if devices_using_certificate else []
-        
+
         return pushed_certs, target_devices
-        
+
     except (AttributeError, IndexError) as e:
         demisto.debug(f"Error processing pushed certificates: {str(e)}")
         raise
- 
+
+
 def extract_certificate_from_pushed_template(device) -> List:
     """
     Extract certificate entries from pushed template configuration.
-    
+
     Args:
         device: The device object to query
-        
+
     Returns:
         List of pushed certificate entries
     """
@@ -14734,16 +14738,17 @@ def extract_certificate_from_pushed_template(device) -> List:
         pushed_certs = certificate.findall(".//entry") if certificate else []
         demisto.debug(f"Found {len(pushed_certs)} pushed certificates")
         return pushed_certs
-    
-    return []    
+
+    return []
+
 
 def extract_local_certificates(device) -> List:
     """
     Extract local certificate entries from device.
-    
+
     Args:
         device: The device object to query
-        
+
     Returns:
         List of local certificate entries
     """
@@ -14754,28 +14759,30 @@ def extract_local_certificates(device) -> List:
         local_certs = response_local.findall(".//entry")
         demisto.debug(f"Found {len(local_certs)} local certificates")
         return local_certs
-    
+
     return []
+
 
 def get_predefined_certificates() -> List:
     """
     Extract predefined certificate entries from system configuration.
-    
+
     Returns:
         List of predefined certificate entries
     """
     params = {"type": "config", "action": "get", "xpath": PREDEFINED_CERTS_XPATH, "cmd": "show predefined", "key": API_KEY}
-    
+
     response_predefined = requests.get(URL, params=params, verify=USE_SSL)
-    
+
     if response_predefined and response_predefined.status_code == 200:
         root = ET.fromstring(response_predefined.text)
         certificate = root.find(".//certificate")
         predefined_certs = certificate.findall(".//entry") if certificate is not None else []
         demisto.debug(f"Found {len(predefined_certs)} predefined certificates")
         return predefined_certs
-    
+
     return []
+
 
 def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> CommandResults:
     """
@@ -14797,8 +14804,9 @@ def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> Comma
                 # 1. Get certs pushed from Panorama using SHOW_CONFIG_RUNNING command:
                 pushed_certs, target_devices = extract_certificates_from_running_config(device)
 
-                consolidated_cert_details.extend(compile_certificate_details(pushed_certs, "Pushed", device.hostname, target_devices))
-
+                consolidated_cert_details.extend(
+                    compile_certificate_details(pushed_certs, "Pushed", device.hostname, target_devices)
+                )
 
         firewall_devices = topology.firewall_devices()
         if firewall_devices:
@@ -14817,20 +14825,26 @@ def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> Comma
         # 3. Get predefined certs
         predefined_certs = get_predefined_certificates()
 
-        consolidated_cert_details.extend(compile_certificate_details(predefined_certs, "Predefined", URL.replace("https://", "").split(":")[0]))
+        consolidated_cert_details.extend(
+            compile_certificate_details(predefined_certs, "Predefined", URL.replace("https://", "").split(":")[0])
+        )
 
-        readable_output = tableToMarkdown("Certificate Information", consolidated_cert_details, headers=[
-                                                                                                            "name",
-                                                                                                            "device",
-                                                                                                            "subject",
-                                                                                                            "expiration_date",
-                                                                                                            "expiration_status",
-                                                                                                            "location",
-                                                                                                            "cert_type",
-                                                                                                            "devices_using_certificate",
-                                                                                                        ],
-                                        removeNull=True)
-        
+        readable_output = tableToMarkdown(
+            "Certificate Information",
+            consolidated_cert_details,
+            headers=[
+                "name",
+                "device",
+                "subject",
+                "expiration_date",
+                "expiration_status",
+                "location",
+                "cert_type",
+                "devices_using_certificate",
+            ],
+            removeNull=True,
+        )
+
         if args.get("show_expired_only"):
             consolidated_cert_details = [cert for cert in consolidated_cert_details if cert.get("expiration_status") == "Expired"]
 
@@ -14840,7 +14854,7 @@ def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> Comma
             readable_output=readable_output if len(consolidated_cert_details) > 0 else "No certificates found",
             raw_response=consolidated_cert_details,
         )
-        
+
     except Exception as e:
         raise Exception(f"Failed to get certificate information: {str(e)}")
 
