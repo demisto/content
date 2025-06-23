@@ -434,7 +434,9 @@ def test_query_argument_with_unicode_escape(mocker):
         for special_char in special_chars
     ]
     mocker.patch.object(SearchIncidentsV2, "execute_command", return_value=[[execute_get_incidents_command_side_effect(1)]]*len(special_chars))
-
+    mocker.patch.object(
+        SearchIncidentsV2, "execute_command", return_value=([[execute_get_incidents_command_side_effect(1)]] * len(special_chars))
+    )
     mocker.patch.object(demisto, "args", side_effect=args_array)
     return_results_mocker = mocker.patch.object(SearchIncidentsV2, "return_results")
     mocker.patch("SearchIncidentsV2.get_demisto_version", return_value={})
