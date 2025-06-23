@@ -150,6 +150,7 @@ class Client(BaseClient):
             offset_context = events.pop()
             loaded_offset_context = json.loads(offset_context)
             offset = loaded_offset_context.get("offset")
+            demisto.info(f"got new {offset=}")
         except Exception as e:
             demisto.error(f"couldn't decode offset with {offset_context=}, reason {e}")
         return events, offset
@@ -542,6 +543,7 @@ def fetch_events_command(
             page_size = remaining_events_to_fetch
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
         try:
+            old_offset = offset
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         except DemistoException as e:
             demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
@@ -573,6 +575,7 @@ def fetch_events_command(
             for event in events:
                 try:
                     event = json.loads(event)
+                    event["offset"] = old_offset
                     if "attackData" in event:
                         for attack_data_key in [
                             "rules",
