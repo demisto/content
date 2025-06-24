@@ -8,7 +8,7 @@ alter
     xdm.email.recipients = arraymap(split(to_string(toAddresses), ","), replex("@element", "\[|\"|\]", "")),
     xdm.email.attachment.filename = arraystring(arraymap(split(to_string(attachmentNames), ","), replex("@element", "\[|\"|\]", "")), " | "),
     xdm.email.subject = subject,
-    xdm.email.cc = ccEmails,
+    xdm.email.cc = arraymap(split(to_string(ccEmails), ","), replex("@element", "\[|\"|\]", "")),
     xdm.email.sender = fromAddress,
     xdm.email.return_path = returnPath,
     xdm.email.message_id = internetMessageId,
