@@ -484,6 +484,37 @@ Get alert AI summary
 |----------------------------| --- |-------------------|
 | Reco.AlertSummary.markdown         | String | The alert summary |
 
+### reco-get-apps
+
+***
+Get app discovery data from Reco. Fetches all available apps using pagination.
+
+#### Base Command
+
+`reco-get-apps`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| before | Before date filter (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ format). | Optional |
+| after | After date filter (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ format). | Optional |
+| limit | Page size for pagination (default 1000). The command fetches all available apps across all pages. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Apps.app_name | String | The name of the application |
+| Reco.Apps.app_id | String | The unique identifier of the application |
+| Reco.Apps.category | String | The category of the application |
+| Reco.Apps.risk_score | Number | The risk score of the application |
+| Reco.Apps.users_count | Number | The number of users with access to the application |
+| Reco.Apps.data_access | String | The data access level of the application |
+| Reco.Apps.updated_at | Date | The last update timestamp of the application |
+| Reco.Apps.created_at | Date | The creation timestamp of the application |
+| Reco.Apps.status | String | The status of the application |
+
 ### reco-set-app-authorization-status
 
 ***

@@ -806,6 +806,7 @@ def test_get_app_discovery_with_filters(requests_mock, reco_client: RecoClient) 
     """Test the get_app_discovery method with date filters."""
     raw_result = get_random_assets_user_has_access_to_response()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/count", json=raw_result, status_code=200)
 
     # Test with date filters
     from datetime import datetime, timedelta
