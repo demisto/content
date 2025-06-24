@@ -321,6 +321,7 @@ repos:
     entry: validate-validation-config-file
     language: python
     pass_filenames: false
+    skip:nightly: true
     args:
     - --config-path=validation_config.toml
 
