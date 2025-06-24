@@ -159,7 +159,7 @@ def test_fetch_incidents_input(mocker, client):
     fetch_severity = ["4.0", "5.0"]
     last_run = "2018-10-01T20:22:35.000Z"
     get_incidents = util_load_json("test_data/get-incidents.json")
-    expected_params = {"from": "2018-10-01T20:22:35.000Z", "limit": "1", "severity": ["4.0", "5.0"]}
+    expected_params = {"from": "2018-10-01T20:22:35.000Z", "limit": "1", "severity": "4.0,5.0"}
 
     mocker.patch.object(demisto, "getLastRun", return_value={"last_run_time": last_run})
     http_request = mocker.patch.object(client, "http_request", return_value=get_incidents)
