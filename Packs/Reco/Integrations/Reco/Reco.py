@@ -1039,7 +1039,7 @@ class RecoClient(BaseClient):
             demisto.error(f"Set app authorization status error: {str(e)}")
             raise e
 
-        demisto.info(f"App {app_id} authorization status updated to {authorization_status}. Rows updated: {rows_updated}")
+        demisto.debug(f"App {app_id} authorization status updated to {authorization_status}. Rows updated: {rows_updated}")
         return response
 
 
