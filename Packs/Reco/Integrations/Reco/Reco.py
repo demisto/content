@@ -1033,7 +1033,7 @@ class RecoClient(BaseClient):
 
             rows_updated = response.get("rows", 0)
             if rows_updated != 1:
-                demisto.info(f"Expected 1 row to be updated, but got {rows_updated}")
+                demisto.debug(f"Expected 1 row to be updated, but got {rows_updated}")
 
         except Exception as e:
             demisto.error(f"Set app authorization status error: {str(e)}")
