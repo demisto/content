@@ -1339,7 +1339,7 @@ class FetchIncident:
         Returns:
             bool: True if we should continue previous run, False for fresh run
         """
-        return bool(self.end_cursor)
+        return bool(API_END_CURSOR)
 
     def _validate_and_adjust_after_time(self, after_time):
         """
