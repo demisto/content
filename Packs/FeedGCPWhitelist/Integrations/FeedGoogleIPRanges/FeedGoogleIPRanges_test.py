@@ -47,7 +47,6 @@ def test_fetch_indicators_main(mocker: MockerFixture):
         side_effect=[
             ([{"ipv4Prefix": "1.1.1.1"}, {"ipv4Prefix": "1.2.3.4"}, {"ipv6Prefix": "1111:1111::/28"}], True),
             ([{"ipv4Prefix": "1.1.1.1"}, {"ipv4Prefix": "1.2.3.4"}, {"ipv6Prefix": "1111:1111::/28"}], True),
-            ([], True),
         ],
     )
 
