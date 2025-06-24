@@ -1339,7 +1339,7 @@ class FetchIncident:
         Returns:
             bool: True if we should continue previous run, False for fresh run
         """
-        return bool(API_END_CURSOR)
+        return bool(self.end_cursor)
 
     def _validate_and_adjust_after_time(self, after_time):
         """
@@ -1430,7 +1430,7 @@ class FetchIncident:
         Returns:
             None
         """
-        if self.should_continue_previous_run():
+        if bool(API_END_CURSOR):
             self._save_pagination_context()
         else:
             self._clear_pagination_context()
