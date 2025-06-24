@@ -1,7 +1,7 @@
 from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, EntityRelationship
 import pytest
 from AnomaliThreatStreamFeed import Client
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from typing import Any
 
@@ -393,7 +393,7 @@ def test_get_past_time_basic_interval(mocker):
     """
     from AnomaliThreatStreamFeed import get_past_time
 
-    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=timezone.utc)
+    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=UTC)
     minutes_interval = 60  # one hour ago
     expected_past_time = "2023-08-01T11:00:00.500"
 
@@ -765,7 +765,7 @@ TEST_CASES_NO_INDICATORS = [
         "mock_http_responses": [{"objects": [], "meta": {"next": None}}],
         "mock_get_past_time_return": None,
         "mock_parse_indicator_for_fetch_side_effect": [],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [],
         "expected_exception": None,
@@ -836,7 +836,7 @@ TEST_CASES = [
         ],
         "mock_get_past_time_return": "2023-08-01T11:00:00.000Z",
         "mock_parse_indicator_for_fetch_side_effect": {"value": "1.1.1.1", "type": "IP"},
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [{"value": "1.1.1.1", "type": "IP"}],
         "expected_exception": None,
@@ -946,7 +946,7 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
             ValueError("Simulated parsing error"),  # First indicator fails parsing
             {"value": "example.com", "type": "DOMAIN"},  # Second indicator parses successfully
         ],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [{"value": "example.com", "type": "DOMAIN"}],  # Only the second one
     }

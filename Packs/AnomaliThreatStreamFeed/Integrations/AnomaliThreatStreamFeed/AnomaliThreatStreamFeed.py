@@ -463,7 +463,7 @@ def fetch_indicators_command(
     order_by = params.get("fetchBy", "Modified Time")
     if order_by == "Created Time":
         order_by = "created_ts"
-    else: # order_by == "Modified Time"
+    else:  # order_by == "Modified Time"
         order_by = "modified_ts"
     confidence_threshold = arg_to_number(params.get("confidenceThreshold", DEFAULT_CONFIDENCE_THRESHOLD))
 
