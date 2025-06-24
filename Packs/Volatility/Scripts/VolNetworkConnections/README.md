@@ -1,6 +1,7 @@
 Finds all the network connections. This script runs through different commands based on the profile provided.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Finds all the network connections. This script runs through different commands b
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +20,6 @@ Finds all the network connections. This script runs through different commands b
 | profile | The Volatility profile to use. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

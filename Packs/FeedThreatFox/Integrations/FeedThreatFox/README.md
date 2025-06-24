@@ -3,7 +3,6 @@ This integration was integrated and tested with version 6.0.3 of ThreatFox Feed.
 
 ## Configure ThreatFox Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -19,7 +18,6 @@ This integration was integrated and tested with version 6.0.3 of ThreatFox Feed.
 | Return IOCs with Ports | If selected, IP indicators will include a tag with the port value | False |
 | Confidence Threshold |  | False |
 | Create relationship | If selected, indicators will be created with relationships | False |
-
 
 ## Commands
 
@@ -39,12 +37,12 @@ Retrieves indicators from the ThreatFox API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_term | Indicator value to search for | Optional | 
-| id | Indicator ID to search for. | Optional | 
-| hash | Hash to search for. | Optional | 
-| tag | Tag to search by. For available tag options, please refer to the API documentation- https://threatfox.abuse.ch/api/. | Optional | 
-| malware | Malware to search by. For available malware options, please refer to the API documentation- https://threatfox.abuse.ch/api/. | Optional | 
-| limit | Maximum indicators to search for. Available only when searching by 'malware' or 'tag'. Default is 50. Max is 1000. | Optional | 
+| search_term | Indicator value to search for | Optional |
+| id | Indicator ID to search for. | Optional |
+| hash | Hash to search for. | Optional |
+| tag | Tag to search by. For available tag options, please refer to the API documentation- https://threatfox.abuse.ch/api/. | Optional |
+| malware | Malware to search by. For available malware options, please refer to the API documentation- https://threatfox.abuse.ch/api/. | Optional |
+| limit | Maximum indicators to search for. Available only when searching by 'malware' or 'tag'. Default is 50. Max is 1000. | Optional |
 
 #### Context Output
 

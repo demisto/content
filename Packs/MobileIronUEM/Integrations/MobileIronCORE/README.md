@@ -22,26 +22,26 @@ Refer to the API documentation at the MobileIron community for more details on s
 
 If you are dividing the devices into different spaces, it is important to make sure the integration
 points to the correct `Device Admin Space ID`.
- 
+
 In most cases, this is set to the value *1* for the global space ID.
 
 ### Setting up pre-processing rules
 
 If you are using the fetch incidents option it is advisable to set-up a pre-processing rule in order
-to filter out any duplicates that might show up as part of the command. 
+to filter out any duplicates that might show up as part of the command.
 
 - Inside the Cortex XSOAR admin go to Settings -> Integrations -> Pre-Processing Rules.
 - In *Step 1* add a rule for *Type* equals *MobileIron Core Device Incident*.
 - In *Step 2* select *Drop and Update*.
-- In *Step 3* select *Link to oldest incident* created within the last *15 days* and check the checkbox next to 
-*Search closed incidents*. 
-- Add an *AND* statement and enter *MobileIron Device ID* of existing incident is identical to the one of the 
+- In *Step 3* select *Link to oldest incident* created within the last *15 days* and check the checkbox next to
+*Search closed incidents*.
+- Add an *AND* statement and enter *MobileIron Device ID* of existing incident is identical to the one of the
 incoming incident.
 - Save.
 
 Here is an example image of the rule
 
-![Pre-Processing Rules Example](../../doc_files/preprocess_rules.png) 
+![Pre-Processing Rules Example](../../doc_files/preprocess_rules.png)
 
 ## Configure MobileIronCORE on Cortex XSOAR
 
@@ -73,7 +73,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Sends a message to the particular device based on the device ID.
 
-
 #### Base Command
 
 `mobileiron-core-send-message`
@@ -82,17 +81,15 @@ Sends a message to the particular device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device to send a message to. | Required | 
-| subject | The subject of the email. | Required | 
-| message | The message of the email. | Required | 
-| message_type | The type of message to send. Possible values are: "pns", "sms" and "email". | Required | 
-
+| device_id | The ID of the device to send a message to. | Required |
+| subject | The subject of the email. | Required |
+| message | The message of the email. | Required |
+| message_type | The type of message to send. Possible values are: "pns", "sms" and "email". | Required |
 
 ### mobileiron-core-update-os
 
 ***
 Updates the operating system on the particular device based on the device ID.
-
 
 #### Base Command
 
@@ -102,15 +99,12 @@ Updates the operating system on the particular device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device on which to update the operating system. | Required | 
-
-
+| device_id | The ID of the device on which to update the operating system. | Required |
 
 ### mobileiron-core-unlock-device-only
 
 ***
 Unlocks the particular device based on the device ID.
-
 
 #### Base Command
 
@@ -120,14 +114,12 @@ Unlocks the particular device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device to unlock. | Required | 
-
+| device_id | The ID of the device to unlock. | Required |
 
 ### mobileiron-core-enable-voice-roaming
 
 ***
 Enables voice roaming on the particular device based on the device ID.
-
 
 #### Base Command
 
@@ -137,14 +129,12 @@ Enables voice roaming on the particular device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device on which to enable voice roaming. | Required | 
-
+| device_id | The ID of the device on which to enable voice roaming. | Required |
 
 ### mobileiron-core-disable-voice-roaming
 
 ***
 Disables voice roaming on the particular device based on the device ID.
-
 
 #### Base Command
 
@@ -154,14 +144,12 @@ Disables voice roaming on the particular device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device on which to disable voice roaming. | Required | 
-
+| device_id | The ID of the device on which to disable voice roaming. | Required |
 
 ### mobileiron-core-enable-data-roaming
 
 ***
 Enables data roaming on the particular device based on the device ID.
-
 
 #### Base Command
 
@@ -171,14 +159,12 @@ Enables data roaming on the particular device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device on which to enable data roaming. | Required | 
-
+| device_id | The ID of the device on which to enable data roaming. | Required |
 
 ### mobileiron-core-disable-data-roaming
 
 ***
 Disables data roaming on the particular device based on the device ID.
-
 
 #### Base Command
 
@@ -188,14 +174,12 @@ Disables data roaming on the particular device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device on which to disable data roaming. | Required | 
-
+| device_id | The ID of the device on which to disable data roaming. | Required |
 
 ### mobileiron-core-enable-personal-hotspot
 
 ***
 Enables a personal hotspot on the particular device based on the device ID.
-
 
 #### Base Command
 
@@ -205,14 +189,12 @@ Enables a personal hotspot on the particular device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device on which to enable a personal hotspot. | Required | 
-
+| device_id | The ID of the device on which to enable a personal hotspot. | Required |
 
 ### mobileiron-core-disable-personal-hotspot
 
 ***
 Disables a personal hotspot on the particular device based on the device ID.
-
 
 #### Base Command
 
@@ -222,14 +204,12 @@ Disables a personal hotspot on the particular device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device on which to disable a personal hotspot. | Required | 
-
+| device_id | The ID of the device on which to disable a personal hotspot. | Required |
 
 ### mobileiron-core-unlock-app-connect-container
 
 ***
 Unlocks an app connect container on the particular device based on the device ID.
-
 
 #### Base Command
 
@@ -239,14 +219,12 @@ Unlocks an app connect container on the particular device based on the device ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device on which to unlock an app connect container. | Required | 
-
+| device_id | The ID of the device on which to unlock an app connect container. | Required |
 
 ### mobileiron-core-retire-device
 
 ***
 Retires a device based on the device ID.
-
 
 #### Base Command
 
@@ -256,14 +234,12 @@ Retires a device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device to retire. | Required | 
-
+| device_id | The ID of the device to retire. | Required |
 
 ### mobileiron-core-wipe-device
 
 ***
 Wipes a device based on the device ID.
-
 
 #### Base Command
 
@@ -273,14 +249,12 @@ Wipes a device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | ID of the device to wipe. | Required | 
-
+| device_id | ID of the device to wipe. | Required |
 
 ### mobileiron-core-force-checkin
 
 ***
 Forces check in to the device based on the device ID.
-
 
 #### Base Command
 
@@ -290,8 +264,7 @@ Forces check in to the device based on the device ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | ID of the device on which to force check in. | Required | 
-
+| device_id | ID of the device on which to force check in. | Required |
 
 ### mobileiron-core-get-devices-data
 
@@ -306,48 +279,46 @@ Gets a list of devices matching the provided query.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query used to filter the list of devices. Default is common.status = "ACTIVE". | Required | 
-| additional_fields | Comma-separated list of fields to query from the API. | Optional | 
-| max_fetch | The maximum number of items to return. | Optional | 
-
+| query | The query used to filter the list of devices. Default is common.status = "ACTIVE". | Required |
+| additional_fields | Comma-separated list of fields to query from the API. | Optional |
+| max_fetch | The maximum number of items to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common_model | String | Model of the device that was fetched. | 
-| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. | 
-| MobileIronCore.Device.common_status | String | Status of the device that was fetched. | 
-| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. | 
-| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. | 
-| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. | 
-| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. | 
-| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. | 
-| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. | 
-| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. | 
-| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. | 
-| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. | 
-| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. | 
-| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. | 
-| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. | 
-| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. | 
-| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. | 
-| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. | 
-| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. | 
-| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. | 
-| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. | 
-| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. | 
-| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. | 
-| MobileIronCore.Device.common_mdm_managed | Boolean | Whether the device that was fetched is MDM managed. | 
-
+| MobileIronCore.Device.common_model | String | Model of the device that was fetched. |
+| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. |
+| MobileIronCore.Device.common_status | String | Status of the device that was fetched. |
+| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. |
+| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. |
+| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. |
+| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. |
+| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. |
+| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. |
+| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. |
+| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. |
+| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. |
+| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. |
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. |
+| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. |
+| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. |
+| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. |
+| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. |
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. |
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. |
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. |
+| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. |
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. |
+| MobileIronCore.Device.common_mdm_managed | Boolean | Whether the device that was fetched is MDM managed. |
 
 #### Command Example
 
@@ -392,12 +363,10 @@ Gets a list of devices matching the provided query.
 }
 ```
 
-
 ### mobileiron-core-get-device-by-uuid
 
 ***
 Gets a single device based on the device UUID.
-
 
 #### Base Command
 
@@ -407,47 +376,45 @@ Gets a single device based on the device UUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_uuid | The UUID of the device to fetch. | Required | 
-| additional_fields | Comma-separated list of fields to query from the API. | Optional | 
-
+| device_uuid | The UUID of the device to fetch. | Required |
+| additional_fields | Comma-separated list of fields to query from the API. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common_model | String | Model of the device that was fetched. | 
-| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. | 
-| MobileIronCore.Device.common_status | String | Status of the device that was fetched. | 
-| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. | 
-| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. | 
-| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. | 
-| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. | 
-| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. | 
-| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. | 
-| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. | 
-| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. | 
-| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. | 
-| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. | 
-| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. | 
-| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. | 
-| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. | 
-| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. | 
-| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. | 
-| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. | 
-| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. | 
-| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. | 
-| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. | 
-| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. | 
+| MobileIronCore.Device.common_model | String | Model of the device that was fetched. |
+| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. |
+| MobileIronCore.Device.common_status | String | Status of the device that was fetched. |
+| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. |
+| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. |
+| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. |
+| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. |
+| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. |
+| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. |
+| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. |
+| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. |
+| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. |
+| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. |
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. |
+| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. |
+| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. |
+| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. |
+| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. |
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. |
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. |
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. |
+| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. |
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. |
 | MobileIronCore.Device.common_mdm_managed | Boolean | Whether the device that was fetched is MDM managed. |
-
 
 #### Command Example
 
@@ -503,52 +470,49 @@ Gets a single device based on the device serial number.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_serial | The serial number of the device to fetch. | Required | 
-| additional_fields | Comma-separated list of fields to query from the API. | Optional | 
-
+| device_serial | The serial number of the device to fetch. | Required |
+| additional_fields | Comma-separated list of fields to query from the API. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common_model | String | Model of the device that was fetched. | 
-| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. | 
-| MobileIronCore.Device.common_status | String | Status of the device that was fetched. | 
-| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. | 
-| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. | 
-| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. | 
-| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. | 
-| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. | 
-| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. | 
-| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. | 
-| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. | 
-| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. | 
-| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. | 
-| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. | 
-| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. | 
-| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. | 
-| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. | 
-| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. | 
-| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. | 
-| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. | 
-| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. | 
-| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. | 
-| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. | 
+| MobileIronCore.Device.common_model | String | Model of the device that was fetched. |
+| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. |
+| MobileIronCore.Device.common_status | String | Status of the device that was fetched. |
+| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. |
+| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. |
+| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. |
+| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. |
+| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. |
+| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. |
+| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. |
+| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. |
+| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. |
+| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. |
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. |
+| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. |
+| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. |
+| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. |
+| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. |
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. |
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. |
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. |
+| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. |
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. |
 | MobileIronCore.Device.common_mdm_managed | Boolean | Whether the device that was fetched is MDM managed. |
-
 
 #### Command Example
 
 ```!mobileiron-core-get-device-by-serial device_serial=EXAMPLE```
-
 
 #### Context Example
 
@@ -592,7 +556,6 @@ Gets a single device based on the device serial number.
 ***
 Gets a single device based on the device WiFi MAC address.
 
-
 #### Base Command
 
 `mobileiron-core-get-device-by-mac`
@@ -601,52 +564,49 @@ Gets a single device based on the device WiFi MAC address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_mac | MAC address of the device to fetch. | Required | 
-| additional_fields | Comma-separated list of fields to query from the API. | Optional | 
-
+| device_mac | MAC address of the device to fetch. | Required |
+| additional_fields | Comma-separated list of fields to query from the API. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common_model | String | Model of the device that was fetched. | 
-| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. | 
-| MobileIronCore.Device.common_status | String | Status of the device that was fetched. | 
-| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. | 
-| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. | 
-| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. | 
-| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. | 
-| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. | 
-| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. | 
-| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. | 
-| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. | 
-| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. | 
-| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. | 
-| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. | 
-| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. | 
-| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. | 
-| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. | 
-| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. | 
-| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. | 
-| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. | 
-| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. | 
-| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. | 
-| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. | 
-| MobileIronCore.Device.common_mdm_managed | Boolean | Whether the device that was fetched is MDM managed. | 
-
+| MobileIronCore.Device.common_model | String | Model of the device that was fetched. |
+| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. |
+| MobileIronCore.Device.common_status | String | Status of the device that was fetched. |
+| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. |
+| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. |
+| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. |
+| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. |
+| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. |
+| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. |
+| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. |
+| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. |
+| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. |
+| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. |
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. |
+| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. |
+| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. |
+| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. |
+| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. |
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. |
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. |
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. |
+| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. |
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. |
+| MobileIronCore.Device.common_mdm_managed | Boolean | Whether the device that was fetched is MDM managed. |
 
 #### Command Example
 
 ```!mobileiron-core-get-device-by-mac device_mac=EXAMPLE```
-
 
 #### Context Example
 
@@ -698,52 +658,49 @@ Gets a single device based on the device IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_ip | IP address of the device to fetch. | Required | 
-| additional_fields | Comma-separated list of fields to query from the API. | Optional | 
-
+| device_ip | IP address of the device to fetch. | Required |
+| additional_fields | Comma-separated list of fields to query from the API. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common_model | String | Model of the device that was fetched. | 
-| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. | 
-| MobileIronCore.Device.common_status | String | Status of the device that was fetched. | 
-| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. | 
-| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. | 
-| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. | 
-| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. | 
-| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. | 
-| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. | 
-| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. | 
-| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. | 
-| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. | 
-| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. | 
-| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. | 
-| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. | 
-| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. | 
-| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. | 
-| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. | 
-| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. | 
-| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. | 
-| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. | 
-| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. | 
-| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. | 
-| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. | 
-| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. | 
-| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. | 
-| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. | 
-| MobileIronCore.Device.common_mdm_managed | Boolean | Whether the device that was fetched is MDM managed. | 
-
+| MobileIronCore.Device.common_model | String | Model of the device that was fetched. |
+| MobileIronCore.Device.common_os_version | String | Operating system version of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform name of the device that was fetched. |
+| MobileIronCore.Device.common_status | String | Status of the device that was fetched. |
+| MobileIronCore.Device.common_imei | String | International Mobile Equipment Identity (IMEI) of the device that was fetched. |
+| MobileIronCore.Device.common_platform | String | Platform of the device that was fetched. |
+| MobileIronCore.Device.common_security_state | String | Security state of the device that was fetched. |
+| MobileIronCore.Device.user_display_name | String | Display name of the device that was fetched. |
+| MobileIronCore.Device.common_last_connected_at | Date | Date the device that was fetched was last connected. |
+| MobileIronCore.Device.common_uuid | String | Device UUID of the device that was fetched. |
+| MobileIronCore.Device.common_quarantined | Boolean | Whether the device was quarantined. |
+| MobileIronCore.Device.common_id | Number | ID of the device that was fetched. |
+| MobileIronCore.Device.common_imsi | String | International mobile subscriber identity (IMSI) of the device that was fetched. |
+| MobileIronCore.Device.common_owner | String | Owner of the device that was fetched. |
+| MobileIronCore.Device.user_email_address | String | User email address of the device that was fetched. |
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer of the device that was fetched. |
+| MobileIronCore.Device.common_compliant | Boolean | Whether the device that was fetched is compliant. |
+| MobileIronCore.Device.user_user_id | String | User ID of the device that was fetched. |
+| MobileIronCore.Device.common_registration_date | Date | Registration date of the device that was fetched. |
+| MobileIronCore.Device.common_wifi_mac_address | String | WiFi MAC address of the device that was fetched. |
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non-compliance reasons for the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID of the device that was fetched. |
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC address EN0 of the device that was fetched. |
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_code | String | Current country code of the device that was fetched. |
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name of the device that was fetched. |
+| MobileIronCore.Device.common_current_country_name | String | Current country nameCurrent country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_name | String | Home country name of the device that was fetched. |
+| MobileIronCore.Device.common_home_country_code | String | Home country code of the device that was fetched. |
+| MobileIronCore.Device.common_device_is_compromised | Boolean | Whether the device that was fetched was compromised. |
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number of the device that was fetched. |
+| MobileIronCore.Device.common_mdm_managed | Boolean | Whether the device that was fetched is MDM managed. |
 
 #### Command Example
 
 ```!mobileiron-core-get-device-by-ip device_id=IP```
-
 
 #### Context Example
 
@@ -781,5 +738,3 @@ Gets a single device based on the device IP address.
     }
 }
 ```
-
-
