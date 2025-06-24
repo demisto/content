@@ -493,7 +493,7 @@ class Client(CoreClient):
 
         # pop the incidents and then log the reply data so as not to overload the logs
         incidents = reply.pop("incidents", []) if isinstance(reply, dict) else reply  # type: ignore
-        demisto.debug(f"reply data: {reply}") 
+        demisto.debug(f"reply data: {reply}")
         demisto.debug(f'Incidents fetched: {[i.get("incident", i).get("incident_id") for i in incidents]}')
         return incidents
 
