@@ -14602,6 +14602,20 @@ def pan_os_get_master_key_details_command() -> CommandResults:
 
 
 def expiration_status_check(cert_expiration: datetime) -> str:
+    """
+    Returns the expiration status of a certificate based on its expiration date.
+    
+    Args:
+        cert_expiration (datetime): The expiration date and time of the certificate
+        
+    Returns:
+        str: The expiration status, one of:
+            - "Expired": Certificate has already expired
+            - "Expiring in 30 days": Certificate expires within 30 days
+            - "Expiring in 60 days": Certificate expires within 31-60 days
+            - "Expiring in 90 days": Certificate expires within 61-90 days
+            - "Valid": Certificate expires in more than 90 days
+    """
     now = datetime.now()
     if cert_expiration < now:
         return "Expired"
@@ -14618,6 +14632,30 @@ def expiration_status_check(cert_expiration: datetime) -> str:
 def compile_certificate_details(
     cert_list: List, cert_type: str, device: str, devices_using_certificate: Optional[List] = None
 ) -> List[dict]:
+    """
+    Extract and consolidate certificate details from XML certificate entries into structured dictionaries.
+    
+    Args:
+        cert_list (List): List of XML certificate entry elements to process
+        cert_type (str): Type of certificate, one of:
+            - "Pushed": Certificates pushed from Panorama to firewalls
+            - "Local": Certificates stored locally on firewall
+            - "Predefined": System predefined certificates
+        device (str): Device identifier (hostname, serial number, etc.) where certificates are found
+        devices_using_certificate (Optional[List], optional): List of devices that use these certificates. Defaults to None.
+    
+    Returns:
+        List[dict]: List of dictionaries containing certificate details. Each dictionary contains:
+            - name (str): Certificate name
+            - device (str): Device identifier
+            - subject (str): Certificate subject or None if not available
+            - expiration_date (str): Expiration date string or None if not available
+            - expiration_status (str): Status from expiration_status_check() or None
+            - location (str): "Panorama" or "Firewall" based on cert_type and DEVICE_GROUP
+            - cert_type (str): The certificate type passed as input
+            - devices_using_certificate (List): Included only if devices_using_certificate is provided
+    """
+    
     cert_details = []
     if cert_type == "Pushed":
         location = "Panorama"
@@ -14654,7 +14692,7 @@ def compile_certificate_details(
     return cert_details
 
 
-def extract_certificates_from_running_config(device) -> Tuple[List, List]:
+def extract_certificates_from_running_config(device: Union[Panorama, Firewall]) -> Tuple[List, List]:
     """
     Process pushed certificates from Panorama response and consolidate them.
 
@@ -14717,7 +14755,7 @@ def extract_certificates_from_running_config(device) -> Tuple[List, List]:
         raise
 
 
-def extract_certificate_from_pushed_template(device) -> List:
+def extract_certificate_from_pushed_template(device: Union[Panorama, Firewall]) -> List:
     """
     Extract certificate entries from pushed template configuration.
 
@@ -14739,7 +14777,7 @@ def extract_certificate_from_pushed_template(device) -> List:
     return []
 
 
-def extract_local_certificates(device) -> List:
+def extract_local_certificates(device: Union[Panorama, Firewall]) -> List:
     """
     Extract local certificate entries from device.
 
