@@ -182,7 +182,7 @@ def handle_get_pagination(client: Client, initial_response: dict[str, Any], init
     remaining_limit = initial_limit - LIMIT_RES_FROM_API
     next_page = initial_response.get("meta", {}).get("next")
 
-    while next_page and remaining_limit > 0:  # Handles pagination
+    while next_page and remaining_limit > 0:  # Loop continues as long as there's a next page link and the limit hasn't reached
         try:
             if next_page.startswith("/api/"):
                 # /api/ is removed here as it appears in the base_url of the client.
@@ -231,21 +231,15 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     params: dict[str, Any] = {"limit": limit}
     if indicator_type:
         if indicator_type not in ["domain", "email", "ip", "md5", "url"]:
-            demisto.info(f"{THREAT_STREAM} - Invalid indicator type.")
+            demisto.error(f"{THREAT_STREAM} - Invalid indicator type.")
             return CommandResults(
-                readable_output="""### Invalid indicator type. Select one of the following types: domain, email, ip, md5, url"""
+                readable_output="""### Invalid indicator type. Select one of the following types: domain, email, ip, md5, url."""
             )
         else:
             params["type"] = indicator_type
 
     demisto.debug(f"{THREAT_STREAM} - Calling API to get indicators with params: {params}")
     res = client.http_request(method="GET", url_suffix=URL_SUFFIX, params=params)
-
-    indicators_raw: list[dict[str, Any]] = res.get("objects", [])
-    if not indicators_raw:
-        demisto.info(f"""{THREAT_STREAM} - No indicators found for the given criteria in the
-                     'threatstream-feed-get-indicators' command.""")
-        return CommandResults(readable_output="### No indicators were found.")
 
     indicators_raw = handle_get_pagination(client, res, limit)  # type: ignore
 
@@ -254,7 +248,7 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
                      'threatstream-feed-get-indicators' command.""")
         return CommandResults(readable_output="### No indicators were found.")
 
-    parsed_indicators = parse_indicators_for_get_command(indicators_raw, sort_by=args.get("sort_by", "Created Time"))
+    parsed_indicators = parse_indicators_for_get_command(indicators_raw, sort_by=args.get("sort_by", "Modified Time"))
     demisto.debug(f"{THREAT_STREAM}-get-indicators command got {len(parsed_indicators)} indicators.")
 
     # Define headers dynamically based on whether an indicator type was specified
@@ -323,14 +317,14 @@ def extract_tag_names(indicator: dict[str, Any]) -> list[str]:
     return names
 
 
-def parse_indicators_for_get_command(indicators, sort_by: str = "Created Time") -> list[dict[str, Any]]:
+def parse_indicators_for_get_command(indicators, sort_by: str = "Modified Time") -> list[dict[str, Any]]:
     """
     Parses a list of raw indicators from the API response into a format suitable for the War Room.
     The returned list is ordered in descending order by the specified timestamp.
 
     Args:
         indicators (list[dict[str, Any]]): List of raw indicator dictionaries from API response.
-        sort_by (str): The field to sort the indicators by. Can be "Created" or "Modified". Defaults to "Created".
+        sort_by (str): The field to sort the indicators by. Can be "Created" or "Modified". Defaults to "Modified".
 
     Returns:
         list[dict[str, Any]]: List of indicators formatted for War Room display,
@@ -466,10 +460,10 @@ def fetch_indicators_command(
     tlp_color = params.get("tlp_color", "WHITE")
     reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params.get("feedReliability", DBotScoreReliability.C))
     now = get_current_utc_time()
-    order_by = params.get("fetchBy", "Created Time")
+    order_by = params.get("fetchBy", "Modified Time")
     if order_by == "Created Time":
         order_by = "created_ts"
-    else:
+    else: # order_by == "Modified Time"
         order_by = "modified_ts"
     confidence_threshold = arg_to_number(params.get("confidenceThreshold", DEFAULT_CONFIDENCE_THRESHOLD))
 

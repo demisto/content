@@ -15,7 +15,7 @@ configuration:
 - display: Fetch by
   name: fetchBy
   type: 15
-  defaultvalue: "Created Time"
+  defaultvalue: "Modified Time"
   required: true
   options:
   - "Created Time"
@@ -60,7 +60,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   advanced: true
-  additionalinfo: Reliability of the source providing the intelligence data
+  additionalinfo: Reliability of the source providing the intelligence data.
   type: 15
   section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Indicator's TLP will override the default value.
@@ -77,7 +77,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Indicator Reputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation. Indicators' verdicts are determined by their Dbot score from the API. The default is Unknown.
+  additionalinfo: Indicators from this integration instance will be marked with this reputation. If not selected, Indicators' verdicts are determined by their Dbot score from the API. The default is Unknown.
   name: feedReputation
   options:
   - None
@@ -139,7 +139,7 @@ script:
       type: Number
     - name: sort_by 
       auto: PREDEFINED
-      description: Sort the records in descending order according to the Created or Modified Time.
+      description: Sort the records in descending order according to the Created or Modified Time. The default is Modified.
       isArray: false
       required: false
       predefined:

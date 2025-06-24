@@ -1,7 +1,7 @@
 from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, EntityRelationship
 import pytest
 from AnomaliThreatStreamFeed import Client
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 
 from typing import Any
 
@@ -246,7 +246,7 @@ def test_get_indicators_command_invalid_type():
 
     result = get_indicators_command(client, args)
 
-    expected_readable_output = """### Invalid indicator type. Select one of the following types: domain, email, ip, md5, url"""
+    expected_readable_output = """### Invalid indicator type. Select one of the following types: domain, email, ip, md5, url."""
     assert result.readable_output == expected_readable_output
     assert result.raw_response is None
 
@@ -393,7 +393,7 @@ def test_get_past_time_basic_interval(mocker):
     """
     from AnomaliThreatStreamFeed import get_past_time
 
-    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=UTC)
+    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=timezone.utc)
     minutes_interval = 60  # one hour ago
     expected_past_time = "2023-08-01T11:00:00.500"
 
@@ -539,14 +539,14 @@ def test_create_relationships_missing_indicator_type_or_value():
     assert result == []
 
 
-def test_create_relationships_single_related_entity():
+def test_create_relationships_related_entity():
     """
-    Tests create_relationships with a single related entity.
+    Tests create_relationships with a related entity.
     Verifies that one relationship is created correctly.
 
     Given:
         - create_relationships_param is True.
-        - A Domain indicator with a single related IP.
+        - A Domain indicator with a related IP.
     When:
         - Calling create_relationships.
     Then:
@@ -591,63 +591,6 @@ def test_create_relationships_single_related_entity():
             "fields": {},
         }
     ]
-    result = create_relationships(reliability=reliability, indicator=indicator)
-    assert result == expected_relationships
-
-
-def test_create_relationships_multiple_related_entities():
-    """
-    Tests create_relationships with multiple related entities in a list.
-    Verifies that multiple relationships are created correctly.
-
-    Given:
-        - create_relationships_param is True.
-        - A domain indicator.
-    When:
-        - Calling create_relationships.
-    Then:
-        Verify that:
-        - A list containing multiple correctly formatted relationships is returned.
-    """
-    from AnomaliThreatStreamFeed import create_relationships
-
-    indicator = {
-        "id": "123",
-        "type": "domain",
-        "confidence": 90,
-        "description": "Test domain",
-        "source": "TestSource",
-        "value": "mydomain1.com",
-        "tags": ["malware", "phishing"],
-        "tlp": "RED",
-        "country": "US",
-        "modified_ts": "2023-01-01T12:00:00Z",
-        "org": "",
-        "created_ts": "2022-01-01T12:00:00Z",
-        "expiration_ts": "2024-01-01T12:00:00Z",
-        "target_industry": ["finance"],
-        "asn": "AS12345",
-        "locations": "New York",
-        "ip": "1.1.1.1",
-        "meta.maltype": "type",
-    }
-    reliability = "B - Usually reliable"
-
-    expected_relationships = [
-        {
-            "entityA": "mydomain1.com",
-            "entityAType": FeedIndicatorType.Domain,
-            "name": EntityRelationship.Relationships.RESOLVED_FROM,
-            "entityAFamily": "Indicator",
-            "entityB": "1.1.1.1",
-            "entityBType": FeedIndicatorType.IP,
-            "type": "IndicatorToIndicator",
-            "reverseName": EntityRelationship.Relationships.RESOLVES_TO,
-            "entityBFamily": "Indicator",
-            "fields": {},
-        }
-    ]
-
     result = create_relationships(reliability=reliability, indicator=indicator)
     assert result == expected_relationships
 
@@ -815,14 +758,14 @@ def test_parse_indicator_for_fetch_error_scenarios(
     assert f"Indicator missing 'type' or 'value': {indicator}" in str(excinfo.value)
 
 
-TEST_CASES = [
+TEST_CASES_NO_INDICATORS = [
     {
         "params": {},  # Use defaults
         "last_run": {"last_successful_run": "2023-08-01T09:00:00Z"},
         "mock_http_responses": [{"objects": [], "meta": {"next": None}}],
         "mock_get_past_time_return": None,
         "mock_parse_indicator_for_fetch_side_effect": [],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [],
         "expected_exception": None,
@@ -830,7 +773,7 @@ TEST_CASES = [
 ]
 
 
-@pytest.mark.parametrize("test_case", TEST_CASES)
+@pytest.mark.parametrize("test_case", TEST_CASES_NO_INDICATORS)
 def test_fetch_indicators_command_subsequent_run_no_new_indicators(mocker, test_case):
     """
     Tests fetch_indicators_command across various scenarios using parametrization.
@@ -893,7 +836,7 @@ TEST_CASES = [
         ],
         "mock_get_past_time_return": "2023-08-01T11:00:00.000Z",
         "mock_parse_indicator_for_fetch_side_effect": {"value": "1.1.1.1", "type": "IP"},
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [{"value": "1.1.1.1", "type": "IP"}],
         "expected_exception": None,
@@ -1003,7 +946,7 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
             ValueError("Simulated parsing error"),  # First indicator fails parsing
             {"value": "example.com", "type": "DOMAIN"},  # Second indicator parses successfully
         ],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [{"value": "example.com", "type": "DOMAIN"}],  # Only the second one
     }

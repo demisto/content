@@ -12,9 +12,9 @@ Use the Anomali ThreatStream Feed Integration to fetch indicators from the Anoma
 | API Key |  | True |
 | Feed Fetch Interval |  | False |
 | Confidence Threshold | Will only return indicators above the confidence threshold. | False |
-| Source Reliability | Reliability of the source providing the intelligence data | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Indicator's TLP will override the default value. | False |
-| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. Indicators' verdicts are determined by their Dbot score from the API. The default is Unknown. | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. If not selected, Indicators' verdicts are determined by their Dbot score from the API. The default is Unknown. | False |
 | Indicator Expiration Method | The method by which to expire indicators from this feed for this integration instance. | False |
 | Create relationships |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -39,7 +39,7 @@ Gets indicators from the feed. This command is mainly used for testing and debug
 | --- | --- | --- |
 | indicator_type | The indicator type to analyze. If not selected, indicators from all types are retrieved. Possible values are: domain, ip, md5, url, email. | Optional | 
 | limit | Maximum number of objects to return (default is 10). | Optional | 
-| sort_by | Sort the records in descending order according to the Created or Modified Time. Possible values are: Created Time, Modified Time. | Optional | 
+| sort_by | Sort the records in descending order according to the Created or Modified Time. The default is Modified. Possible values are: Created Time, Modified Time. | Optional | 
 
 #### Context Output
 
