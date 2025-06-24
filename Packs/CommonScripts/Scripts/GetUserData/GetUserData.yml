@@ -26,13 +26,13 @@ args:
   - 'Cortex Core - IR'
   - 'PrismaCloud v2'
   - 'AzureRiskyUsers'
-- description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
+- description: Whether to fetch a human-readable entry for each command or just the final result. If set to true, all commands will have human-readable entries. If set to false, only the final result will be human-readable.
   name: verbose
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
-- description: whether there are additional fields to the main fields or not.
+- description: Whether to return unmapped fields to the context output under the "AdditionalFields" path.
   auto: PREDEFINED
   name: additional_fields
   defaultValue: 'false'

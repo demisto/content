@@ -497,6 +497,7 @@ def get_data(
         args={arg_name: arg_value},
     )
     if modules.is_brand_available(get_user_command) and is_valid_args(get_user_command):
+        demisto.debug(f"calling {command_name} command with brand {brand_name}")
         readable_outputs, outputs = cmd(get_user_command, additional_fields)
         if len(outputs) == 1:  # contains only the source key
             outputs["Status"] = f"User not found - userId: {arg_value}."
