@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 62,
+          "y": -144
         }
       }
     note: false
@@ -37,30 +37,39 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 96b1a79f-2e70-481b-be96-a08760a451b2
-    type: regular
+    taskid: 951479cb-f27a-401f-99e0-f95564616dcb
+    type: condition
     task:
-      id: 96b1a79f-2e70-481b-be96-a08760a451b2
+      id: 951479cb-f27a-401f-99e0-f95564616dcb
       version: -1
-      name: Query asimily-get-asset-details
+      name: Check if MacAddr Not Empty
       description: Fetch Asimily Asset information
-      script: '|||asimily-get-asset-details'
-      type: regular
-      iscommand: true
+      type: condition
+      iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
       - "2"
+      "yes":
+      - "3"
     scriptarguments:
       mac_addr:
         simple: ${incident.asimilydevicemacaddress}
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.asimilydevicemacaddress
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 239
+          "x": 62,
+          "y": 64
         }
       }
     note: false
@@ -87,8 +96,43 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 424
+          "x": 62,
+          "y": 342
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fdd10856-dd84-49a9-9b77-ebfe76603a55
+    type: regular
+    task:
+      id: fdd10856-dd84-49a9-9b77-ebfe76603a55
+      version: -1
+      name: Query asimily-get-asset-details
+      description: Fetch Asimily Asset information.
+      script: Asimily Insight|||asimily-get-asset-details
+      type: regular
+      iscommand: true
+      brand: Asimily Insight
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      mac_addr:
+        simple: ${incident.asimilydevicemacaddress}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 343,
+          "y": 205
         }
       }
     note: false
@@ -100,13 +144,15 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.7
+    },
     "paper": {
       "dimensions": {
-        "height": 434,
-        "width": 381,
-        "x": 50,
-        "y": 50
+        "height": 546,
+        "width": 662,
+        "x": 62,
+        "y": -144
       }
     }
   }
