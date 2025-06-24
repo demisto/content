@@ -39,6 +39,8 @@ In cases where you encounter timeout errors when processing many URLs, you can e
 1. Split the URLs into smaller batches to process.
 2. Increase the timeout setting for the specific task in the playbook that runs the rasterize command.
 
+To increase the timeout, modify the task's configuration by accessing the task settings, clicking the **Advanced** section, and adjusting the **Execution timeout (seconds)** field to a higher value appropriate for the workload.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
