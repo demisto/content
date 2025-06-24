@@ -121,42 +121,51 @@ If MFA is enabled for your user, follow the next steps:
 1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
 2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
 
-    | **Parameter** | **Description** | **Required** |
-    |--------| --- | --- |
-    | ServiceNow URL, in the format <https://company.service-now.com/> |  | True |
-    | Username/Client ID |  | False |
-    | Password |  | False |
-    | Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
-    | Default ticket type for running ticket commands and fetching incidents | The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item. | False |
-    | ServiceNow API Version (e.g. 'v1') |  | False |
-    | Fetch incidents |  | False |
-    | The query to use when fetching incidents |  | False |
-    | How many incidents to fetch each time |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
-    | Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at&gt;[Last Run]".<br/>To prevent duplicate incidents, this field is mandatory for fetching incidents. |  | False |
-    | ServiceNow ticket column to be set as the incident name. Default is the incident number |  | False |
-    | Incident type |  | False |
-    | Get incident attachments |  | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from ServiceNow to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to Cortex XSOAR and ServiceNow\). | False |
-    | Use Display Value | Select this checkbox to retrieve comments and work notes without accessing the \`sys_field_journal\` table. | False |
-    | Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM. | False |
-    | Comment Entry Tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
-    | Work Note Entry Tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
-    | File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
-    | File Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
-    | Timestamp field to query for updates as part of the mirroring flow | According to the timestamp in this field, records will be queried to check for updates. | False |
-    | How many incidents to mirror incoming each time | If a greater number of incidents than the limit were modified, then they won't be mirrored in. | False |
-    | Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here. | False |
-    | Mirrored XSOAR Ticket closure method | Define how to close the mirrored tickets in Cortex XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. Choose 'None' to disable closing the mirrored tickets in Cortex XSOAR. | False |
-    | Mirrored XSOAR Ticket custom close state code | Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
-    | Mirrored XSOAR Ticket custom close resolution code | Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
-    | Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets in ServiceNow, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
-    | Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets in ServiceNow with custom state. Enter here the custom closure state code \(should be an integer\) to override the default closure method. If the closure code does not exist, the default one will be used instead. | False |
-    | Mirror Existing Notes For New Fetched Incidents | When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| ServiceNow URL, in the format https://company.service-now.com/ |  | True |
+| Username/Client ID |  | False |
+| Password |  | False |
+| Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
+| Use JWT Authentication | Select this checkbox to use JWT authentication. See \(?\) for more information. | False |
+| Private key |  | False |
+| kid (Key Id) |  | False |
+| sub |  | False |
+| Default ticket type for running ticket commands and fetching incidents | The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item. | False |
+| ServiceNow API Version (e.g. 'v1') |  | False |
+| Fetch incidents |  | False |
+| The query to use when fetching incidents |  | False |
+| How many incidents to fetch each time |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
+| Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at&gt;[Last Run]".<br/>To prevent duplicate incidents, this field is mandatory for fetching incidents. |  | False |
+| ServiceNow ticket column to be set as the incident name. Default is the incident number |  | False |
+| Incident type |  | False |
+| Get incident attachments |  | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from ServiceNow to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to Cortex XSOAR and ServiceNow\). | False |
+| Use Display Value | Select this checkbox to retrieve comments and work notes without accessing the \`sys_field_journal\` table. | False |
+| Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format \(full form\) \`HH:mm:ss\` with support to \`a\` notation for AM/PM. | False |
+| Comment Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
+| Comment Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a comment from ServiceNow. | False |
+| Work Note Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
+| Work Note Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a work note from ServiceNow. | False |
+| File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
+| File Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
+| Timestamp field to query for updates as part of the mirroring flow | According to the timestamp in this field, records will be queried to check for updates. | False |
+| How many incidents to mirror incoming each time | If a greater number of incidents than the limit were modified, then they won't be mirrored in. | False |
+| Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here. | False |
+| Mirrored XSOAR Ticket closure method | When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
+| Mirrored XSOAR Ticket custom close state code | Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels \(acceptable format example: “10=Design,11=Development,12=Testing”\) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
+| Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state) | Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels \(acceptable format example: “10=Design,11=Development,12=Testing”\) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
+| Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
+| Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code \(should be an integer\) to override the default closure method. If the closure code does not exist, the default code will be used instead. | False |
+| Mirrored ServiceNow Ticket Close Codes | Specify how to close mirrored tickets in ServiceNow using a close code. Provide a comma-separated list of valid close_code values \(e.g., No resolution provided,Duplicate\). Note that a corresponding list of custom close reasons must be defined under Server Configuration in Cortex XSOAR to ensure proper mapping. If no close code is provided, no close code will be sent when closing tickets. | False |
+| Mirror Existing Notes For New Fetched Incidents | When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incidents Fetch Interval |  | False |
+| Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+
 
 3. Click **Test** to validate the URLs, token, and connection.
 4. Click **Done.**
@@ -2672,16 +2681,54 @@ There is no context output for this command.
 
 >Successfully retrieved attachments for ticket with sys id 111
 
-### Troubleshooting  
+### Troubleshooting
 
 The following are tips for handling issues with mirroring incidents between ServiceNow and Cortex XSOAR.
 
-| **Issue** | **Recommendation**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Unauthorized connection error. | Check the credentials. <br></br>Make sure the oauth ID and secret are created using the account configured on Cortex XSOAR. [Refer the KB](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0783632).<br></br>Check the roles to ensure the following roles are granted - itil (For ServiceNow v2), cmdb_inst_admin (For ServiceNow CMDB), rest_api_explorer, snc_platform_rest_api_access, web_service_admin.<br></br>Use the client ID and secret in place of username and password in the instance configuration. And use the account's username and password during the oauth step in the pop up window.<br></br>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Mirroring is not working. | Open Context Data and search for dbot. Confirm the dbot fields are configured correctly either through the mapper for that specific incident type or using setIncident. Specifically, make sure the integration instance is configured correctly for the mirroring direction (ingoing, outgoing, both) - dbotMirrorId, dbotMirrorDirection, dbotMirrorInstance, dbotMirrorTags                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Comments and work notes from before incident creation are not fetched/mirrored. | Mirroring settings apply only for incidents that are fetched after applying the settings. <br></br> For example, if a user creates a ServiceNow incident with added comments/work notes and then defines a ServiceNow integration instance with mirroring in Cortex XSOAR, those comments/work notes are not fetched with the incident in Cortex XSOAR. <br></br> To fetch pre-existing comments/work notes, you can use the ***servicenow-get-ticket-notes*** command.  <br></br> To retrieve comments and work notes using this command follow one of these steps: <br></br> - Grant elevated privileges to the **sys_journal_field**. This is done by assigning the **Itil** role (see this ServiceNow community link on [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks). <br></br> - Select the `Use Display Value` checkbox in the instance configuration. This will retrieve comments and work notes using their display value from ServiceNow. When choosing this option, you must select the date format of your instance from the `Instance Date Format` dropdown menu (see the [ServiceNow documentation](https://docs.servicenow.com/bundle/tokyo-platform-administration/page/administer/time/task/t_PersonalizeTheSystemDateFormat.html) for an explanation how to find the date format of your instance). Note that in this case, the values that will appear under the `sys_created_by` field of the retrieved notes are the display values from ServiceNow and not the system values, e.g., "System Administrator" instead of "admin". |  
-| Ticket is not closing. | Verify the integration instance is configured correctly for the *Mirrored XSOAR Ticket closure method* or *Mirrored ServiceNow Ticket closure method* fields.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Required fields are not getting sent. | This may be a mapping issue, specifically if close reason and close notes are required.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Auto-Extract extracts sys_id as a file. | This is by design. To resolve this:  <br></br> - Turn off Auto-Extract for all fields and only used on specific fields.  <br></br> - Turn off Auto-Extract at the incident level and use the task level for extraction.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Date displayed in the Cortex XSOAR layout is not aligned with ServiceNow. | 1. Navigate to the `incoming-mapper` you are using. <br></br> 2. For every field that uses the ``DateStringToISOFormat`` script, change the ``dayfirst`` argument  to ``true``.
+- **Unauthorized connection error:**  
+  - Check the credentials.  
+  - Make sure the OAuth client ID and secret are created using the same ServiceNow account configured in Cortex XSOAR. [Refer to the KB article](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0783632).  
+  - Verify that the required roles are granted: `itil` (for ServiceNow v2), `cmdb_inst_admin` (for ServiceNow CMDB), `rest_api_explorer`, `snc_platform_rest_api_access`, `web_service_admin`.  
+  - In the integration instance configuration, use the client ID and secret instead of a username and password. During the OAuth authorization step in the popup, enter the ServiceNow account's username and password.
+
+- **Mirroring is not working:**  
+  - Open the context data and search for `dbot`.  
+  - Confirm that the following fields are properly configured via the mapper or using the `setIncident` command:  
+    - `dbotMirrorId`  
+    - `dbotMirrorDirection`  
+    - `dbotMirrorInstance`  
+    - `dbotMirrorTags`  
+  - Also ensure the integration instance is configured for the correct mirroring direction (incoming, outgoing, or both).
+
+- **Comments and work notes from before incident creation are not fetched/mirrored:**  
+  - Mirroring applies only to incidents fetched after enabling mirroring settings.  
+  - If a ServiceNow incident was created before the integration instance was configured, its earlier comments and work notes won't be mirrored automatically.  
+  - To retrieve historical comments and work notes, use the `!servicenow-get-ticket-notes` command:  
+    - **Option 1:** Grant elevated privileges to the `sys_journal_field` table by assigning the `itil` role. [See this community post](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc).  
+    - **Option 2:** Enable the **Use Display Value** checkbox in the instance configuration. Also select the appropriate **Instance Date Format**. [See ServiceNow docs](https://docs.servicenow.com/bundle/tokyo-platform-administration/page/administer/time/task/t_PersonalizeTheSystemDateFormat.html) for guidance.  
+    - **Note:** When using display values, user names like `admin` may appear as `System Administrator`.
+
+- **Ticket is not closing:**  
+  - Check the integration instance configuration to ensure the appropriate closure method is selected for:  
+    - *Mirrored XSOAR Ticket Closure Method*  
+    - *Mirrored ServiceNow Ticket Closure Method*
+
+- **Required fields are not getting sent:**  
+  - This may be due to missing field mappings, especially for required fields like `closeReason` or `closeNotes`.  
+  - Ensure `close_code` is mapped to `CloseReason` and `close_notes` is mapped to `closeNotes`.
+
+- **Data Policy Exception – “The following fields are mandatory: Resolution code, Resolution Notes”:**  
+  - This occurs when ServiceNow enforces a data policy requiring these fields to be populated on closure.  
+  - To resolve the issue, map the following in the outgoing mapper:  
+    - `close_code` → `CloseReason`  
+    - `close_notes` → `closeNotes`  
+  - Without these mappings, the integration cannot populate the required fields, and the closure will fail with this exception.
+
+- **Auto-Extract extracts `sys_id` as a file:**  
+  - This behavior is by design. To avoid it:  
+    - Turn off Auto-Extract for all fields and apply it only on specific fields.  
+    - Alternatively, disable Auto-Extract at the incident level and use task-level extraction.
+
+- **Date displayed in the Cortex XSOAR layout does not match ServiceNow:**  
+  - Navigate to the **incoming mapper** you are using.  
+  - For each field using the `DateStringToISOFormat` script, set the `dayfirst` argument to `true`.

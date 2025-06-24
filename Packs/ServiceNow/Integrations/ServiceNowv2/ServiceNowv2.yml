@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: ServiceNow v2_copy
+  id: ServiceNow v2
   version: -1
 configuration:
 - display: ServiceNow URL, in the format https://company.service-now.com/
@@ -293,11 +293,11 @@ configuration:
   - platform
   required: false
   section: Collect
-- display: Mirrored ServiceNow Ticket Close Code
+- display: Mirrored ServiceNow Ticket Close Codes
   name: close_code
   type: 0
   advanced: true
-  additionalinfo: Define how to close the mirrored tickets in ServiceNow with a close code. Enter here the close code.
+  additionalinfo: Specify how to close mirrored tickets in ServiceNow using a close code. Provide a comma-separated list of valid close_code values (e.g., No resolution provided,Duplicate). Note that a corresponding list of custom close reasons must be defined under Server Configuration in Cortex XSOAR to ensure proper mapping. If no close code is provided, no close code will be sent when closing tickets.
   hidden:
     - marketplacev2
     - platform
@@ -349,8 +349,8 @@ configuration:
   required: false
   section: Collect
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
-display: ServiceNow v2_copy
-name: ServiceNow v2_copy
+display: ServiceNow v2
+name: ServiceNow v2
 script:
   commands:
   - arguments:
