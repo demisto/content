@@ -1,19 +1,9 @@
 id: Sysdig Trigger System Capture
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Sysdig Response Actions
-    itemVersion: 1.0.0
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-    isoverridable: false
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Sysdig Trigger System Capture
-description: Example playbook on how to manage different response actions based on
-  incident fields
+description: Example playbook on how to manage different response actions based on incident fields.
 tags:
 - Runtime
 - Sysdig
@@ -29,6 +19,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -56,8 +47,7 @@ tasks:
       id: 9895d9a7-87e2-48bc-980b-607e37255035
       version: -1
       name: Do we trigger a system capture?
-      description: Condition to trigger or not a system capture based on the Incident
-        fields
+      description: Condition to trigger or not a system capture based on the Incident fields
       type: condition
       iscommand: false
       brand: ""
@@ -98,8 +88,7 @@ tasks:
       id: c801bdb3-ada0-4277-8558-51883aac8111
       version: -1
       name: Create system capture
-      description: Command to trigger a system capture, it will record all system
-        calls at the host level.
+      description: Command to trigger a system capture, it will record all system calls at the host level.
       script: SysdigResponseActions|||create-system-capture
       type: regular
       iscommand: true
@@ -198,28 +187,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-sourceplaybookid: Sysdig Response Action
-dirtyInputs: true
 fromversion: 6.0.0
-collapsedTasks:
-  "0": |-
-    {
-      "children": {
-        "1": {
-          "type": "condition",
-          "x": 718,
-          "y": -80
-        },
-        "2": {
-          "type": "regular",
-          "x": 718,
-          "y": 129
-        },
-        "3": {
-          "type": "regular",
-          "x": 718,
-          "y": 283
-        }
-      },
-      "nextTasks": []
-    }
+tests:
+- No tests (auto formatted)

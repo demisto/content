@@ -1,15 +1,20 @@
 This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture
 This integration was integrated and tested with Host shield `13.9.1` of the Sysdig Agent and ResponseActions version `0.1.0`
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Sysdig Response Actions in Cortex
 
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Your server URL |  | True |
-| Password | The API Key to use for the connection | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Your server URL | True |
+| API Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Classifier | False |
+| Incident type (if classifier doesn't exist) | False |
+| Mapper (incoming) | False |
 
 ## Commands
 
@@ -40,7 +45,7 @@ Execute response actions through the Sysdig API
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| execute_response_action.Output | String | Output of the response-actions API | 
+| execute_response_action.Output | Dict | Output of the response-actions API | 
 
 ### create-system-capture
 
@@ -61,14 +66,14 @@ Command to trigger a system capture, it will record all system calls at the host
 | agent_id | The agent ID. | Required | 
 | customer_id | The customer ID. | Required | 
 | machine_id | The machine ID/MAC. Example "01:aa:02:bb:03:cc". | Required | 
-| scan_duration | Capture duration in seconds. | Required | 
+| scan_duration | Capture duration in seconds. | Optional | 
 | scap_filter | Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi). | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| create_system_capture.Output | String | Output of the system capture created | 
+| create_system_capture.Output | Dict | Output of the system capture created | 
 
 ### get-capture-file
 
@@ -89,7 +94,7 @@ Command to get a system capture based on the capture ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| get_capture_file.Output | String | Output of the system capture downloaded | 
+| get_capture_file.Output | Dict | Output of the system capture downloaded | 
 
 ### get-action-execution
 
@@ -110,4 +115,4 @@ Get the status and information of a triggered action execution
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| get_action_execution.Output | String | Output of the action execution info | 
+| get_action_execution.Output | Dict | Output of the action execution info | 

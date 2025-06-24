@@ -33,26 +33,28 @@ configuration:
   type: 13
   required: false
   section: Collect
-- defaultvalue: Sysdig Runtime Event
-  display: Incident type (if classifier doesn't exist)
-  name: incidentType
-  required: false
-  type: 13
-  section: Collect
 - defaultvalue: Sysdig Mapper Runtime Event
   display: Mapper (incoming)
   name: mapper
   required: false
   type: 13
   section: Collect
-description: 'This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture'
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+description: 'This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture.'
 display: Sysdig Response Actions
 name: SysdigResponseActions
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: Action type to perform
+      description: Action type to perform.
       name: actionType
       required: true
       predefined:
@@ -61,63 +63,62 @@ script:
       - STOP_CONTAINER
       - PAUSE_CONTAINER
       - FILE_QUARANTINE
-    - description: The caller ID, it must be unique every time
+    - description: The caller ID, it must be unique every time.
       name: callerId
       required: true
       type: String
-    - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
+    - description: 'The container ID to apply the action. Example "container.id": "123456789123".'
       name: container_id
       type: String
       required: false
-    - description: 'The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action'
+    - description: 'The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action.'
       name: path_absolute
       type: String
       required: false
-    - description: 'The host ID. Example "laksjdf1923u90snca893"'
+    - description: 'The host ID. Example "gke-host-1234".'
       name: host_id
       type: String
       required: false
-    - description: 'The process ID. Example "1234". Required for the `KILL_PROCESS` action'
+    - description: 'The process ID. Example "1234". Required for the `KILL_PROCESS` action.'
       name: process_id
       type: Number
       required: false
-    description: Execute response actions through the Sysdig API
+    description: Execute response actions through the Sysdig API.
     name: execute-response-action
     outputs:
     - contextPath: execute_response_action.Output
-      description: Output of the response-actions API
+      description: Output of the response-actions API.
       type: Dict
   - arguments:
-    - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
+    - description: 'The container ID to apply the action. Example "container.id": "123456789123".'
       name: container_id
       type: String
       required: true
-    - description: 'The host name. Example "ip-1-1-1-1.us-west-1.compute.internal"'
+    - description: 'The host name. Example "ip-1-1-1-1.us-west-1.compute.internal".'
       name: host_name
       type: String
       required: true
-    - description: 'The capture name'
+    - description: 'The capture name.'
       name: capture_name
       type: String
       required: true
-    - description: 'The agent ID'
+    - description: 'The agent ID.'
       name: agent_id
       type: String
       required: true
-    - description: 'The customer ID'
+    - description: 'The customer ID.'
       name: customer_id
       type: String
       required: true
-    - description: 'The machine ID/MAC. Example "01:aa:02:bb:03:cc"'
+    - description: 'The machine ID/MAC. Example "01:aa:02:bb:03:cc".'
       name: machine_id
       type: String
       required: true
-    - defaultvalue: 15
-      description: 'Capture duration in seconds'
+    - description: 'Capture duration in seconds.'
       name: scan_duration
       type: Number
       required: false
-    - description: 'Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi)'
+    - description: 'Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi).'
       name: scap_filter
       type: String
       required: false
@@ -125,10 +126,10 @@ script:
     name: create-system-capture
     outputs:
     - contextPath: create_system_capture.Output
-      description: Output of the system capture created
+      description: Output of the system capture created.
       type: Dict
   - arguments:
-    - description: System Capture ID
+    - description: System Capture ID.
       name: capture_id
       type: Number
       required: true
@@ -136,18 +137,18 @@ script:
     name: get-capture-file
     outputs:
     - contextPath: get_capture_file.Output
-      description: Output of the system capture downloaded
+      description: Output of the system capture downloaded.
       type: Dict
   - arguments:
-    - description: The action exection ID
+    - description: The action exection ID.
       name: action_execution_id
       type: String
       required: true
-    description: Get the status and information of a triggered action execution
+    description: Get the status and information of a triggered action execution.
     name: get-action-execution
     outputs:
     - contextPath: get_action_execution.Output
-      description: Output of the action execution info
+      description: Output of the action execution info.
       type: Dict
   dockerimage: demisto/python3:3.10.14.101217
   isfetch: true
