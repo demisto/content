@@ -216,11 +216,11 @@ class PychromeEventHandler:
         self.is_private_network_url = False
 
     def page_frame_started_loading(self, frameId):
-        demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}, {self.tab.id=}")
+        demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}, {self.tab.id=}, {self.path=}")
         self.start_frame = frameId
         if self.request_id:
             # We're in redirect
-            demisto.debug(f"Frame (reload) started loading: {frameId}, clearing {self.request_id=}, {self.tab.id=}")
+            demisto.debug(f"Frame (reload) started loading: {frameId}, clearing {self.request_id=}, {self.tab.id=}, {self.path=}")
             self.request_id = None
             self.response_received = False
             # self.start_frame = None
