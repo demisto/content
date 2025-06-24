@@ -1,13 +1,12 @@
 [MODEL: dataset="abnormal_security_email_protection_raw"]
 alter
-    get_attachmentNames = arrayindex(attachmentNames, 0),
     senderIpAddressipv4 = if(senderIpAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", senderIpAddress, null),
     senderIpAddressipv6 = if(senderIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", senderIpAddress, null)
 | alter
     xdm.event.id = threatId,
     xdm.event.outcome = if(remediationStatus = "Auto-Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Post Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "No Action Done", XDM_CONST.OUTCOME_FAILED, remediationStatus = "Would Remediate", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = "Remediation Attempted", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = null, null, to_string(remediationStatus)),
-    xdm.email.recipients = toAddresses,
-    xdm.email.attachment.filename = get_attachmentNames,
+    xdm.email.recipients = arraymap(split(to_string(toAddresses), ","), replex("@element", "\[|\"|\]", "")),
+    xdm.email.attachment.filename = arraystring(arraymap(split(to_string(attachmentNames), ","), replex("@element", "\[|\"|\]", "")), " | "),
     xdm.email.subject = subject,
     xdm.email.cc = ccEmails,
     xdm.email.sender = fromAddress,
