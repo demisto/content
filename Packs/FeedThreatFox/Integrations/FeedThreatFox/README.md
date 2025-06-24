@@ -1,5 +1,5 @@
-Use the ThreatFox Feed integration to fetch indicators from the feed.
-This integration was integrated and tested with version 6.0.3 of ThreatFox Feed.
+ThreatFox is a platform from abuse.ch and Spamhaus dedicated to sharing indicators of compromise (IOCs) associated with malware, with the infosec community, AV vendors and cyber threat intelligence providers. 
+For more information visit: https://threatfox.abuse.ch/
 
 #### Create an Auth Key for abuse.ch
 > Note: If you already have a profile, you can skip steps 1 and 2.

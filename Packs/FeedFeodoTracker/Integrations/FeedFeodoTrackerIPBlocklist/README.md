@@ -1,4 +1,5 @@
-Gets a list of bad IPs from Feodo Tracker.
+Feodo Tracker is a project of abuse.ch with the goal of sharing botnet C&C servers associated with Dridex, Emotet (aka Heodo), TrickBot, QakBot (aka QuakBot / Qbot) and BazarLoader (aka BazarBackdoor). 
+For more information, visit: https://feodotracker.abuse.ch/
 
 #### Create an Auth Key for abuse.ch
 > Note: If you already have a profile, you can skip steps 1 and 2.

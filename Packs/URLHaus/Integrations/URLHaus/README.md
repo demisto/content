@@ -1,4 +1,4 @@
-URLhaus shares malicious URLs that are being used for malware distribution.
+URLhaus leverages abuse.ch and shares malicious URLs that are being used for malware distribution.
 This integration was integrated and tested with version v1 of URLhaus.
 
 ## Configure URLhaus in Cortex
@@ -16,7 +16,7 @@ This integration was integrated and tested with version v1 of URLhaus.
 | Compromised (is malicious) |  | False |
 | Number of retries | Determines how many times a command should be retried before raising an error. | False |
 
-#### Create an Auth Key for abuse.ch
+#### Create a required Auth Key for abuse.ch
 > Note: If you already have a profile, you can skip steps 1 and 2.
 
 1. Sign up for an abuse.ch account. You can do this easily by using an existing account that you may already have on X, LinkedIn, Google or Github. Just log in with the authentication provider of your choice here: https://auth.abuse.ch/

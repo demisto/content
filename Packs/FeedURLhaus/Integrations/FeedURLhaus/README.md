@@ -1,6 +1,6 @@
-## URLhaus
+URLhaus is a platform from abuse.ch and Spamhaus dedicated to sharing malicious URLs that are being used for malware distribution. 
+For more information, visit: https://urlhaus.abuse.ch/
 
----
 
 Fetch indicators from URLhaus api
 =======
