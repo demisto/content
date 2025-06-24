@@ -295,10 +295,30 @@ class DetectionType:
 
     @classmethod
     def get_api_value(cls, user_input):
-        """Convert user-friendly input to API value using api_dict"""
+        """Convert user-friendly input to API value using api_dict
+
+        Args:
+            user_input: String or list of strings to convert
+
+        Returns:
+            Single API value (if string input) or list of API values (if list input)
+        """
         if not user_input:
             return None
 
+        # Handle list input
+        if isinstance(user_input, list):
+            api_values = []
+            for item in user_input:
+                if item:  # Skip empty/None items
+                    item_lower = item.lower()
+                    for friendly_value, api_value in cls.api_dict.items():
+                        if friendly_value.lower() in item_lower:
+                            api_values.append(api_value)
+                            break
+            return api_values if api_values else None
+
+        # Handle string input (original logic)
         user_input_lower = user_input.lower()
         for friendly_value, api_value in cls.api_dict.items():
             if friendly_value.lower() in user_input_lower:
@@ -1383,13 +1403,6 @@ class FetchIncident:
 
         demisto.debug(f"Fetch incidents didn't complete - set last run data to {json.dumps(last_run_data)}")
 
-    def save_last_run_time(self):
-        last_run_data = self.last_run_data.copy()
-        last_run_data[DemistoParams.TIME] = self.api_start_run_time
-
-        # Save using setLastRun
-        demisto.setLastRun(last_run_data)
-
     def _clear_pagination_context(self):
         """
         Clear pagination context when no more pages to fetch
@@ -1487,7 +1500,7 @@ def get_token():
 def set_api_end_cursor(page_info):
     global API_END_CURSOR
 
-    if page_info.get(WizApiResponse.HAS_NEXT_PAGE):
+    if page_info and page_info.get(WizApiResponse.HAS_NEXT_PAGE):
         API_END_CURSOR = page_info.get(WizApiResponse.END_CURSOR, "")
     else:
         API_END_CURSOR = None
@@ -1755,7 +1768,6 @@ def fetch_incidents():
         else:
             demisto.info("No new incidents to fetch")
     except Exception as e:
-        fetch_manager.save_last_run_time()
         return log_and_return_error(f"Error fetching incidents: {e}")
 
 
@@ -1911,14 +1923,22 @@ def validate_detection_type(detection_type):
         return ValidationResponse.create_success()
 
     # Convert user-friendly input to API value
-    api_value = DetectionType.get_api_value(detection_type)
+    api_value = DetectionType.get_api_value(user_input=detection_type)
 
-    if api_value and api_value in DetectionType.api_values():
-        return ValidationResponse.create_success(api_value)
-    else:
-        error_msg = f"Invalid detection type: {detection_type}. Valid types are: {', '.join(DetectionType.values())}"
-        demisto.error(error_msg)
-        return ValidationResponse.create_error(error_msg)
+    if api_value:
+        # Handle both single values and lists
+        if isinstance(api_value, list):
+            valid_api_values = set(DetectionType.api_values())
+            if set(api_value).issubset(valid_api_values):
+                return ValidationResponse.create_success(api_value)
+        else:
+            if api_value in DetectionType.api_values():
+                return ValidationResponse.create_success(api_value)
+
+    # If we get here, validation failed
+    error_msg = f"Invalid detection type: {detection_type}. Valid types are: {', '.join(DetectionType.values())}"
+    demisto.error(error_msg)
+    return ValidationResponse.create_error(error_msg)
 
 
 def validate_matched_rule_id(matched_rule_id):
@@ -3092,7 +3112,7 @@ def get_filtered_detections(
     Args:
         detection_id (str or list): Detection ID or list of detection IDs
         issue_id (str): Issue ID
-        detection_type (str): Type of detections
+        detection_type (str or list): Type of detections
         detection_platform (list): Cloud platforms
         detection_origin (list): Detection origins
         detection_cloud_account_or_cloud_organization (str): Detection cloud_account_or_cloud_organization
@@ -3353,7 +3373,9 @@ def get_single_detection():
         if not detection_id:
             return log_and_return_error(f"Missing required argument: {WizInputParam.DETECTION_ID}")
 
-        detection = get_filtered_detections(detection_id=detection_id)
+        detection = get_filtered_detections(detection_id=detection_id,
+                                            detection_type=[DetectionType.GENERATED_THREAT,
+                                                            DetectionType.DID_NOT_GENERATE_THREAT])
 
         if isinstance(detection, str):
             return log_and_return_error(f"Error retrieving detection: {detection}")

@@ -1253,12 +1253,12 @@ def test_validate_wiz_enum_parameter(mock_demisto, parameter_value, enum_values,
 @pytest.mark.parametrize(
     "issue_type,expected_valid",
     [
-        ("CLOUD_EVENT", True),
+        ("TOXIC_COMBINATION", True),
         ("CLOUD_CONFIGURATION", True),
         ("THREAT_DETECTION", True),
         ("INVALID_TYPE", False),
-        ("CLOUD_EVENT,THREAT_DETECTION", True),
-        (["CLOUD_EVENT", "CLOUD_CONFIGURATION"], True),
+        ("TOXIC_COMBINATION,THREAT_DETECTION", True),
+        (["TOXIC_COMBINATION", "CLOUD_CONFIGURATION"], True),
         (None, True),
         ("", True),
     ],
@@ -1316,10 +1316,10 @@ def test_validate_status(status, expected_valid, capfd):
 @pytest.mark.parametrize(
     "parameters,expected_success",
     [
-        ({"issue_type": "CLOUD_EVENT", "status": "OPEN", "severity": "CRITICAL"}, True),
+        ({"issue_type": "TOXIC_COMBINATION", "status": "OPEN", "severity": "CRITICAL"}, True),
         ({"issue_type": "INVALID_TYPE", "status": "OPEN", "severity": "CRITICAL"}, False),
-        ({"issue_type": "CLOUD_EVENT", "status": "INVALID_STATUS", "severity": "CRITICAL"}, False),
-        ({"issue_type": "CLOUD_EVENT", "status": "OPEN", "severity": "INVALID_SEVERITY"}, False),
+        ({"issue_type": "TOXIC_COMBINATION", "status": "INVALID_STATUS", "severity": "CRITICAL"}, False),
+        ({"issue_type": "TOXIC_COMBINATION", "status": "OPEN", "severity": "INVALID_SEVERITY"}, False),
         ({}, True),
         ({"issue_type": None, "status": None, "severity": None}, True),
     ],
@@ -1420,8 +1420,8 @@ def test_apply_status_filter(status_list, expected_filter):
 @pytest.mark.parametrize(
     "issue_type_list,expected_filter",
     [
-        (["CLOUD_EVENT"], {"filterBy": {"issue_type": ["CLOUD_EVENT"]}}),
-        (["CLOUD_EVENT", "THREAT_DETECTION"], {"filterBy": {"issue_type": ["CLOUD_EVENT", "THREAT_DETECTION"]}}),
+        (["TOXIC_COMBINATION"], {"filterBy": {"type": ["TOXIC_COMBINATION"]}}),
+        (["TOXIC_COMBINATION", "THREAT_DETECTION"], {"filterBy": {"type": ["TOXIC_COMBINATION", "THREAT_DETECTION"]}}),
         (None, {}),
     ],
 )
@@ -1439,13 +1439,13 @@ def test_apply_issue_type_filter(issue_type_list, expected_filter):
 def test_apply_all_issue_filters():
     """Test apply_all_issue_filters with all filter types"""
     variables = {}
-    validated_values = {"severity": ["CRITICAL", "HIGH"], "status": ["OPEN"], "issue_type": ["CLOUD_EVENT"]}
+    validated_values = {"severity": ["CRITICAL", "HIGH"], "status": ["OPEN"], "issue_type": ["TOXIC_COMBINATION"]}
 
     result = apply_all_issue_filters(variables, validated_values)
 
     assert result["filterBy"]["severity"] == ["CRITICAL", "HIGH"]
     assert result["filterBy"]["status"] == ["OPEN"]
-    assert result["filterBy"]["issue_type"] == ["CLOUD_EVENT"]
+    assert result["filterBy"]["type"] == ["TOXIC_COMBINATION"]
 
 
 def test_apply_all_issue_filters_empty():
@@ -1462,21 +1462,22 @@ def test_apply_all_issue_filters_empty():
 
 
 @pytest.mark.parametrize(
-    "demisto_args,expected_uses_default",
+    "demisto_params,expected_uses_default",
     [
         ({}, True),
         ({"issue_type": None, "status": None, "severity": None}, True),
-        ({"issue_type": "CLOUD_EVENT"}, False),
+        ({"issue_type": "TOXIC_COMBINATION"}, False),
         ({"status": "OPEN"}, False),
         ({"severity": "CRITICAL"}, False),
-        ({"issue_type": "CLOUD_EVENT", "status": "OPEN"}, False),
+        ({"issue_type": "TOXIC_COMBINATION", "status": "OPEN"}, False),
     ],
 )
 @patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
-def test_get_fetch_issues_variables(mock_demisto, demisto_args, expected_uses_default):
+def test_get_fetch_issues_variables(mock_demisto, demisto_params, expected_uses_default):
     """Test get_fetch_issues_variables with various argument combinations"""
-    mock_demisto.args.return_value = demisto_args
+    mock_demisto.args.return_value = demisto_params
     mock_demisto.info = MagicMock()
+    mock_demisto.params.return_value = demisto_params
 
     max_fetch = 50
     last_run = "2025-01-01T00:00:00Z"
@@ -1491,11 +1492,11 @@ def test_get_fetch_issues_variables(mock_demisto, demisto_args, expected_uses_de
         mock_demisto.info.assert_called_with("No issue type, status or severity provided, fetching default issues")
         assert result["filterBy"]["status"] == DEFAULT_FETCH_ISSUE_STATUS
 
-    if demisto_args.get("issue_type"):
-        assert "issue_type" in result["filterBy"]
-    if demisto_args.get("status") and not expected_uses_default:
+    if demisto_params.get("issue_type"):
+        assert "type" in result["filterBy"]
+    if demisto_params.get("status") and not expected_uses_default:
         assert "status" in result["filterBy"]
-    if demisto_args.get("severity"):
+    if demisto_params.get("severity"):
         assert "severity" in result["filterBy"]
 
 
@@ -1503,7 +1504,7 @@ def test_get_fetch_issues_variables(mock_demisto, demisto_args, expected_uses_de
 @patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
 def test_get_fetch_issues_variables_validation_error(mock_demisto, mock_return_error):
     """Test get_fetch_issues_variables with validation error"""
-    mock_demisto.args.return_value = {"issue_type": "INVALID_TYPE"}
+    mock_demisto.params.return_value = {"issue_type": "INVALID_TYPE"}
 
     get_fetch_issues_variables(50, "2025-01-01T00:00:00Z")
 
@@ -1536,7 +1537,7 @@ def test_get_fetch_issues_variables_copies_default_variables(mock_demisto):
 def test_wiz_issue_type_values():
     """Test WizIssueType.values() returns expected values"""
     values = WizIssueType.values()
-    expected = ["CLOUD_EVENT", "CLOUD_CONFIGURATION", "THREAT_DETECTION"]
+    expected = ["TOXIC_COMBINATION", "CLOUD_CONFIGURATION", "THREAT_DETECTION"]
 
     assert all(value in values for value in expected)
     assert len(values) == len(expected)

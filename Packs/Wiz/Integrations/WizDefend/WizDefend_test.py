@@ -283,6 +283,10 @@ def valid_threat_scenario():
 @pytest.mark.parametrize(
     "detection_type,expected_valid,expected_value",
     [
+        (["GENERATED THREAT", "DID NOT GENERATE THREAT"], True, ["GENERATED_THREAT", "MATCH_ONLY"]),
+        (["GENERATED THREAT"], True, ["GENERATED_THREAT"]),
+        (["DID NOT GENERATE THREAT"], True, ["MATCH_ONLY"]),
+        ("GENERATED THREAT", True, "GENERATED_THREAT"),
         ("GENERATED THREAT", True, "GENERATED_THREAT"),
         ("GENERATED_THREAT", False, None),
         ("generated threat", True, "GENERATED_THREAT"),  # Case insensitive
@@ -734,6 +738,8 @@ def test_validate_matched_rule_id(rule_id, expected_valid, expected_value):
 @pytest.mark.parametrize(
     "detection_type,expected_result",
     [
+        (["GENERATED_THREAT"], True),
+        (["DID NOT GENERATE THREAT", "GENERATED_THREAT"], True),
         ("GENERATED_THREAT", True),
         (None, False),
         ("CLOUD_THREAT", True),
@@ -747,7 +753,11 @@ def test_apply_detection_type_filter(detection_type, expected_result):
     if expected_result:
         assert "filterBy" in result
         assert "type" in result["filterBy"]
-        assert result["filterBy"]["type"]["equals"] == [detection_type]
+        if isinstance(detection_type, list):
+            expected_equals = detection_type
+        else:
+            expected_equals = [detection_type]
+        assert result["filterBy"]["type"]["equals"] == expected_equals
     else:
         assert result == {}
 
@@ -1920,49 +1930,27 @@ def test_get_filtered_detections_validation_error(mock_validate):
     # Verify result is the error message
     assert result == "Validation error message"
 
-
-@patch(
-    "Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters",
-    return_value=(True, None, {"severity": ["CRITICAL"]}),
-)
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_api")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_detection_url", return_value="https://app.wiz.io/detection/123")
-def test_get_filtered_detections_with_all_params(mock_url, mock_query_api, mock_validate, sample_detection):
+def test_get_filtered_detections_with_all_params(mock_url, mock_query_api, sample_detection):
     """Test get_filtered_detections with all parameters specified"""
-    # Set up validated values
-    validated_values = {
-        "detection_id": [str(uuid.uuid4())],
-        "issue_id": str(uuid.uuid4()),
-        "type": "GENERATED_THREAT",
-        "platform": ["AWS"],
-        "origin": ["WIZ_SENSOR"],
-        "subscription": "test-subscription",
-        "resource_id": "test-id",
-        "severity": ["CRITICAL"],
-        "creation_minutes_back": 15,
-        "rule_match_id": "rule-id",
-        "rule_match_name": "rule name",
-        "project_id": "project-id",
-    }
 
-    # Configure the mocks
-    mock_validate.return_value = (True, None, validated_values)
     mock_query_api.return_value = [sample_detection]
 
-    # Call the function with all parameters
+    # Use valid parameters that will pass real validation
     result = get_filtered_detections(
-        detection_id=validated_values["detection_id"][0],
-        issue_id=validated_values["issue_id"],
-        detection_type="GENERATED THREAT",
-        detection_platform=validated_values["platform"],
-        detection_origin=validated_values["origin"],
-        detection_cloud_account_or_cloud_organization=validated_values["subscription"],
-        resource_id=validated_values["resource_id"],
-        severity="CRITICAL",
-        creation_minutes_back="15",
-        rule_match_id=validated_values["rule_match_id"],
-        rule_match_name=validated_values["rule_match_name"],
-        project_id=validated_values["project_id"],
+        detection_id=str(uuid.uuid4()),  # Valid UUID
+        issue_id=str(uuid.uuid4()),  # Valid UUID
+        detection_type=[DetectionType.GENERATED_THREAT, DetectionType.DID_NOT_GENERATE_THREAT],  # Valid enum values
+        detection_platform=["AWS"],  # Valid platform
+        detection_origin=["WIZ_SENSOR"],  # Valid origin
+        detection_cloud_account_or_cloud_organization="12345678-1234-1234-1234-d25e16359c19",
+        resource_id="test-id",
+        severity="CRITICAL",  # Valid severity
+        creation_minutes_back="15",  # Valid number
+        rule_match_id=str(uuid.uuid4()),  # Valid UUID
+        rule_match_name="rule name",
+        project_id="project-id",
     )
 
     # Verify result
@@ -5077,3 +5065,123 @@ def test_max_fetch_buffer_simple(first_fetch_param, test_age_minutes, expected_t
             f"for first_fetch='{first_fetch_param}' with test age {test_age_minutes} minutes. "
             f"Timestamp: {test_time_str}"
         )
+
+
+@pytest.mark.parametrize(
+    "detection_id,api_response,expected_behavior,expected_error_contains,should_call_api,should_call_return_results",
+    [
+        # Success case
+        (
+                str(uuid.uuid4()),  # Valid UUID
+                [{"id": "detection-123", "severity": "CRITICAL"}],  # Valid API response
+                "success",
+                None,
+                True,
+                True,
+        ),
+        # Missing detection_id
+        (
+                None,  # No detection_id provided
+                None,  # API not called
+                "error",
+                f"Missing required argument: {WizInputParam.DETECTION_ID}",
+                False,
+                False,
+        ),
+        # Empty detection_id
+        (
+                "",  # Empty detection_id
+                None,  # API not called
+                "error",
+                f"Missing required argument: {WizInputParam.DETECTION_ID}",
+                False,
+                False,
+        ),
+        # API returns error string
+        (
+                str(uuid.uuid4()),  # Valid UUID
+                "API validation error",  # API returns error string
+                "error",
+                "Error retrieving detection: API validation error",
+                True,
+                False,
+        ),
+        # API returns empty list
+        (
+                str(uuid.uuid4()),  # Valid UUID
+                [],  # Empty response
+                "success",
+                None,
+                True,
+                True,
+        ),
+        # Exception during API call
+        (
+                str(uuid.uuid4()),  # Valid UUID
+                Exception("Connection timeout"),  # Exception thrown
+                "error",
+                "An error occurred while retrieving detection: Connection timeout",
+                True,
+                False,
+        ),
+    ],
+)
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.log_and_return_error")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_detections")
+def test_get_single_detection_all_cases(
+    mock_get_filtered,
+    mock_log_and_return_error,
+    mock_return_results,
+    detection_id,
+    api_response,
+    expected_behavior,
+    expected_error_contains,
+    should_call_api,
+    should_call_return_results,
+):
+    """Comprehensive test for get_single_detection covering all use cases"""
+
+    # Setup the demisto.args mock
+    args_value = {"detection_id": detection_id} if detection_id is not None else {}
+
+    # Configure API mock based on test case
+    if isinstance(api_response, Exception):
+        mock_get_filtered.side_effect = api_response
+    else:
+        mock_get_filtered.return_value = api_response
+
+    with patch.object(demisto, "args", return_value=args_value):
+        get_single_detection()
+
+        # Verify API call behavior
+        if should_call_api:
+            mock_get_filtered.assert_called_once_with(
+                detection_id=detection_id,
+                detection_type=[DetectionType.GENERATED_THREAT, DetectionType.DID_NOT_GENERATE_THREAT]
+            )
+        else:
+            mock_get_filtered.assert_not_called()
+
+        # Verify error handling
+        if expected_behavior == "error":
+            mock_log_and_return_error.assert_called_once()
+            error_message = mock_log_and_return_error.call_args[0][0]
+            assert expected_error_contains in error_message
+            mock_return_results.assert_not_called()
+        else:
+            # Success case
+            mock_log_and_return_error.assert_not_called()
+
+        # Verify return_results behavior
+        if should_call_return_results:
+            mock_return_results.assert_called_once()
+            call_args = mock_return_results.call_args[0][0]
+            assert call_args.outputs_prefix == OutputPrefix.DETECTION
+            assert call_args.outputs == api_response
+            assert call_args.readable_output == api_response
+            assert call_args.raw_response == api_response
+        elif expected_behavior == "success":
+            # If we expect success but shouldn't call return_results,
+            # it means we need to handle this case differently
+            pass

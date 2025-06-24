@@ -517,14 +517,11 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - OBJECT_DELETED
-      - ISSUE_FIXED
-      - FALSE_POSITIVE
-      - EXCEPTION
-      - CONTROL_DISABLED
-      - CONTROL_DELETED
-      - WONT_FIX
-      - DETECTION_EXPIRED
+      - MALICIOUS_THREAT
+      - NOT_MALICIOUS_THREAT
+      - SECURITY_TEST_THREAT
+      - PLANNED_ACTION_THREAT
+      - INCONCLUSIVE_THREAT
     - name: resolution_note
       description: resolution note.
       required: true

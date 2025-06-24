@@ -1571,7 +1571,7 @@ class WizSeverity:
 
 
 class WizIssueType:
-    CLOUD_EVENT = "CLOUD_EVENT"
+    TOXIC_COMBINATION = "TOXIC_COMBINATION"
     CLOUD_CONFIGURATION = "CLOUD_CONFIGURATION"
     THREAT_DETECTION = "THREAT_DETECTION"
 
@@ -1895,9 +1895,9 @@ def apply_status_filter(variables, status_list):
     return apply_wiz_filter(variables, status_list, "status", equals_wrapper=False)
 
 
-def apply_issue_type_filter(variables, status_list):
+def apply_issue_type_filter(variables, type_list):
     """Adds the status filter to the query variables"""
-    return apply_wiz_filter(variables, status_list, "issue_type", equals_wrapper=False)
+    return apply_wiz_filter(variables, type_list, "type", equals_wrapper=False)
 
 
 def apply_all_issue_filters(variables, validated_values):
@@ -1919,11 +1919,11 @@ def apply_all_issue_filters(variables, validated_values):
 
 
 def get_fetch_issues_variables(max_fetch, last_run):
-    demisto_args = demisto.args()
+    demisto_params = demisto.params()
     parameters_dict = {
-        WizInputParam.ISSUE_TYPE: demisto_args.get(WizInputParam.ISSUE_TYPE),
-        WizInputParam.STATUS: demisto_args.get(WizInputParam.STATUS),
-        WizInputParam.SEVERITY: demisto_args.get(WizInputParam.SEVERITY),
+        WizInputParam.ISSUE_TYPE: demisto_params.get(WizInputParam.ISSUE_TYPE),
+        WizInputParam.STATUS: demisto_params.get(WizInputParam.STATUS),
+        WizInputParam.SEVERITY: demisto_params.get(WizInputParam.SEVERITY),
     }
 
     # Using default fetch parameters
@@ -1964,6 +1964,7 @@ def fetch_issues(max_fetch):
 
     query = PULL_ISSUES_QUERY
     variables = get_fetch_issues_variables(max_fetch, last_run)
+    demisto.info(f"Fetching Issues for {variables}")
 
     api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
     response_json = checkAPIerrors(query, variables)
