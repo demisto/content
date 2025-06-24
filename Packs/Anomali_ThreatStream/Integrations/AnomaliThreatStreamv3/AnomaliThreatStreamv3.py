@@ -2499,19 +2499,19 @@ def get_supported_platforms(client: Client, sandbox="Anomali", limit=None, all_r
     Returns list of supported platforms for premium sandbox or default sandbox.
     """
     platform_data = client.http_request("GET", "v1/submit/parameters/")
-    result_key = "platform_choices" if sandbox_type == "default" else "premium_platform_choices"
-    available_platforms = platform_data.get(result_key, [])
-    if not available_platforms:
-        return f"No supported platforms found for {sandbox_type} sandbox"
-    if limit and isinstance(available_platforms, list) and all_results == "false":
-        output = camelize(available_platforms[: int(limit)])
-    else:
-        output = camelize(available_platforms)
-    outputs_prefix = "DefaultPlatforms" if sandbox_type == "default" else "PremiumPlatforms"
+    # result_key = "platform_choices" if sandbox_type == "default" else "premium_platform_choices"
+    # available_platforms = platform_data.get(result_key, [])
+    # if not available_platforms:
+    #     return f"No supported platforms found for {sandbox_type} sandbox"
+    # if limit and isinstance(available_platforms, list) and all_results == "false":
+    #     output = camelize(available_platforms[: int(limit)])
+    # else:
+    #     output = camelize(available_platforms)
+    # outputs_prefix = "DefaultPlatforms" if sandbox_type == "default" else "PremiumPlatforms"
     return CommandResults(
-        outputs_prefix=f"{THREAT_STREAM}.{outputs_prefix}",
-        outputs=output,
-        readable_output=tableToMarkdown(f"Supported platforms for {sandbox_type} sandbox", output),
+        outputs_prefix=f"{THREAT_STREAM}.Platforms",
+        outputs=platform_data,
+        readable_output=tableToMarkdown(f"Supported platforms for {sandbox} sandbox", platform_data),
         raw_response=platform_data,
     )
 
