@@ -1634,7 +1634,22 @@ class TestHuntingQueryBuilder:
             expected = "tableName | where Timestamp > ago(2880m)"
             assert HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range) == expected
 
-        def test_rebuild_query_with_time_range__full_query(self):
+        @pytest.mark.parametrize(
+            "query, time_range, expected",
+            [
+                pytest.param(
+                    "tableName | where a | where b",
+                    "2 days",
+                    "tableName | where Timestamp > ago(2880m) | where a | where b",
+                ),
+                pytest.param(
+                    "tableName| where a | where b",
+                    "2 days",
+                    "tableName| where Timestamp > ago(2880m) | where a | where b",
+                ),  # query without space after table name (bug fix CIAC-14096)
+            ]
+        )
+        def test_rebuild_query_with_time_range(self, query, time_range, expected):
             """
             Tests full query
 
@@ -1645,9 +1660,6 @@ class TestHuntingQueryBuilder:
             Then:
                 - returns a query with time_range
             """
-            query = "tableName | where a | where b"
-            time_range = "2 days"
-            expected = "tableName | where Timestamp > ago(2880m) | where a | where b"
             assert HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range) == expected
 
         def test_list_to_filter_values__empty(self):
