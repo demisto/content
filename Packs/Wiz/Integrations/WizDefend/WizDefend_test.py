@@ -1930,6 +1930,7 @@ def test_get_filtered_detections_validation_error(mock_validate):
     # Verify result is the error message
     assert result == "Validation error message"
 
+
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_api")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_detection_url", return_value="https://app.wiz.io/detection/123")
 def test_get_filtered_detections_with_all_params(mock_url, mock_query_api, sample_detection):
@@ -5072,57 +5073,57 @@ def test_max_fetch_buffer_simple(first_fetch_param, test_age_minutes, expected_t
     [
         # Success case
         (
-                str(uuid.uuid4()),  # Valid UUID
-                [{"id": "detection-123", "severity": "CRITICAL"}],  # Valid API response
-                "success",
-                None,
-                True,
-                True,
+            str(uuid.uuid4()),  # Valid UUID
+            [{"id": "detection-123", "severity": "CRITICAL"}],  # Valid API response
+            "success",
+            None,
+            True,
+            True,
         ),
         # Missing detection_id
         (
-                None,  # No detection_id provided
-                None,  # API not called
-                "error",
-                f"Missing required argument: {WizInputParam.DETECTION_ID}",
-                False,
-                False,
+            None,  # No detection_id provided
+            None,  # API not called
+            "error",
+            f"Missing required argument: {WizInputParam.DETECTION_ID}",
+            False,
+            False,
         ),
         # Empty detection_id
         (
-                "",  # Empty detection_id
-                None,  # API not called
-                "error",
-                f"Missing required argument: {WizInputParam.DETECTION_ID}",
-                False,
-                False,
+            "",  # Empty detection_id
+            None,  # API not called
+            "error",
+            f"Missing required argument: {WizInputParam.DETECTION_ID}",
+            False,
+            False,
         ),
         # API returns error string
         (
-                str(uuid.uuid4()),  # Valid UUID
-                "API validation error",  # API returns error string
-                "error",
-                "Error retrieving detection: API validation error",
-                True,
-                False,
+            str(uuid.uuid4()),  # Valid UUID
+            "API validation error",  # API returns error string
+            "error",
+            "Error retrieving detection: API validation error",
+            True,
+            False,
         ),
         # API returns empty list
         (
-                str(uuid.uuid4()),  # Valid UUID
-                [],  # Empty response
-                "success",
-                None,
-                True,
-                True,
+            str(uuid.uuid4()),  # Valid UUID
+            [],  # Empty response
+            "success",
+            None,
+            True,
+            True,
         ),
         # Exception during API call
         (
-                str(uuid.uuid4()),  # Valid UUID
-                Exception("Connection timeout"),  # Exception thrown
-                "error",
-                "An error occurred while retrieving detection: Connection timeout",
-                True,
-                False,
+            str(uuid.uuid4()),  # Valid UUID
+            Exception("Connection timeout"),  # Exception thrown
+            "error",
+            "An error occurred while retrieving detection: Connection timeout",
+            True,
+            False,
         ),
     ],
 )
@@ -5157,8 +5158,7 @@ def test_get_single_detection_all_cases(
         # Verify API call behavior
         if should_call_api:
             mock_get_filtered.assert_called_once_with(
-                detection_id=detection_id,
-                detection_type=[DetectionType.GENERATED_THREAT, DetectionType.DID_NOT_GENERATE_THREAT]
+                detection_id=detection_id, detection_type=[DetectionType.GENERATED_THREAT, DetectionType.DID_NOT_GENERATE_THREAT]
             )
         else:
             mock_get_filtered.assert_not_called()

@@ -3373,9 +3373,9 @@ def get_single_detection():
         if not detection_id:
             return log_and_return_error(f"Missing required argument: {WizInputParam.DETECTION_ID}")
 
-        detection = get_filtered_detections(detection_id=detection_id,
-                                            detection_type=[DetectionType.GENERATED_THREAT,
-                                                            DetectionType.DID_NOT_GENERATE_THREAT])
+        detection = get_filtered_detections(
+            detection_id=detection_id, detection_type=[DetectionType.GENERATED_THREAT, DetectionType.DID_NOT_GENERATE_THREAT]
+        )
 
         if isinstance(detection, str):
             return log_and_return_error(f"Error retrieving detection: {detection}")
