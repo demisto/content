@@ -4,6 +4,7 @@ from CSVFeedApiModule import *
 
 def main():  # pragma: no cover
     try:
+        a = 5
         params = {k: v for k, v in demisto.params().items() if v is not None}
         args = demisto.args()
         params = params | args
