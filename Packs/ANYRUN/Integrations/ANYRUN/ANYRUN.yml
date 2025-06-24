@@ -1,4 +1,7 @@
 category: Forensics & Malware Analysis
+sectionOrder:
+  - Connect
+  - Collect
 commonfields:
   id: ANYRUN
   version: -1
@@ -339,6 +342,7 @@ script:
       - Windows 7
       - Windows 8.1
       - Windows 10
+      - Windows 11
     - auto: PREDEFINED
       defaultValue: complete
       description: Environment preset type.
@@ -369,13 +373,14 @@ script:
       - owner
       - bylink
       - public
+      - byteam
     description: Submit a file or url for analysis.
     name: anyrun-run-analysis
     outputs:
     - contextPath: ANYRUN.Task.ID
       description: ID of the task created to analyze the submission.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   subtype: python3
   runonce: false
   script: '-'
