@@ -1,8 +1,6 @@
-import json
 from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections.abc import Callable
 from typing import Any
 import requests
@@ -29,25 +27,24 @@ GET_ONBOARDING_ACCOUNTS = "/onboarding/accounts"
 GET_ONBOARDING_CONNECTORS = "/onboarding/connectors"
 
 
-class HealthStatus(str, Enum):
+class HealthStatus(str):
     ERROR = "ERROR"
     WARNING = "WARNING"
     OK = "ok"
 
 
-class ErrorType(str, Enum):
-    CONNECTIVITY_ERROR = "ConnectivityError"
-    PERMISSION_ERROR = "PermissionError"
-    INTERNAL_ERROR = "InternalError"
+class ErrorType(str):
+    CONNECTIVITY_ERROR = "Connectivity Error"
+    PERMISSION_ERROR = "Permission Error"
+    INTERNAL_ERROR = "Internal Error"
 
 
 class HealthCheckError:
-    def __init__(self, account_id: str, connector_id: str, message: str, error_type: ErrorType):
+    def __init__(self, account_id: str, connector_id: str, message: str, error_type: str):
         self.account_id = account_id
         self.connector_id = connector_id
-        self.message = f"{account_id}: {message}"
+        self.message = f"[{account_id}] {message}"
         self.error_type = error_type
-        
         # Determine classification based on error type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
@@ -69,8 +66,7 @@ class HealthCheck:
         self.connector_id = connector_id
 
     def error(self, error: HealthCheckError | list[HealthCheckError]) -> None:
-        """
-        Adds a health check error or list of errors to the results.
+        """Adds a health check error or list of errors to the results.
 
         Args:
             error (HealthCheckError | list[HealthCheckError]): The error(s) to add to the results.
@@ -95,7 +91,7 @@ class HealthCheck:
             return EntryType.ERROR if HealthStatus.ERROR in [error.classification for error in self.errors] else EntryType.WARNING
 
         if not self.errors:
-            return HealthStatus.OK.value
+            return HealthStatus.OK
 
         error_list = [error.to_dict() for error in self.errors]
         return CommandResults(entry_type=_calculate_severity(), content_format=EntryFormat.JSON, raw_response=error_list)
@@ -124,13 +120,14 @@ def get_connector_id() -> str | None:
 
 
 def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
-    """
-    Retrieves valid credentials for the specified cloud provider from CTS.
+    """Retrieves valid credentials for the specified cloud provider from CTS.
+
     Args:
         cloud_type (str): Cloud provider type ("GCP", "AWS", "AZURE", "OCI").
         account_id (str): Cloud account identifier - GCP: Project ID, AWS: Account ID,
-                          AZURE: Subscription ID
+                         AZURE: Subscription ID
         scopes (list, optional): Authorization scopes. Defaults to None.
+
     Returns:
         dict: Credentials dictionary for the specified cloud provider. The structure varies by cloud type:
             - For all providers:
@@ -143,6 +140,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
                 - 'key' (str): AccessKeyId
             - For AZURE:
                 - 'access_token' (str): JWT
+
     Raises:
         DemistoException: If token retrieval fails or response parsing fails.
         ValueError: If account_id is not provided.
@@ -152,7 +150,6 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         raise ValueError(f"Missing {name} for {cloud_type}")
 
     cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
-    demisto.info(f"Cloud credentials request context: {cloud_info_context}")
 
     request_data = {
         "connector_id": cloud_info_context.get("connectorID"),
@@ -165,33 +162,36 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         request_data["scopes"] = scopes
 
     demisto.info(f"Request data for credentials retrieval: {request_data}")
-
-    response = demisto._platformAPICall(path=GET_CTS_ACCOUNTS_TOKEN, method="POST", data={"request_data": request_data})
-
-    status_code = response.get("status")
-    if status_code != 200:
-        error_detail = response.get("data", "No error message provided")
-        raise DemistoException(
-            f"Failed to get credentials from CTS for {cloud_type}. Status code: {status_code}. Error: {error_detail}"
-        )
+    response = None
 
     try:
-        res_json = json.loads(response["data"])
+        response = demisto._platformAPICall(path=GET_CTS_ACCOUNTS_TOKEN, method="POST", data={"request_data": request_data})
+        raw_data = response.get("data")
+
+        if not raw_data:
+            raise ValueError(f"No 'data' field in CTS response: {response}")
+
+        if isinstance(raw_data, str):
+            res_json = json.loads(raw_data)
+        elif isinstance(raw_data, dict):
+            res_json = raw_data
+        else:
+            raise ValueError(f"Unexpected type for response['data']: {type(raw_data)}")
+
         credentials = res_json.get("data")
         if not credentials:
             raise KeyError("Did not receive any credentials from CTS.")
+
         expiration_time = credentials.get("expiration_time")
-        demisto.info(f"Received credentials. Expiration time: {expiration_time}")
+        demisto.info(f"{account_id}: Received credentials. Expiration time: {expiration_time}")
         return credentials
-    except (
-        json.JSONDecodeError,
-        KeyError,
-        TypeError,
-    ) as e:
-        raise DemistoException(f"Failed to parse credentials from CTS response for {cloud_type}.") from e
+
+    except Exception as e:
+        demisto.debug(f"{account_id}: Error while retrieving credentials: {str(e)}. Response: {response}")
+        raise DemistoException(f"Failed to get credentials from CTS: {str(e)}. Response: {response}")
 
 
-def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> list:
+def get_accounts_by_connector_id(connector_id: str, max_results: int | None = None) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
     Args:
@@ -202,21 +202,24 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
     """
     all_accounts = []
     next_token = ""
-    while True:
-        params = {"entity_type": "connector", "entity_id": connector_id}
-        if next_token:
-            params["next_token"] = next_token
+    try:
+        while True:
+            params = {"entity_type": "connector", "entity_id": connector_id}
+            if next_token:
+                params["next_token"] = next_token
 
-        result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
-        res_json = json.loads(result["data"])
+            result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
+            res_json = json.loads(result["data"])
+            accounts = res_json.get("values", [])
+            all_accounts.extend(accounts)
+            next_token = res_json.get("next_token", "")
 
-        accounts = res_json.get("values", [])
-        all_accounts.extend(accounts)
+            demisto.debug(f"Fetched {len(accounts)} accounts")
 
-        next_token = res_json.get("next_token", "")
-        demisto.debug(f"Fetched {len(accounts)} accounts")
-        if not next_token or (max_results and len(all_accounts) >= max_results):
-            break
+            if not next_token or (max_results and len(all_accounts) >= max_results):
+                break
+    except Exception as e:
+        demisto.error(f"Failed to fetch accounts for connector {connector_id}: {str(e)}")
 
     if max_results:
         return all_accounts[:max_results]
@@ -224,16 +227,18 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
 
 
 def _check_account_permissions(
-    account: dict, connector_id: str, permission_check_func: Callable[[str, str], HealthCheckError]
+    account: dict, connector_id: str, shared_creds: dict, permission_check_func: Callable[[dict, str, str], HealthCheckError]
 ) -> HealthCheckError | None:
-    """
-    Helper function to check permissions for a single account.
+    """Helper function to check permissions for a single account.
+
     Args:
         account (dict): Account information.
         connector_id (str): The connector ID.
+        shared_creds (dict): Pre-fetched credentials to reuse across all accounts.
         permission_check_func (callable): Function that implements the permission check.
+
     Returns:
-        Any: Result of the permission check.
+        HealthCheckError | None: Result of the permission check, or None if account has no ID.
     """
     account_id = account.get("account_id")
     if not account_id:
@@ -241,7 +246,7 @@ def _check_account_permissions(
         return None
 
     try:
-        return permission_check_func(account_id, connector_id)
+        return permission_check_func(shared_creds, account_id, connector_id)
     except Exception as e:
         demisto.error(f"Error checking permissions for account {account_id}: {str(e)}")
         return HealthCheckError(
@@ -253,40 +258,64 @@ def _check_account_permissions(
 
 
 def run_permissions_check_for_accounts(
-    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: None | int = 10
+    connector_id: str, cloud_type: str, permission_check_func: Callable[[dict, str, str], Any]
 ) -> str | CommandResults:
-    """
-    Runs a permission check function for each account associated with a connector concurrently.
+    """Runs a permission check function for each account associated with a connector sequentially.
+
     Args:
         connector_id (str): The ID of the connector to fetch accounts for.
+        cloud_type (str): The cloud provider type (AWS, GCP, AZURE, OCI).
         permission_check_func (callable): Function that implements the permission check.
-                                         Should accept account_id and connector_id parameters
-                                         and return a HealthCheck.
-        max_workers (int, optional): Maximum number of worker threads. Defaults to 10.
+                                        Should accept shared_creds, account_id and connector_id parameters
+                                        and return a HealthCheckError or None.
+
     Returns:
-        Either "ok" string or CommandResults with appropriate EntryType
+        str | CommandResults: Either "ok" string or CommandResults with appropriate EntryType
+
     Raises:
         DemistoException: If the account retrieval fails.
     """
     accounts = get_accounts_by_connector_id(connector_id)
-    demisto.debug(f"Fetched the following accounts: {accounts}")
+    demisto.debug(f"Processing {len(accounts)} accounts for {cloud_type}")
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
-        return HealthStatus.OK.value
+        return HealthStatus.OK
 
     health_check_result = HealthCheck(connector_id)
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_account = {
-            executor.submit(_check_account_permissions, account, connector_id, permission_check_func): account
-            for account in accounts
-        }
 
-        for future in as_completed(future_to_account):
-            result = future.result()
-            if result is not None:
-                health_check_result.error(result)
+    # Get credentials once for all accounts since they share the same creds
+    try:
+        account_id = next((a["account_id"] for a in accounts if a.get("account_id")), None)
+        if not account_id:
+            raise DemistoException("No valid account_id found in accounts")
 
+        shared_creds = get_cloud_credentials(cloud_type, account_id) # todo need to add expiration
+        demisto.debug(f"Retrieved shared {cloud_type} credentials for all accounts")
+
+    except Exception as e:
+        error_msg = f"Failed to retrieve {cloud_type} credentials for connector {connector_id}: {str(e)}"
+        demisto.error(error_msg)
+        health_check_result.error(
+            HealthCheckError(
+                account_id="",  # No specific account since this is a connector-level error
+                connector_id=connector_id,
+                message=error_msg,
+                error_type=ErrorType.CONNECTIVITY_ERROR,
+            )
+        )
+        return health_check_result.summarize()
+
+    # Process accounts sequentially
+    for i, account in enumerate(accounts, 1):
+        account_id = account.get("account_id", "unknown")
+        demisto.debug(f"Processing account {i}/{len(accounts)}: {account_id}")
+
+        result = _check_account_permissions(account, connector_id, shared_creds, permission_check_func)
+        if result is not None:
+            health_check_result.error(result)
+
+    demisto.info(f"Completed processing {len(accounts)} accounts")
     return health_check_result.summarize()
 
 
@@ -308,5 +337,6 @@ def get_proxydome_token() -> str:
     params = {"audience": "cortex.platform.local"}
     headers = {"Metadata-Flavor": "Google"}
     proxies = {"http": "", "https": ""}
+
     response = requests.get(url, headers=headers, params=params, proxies=proxies)
     return response.text

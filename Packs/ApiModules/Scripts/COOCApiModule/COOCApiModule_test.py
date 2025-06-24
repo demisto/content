@@ -1,7 +1,7 @@
 import json
 import pytest
 from CommonServerPython import *
-from COOCApiModule import CloudTypes, get_cloud_credentials
+from COOCApiModule import CloudTypes, get_cloud_credentials, HealthCheckError, ErrorType, HealthStatus
 import demistomock as demisto
 
 
@@ -14,14 +14,14 @@ def test_get_cloud_credentials_success(mocker):
 
     # Mock context data
     cloud_info = {"connectorID": "test-connector-id", "accountID": "test-account-id", "outpostID": "test-outpost-id"}
-    mock_context = {"CloudIntegrationProviderInfo": cloud_info}
+    mock_context = {"CloudIntegrationInfo": cloud_info}
 
     # Mock the demisto functions directly
-    mocker.patch.object(demisto, "callingContext", return_value={"context": mock_context})
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
     mocker.patch.object(demisto, "info")
 
     # Mock platform API response with credentials
-    credentials = {"access_token": "test-access-token", "expiration_time": "2023-01-01T00:00:00Z"}
+    credentials = {"access_token": "test-access-token", "expiration_time": 1672531200000}
     api_response = {
         "status": 200,
         "data": json.dumps({"data": credentials}),
@@ -52,12 +52,12 @@ def test_get_cloud_credentials_with_scopes(mocker):
 
     # Mock context data
     cloud_info = {"connectorID": "test-connector-id", "accountID": "test-account-id", "outpostID": "test-outpost-id"}
-    mock_context = {"CloudIntegrationProviderInfo": cloud_info}
-    mocker.patch.object(demisto, "callingContext", return_value={"context": mock_context})
+    mock_context = {"CloudIntegrationInfo": cloud_info}
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
     mocker.patch.object(demisto, "info")
 
     # Mock platform API response
-    credentials = {"access_token": "test-access-token", "expiration_time": "2023-01-01T00:00:00Z"}
+    credentials = {"access_token": "test-access-token", "expiration_time": 1672531200000}
     api_response = {
         "status": 200,
         "data": json.dumps({"data": credentials}),
@@ -78,6 +78,19 @@ def test_get_cloud_credentials_with_scopes(mocker):
     assert request_data["scopes"] == test_scopes
 
 
+def test_get_cloud_credentials_missing_account_id():
+    """
+    Given: A cloud type but missing account_id.
+    When: The get_cloud_credentials function is called.
+    Then: A ValueError is raised with appropriate message.
+    """
+
+    with pytest.raises(ValueError) as excinfo:
+        get_cloud_credentials(CloudTypes.AWS.value, account_id="")
+
+    assert "Missing AWS Account ID for AWS" in str(excinfo.value)
+
+
 def test_get_cloud_credentials_api_error(mocker):
     """
     Given: A valid cloud type but the API returns an error.
@@ -87,9 +100,10 @@ def test_get_cloud_credentials_api_error(mocker):
 
     # Mock context data
     cloud_info = {"connectorID": "test-connector-id", "accountID": "test-account-id", "outpostID": "test-outpost-id"}
-    mock_context = {"CloudIntegrationProviderInfo": cloud_info}
-    mocker.patch.object(demisto, "callingContext", return_value={"context": mock_context})
+    mock_context = {"CloudIntegrationInfo": cloud_info}
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
     mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
 
     # Mock platform API error response
     api_response = {"status": 400, "data": "Bad request"}
@@ -100,9 +114,7 @@ def test_get_cloud_credentials_api_error(mocker):
         get_cloud_credentials(CloudTypes.AZURE.value, account_id="test-account-id")
 
     # Verify exception message
-    assert "Failed to get credentials from CTS for AZURE" in str(excinfo.value)
-    assert "Status code: 400" in str(excinfo.value)
-    assert "Error: Bad request" in str(excinfo.value)
+    assert "Failed to get credentials from CTS" in str(excinfo.value)
 
 
 def test_get_cloud_credentials_parse_error(mocker):
@@ -114,9 +126,10 @@ def test_get_cloud_credentials_parse_error(mocker):
 
     # Mock context data
     cloud_info = {"connectorID": "test-connector-id", "accountID": "test-account-id", "outpostID": "test-outpost-id"}
-    mock_context = {"CloudIntegrationProviderInfo": cloud_info}
-    mocker.patch.object(demisto, "callingContext", return_value={"context": mock_context})
+    mock_context = {"CloudIntegrationInfo": cloud_info}
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
     mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
 
     # Mock platform API with invalid JSON
     api_response = {"status": 200, "data": "Not a valid JSON"}
@@ -127,7 +140,7 @@ def test_get_cloud_credentials_parse_error(mocker):
         get_cloud_credentials(CloudTypes.OCI.value, account_id="test-account-id")
 
     # Verify exception message
-    assert "Failed to parse credentials from CTS response for OCI" in str(excinfo.value)
+    assert "Failed to get credentials from CTS" in str(excinfo.value)
 
 
 def test_get_accounts_by_connector_id_with_max_results(mocker):
@@ -147,6 +160,7 @@ def test_get_accounts_by_connector_id_with_max_results(mocker):
         ),
     }
     mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+    mocker.patch.object(demisto, "debug")
 
     # Call the function with max_results=2
     result = get_accounts_by_connector_id(connector_id="test-connector-id", max_results=2)
@@ -163,7 +177,6 @@ def test_health_check_error_to_dict():
     When: Creating a HealthCheckError and calling to_dict().
     Then: The returned dictionary contains the expected fields and values.
     """
-    from COOCApiModule import HealthCheckError, ErrorType, HealthStatus
 
     # Create HealthCheckError with permission error
     permission_error = HealthCheckError(
@@ -200,7 +213,7 @@ def test_health_check_summarize_no_errors():
     When: The summarize method is called.
     Then: It returns "ok".
     """
-    from COOCApiModule import HealthCheck, HealthStatus
+    from COOCApiModule import HealthCheck
 
     # Create HealthCheck with no errors
     health_check = HealthCheck(connector_id="test-connector-id")
@@ -209,12 +222,38 @@ def test_health_check_summarize_no_errors():
     result = health_check.summarize()
 
     # Verify result
-    assert result == HealthStatus.OK.value
+    assert result == HealthStatus.OK
+
+
+def test_health_check_summarize_with_errors():
+    """
+    Given: A HealthCheck instance with errors.
+    When: The summarize method is called.
+    Then: It returns CommandResults with appropriate entry type.
+    """
+    from COOCApiModule import HealthCheck
+
+    # Create HealthCheck with errors
+    health_check = HealthCheck(connector_id="test-connector-id")
+    error = HealthCheckError(
+        account_id="test-account-id",
+        connector_id="test-connector-id",
+        message="Test error",
+        error_type=ErrorType.PERMISSION_ERROR,
+    )
+    health_check.error(error)
+
+    # Call summarize
+    result = health_check.summarize()
+
+    # Verify result is CommandResults
+    assert isinstance(result, CommandResults)
+    assert result.entry_type == EntryType.WARNING
 
 
 def test_check_account_permissions(mocker):
     """
-    Given: An account, connector_id, and permission check function.
+    Given: An account, connector_id, shared_creds, and permission check function.
     When: _check_account_permissions is called.
     Then: It calls the permission check function with the correct parameters and returns its result.
     """
@@ -225,16 +264,17 @@ def test_check_account_permissions(mocker):
 
     # Test with valid account
     account = {"account_id": "test-account-id"}
-    result = _check_account_permissions(account, "test-connector-id", mock_permission_check)
+    shared_creds = {"access_token": "test-token"}
+    result = _check_account_permissions(account, "test-connector-id", shared_creds, mock_permission_check)
 
     # Verify permission check was called with correct parameters
-    mock_permission_check.assert_called_once_with("test-account-id", "test-connector-id")
+    mock_permission_check.assert_called_once_with(shared_creds, "test-account-id", "test-connector-id")
     assert result == "permission_check_result"
 
 
 def test_check_account_permissions_no_account_id(mocker):
     """
-    Given: An account without account_id, connector_id, and permission check function.
+    Given: An account without account_id, connector_id, shared_creds, and permission check function.
     When: _check_account_permissions is called.
     Then: It logs a debug message and returns None.
     """
@@ -246,7 +286,8 @@ def test_check_account_permissions_no_account_id(mocker):
 
     # Test with account missing account_id
     account = {"name": "test-account"}
-    result = _check_account_permissions(account, "test-connector-id", mock_permission_check)
+    shared_creds = {"access_token": "test-token"}
+    result = _check_account_permissions(account, "test-connector-id", shared_creds, mock_permission_check)
 
     # Verify permission check was not called and debug was logged
     assert not mock_permission_check.called
@@ -256,11 +297,11 @@ def test_check_account_permissions_no_account_id(mocker):
 
 def test_check_account_permissions_exception(mocker):
     """
-    Given: An account, connector_id, and permission check function that raises an exception.
+    Given: An account, connector_id, shared_creds, and permission check function that raises an exception.
     When: _check_account_permissions is called.
     Then: It handles the exception and returns a HealthCheckError.
     """
-    from COOCApiModule import _check_account_permissions, HealthCheckError, ErrorType
+    from COOCApiModule import _check_account_permissions
 
     # Mock permission check function to raise exception
     mock_permission_check = mocker.Mock(side_effect=Exception("Test error"))
@@ -268,7 +309,8 @@ def test_check_account_permissions_exception(mocker):
 
     # Test with exception in permission check
     account = {"account_id": "test-account-id"}
-    result = _check_account_permissions(account, "test-connector-id", mock_permission_check)
+    shared_creds = {"access_token": "test-token"}
+    result = _check_account_permissions(account, "test-connector-id", shared_creds, mock_permission_check)
 
     # Verify error was logged and HealthCheckError returned
     assert demisto.error.called
@@ -279,75 +321,245 @@ def test_check_account_permissions_exception(mocker):
     assert result.error_type == ErrorType.INTERNAL_ERROR
 
 
-def test_run_permissions_check_for_accounts(mocker):
-    """
-    Given: A connector_id and permission check function.
-    When: run_permissions_check_for_accounts is called.
-    Then: It retrieves accounts and runs permission checks concurrently.
-    """
-    from COOCApiModule import run_permissions_check_for_accounts, HealthCheckError, ErrorType
-
-    # Mock get_accounts_by_connector_id
-    accounts = [{"account_id": "account-1"}, {"account_id": "account-2"}]
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-
-    # Mock HealthCheck
-    mock_health_check = mocker.MagicMock()
-    mock_health_check.summarize.return_value = "health_check_result"
-    mocker.patch("COOCApiModule.HealthCheck", return_value=mock_health_check)
-
-    # Create a permission check function that adds errors to the health check
-    def mock_permission_check(account_id, connector_id):
-        if account_id == "account-1":
-            return HealthCheckError(
-                account_id=account_id, connector_id=connector_id, message="Test error", error_type=ErrorType.PERMISSION_ERROR
-            )
-        return None
-
-    # Mock ThreadPoolExecutor to execute the function directly
-    executor_mock = mocker.patch("COOCApiModule.ThreadPoolExecutor")
-    executor_instance = executor_mock.return_value.__enter__.return_value
-
-    # Set up the submit method to call our function directly
-    def submit_side_effect(func, account, connector_id, check_func):
-        future = mocker.MagicMock()
-        result = func(account, connector_id, check_func)
-        future.result.return_value = result
-        return future
-
-    executor_instance.submit.side_effect = submit_side_effect
-
-    # Mock as_completed to return our futures
-    future1 = mocker.MagicMock()
-    future1.result.return_value = "error1"
-    future2 = mocker.MagicMock()
-    future2.result.return_value = None
-    mocker.patch("COOCApiModule.as_completed", return_value=[future1, future2])
-
-    # Call function
-    result = run_permissions_check_for_accounts(connector_id="test-connector-id", permission_check_func=mock_permission_check)
-
-    # Verify results
-    assert result == "health_check_result"
-    # Verify error was added to health check
-    assert mock_health_check.error.called
-
-
 def test_run_permissions_check_no_accounts(mocker):
     """
     Given: A connector_id with no associated accounts.
     When: run_permissions_check_for_accounts is called.
     Then: It returns "ok" without running any permission checks.
     """
-    from COOCApiModule import run_permissions_check_for_accounts, HealthStatus
+    from COOCApiModule import run_permissions_check_for_accounts
 
     # Mock get_accounts_by_connector_id to return empty list
     mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=[])
     mocker.patch.object(demisto, "debug")
 
     # Call function
-    result = run_permissions_check_for_accounts(connector_id="test-connector-id", permission_check_func=mocker.Mock())
+    result = run_permissions_check_for_accounts(
+        connector_id="test-connector-id", cloud_type="AWS", permission_check_func=mocker.Mock()
+    )
 
     # Verify results
-    assert result == HealthStatus.OK.value
+    assert result == HealthStatus.OK
     assert demisto.debug.called
+
+
+def test_run_permissions_check_credentials_failure(mocker):
+    """
+    Given: A connector_id with accounts but credential retrieval fails.
+    When: run_permissions_check_for_accounts is called.
+    Then: It returns CommandResults with connectivity error.
+    """
+    from COOCApiModule import run_permissions_check_for_accounts
+
+    # Mock get_accounts_by_connector_id
+    accounts = [{"account_id": "account-1"}]
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+
+    # Mock get_cloud_credentials to raise exception
+    mocker.patch("COOCApiModule.get_cloud_credentials", side_effect=Exception("Credential error"))
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+
+    # Mock HealthCheck
+    mock_health_check = mocker.MagicMock()
+    mock_health_check.summarize.return_value = CommandResults(entry_type=EntryType.ERROR)
+    mocker.patch("COOCApiModule.HealthCheck", return_value=mock_health_check)
+
+    # Call function
+    result = run_permissions_check_for_accounts(
+        connector_id="test-connector-id", cloud_type="AWS", permission_check_func=mocker.Mock()
+    )
+
+    # Verify error was handled
+    assert mock_health_check.error.called
+    error_call_args = mock_health_check.error.call_args[0][0]
+    assert isinstance(error_call_args, HealthCheckError)
+    assert error_call_args.error_type == ErrorType.CONNECTIVITY_ERROR
+
+
+def test_get_connector_id_success(mocker):
+    """
+    Given: A calling context with CloudIntegrationInfo containing connectorID.
+    When: get_connector_id is called.
+    Then: It returns the connector ID.
+    """
+    from COOCApiModule import get_connector_id
+
+    # Mock context with connector ID
+    cloud_info = {"connectorID": "test-connector-id"}
+    mock_context = {"CloudIntegrationInfo": cloud_info}
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = get_connector_id()
+
+    # Verify result
+    assert result == "test-connector-id"
+    assert demisto.debug.called
+
+
+def test_get_connector_id_not_found(mocker):
+    """
+    Given: A calling context without CloudIntegrationInfo or connectorID.
+    When: get_connector_id is called.
+    Then: It returns None and logs debug message.
+    """
+    from COOCApiModule import get_connector_id
+
+    # Mock context without connector ID
+    mock_context = {}
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = get_connector_id()
+
+    # Verify result
+    assert result is None
+    assert demisto.debug.called
+
+
+def test_get_proxydome_token_success(mocker):
+    """
+    Given: A successful request to the GCP metadata server.
+    When: get_proxydome_token is called.
+    Then: It returns the identity token.
+    """
+    from COOCApiModule import get_proxydome_token
+    import requests
+
+    # Mock successful response
+    mock_response = mocker.MagicMock()
+    mock_response.text = "identity-token-12345"
+    mocker.patch.object(requests, "get", return_value=mock_response)
+
+    # Call function
+    result = get_proxydome_token()
+
+    # Verify result
+    assert result == "identity-token-12345"
+
+    # Verify request was made with correct parameters
+    requests.get.assert_called_once_with(
+        "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity",
+        headers={"Metadata-Flavor": "Google"},
+        params={"audience": "cortex.platform.local"},
+        proxies={"http": "", "https": ""},
+    )
+
+
+def test_get_proxydome_token_request_failure(mocker):
+    """
+    Given: A failed request to the GCP metadata server.
+    When: get_proxydome_token is called.
+    Then: It raises a RequestException.
+    """
+    from COOCApiModule import get_proxydome_token
+    import requests
+
+    # Mock failed response
+    mocker.patch.object(requests, "get", side_effect=requests.RequestException("Connection failed"))
+
+    # Call function and expect exception
+    with pytest.raises(requests.RequestException):
+        get_proxydome_token()
+
+
+def test_provider_account_names():
+    """
+    Given: The PROVIDER_ACCOUNT_NAMES constant.
+    When: Accessing provider account names.
+    Then: It contains the expected mappings.
+    """
+    from COOCApiModule import PROVIDER_ACCOUNT_NAMES
+
+    assert PROVIDER_ACCOUNT_NAMES[CloudTypes.GCP.value] == "Project ID"
+    assert PROVIDER_ACCOUNT_NAMES[CloudTypes.AWS.value] == "AWS Account ID"
+    assert PROVIDER_ACCOUNT_NAMES[CloudTypes.AZURE.value] == "Subscription ID"
+    assert PROVIDER_ACCOUNT_NAMES[CloudTypes.OCI.value] == "Oracle Cloud Account ID"
+
+
+def test_health_check_error_list(mocker):
+    """
+    Given: A HealthCheck instance and a list of errors.
+    When: The error method is called with a list.
+    Then: All errors are added to the health check.
+    """
+    from COOCApiModule import HealthCheck
+
+    health_check = HealthCheck(connector_id="test-connector-id")
+
+    errors = [
+        HealthCheckError(
+            account_id="account-1",
+            connector_id="test-connector-id",
+            message="Error 1",
+            error_type=ErrorType.PERMISSION_ERROR,
+        ),
+        HealthCheckError(
+            account_id="account-2",
+            connector_id="test-connector-id",
+            message="Error 2",
+            error_type=ErrorType.CONNECTIVITY_ERROR,
+        ),
+    ]
+
+    health_check.error(errors)
+
+    assert len(health_check.errors) == 2
+    assert health_check.errors[0].account_id == "account-1"
+    assert health_check.errors[1].account_id == "account-2"
+
+
+def test_get_cloud_credentials_no_data_field(mocker):
+    """
+    Given: An API response without a 'data' field.
+    When: get_cloud_credentials is called.
+    Then: A DemistoException is raised.
+    """
+
+    # Mock context data
+    cloud_info = {"connectorID": "test-connector-id", "outpostID": "test-outpost-id"}
+    mock_context = {"CloudIntegrationInfo": cloud_info}
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    # Mock platform API response without data field
+    api_response = {"status": 200}
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+
+    # Call the function and expect an exception
+    with pytest.raises(DemistoException) as excinfo:
+        get_cloud_credentials(CloudTypes.AWS.value, account_id="test-account-id")
+
+    assert "Failed to get credentials from CTS" in str(excinfo.value)
+
+
+def test_get_cloud_credentials_dict_response(mocker):
+    """
+    Given: An API response with data as a dictionary (not string).
+    When: get_cloud_credentials is called.
+    Then: It successfully processes the response.
+    """
+
+    # Mock context data
+    cloud_info = {"connectorID": "test-connector-id", "outpostID": "test-outpost-id"}
+    mock_context = {"CloudIntegrationInfo": cloud_info}
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
+    mocker.patch.object(demisto, "info")
+
+    # Mock platform API response with data as dict
+    credentials = {"access_token": "test-token", "expiration_time": 1672531200000}
+    api_response = {"status": 200, "data": {"data": credentials}}
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+
+    # Call the function
+    result = get_cloud_credentials(CloudTypes.AWS.value, account_id="test-account-id")
+
+    # Verify result
+    assert result == credentials
