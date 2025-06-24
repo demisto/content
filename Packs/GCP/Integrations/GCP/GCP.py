@@ -895,7 +895,7 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #     return CommandResults(readable_output=hr)
 
 
-def _get_commands_for_requirement(requirement: str, req_type: str) -> str:
+def _get_commands_for_requirement(requirement: str, req_type: str) -> list[str]:
     """
     Find which commands require a specific API or permission.
 
@@ -913,7 +913,7 @@ def _get_commands_for_requirement(requirement: str, req_type: str) -> str:
         if (req_type == "apis" and requirement == service.api_endpoint)
         or (req_type == "permissions" and requirement in permissions)
     ]
-    return ", ".join(commands) if commands else "unknown commands"
+    return commands or ["unknown commands"]
 
 
 def validate_apis_enabled(creds: Credentials, project_id: str, apis: list[str]) -> list[str]:
@@ -1047,7 +1047,7 @@ def check_required_permissions(
             if missing:
                 for perm in missing:
                     commands = _get_commands_for_requirement(perm, "permissions")
-                    message = f"'{perm}' missing for {commands}"
+                    message = f"'{perm}' missing for {"command" if len(commands) == 1 else "commands"}: {", ".join(commands)}"
                     errors.append(message)
         except Exception as e:
             error_message = f"Failed to test permissions for GCP integration: {str(e)}"
@@ -1063,7 +1063,7 @@ def check_required_permissions(
 
     for api in validate_apis_enabled(creds, project_id, apis):
         commands = _get_commands_for_requirement(api, "apis")
-        message = f"API '{api}' disabled, required for {commands}"
+        message = f"API '{api}' disabled, required for {"command" if len(commands) == 1 else "commands"}: {", ".join(commands)}"
         errors.append(message)
 
     if errors:
