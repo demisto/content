@@ -474,7 +474,6 @@ def get_alert_command(client: MsClient, args: dict):
                 "State": properties.get("status"),
                 "RemediationSteps": properties.get("remediationSteps"),
                 "VendorName": properties.get("vendorName"),
-                "AlertName": properties.get("alertName"),
                 "ID": alert.get("name"),
                 "ExtendedProperties": properties.get("extendedProperties"),
                 "Entities": properties.get("entities"),
@@ -583,9 +582,9 @@ def list_alerts_command(client: MsClient, args: dict):
                     "CompromisedEntity": properties.get("compromisedEntity"),
                     "Description": properties.get("description"),
                     "ID": alert.get("name"),
-                    "DetectedTime": alert.get("timeGeneratedUtc"),
-                    "ReportedSeverity": alert.get("severity"),
-                    "State": alert.get("status"),
+                    "DetectedTime": properties.get("timeGeneratedUtc"),
+                    "ReportedSeverity": properties.get("severity"),
+                    "State": properties.get("status"),
                 }
             )
 
