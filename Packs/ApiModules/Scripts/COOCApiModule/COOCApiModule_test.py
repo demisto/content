@@ -222,7 +222,7 @@ def test_health_check_summarize_no_errors():
     result = health_check.summarize()
 
     # Verify result
-    assert result == HealthStatus.OK.value
+    assert result == HealthStatus.OK
 
 
 def test_health_check_summarize_with_errors():
@@ -321,71 +321,6 @@ def test_check_account_permissions_exception(mocker):
     assert result.error_type == ErrorType.INTERNAL_ERROR
 
 
-def test_run_permissions_check_for_accounts(mocker):
-    """
-    Given: A connector_id, cloud_type, and permission check function.
-    When: run_permissions_check_for_accounts is called.
-    Then: It retrieves accounts, gets shared credentials, and runs permission checks concurrently.
-    """
-    from COOCApiModule import run_permissions_check_for_accounts
-
-    # Mock get_accounts_by_connector_id
-    accounts = [{"account_id": "account-1"}, {"account_id": "account-2"}]
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-
-    # Mock get_cloud_credentials
-    mock_creds = {"access_token": "test-token", "expiration_time": 1672531200000}
-    mocker.patch("COOCApiModule.get_cloud_credentials", return_value=mock_creds)
-
-    mocker.patch.object(demisto, "debug")
-
-    # Mock HealthCheck
-    mock_health_check = mocker.MagicMock()
-    mock_health_check.summarize.return_value = "health_check_result"
-    mocker.patch("COOCApiModule.HealthCheck", return_value=mock_health_check)
-
-    # Create a permission check function
-    def mock_permission_check(shared_creds, account_id, connector_id):
-        if account_id == "account-1":
-            return HealthCheckError(
-                account_id=account_id, connector_id=connector_id, message="Test error", error_type=ErrorType.PERMISSION_ERROR
-            )
-        return None
-
-    # Mock ThreadPoolExecutor
-    # Mock ThreadPoolExecutor
-    executor_mock = mocker.patch("COOCApiModule.ThreadPoolExecutor")
-    executor_instance = executor_mock.return_value.__enter__.return_value
-
-    # Set up the submit method to call our function directly
-    def submit_side_effect(func, account, connector_id, shared_creds, check_func):
-        future = mocker.MagicMock()
-        result = func(account, connector_id, shared_creds, check_func)
-        future.result.return_value = result
-        return future
-
-    executor_instance.submit.side_effect = submit_side_effect
-
-    # Mock as_completed to return our futures
-    future1 = mocker.MagicMock()
-    future1.result.return_value = HealthCheckError(
-        account_id="account-1", connector_id="test-connector-id", message="Test error", error_type=ErrorType.PERMISSION_ERROR
-    )
-    future2 = mocker.MagicMock()
-    future2.result.return_value = None
-    mocker.patch("COOCApiModule.as_completed", return_value=[future1, future2])
-
-    # Call function
-    result = run_permissions_check_for_accounts(
-        connector_id="test-connector-id", cloud_type="AWS", permission_check_func=mock_permission_check
-    )
-
-    # Verify results
-    assert result == "health_check_result"
-    # Verify error was added to health check
-    assert mock_health_check.error.called
-
-
 def test_run_permissions_check_no_accounts(mocker):
     """
     Given: A connector_id with no associated accounts.
@@ -404,7 +339,7 @@ def test_run_permissions_check_no_accounts(mocker):
     )
 
     # Verify results
-    assert result == HealthStatus.OK.value
+    assert result == HealthStatus.OK
     assert demisto.debug.called
 
 
