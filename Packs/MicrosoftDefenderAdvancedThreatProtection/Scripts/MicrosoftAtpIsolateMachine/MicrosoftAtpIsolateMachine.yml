@@ -9,7 +9,7 @@ tags:
 comment: Isolates a machine from accessing external networks.
 enabled: true
 args:
-  - description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+  - description: "A comma-separated list of machine IDs to be used for isolation. For example: 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424."
     isArray: true
     name: machine_id
     required: true
@@ -17,7 +17,7 @@ args:
   - description: A comment to associate with the action.
     name: comment
     required: true
-  - description: Full isolation or selective isolation. (Restrict only limited set of applications from accessing the network).
+  - description: Full isolation or selective isolation (restrict only limited set of applications from accessing the network).
     name: isolation_type
     auto: PREDEFINED
     predefined:
@@ -32,16 +32,16 @@ outputs:
     description: The machine action ID.
     type: String
   - contextPath: MicrosoftATP.MachineAction.Type
-    description: Type of the machine action.
+    description: The machine action type.
     type: String
   - contextPath: MicrosoftATP.MachineAction.Scope
-    description: Scope of the action.
+    description: The scope of the action.
     type: Unknown
   - contextPath: MicrosoftATP.MachineAction.Requestor
     description: The ID of the user that executed the action.
     type: String
   - contextPath: MicrosoftATP.MachineAction.RequestorComment
-    description: Comment that was written when issuing the action.
+    description: The comment that was written when issuing the action.
     type: String
   - contextPath: MicrosoftATP.MachineAction.Status
     description: The current status of the command.
@@ -62,7 +62,7 @@ outputs:
     description: The file identifier.
     type: String
   - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-    description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
+    description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
     type: String
 scripttarget: 0
 subtype: python3

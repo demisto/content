@@ -16,7 +16,7 @@ Isolates a machine from accessing external networks.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| machine_id | A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. |
+| machine_id | A comma-separated list of machine IDs to be used to stop the isolation. For example: 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. |
 | comment | Comment to associate with the action. |
 | ran_once_flag | Flag for the rate limit retry. |
 

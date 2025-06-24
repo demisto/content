@@ -18,7 +18,7 @@ args:
   - description: A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders.
     name: folder_id
   - deprecated: true
-    description: flag for rate limit retry.
+    description: A flag for rate limit retry.
     name: ran_once_flag
 scripttarget: 0
 subtype: python3

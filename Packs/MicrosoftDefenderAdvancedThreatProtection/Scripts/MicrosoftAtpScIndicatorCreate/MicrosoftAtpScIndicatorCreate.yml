@@ -67,7 +67,7 @@ outputs:
     description: Created by the system when the indicator is ingested. Generated GUID/unique identifier.
     type: String
   - contextPath: MicrosoftATP.Indicators.action
-    description: 'The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", "alert".'
+    description: "The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: unknown, allow, block, alert."
     type: String
   - contextPath: MicrosoftATP.Indicators.description
     description: Brief description (100 characters or less) of the threat represented by the indicator.
@@ -76,7 +76,7 @@ outputs:
     description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
     type: Date
   - contextPath: MicrosoftATP.Indicators.severity
-    description: 'The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all.'
+    description: "The severity of the malicious behavior identified by the data within the indicator. Possible values: Informational, Low, Medium, and High, where High is the most severe and Informational is not severe at all."
     type: String
   - contextPath: MicrosoftATP.Indicators.indicatorValue
     description: The value of the indicator.
@@ -94,7 +94,7 @@ outputs:
     description: A list of MITRE techniques.
     type: Unknown
   - contextPath: MicrosoftATP.Indicators.indicatorType
-    description: 'Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url".'
+    description: "The indicator Type. Possible values: FileSha1, FileSha256, IpAddress, DomainName and Url."
     type: String
   - contextPath: MicrosoftATP.Indicators.lastUpdateTime
     description: The last time the indicator was updated.
@@ -109,7 +109,7 @@ outputs:
     description: The indicator title.
     type: String
   - contextPath: MicrosoftATP.Indicators.createdBySource
-    description: Source of indicator creation. For example, PublicApi.
+    description: The source that created the indicator. For example, PublicApi.
     type: String
   - contextPath: MicrosoftATP.Indicators.historicalDetection
     description: Whether a historical detection exists.
@@ -136,7 +136,7 @@ outputs:
     description: The SHA256 hash of the file.
     type: String
   - contextPath: Domain.Name
-    description: 'The domain name, for example: "google.com".'
+    description: 'The domain name. For example: "google.com".'
     type: String
   - contextPath: IP.Address
     description: IP address.

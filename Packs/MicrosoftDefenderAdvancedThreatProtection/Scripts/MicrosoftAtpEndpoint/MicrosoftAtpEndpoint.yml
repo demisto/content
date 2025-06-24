@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
   - Utilities
-comment: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required - IP, hostname, or ID. Otherwise, an error appears.
+comment: "Retrieves machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required: IP, hostname, or ID. Otherwise, an error appears."
 enabled: true
 args:
   - name: id
@@ -93,13 +93,13 @@ outputs:
     description: The machine exposure score.
     type: String
   - contextPath: MicrosoftATP.Machine.IsAADJoined
-    description: True if machine is AAD joined, False otherwise.
+    description: Whether the machine is AAD joined.
     type: Boolean
   - contextPath: MicrosoftATP.Machine.AADDeviceID
     description: The AAD Device ID.
     type: String
   - contextPath: MicrosoftATP.Machine.MachineTags
-    description: Set of machine tags.
+    description: The set of machine tags.
     type: String
   - contextPath: MicrosoftATP.Machine.IPAddresses.ipAddress
     description: The machine IP address.

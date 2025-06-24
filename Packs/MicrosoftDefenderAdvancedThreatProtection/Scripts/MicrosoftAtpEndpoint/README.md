@@ -1,4 +1,4 @@
-Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required - IP, hostname, or ID. Otherwise, an error appears.
+Retrieves machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required: IP, hostname, or ID. Otherwise, an error appears.
 
 ## Script Data
 
@@ -50,9 +50,9 @@ Gets machines that have communicated with Microsoft Defender for Endpoint cloud.
 | MicrosoftATP.Machine.RBACGroupName | The machine RBAC group name. | String |
 | MicrosoftATP.Machine.RiskScore | The machine risk score. | String |
 | MicrosoftATP.Machine.ExposureLevel | The machine exposure score. | String |
-| MicrosoftATP.Machine.IsAADJoined | True if machine is AAD joined, False otherwise. | Boolean |
+| MicrosoftATP.Machine.IsAADJoined | Whether the machine is AAD joined. | Boolean |
 | MicrosoftATP.Machine.AADDeviceID | The AAD Device ID. | String |
-| MicrosoftATP.Machine.MachineTags | Set of machine tags. | String |
+| MicrosoftATP.Machine.MachineTags | The set of machine tags. | String |
 | MicrosoftATP.Machine.IPAddresses.ipAddress | The machine IP address. | String |
 | MicrosoftATP.Machine.IPAddresses.MACAddress | The machine MAC address. | String |
 | MicrosoftATP.Machine.IPAddresses.operationalStatus | The machine operational status. | String |

@@ -9,7 +9,7 @@ tags:
 comment: Isolates a machine from accessing external networks.
 enabled: true
 args:
-  - description: A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+  - description: "A comma-separated list of machine IDs to be used to stop the isolation. For example: 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424."
     isArray: true
     name: machine_id
     required: true
