@@ -1984,32 +1984,34 @@ class Client(BaseClient):
             params=params,
         )
 
-    def new_datastream(self,
-                       stream_name: str,
-                       group_id: int,
-                       contract_id: str,
-                       properties: list,
-                       dataset_fields: list,
-                       interval_in_seconds: int = 30,
-                       log_format: str = "JSON",
-                       field_delimiter: str = None,
-                       upload_file_prefix: str = None,
-                       upload_file_suffix: str = None,
-                       ca_cert: str = None,
-                       client_cert: str = None,
-                       client_key: str = None,
-                       content_type: str = None,
-                       custom_header_name: str = None,
-                       custom_header_value: str = None,
-                       compress_logs: bool = True,
-                       destination_type: str = "SPLUNK",
-                       display_name: str = None,
-                       endpoint: str = None,
-                       event_collector_token: str = None,
-                       tls_hostname: str = None,
-                       notification_emails: list = [],
-                       collect_midgress: bool = False,
-                       activate: bool = True,) -> dict:
+    def new_datastream(
+        self,
+        stream_name: str,
+        group_id: int,
+        contract_id: str,
+        properties: list,
+        dataset_fields: list,
+        interval_in_seconds: int = 30,
+        log_format: str = "JSON",
+        field_delimiter: str = None,
+        upload_file_prefix: str = None,
+        upload_file_suffix: str = None,
+        ca_cert: str = None,
+        client_cert: str = None,
+        client_key: str = None,
+        content_type: str = None,
+        custom_header_name: str = None,
+        custom_header_value: str = None,
+        compress_logs: bool = True,
+        destination_type: str = "SPLUNK",
+        display_name: str = None,
+        endpoint: str = None,
+        event_collector_token: str = None,
+        tls_hostname: str = None,
+        notification_emails: list = [],
+        collect_midgress: bool = False,
+        activate: bool = True,
+    ) -> dict:
         """
             Creates a stream configuration. Within a stream configuration,
             you can select properties to monitor in the stream, data set fields to collect in logs,
@@ -2028,12 +2030,9 @@ class Client(BaseClient):
         Returns:
             The response confirms the stream has been created and returns its details.
         """
-        method = 'post'
-        url_suffix = 'datastream-config-api/v2/log/streams'
-        headers = {
-            "Content-Type": "application/json",
-            "accept": "application/json"
-        }
+        method = "post"
+        url_suffix = "datastream-config-api/v2/log/streams"
+        headers = {"Content-Type": "application/json", "accept": "application/json"}
         params = {"activate": activate}
 
         body = {
@@ -2044,9 +2043,7 @@ class Client(BaseClient):
             "properties": properties,
             "datasetFields": dataset_fields,
             "deliveryConfiguration": {
-                "frequency": {
-                    "intervalInSeconds": interval_in_seconds
-                },
+                "frequency": {"intervalInSeconds": interval_in_seconds},
                 "format": log_format,
                 "fieldDelimiter": field_delimiter,
             },
@@ -2061,16 +2058,17 @@ class Client(BaseClient):
                 "clientKey": client_key,
                 "customHeaderName": custom_header_name,
                 "customHeaderValue": custom_header_value,
-                "tlsHostname": tls_hostname
-            }
+                "tlsHostname": tls_hostname,
+            },
         }
         remove_nulls_from_dictionary(body)  # <==
-        return self._http_request(method=method,
-                                  url_suffix=url_suffix,
-                                  headers=headers,
-                                  json_data=body,
-                                  params=params,
-                                  )
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            headers=headers,
+            json_data=body,
+            params=params,
+        )
 
     def get_cps_enrollment_by_id(self, enrollment_id: int) -> dict:
         """
@@ -2131,7 +2129,7 @@ class Client(BaseClient):
             <Response [200]>
         """
 
-        all_properties = self._http_request(method='GET', url_suffix='/identity-management/v3/user-admin/properties')
+        all_properties = self._http_request(method="GET", url_suffix="/identity-management/v3/user-admin/properties")
 
         return all_properties
 
@@ -2143,11 +2141,11 @@ class Client(BaseClient):
             A list of dictionaries that each dictionary includes a datastream.
             <Response [200]>
         """
-        url_suffix = '/datastream-config-api/v2/log/streams'
+        url_suffix = "/datastream-config-api/v2/log/streams"
         if group_id != 0:
-            url_suffix = f'{url_suffix}?groupId={group_id}'
+            url_suffix = f"{url_suffix}?groupId={group_id}"
 
-        all_datastreams = self._http_request(method='GET', url_suffix=url_suffix)
+        all_datastreams = self._http_request(method="GET", url_suffix=url_suffix)
 
         return all_datastreams
 
@@ -2167,10 +2165,10 @@ class Client(BaseClient):
             <Response [200]>
         """
 
-        url_suffix = f'/datastream-config-api/v2/log/streams/{stream_id}'
+        url_suffix = f"/datastream-config-api/v2/log/streams/{stream_id}"
         if version != 0:
-            url_suffix = f'{url_suffix}?version={version}'
-        datastream = self._http_request(method='GET', url_suffix=url_suffix)
+            url_suffix = f"{url_suffix}?version={version}"
+        datastream = self._http_request(method="GET", url_suffix=url_suffix)
 
         return datastream
 
@@ -2187,10 +2185,10 @@ class Client(BaseClient):
             A dictionary that includes a list of dictionaries of groups.
             <Response [200]>
         """
-        url_suffix = 'datastream-config-api/v2/log/groups'
+        url_suffix = "datastream-config-api/v2/log/groups"
         if contract_id:
-            url_suffix = f'{url_suffix}?contractId={contract_id}'
-        groups = self._http_request(method='GET', url_suffix=url_suffix)
+            url_suffix = f"{url_suffix}?contractId={contract_id}"
+        groups = self._http_request(method="GET", url_suffix=url_suffix)
 
         return groups
 
@@ -2207,8 +2205,8 @@ class Client(BaseClient):
             <Response [200]>
         """
 
-        url_suffix = f'datastream-config-api/v2/log/groups/{group_id}/properties'
-        properties = self._http_request(method='GET', url_suffix=url_suffix)
+        url_suffix = f"datastream-config-api/v2/log/groups/{group_id}/properties"
+        properties = self._http_request(method="GET", url_suffix=url_suffix)
 
         return properties
 
@@ -2225,15 +2223,16 @@ class Client(BaseClient):
             <Response [204]>
         """
 
-        url_suffix = f'datastream-config-api/v2/log/streams/{stream_id}'
-        output = self._http_request(method='DELETE', url_suffix=url_suffix, resp_type="response")
+        url_suffix = f"datastream-config-api/v2/log/streams/{stream_id}"
+        output = self._http_request(method="DELETE", url_suffix=url_suffix, resp_type="response")
         return output
 
-    def patch_datastream(self,
-                         stream_id: int,
-                         body: list,
-                         activate: str,
-                         ) -> dict:
+    def patch_datastream(
+        self,
+        stream_id: int,
+        body: list,
+        activate: str,
+    ) -> dict:
         """
         Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates
         a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE
@@ -2254,20 +2253,20 @@ class Client(BaseClient):
             The response provides a URL link to the newly created property.
         """
 
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json-patch+json"
-        }
+        headers = {"accept": "application/json", "content-type": "application/json-patch+json"}
 
-        return self._http_request(method='PATCH',
-                                  url_suffix=f'datastream-config-api/v2/log/streams/{stream_id}?activate={activate}',
-                                  headers=headers,
-                                  json_data=body)
+        return self._http_request(
+            method="PATCH",
+            url_suffix=f"datastream-config-api/v2/log/streams/{stream_id}?activate={activate}",
+            headers=headers,
+            json_data=body,
+        )
 
-    def activate_datastream(self,
-                            stream_id: int,
-                            option: str,
-                            ) -> dict:
+    def activate_datastream(
+        self,
+        stream_id: int,
+        option: str,
+    ) -> dict:
         """
         Activate/Deactivate the latest version of a DataStream.
 
@@ -2280,14 +2279,11 @@ class Client(BaseClient):
             The response provides a URL link to the newly created datastream.
         """
 
-        headers = {
-            "accept": "application/json"
-        }
+        headers = {"accept": "application/json"}
 
-        return self._http_request(method='POST',
-                                  url_suffix=f'datastream-config-api/v2/log/streams/{stream_id}/{option}',
-                                  headers=headers
-                                  )
+        return self._http_request(
+            method="POST", url_suffix=f"datastream-config-api/v2/log/streams/{stream_id}/{option}", headers=headers
+        )
 
     def get_client_lists(self):
         """
@@ -2300,8 +2296,8 @@ class Client(BaseClient):
             <Response [200]>
         """
 
-        url_suffix = 'client-list/v1/lists'
-        return self._http_request(method='GET', url_suffix=url_suffix)
+        url_suffix = "client-list/v1/lists"
+        return self._http_request(method="GET", url_suffix=url_suffix)
 
     def list_edgehostname(self, contract_id: str, group_id: str):
         """
@@ -2316,21 +2312,35 @@ class Client(BaseClient):
         Returns:
             <Response [200]>
         """
-        headers = {
-            "accept": "application/json",
-            "PAPI-Use-Prefixes": "true"
-        }
+        headers = {"accept": "application/json", "PAPI-Use-Prefixes": "true"}
         if group_id == "na":
-            url_suffix = f'papi/v1/edgehostnames?contractId={contract_id}&options=mapDetails'
+            url_suffix = f"papi/v1/edgehostnames?contractId={contract_id}&options=mapDetails"
         else:
-            url_suffix = f'papi/v1/edgehostnames?contractId={contract_id}&groupId={group_id}&options=mapDetails'
-        return self._http_request(method='GET', url_suffix=url_suffix, headers=headers)
+            url_suffix = f"papi/v1/edgehostnames?contractId={contract_id}&groupId={group_id}&options=mapDetails"
+        return self._http_request(method="GET", url_suffix=url_suffix, headers=headers)
 
-    def generic_api_call(self, method, url_suffix='', headers=None, json_data=None,
-                         params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
-                         return_empty_response=False, retries=0, status_list_to_retry=None,
-                         backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                         empty_valid_codes=None, with_metrics=False, **kwargs):
+    def generic_api_call(
+        self,
+        method,
+        url_suffix="",
+        headers=None,
+        json_data=None,
+        params=None,
+        data=None,
+        files=None,
+        timeout=None,
+        resp_type="json",
+        ok_codes=None,
+        return_empty_response=False,
+        retries=0,
+        status_list_to_retry=None,
+        backoff_factor=5,
+        raise_on_redirect=False,
+        raise_on_status=False,
+        empty_valid_codes=None,
+        with_metrics=False,
+        **kwargs,
+    ):
         """
             Generic API Call command.
 
@@ -2428,11 +2438,27 @@ class Client(BaseClient):
         data = data
         json_data = json_data
 
-        return self._http_request(method=method, url_suffix=url_suffix, headers=headers, params=params, data=data, json_data=json_data,
-                                  files=files, timeout=timeout, resp_type=resp_type, ok_codes=ok_codes,
-                                  return_empty_response=return_empty_response, retries=retries, status_list_to_retry=status_list_to_retry,
-                                  backoff_factor=backoff_factor, raise_on_redirect=raise_on_redirect, raise_on_status=raise_on_status,
-                                  empty_valid_codes=empty_valid_codes, with_metrics=with_metrics, **kwargs)
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            headers=headers,
+            params=params,
+            data=data,
+            json_data=json_data,
+            files=files,
+            timeout=timeout,
+            resp_type=resp_type,
+            ok_codes=ok_codes,
+            return_empty_response=return_empty_response,
+            retries=retries,
+            status_list_to_retry=status_list_to_retry,
+            backoff_factor=backoff_factor,
+            raise_on_redirect=raise_on_redirect,
+            raise_on_status=raise_on_status,
+            empty_valid_codes=empty_valid_codes,
+            with_metrics=with_metrics,
+            **kwargs,
+        )
 
 
 """ HELPER FUNCTIONS """
@@ -6245,33 +6271,34 @@ def list_cps_active_certificates_command(
 
 
 @logger
-def new_datastream_command(client: Client,
-                           stream_name: str,
-                           group_id: int,
-                           contract_id: str,
-                           properties: str,
-                           dataset_fields: str,
-                           interval_in_seconds: int = 30,
-                           log_format: str = "JSON",
-                           field_delimiter: str = None,
-                           upload_file_prefix: str = None,
-                           upload_file_suffix: str = None,
-                           ca_cert: str = None,
-                           client_cert: str = None,
-                           client_key: str = None,
-                           content_type: str = None,
-                           custom_header_name: str = None,
-                           custom_header_value: str = None,
-                           compress_logs: bool = True,
-                           destination_type: str = "SPLUNK",
-                           display_name: str = None,
-                           endpoint: str = None,
-                           event_collector_token: str = None,
-                           tls_hostname: str = None,
-                           notification_emails: str = None,
-                           collect_midgress: bool = False,
-                           activate: bool = True
-                           ) -> tuple[str, dict, Union[list, dict]]:
+def new_datastream_command(
+    client: Client,
+    stream_name: str,
+    group_id: int,
+    contract_id: str,
+    properties: str,
+    dataset_fields: str,
+    interval_in_seconds: int = 30,
+    log_format: str = "JSON",
+    field_delimiter: str = None,
+    upload_file_prefix: str = None,
+    upload_file_suffix: str = None,
+    ca_cert: str = None,
+    client_cert: str = None,
+    client_key: str = None,
+    content_type: str = None,
+    custom_header_name: str = None,
+    custom_header_value: str = None,
+    compress_logs: bool = True,
+    destination_type: str = "SPLUNK",
+    display_name: str = None,
+    endpoint: str = None,
+    event_collector_token: str = None,
+    tls_hostname: str = None,
+    notification_emails: str = None,
+    collect_midgress: bool = False,
+    activate: bool = True,
+) -> tuple[str, dict, Union[list, dict]]:
     """
         Creates a stream configuration. Within a stream configuration,
         you can select properties to monitor in the stream, data set fields to collect in logs,
@@ -6354,38 +6381,38 @@ def new_datastream_command(client: Client,
     dataset_fields_list_dict: list = []
     for item in dataset_fields_list:
         dataset_fields_list_dict.append({"datasetFieldId": int(item)})
-    raw_response: dict = client.new_datastream(stream_name=stream_name,
-                                               group_id=group_id,
-                                               contract_id=contract_id,
-                                               properties=properties_list_dict,
-                                               dataset_fields=dataset_fields_list_dict,
-                                               interval_in_seconds=interval_in_seconds,
-                                               log_format=log_format,
-                                               field_delimiter=field_delimiter,
-                                               upload_file_prefix=upload_file_prefix,
-                                               upload_file_suffix=upload_file_suffix,
-                                               ca_cert=ca_cert,
-                                               client_cert=client_cert,
-                                               client_key=client_key,
-                                               content_type=content_type,
-                                               custom_header_name=custom_header_name,
-                                               custom_header_value=custom_header_value,
-                                               compress_logs=compress_logs,
-                                               destination_type=destination_type,
-                                               display_name=display_name,
-                                               endpoint=endpoint,
-                                               event_collector_token=event_collector_token,
-                                               tls_hostname=tls_hostname,
-                                               notification_emails=notification_emails_list,
-                                               collect_midgress=collect_midgress,
-                                               activate=activate)
+    raw_response: dict = client.new_datastream(
+        stream_name=stream_name,
+        group_id=group_id,
+        contract_id=contract_id,
+        properties=properties_list_dict,
+        dataset_fields=dataset_fields_list_dict,
+        interval_in_seconds=interval_in_seconds,
+        log_format=log_format,
+        field_delimiter=field_delimiter,
+        upload_file_prefix=upload_file_prefix,
+        upload_file_suffix=upload_file_suffix,
+        ca_cert=ca_cert,
+        client_cert=client_cert,
+        client_key=client_key,
+        content_type=content_type,
+        custom_header_name=custom_header_name,
+        custom_header_value=custom_header_value,
+        compress_logs=compress_logs,
+        destination_type=destination_type,
+        display_name=display_name,
+        endpoint=endpoint,
+        event_collector_token=event_collector_token,
+        tls_hostname=tls_hostname,
+        notification_emails=notification_emails_list,
+        collect_midgress=collect_midgress,
+        activate=activate,
+    )
 
-    title = f'{INTEGRATION_NAME} - new datastream'
+    title = f"{INTEGRATION_NAME} - new datastream"
     entry_context = raw_response
     human_readable_ec = raw_response
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.DataStream": entry_context
-    }
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream": entry_context}
 
     human_readable = tableToMarkdown(
         name=title,
@@ -6409,10 +6436,8 @@ def list_datastreams_command(client: Client, group_id: int = 0) -> tuple[str, di
     """
 
     raw_response: dict = client.list_datastreams(group_id=group_id)
-    title = f'{INTEGRATION_NAME} - list datastreams command'
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.DataStreams": raw_response
-    }
+    title = f"{INTEGRATION_NAME} - list datastreams command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStreams": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6439,10 +6464,8 @@ def get_datastream_command(client: Client, stream_id: int, version: int = 0) -> 
     """
 
     raw_response: dict = client.get_datastream(stream_id=stream_id, version=version)
-    title = f'{INTEGRATION_NAME} - get datastream command'
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.DataStreamDetails": raw_response
-    }
+    title = f"{INTEGRATION_NAME} - get datastream command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStreamDetails": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6464,10 +6487,8 @@ def list_idam_properties_command(client: Client) -> tuple[str, dict, Union[list,
     """
 
     raw_response: dict = client.list_idam_properties()
-    title = f'{INTEGRATION_NAME} - list idam properties command'
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.Idam.Properties": raw_response
-    }
+    title = f"{INTEGRATION_NAME} - list idam properties command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Idam.Properties": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6492,10 +6513,8 @@ def list_datastream_groups_command(client: Client, contract_id: str = "") -> tup
     """
 
     raw_response: dict = client.list_datastream_groups(contract_id=contract_id)
-    title = f'{INTEGRATION_NAME} - list datastream groups command'
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.DataStreamGroups": raw_response
-    }
+    title = f"{INTEGRATION_NAME} - list datastream groups command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStreamGroups": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6518,10 +6537,8 @@ def list_datastream_properties_bygroup_command(client: Client, group_id: int) ->
         human readable (markdown format), entry context and raw response
     """
     raw_response: dict = client.list_datastream_properties_bygroup(group_id=group_id)
-    title = f'{INTEGRATION_NAME} - list datastream active properties command'
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.DataStream.Group": raw_response
-    }
+    title = f"{INTEGRATION_NAME} - list datastream active properties command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream.Group": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6551,10 +6568,8 @@ def delete_datastream_command(client: Client, stream_id: int) -> tuple[str, dict
     else:
         dict_response: dict = {"stream_id": stream_id, "deletion": f"failed - {str(raw_response)}"}
 
-    title = f'{INTEGRATION_NAME} - delete datastream command'
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.DataStream": dict_response
-    }
+    title = f"{INTEGRATION_NAME} - delete datastream command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream": dict_response}
     human_readable = tableToMarkdown(
         name=title,
         t=dict_response,
@@ -6564,13 +6579,14 @@ def delete_datastream_command(client: Client, stream_id: int) -> tuple[str, dict
 
 
 @logger
-def patch_datastream_command(client: Client,
-                             stream_id: int,
-                             path: str,
-                             value: str,
-                             value_to_json: str,
-                             activate: str = 'true',
-                             ) -> tuple[str, dict, Union[list, dict]]:
+def patch_datastream_command(
+    client: Client,
+    stream_id: int,
+    path: str,
+    value: str,
+    value_to_json: str,
+    activate: str = "true",
+) -> tuple[str, dict, Union[list, dict]]:
     """
         Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates
         a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE
@@ -6596,21 +6612,13 @@ def patch_datastream_command(client: Client,
 
     import json
 
-    body = [
-        {
-            'op': 'REPLACE',
-            'path': path,
-            'value': json.loads(value) if value_to_json.lower() == "yes" else value
-        }
-    ]
+    body = [{"op": "REPLACE", "path": path, "value": json.loads(value) if value_to_json.lower() == "yes" else value}]
 
     raw_response: dict = client.patch_datastream(stream_id=stream_id, activate=activate, body=body)
 
-    title = f'{INTEGRATION_NAME} - Patch datastream command'
+    title = f"{INTEGRATION_NAME} - Patch datastream command"
 
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.Datastream": raw_response
-    }
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Datastream": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6621,10 +6629,11 @@ def patch_datastream_command(client: Client,
 
 
 @logger
-def toggle_datastream_command(client: Client,
-                                stream_id: int,
-                                option: str = 'activate',
-                                ) -> tuple[str, dict, Union[list, dict]]:
+def toggle_datastream_command(
+    client: Client,
+    stream_id: int,
+    option: str = "activate",
+) -> tuple[str, dict, Union[list, dict]]:
     """
         Activate/Deactivate the latest version of a DataStream.
 
@@ -6638,11 +6647,9 @@ def toggle_datastream_command(client: Client,
 
     raw_response: dict = client.toggle_datastream(stream_id=stream_id, option=option)
 
-    title = f'{INTEGRATION_NAME} - Activate DataStream command'
+    title = f"{INTEGRATION_NAME} - Activate DataStream command"
 
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.DataStream.Activation": raw_response
-    }
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream.Activation": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6665,10 +6672,8 @@ def get_client_lists_command(client: Client) -> tuple[str, dict, Union[list, dic
     """
 
     raw_response: dict = client.get_client_lists()
-    title = f'{INTEGRATION_NAME} - Get Client List command'
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
-    }
+    title = f"{INTEGRATION_NAME} - Get Client List command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6692,10 +6697,8 @@ def list_edgehostname_command(client: Client, contract_id: str, group_id: str = 
     """
 
     raw_response: dict = client.list_edgehostname(contract_id=contract_id, group_id=group_id)
-    title = f'{INTEGRATION_NAME} - List Edgehostname command'
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.Edgehostname": raw_response
-    }
+    title = f"{INTEGRATION_NAME} - List Edgehostname command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Edgehostname": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6705,11 +6708,28 @@ def list_edgehostname_command(client: Client, contract_id: str, group_id: str = 
 
 
 @logger
-def generic_api_call_command(client: Client, method, url_suffix='', headers=None, json_data=None,
-                             params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
-                             return_empty_response=False, retries=0, status_list_to_retry=None,
-                             backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                             empty_valid_codes=None, with_metrics=False, **kwargs):
+def generic_api_call_command(
+    client: Client,
+    method,
+    url_suffix="",
+    headers=None,
+    json_data=None,
+    params=None,
+    data=None,
+    files=None,
+    timeout=None,
+    resp_type="json",
+    ok_codes=None,
+    return_empty_response=False,
+    retries=0,
+    status_list_to_retry=None,
+    backoff_factor=5,
+    raise_on_redirect=False,
+    raise_on_status=False,
+    empty_valid_codes=None,
+    with_metrics=False,
+    **kwargs,
+):
     """
         Generic API Call command.
 
@@ -6813,9 +6833,8 @@ def generic_api_call_command(client: Client, method, url_suffix='', headers=None
             timeout = tuple([float(x) for x in timeout.split(",")])
         else:
             timeout = float(timeout)
-    if ok_codes is not None:
-        if "," in ok_codes:
-            ok_codes = tuple([int(x) for x in ok_codes.split(",")])
+    if ok_codes is not None and "," in ok_codes:
+        ok_codes = tuple([int(x) for x in ok_codes.split(",")])
     if retries is not None:
         retries = int(retries)
     if status_list_to_retry is not None:
@@ -6831,16 +6850,30 @@ def generic_api_call_command(client: Client, method, url_suffix='', headers=None
     if with_metrics is not None:
         with_metrics = argToBoolean(with_metrics)
 
-    raw_response = client.generic_api_call(method=method, url_suffix=url_suffix, headers=headers, params=params, data=data, json_data=json_data,
-                                           files=files, timeout=timeout, resp_type=resp_type, ok_codes=ok_codes,
-                                           return_empty_response=return_empty_response, retries=retries, status_list_to_retry=status_list_to_retry,
-                                           backoff_factor=backoff_factor, raise_on_redirect=raise_on_redirect, raise_on_status=raise_on_status,
-                                           empty_valid_codes=empty_valid_codes, with_metrics=with_metrics, **kwargs)
+    raw_response = client.generic_api_call(
+        method=method,
+        url_suffix=url_suffix,
+        headers=headers,
+        params=params,
+        data=data,
+        json_data=json_data,
+        files=files,
+        timeout=timeout,
+        resp_type=resp_type,
+        ok_codes=ok_codes,
+        return_empty_response=return_empty_response,
+        retries=retries,
+        status_list_to_retry=status_list_to_retry,
+        backoff_factor=backoff_factor,
+        raise_on_redirect=raise_on_redirect,
+        raise_on_status=raise_on_status,
+        empty_valid_codes=empty_valid_codes,
+        with_metrics=with_metrics,
+        **kwargs,
+    )
 
-    title = f'{INTEGRATION_NAME} - Generic API Call command'
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}": raw_response
-    }
+    title = f"{INTEGRATION_NAME} - Generic API Call command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}": raw_response}
     human_readable = tableToMarkdown(
         name=title,
         t=raw_response,
@@ -6944,18 +6977,18 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-list-dns-zones": list_dns_zones_command,
         f"{INTEGRATION_COMMAND_NAME}-list-dns-zone-recordsets": list_dns_zone_recordsets_command,
         f"{INTEGRATION_COMMAND_NAME}-list-cps-active-certificates": list_cps_active_certificates_command,
-        f'{INTEGRATION_COMMAND_NAME}-new-datastream': new_datastream_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-idam-properties': list_idam_properties_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-datastreams': list_datastreams_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-datastream': get_datastream_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-datastream-groups': list_datastream_groups_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-datastream-properties-bygroup': list_datastream_properties_bygroup_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-datastream': delete_datastream_command,
-        f'{INTEGRATION_COMMAND_NAME}-patch-datastream': patch_datastream_command,
-        f'{INTEGRATION_COMMAND_NAME}-toggle-datastream': toggle_datastream_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-client_lists': get_client_lists_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-edgehostname': list_edgehostname_command,
-        f'{INTEGRATION_COMMAND_NAME}-generic-api-call-command': generic_api_call_command,
+        f"{INTEGRATION_COMMAND_NAME}-new-datastream": new_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-idam-properties": list_idam_properties_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-datastreams": list_datastreams_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-datastream": get_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-datastream-groups": list_datastream_groups_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-datastream-properties-bygroup": list_datastream_properties_bygroup_command,
+        f"{INTEGRATION_COMMAND_NAME}-delete-datastream": delete_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-patch-datastream": patch_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-toggle-datastream": toggle_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-client_lists": get_client_lists_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-edgehostname": list_edgehostname_command,
+        f"{INTEGRATION_COMMAND_NAME}-generic-api-call-command": generic_api_call_command,
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
