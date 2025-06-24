@@ -14,7 +14,7 @@ alter
     xdm.email.message_id = internetMessageId,
     xdm.alert.category = attackType,
     xdm.alert.name = attackStrategy,
-    xdm.alert.description = summaryInsights,
+    xdm.alert.description = arraystring(arraymap(split(to_string(summaryInsights), ","), replex("@element", "\[|\"|\]", "")), " | "),
     xdm.observer.unique_identifier = to_string(abxMessageId),
     xdm.source.ipv4 = senderIpAddressipv4,
     xdm.source.ipv6 = senderIpAddressipv6;
