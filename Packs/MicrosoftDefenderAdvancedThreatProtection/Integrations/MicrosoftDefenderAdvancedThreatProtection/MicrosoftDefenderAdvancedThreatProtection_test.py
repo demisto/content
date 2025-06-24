@@ -1647,7 +1647,7 @@ class TestHuntingQueryBuilder:
                     "2 days",
                     "tableName| where Timestamp > ago(2880m) | where a | where b",
                 ),  # query without space after table name (bug fix CIAC-14096)
-            ]
+            ],
         )
         def test_rebuild_query_with_time_range__full_query(self, query, time_range, expected):
             """
