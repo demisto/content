@@ -3,78 +3,109 @@ inputs: []
 name: Asimily Asset Info Enrich
 outputs: []
 starttaskid: "0"
+version: -1
 tasks:
   "0":
-    continueonerrortype: ""
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 57bb609f-322e-4377-8ad0-1504bca2b7bc
+    type: start
+    task:
+      id: 57bb609f-322e-4377-8ad0-1504bca2b7bc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 57bb609f-322e-4377-8ad0-1504bca2b7bc
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 57bb609f-322e-4377-8ad0-1504bca2b7bc
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
-  "1":
-    continueonerrortype: ""
-    id: "1"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 96b1a79f-2e70-481b-be96-a08760a451b2
+    type: regular
+    task:
+      id: 96b1a79f-2e70-481b-be96-a08760a451b2
+      version: -1
+      name: Query asimily-get-asset-details
+      description: Fetch Asimily Asset information
+      script: '|||asimily-get-asset-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       mac_addr:
         simple: ${incident.asimilydevicemacaddress}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Asimily Insight
-      description: Fetch Asimily Asset information
-      id: 43e91be8-7bcb-469f-a87b-8bced0dc9eed
-      iscommand: true
-      name: asimily-get-asset-details
-      script: Asimily Insight|||asimily-get-asset-details
-      type: regular
-      version: -1
-    taskid: 43e91be8-7bcb-469f-a87b-8bced0dc9eed
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 239
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7c9a9d64-1ca2-42b6-b193-dd8fa8d48194
+    type: title
+    task:
+      id: 7c9a9d64-1ca2-42b6-b193-dd8fa8d48194
+      version: -1
+      name: Done
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 424
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 250,
+        "height": 434,
         "width": 381,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
