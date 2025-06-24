@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed some outputs keys starting with `account` and replaced them with keys starting with `UserData`."
+}
