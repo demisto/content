@@ -26,6 +26,105 @@ SCOPE_BY_CONNECTION = {
     "Client Credentials": "https://management.azure.com/.default",
 }
 
+PERMISSIONS_TO_COMMANDS = {
+    "Microsoft.Network/networkSecurityGroups/securityRules/read": [
+        "azure-nsg-security-rule-update"
+    ],
+    "Microsoft.Network/networkSecurityGroups/securityRules/write": [
+        "azure-nsg-security-rule-update"
+    ],
+    "Microsoft.Storage/storageAccounts/read": [
+        "azure-storage-account-update"
+    ],
+    "Microsoft.Storage/storageAccounts/write": [
+        "azure-storage-account-update"
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/read": [
+        "azure-storage-blob-service-properties-set"
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/write": [
+        "azure-storage-blob-service-properties-set"
+    ],
+    "Microsoft.Authorization/policyAssignments/read": [
+        "azure-policy-assignment-create"
+    ],
+    "Microsoft.Authorization/policyAssignments/write": [
+        "azure-policy-assignment-create"
+    ],
+    "Microsoft.DBforPostgreSQL/servers/read": [
+        "azure-postgres-server-update"
+    ],
+    "Microsoft.DBforPostgreSQL/servers/write": [
+        "azure-postgres-server-update"
+    ],
+    "Microsoft.DBforPostgreSQL/servers/configurations/read": [
+        "azure-postgres-config-set"
+    ],
+    "Microsoft.DBforPostgreSQL/servers/configurations/write": [
+        "azure-postgres-config-set"
+    ],
+    "Microsoft.Web/sites/config/read": [
+        "azure-webapp-config-set, azure-webapp-auth-update"
+    ],
+    "Microsoft.Web/sites/config/write": [
+        "azure-webapp-config-set, azure-webapp-auth-update"
+    ],
+    "Microsoft.Web/sites/read": [
+        "azure-webapp-update"
+    ],
+    "Microsoft.Web/sites/write": [
+        "azure-webapp-update"
+    ],
+    "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
+        "azure-mysql-flexible-server-param-set"
+    ],
+    "Microsoft.DBforMySQL/flexibleServers/configurations/write": [
+        "azure-mysql-flexible-server-param-set"
+    ],
+    "Microsoft.Insights/logprofiles/read": [
+        "azure-monitor-log-profile-update"
+    ],
+    "Microsoft.Insights/logprofiles/write": [
+        "azure-monitor-log-profile-update"
+    ],
+    "Microsoft.Compute/disks/read": [
+        "azure-disk-update"
+    ],
+    "Microsoft.Compute/disks/write": [
+        "azure-disk-update"
+    ],
+    "Microsoft.ContainerRegistry/registries/read": [
+        "azure-acr-update"
+    ],
+    "Microsoft.ContainerRegistry/registries/write": [
+        "azure-acr-update"
+    ],
+    "Microsoft.KeyVault/vaults/read": [
+        "azure-key-vault-update"
+    ],
+    "Microsoft.KeyVault/vaults/write": [
+        "azure-key-vault-update"
+    ],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
+        "azure-sql-db-threat-policy-update"
+    ],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
+        "azure-sql-db-threat-policy-update"
+    ],
+    "Microsoft.DocumentDB/databaseAccounts/read": [
+        "azure-cosmos-db-update"
+    ],
+    "Microsoft.DocumentDB/databaseAccounts/write": [
+        "azure-cosmos-db-update"
+    ],
+    "Microsoft.Sql/servers/databases/transparentDataEncryption/read": [
+        "azure-sql-db-transparent-data-encryption-set"
+    ],
+    "Microsoft.Sql/servers/databases/transparentDataEncryption/write": [
+        "azure-sql-db-transparent-data-encryption-set"
+    ]
+}
+
 REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/networkSecurityGroups/securityRules/read",
     "Microsoft.Network/networkSecurityGroups/securityRules/write",
@@ -150,7 +249,7 @@ class AzureClient:
                 params=params,
                 resp_type=resp_type,
                 headers=self.headers,
-                ok_codes=(200, 201, 202, 204, 206, 404),
+                ok_codes=(200, 201, 202, 204, 206),
                 proxies=proxies,
             )
 
@@ -158,6 +257,46 @@ class AzureClient:
             method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type
         )
        
+    
+    def handle_azure_error(self, e: Exception, resource_name: str, resource_type: str, subscription_id: str = None, resource_group_name: str = None) -> None:
+        """
+        Standardized error handling for Azure API calls
+        
+        Args:
+            e: The exception that was raised
+            resource_name: Name of the resource that caused the error
+            resource_type: Type of the resource (e.g., 'Security Rule', 'Storage Account')
+            subscription_id: Azure subscription ID (optional, for better error messages)
+            resource_group_name: Resource group name (optional, for better error messages)
+            
+        Raises:
+            ValueError: For 404 (not found) errors
+            DemistoException: For permission errors and other API errors
+        """
+        error_msg = str(e).lower()
+        demisto.debug(f"Azure API error for {resource_type} '{resource_name}': {type(e).__name__}")
+        
+        if "404" in error_msg or "not found" in error_msg:
+            error_details = f'{resource_type} "{resource_name}"'
+            if subscription_id and resource_group_name:
+                error_details += f' under subscription ID "{subscription_id}" and resource group "{resource_group_name}"'
+            elif subscription_id:
+                error_details += f' under subscription ID "{subscription_id}"'
+            raise ValueError(f'{error_details} was not found.')
+            
+        elif "403" in error_msg or "forbidden" in error_msg:
+            raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}".')
+            
+        elif "401" in error_msg or "unauthorized" in error_msg:
+            raise DemistoException(f'Authentication failed when accessing {resource_type} "{resource_name}". Please check credentials.')
+            
+        elif "400" in error_msg or "bad request" in error_msg:
+            raise DemistoException(f'Invalid request for {resource_type} "{resource_name}". Please check the parameters.')
+            
+        else:
+            # Re-raise the original exception for any other errors
+            raise DemistoException(f'Failed to access {resource_type} "{resource_name}": {str(e)}')
+
 
     def create_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str):
         return self.http_request(
@@ -169,19 +308,37 @@ class AzureClient:
 
 
     def get_rule(self, security_group: str, rule_name: str, subscription_id: str, resource_group_name: str):
+        """
+        Get a network security group rule.
+        
+        Args:
+            security_group: Name of the network security group
+            rule_name: Name of the security rule to retrieve
+            subscription_id: Azure subscription ID
+            resource_group_name: Resource group name
+            
+        Returns:
+            Dictionary containing the security rule information
+            
+        Raises:
+            ValueError: If the rule is not found
+            DemistoException: If there are permission or other API errors
+        """
         try:
+            demisto.debug("Retrieving security rule details.")
             return self.http_request(
                 "GET",
-                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/\
-resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
-networkSecurityGroups/{security_group}/securityRules/{rule_name}?",
+                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}",
             )
         except Exception as e:
-            if "404" in str(e):
-                raise ValueError(f'Rule {rule_name} under subscription ID "{subscription_id}" \
-and resource group "{resource_group_name}" was not found.')
-            raise
-
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{security_group}/{rule_name}",
+                resource_type="Security Rule",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+            
 
     def storage_account_update_request(self, subscription_id: str, resource_group_name: str, args: dict):
         """
@@ -213,7 +370,7 @@ and resource group "{resource_group_name}" was not found.')
                         "name": args.get("custom_domain_name"),
                         "useSubDomainName": args.get("use_sub_domain_name") == "true" if "use_sub_domain_name" in args else None,
                     },
-                    "Encryption": {
+                    "encryption": {
                         "keySource": args.get("enc_key_source"),
                         "keyvaultproperties": {
                             "keyname": args.get("enc_keyvault_key_name"),
@@ -242,22 +399,29 @@ and resource group "{resource_group_name}" was not found.')
         )
 
         json_data_args = remove_empty_elements(json_data_args)
-        response =  self.http_request(
-            method="PATCH",
-            full_url=(
-                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                f"/providers/Microsoft.Storage/storageAccounts/{account_name}"
-            ),
-            params={
-                "api-version": API_VERSION,
-            },
-            json_data=json_data_args,
-            resp_type="response",
-        )
-        if response.status_code == 404:
-            raise DemistoException(f"Storage account {account_name} not found in resource group {resource_group_name}.")
-
-        return response
+        demisto.debug(f'Updating storage account "{account_name}".')
+        try:
+            response =  self.http_request(
+                method="PATCH",
+                full_url=(
+                    f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                    f"/providers/Microsoft.Storage/storageAccounts/{account_name}"
+                ),
+                params={
+                    "api-version": API_VERSION,
+                },
+                json_data=json_data_args,
+                resp_type="response",
+            )
+            return response
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=account_name,
+                resource_type="Storage Account",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
         
 
     def storage_blob_service_properties_set_request(
@@ -269,7 +433,8 @@ and resource group "{resource_group_name}" was not found.')
         delete_rentention_policy_days: str | None,
     ):
         """
-        Updates the delete retention policy settings for the Blob service of a given Azure Storage account.
+        Set properties of Blob service of a given Azure Storage account.
+        
         Args:
             subscription_id (str): Azure subscription ID containing the storage account.
             resource_group_name (str): Name of the resource group that contains the storage account.
@@ -279,6 +444,10 @@ and resource group "{resource_group_name}" was not found.')
 
         Returns:
             dict: The full JSON response from the Azure REST API after applying the update.
+            
+        Raises:
+            ValueError: If the storage account is not found or required parameters are missing
+            DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -291,7 +460,16 @@ and resource group "{resource_group_name}" was not found.')
         }
         params = {"api-version": API_VERSION}
         data = remove_empty_elements(data)
-        return self.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
+        try:
+            return self.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/blobServices",
+                resource_type="Storage Blob Service",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
 
 
     def create_policy_assignment(
@@ -325,6 +503,10 @@ and resource group "{resource_group_name}" was not found.')
 
         Returns:
         dict: The response from the Azure REST API after applying the update.
+        
+        Raises:
+        ValueError: If required parameters are missing or PostgreSQL server not found
+        DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -333,7 +515,19 @@ and resource group "{resource_group_name}" was not found.')
         params = {"api-version": POSTGRES_API_VERSION}
         data = {"properties": {"source": source, "value": value}}
         data = remove_empty_elements(data)
-        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        demisto.debug(f'Updating configuration of PostgreSQL server "{server_name}".')
+        try:
+            return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{configuration_name}",
+                resource_type="PostgreSQL Configuration",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+
+
 
     def set_webapp_config(
         self,
@@ -357,6 +551,10 @@ and resource group "{resource_group_name}" was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+            
+        Raises:
+            ValueError: If required parameters are missing or webapp not found
+            DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -371,8 +569,18 @@ and resource group "{resource_group_name}" was not found.')
             }
         }
         data = remove_empty_elements(data)
-        demisto.debug(f"Setting WebApp configuration with {data}.")
-        return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        demisto.debug(f"Setting WebApp configuration for {name}.")
+        try:
+            return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=name,
+                resource_type="Web App",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+
 
     def get_webapp_auth(self, name: str, subscription_id: str, resource_group_name: str):
         """
@@ -385,6 +593,10 @@ and resource group "{resource_group_name}" was not found.')
 
         Returns:
             dict: The authentication settings of the web app.
+            
+        Raises:
+            ValueError: If required parameters are missing or webapp not found
+            DemistoException: If there are permission or other API errors
         """
         try:
             full_url = (
@@ -394,10 +606,14 @@ and resource group "{resource_group_name}" was not found.')
             params = {"api-version": WEBAPP_API_VERSION}
             return self.http_request(method="GET", full_url=full_url, params=params)
         except Exception as e:
-            if "404" in str(e):
-                raise ValueError(f'Web App auth {name} under subscription ID "{subscription_id}" \
-and resource group "{resource_group_name}" was not found.')
-            raise
+            self.handle_azure_error(
+            e=e,
+            resource_name=name,
+            resource_type="Web App",
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name
+        )
+            
 
     def update_webapp_auth(self, name: str, subscription_id: str, resource_group_name: str, current: dict):
         """
@@ -411,6 +627,10 @@ and resource group "{resource_group_name}" was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+            
+        Raises:
+            ValueError: If required parameters are missing or webapp not found
+            DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -424,8 +644,18 @@ and resource group "{resource_group_name}" was not found.')
         #     }
         # }
         data = current
-        demisto.debug(f"Updating WebApp auth with {data}.")
-        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        demisto.debug(f"Updating WebApp auth of {name}.")
+        try:
+            return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=name,
+                resource_type="Web App",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+
 
     def flexible_server_param_set(
         self, server_name: str, configuration_name: str, subscription_id: str, resource_group_name: str, source: str, value: str
@@ -443,6 +673,10 @@ and resource group "{resource_group_name}" was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+        
+        Raises:
+            ValueError: If the MySQL flexible server or configuration parameter is not found
+            DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -450,7 +684,17 @@ and resource group "{resource_group_name}" was not found.')
         )
         params = {"api-version": FLEXIBLE_API_VERSION}
         data = {"properties": {"source": source, "value": value}}
-        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        try:
+            return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{configuration_name}",
+                resource_type="MySQL Flexible Server Configuration",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+
 
     def get_monitor_log_profile(self, subscription_id: str, log_profile_name: str):
         """
@@ -461,17 +705,26 @@ and resource group "{resource_group_name}" was not found.')
             log_profile_name (str): Name of the log profile.
 
         Returns:
-            dict: The log profile.
+            dict: The log profile configuration from Azure API.
+        
+        Raises:
+            ValueError: If the log profile is not found
+            DemistoException: If there are permission or other API errors
         """
         try:
             full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
             params = {"api-version": MONITOR_API_VERSION}
+            demisto.debug(f'Getting log profile "{log_profile_name}".')
             return self.http_request(method="GET", full_url=full_url, params=params)
         except Exception as e:
-            if "404" in str(e):
-                raise ValueError(f'Log Profile {log_profile_name} under subscription ID "{subscription_id}" \
-was not found.')
-            raise
+            self.handle_azure_error(
+                e=e,
+                resource_name=log_profile_name,
+                resource_type="Monitor Log Profile",
+                subscription_id=subscription_id,
+                resource_group_name=None
+            )
+            
 
     def monitor_log_profile_update(self, subscription_id: str, log_profile_name: str, current_log_profile: dict):
         """
@@ -484,12 +737,27 @@ was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+        
+        Raises:
+            ValueError: If the log profile is not found
+            DemistoException: If there are permission or other API errors
         """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
         params = {"api-version": MONITOR_API_VERSION}
         data = current_log_profile
         data = remove_empty_elements(data)
-        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        try:
+            demisto.debug(f'Updating log profile "{log_profile_name}".')
+            return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=log_profile_name,
+                resource_type="Monitor Log Profile",
+                subscription_id=subscription_id,
+                resource_group_name=None
+            )
+            
 
     def disk_update(
         self,
@@ -513,6 +781,10 @@ was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+        
+        Raises:
+            ValueError: If the disk is not found
+            DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -527,8 +799,19 @@ was not found.')
             }
         }
         data = remove_empty_elements(data)
-        return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
-
+        try:
+            demisto.debug(f'Updating disk "{disk_name}."')
+            return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=disk_name,
+                resource_type="Disk",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+        
+        
     def webapp_update(
         self,
         subscription_id: str,
@@ -551,6 +834,10 @@ was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+            
+        Raises:
+            ValueError: If the web app is not found
+            DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}"
@@ -566,18 +853,27 @@ was not found.')
             },
         }
         data = remove_empty_elements(data)
-        demisto.debug(f"Updating WebApp with {data}.")
-        return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        demisto.debug(f'Updating WebApp "{name}".')
+        try:
+            return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=name,
+                resource_type="Web App",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
 
     def acr_update(
         self,
         subscription_id: str,
         resource_group_name: str,
         registry_name: str,
-        allow_exports: str,
-        public_network_access: str,
-        anonymous_pull_enabled: str,
-        authentication_as_arm_policy: str,
+        allow_exports: str | None,
+        public_network_access: str | None,
+        anonymous_pull_enabled: str | None,
+        authentication_as_arm_policy: str | None,
     ):
         """
         Updates an Azure Container Registry.
@@ -593,6 +889,10 @@ was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+        
+        Raises:
+            ValueError: If the container registry is not found
+            DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -610,8 +910,17 @@ was not found.')
             },
         }
         data = remove_empty_elements(data)
-        demisto.debug(f"Updating ACR with {data}")
-        return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        demisto.debug(f'Updating ACR "{registry_name}".')
+        try:
+            return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=registry_name,
+                resource_type="Container Registry",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
 
     def postgres_server_update(self, subscription_id: str, resource_group_name: str, server_name: str, ssl_enforcement: str):
         """
@@ -625,6 +934,10 @@ was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+        
+        Raises:
+            ValueError: If the PostgreSQL server is not found
+            DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -635,8 +948,19 @@ was not found.')
             "properties": {"sslEnforcement": ssl_enforcement},
         }
         data = remove_empty_elements(data)
-        return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
-
+        try:
+            demisto.debug(f'Updating postgres server "{server_name}".')
+            return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=server_name,
+                resource_type="PostgreSQL Server",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+            
+            
     def update_key_vault_request(
         self,
         subscription_id: str,
@@ -644,7 +968,7 @@ was not found.')
         vault_name: str,
         enable_soft_delete: str,
         enable_purge_protection: str,
-    ) -> dict[str, Any]:
+    ):
         """
         Updates a Key Vault.
 
@@ -657,6 +981,10 @@ was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+        
+        Raises:
+            ValueError: If the key vault is not found
+            DemistoException: If there are permission or other API errors
         """
         data = {"properties": {"enableSoftDelete": enable_soft_delete, "enablePurgeProtection": enable_purge_protection}}
         params = {"api-version": KEY_VAULT_API_VERSION}
@@ -664,8 +992,18 @@ was not found.')
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.KeyVault/vaults/{vault_name}"
         )
-        demisto.debug("Updating key vault.")
-        return self.http_request("PATCH", full_url=full_url, json_data=data, params=params)
+        try:
+            demisto.debug(f'Updating key vault "{vault_name}".')
+            return self.http_request("PATCH", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=vault_name,
+                resource_type="Key Vault",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+
 
     def sql_db_threat_policy_get(self, server_name: str, db_name: str, subscription_id: str, resource_group_name: str):
         """
@@ -679,14 +1017,28 @@ was not found.')
 
         Returns:
             dict: The threat policy of the SQL database.
+            
+        Raises:
+            ValueError: If the SQL database or server is not found
+            DemistoException: If there are permission or other API errors
         """
         params = {"api-version": SQL_DB_API_VERSION}
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
         )
-
-        return self.http_request("GET", full_url=full_url, params=params)
+        try:
+            demisto.debug("Getting SQL DB threat policy.")
+            return self.http_request("GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{db_name}",
+                resource_type="SQL Database Threat Policy",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+            
 
     def sql_db_threat_policy_update(
         self, server_name: str, db_name: str, subscription_id: str, current: dict, resource_group_name: str
@@ -703,6 +1055,10 @@ was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+        
+        Raises:
+            ValueError: If the SQL database or server is not found
+            DemistoException: If there are permission or other API errors
         """
         data = current
         params = {"api-version": SQL_DB_API_VERSION}
@@ -710,8 +1066,18 @@ was not found.')
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
         )
-        demisto.debug("Updating SQL DB threat policy.")
-        return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
+        try:
+            demisto.debug("Updating SQL DB threat policy.")
+            return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{db_name}",
+                resource_type="SQL Database Threat Policy",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+
 
     def sql_db_tde_set(self, server_name: str, db_name: str, subscription_id: str, state: str, resource_group_name: str):
         """
@@ -726,6 +1092,10 @@ was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+            
+        Raises:
+            ValueError: If the SQL database or server is not found
+            DemistoException: If there are permission or other API errors
         """
         data = {"properties": {"state": state}}
         params = {"api-version": SQL_DB_API_VERSION}
@@ -734,7 +1104,17 @@ was not found.')
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/transparentDataEncryption/current"
         )
         demisto.debug("Setting SQL DB Transparent Data Encryption state.")
-        return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
+        try:
+            return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{db_name}",
+                resource_type="SQL Database Transparent Data Encryption",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
+
 
     def cosmos_db_update(
         self,
@@ -754,6 +1134,10 @@ was not found.')
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
+        
+        Raises:
+            ValueError: If the Cosmos DB account is not found
+            DemistoException: If there are permission or other API errors
         """
         data = {"properties": {"disableKeyBasedMetadataWriteAccess": disable_key_based_metadata_write_access}}
         data = remove_empty_elements(data)
@@ -762,8 +1146,17 @@ was not found.')
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DocumentDB/databaseAccounts/{account_name}"
         )
-
-        return self.http_request("PATCH", full_url=full_url, json_data=data, params=params)
+        demisto.debug("Updating Cosmos DB.")
+        try:
+            return self.http_request("PATCH", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=account_name,
+                resource_type="Cosmos DB Account",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name
+            )
 
     def remove_member_from_role(self, role_object_id: str, user_id: str):
         """Removing a member from a specific role.
@@ -1385,10 +1778,10 @@ def acr_update_command(client: AzureClient, params: dict, args: dict):
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     registry_name = args.get("registry_name", "")
-    allow_exports = args.get("allow_exports", "")
-    public_network_access = args.get("public_network_access", "")
-    anonymous_pull_enabled = args.get("anonymous_pull_enabled", "")
-    authentication_as_arm_policy = args.get("authentication_as_arm_policy", "")
+    allow_exports = args.get("allow_exports")
+    public_network_access = args.get("public_network_access")
+    anonymous_pull_enabled = args.get("anonymous_pull_enabled")
+    authentication_as_arm_policy = args.get("authentication_as_arm_policy")
     response = client.acr_update(
         subscription_id,
         resource_group_name,
@@ -1666,7 +2059,7 @@ def get_token(access_token: str) -> dict:
 
 def get_role_assignments(client, object_id: str):
     role_assignments = client.get_role_assignments_call(object_id)
-    return role_assignments.get("value")
+    return role_assignments.get("value", [])
 
 
 def get_role_definitions_permissions(client: AzureClient, list_role_assignments: list) -> list:
@@ -1682,12 +2075,14 @@ def get_role_definitions_permissions(client: AzureClient, list_role_assignments:
     """
     role_definitions_permissions = []
     for assignment in list_role_assignments:
+        demisto.debug(f"Searching permissions of role assignment '{assignment}'.")
         role_definition_id = assignment.get("properties", {}).get("roleDefinitionId", "").split("/")[-1]
         current_role_permissions = (
             client.get_role_permissions(role_definition_id).get("properties", {}).get("permissions")[0].get("actions")
         )
         role_definitions_permissions.extend(current_role_permissions)
 
+    demisto.debug(f"Found the following role permissions: {role_definitions_permissions}")
     return role_definitions_permissions
 
 
@@ -1729,7 +2124,9 @@ def test_module(client: AzureClient, token: str = "") -> str:
         raise Exception(f"Missing the following permissions: {missing_permissions}.")
 
 
-def check_required_permissions(token: str, subscription_id: str, connector_id: str) -> HealthCheckError | None:
+def check_required_permissions(
+    token: str, subscription_id: str, connector_id: str
+    ) -> list[HealthCheckError] | HealthCheckError | None:
     """
     Checks if the current credentials have all required permissions.
 
@@ -1752,9 +2149,11 @@ def check_required_permissions(token: str, subscription_id: str, connector_id: s
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
     client = AzureClient(subscription_id=subscription_id, headers=headers)
     try:
-        list_role_assignments = get_role_assignments(client, object_id)
+        demisto.debug("Start checking permissions.")
+        list_role_assignments: list = get_role_assignments(client, object_id)
         list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
         missing_permissions = check_all_permissions(list_roles_permissions, [])
+        demisto.debug(f"Missing the following permissions: {missing_permissions}")
     except Exception as e:
         error_message = f"Failed to test permissions for Azure integration: {str(e)}"
         if connector_id:
@@ -1768,26 +2167,34 @@ def check_required_permissions(token: str, subscription_id: str, connector_id: s
         raise DemistoException(error_message)
 
     if missing_permissions:
-        error_message = f"Missing required permissions for Azure integration: {missing_permissions}"
+        perm_to_cmds = {
+            perm: [cmd.strip() for cmd in PERMISSIONS_TO_COMMANDS.get(perm, []) for cmd in cmd.split(',')]
+            for perm in missing_permissions
+        }
+        error_lines = [f"- {perm} (required for: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
         if connector_id:
-            return HealthCheckError(
-                account_id=subscription_id,
-                connector_id=connector_id,
-                message=error_message,
-                error_type=ErrorType.PERMISSION_ERROR,
-            )
+            return [
+                HealthCheckError(
+                    account_id=subscription_id,
+                    connector_id=connector_id,
+                    message=f"Missing required permission {line}",
+                    error_type=ErrorType.PERMISSION_ERROR,
+                )
+                for line in error_lines
+            ]
 
-        raise DemistoException(error_message)
-
+        raise DemistoException("Missing required permissions for Azure integration:\n" + "\n".join(error_lines))
+    
     return None
 
 
-def health_check(subscription_id: str, connector_id: str) -> HealthCheckError | None:
+def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> HealthCheckError | None:
     """
     Tests connectivity to Azure and checks for required permissions.
     This function is specifically used for COOC (Connect on our Cloud) health checks
     to verify connectivity and permissions.
     Args:
+        shared_creds (dict): Pre-fetched cloud credentials (format varies by provider).
         project_id (str): The Azure subscription ID to check against.
         connector_id (str): The connector ID for the Cloud integration.
     Returns:
@@ -1801,8 +2208,7 @@ def health_check(subscription_id: str, connector_id: str) -> HealthCheckError | 
             error_type=ErrorType.INTERNAL_ERROR,
         )
     try:
-        credential_data = get_cloud_credentials(CloudTypes.AZURE.value, subscription_id)
-        token = credential_data.get("access_token")
+        token = shared_creds.get("access_token")
         if not token:
             return HealthCheckError(
                 account_id=subscription_id,
@@ -1904,7 +2310,7 @@ def main():
 
         if command == "test-module" and connector_id:
             demisto.debug(f"Running permissions check for the accounts of {connector_id}")
-            return_results(run_permissions_check_for_accounts(connector_id, health_check))
+            return_results(run_permissions_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
         elif command == "test-module":
             return_results(test_module(client, token))
         elif command in commands_with_params_and_args:
