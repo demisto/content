@@ -231,7 +231,7 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     params: dict[str, Any] = {"limit": limit}
     if indicator_type:
         if indicator_type not in ["domain", "email", "ip", "md5", "url"]:
-            demisto.error(f"{THREAT_STREAM} - Invalid indicator type.")
+            demisto.info(f"{THREAT_STREAM} - Invalid indicator type.")
             return CommandResults(
                 readable_output="""### Invalid indicator type. Select one of the following types: domain, email, ip, md5, url."""
             )
@@ -244,7 +244,7 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     indicators_raw = handle_get_pagination(client, res, limit)  # type: ignore
 
     if not indicators_raw:
-        demisto.info(f"""{THREAT_STREAM} - No indicators found for the given criteria in the
+        demisto.debug(f"""{THREAT_STREAM} - No indicators found for the given criteria in the
                      'threatstream-feed-get-indicators' command.""")
         return CommandResults(readable_output="### No indicators were found.")
 
