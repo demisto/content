@@ -23,6 +23,6 @@
         "platform"
     ],
     "supportedModules": [
-        "AGENTIX"
+        "agentix"
     ]
 }
