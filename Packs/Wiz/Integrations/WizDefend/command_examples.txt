@@ -54,8 +54,9 @@
 !wiz-defend-get-threats origin="WIZ_SENSOR" resource_id="i-0g03j4h5gd123d456" creation_days_back="15"
 !wiz-defend-get-threats platform="AWS,Azure,GCP" cloud_account_or_cloud_organization="12345678-1234-1234-1234-12345678abcd"
 
-!wiz-defend-resolve-threat issue_id="12345678-1234-1234-1234-cc0a24716e0b" resolution_reason="ISSUE_FIXED" resolution_note="Issue has been resolved"
+!wiz-defend-resolve-threat issue_id="12345678-1234-1234-1234-cc0a24716e0b" resolution_reason="MALICIOUS_THREAT" resolution_note="Issue has been resolved"
 
+!wiz-defend-reopen-threat issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 !wiz-defend-reopen-threat issue_id="12345678-1234-1234-1234-cc0a24716e0b" reopen_note="still an issue"
 
 !wiz-defend-set-threat-in-progress issue_id="12345678-1234-1234-1234-cc0a24716e0b"
