@@ -609,7 +609,7 @@ $includeTriggeringEvents: Boolean = true) {
 PULL_DETECTIONS_VARIABLES = {
     WizApiVariables.ORDER_BY: {
         WizApiVariables.FIELD: WizOrderByFields.CREATED_AT,
-        WizApiVariables.DIRECTION: WizOrderDirection.ASC,
+        WizApiVariables.DIRECTION: WizOrderDirection.DESC,
     }
 }
 
