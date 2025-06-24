@@ -14880,7 +14880,6 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int, offse
         dir="forward",
         skip=offset_fetch,
     )
-    demisto.debug(f"{params=}")
     response = http_request(URL, "GET", params=params)
     return dict_safe_get(response, ("response", "result", "job"))  # type: ignore
 

@@ -9,6 +9,10 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 ## Configure Cofense Triage v3 in Cortex
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Cofense Triage v3.
+3. Click **Add instance** to create and configure a new integration instance.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Server URL to connect to Cofense Triage. | True |
@@ -26,6 +30,8 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Trust any certificate (not secure) |  | False |
 | Incident type |  | False |
 | Fetch incidents |  | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Integration Settings Preferences
 
