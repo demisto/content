@@ -22,6 +22,7 @@ To use this integration, the following permissions are required on the Azure app
 - `RoleManagement.ReadWrite.Directory`
 - `Policy.ReadWrite.ConditionalAccess`
 - `Policy.Read.All`
+- `Application.Read.All`
 
 ## Commands
 
