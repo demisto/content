@@ -1649,7 +1649,7 @@ class TestHuntingQueryBuilder:
                 ),  # query without space after table name (bug fix CIAC-14096)
             ]
         )
-        def test_rebuild_query_with_time_range(self, query, time_range, expected):
+        def test_rebuild_query_with_time_range__full_query(self, query, time_range, expected):
             """
             Tests full query
 
