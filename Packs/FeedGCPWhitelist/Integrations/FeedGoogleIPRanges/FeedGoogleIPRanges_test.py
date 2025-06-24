@@ -34,10 +34,7 @@ def test_fetch_indicators_main(mocker: MockerFixture):
             "tlp_color": None,
         },
     )
-    mocker.patch(
-        "FeedGoogleIPRanges.is_demisto_version_ge",
-        return_value=True
-    )
+    mocker.patch("FeedGoogleIPRanges.is_demisto_version_ge", return_value=True)
     mocker.patch.object(demisto, "command", return_value="fetch-indicators")
     create_indicators_mocker = mocker.patch.object(demisto, "createIndicators")
 
