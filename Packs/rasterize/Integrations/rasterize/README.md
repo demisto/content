@@ -36,10 +36,10 @@ The default timeout is 5 minutes (300 seconds). If the rasterize command process
 
 In cases where you encounter timeout errors when processing many URLs, you can either:
 
-1. Split the URLs into smaller batches to process.
-2. Increase the timeout setting for the specific task in the playbook that runs the rasterize command.
+* Split the URLs into smaller batches to process.
+* Increase the timeout setting for the specific task in the playbook that runs the rasterize command.
 
-To increase the timeout, modify the task's configuration by accessing the task settings, clicking the **Advanced** section, and adjusting the **Execution timeout (seconds)** field to a higher value appropriate for the workload.
+To increase the timeout for a playbook task, modify the task's configuration by accessing the task settings, clicking the **Advanced** section, and adjusting the **Execution timeout (seconds)** field to a higher value appropriate for the workload.
 
 ## Commands
 
