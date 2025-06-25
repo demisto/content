@@ -1400,13 +1400,14 @@ def fetch_incidents():
     most_recent_event_time = ""
 
     last_run_data = demisto.getLastRun()
-    if last_run_data:
+    demisto.debug(f"{last_run_data=}")
+    if last_run_data.get("time"):
         last_run_time = last_run_data["time"]
     else:
         date_time_interval_ago = now_utc - timedelta(minutes=int(FETCH_INTERVAL))
         date_time_interval_ago_posix = datetime_to_posix_without_milliseconds(date_time_interval_ago)
         last_run_time = date_time_interval_ago_posix
-
+    demisto.debug(f"{last_run_time=}")
     list_of_sites_to_fetch = get_list_of_site_names_to_fetch()
     events_array = get_events_from_given_sites(list_of_sites_to_fetch, last_run_time)
     incidents = []
@@ -1421,6 +1422,7 @@ def fetch_incidents():
         if event_time > most_recent_event_time:
             most_recent_event_time = event_time
 
+    most_recent_event_time = most_recent_event_time or last_run_time
     demisto.incidents(incidents)
     demisto.setLastRun({"time": most_recent_event_time})
 
