@@ -13,7 +13,17 @@ import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
 from panos.panorama import Panorama, DeviceGroup, Template, TemplateStack, PanoramaCommitAll
-from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule, NatRule
+from panos.policies import (
+    Rulebase,
+    PreRulebase,
+    PostRulebase,
+    SecurityRule,
+    NatRule,
+    ApplicationOverride,
+    AuthenticationRule,
+    DecryptionRule,
+    PolicyBasedForwarding,
+)
 from panos.objects import (
     LogForwardingProfile,
     LogForwardingProfileMatchList,
@@ -259,6 +269,30 @@ CHARACTERISTICS_LIST = (
 )
 
 RULE_TYPES_MAP = {"Security Rule": "security", "NAT Rule": "nat", "PBF Rule": "pbf"}
+
+# Map rulebase types to their corresponding class implementations
+Rulebase_to_ClassType_Map = {
+    "security": SecurityRule,
+    "application-override": ApplicationOverride,
+    "authentication": AuthenticationRule,
+    "decryption": DecryptionRule,
+    "nat": NatRule,
+    "pbf": PolicyBasedForwarding,
+}
+
+# Map rulebase types to the Context prefix to use when returning command results for rule changes.
+Rulebase_to_ContextPrefix_Map = {
+    "security": "SecurityRule",
+    "decryption": "SSLRule",
+    "nat": "NAT",
+    "pbf": "PBF",
+    "authentication": "AuthRule",
+    "application-override": "AppOverride",
+}
+
+
+# Map Panorama rule positions to their corresponding class implementations
+Pre_Post_to_ClassType_Map = {"pre-rulebase": PreRulebase, "post-rulebase": PostRulebase}
 
 
 class ExceptionCommandType(enum.Enum):
@@ -4149,33 +4183,6 @@ def panorama_edit_rule_command(args: dict):
                 "EntryContext": {"Panorama.SecurityRule(val.Name == obj.Name)": rule_output},
             }
         )
-
-
-@logger
-def panorama_delete_rule_command(rulename: str):
-    """
-    Delete a security rule
-    """
-    params = {"type": "config", "action": "delete", "key": API_KEY}
-    if DEVICE_GROUP:
-        if not PRE_POST:
-            raise Exception("Please provide the pre_post argument when moving a rule in Panorama instance.")
-        else:
-            params["xpath"] = XPATH_SECURITY_RULES + PRE_POST + "/security/rules/entry" + "[@name='" + rulename + "']"
-    else:
-        params["xpath"] = XPATH_SECURITY_RULES + "[@name='" + rulename + "']"
-
-    result = http_request(URL, "POST", body=params)
-
-    return_results(
-        {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["json"],
-            "Contents": result,
-            "ReadableContentsFormat": formats["text"],
-            "HumanReadable": "Rule deleted successfully.",
-        }
-    )
 
 
 @logger
@@ -10368,6 +10375,74 @@ class PanosObjectReference(ResultData):
     _title = "PAN-OS Objects"
 
 
+@dataclass
+class ShowRuleHitCountResult:
+    """
+    :param name: The name of the rule.
+    :param vsys: The name of the vsys where the rule is configured.
+    :param rulebase: The rulebase type of the rule.
+    :param instanceName: The name of the Integration Instance running the command
+    :param instanceType: The type of the Integration Instance running the command (panorama or firewall)
+    :param latest:
+    :param hit_count: The number of hits for the rule.
+    :param last_hit_timestamp: Timestmap of the last time the rule was hit.
+    :param last_reset_timestamp: Timestamp of the last time the hit count was reset.
+    :param first_hit_timestamp: Timestamp of the first time the rule was hit.
+    :param rule_creation_timestamp: Timestamp of when the rule was created.
+    :param rule_modification_timestamp: Timestamp of the last time the rule's configuration was modified.
+    :param is_from_panorama: Boolean indicating if the rule is pushed from Panorama (True) or local to firewall (False)
+    """
+
+    hostid: str
+    latest: str
+    hit_count: int
+    last_hit_timestamp: str
+    last_reset_timestamp: str
+    first_hit_timestamp: str
+    rule_creation_timestamp: str
+    rule_modification_timestamp: str
+    instanceName: str = ""
+    instanceType: str = ""
+    name: str = ""
+    vsys: str = ""
+    rulebase: str = ""
+    is_from_panorama: bool = False
+    from_dg_name: str = ""
+    position: str = ""
+
+    _output_prefix = OUTPUT_PREFIX + "RuleHitCount"
+    _title = "PAN-OS Rule Hit Count"
+    _outputs_key_field = "rulebase"
+
+    def __post_init__(self):
+        self.hit_count = int(self.hit_count)
+        self.last_hit_timestamp = self._format_timestamp(self.last_hit_timestamp)
+        self.last_reset_timestamp = self._format_timestamp(self.last_reset_timestamp)
+        self.first_hit_timestamp = self._format_timestamp(self.first_hit_timestamp)
+        self.rule_creation_timestamp = self._format_timestamp(self.rule_creation_timestamp)
+        self.rule_modification_timestamp = self._format_timestamp(self.rule_modification_timestamp)
+
+    def _format_timestamp(self, timestamp):
+        return datetime.fromtimestamp(int(timestamp)).strftime(DATE_FORMAT)
+
+
+@dataclass
+class PushedSharedPolicy:
+    """
+    :param hostid: The serial number of the firewall the pushed policies were found on
+    :param name: The name of the rule
+    :param loc: The device group location of the rule
+    :param position: The rule position (pre-rulebase or post-rulebase)
+    :param policy_type: The rule's policy type (security, nat, etc)
+    """
+
+    hostid: str
+    name: str
+    loc: str
+    position: str = ""
+    policy_type: str = ""
+
+
 def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, class_type: Callable):
     """
     Given a dictionary and a datacalass, converts the dictionary into the dataclass type.
@@ -10531,6 +10606,118 @@ class ConfigurationHygieneFix(ResultData):
 
     _output_prefix = OUTPUT_PREFIX + "ConfigurationHygieneFix"
     _title = "PAN-OS Fixed Configuration Hygiene Issues"
+
+
+@logger
+def panorama_disable_or_delete_rule_command(
+    topology: Topology, operation: str, rulename: str, rulebase: str = "", pre_post: str = "", target: str = "", vsys: str = ""
+):
+    """
+    Disable or Delete a policy rule from the specified rulebase.
+
+    :param topology: The network topology containing firewall and Panorama objects
+    :param operation: The operation to perform ('delete' or 'disable')
+    :param rulename: Name of the rule to delete or disable
+    :param rulebase: Type of rulebase containing the rule
+    :param pre_post: Whether the rule is in pre or post rulebase
+    :param target: Target firewall device
+    :param vsys: Virtual system identifier
+    """
+    # Identify the platform type
+    is_panorama = len(topology.panorama_objects) > 0
+
+    # Identify the pan-os-python class type for the given rulebase
+    rule_class_type = Rulebase_to_ClassType_Map.get(rulebase)
+
+    if rule_class_type is None:
+        raise ValueError(f"Unsupported rulebase type: {rulebase}")
+
+    category = ""
+    applied_action = ""
+    location_description = ""
+
+    if (is_panorama and target) or not is_panorama:
+        # Firewall case - Directly connected to a Firewall, otherwise proxying through Panorama to issue Firewall commands
+        firewall = next(iter(topology.firewalls(target=target)))
+        if vsys:
+            firewall.vsys = vsys
+
+        # Prepare class objects
+        rulebase_object = firewall.add(Rulebase())
+        rule = rule_class_type(name=rulename)
+        rulebase_object.add(rule)
+
+        # Fetch rule details from the device
+        try:
+            rule.refresh()
+        except panos.errors.PanObjectMissing as ex:
+            return_error(f"Rule {rulename} was not found on firewall {target}.")
+
+        category = "Local"
+        location_description = f"firewall {target}"
+
+    elif is_panorama and pre_post and DEVICE_GROUP:
+        # Panorama case - Connected to Panorama and the rule is configured there
+        pre_post = pre_post.replace("_", "-")
+        panorama = next(iter(topology.panorama_devices()))
+
+        # Prepare class objects
+        devicegroup_object = panorama.add(DeviceGroup(name=DEVICE_GROUP))
+        pre_post_class_type = Pre_Post_to_ClassType_Map.get(pre_post)
+
+        if pre_post_class_type is None:
+            raise ValueError(f"Unsupported pre_post value: {pre_post}")
+
+        rulebase_object = devicegroup_object.add(pre_post_class_type())
+        rule = rule_class_type(name=rulename)
+        rulebase_object.add(rule)
+
+        # Fetch rule details from the device
+        try:
+            rule.refresh()
+        except panos.errors.PanObjectMissing as ex:
+            return_error(f"Rule {rulename} was not found on Panorama device group {DEVICE_GROUP} {pre_post}.")
+
+        category = "Panorama"
+        location_description = f"Panorama device group {DEVICE_GROUP} {pre_post}"
+
+    else:
+        return_error(
+            f"Invalid arguments provided. Disabling or deleting rules from Panorama requires device-group and pre_post to be set."
+        )
+
+    # Apply the operation (common to both cases)
+    if operation == "delete":
+        rule.delete()
+        applied_action = "Deleted"
+    elif operation == "disable":
+        rule.disabled = True
+        rule.apply()
+        applied_action = "Disabled"
+
+    # Build outputs (common structure)
+    outputs = {
+        "Panorama.CleanedUpRules": {
+            "Category": category,
+            "RuleName": rulename,
+            "Rulebase": rulebase,
+            "PrePost": pre_post,
+            "DeviceGroup": DEVICE_GROUP,
+            "Target": target,
+            "Vsys": vsys,
+            "AppliedAction": applied_action,
+        },
+        f"Panorama.{Rulebase_to_ContextPrefix_Map.get(rulebase)}(val.Name == obj.Name)": {
+            "Name": rulename,
+            "DeviceGroup": DEVICE_GROUP,
+        },
+    }
+
+    result = CommandResults(
+        readable_output=f"Rule {rulename} was successfully {applied_action.lower()} on {location_description}.", outputs=outputs
+    )
+
+    return_results(result)
 
 
 class HygieneRemediation:
@@ -11794,6 +11981,106 @@ class FirewallCommand:
 
         return ShowRoutingRouteCommandResult(summary_data=summary_data, result_data=result_data)
 
+    @staticmethod
+    def get_hitcounts(
+        topology: Topology,
+        cmd: str,
+        rulebase_type: str,
+        no_new_hits_since: datetime | None,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None,
+        unused_only: str = "false",
+    ) -> List[ShowRuleHitCountResult] | None:
+        """
+        Runs the `show rule-hit-count` command.
+        :param topology: `Topology` instance.
+        :param cmd: The XML-formatted command to run on the firewalls.
+        :param rulebase_type: The rulebase being examined
+        :param no_new_hits_since: The datetime object used to filter out rules that haven't had any new hits since that time.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command.
+        :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
+        """
+        # Initialize empty list to store results to return
+        result_data = []
+
+        # Get the name of the PANOS integration instance
+        instanceName = demisto.callingContext["context"]["IntegrationInstance"]
+
+        # Identify the platform type the PANOS integration instance is connected to
+        instanceType = "panorama" if len(topology.panorama_objects) > 0 else "firewall"
+
+        # Run operational command on each firewall using the given XML command to get rule hitcounts
+        for firewall in topology.firewalls(filter_string=device_filter_string, target=target):
+            demisto.debug(
+                f"Now running operational command to get rule hitcounts.  Command XML: {cmd}\n"
+                f"Device Filter String: {device_filter_string}\nTarget: {target}"
+            )
+            hitcount_response = run_op_command(firewall, cmd=cmd, cmd_xml=False)
+
+            # Get list of vsys entries in the response
+            vsys_entries = hitcount_response.findall("./result/rule-hit-count/vsys/entry")
+
+            # Run operational command on the firewall to fetch policies pushed from Panorama (if any)
+            # Details from this will be used to enhance the returned results.
+            demisto.debug(f"Now running operational command to get Panorama pushed policies")
+            pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
+            pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
+            pushed_rulebases = {}
+            pushed_rulebases["pre_rulebase"] = pushed_config_response.findall(
+                f"./result/policy/panorama/pre-rulebase/{rulebase_type}/rules/entry"
+            )
+            pushed_rulebases["post_rulebase"] = pushed_config_response.findall(
+                f"./result/policy/panorama/post-rulebase/{rulebase_type}/rules/entry"
+            )
+
+            # Create data class items from pushed policy data
+            pushed_rulebase_results = {}
+            for position in ["pre_rulebase", "post_rulebase"]:
+                for pushed_rule in pushed_rulebases[position]:
+                    pushed_rulebase_entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
+                    pushed_rulebase_entry.policy_type = rulebase_type
+                    pushed_rulebase_entry.position = position
+                    pushed_rulebase_results[pushed_rulebase_entry.name] = pushed_rulebase_entry
+
+            for vsys_entry in vsys_entries:
+                # Get the name of the current vsys entry
+                vsys_name = vsys_entry.get("name", "")
+
+                for rulebase_entry in vsys_entry.findall("./rule-base/entry"):
+                    # Get the name of the current rulebase entry
+                    rulebase_name = rulebase_entry.get("name", "")
+
+                    for rule_entry in rulebase_entry.findall("./rules/entry"):
+                        # Iterate through all rules in the list, formatting them as a data class
+                        ET.SubElement(rule_entry, "instanceName")
+                        result: ShowRuleHitCountResult = dataclass_from_element(firewall, ShowRuleHitCountResult, rule_entry)
+
+                        # Skip rules with hits or no new hits since a given date if those arguments were specified
+                        if (unused_only == "true" and result.hit_count != 0) or (
+                            no_new_hits_since and datetime.strptime(result.last_hit_timestamp, DATE_FORMAT) > no_new_hits_since
+                        ):
+                            continue  # Skip this result if given filter arguments say we should omit it
+
+                        # Add vsys and rulebase, and integration instance names identified from earlier stages
+                        result.vsys = vsys_name
+                        result.rulebase = rulebase_name
+                        result.instanceName = instanceName
+                        result.instanceType = instanceType
+
+                        # Add information about Panorama pushed policy, if any
+                        pushed_rule_entry = pushed_rulebase_results.get(result.name)
+                        if pushed_rule_entry:
+                            result.is_from_panorama = True
+                            result.position = pushed_rule_entry.position
+                            result.from_dg_name = pushed_rule_entry.loc
+
+                        # Add the result to the list of results
+                        result_data.append(result)
+
+        # Return final results
+        return result_data
+
 
 """
 -- XSOAR Specific Code Starts below --
@@ -12023,6 +12310,70 @@ def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabi
     :param state: New state.
     """
     return FirewallCommand.change_status(topology, hostid=target, state=state)
+
+
+def get_rule_hitcounts(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None,
+    rulebase: str = "security",
+    vsys: str = "all",
+    rules: str = "all",
+    unused_only: str = "false",
+    no_new_hits_since: Optional[str] = None,
+):
+    """
+    Retrieves hit counts for policy rules from the specified firewall or device.
+
+    :param topology: `Topology` instance
+    :param device_filter_string: String to filter to only check given device
+    :param target: ID of host (serial or hostname) to target
+    :param rulebase: Type of rulebase to check (default: security)
+    :param vsys: Virtual system to check, or "all" for all virtual systems
+    :param rules: Comma-separated list of rule names to check, or "all" for all rules
+    :param unused_only: Whether to return only unused rules (default: false)
+    :param no_new_hits_since: Date string in format "YYYY/MM/DD HH:MM:SS" to filter rules with no hits since that time
+    """
+    # Prepare XML ElementTree to add attributes to
+    xml_root = ET.Element("show")
+    xml_rule_hit_count = ET.SubElement(xml_root, "rule-hit-count")
+
+    # Add vsys selection to ElementTree
+    xml_vsys = ET.SubElement(xml_rule_hit_count, "vsys")
+
+    # Function to add rulebase and rule selections to the appropriate parent object
+    def add_rulebase_and_rules(parent):
+        # Add rule-base and rules list to the parent element
+        rulebase_elem = ET.SubElement(parent, "rule-base")
+        rulebase_entry = ET.SubElement(rulebase_elem, "entry", name=rulebase)
+        return ET.SubElement(rulebase_entry, "rules")
+
+    # Add rules argument to ElementTree, adding container attribute for specific rules if needed
+    if vsys == "all":
+        all_vsys = ET.SubElement(xml_vsys, "all")
+        vsys_rules = add_rulebase_and_rules(all_vsys)
+    else:
+        vsys_name = ET.SubElement(xml_vsys, "vsys-name")
+        vsys_name_entry = ET.SubElement(vsys_name, "entry", name=vsys)
+        vsys_rules = add_rulebase_and_rules(vsys_name_entry)
+
+    # Add rules to check to ElementTree
+    if rules == "all":
+        ET.SubElement(vsys_rules, "all")
+    else:
+        # If a list of specific rules was given, split comma-separated list & strip whitespace, then add to ElementTree
+        rule_list = ET.SubElement(vsys_rules, "list")
+        for rule in rules.split(","):
+            ET.SubElement(rule_list, "member").text = f"{rule.strip()}"
+
+    # Format operational command XPATH
+    cmd = ET.tostring(xml_root, encoding="us-ascii")
+
+    # Convert date string from "no_new_hits_since" argument to datetime object
+    no_new_hits_since_dt = datetime.strptime(no_new_hits_since, "%Y/%m/%d %H:%M:%S") if no_new_hits_since else None
+
+    # Execute command and return result
+    return FirewallCommand.get_hitcounts(topology, cmd, rulebase, no_new_hits_since_dt, device_filter_string, target, unused_only)
 
 
 """Hygiene Commands"""
@@ -15585,7 +15936,18 @@ def main():  # pragma: no cover
             panorama_edit_rule_command(args)
 
         elif command == "panorama-delete-rule" or command == "pan-os-delete-rule":
-            panorama_delete_rule_command(args.get("rulename"))
+            topology = get_topology()
+            args = demisto.args()
+            args.pop("device-group", None)
+            args["operation"] = "delete"
+            panorama_disable_or_delete_rule_command(topology, **args)
+
+        elif command == "panorama-disable-rule" or command == "pan-os-disable-rule":
+            topology = get_topology()
+            args = demisto.args()
+            args.pop("device-group", None)
+            args["operation"] = "disable"
+            panorama_disable_or_delete_rule_command(topology, **args)
 
         # Traffic Logs - deprecated
         elif command == "panorama-query-traffic-logs" or command == "pan-os-query-traffic-logs":
@@ -16034,6 +16396,14 @@ def main():  # pragma: no cover
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(get_object(topology, **demisto.args()), empty_result_message="No objects found.")
+            )
+        elif command == "pan-os-get-rule-hitcounts":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_rule_hitcounts(topology, **demisto.args()),
+                    empty_result_message="No devices in Topology returned rule hit count data.",
+                )
             )
         elif command == "pan-os-platform-get-device-state":
             topology = get_topology()

@@ -10,6 +10,7 @@ import requests_mock
 from CommonServerPython import CommandResults, DemistoException
 from defusedxml import ElementTree
 from freezegun import freeze_time
+from datetime import datetime
 from panos.device import Vsys
 from panos.firewall import Firewall
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
@@ -8922,3 +8923,65 @@ class TestDynamicUpdateCommands:
                     },
                 }
             }
+
+
+@pytest.mark.parametrize(
+    ("vsys", "rules", "no_new_hits_since", "expected_cmd", "expected_datetime"),
+    [
+        (
+            "vsys1",
+            "Rule1",
+            "",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
+            b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
+            b"</rule-hit-count></show>",
+            None,
+        ),
+        (
+            "all",
+            "Rule1",
+            "",
+            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
+            b"</list></rules></entry></rule-base></all></vsys></rule-hit-count></show>",
+            None,
+        ),
+        (
+            "all",
+            "all",
+            "",
+            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><all /></rules></entry>'
+            b"</rule-base></all></vsys></rule-hit-count></show>",
+            None,
+        ),
+        (
+            "all",
+            "Rule1, Rule2, Rule3",
+            "",
+            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
+            b"<member>Rule2</member><member>Rule3</member></list></rules></entry></rule-base></all></vsys>"
+            b"</rule-hit-count></show>",
+            None,
+        ),
+        (
+            "vsys1",
+            "Rule1",
+            "2025/06/01 00:00:00",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
+            b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
+            b"</rule-hit-count></show>",
+            datetime.strptime("2025/06/01 00:00:00", "%Y/%m/%d %H:%M:%S"),
+        ),
+    ],
+)
+def test_get_rule_hitcounts(vsys, rules, no_new_hits_since, expected_cmd, expected_datetime, mock_topology, mocker):
+    from Panorama import get_rule_hitcounts
+
+    mock_get_hitcounts = mocker.patch("Panorama.FirewallCommand.get_hitcounts", return_value=True)
+
+    get_rule_hitcounts(mock_topology, "", "1.2.3.4", "security", vsys, rules, "false", no_new_hits_since)
+
+    cmd_result = mock_get_hitcounts.call_args[0][1]
+    no_new_hits_since_dt = mock_get_hitcounts.call_args[0][3]
+
+    assert cmd_result == expected_cmd
+    assert no_new_hits_since_dt == expected_datetime
