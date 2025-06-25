@@ -1770,14 +1770,15 @@ def test_should_close_incident_in_remote(mocker, delta, data, close_ticket_param
 
 
 @pytest.mark.parametrize(
-    "delta, incident_status, to_open",
+    "delta, data, incident_status, to_open",
     [
-        ({"classification": "FalsePositive"}, IncidentStatus.ACTIVE, False),
-        ({"classification": ""}, IncidentStatus.ACTIVE, True),
-        ({"classification": ""}, IncidentStatus.DONE, False),
-        ({}, IncidentStatus.ACTIVE, False),
+        ({"classification": "FalsePositive"}, {"status": "Active"}, IncidentStatus.ACTIVE, False),
+        ({"classification": ""}, {"status": "Closed"}, IncidentStatus.ACTIVE, True),
+        ({"classification": ""}, {"status": "Closed", "classification": "FalsePositive"}, IncidentStatus.DONE, False),
+        ({}, {"status": "Active", "classification": "FalsePositive"}, IncidentStatus.ACTIVE, False),
         (
             {"classification": "FalsePositive"},
+            {"classification": "FalsePositive", "status": "Closed"},
             IncidentStatus.DONE,
             False,
         ),

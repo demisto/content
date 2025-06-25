@@ -810,7 +810,7 @@ def should_open_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any], 
         Boolean value - whether to open the ticket or not.
     """
     closing_field = "classification"
-    closing_reason = delta.get(closing_field, data.get(closing_field, "")) == ""
+    closing_reason = delta.get(closing_field, data.get(closing_field)) == ""
     return incident_status == IncidentStatus.ACTIVE and closing_reason
 
 
