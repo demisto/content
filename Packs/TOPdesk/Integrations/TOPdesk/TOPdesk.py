@@ -175,26 +175,18 @@ class Client(BaseClient):
         allowed_list_type = ["assets"]
 
         if list_type not in allowed_list_type:
-            raise ValueError(
-                f"Cannot get list of type {list_type}.\n Only {allowed_list_type} are allowed."
-            )
+            raise ValueError(f"Cannot get list of type {list_type}.\n Only {allowed_list_type} are allowed.")
         else:
             url_suffix = f"assetmgmt/{list_type}"
 
         request_params: dict[str, Any] = assign_params(
-            archived=archived,
-            pageStart=start,
-            pageSize=page_size,
-            fields=fields,
-            searchTerm=search_term
+            archived=archived, pageStart=start, pageSize=page_size, fields=fields, searchTerm=search_term
         )
         if query:
             request_params["$filter"] = query
 
         try:
-            result = self._http_request(
-                method="GET", url_suffix=url_suffix, params=request_params
-            )
+            result = self._http_request(method="GET", url_suffix=url_suffix, params=request_params)
 
         except Exception:
             demisto.debug("No items found")
@@ -253,16 +245,12 @@ class Client(BaseClient):
             data = json.loads(data)
 
         if asset_id and data:
-            return self._http_request(
-                method="POST", url_suffix=f"/assetmgmt/assets/{asset_id}", json_data=data, params=params
-            )
+            return self._http_request(method="POST", url_suffix=f"/assetmgmt/assets/{asset_id}", json_data=data, params=params)
 
         if not asset_id and data:
             raise DemistoException("Invalid arguments provided.")
 
-        return self._http_request(
-            method="POST", url_suffix=f"/assetmgmt/assets/{asset_id}", json_data=data, params=params
-        )
+        return self._http_request(method="POST", url_suffix=f"/assetmgmt/assets/{asset_id}", json_data=data, params=params)
 
     def update_incident(self, args: dict[str, Any]) -> dict[str, Any]:
         """Update incident in TOPdesk.
@@ -907,9 +895,7 @@ def assets_to_command_results(assets: list[dict[str, Any]]) -> CommandResults:
         return CommandResults(readable_output="No assets found")
     # Remove '@' prefix from keys in each asset
     assets = [{k.replace("@", ""): v for k, v in asset.items()} for asset in assets]
-    readable_output = tableToMarkdown(
-        f"{INTEGRATION_NAME} assets", capitalize_for_outputs(assets), removeNull=True
-    )
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} assets", capitalize_for_outputs(assets), removeNull=True)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_NAME}.Asset",
@@ -1286,9 +1272,7 @@ def get_incidents_list_command(client: Client, args: dict[str, Any]) -> CommandR
             raise e
 
 
-def get_assets_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults | str:
+def get_assets_list_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """Parse arguments and return asset list as CommandResults.
 
     Args:
@@ -1299,9 +1283,7 @@ def get_assets_list_command(
     """
 
     try:
-        command_results = assets_to_command_results(
-            get_assets_list(client=client, args=args)
-        )
+        command_results = assets_to_command_results(get_assets_list(client=client, args=args))
         return command_results
     except Exception as e:
         if "Error parsing query" in str(e):

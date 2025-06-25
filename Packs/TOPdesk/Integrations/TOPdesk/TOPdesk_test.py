@@ -30,7 +30,7 @@ from TOPdesk import (
     subcategories_command,
     update_remote_system_command,
     get_assets_list_command,
-    update_asset_command
+    update_asset_command,
 )
 
 
@@ -1311,9 +1311,7 @@ def test_get_modified_remote_data_command(client, requests_mock, args, params):
     get_modified_remote_data_command(client, args, params)
 
 
-@pytest.mark.parametrize(
-    "args,params", [({"remote_incident_id": "some-id"}, {"close_ticket": False})]
-)
+@pytest.mark.parametrize("args,params", [({"remote_incident_id": "some-id"}, {"close_ticket": False})])
 def test_update_remote_system_command(client, args, params):
     update_remote_system_command(client, args, params)
 
@@ -1342,9 +1340,9 @@ def test_assets_list(client, requests_mock):
             "id": "d3861991-b025-48fb-b203-2df828569736",
         },
         "readable_output": "### TOPdesk assets\n"
-                           "|Archived|Etag|Id|Text|\n"
-                           "|---|---|---|---|\n"
-                           "| true | 2022-04-11T08:20:42.409          | d3861991-b025-48fb-b203-2df828569736 | test.contoso.com |\n",
+        "|Archived|Etag|Id|Text|\n"
+        "|---|---|---|---|\n"
+        "| true | 2022-04-11T08:20:42.409          | d3861991-b025-48fb-b203-2df828569736 | test.contoso.com |\n",
     }
     mock_assets = util_load_json("test_data/topdesk_asset.json")
     expected_request_params = {
@@ -1364,10 +1362,7 @@ def test_assets_list(client, requests_mock):
     assert mocked_request.last_request.qs == expected_request_params
 
     for expected_output in expected_results["outputs"]:
-        assert (
-            command_results.outputs[0][expected_output.title()]
-            == expected_results["outputs"][expected_output]
-        )
+        assert command_results.outputs[0][expected_output.title()] == expected_results["outputs"][expected_output]
     assert command_results.readable_output == expected_results["readable_output"]
 
 
