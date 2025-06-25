@@ -802,7 +802,7 @@ def should_open_incident_in_remote(delta: Dict[str, Any], incident_status: Incid
         2. Classification value is empty.
 
     Args:
-        delta (dict): Contains the keys.
+        data (dict): Default incident data information.
         incident_status (IncidentStatus): The investigation status.
 
     Returns:
