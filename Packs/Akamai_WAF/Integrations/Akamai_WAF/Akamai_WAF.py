@@ -2262,7 +2262,7 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def activate_datastream(
+    def toggle_datastream(
         self,
         stream_id: int,
         option: str,
