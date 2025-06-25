@@ -811,8 +811,7 @@ def should_open_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any], 
     """
     closing_field = "classification"
     closing_reason = delta.get(closing_field, data.get(closing_field, "")) == ""
-    status = incident_status == IncidentStatus.ACTIVE and data.get("status") == "Closed"
-    return status and closing_reason
+    return incident_status == IncidentStatus.ACTIVE and closing_reason
 
 
 def extract_classification_reason(delta: Dict[str, str], data: Dict[str, str]):
