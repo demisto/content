@@ -31,6 +31,27 @@ class Client(BaseClient):
     Retrieve event details /albertlogs/{event_id}
     """
 
+    def error_handler(self, res: requests.Response):
+        """Generic handler for API call error
+        Constructs and throws a proper error for the API call response.
+
+        :type response: ``requests.Response``
+        :param response: Response from API after the request for which to check the status.
+        """
+
+        err_msg = f"Error in API call [{res.status_code}] - {res.reason}"
+        demisto.debug(
+            f"""
+            ---Start Error Details---
+            Error API Endpoint:
+            {res.url}
+            Error Content:
+            {str(res._content)}
+            ---End Error Details---
+            """
+        )
+        raise DemistoException(err_msg, res=res)
+
     def get_event(self, event_id: str) -> Dict[str, Any]:
         """
         Returns the details of an MS-ISAC event
@@ -43,7 +64,9 @@ class Client(BaseClient):
         """
         # We need to specify 404 as an OK code so that we can handle "no results found" as an output instead of an error
         # The API returns 404 if the specified event ID was not found
-        return self._http_request(method="GET", url_suffix=f"/albertlogs/{event_id}", timeout=100, ok_codes=(200, 404))
+        return self._http_request(
+            method="GET", url_suffix=f"/albertlogs/{event_id}", timeout=100, ok_codes=(200, 404), error_handler=self.error_handler
+        )
 
     def retrieve_events(self, days: int) -> Dict[str, Any]:
         """
@@ -56,7 +79,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
 
-        return self._http_request(method="GET", url_suffix=f"/albert/{days}", timeout=100)
+        return self._http_request(method="GET", url_suffix=f"/albert/{days}", timeout=100, error_handler=self.error_handler)
 
 
 """ HELPER FUNCTIONS """
@@ -141,10 +164,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    try:
-        client.retrieve_events(days=1)
-    except DemistoException as error:
-        raise error
+    client.retrieve_events(days=1)
     return "ok"
 
 
@@ -221,6 +241,11 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]):
 
     # event is our raw-response
     event_list = client.retrieve_events(days=days)["data"]
+
+    # If there are no albert events in the search window, the data key will be a string.
+    if isinstance(event_list, str):
+        return event_list
+
     # We initialize raw_response so we can use it as a check after the for loop has completed
     # If we find the event ID then this will be overwritten otherwise we return a different output
     raw_response = None
@@ -337,7 +362,7 @@ def main():
 
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {"Authorization": f"Bearer {api_key}"}
+        headers = {"Authorization": f"Bearer {api_key}", "Accept": "application/json"}
         client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":
