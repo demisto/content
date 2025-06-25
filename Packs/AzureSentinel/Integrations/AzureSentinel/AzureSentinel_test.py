@@ -1774,7 +1774,7 @@ def test_should_close_incident_in_remote(mocker, delta, data, close_ticket_param
     [
         ({"classification": "FalsePositive"}, {"status": "Active"}, IncidentStatus.ACTIVE, False),
         ({"classification": ""}, {"status": "Closed"}, IncidentStatus.ACTIVE, True),
-        ({"classification": ""}, {"status": "Closed", "classification": "FalsePositive"}, IncidentStatus.DONE, False),
+        ({"classification": ""}, {"status": "Closed", "classification": "FalsePositive"}, IncidentStatus.DONE, True),
         ({}, {"status": "Active", "classification": "FalsePositive"}, IncidentStatus.ACTIVE, False),
         (
             {"classification": "FalsePositive"},
@@ -1791,7 +1791,7 @@ def test_should_close_incident_in_remote(mocker, delta, data, close_ticket_param
         "5#-the_incident_is_close_classification_changed",
     ],
 )
-def test_should_open_incident_in_remote(delta, data, incident_status, to_open):
+def test_should_open_incident_in_remote(delta, incident_status, to_open):
     """
     Given
         - case 1: The incident is open and the classification was changed.
@@ -1808,7 +1808,7 @@ def test_should_open_incident_in_remote(delta, data, incident_status, to_open):
         - case 4: We expect to process the incident, so its ID exists in the expected result.
         - case 5: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
     """
-    assert should_open_incident_in_remote(delta, data, incident_status) == to_open
+    assert should_open_incident_in_remote(delta, incident_status) == to_open
 
 
 @pytest.mark.parametrize(
