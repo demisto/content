@@ -26,7 +26,7 @@ configuration:
 name: GCP
 display: GCP
 category: Cloud Services
-description: The GCP Integration automates management and security configurations for Compute Engine, Storage, and Container resources on GCP.
+description: Cloud integrations are installed from the Data Sources page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select GCP, then in Advanced Settings > Security Capabilities, enable "Automation".
 script:
   commands:
   - name: gcp-compute-firewall-patch
