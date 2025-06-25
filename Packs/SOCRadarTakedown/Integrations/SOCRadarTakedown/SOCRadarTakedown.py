@@ -1,10 +1,11 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import urllib3
 import traceback
 import re
 from typing import Any, Dict, List, Optional, Union
 from json.decoder import JSONDecodeError
+
+# Import XSOAR common functions
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -20,13 +21,12 @@ MESSAGES = {
 
 """ CLIENT CLASS """
 
-
 class Client:
     """
     Client class to interact with the SOCRadar Takedown API
     """
 
-    def __init__(self, base_url, api_key, company_id, verify, proxy):
+    def __init__(self, base_url: str, api_key: str, company_id: str, verify: bool, proxy: bool):
         self.base_url = base_url
         self.api_key = api_key
         self.company_id = company_id
@@ -34,17 +34,13 @@ class Client:
         self.verify = verify
         self.proxy = proxy
 
-    def check_auth(self):
+    def check_auth(self) -> Dict[str, Any]:
         """Checks if the API key is valid"""
-        import requests
-
-        url = f"{self.base_url}/get/company/{self.company_id}/takedown/progress"
-        params = {"asset_id": "test", "type": "impersonating_accounts"}
-
+        url = f"{self.base_url}/get/company/{self.company_id}/takedown/requests"
+        
         try:
             response = requests.get(
                 url,
-                params=params,
                 headers=self.headers,
                 verify=self.verify
             )
@@ -53,6 +49,8 @@ class Client:
                 raise Exception("Authorization Error: Invalid API Key")
             elif response.status_code == 429:
                 raise Exception("Rate limit exceeded")
+            elif response.status_code >= 500:
+                raise Exception(f"Server Error: {response.status_code}")
             elif response.status_code >= 400:
                 raise Exception(f"API Error: {response.status_code}")
 
@@ -61,16 +59,14 @@ class Client:
         except requests.exceptions.RequestException as e:
             raise Exception(f"Connection error: {str(e)}")
 
-    def submit_phishing_domain_takedown(self, domain, abuse_type="potential_phishing", notes="",
-                                        domain_type="phishing_domain", send_alarm=True, email=""):
-        """Submits a takedown request for a phishing domain"""
-        import requests
-
+    def submit_takedown_request(self, entity: str, request_type: str, abuse_type: str, 
+                               notes: str = "", send_alarm: bool = True, email: str = "") -> Dict[str, Any]:
+        """Generic method to submit takedown requests"""
         url = f"{self.base_url}/add/company/{self.company_id}/takedown/request"
         data = {
             "abuse_type": abuse_type,
-            "entity": domain,
-            "type": domain_type,
+            "entity": entity,
+            "type": request_type,
             "notes": notes,
             "send_alarm": send_alarm,
             "email": email
@@ -88,124 +84,11 @@ class Client:
 
         return response.json()
 
-    def submit_social_media_impersonation_takedown(self, url_link, abuse_type="impersonating_accounts",
-                                                   notes="", send_alarm=True, email=""):
-        """Submits a takedown request for social media impersonation"""
-        import requests
-
-        api_url = f"{self.base_url}/add/company/{self.company_id}/takedown/request"
-        data = {
-            "abuse_type": abuse_type,
-            "entity": url_link,
-            "type": "impersonating_accounts",
-            "notes": notes,
-            "send_alarm": send_alarm,
-            "email": email
-        }
-
-        response = requests.post(
-            api_url,
-            json=data,
-            headers=self.headers,
-            verify=self.verify
-        )
-
-        if response.status_code >= 400:
-            raise Exception(f"API Error: {response.status_code} - {response.text}")
-
-        return response.json()
-
-    def get_takedown_progress(self, asset_id, takedown_type):
-        """Gets the progress of a takedown request"""
-        import requests
-
-        url = f"{self.base_url}/get/company/{self.company_id}/takedown/progress"
-        params = {
-            "asset_id": asset_id,
-            "type": takedown_type
-        }
-
-        try:
-            response = requests.get(
-                url,
-                params=params,
-                headers=self.headers,
-                verify=self.verify
-            )
-
-            if response.status_code == 401:
-                raise Exception("Authorization Error: Invalid API Key")
-            elif response.status_code == 429:
-                raise Exception("Rate limit exceeded")
-            elif response.status_code >= 400:
-                raise Exception(f"API Error: {response.status_code} - {response.text}")
-
-            return response.json()
-
-        except requests.exceptions.RequestException as e:
-            raise Exception(f"Connection error: {str(e)}")
-
-    def submit_source_code_leak_takedown(self, url_link, abuse_type="source_code_leak",
-                                         notes="", send_alarm=True, email=""):
-        """Submits a takedown request for leaked source code"""
-        import requests
-
-        api_url = f"{self.base_url}/add/company/{self.company_id}/takedown/request"
-        data = {
-            "abuse_type": abuse_type,
-            "entity": url_link,
-            "type": "source_code_leak",
-            "notes": notes,
-            "send_alarm": send_alarm,
-            "email": email
-        }
-
-        response = requests.post(
-            api_url,
-            json=data,
-            headers=self.headers,
-            verify=self.verify
-        )
-
-        if response.status_code >= 400:
-            raise Exception(f"API Error: {response.status_code} - {response.text}")
-
-        return response.json()
-
-    def submit_rogue_app_takedown(self, app_info, abuse_type="rogue_mobile_app",
-                                  notes="", send_alarm=True, email=""):
-        """Submits a takedown request for a rogue mobile app"""
-        import requests
-
-        api_url = f"{self.base_url}/add/company/{self.company_id}/takedown/request"
-        data = {
-            "abuse_type": abuse_type,
-            "entity": app_info,
-            "type": "rogue_mobile_app",
-            "notes": notes,
-            "send_alarm": send_alarm,
-            "email": email
-        }
-
-        response = requests.post(
-            api_url,
-            json=data,
-            headers=self.headers,
-            verify=self.verify
-        )
-
-        if response.status_code >= 400:
-            raise Exception(f"API Error: {response.status_code} - {response.text}")
-
-        return response.json()
-
-
 """ HELPER FUNCTIONS """
-
 
 class Validator:
     @staticmethod
-    def validate_domain(domain_to_validate):
+    def validate_domain(domain_to_validate: str) -> bool:
         if not isinstance(domain_to_validate, str) or len(domain_to_validate) > 255:
             return False
         if domain_to_validate.endswith("."):
@@ -219,7 +102,7 @@ class Validator:
             raise ValueError(f'Domain "{domain}" is not a valid domain address')
 
     @staticmethod
-    def validate_url(url: str):
+    def validate_url(url: str) -> bool:
         """Basic URL validation"""
         url_pattern = re.compile(
             r'^https?://'  # http:// or https://
@@ -235,445 +118,249 @@ class Validator:
         if not Validator.validate_url(url):
             raise ValueError(f'URL "{url}" is not a valid URL')
 
+def get_client_from_params() -> Client:
+    """Initialize client from demisto params"""
+    api_key = demisto.params().get("apikey", "").strip()
+    company_id = demisto.params().get("company_id", "").strip()
+    verify_certificate = not demisto.params().get("insecure", False)
+    proxy = demisto.params().get("proxy", False)
+
+    if not api_key:
+        raise ValueError("API Key is required")
+    if not company_id:
+        raise ValueError("Company ID is required")
+
+    return Client(
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key=api_key,
+        company_id=company_id,
+        verify=verify_certificate,
+        proxy=proxy
+    )
 
 """ COMMAND FUNCTIONS """
 
-
-def test_module():
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication"""
     try:
-        # Get parameters
-        api_key = demisto.params().get("apikey", "")
-        company_id = demisto.params().get("company_id", "")
-        verify_certificate = not demisto.params().get("insecure", False)
-        proxy = demisto.params().get("proxy", False)
-
-        if not api_key:
-            return "API Key is required"
-        if not company_id:
-            return "Company ID is required"
-
-        # Create client and test
-        client = Client(
-            base_url=SOCRADAR_API_ENDPOINT,
-            api_key=api_key,
-            company_id=company_id,
-            verify=verify_certificate,
-            proxy=proxy
-        )
-
         client.check_auth()
         return "ok"
-
     except Exception as e:
         return f"Test failed: {str(e)}"
 
-
-def submit_phishing_domain_takedown_command():
+def submit_phishing_domain_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for a phishing domain"""
-    try:
-        # Get parameters
-        api_key = demisto.params().get("apikey", "")
-        company_id = demisto.params().get("company_id", "")
-        verify_certificate = not demisto.params().get("insecure", False)
-        proxy = demisto.params().get("proxy", False)
+    args = demisto.args()
+    domain = args.get("domain", "")
+    abuse_type = args.get("abuse_type", "potential_phishing")
+    domain_type = args.get("type", "phishing_domain")
+    notes = args.get("notes", "")
+    send_alarm = args.get("send_alarm", "true").lower() == "true"
+    email = args.get("email", "")
 
-        # Get arguments
-        domain = demisto.args().get("domain", "")
-        abuse_type = demisto.args().get("abuse_type", "potential_phishing")
-        domain_type = demisto.args().get("type", "phishing_domain")
-        notes = demisto.args().get("notes", "")
-        send_alarm = demisto.args().get("send_alarm", "true").lower() == "true"
-        email = demisto.args().get("email", "")
+    # Validate domain
+    Validator.raise_if_domain_not_valid(domain)
 
-        # Validate required fields
-        if not domain:
-            raise ValueError("Domain is required")
-        if not email:
-            raise ValueError("Email is required")
+    # Submit request
+    raw_response = client.submit_takedown_request(
+        entity=domain,
+        request_type=domain_type,
+        abuse_type=abuse_type,
+        notes=notes,
+        send_alarm=send_alarm,
+        email=email
+    )
 
-        # Validate domain
-        Validator.raise_if_domain_not_valid(domain)
+    # Prepare output
+    readable_output = f"### Phishing Domain Takedown Request\n"
+    readable_output += f"**Domain**: {domain}\n"
+    readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
-        # Create client
-        client = Client(
-            base_url=SOCRADAR_API_ENDPOINT,
-            api_key=api_key,
-            company_id=company_id,
-            verify=verify_certificate,
-            proxy=proxy
-        )
+    if raw_response.get("message"):
+        readable_output += f"**Message**: {raw_response.get('message')}\n"
 
-        # Submit request
-        raw_response = client.submit_phishing_domain_takedown(
-            domain, abuse_type, notes, domain_type, send_alarm, email
-        )
+    outputs = {
+        "Domain": domain,
+        "AbuseType": abuse_type,
+        "Status": "Success" if raw_response.get('is_success', False) else "Failed",
+        "Message": raw_response.get("message", ""),
+        "SendAlarm": send_alarm,
+        "Notes": notes
+    }
 
-        # Prepare output
-        readable_output = f"### Phishing Domain Takedown Request\n"
-        readable_output += f"**Domain**: {domain}\n"
-        readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
+    return CommandResults(
+        outputs_prefix="SOCRadarTakedown.PhishingDomain",
+        outputs_key_field="Domain",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
 
-        if raw_response.get("message"):
-            readable_output += f"**Message**: {raw_response.get('message')}\n"
-
-        outputs = {
-            "SOCRadarTakedown.PhishingDomain(val.Domain == obj.Domain)": {
-                "Domain": domain,
-                "AbuseType": abuse_type,
-                "Status": "Success" if raw_response.get('is_success', False) else "Failed",
-                "Message": raw_response.get("message", ""),
-                "SendAlarm": send_alarm,
-                "Notes": notes
-            }
-        }
-
-        demisto.results({
-            "Type": entryTypes["note"],
-            "Contents": raw_response,
-            "ContentsFormat": formats["json"],
-            "HumanReadable": readable_output,
-            "EntryContext": outputs
-        })
-
-    except Exception as e:
-        demisto.results({
-            "Type": entryTypes["error"],
-            "Contents": str(e),
-            "ContentsFormat": formats["text"]
-        })
-
-
-def submit_social_media_impersonation_takedown_command():
+def submit_social_media_impersonation_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for social media impersonation"""
-    try:
-        # Get parameters
-        api_key = demisto.params().get("apikey", "")
-        company_id = demisto.params().get("company_id", "")
-        verify_certificate = not demisto.params().get("insecure", False)
-        proxy = demisto.params().get("proxy", False)
+    args = demisto.args()
+    url_link = args.get("url", "")
+    abuse_type = args.get("abuse_type", "impersonating_accounts")
+    notes = args.get("notes", "")
+    send_alarm = args.get("send_alarm", "true").lower() == "true"
+    email = args.get("email", "")
 
-        # Get arguments
-        url_link = demisto.args().get("url", "")
-        abuse_type = demisto.args().get("abuse_type", "impersonating_accounts")
-        notes = demisto.args().get("notes", "")
-        send_alarm = demisto.args().get("send_alarm", "true").lower() == "true"
-        email = demisto.args().get("email", "")
+    # Validate URL
+    Validator.raise_if_url_not_valid(url_link)
 
-        # Validate required fields
-        if not url_link:
-            raise ValueError("URL is required")
-        if not email:
-            raise ValueError("Email is required")
+    # Submit request
+    raw_response = client.submit_takedown_request(
+        entity=url_link,
+        request_type="impersonating_accounts",
+        abuse_type=abuse_type,
+        notes=notes,
+        send_alarm=send_alarm,
+        email=email
+    )
 
-        # Validate URL
-        Validator.raise_if_url_not_valid(url_link)
+    # Prepare output
+    readable_output = f"### Social Media Impersonation Takedown Request\n"
+    readable_output += f"**URL**: {url_link}\n"
+    readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
-        # Create client
-        client = Client(
-            base_url=SOCRADAR_API_ENDPOINT,
-            api_key=api_key,
-            company_id=company_id,
-            verify=verify_certificate,
-            proxy=proxy
-        )
+    if raw_response.get("message"):
+        readable_output += f"**Message**: {raw_response.get('message')}\n"
 
-        # Submit request
-        raw_response = client.submit_social_media_impersonation_takedown(
-            url_link, abuse_type, notes, send_alarm, email
-        )
+    outputs = {
+        "URL": url_link,
+        "AbuseType": abuse_type,
+        "Status": "Success" if raw_response.get('is_success', False) else "Failed",
+        "Message": raw_response.get("message", ""),
+        "SendAlarm": send_alarm,
+        "Notes": notes
+    }
 
-        # Prepare output
-        readable_output = f"### Social Media Impersonation Takedown Request\n"
-        readable_output += f"**URL**: {url_link}\n"
-        readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
+    return CommandResults(
+        outputs_prefix="SOCRadarTakedown.SocialMediaImpersonation",
+        outputs_key_field="URL",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
 
-        if raw_response.get("message"):
-            readable_output += f"**Message**: {raw_response.get('message')}\n"
-
-        outputs = {
-            "SOCRadarTakedown.SocialMediaImpersonation(val.URL == obj.URL)": {
-                "URL": url_link,
-                "AbuseType": abuse_type,
-                "Status": "Success" if raw_response.get('is_success', False) else "Failed",
-                "Message": raw_response.get("message", ""),
-                "SendAlarm": send_alarm,
-                "Notes": notes
-            }
-        }
-
-        demisto.results({
-            "Type": entryTypes["note"],
-            "Contents": raw_response,
-            "ContentsFormat": formats["json"],
-            "HumanReadable": readable_output,
-            "EntryContext": outputs
-        })
-
-    except Exception as e:
-        demisto.results({
-            "Type": entryTypes["error"],
-            "Contents": str(e),
-            "ContentsFormat": formats["text"]
-        })
-
-
-def get_takedown_progress_command():
-    """Gets the progress of a takedown request"""
-    try:
-        # Get parameters
-        api_key = demisto.params().get("apikey", "")
-        company_id = demisto.params().get("company_id", "")
-        verify_certificate = not demisto.params().get("insecure", False)
-        proxy = demisto.params().get("proxy", False)
-
-        # Get arguments
-        asset_id = demisto.args().get("asset_id", "")
-        takedown_type = demisto.args().get("type", "")
-
-        # Validate required fields
-        if not asset_id:
-            raise ValueError("Asset ID is required")
-        if not takedown_type:
-            raise ValueError("Type is required")
-
-        # Create client
-        client = Client(
-            base_url=SOCRADAR_API_ENDPOINT,
-            api_key=api_key,
-            company_id=company_id,
-            verify=verify_certificate,
-            proxy=proxy
-        )
-
-        # Get progress
-        raw_response = client.get_takedown_progress(asset_id, takedown_type)
-
-        # Prepare output
-        readable_output = f"### Takedown Progress\n"
-        readable_output += f"**Asset ID**: {asset_id}\n"
-        readable_output += f"**Type**: {takedown_type}\n"
-
-        if raw_response.get("status"):
-            readable_output += f"**Status**: {raw_response.get('status')}\n"
-        if raw_response.get("progress"):
-            readable_output += f"**Progress**: {raw_response.get('progress')}\n"
-        if raw_response.get("message"):
-            readable_output += f"**Message**: {raw_response.get('message')}\n"
-
-        outputs = {
-            "SOCRadarTakedown.Progress(val.AssetId == obj.AssetId)": {
-                "AssetId": asset_id,
-                "Type": takedown_type,
-                "Status": raw_response.get("status", ""),
-                "Progress": raw_response.get("progress", ""),
-                "Message": raw_response.get("message", ""),
-                "RawResponse": raw_response
-            }
-        }
-
-        demisto.results({
-            "Type": entryTypes["note"],
-            "Contents": raw_response,
-            "ContentsFormat": formats["json"],
-            "HumanReadable": readable_output,
-            "EntryContext": outputs
-        })
-
-    except Exception as e:
-        demisto.results({
-            "Type": entryTypes["error"],
-            "Contents": str(e),
-            "ContentsFormat": formats["text"]
-        })
-
-
-def submit_source_code_leak_takedown_command():
+def submit_source_code_leak_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for leaked source code"""
-    try:
-        # Get parameters
-        api_key = demisto.params().get("apikey", "")
-        company_id = demisto.params().get("company_id", "")
-        verify_certificate = not demisto.params().get("insecure", False)
-        proxy = demisto.params().get("proxy", False)
+    args = demisto.args()
+    url_link = args.get("url", "")
+    abuse_type = args.get("abuse_type", "source_code_leak")
+    notes = args.get("notes", "")
+    send_alarm = args.get("send_alarm", "true").lower() == "true"
+    email = args.get("email", "")
 
-        # Get arguments
-        url_link = demisto.args().get("url", "")
-        abuse_type = demisto.args().get("abuse_type", "source_code_leak")
-        notes = demisto.args().get("notes", "")
-        send_alarm = demisto.args().get("send_alarm", "true").lower() == "true"
-        email = demisto.args().get("email", "")
+    # Validate URL
+    Validator.raise_if_url_not_valid(url_link)
 
-        # Validate required fields
-        if not url_link:
-            raise ValueError("URL is required")
-        if not email:
-            raise ValueError("Email is required")
+    # Submit request
+    raw_response = client.submit_takedown_request(
+        entity=url_link,
+        request_type="source_code_leak",
+        abuse_type=abuse_type,
+        notes=notes,
+        send_alarm=send_alarm,
+        email=email
+    )
 
-        # Validate URL
-        Validator.raise_if_url_not_valid(url_link)
+    # Prepare output
+    readable_output = f"### Source Code Leak Takedown Request\n"
+    readable_output += f"**URL**: {url_link}\n"
+    readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
-        # Create client
-        client = Client(
-            base_url=SOCRADAR_API_ENDPOINT,
-            api_key=api_key,
-            company_id=company_id,
-            verify=verify_certificate,
-            proxy=proxy
-        )
+    if raw_response.get("message"):
+        readable_output += f"**Message**: {raw_response.get('message')}\n"
 
-        # Submit request
-        raw_response = client.submit_source_code_leak_takedown(
-            url_link, abuse_type, notes, send_alarm, email
-        )
+    outputs = {
+        "URL": url_link,
+        "AbuseType": abuse_type,
+        "Status": "Success" if raw_response.get('is_success', False) else "Failed",
+        "Message": raw_response.get("message", ""),
+        "SendAlarm": send_alarm,
+        "Notes": notes
+    }
 
-        # Prepare output
-        readable_output = f"### Source Code Leak Takedown Request\n"
-        readable_output += f"**URL**: {url_link}\n"
-        readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
+    return CommandResults(
+        outputs_prefix="SOCRadarTakedown.SourceCodeLeak",
+        outputs_key_field="URL",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
 
-        if raw_response.get("message"):
-            readable_output += f"**Message**: {raw_response.get('message')}\n"
-
-        outputs = {
-            "SOCRadarTakedown.SourceCodeLeak(val.URL == obj.URL)": {
-                "URL": url_link,
-                "AbuseType": abuse_type,
-                "Status": "Success" if raw_response.get('is_success', False) else "Failed",
-                "Message": raw_response.get("message", ""),
-                "SendAlarm": send_alarm,
-                "Notes": notes
-            }
-        }
-
-        demisto.results({
-            "Type": entryTypes["note"],
-            "Contents": raw_response,
-            "ContentsFormat": formats["json"],
-            "HumanReadable": readable_output,
-            "EntryContext": outputs
-        })
-
-    except Exception as e:
-        demisto.results({
-            "Type": entryTypes["error"],
-            "Contents": str(e),
-            "ContentsFormat": formats["text"]
-        })
-
-
-def submit_rogue_app_takedown_command():
+def submit_rogue_app_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for a rogue mobile app"""
-    try:
-        # Get parameters
-        api_key = demisto.params().get("apikey", "")
-        company_id = demisto.params().get("company_id", "")
-        verify_certificate = not demisto.params().get("insecure", False)
-        proxy = demisto.params().get("proxy", False)
+    args = demisto.args()
+    app_info = args.get("app_info", "")
+    abuse_type = args.get("abuse_type", "rogue_mobile_app")
+    notes = args.get("notes", "")
+    send_alarm = args.get("send_alarm", "true").lower() == "true"
+    email = args.get("email", "")
 
-        # Get arguments
-        app_info = demisto.args().get("app_info", "")
-        abuse_type = demisto.args().get("abuse_type", "rogue_mobile_app")
-        notes = demisto.args().get("notes", "")
-        send_alarm = demisto.args().get("send_alarm", "true").lower() == "true"
-        email = demisto.args().get("email", "")
+    # Submit request
+    raw_response = client.submit_takedown_request(
+        entity=app_info,
+        request_type="rogue_mobile_app",
+        abuse_type=abuse_type,
+        notes=notes,
+        send_alarm=send_alarm,
+        email=email
+    )
 
-        # Validate required fields
-        if not app_info:
-            raise ValueError("App info is required")
-        if not email:
-            raise ValueError("Email is required")
+    # Prepare output
+    readable_output = f"### Rogue App Takedown Request\n"
+    readable_output += f"**App Info**: {app_info}\n"
+    readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
-        # Create client
-        client = Client(
-            base_url=SOCRADAR_API_ENDPOINT,
-            api_key=api_key,
-            company_id=company_id,
-            verify=verify_certificate,
-            proxy=proxy
-        )
+    if raw_response.get("message"):
+        readable_output += f"**Message**: {raw_response.get('message')}\n"
 
-        # Submit request
-        raw_response = client.submit_rogue_app_takedown(
-            app_info, abuse_type, notes, send_alarm, email
-        )
+    outputs = {
+        "AppInfo": app_info,
+        "AbuseType": abuse_type,
+        "Status": "Success" if raw_response.get('is_success', False) else "Failed",
+        "Message": raw_response.get("message", ""),
+        "SendAlarm": send_alarm,
+        "Notes": notes
+    }
 
-        # Prepare output
-        readable_output = f"### Rogue App Takedown Request\n"
-        readable_output += f"**App Info**: {app_info}\n"
-        readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
-
-        if raw_response.get("message"):
-            readable_output += f"**Message**: {raw_response.get('message')}\n"
-
-        outputs = {
-            "SOCRadarTakedown.RogueApp(val.AppInfo == obj.AppInfo)": {
-                "AppInfo": app_info,
-                "AbuseType": abuse_type,
-                "Status": "Success" if raw_response.get('is_success', False) else "Failed",
-                "Message": raw_response.get("message", ""),
-                "SendAlarm": send_alarm,
-                "Notes": notes
-            }
-        }
-
-        demisto.results({
-            "Type": entryTypes["note"],
-            "Contents": raw_response,
-            "ContentsFormat": formats["json"],
-            "HumanReadable": readable_output,
-            "EntryContext": outputs
-        })
-
-    except Exception as e:
-        demisto.results({
-            "Type": entryTypes["error"],
-            "Contents": str(e),
-            "ContentsFormat": formats["text"]
-        })
-
+    return CommandResults(
+        outputs_prefix="SOCRadarTakedown.RogueApp",
+        outputs_key_field="AppInfo",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
 
 """ MAIN FUNCTION """
-
 
 def main():
     """Main function, parses params and runs command functions"""
     try:
         command = demisto.command()
-
+        
         if command == "test-module":
-            result = test_module()
-            demisto.results(result)
-
-        elif command == "socradar-submit-phishing-domain":
-            submit_phishing_domain_takedown_command()
-
-        elif command == "socradar-submit-social-media-impersonation":
-            submit_social_media_impersonation_takedown_command()
-
-        elif command == "socradar-get-takedown-progress":
-            get_takedown_progress_command()
-
-        elif command == "socradar-submit-source-code-leak":
-            submit_source_code_leak_takedown_command()
-
-        elif command == "socradar-submit-rogue-app":
-            submit_rogue_app_takedown_command()
-
+            client = get_client_from_params()
+            result = test_module(client)
+            return_results(result)
         else:
-            demisto.results({
-                "Type": entryTypes["error"],
-                "Contents": f"Unknown command: {command}",
-                "ContentsFormat": formats["text"]
-            })
+            client = get_client_from_params()
+            
+            if command == "socradar-submit-phishing-domain":
+                return_results(submit_phishing_domain_takedown_command(client))
+            elif command == "socradar-submit-social-media-impersonation":
+                return_results(submit_social_media_impersonation_takedown_command(client))
+            elif command == "socradar-submit-source-code-leak":
+                return_results(submit_source_code_leak_takedown_command(client))
+            elif command == "socradar-submit-rogue-app":
+                return_results(submit_rogue_app_takedown_command(client))
+            else:
+                raise NotImplementedError(f"Unknown command {command}")
 
     except Exception as e:
-        demisto.results({
-            "Type": entryTypes["error"],
-            "Contents": f"Failed to execute {demisto.command()} command. Error: {str(e)}",
-            "ContentsFormat": formats["text"]
-        })
-
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 """ ENTRY POINT """
 
