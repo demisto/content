@@ -3,8 +3,10 @@ from utils import timestamped_print
 import os
 import sys
 
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
+BRANCH_NAME = os.getenv("BRANCH_NAME", "main")
 
-def validate_codeowners_file(owner: str, repo: str, github_token: str) -> dict:
+def validate_codeowners_file(owner: str, repo: str) -> dict:
     """
     Validates the CODEOWNERS file for a given GitHub repository using the GitHub API.
 
@@ -15,7 +17,6 @@ def validate_codeowners_file(owner: str, repo: str, github_token: str) -> dict:
     Args:
         owner (str): The owner of the repository.
         repo (str): The name of the repository.
-        github_token (str): GitHub Personal Access Token (PAT).
 
     Returns:
         dict: A dictionary containing the API response. If successful, it will
@@ -28,12 +29,12 @@ def validate_codeowners_file(owner: str, repo: str, github_token: str) -> dict:
     url = f"https://api.github.com/repos/{owner}/{repo}/codeowners/errors"
     headers = {
         "Accept": "application/vnd.github+json",
-        "Authorization": f"Bearer {github_token}",
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
         "X-GitHub-Api-Version": api_version,
     }
 
     try:
-        response = requests.get(url, headers=headers, params={"ref": os.getenv("BRANCH_NAME", "main")})
+        response = requests.get(url, headers=headers, params={"ref": BRANCH_NAME})
         response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx)
 
         data = response.json()
@@ -58,11 +59,10 @@ def validate_codeowners_file(owner: str, repo: str, github_token: str) -> dict:
 
 if __name__ == "__main__":
     # --- Configuration ---
-    GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
     repository_owner = "demisto"
     repository_name = "content"
 
-    validation_result = validate_codeowners_file(repository_owner, repository_name, GITHUB_TOKEN)
+    validation_result = validate_codeowners_file(repository_owner, repository_name)
 
     if "error" in validation_result and validation_result["error"]:
         timestamped_print(f"Validation failed: {validation_result['message']}")
