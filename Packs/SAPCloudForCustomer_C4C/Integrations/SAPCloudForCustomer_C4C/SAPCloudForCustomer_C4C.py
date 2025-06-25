@@ -1,64 +1,76 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
-from typing import Any, Dict, Optional
-
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *  # noqa: F401
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+SAP_CLOUD = "SAP CLOUD FOR CUSTOMER"
+
 
 """ CLIENT CLASS """
 
-
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    """
+    Client to use in the Anomali ThreatStream Feed integration. Overrides BaseClient
     """
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(
-        self, dummy: str, dummy2: Optional[int]
-    ) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def __init__(self, base_url, user_name, password, base64String, verify):
+        super().__init__(base_url=base_url, verify=verify, ok_codes=(200, 201, 202))
+        self.credentials = {
+             "Authorization": "Basic " + base64String, "Content-Type": "application/json"
+        }
 
-        Args:
-            dummy: string to add in the dummy dict that is returned. This is a required argument.
-            dummy2: int to limit the number of results. This is an optional argument.
-
-        Returns:
-            The dict with the arguments
+    def http_request(
+        self,
+        method,
+        url_suffix,
+        params=None,
+        data=None,
+        headers=None,
+        files=None,
+        json=None,
+        without_credentials=False,
+        resp_type="json",
+    ):
         """
-        return {"dummy": dummy, "dummy2": dummy2}
+        A wrapper for requests lib to send our requests and handle requests and responses better.
+        """
+        headers = headers or {}
+        if not without_credentials:
+            headers.update(self.credentials)
+        res = super()._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            headers=headers,
+            params=params,
+            data=data,
+            json_data=json,
+            files=files,
+            resp_type=resp_type,
+            error_handler=self.error_handler,
+            retries=2,
+        )
+        return res
 
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
+    def error_handler(self, res: requests.Response):  # pragma: no cover
+        """
+        Error handler to call by super()._http_request in case an error was occurred.
+        Handles specific HTTP status codes and raises a DemistoException.
+        Args:
+            res (requests.Response): The HTTP response object.
+        """
+        # Handle error responses gracefully
+        if res.status_code == 401:
+            raise DemistoException(f"{SAP_CLOUD} - Got unauthorized from the server. Check the credentials. {res.text}")
+        elif res.status_code == 204:
+            return
+        elif res.status_code == 404:
+            raise DemistoException(f"{SAP_CLOUD} - The resource was not found. {res.text}")
+        raise DemistoException(f"{SAP_CLOUD} - Error in API call {res.status_code} - {res.text}")
 
 """ HELPER FUNCTIONS """
 
@@ -66,92 +78,88 @@ class Client(BaseClient):
 
 """ COMMAND FUNCTIONS """
 
+def encode_to_base64(input_string):
+  """
+  Encodes a given string into its Base64 representation.
+
+  Args:
+    input_string: The string to be encoded.
+
+  Returns:
+    The Base64 encoded string.
+  """
+  bytes_string = input_string.encode('utf-8')
+  encoded_bytes = base64.b64encode(bytes_string)
+  encoded_string = encoded_bytes.decode('utf-8')
+  return encoded_string
+
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises:
-     exceptions if something goes wrong.
-
-    Args:
-        Client: client to use
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
     """
-
-    # TODO: ADD HERE some code to test connectivity and authentication to your service.
-    # This  should validate all the inputs given in the integration configuration panel,
-    # either manually or by using an API that uses them.
-    client.baseintegration_dummy("dummy", 10)  # No errors, the api is working
+    Tests API connectivity and authentication.
+    Args:
+        client (Client): The client object to use for API requests.
+    Returns:
+        str: 'ok' if the test passed, otherwise raises an exception.
+    """
+    url = """/sap/c4c/odata/ana_businessanalytics_analytics.svc/RPZA9F4655905ABCDBA01BD67QueryResults?"""
+    client.http_request("GET", url_suffix=f"{url}/", params={"$filter": "CTIMESTAMP ge '25.06.2025 17:46:40 INDIA'", "$top": 2,
+                                                             "$format": "json"})
     return "ok"
 
 
 # TODO: REMOVE the following dummy command function
 def baseintegration_dummy_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
-    dummy = args.get("dummy")  # dummy is a required argument, no default
-    dummy2 = args.get("dummy2")  # dummy2 is not a required argument
+    client: Client, args: Dict[str, Any]):
+    # dummy = args.get("dummy")  # dummy is a required argument, no default
+    # dummy2 = args.get("dummy2")  # dummy2 is not a required argument
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy, dummy2)
+    # # Call the Client function and get the raw response
+    # result = client.baseintegration_dummy(dummy, dummy2)
 
-    return CommandResults(
-        outputs_prefix="BaseIntegration",
-        outputs_key_field="",
-        outputs=result,
-    )
+    # return CommandResults(
+    #     outputs_prefix="BaseIntegration",
+    #     outputs_key_field="",
+    #     outputs=result,
+    # )
+    pass
 
 
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 def main():
-    """main function, parses params and runs command functions"""
-
-    # TODO: make sure you properly handle authentication
-    # api_key = params.get('apikey')
-
-    params = demisto.params()
-    # get the service API url
-    base_url = urljoin(params.get("url"), "/api/v1")
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not argToBoolean(params("insecure", False))
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = argToBoolean(params.get("proxy", False))
-
+    """
+    Initiate integration command
+    """
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
+
+    params = demisto.params()
+
+    # init credentials
+    user_name = demisto.get(params, "username.identifier")
+    password = demisto.get(params, "username.password")
+    server_url = params.get("url", "").strip("/")
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers = {}
-
+        
+        base64String = encode_to_base64(user_name + ":" + password) # type: ignore
         client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
+            base_url=f"{server_url}/api/",
+            user_name=user_name,
+            password=password,
+            base64String = base64String,
+            verify=not params.get("insecure", False),
         )
-        args = demisto.args()
+
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-        # TODO: REMOVE the following dummy command case:
+            # This call is made when clicking the integration 'Test' button.
+            return_results(test_module(client))
         elif command == "baseintegration-dummy":
-            result = baseintegration_dummy_command(client, args)
+            # result = baseintegration_dummy_command(client, args)
+            pass
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        return_results(
-            result
-        )  # Returns either str, CommandResults and a list of CommandResults
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 

@@ -3,16 +3,22 @@ commonfields:
   id: SAPCloudForCustomer_C4C
   version: -1
 configuration:
-- defaultvalue: https://example.com/
+- defaultvalue: https://my313577.crm.ondemand.com
   display: Your server URL
   name: url
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for the connection
-  name: apikey
+  section: Connect
+- display: Username
+  name: username
   required: true
-  type: 4
+  type: 9
+  section: Connect
+- display: Report ID
+  name: report_id
+  type: 0
+  required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -21,8 +27,21 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: SAPCloudForCustomer_C4C
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+- display: Maximum number of audit events per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+  defaultValue: '10000'
+description: 'The SAP Cloud for Customer solution helps you manage day-to-day sales and service interactions efficiently by sending and receiving signals between front- and back-office solutions and providing a single view of the customer.'
+display: SAP Cloud For Customer C4C
 name: SAPCloudForCustomer_C4C
 script:
   commands:
@@ -52,6 +71,7 @@ script:
   script: '-'
   type: python
   subtype: python3
+  isfetchevents: true
   dockerimage: demisto/python3:3.9.8.24399
 fromversion: 6.1.0
 marketplaces:
