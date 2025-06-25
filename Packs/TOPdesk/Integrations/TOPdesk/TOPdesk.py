@@ -190,7 +190,7 @@ class Client(BaseClient):
 
         except Exception:
             demisto.debug("No items found")
-            result = []
+            result = {}
         return result
 
     def get_list(self, endpoint: str) -> list[dict[str, Any]]:
