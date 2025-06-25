@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
   - Utilities
-comment: Creates a new indicator in Microsoft Defender for Endpoint.
+comment: A polling wrapper script; creates a new indicator in Microsoft Defender for Endpoint.
 enabled: true
 args:
   - description: The value of the indicator to update.

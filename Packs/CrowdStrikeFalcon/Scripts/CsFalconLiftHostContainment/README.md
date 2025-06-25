@@ -1,4 +1,4 @@
-Lifts containment on the host, returning its network communications to normal.
+A polling wrapper script; lifts containment on the host, returning its network communications to normal.
 
 ## Script Data
 

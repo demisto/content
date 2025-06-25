@@ -1,4 +1,4 @@
-Retrieves machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required: IP, hostname, or ID. Otherwise, an error appears.
+A polling wrapper script; retrieves machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required: IP, hostname, or ID. Otherwise, an error appears.
 
 ## Script Data
 

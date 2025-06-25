@@ -1,4 +1,4 @@
-Isolates a machine from accessing external networks.
+A polling wrapper script; isolates a machine from accessing external networks.
 
 ## Script Data
 

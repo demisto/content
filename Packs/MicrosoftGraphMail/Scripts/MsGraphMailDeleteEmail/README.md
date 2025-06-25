@@ -1,4 +1,4 @@
-Deletes an email.
+A polling wrapper script; deletes an email.
 
 ## Script Data
 

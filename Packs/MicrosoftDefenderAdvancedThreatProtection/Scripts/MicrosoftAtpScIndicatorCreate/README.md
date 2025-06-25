@@ -1,4 +1,4 @@
-Creates a new indicator in Microsoft Defender for Endpoint.
+A polling wrapper script; creates a new indicator in Microsoft Defender for Endpoint.
 
 ## Script Data
 

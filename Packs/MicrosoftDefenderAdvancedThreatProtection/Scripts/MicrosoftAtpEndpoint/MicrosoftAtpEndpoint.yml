@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
   - Utilities
-comment: "Retrieves machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required: IP, hostname, or ID. Otherwise, an error appears."
+comment: "A polling wrapper script; retrieves machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required: IP, hostname, or ID. Otherwise, an error appears."
 enabled: true
 args:
   - name: id

@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
   - Utilities
-comment: Deletes an email.
+comment: A polling wrapper script; deletes an email.
 enabled: true
 args:
   - description: User ID or principal ID (usually an email address in the format someuser@example.com).
