@@ -49,6 +49,7 @@ if __name__ == "__main__":
 
     if validation_result.get("error", False):
         print(f"Validation failed: {validation_result['message']}")
+        sys.exit(1)
     else:
         if errors := validation_result.get("errors", []):
             print("CODEOWNERS file has errors:\n")
