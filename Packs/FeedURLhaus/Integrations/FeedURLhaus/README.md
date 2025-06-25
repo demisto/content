@@ -1,6 +1,5 @@
-URLhaus is a platform from abuse.ch and Spamhaus dedicated to sharing malicious URLs that are being used for malware distribution. 
+URLhaus is a platform from abuse.ch and Spamhaus dedicated to sharing malicious URLs that are being used for malware distribution.
 For more information, visit: https://urlhaus.abuse.ch/
-
 
 Fetch indicators from URLhaus api
 =======
@@ -21,6 +20,7 @@ Fetch indicators from the URLhaus API.
 | Use system proxy settings   | If you want to use proxy for the integration                                               | True         |
 
 #### Create an Auth Key for abuse.ch
+>
 > Note: If you already have a profile, you can skip steps 1 and 2.
 
 1. Sign up for an abuse.ch account. You can do this easily by using an existing account that you may already have on X, LinkedIn, Google or Github. Just log in with the authentication provider of your choice here: https://auth.abuse.ch/
