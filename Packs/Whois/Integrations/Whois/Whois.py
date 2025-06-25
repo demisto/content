@@ -1646,8 +1646,12 @@ tlds = {
 grammar = {
     "_data": {
         "id": ["Domain ID:[ ]*(?P<val>.+)"],
-        "status": [r"\[Status\]\s*(?P<val>.+)", r"Status\s*:\s?(?P<val>.+)", r"\[State\]\s*(?P<val>.+)",
-                   r"^state:\s*(?P<val>.+)"],
+        "status": [
+            r"\[Status\]\s*(?P<val>.+)",
+            r"Status\s*:\s?(?P<val>.+)",
+            r"\[State\]\s*(?P<val>.+)",
+            r"^state:\s*(?P<val>.+)",
+        ],
         "creation_date": [
             r"\[Created on\]\s*(?P<val>.+)",
             "Created on[.]*: [a-zA-Z]+, (?P<val>.+)",
