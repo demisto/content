@@ -570,12 +570,11 @@ def search_users(default_base_dn, page_size):
 
     args = demisto.args()
     params = demisto.params()
-
     attributes: list[str] = []
     custom_attributes: list[str] = []
 
     if argToBoolean(params.get("fail_on_empty_args", False)):
-        check_if_empty_args(args)
+        check_if_empty_args_ad_get_user_command(args)
 
     # zero is actually no limitation, default is 20
     limit = int(args.get("limit", "20"))
@@ -664,8 +663,8 @@ def search_users(default_base_dn, page_size):
     demisto.results(demisto_entry)
 
 
-def check_if_empty_args(args: dict):
-    """Checks if the args dictionary contains empty values.
+def check_if_empty_args_ad_get_user_command(args: dict):
+    """Checks if the args dictionary contains empty values for the ad-get-user command.
     If there are empty values, raises an error.
     """
     empty_args = []
@@ -676,7 +675,7 @@ def check_if_empty_args(args: dict):
     if empty_args:
         raise DemistoException(
             f"Got empty values for arguments: {empty_args}. Remove those values or uncheck the *Error on empty arguments* parameter\n"  # noqa: E501
-        )  # noqa: E501
+        )
 
 
 def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
