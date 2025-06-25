@@ -191,7 +191,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         raise DemistoException(f"Failed to get credentials from CTS: {str(e)}. Response: {response}")
 
 
-def get_accounts_by_connector_id(connector_id: str, max_results: int | None = 10) -> list:
+def get_accounts_by_connector_id(connector_id: str, max_results: int | None = 1) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
     Args:
@@ -211,11 +211,8 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = 10
             result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
             res_json = json.loads(result["data"])
             accounts = res_json.get("values", [])
-            all_accounts.extend([account for account in accounts if account.get("account_type") == "ACCOUNT"])
+            all_accounts.extend([a for a in accounts if a.get("account_type") == "ACCOUNT" and a.get("account_id")])
             next_token = res_json.get("next_token", "")
-
-            demisto.debug(f"[COOC API] Fetched {len(accounts)} accounts")
-
             if not next_token or (max_results and len(all_accounts) >= max_results):
                 break
     except Exception as e:
@@ -227,7 +224,7 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = 10
 
 
 def _check_account_permissions(
-    account: dict, connector_id: str, shared_creds: dict, permission_check_func: Callable[[dict, str, str], HealthCheckError]
+    account_id: str, connector_id: str, shared_creds: dict, permission_check_func: Callable[[dict, str, str], HealthCheckError]
 ) -> HealthCheckError | None:
     """Helper function to check permissions for a single account.
 
@@ -240,10 +237,6 @@ def _check_account_permissions(
     Returns:
         HealthCheckError | None: Result of the permission check, or None if account has no ID.
     """
-    account_id = account.get("account_id")
-    if not account_id:
-        demisto.debug(f"[COOC API] Account without ID found for connector {connector_id}: {account}")
-        return None
 
     try:
         return permission_check_func(shared_creds, account_id, connector_id)
@@ -282,12 +275,8 @@ def run_permissions_check_for_accounts(
             demisto.debug(f"[COOC API] No accounts found for connector ID: {connector_id}")
             return HealthStatus.OK
 
-        # Get credentials once for all accounts since they share the same creds
-        account = next((a for a in accounts if a.get("account_id") and a.get("account_type") == "ACCOUNT"), None)
-        if not account:
-            raise DemistoException("No valid account_id found in accounts")
-
-        shared_creds = get_cloud_credentials(cloud_type, account.get("account_id"))
+        account_id = accounts[0]
+        shared_creds = get_cloud_credentials(cloud_type, account_id)
         demisto.debug(f"[COOC API] Retrieved shared {cloud_type} credentials for all accounts")
 
     except Exception as e:
@@ -303,11 +292,11 @@ def run_permissions_check_for_accounts(
         )
         return health_check_result.summarize()
 
-    result = _check_account_permissions(account, connector_id, shared_creds, permission_check_func)
+    result = _check_account_permissions(account_id, connector_id, shared_creds, permission_check_func)
     if result is not None:
         health_check_result.error(result)
 
-    demisto.info(f"[COOC API] Completed processing {account.get("account_id")}")
+    demisto.info(f"[COOC API] Completed processing {account_id}")
     return health_check_result.summarize()
 
 

@@ -59,9 +59,9 @@ def http_mock(
         return util_load_json("test_data/get_team_response.json")
     elif url_suffix == "/api/v4/teams/team_id/channels" or url_suffix == "/api/v4/teams/team_id/channels/private":
         return util_load_json("test_data/list_channels_response.json")
-    elif url_suffix == '/api/v4/users/user_id/teams/team_id/channels':
+    elif url_suffix == "/api/v4/users/user_id/teams/team_id/channels":
         return util_load_json("test_data/list_channel_memberships_for_user.json")
-    elif url_suffix == '/api/v4/channels':
+    elif url_suffix == "/api/v4/channels":
         return util_load_json("test_data/create_channel_response.json")
     elif url_suffix == "/api/v4/users":
         return util_load_json("test_data/list_users_response.json")
@@ -74,21 +74,21 @@ def http_mock(
         or url_suffix == "/api/v4/users/user_id"
     ):
         return util_load_json("test_data/list_users_response.json")[0]
-    elif url_suffix == '/api/v4/users/username/username2':
+    elif url_suffix == "/api/v4/users/username/username2":
         return util_load_json("test_data/list_users_response.json")[1]
-    elif url_suffix == '/api/v4/channels/direct':
+    elif url_suffix == "/api/v4/channels/direct":
         channel = util_load_json("test_data/create_channel_response.json")
         channel["id"] = "direct_id"
-        channel["type"] = 'D'
+        channel["type"] = "D"
         return channel
-    elif url_suffix == '/api/v4/channels/group':
+    elif url_suffix == "/api/v4/channels/group":
         channel = util_load_json("test_data/create_channel_response.json")
         channel["id"] = "group_id"
-        channel["type"] = 'G'
+        channel["type"] = "G"
         return channel
-    elif url_suffix == '/api/v4/groups':
+    elif url_suffix == "/api/v4/groups":
         return util_load_json("test_data/list_groups_response.json")
-    elif url_suffix == '/api/v4/groups/group_id/members':
+    elif url_suffix == "/api/v4/groups/group_id/members":
         return util_load_json("test_data/list_group_members_response.json")
     else:
         return {}
@@ -154,10 +154,9 @@ def test_list_private_channels_for_user_command(http_client):
     When: Running list_private_channels_for_user_command with a team name and user id.
     Then: Ensure we get the result.
     """
-    args = {'team_name': 'team_name',
-            'user_id': 'user_id'}
+    args = {"team_name": "team_name", "user_id": "user_id"}
     results = list_private_channels_for_user_command(http_client, args)
-    assert results.outputs["channels"][0].get('name') == 'name'
+    assert results.outputs["channels"][0].get("name") == "name"
     assert len(results.outputs["channels"]) == 1
 
 
@@ -310,8 +309,8 @@ def test_get_channel_id_to_send_notif(http_client, mocker):
     When: Running get_channel_id_to_send_notif for a single user.
     Then: Ensure we get the result.
     """
-    results = get_channel_id_to_send_notif(http_client, ['username'], 'channel_name', 'investigation_id')
-    assert results == 'direct_id'
+    results = get_channel_id_to_send_notif(http_client, ["username"], "channel_name", "investigation_id")
+    assert results == "direct_id"
 
 
 def test_get_channel_id_to_send_notif_multiple_users(http_client, mocker):
@@ -320,8 +319,8 @@ def test_get_channel_id_to_send_notif_multiple_users(http_client, mocker):
     When: Running get_channel_id_to_send_notif for two users.
     Then: Ensure we get the result.
     """
-    results = get_channel_id_to_send_notif(http_client, ['username', 'username2'], 'channel_name', 'investigation_id')
-    assert results == 'group_id'
+    results = get_channel_id_to_send_notif(http_client, ["username", "username2"], "channel_name", "investigation_id")
+    assert results == "group_id"
 
 
 def test_get_channel_id_from_context(mocker):
@@ -550,7 +549,6 @@ def test_send_notification_command(http_client, mocker):
     assert result.readable_output == "Message sent to MatterMost successfully. Message ID is: message_id"
 
 
-
 def test_list_groups_command(http_client):
     """
     Given -
@@ -561,9 +559,11 @@ def test_list_groups_command(http_client):
     Then -
         Validate that the function returns the expected CommandResults.
     """
-    args = {'group': 'user_group', }
+    args = {
+        "group": "user_group",
+    }
     results = list_groups_command(http_client, args)
-    assert results.outputs[0].get('id') == 'group_id'
+    assert results.outputs[0].get("id") == "group_id"
 
 
 def test_list_group_members_command(http_client):
@@ -576,7 +576,9 @@ def test_list_group_members_command(http_client):
     Then -
         Validate that the function returns the expected CommandResults.
     """
-    args = {'group_id': 'group_id', }
+    args = {
+        "group_id": "group_id",
+    }
     results = list_group_members_command(http_client, args)
     assert len(results.outputs) == 1
     assert results.outputs[0]["username"] == "username"
@@ -592,9 +594,9 @@ def test_add_group_member_command(http_client):
     Then -
         Validate that the function returns the expected CommandResults.
     """
-    args = {'group_id': 'group_id', "user_ids": "user_id"}
+    args = {"group_id": "group_id", "user_ids": "user_id"}
     results = add_group_member_command(http_client, args)
-    assert results.readable_output == 'The member username was added to the group successfully, with group ID: group_id'
+    assert results.readable_output == "The member username was added to the group successfully, with group ID: group_id"
 
 
 def test_remove_group_member_command(http_client):
@@ -607,9 +609,9 @@ def test_remove_group_member_command(http_client):
     Then -
         Validate that the function returns the expected CommandResults.
     """
-    args = {'group_id': 'group_id', "user_ids": "user_id"}
+    args = {"group_id": "group_id", "user_ids": "user_id"}
     results = remove_group_member_command(http_client, args)
-    assert results.readable_output == 'The member username was removed from the group successfully, with group ID: group_id'
+    assert results.readable_output == "The member username was removed from the group successfully, with group ID: group_id"
 
 
 def test_set_channel_role_command(http_client, mocker):
@@ -622,10 +624,11 @@ def test_set_channel_role_command(http_client, mocker):
     Then -
         Validate that the function returns the expected CommandResults.
     """
-    args = {'channel_id': 'channel_id', "user_id": "user_id", "role": "admin"}
+    args = {"channel_id": "channel_id", "user_id": "user_id", "role": "admin"}
     mocker.patch.object(http_client, "remove_group_member_request", return_value={"status": "ok"})
     results = set_channel_role_command(http_client, args)
-    assert results.readable_output == 'Set channel role for username successfully to Admin.'
+    assert results.readable_output == "Set channel role for username successfully to Admin."
+
 
 ######### async tests #########
 
