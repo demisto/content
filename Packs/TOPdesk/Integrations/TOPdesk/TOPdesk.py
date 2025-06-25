@@ -9,7 +9,7 @@ import math
 import os
 import shutil
 from collections.abc import Callable
-from distutils.version import LooseVersion
+from packaging.version import Version
 from typing import Any
 
 import dateparser
@@ -46,7 +46,7 @@ class Client(BaseClient):
         Return True if the version supports new FIQL type query and False otherwise.
         """
         try:
-            rest_api_version = LooseVersion(self.get_single_endpoint("/version")["version"])
+            rest_api_version = Version(self.get_single_endpoint("/version")["version"])
 
         except DemistoException as e:
             if "Error 401" in str(e):
@@ -56,7 +56,7 @@ class Client(BaseClient):
             else:
                 raise e
 
-        return rest_api_version >= LooseVersion(FIRST_REST_API_VERSION_WITH_NEW_QUERY)
+        return rest_api_version >= Version(FIRST_REST_API_VERSION_WITH_NEW_QUERY)
 
     def get_list_with_query(
         self,
