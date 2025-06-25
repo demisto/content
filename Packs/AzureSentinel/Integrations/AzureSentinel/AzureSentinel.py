@@ -913,6 +913,7 @@ def update_remote_incident(
     # those fields are close incident fields and handled separately in should_close_incident_in_remote
     relevant_keys_delta -= {"classification", "classificationComment"}
     if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
+        demisto.debug(f"{incident_status=}")
         reopen_ticket = should_open_incident_in_remote(delta, data, incident_status)
         close_ticket = should_close_incident_in_remote(delta, data, incident_status)
         if relevant_keys_delta or reopen_ticket or close_ticket:
