@@ -1,7 +1,9 @@
 import json
 
 import requests_mock
-from Cyberwatch import Client
+from Cyberwatch import Client, fetch_incidents
+import demistomock as demisto
+import datetime as _dt
 
 
 def util_load_json(path):
@@ -365,3 +367,311 @@ def test_fetch_security_issue_command_no_id(mocker):
             fetch_security_issue_command(client, {})
         except Exception as e:
             assert str(e) == "Please provide a Security Issues ID"
+
+
+def test__as_list_edge_cases():
+    from Cyberwatch import _as_list
+
+    # Scalar string stays scalar (wrapped in a list)
+    assert _as_list("a,b") == ["a,b"]
+
+    # Iterable is returned unchanged
+    assert _as_list(["x", "y"]) == ["x", "y"]
+
+
+def test_cursor_build_parse_roundtrip():
+    import Cyberwatch as _cw
+
+    cases = [
+        # last_success only
+        {"last_success": 111, "cycle_start": None, "server_id": None, "cve_id": None},
+        # last_success + cycle_start
+        {"last_success": 111, "cycle_start": 222, "server_id": None, "cve_id": None},
+        # last_success + cycle_start + server_id
+        {"last_success": 111, "cycle_start": 222, "server_id": 333, "cve_id": None},
+        # full cursor
+        {"last_success": 111, "cycle_start": 222, "server_id": 333, "cve_id": "CVE-2025-0001"},
+    ]
+
+    for c in cases:
+        built = _cw._build_cursor(c["last_success"], c["cycle_start"], c["server_id"], c["cve_id"])
+        parsed = _cw._parse_cursor(built)
+        assert parsed == c
+
+
+def test_parse_cursor_malformed():
+    import Cyberwatch as _cw
+
+    # empty or None
+    assert _cw._parse_cursor("") is None
+    assert _cw._parse_cursor(None) is None
+    # first field must be int
+    assert _cw._parse_cursor("not-int###123") is None
+
+
+def test_to_utc_variants(mocker):
+    """
+    • No-timezone     → assume UTC and make it *aware*
+    • Explicit “Z”    → already UTC, keep value
+    • +02:00 offset   → convert back to UTC (-2 h)
+    """
+    from Cyberwatch import to_utc
+
+    # naïve (no tz) string
+    naive_str = "2025-06-02T14:30:00"
+    naive_dt = to_utc(naive_str)
+    assert naive_dt.tzinfo is _dt.UTC
+    assert naive_dt.isoformat() == "2025-06-02T14:30:00+00:00"
+
+    # explicit “Z” (UTC) string
+    zulu_str = "2025-06-02T14:30:00Z"
+    zulu_dt = to_utc(zulu_str)
+    assert zulu_dt == naive_dt
+    assert zulu_dt.tzinfo is _dt.UTC
+
+    # offset string (+02:00 should roll back 2 h)
+    offset_str = "2025-06-02T16:30:00+02:00"
+    offset_dt = to_utc(offset_str)
+    assert offset_dt == naive_dt
+
+
+def _freeze_now(mocker, year=2025, month=6, day=2, h=12):
+    import Cyberwatch as _cw
+
+    fixed = _dt.datetime(year, month, day, h, 0, 0, tzinfo=_dt.UTC)
+
+    class _FixedDateTime(_dt.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return fixed if tz is None else fixed.astimezone(tz)
+
+    mocker.patch.object(_cw, "datetime", _FixedDateTime)
+
+
+def test_fetch_incidents_one_incident(mocker):
+    """One CVE present on one asset ➜ one incident pushed."""
+    _freeze_now(mocker)
+    import Cyberwatch as _cw
+
+    frozen_ts = int(_cw.datetime.now(_dt.UTC).timestamp())
+
+    mocker.patch.object(
+        Client,
+        "get_assets",
+        return_value=util_load_json("test_data/test_fetch_incident_assets_one.json"),
+    )
+    mocker.patch.object(
+        Client,
+        "get_one_asset",
+        return_value=util_load_json("test_data/test_fetch_incident_full_asset_one.json"),
+    )
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"cursor": "0"})
+
+    pushed: list[dict] = []
+    mocker.patch.object(demisto, "incidents", side_effect=pushed.extend)
+    set_lr = mocker.patch.object(demisto, "setLastRun")
+
+    fetch_incidents(client, {"max_fetch": "50"})
+
+    assert [i["name"] for i in pushed] == ["CVE-2025-0001 on srv1"]
+    set_lr.assert_called_once()
+    assert int(set_lr.call_args[0][0]["cursor"]) == frozen_ts
+
+
+def test_fetch_incidents_respects_max_fetch(mocker):
+    """Multiple CVEs on one asset, but max_fetch=2 ➜ two incidents pushed per cycle."""
+    # freeze time so the cycle_start_ts is deterministic (2025-06-10 00:00 UTC)
+    _freeze_now(mocker, year=2025, month=6, day=10)
+    import Cyberwatch as _cw
+
+    cycle_ts = int(_cw.datetime.now(_dt.UTC).timestamp())
+
+    # fixtures: one asset containing five CVEs
+    mocker.patch.object(
+        Client,
+        "get_assets",
+        return_value=util_load_json("test_data/test_fetch_incident_assets_one.json"),
+    )
+    mocker.patch.object(
+        Client,
+        "get_one_asset",
+        return_value=util_load_json("test_data/test_fetch_incident_full_asset_five.json"),
+    )
+
+    cursor = "0"  # start from epoch
+    collected: list[str] = []
+
+    expected_batches = [
+        ("CVE-2025-0001", "CVE-2025-0002"),
+        ("CVE-2025-0003", "CVE-2025-0004"),
+        ("CVE-2025-0005",),
+    ]
+
+    for batch in expected_batches:
+        mocker.patch.object(demisto, "getLastRun", return_value={"cursor": cursor})
+
+        pushed: list[dict] = []
+        mocker.patch.object(demisto, "incidents", side_effect=pushed.extend)
+        set_lr = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_incidents(client, {"max_fetch": "2"})
+
+        names = [i["name"] for i in pushed]
+        assert names == [f"{cve} on srv1" for cve in batch]
+        collected.extend(names)
+
+        set_lr.assert_called_once()
+        cursor = set_lr.call_args[0][0]["cursor"]
+        parts = cursor.split("###")
+
+        if len(batch) == 2:  # still hit max_fetch
+            assert parts[0] == "0"  # last_success_ts
+            assert int(parts[1]) == cycle_ts  # cycle_start_ts
+            assert parts[2] == "912"  # asset id
+            assert parts[3] == batch[-1]  # last CVE processed
+        else:  # cycle finished
+            assert parts == [str(cycle_ts)]
+
+    assert collected == [f"CVE-2025-000{i} on srv1" for i in range(1, 6)]
+
+
+def test_fetch_incidents_skips_ignored_by_default(mocker):
+    _freeze_now(mocker, year=2025, month=6, day=10)
+    import Cyberwatch as _cw
+
+    frozen_ts = int(_cw.datetime.now(_dt.UTC).timestamp())
+
+    mocker.patch.object(
+        Client,
+        "get_assets",
+        return_value=util_load_json("test_data/test_fetch_incident_assets_one.json"),
+    )
+    mocker.patch.object(
+        Client,
+        "get_one_asset",
+        return_value=util_load_json("test_data/test_fetch_incident_full_asset_ignored.json"),
+    )
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"cursor": "0"})
+    pushed: list[dict] = []
+    mocker.patch.object(demisto, "incidents", side_effect=pushed.extend)
+    set_lr = mocker.patch.object(demisto, "setLastRun")
+
+    fetch_incidents(client, {})
+
+    assert pushed == []
+    set_lr.assert_called_once()
+    assert set_lr.call_args[0][0]["cursor"] == str(frozen_ts)
+
+
+def test_fetch_incidents_ingests_ignored_when_requested(mocker):
+    _freeze_now(mocker)
+
+    mocker.patch.object(
+        Client,
+        "get_assets",
+        return_value=util_load_json("test_data/test_fetch_incident_assets_one.json"),
+    )
+    mocker.patch.object(
+        Client,
+        "get_one_asset",
+        return_value=util_load_json("test_data/test_fetch_incident_full_asset_ignored.json"),
+    )
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"cursor": "0"})
+
+    pushed: list[dict] = []
+    mocker.patch.object(demisto, "incidents", side_effect=pushed.extend)
+    mocker.patch.object(demisto, "setLastRun")
+
+    fetch_incidents(
+        client,
+        {"cve_filters": '{"ignored": true}', "max_fetch": "10"},
+    )
+
+    assert len(pushed) == 1
+    assert pushed[0]["name"].startswith("CVE-2025-9999")
+
+
+def test_fetch_incidents_uses_last_run_timestamp(mocker):
+    _freeze_now(mocker)
+
+    mocker.patch.object(
+        Client,
+        "get_assets",
+        return_value=util_load_json("test_data/test_fetch_incident_assets_one.json"),
+    )
+    mocker.patch.object(
+        Client,
+        "get_one_asset",
+        return_value=util_load_json("test_data/test_fetch_incident_full_asset_two_cves.json"),
+    )
+
+    lr_ts = int(_dt.datetime(2025, 6, 1, tzinfo=_dt.UTC).timestamp())
+    mocker.patch.object(demisto, "getLastRun", return_value={"cursor": str(lr_ts)})
+
+    pushed: list[dict] = []
+    mocker.patch.object(demisto, "incidents", side_effect=pushed.extend)
+    mocker.patch.object(demisto, "setLastRun")
+
+    fetch_incidents(client, {"max_fetch": "10"})
+
+    assert len(pushed) == 1
+    assert pushed[0]["name"].startswith("CVE-2025-0002")
+
+
+def test_fetch_incidents_filter_prioritized_true(mocker):
+    _freeze_now(mocker)
+
+    mocker.patch.object(
+        Client,
+        "get_assets",
+        return_value=util_load_json("test_data/test_fetch_incident_assets_one.json"),
+    )
+    mocker.patch.object(
+        Client,
+        "get_one_asset",
+        return_value=util_load_json("test_data/test_fetch_incident_full_asset_prioritized.json"),
+    )
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"cursor": "0"})
+
+    pushed: list[dict] = []
+    mocker.patch.object(demisto, "incidents", side_effect=pushed.extend)
+    mocker.patch.object(demisto, "setLastRun")
+
+    fetch_incidents(
+        client,
+        {"cve_filters": '{"prioritized": true}', "max_fetch": "10"},
+    )
+
+    assert [i["name"] for i in pushed] == ["CVE-2025-1111 on srv1"]
+
+
+def test_fetch_incidents_filter_min_scores(mocker):
+    _freeze_now(mocker)
+
+    mocker.patch.object(
+        Client,
+        "get_assets",
+        return_value=util_load_json("test_data/test_fetch_incident_assets_one.json"),
+    )
+    mocker.patch.object(
+        Client,
+        "get_one_asset",
+        return_value=util_load_json("test_data/test_fetch_incident_full_asset_scores.json"),
+    )
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"cursor": "0"})
+
+    pushed: list[dict] = []
+    mocker.patch.object(demisto, "incidents", side_effect=pushed.extend)
+    mocker.patch.object(demisto, "setLastRun")
+
+    fetch_incidents(
+        client,
+        {"cve_filters": '{"min_cvss": 9, "min_epss": 0.5}', "max_fetch": "10"},
+    )
+
+    assert [i["name"] for i in pushed] == ["CVE-2025-HIGH on srv1"]

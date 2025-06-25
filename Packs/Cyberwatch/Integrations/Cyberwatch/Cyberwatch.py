@@ -1,5 +1,7 @@
 from collections.abc import Callable
 from datetime import datetime, timedelta
+from dateutil.parser import parse as parse_iso
+import json
 from typing import Any
 
 import demistomock as demisto
@@ -10,6 +12,9 @@ from CommonServerUserPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+FETCH_LIMIT_MAX = 10000
+CURSOR_DELIM = "###"
 
 
 class Client(BaseClient):
@@ -584,6 +589,54 @@ def test_module(client: Client) -> str:
 """ HELPERS """
 
 
+def _parse_cursor(raw: str | None) -> dict[str, Any] | None:
+    """
+    Split the persisted cursor string and cast the parts.
+
+    Returns
+        {
+            "last_success": int,
+            "cycle_start": int | None,
+            "server_id": int | None,
+            "cve_id": str | None,
+        }
+        …or None if `raw` is empty / malformed.
+    """
+    if not raw:
+        return None
+
+    parts = raw.split(CURSOR_DELIM)
+    try:
+        last_success = int(parts[0])
+    except ValueError:
+        return None
+
+    cycle_start = int(parts[1]) if len(parts) > 1 and parts[1] else None
+    server_id = int(parts[2]) if len(parts) > 2 and parts[2] else None
+    cve_id = parts[3] if len(parts) > 3 and parts[3] else None
+
+    return {
+        "last_success": last_success,
+        "cycle_start": cycle_start,
+        "server_id": server_id,
+        "cve_id": cve_id,
+    }
+
+
+def _build_cursor(
+    last_success: int, cycle_start: int | None = None, server_id: int | None = None, cve_id: str | None = None
+) -> str:
+    """Reverse of _parse_cursor."""
+    pieces: list[str] = [str(last_success)]
+    if cycle_start is not None:
+        pieces.append(str(cycle_start))
+        if server_id is not None:
+            pieces.append(str(server_id))
+            if cve_id is not None:
+                pieces.append(str(cve_id))
+    return CURSOR_DELIM.join(pieces)
+
+
 def iso8601_to_human(iso8601_str, default_value=""):
     """
     Convert ISO8601 string to human readable date time.
@@ -609,7 +662,179 @@ def iso8601_to_human(iso8601_str, default_value=""):
     return default_value
 
 
-""" FUNCTIONS """
+def to_utc(dt_str: str) -> datetime:
+    """
+    Converts an ISO 8601 or Z date string to a UTC **aware** datetime.
+    If the string has no timezone, UTC is assumed.
+    """
+    dt = parse_iso(dt_str)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    else:
+        dt = dt.astimezone(timezone.utc)
+    return dt
+
+
+def _as_list(value):
+    """Allows accepting either a single value or a JSON list."""
+    if value is None:
+        return None
+    return value if isinstance(value, list) else [value]
+
+
+def cve_passes_filters(cve: dict, filt: dict) -> bool:
+    """
+    Returns True if the CVE satisfies all the provided filters.
+    Args:
+        cve (dict): A dictionary representing the CVE details. Expected keys include:
+            - "active" (bool): Indicates if the CVE is active.
+            - "ignored" (bool): Indicates if the CVE is ignored.
+            - "prioritized" (bool): Indicates if the CVE is prioritized.
+            - "cve_code" (str): The CVE identifier.
+            - "score" (float): The score of the CVE.
+            - "epss" (float): The EPSS score of the CVE.
+        filt (dict): A dictionary of filters to apply. Supported keys include:
+            - "active" (bool): Filter by active status (default is True).
+            - "ignored" (bool): Filter by ignored status (default is False).
+            - "prioritized" (bool): Filter by prioritized status.
+            - "cve_code" (str or list): Filter by specific CVE code(s).
+            - "min_cvss" (float): Minimum CVSS score to include.
+            - "min_epss" (float): Minimum EPSS score to include.
+    Returns:
+        bool: True if the CVE matches all the specified filters, False otherwise.
+    """
+    if filt.get("active", True) is False and cve.get("active", True) is False:
+        return False
+    if filt.get("active") is True and not cve.get("active", True):
+        return False
+
+    if filt.get("ignored", False) is False and cve.get("ignored", False):
+        return False
+    if filt.get("ignored") is True and not cve.get("ignored", False):
+        return False
+
+    if "prioritized" in filt and cve.get("prioritized") != filt["prioritized"]:
+        return False
+
+    if (codes := _as_list(filt.get("cve_code"))) and cve["cve_code"] not in codes:
+        return False
+
+    # Scores numériques
+    cvss = cve.get("score") or 0
+    epss = cve.get("epss") or 0
+
+    if (min_cvss := filt.get("min_cvss")) is not None and cvss < float(min_cvss):
+        return False
+
+    return not ((min_epss := filt.get("min_epss")) is not None and epss < float(min_epss))
+
+
+def fetch_incidents(client: Client, params: dict[str, Any]) -> None:
+    """
+    Incremental incident fetch with a resumable cursor.
+
+    Cursor layout:
+        <last_success_ts>###<cycle_start_ts>###<server_id>###<cve_id>
+    """
+    first_fetch = params.get("first_fetch", "3 days")
+    max_fetch = min(int(params.get("max_fetch", 200)), FETCH_LIMIT_MAX)
+
+    asset_filters = json.loads(params.get("asset_filters", "{}") or "{}")
+    cve_filters = json.loads(params.get("cve_filters", "{}") or '{"ignored": false}')
+
+    # Parse the cursor from the last run.
+    parsed = _parse_cursor(demisto.getLastRun().get("cursor") if demisto.getLastRun() else None)
+
+    # If the cursor is not set, we start a new cycle.
+    if not parsed:
+        start_ms, _ = parse_date_range(first_fetch, to_timestamp=True)
+        last_success_ts = int(start_ms / 1000)
+        cycle_start_ts = int(datetime.now(timezone.utc).timestamp())
+        resume_server_id = None
+        resume_cve_id = None
+    else:  # continuing either a cycle or a new one
+        last_success_ts = parsed["last_success"]
+        cycle_start_ts = parsed["cycle_start"] or int(datetime.now(timezone.utc).timestamp())
+        resume_server_id = parsed["server_id"]
+        resume_cve_id = parsed["cve_id"]
+
+    incidents: list[dict[str, Any]] = []
+    last_asset_id: int | None = None
+    last_cve_code: str | None = None
+    hit_limit = False
+
+    # Iterate assets in order
+    assets = client.get_assets(asset_filters)
+    for asset in assets:
+        # Skip the processed assets until we reach the one we stopped at
+        if resume_server_id is not None and asset["id"] != resume_server_id:
+            continue
+
+        full_asset = client.get_one_asset({"id": asset["id"]})
+
+        # Skikpping CVEs until we reach the one we stopped at
+        skipping_cv_es = resume_server_id == asset["id"] and resume_cve_id is not None
+        for cve in full_asset.get("cve_announcements", []):
+            if skipping_cv_es:
+                if cve["cve_code"] == resume_cve_id:
+                    skipping_cv_es = False
+                continue
+
+            detected_ts = int(to_utc(cve.get("detected_at")).timestamp())
+
+            # Only consider detections in [last_success_ts, cycle_start_ts]
+            if detected_ts <= last_success_ts or detected_ts > cycle_start_ts:
+                continue
+
+            if not cve_passes_filters(cve, cve_filters):
+                continue
+
+            incidents.append(
+                {
+                    "name": f"{cve['cve_code']} on {asset['hostname']}",
+                    "occurred": datetime.utcfromtimestamp(detected_ts).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "rawJSON": json.dumps(
+                        {
+                            "cve": cve["cve_code"],
+                            "score": cve["score"],
+                            "environmental_score": cve.get("environmental_score"),
+                            "epss": cve.get("epss"),
+                            "ignored": cve.get("ignored", False),
+                            "active": cve.get("active", True),
+                            "detected_at": cve.get("detected_at"),
+                            "prioritized": cve.get("prioritized", False),
+                            "server_id": asset["id"],
+                        }
+                    ),
+                }
+            )
+
+            last_asset_id = asset["id"]
+            last_cve_code = cve["cve_code"]
+
+            if len(incidents) >= max_fetch:
+                hit_limit = True
+                break
+        # Reset resume pointers after first asset is handled
+        resume_server_id = None
+        resume_cve_id = None
+
+        if hit_limit:
+            break
+
+    if hit_limit:
+        cursor = _build_cursor(
+            last_success_ts,
+            cycle_start_ts,
+            last_asset_id,
+            last_cve_code,
+        )
+    else:
+        # cycle finished – advance last_success_ts and clear bookmark
+        cursor = _build_cursor(cycle_start_ts)
+
+    demisto.incidents(incidents)
+    demisto.setLastRun({"cursor": cursor})
 
 
 def list_cves_command(client: Client, args: Dict[str, Any]):
@@ -1032,6 +1257,8 @@ def main():  # pragma: no cover
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
+        elif command == "fetch-incidents":
+            fetch_incidents(client, params)
         else:
             return_results(command_dict[command](client, args))
     except Exception as e:
