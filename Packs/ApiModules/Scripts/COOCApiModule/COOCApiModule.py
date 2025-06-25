@@ -198,7 +198,7 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = No
         connector_id (str): The ID of the connector to fetch accounts for.
         max_results (int, optional): Maximum number of results to return. Defaults to None (all results).
     Returns:
-        list: List of accounts associated with the specified connector.
+        list: List of accounts (only of type ACCOUNT) associated with the specified connector.
     """
     all_accounts = []
     next_token = ""
@@ -221,6 +221,7 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = No
     except Exception as e:
         demisto.error(f"[COOC API] Failed to fetch accounts for connector {connector_id}: {str(e)}")
 
+    all_accounts = [account for account in all_accounts if account.get("account_type") == "ACCOUNT"]
     if max_results:
         return all_accounts[:max_results]
     return all_accounts
@@ -290,7 +291,7 @@ def run_permissions_check_for_accounts(
         if not account_id:
             raise DemistoException("No valid account_id found in accounts")
 
-        shared_creds = get_cloud_credentials(cloud_type, account_id)  # todo need to add expiration
+        shared_creds = get_cloud_credentials(cloud_type, account_id) # todo need to add expiration
         demisto.debug(f"[COOC API] Retrieved shared {cloud_type} credentials for all accounts")
 
     except Exception as e:

@@ -195,6 +195,7 @@ def extract_zone_name(zone_input: str | None) -> str:
 
     Returns:
         str: The zone name, e.g., "us-central1-b".
+        https://www.googleapis.com/compute/v1/projects/test/zones/us-central1-b -> us-central1-b
 
     Raises:
         DemistoException: If the zone input is empty or invalid.
