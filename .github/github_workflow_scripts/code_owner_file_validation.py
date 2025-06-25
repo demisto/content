@@ -6,6 +6,7 @@ import sys
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 BRANCH_NAME = os.getenv("BRANCH_NAME", "main")
 
+
 def validate_codeowners_file(owner: str, repo: str) -> dict:
     """
     Validates the CODEOWNERS file for a given GitHub repository using the GitHub API.
