@@ -1,4 +1,4 @@
-name: Code Owner File Validation
+name: CODEOWNERS File Validation
 on:
   pull_request:
     types: [opened, synchronize]
