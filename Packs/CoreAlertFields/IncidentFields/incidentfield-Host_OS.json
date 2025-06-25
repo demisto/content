@@ -2,6 +2,14 @@
     "associatedToAll": true,
     "caseInsensitive": true,
     "cliName": "hostos",
+    "selectValues": [
+    "AGENT_OS_WINDOWS",
+    "AGENT_OS_MAC",
+    "AGENT_OS_LINUX",
+    "AGENT_OS_ANDROID",
+    "AGENT_OS_IOS",
+    "AGENT_OS_CAAS_LINUX"
+    ],
     "closeForm": false,
     "content": true,
     "description": "Action taken by the alert sensor, either Detected or Prevented with action status displayed in parenthesis.",
