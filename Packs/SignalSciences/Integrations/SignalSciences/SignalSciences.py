@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 import json
-
 import requests
 
 """ GLOBAL VARS """
@@ -231,7 +230,7 @@ def is_legal_list_type(list_type):
 
 
 def represents_int(string_var):
-    if "." in string_var:
+    if not string_var or "." in string_var:
         return False
     if string_var[0] in ("-", "+"):
         return string_var[1:].isdigit()
