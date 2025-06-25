@@ -510,7 +510,7 @@ class Client(CoreClient):
             url_suffix="/alerts/update_alerts",
             json_data=request_data,
             headers=self.headers,
-            timeout=self.timeout, 
+            timeout=self.timeout,
         )
         if "reply" not in response or "alerts_ids" not in response["reply"]:
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
