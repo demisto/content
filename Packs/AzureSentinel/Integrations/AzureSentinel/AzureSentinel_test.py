@@ -1770,16 +1770,14 @@ def test_should_close_incident_in_remote(mocker, delta, data, close_ticket_param
 
 
 @pytest.mark.parametrize(
-    "delta, data, incident_status, to_open",
+    "delta, incident_status, to_open",
     [
-        ({"classification": "FalsePositive"}, {"status": "Active"}, IncidentStatus.ACTIVE, False),
-        ({"classification": ""}, {"status": "Closed"}, IncidentStatus.ACTIVE, True),
-        ({"classification": ""}, {"status": "Closed"}, IncidentStatus.DONE, False),
-        ({"classification": ""}, {"status": "Active"}, IncidentStatus.ACTIVE, False),
-        ({}, {"status": "Active"}, IncidentStatus.ACTIVE, False),
+        ({"classification": "FalsePositive"}, IncidentStatus.ACTIVE, False),
+        ({"classification": ""}, IncidentStatus.ACTIVE, True),
+        ({"classification": ""}, IncidentStatus.DONE, False),
+        ({}, IncidentStatus.ACTIVE, False),
         (
             {"classification": "FalsePositive"},
-            {"classification": "FalsePositive", "status": "Closed"},
             IncidentStatus.DONE,
             False,
         ),
@@ -1788,9 +1786,8 @@ def test_should_close_incident_in_remote(mocker, delta, data, close_ticket_param
         "1#-the_incident_is_open_classification_changed",
         "2#-the_incident_is_reopened",
         "3#-the_incident_is_close_classification_removed",
-        "4#-the_incident_is_open_classification_removed",
-        "5#-the_incident_is_open",
-        "6#-the_incident_is_close_classification_changed",
+        "4#-the_incident_is_open",
+        "5#-the_incident_is_close_classification_changed",
     ],
 )
 def test_should_open_incident_in_remote(delta, data, incident_status, to_open):
@@ -1799,18 +1796,16 @@ def test_should_open_incident_in_remote(delta, data, incident_status, to_open):
         - case 1: The incident is open and the classification was changed.
         - case 2: The incident is re-opened.
         - case 3: The incident is closed and the classification was changed.
-        - case 4: The incident is open and the classification was changed.
-        - case 5: The incident is open and the classification was not changed.
-        - case 6: The incident is close and the classification was changed.
+        - case 4: The incident is open and the classification was not changed.
+        - case 5: The incident is close and the classification was changed.
     When
         - outgoing mirroring triggered by a change in the incident
     Then
         - case 1: We expect to process the incident, so its ID exists in the expected result.
         - case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
         - case 3: We expect to process the incident, so its ID exists in the expected result.
-        - case 4: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
-        - case 5: We expect to process the incident, so its ID exists in the expected result.
-        - case 6: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
+        - case 4: We expect to process the incident, so its ID exists in the expected result.
+        - case 5: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
     """
     assert should_open_incident_in_remote(delta, data, incident_status) == to_open
 
