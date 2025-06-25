@@ -1,7 +1,7 @@
 name: Code Owner File Validation
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, synchronize]
 
 permissions:
   pull-requests: read
