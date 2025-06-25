@@ -121,18 +121,6 @@ COMMAND_REQUIREMENTS = {
         GCPServices.RESOURCE_MANAGER,
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     ),
-    # "gcp-iam-project-deny-policy-create": (
-    #     GCPServices.IAM_V2,
-    #     ["iam.denypolicies.create"]
-    # ),
-    # "gcp-iam-service-account-delete": (
-    #     GCPServices.IAM_V1,
-    #     ["iam.serviceAccounts.delete"]
-    # ),
-    # "gcp-iam-group-membership-delete": (
-    #     GCPServices.CLOUD_IDENTITY,
-    #     ["cloudidentity.groups.memberships.delete"]
-    # ),
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
@@ -819,270 +807,6 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
-# def admin_user_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-#     """
-#     Updates user account fields in GSuite, such as names, org unit, or status.
-#
-#     Args:
-#         creds (Credentials): GCP credentials with admin directory scopes.
-#         args (dict[str, Any]): Must include 'user_key' and 'update_fields'.
-#
-#     Returns:
-#         CommandResults: Result of the user update operation.
-#     """
-#     user_key = args.get("user_key")
-#     update_fields = json.loads(args.get("update_fields", "{}"))
-#
-#     directory = GCPServices.ADMIN_DIRECTORY.build(creds)
-#
-#     try:
-#         response = directory.users().update(userKey=user_key, body=update_fields).execute()  # pylint: disable=E1101
-#         hr = f"GSuite user {user_key} was successfully updated."
-#     except Exception as e:
-#         raise DemistoException(f"Failed to update user: {str(e)}") from e
-#
-#     return CommandResults(readable_output=hr, outputs_prefix="GCP.GSuite.User", outputs=response)
-#
-#
-# def admin_user_password_reset(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-#     """
-#     Resets the password for a GSuite user account.
-#
-#     Args:
-#         creds (Credentials): GCP credentials with admin directory security scope.
-#         args (dict[str, Any]): Must include 'user_key' and 'new_password'.
-#
-#     Returns:
-#         CommandResults: Result of the password reset operation.
-#     """
-#     user_key = args.get("user_key")
-#     new_password = args.get("new_password")
-#
-#     directory = GCPServices.ADMIN_DIRECTORY.build(creds)
-#
-#     try:
-#         # Create password update body
-#         password_update = {"password": new_password}
-#
-#         response = directory.users().update(userKey=user_key, body=password_update).execute()  # pylint: disable=E1101
-#         hr = f"Password for GSuite user {user_key} was successfully reset."
-#     except Exception as e:
-#         raise DemistoException(f"Failed to reset password: {str(e)}") from e
-#
-#     return CommandResults(readable_output=hr, outputs_prefix="GCP.GSuite.User.Password", outputs=response)
-#
-#
-# def admin_user_signout(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-#     """
-#     Invalidates all active sessions for a GSuite user, forcing them to sign in again.
-#
-#     Args:
-#         creds (Credentials): GCP credentials with admin directory security scope.
-#         args (dict[str, Any]): Must include 'user_key'.
-#
-#     Returns:
-#         CommandResults: Result of the signout operation.
-#     """
-#     user_key = args.get("user_key")
-#
-#     directory = GCPServices.ADMIN_DIRECTORY.build(creds)
-#
-#     try:
-#         directory.users().signOut(userKey=user_key).execute()  # pylint: disable=E1101
-#         hr = f"All active sessions for GSuite user {user_key} were successfully signed out."
-#     except Exception as e:
-#         raise DemistoException(f"Failed to sign out user: {str(e)}") from e
-#
-#     return CommandResults(readable_output=hr)
-
-
-def _get_commands_for_requirement(requirement: str, req_type: str) -> list[str]:
-    """
-    Find which commands require a specific API or permission.
-
-    Args:
-        requirement (str): The API endpoint or permission to search for.
-        req_type (str): Either 'apis' or 'permissions' to specify search type.
-
-    Returns:
-        str: Comma-separated list of command names that require the specified resource.
-             Returns 'unknown commands' if no matches found.
-    """
-    commands = [
-        cmd
-        for cmd, (service, permissions) in COMMAND_REQUIREMENTS.items()
-        if (req_type == "apis" and requirement == service.api_endpoint)
-        or (req_type == "permissions" and requirement in permissions)
-    ]
-    return commands or ["unknown commands"]
-
-
-def validate_apis_enabled(creds: Credentials, project_id: str, apis: list[str]) -> list[str]:
-    """
-    Check if required Google Cloud APIs are enabled for the project.
-
-    Uses the Service Usage API to verify that each required API is enabled.
-    If the Service Usage API itself is unavailable, returns empty list to skip validation.
-
-    Args:
-        creds (Credentials): GCP credentials for API access.
-        project_id (str): The GCP project ID to check.
-        apis (list[str]): List of API endpoints to validate (e.g., ['compute.googleapis.com']).
-
-    Returns:
-        list[str]: List of API endpoints that are disabled and need to be enabled.
-                  Returns empty list if Service Usage API is unavailable.
-    """
-    try:
-        service_usage = GCPServices.SERVICE_USAGE.build(creds)
-        disabled = []
-
-        for api in apis:
-            try:
-                response = (
-                    service_usage.services()  # pylint: disable=E1101
-                    .get(name=f"projects/{project_id}/services/{api}")
-                    .execute()
-                )
-                if response.get("state") != "ENABLED":
-                    disabled.append(api)
-            except Exception as e:
-                demisto.debug(f"API check failed for {api}: {str(e)}")
-                disabled.append(api)  # Assume disabled if check fails
-
-        return disabled
-    except Exception as e:
-        demisto.debug(f"Service Usage API unavailable: {str(e)}")
-        return []  # Skip validation if Service Usage API not accessible
-
-
-def _get_requirements(command: str = "") -> tuple[list[str], list[str]]:
-    """
-    Extract API endpoints and permissions for a command or all commands.
-
-    Uses frozenset union pattern to efficiently get unique values across all commands
-    when no specific command is provided.
-
-    Args:
-        command (str, optional): Specific command name. If empty, returns requirements for all commands.
-
-    Returns:
-        tuple[list[str], list[str]]: Tuple containing:
-            - List of required API endpoints
-            - List of required IAM permissions
-    """
-    # Get service and permissions using the same pattern
-    service, permissions = COMMAND_REQUIREMENTS.get(
-        command, (None, list(frozenset().union(*[perms for _, perms in COMMAND_REQUIREMENTS.values()])))
-    )
-
-    # Get APIs using the same pattern
-    apis = (
-        [service.api_endpoint]
-        if service
-        else list(frozenset().union(*[[svc.api_endpoint] for svc, _ in COMMAND_REQUIREMENTS.values()]))
-    )
-
-    return apis, permissions
-
-
-def check_required_permissions(
-    creds: Credentials, project_id: str, connector_id: str = None, command: str = ""
-) -> list[HealthCheckError] | HealthCheckError | None:
-    """
-    Comprehensive validation of GCP APIs and IAM permissions for commands.
-
-    Validation order:
-    1. IAM Permissions: Tests IAM permissions using Resource Manager's testIamPermissions API
-    2. API Enablement: Verifies required Google Cloud APIs are enabled using Service Usage API
-
-    Special handling:
-    - Cloud Identity permissions are skipped (cannot be tested via API)
-    - Service Usage API failures are logged but don't block execution
-    - Provides actionable error messages with gcloud commands for remediation
-
-    Args:
-        creds (Credentials): GCP credentials to test.
-        project_id (str): The GCP project ID to validate against.
-        connector_id (str, optional): Connector ID for COOC health checks.
-                                    If provided, returns HealthCheckError objects.
-                                    If None, raises DemistoException on failures.
-        command (str, optional): Specific command to validate.
-                               If empty, validates all integration commands.
-
-    Returns:
-        For COOC context (connector_id provided):
-            - None: All validations passed
-            - HealthCheckError: Single validation error
-            - list[HealthCheckError]: Multiple validation errors
-
-        For integration context (no connector_id):
-            - None: All validations passed
-            - Raises DemistoException: On any validation failure
-
-    Raises:
-        DemistoException: When validation fails and not in COOC context.
-    """
-    apis, permissions = _get_requirements(command)
-    errors = []
-
-    # 1. First validate IAM permissions
-    untestable_permissions = [p for p in permissions if p.startswith("cloudidentity.")]
-    testable_permissions = list(set(permissions) - set(untestable_permissions))
-
-    if untestable_permissions:
-        demisto.info(f"The following permissions cannot be verified and will be assumed granted: {untestable_permissions}")
-
-    if testable_permissions:
-        try:
-            resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-            response = (
-                resource_manager.projects()
-                .testIamPermissions(  # pylint: disable=E1101
-                    resource=f"projects/{project_id}", body={"permissions": testable_permissions}
-                )
-                .execute()
-            )
-            granted = set(response.get("permissions", []))
-            missing = set(testable_permissions) - granted
-            if missing:
-                for perm in missing:
-                    commands = _get_commands_for_requirement(perm, "permissions")
-                    message = f"'{perm}' missing for {"command" if len(commands) == 1 else "commands"}: {", ".join(commands)}"
-                    errors.append(message)
-        except Exception as e:
-            error_message = f"Failed to test permissions for GCP integration: {str(e)}"
-            if connector_id:
-                return HealthCheckError(
-                    account_id=project_id,
-                    connector_id=connector_id,
-                    message=error_message,
-                    error_type=ErrorType.PERMISSION_ERROR,
-                )
-
-            raise DemistoException(error_message)
-
-    for api in validate_apis_enabled(creds, project_id, apis):
-        commands = _get_commands_for_requirement(api, "apis")
-        message = f"API '{api}' disabled, required for {"command" if len(commands) == 1 else "commands"}: {", ".join(commands)}"
-        errors.append(message)
-
-    if errors:
-        if connector_id:
-            return [
-                HealthCheckError(
-                    account_id=project_id,
-                    connector_id=connector_id,
-                    message=error,
-                    error_type=ErrorType.PERMISSION_ERROR,
-                )
-                for error in errors
-            ]
-        raise DemistoException("Missing required permissions/API for GCP integration:\n-" + "\n-".join(errors))
-
-    return None
-
-
 def health_check(shared_creds: dict, project_id: str, connector_id: str) -> HealthCheckError | list[HealthCheckError] | None:
     """Tests connectivity to GCP and checks for required permissions.
 
@@ -1108,16 +832,18 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
     try:
         token = shared_creds.get("access_token")
         if not token:
-            return HealthCheckError(
-                account_id=project_id,
-                connector_id=connector_id,
-                message="Failed to authenticate with GCP - token is missing from credentials",
-                error_type=ErrorType.CONNECTIVITY_ERROR,
-            )
-
+            raise DemistoException("Failed to authenticate with GCP - token is missing from credentials")
         creds = Credentials(token=token)
-        demisto.debug(f"{project_id}: Using pre-fetched credentials for health check")
-        return check_required_permissions(creds, project_id, connector_id)
+        if not creds:
+            raise DemistoException("Failed to create credentials object from token")
+
+        # Test core GCP services
+        # Test Compute service (most commonly used)
+        compute = GCPServices.COMPUTE.build(creds)
+        compute.projects().get(project=project_id).execute()
+        # Test Resource Manager (required for IAM operations)
+        resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+        resource_manager.projects().get(name=f"projects/{project_id}").execute()
     except Exception as e:
         return HealthCheckError(
             account_id=project_id,
@@ -1125,36 +851,6 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
             message=str(e),
             error_type=ErrorType.CONNECTIVITY_ERROR,
         )
-
-
-def test_module(creds: Credentials, args: dict[str, Any]) -> str:
-    """
-    Tests connectivity to GCP and checks for required permissions.
-
-    This function is used for the integration's test button functionality.
-    It verifies connectivity and basic permissions.
-
-    Args:
-        creds (Credentials): GCP credentials to test.
-        args (dict[str, Any]): Command arguments with 'project_id'.
-
-    Returns:
-        str: "ok" if test is successful.
-
-    Raises:
-        DemistoException: If the test fails for any reason.
-    """
-    project_id = args.get("project_id")
-    if not project_id:
-        raise DemistoException("Missing required parameter 'project_id'")
-
-    try:
-        # Check permissions without using the health check result handler
-        check_required_permissions(creds, project_id)
-        return "ok"
-    except Exception as e:
-        demisto.debug(f"Test module failed: {str(e)}")
-        raise DemistoException(f"Failed to connect to GCP: {str(e)}")
 
 
 def get_credentials(args: dict, params: dict) -> Credentials:
@@ -1217,7 +913,6 @@ def main():  # pragma: no cover
         params = demisto.params()
 
         command_map = {
-            "test-module": test_module,
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
             "gcp-compute-subnet-update": compute_subnet_update,
@@ -1233,13 +928,6 @@ def main():  # pragma: no cover
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
-            "gcp-iam-project-deny-policy-create": iam_project_deny_policy_create,
-            "gcp-iam-service-account-delete": iam_service_account_delete,
-            "gcp-iam-group-membership-delete": iam_group_membership_delete,
-            # Admin Directory commands
-            # "gcp-admin-user-update": admin_user_update,
-            # "gcp-admin-user-password-reset": admin_user_password_reset,
-            # "gcp-admin-user-signout": admin_user_signout,
         }
 
         if command == "test-module" and (connector_id := get_connector_id()):

@@ -191,7 +191,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         raise DemistoException(f"Failed to get credentials from CTS: {str(e)}. Response: {response}")
 
 
-def get_accounts_by_connector_id(connector_id: str, max_results: int | None = None) -> list:
+def get_accounts_by_connector_id(connector_id: str, max_results: int | None = 10) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
     Args:
@@ -211,7 +211,7 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = No
             result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
             res_json = json.loads(result["data"])
             accounts = res_json.get("values", [])
-            all_accounts.extend(accounts)
+            all_accounts.extend([account for account in accounts if account.get("account_type") == "ACCOUNT"])
             next_token = res_json.get("next_token", "")
 
             demisto.debug(f"[COOC API] Fetched {len(accounts)} accounts")
@@ -219,9 +219,8 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = No
             if not next_token or (max_results and len(all_accounts) >= max_results):
                 break
     except Exception as e:
-        demisto.error(f"[COOC API] Failed to fetch accounts for connector {connector_id}: {str(e)}")
+        raise DemistoException(f"Failed to fetch accounts for connector: {str(e)}")
 
-    all_accounts = [account for account in all_accounts if account.get("account_type") == "ACCOUNT"]
     if max_results:
         return all_accounts[:max_results]
     return all_accounts
@@ -276,22 +275,19 @@ def run_permissions_check_for_accounts(
     Raises:
         DemistoException: If the account retrieval fails.
     """
-    accounts = get_accounts_by_connector_id(connector_id)
-    demisto.debug(f"[COOC API] Processing {len(accounts)} accounts for {cloud_type}")
-
-    if not accounts:
-        demisto.debug(f"[COOC API] No accounts found for connector ID: {connector_id}")
-        return HealthStatus.OK
-
     health_check_result = HealthCheck(connector_id)
-
-    # Get credentials once for all accounts since they share the same creds
     try:
-        account_id = next((a["account_id"] for a in accounts if a.get("account_id")), None)
-        if not account_id:
+        accounts = get_accounts_by_connector_id(connector_id)
+        if not accounts:
+            demisto.debug(f"[COOC API] No accounts found for connector ID: {connector_id}")
+            return HealthStatus.OK
+
+        # Get credentials once for all accounts since they share the same creds
+        account = next((a for a in accounts if a.get("account_id") and a.get("account_type") == "ACCOUNT"), None)
+        if not account:
             raise DemistoException("No valid account_id found in accounts")
 
-        shared_creds = get_cloud_credentials(cloud_type, account_id) # todo need to add expiration
+        shared_creds = get_cloud_credentials(cloud_type, account.get("account_id"))
         demisto.debug(f"[COOC API] Retrieved shared {cloud_type} credentials for all accounts")
 
     except Exception as e:
@@ -307,16 +303,11 @@ def run_permissions_check_for_accounts(
         )
         return health_check_result.summarize()
 
-    # Process accounts sequentially
-    for i, account in enumerate(accounts, 1):
-        account_id = account.get("account_id", "unknown")
-        demisto.debug(f"[COOC API] Processing account {i}/{len(accounts)}: {account_id}")
+    result = _check_account_permissions(account, connector_id, shared_creds, permission_check_func)
+    if result is not None:
+        health_check_result.error(result)
 
-        result = _check_account_permissions(account, connector_id, shared_creds, permission_check_func)
-        if result is not None:
-            health_check_result.error(result)
-
-    demisto.info(f"[COOC API] Completed processing {len(accounts)} accounts")
+    demisto.info(f"[COOC API] Completed processing {account.get("account_id")}")
     return health_check_result.summarize()
 
 
