@@ -18,7 +18,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 FAILURE_SLEEP = 20  # sleep between consecutive failures events fetch
 FETCH_SLEEP = arg_to_number(demisto.params().get("fetch_interval")) or 60  # sleep between fetches
-FETCH_INITIAL_SLEEP = 1 # sleep before the initial check to see if a query has completed.
+FETCH_INITIAL_SLEEP = 1  # sleep before the initial check to see if a query has completed.
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
@@ -2258,7 +2258,7 @@ def poll_offense_events(
         search_status_response = client.search_status_get(search_id)
         print_debug_msg(f"Got search status for {search_id}")
         query_status = search_status_response.get("status")
-        query_runtime = search_status_response.get("query_execution_time","N/A")
+        query_runtime = search_status_response.get("query_execution_time", "N/A")
         print_debug_msg(f"Search status for offense {offense_id} is {query_status}. Current time elapsed: {query_runtime}")
 
         if query_status in {"CANCELED", "ERROR"}:
