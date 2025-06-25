@@ -1,11 +1,11 @@
 # Marketplace Related - Marketplace PMs only
-/Config/approved_tags.json @yaakovpraisler @demisto/content-leaders
-/Config/approved_usecases.json @yaakovpraisler @demisto/content-leaders
-/Tests/Marketplace/landingPage_sections.json @yaakovpraisler @demisto/content-leaders
-/Config/approved_categories.json @yaakovpraisler @demisto/content-leaders
-/Config/core_packs_list.json @yaakovpraisler @demisto/content-leaders
-/Config/core_packs_mpv2_list.json @yaakovpraisler @demisto/content-leaders
-/Config/corepacks_override.json @yaakovpraisle
+/Config/approved_tags.json @israelpoli @demisto/content-leaders
+/Config/approved_usecases.json @israelpoli @demisto/content-leaders
+/Tests/Marketplace/landingPage_sections.json @israelpoli @demisto/content-leaders
+/Config/approved_categories.json @israelpoli @demisto/content-leaders
+/Config/core_packs_list.json @israelpoli @demisto/content-leaders
+/Config/core_packs_mpv2_list.json @israelpoli @demisto/content-leaders
+/Config/corepacks_override.json @israelpol
 
 # Docker native image
 /Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
