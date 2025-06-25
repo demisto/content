@@ -6563,10 +6563,8 @@ def delete_datastream_command(client: Client, stream_id: int) -> tuple[str, dict
 
     raw_response: dict = client.delete_datastream(stream_id=stream_id)
 
-    if "Response [204]" in str(raw_response):
-        dict_response: dict = {"stream_id": stream_id, "deletion": "completed"}
-    else:
-        dict_response: dict = {"stream_id": stream_id, "deletion": f"failed - {str(raw_response)}"}
+    dict_response: dict = {"stream_id": stream_id}
+    dict_response["deletion"] = "completed" if "Response [204]" in str(raw_response) else f"failed - {str(raw_response)}"
 
     title = f"{INTEGRATION_NAME} - delete datastream command"
     context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream": dict_response}
