@@ -5,7 +5,7 @@
 /Config/approved_categories.json @israelpoli @demisto/content-leaders
 /Config/core_packs_list.json @israelpoli @demisto/content-leaders
 /Config/core_packs_mpv2_list.json @israelpoli @demisto/content-leaders
-/Config/corepacks_override.json @israelpoli
+/Config/corepacks_override.json @israelpol
 
 # Docker native image
 /Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
