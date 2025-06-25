@@ -2203,7 +2203,7 @@ script:
     - description: The Unique ID of the Asset.
       name: asset_id
       required: true
-    - description: "A json with the fields that you want to configure: {'asset_name':'testasset'}."
+    - description: "JSON format with the fields that you want to configure: {'asset_name':'testasset'}."
       name: data
       required: true
     description: Update Asset Fields.
