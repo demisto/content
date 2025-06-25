@@ -1214,7 +1214,7 @@ script:
       - 'false'
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
-  - name: o365-sc-search-and-delete-email-quick-action
+  - name: o365-sc-search-and-delete-email-office-365-quick-action
     prettyname: Search And Delete Email - Office 365
     # hidden: true
     # quickaction: true
@@ -1260,6 +1260,7 @@ script:
     arguments:
     - name: name
       required: true
+      defaultValue: 1
       description: test arg.
 
   dockerimage: demisto/pwsh-exchangev3:1.0.0.116826

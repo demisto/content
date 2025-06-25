@@ -1549,6 +1549,7 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if (!$kwargs.search_name -or $kwargs.search_name -eq "") {
         $kwargs.search_name = "XSOAR-$(New-Guid)"
     }
+    $demisto.results("kql: " +  $kwargs.kql)
     # Raw response 
         $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
                                       $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion, $null)
@@ -1744,7 +1745,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $results = ConvertTo-Boolean $kwargs.results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearchAction($kwargs.search_action_name)
+    $raw_response = $client.GetSearchAction($kwargs.search_action_name, $null)
     # Entry context
     $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
@@ -1930,7 +1931,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     $polling_first_run = ConvertTo-Boolean $kwargs.polling_first_run
     $force = ConvertTo-Boolean $kwargs.force
     $internet_message_id = $kwargs.internet_message_id
-    $kql = "internetMessageId: $internet_message_id"
+    $kql = "internetMessageId:`"$internet_message_id`""
 
     $search_name = if ($kwargs.search_name) {
         $kwargs.search_name
@@ -1955,6 +1956,8 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     if ($polling_first_run) {
         $demisto.results("Running first run logic")
         try {
+            $demisto.results("kql: " + $kql)
+
             $demisto.results("Attempting to create new search: $search_name")
             $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "Stop")
             $demisto.results("NewSearch")
@@ -1998,6 +2001,10 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 }
                 "Completed" {
                     try {
+                        $demisto.results("Items: " + $search.Items)
+                        if ($search.Items -eq 0) {
+                            return "$script:INTEGRATION_NAME - Search already completed previously with no results. Run again with force=true to retry.", $entry_context, $search
+                        }
                         $action = $client.GetSearchAction($search_action_name, "Stop")
                         $demisto.results("GetSearchAction status: " + $action.Status)
                         switch ($action.Status) {
@@ -2059,9 +2066,14 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
             return "$script:INTEGRATION_NAME - Search is still starting.", $entry_context, $search, $polling_args
         }
         "Completed" {
+            $demisto.results("Items: " + $search.Items)
+            if ($search.Items -eq 0) {
+                return "$script:INTEGRATION_NAME - Search completed but found no emails.", $entry_context, $search
+            }
             $demisto.results("Search completed. Checking action status...")
             try {
-                $action = $client.GetSearchAction($search_action_name)
+                $demisto.results("GetSearchAction search_action_name: " + $search_action_name)
+                $action = $client.GetSearchAction($search_action_name, "Stop")
                 $demisto.results("GetSearchAction status: " + $action.Status)
                 switch ($action.Status) {
                     $null {
@@ -2085,7 +2097,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
             } catch {
                 $demisto.results("Action not found or failed. Creating new purge action.")
             }
-
+            $demisto.results("NewSearchAction search_name: " + $search_name)
             $action = $client.NewSearchAction(
                 $search_name,
                 "Purge",
@@ -2262,7 +2274,7 @@ function Main {
             "$script:COMMAND_PREFIX-case-hold-policy-set" {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-search-and-delete-email-quick-action" {
+            "$script:COMMAND_PREFIX-search-and-delete-email-office-365-quick-action" {
                 ($human_readable, $entry_context, $raw_response, $polling_args) = SearchAndDeleteEmailCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-test-polling" {
