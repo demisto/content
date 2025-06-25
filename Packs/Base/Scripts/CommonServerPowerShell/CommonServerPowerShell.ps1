@@ -600,7 +600,7 @@ function ReturnPollingOutputs(
         EntryContext   = $Outputs;
         PollingCommand = $CommandName;
         NextRun        = $NextRun;
-        PollingArg     = $PollingArgs
+        PollingArgs     = $PollingArgs
         Timeout        = $Timeout;
         PollingItemsRemaining = 0;
     }
@@ -613,7 +613,7 @@ function ReturnPollingOutputs(
         # if RawResponse was not provided but outputs were provided then set Contents as outputs
         $entry.Contents = $Outputs
     }
-    $Demisto.results("entry: $(($entry | ConvertTo-Json -Depth 3))")
+    # $Demisto.results("entry: $(($entry | ConvertTo-Json -Depth 3))")
     $demisto.Results($entry) | Out-Null
     return $entry
 }

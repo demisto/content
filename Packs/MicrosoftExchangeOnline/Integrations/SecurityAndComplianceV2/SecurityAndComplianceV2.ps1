@@ -2174,27 +2174,26 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
 
 
 function testPollingCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    $Demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
     $entry_context = @{}
     $raw_response = @{}
     $command = "o365-sc-test-polling"
     $polling_args = $null
     $human_readable = ""
 
-    if (-not $kwargs.arg) {
-        $polling_args = @{}
-        $polling_args += $kwargs
-        $polling_args.argA = "arg-1"
-        $polling_args.argB = "arg-2"
-
+    if ($kwargs.name -eq "1") {
+        $polling_args = @{ name = "2" }
         $human_readable = "First run"
     }
-    elseif ($kwargs.arg -eq "arg-1") {
-        $polling_args = @{}
-        $polling_args += $kwargs
-        $polling_args.arg = "arg-2"
+    elseif ($kwargs.name -eq "2") {
+        $polling_args = @{ name = "3" }
         $human_readable = "Second run"
     }
-    elseif ($kwargs.arg -eq "arg-2") {
+    elseif ($kwargs.name -eq "3") {
+        $polling_args = @{ name = "4" }
+        $human_readable = "Second run"
+    }
+    else {
         $human_readable = "Polling finished"
     }
 

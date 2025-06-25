@@ -1304,7 +1304,8 @@ script:
     polling: true
     description: test polling.
     arguments:
-    - name: arg
+    - name: name
+      required: true
       description: test arg.
 
   dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
