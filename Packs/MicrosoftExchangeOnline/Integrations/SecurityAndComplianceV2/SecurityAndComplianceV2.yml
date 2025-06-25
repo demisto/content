@@ -1217,7 +1217,7 @@ script:
   - name: o365-sc-search-and-delete-email-quick-action
     prettyname: Search And Delete Email - Office 365
     # hidden: true
-    quickaction: true
+    # quickaction: true
     polling: true
     description: Deletes an email for all recipients.
     arguments:
