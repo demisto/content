@@ -40,10 +40,6 @@
         "type": "string",
         "is_array": false
     },
-    "event_type": {
-        "type": "string",
-        "is_array": false
-    },    
     "event_id": {
         "type": "int",
         "is_array": false
