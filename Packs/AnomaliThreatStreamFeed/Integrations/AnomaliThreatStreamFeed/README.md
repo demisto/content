@@ -38,8 +38,8 @@ Gets indicators from the feed. This command is mainly used for testing and debug
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_type | The indicator type to analyze. If not selected, indicators from all types are retrieved. Possible values are: domain, ip, md5, url, email. | Optional | 
-| limit | Maximum number of objects to return (default is 10). | Optional | 
-| sort_by | Sort the records in descending order according to the Created or Modified Time. The default is Modified. Possible values are: Created Time, Modified Time. | Optional | 
+| limit | Maximum number of objects to return. Default is 10. | Optional | 
+| sort_by | Sort the records in descending order according to the Created or Modified Time. Possible values are: Created Time, Modified Time. Default is Modified Time. | Optional | 
 
 #### Context Output
 

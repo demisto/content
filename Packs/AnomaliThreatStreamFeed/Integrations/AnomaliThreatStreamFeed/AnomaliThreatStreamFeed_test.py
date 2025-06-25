@@ -2,7 +2,6 @@ from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, Entit
 import pytest
 from AnomaliThreatStreamFeed import Client
 from datetime import datetime, UTC
-
 from typing import Any
 
 
@@ -223,7 +222,7 @@ def test_get_indicators_command_success_no_type(mocker):
     assert result.raw_response == mock_api_response["objects"]
 
 
-def test_get_indicators_command_invalid_type():
+def test_get_indicators_command_invalid_type(mocker):
     """
     Tests the scenario where an invalid indicator_type is provided to get_indicators_command.
     Verifies that the function returns an error message and does not proceed to make API calls.
@@ -243,8 +242,12 @@ def test_get_indicators_command_invalid_type():
 
     # Arguments with an invalid indicator type
     args = {"indicator_type": "malware", "limit": 10}
+    mock_demisto_error = mocker.patch("AnomaliThreatStreamFeed.demisto.error")  # Patch demisto.error to assert its call
 
     result = get_indicators_command(client, args)
+
+    # Verify demisto.error was called
+    mock_demisto_error.assert_called_once_with(f"{THREAT_STREAM} - Invalid indicator type.")
 
     expected_readable_output = """### Invalid indicator type. Select one of the following types: domain, email, ip, md5, url."""
     assert result.readable_output == expected_readable_output
@@ -595,6 +598,74 @@ def test_create_relationships_related_entity():
     assert result == expected_relationships
 
 
+def test_create_relationships_multiple_related_entities():
+    """
+    Tests create_relationships with multiple related entities in a list.
+    Verifies that multiple relationships are created correctly.
+    Given:
+        - create_relationships_param is True.
+        - A domain indicator.
+    When:
+        - Calling create_relationships.
+    Then:
+        Verify that:
+        - A list containing multiple correctly formatted relationships is returned.
+    """
+    from AnomaliThreatStreamFeed import create_relationships
+
+    indicator = {
+        "id": "123",
+        "type": "domain",
+        "confidence": 90,
+        "description": "Test domain",
+        "source": "TestSource",
+        "value": "mydomain1.com",
+        "tags": ["malware", "phishing"],
+        "tlp": "RED",
+        "country": "US",
+        "modified_ts": "2023-01-01T12:00:00Z",
+        "org": "",
+        "created_ts": "2022-01-01T12:00:00Z",
+        "expiration_ts": "2024-01-01T12:00:00Z",
+        "target_industry": ["finance"],
+        "asn": "AS12345",
+        "locations": "New York",
+        "ip": "1.1.1.1",
+        "meta": {"maltype": "2.2.2.2"},
+    }
+    reliability = "B - Usually reliable"
+
+    expected_relationships = [
+        {
+            "name": "resolved-from",
+            "reverseName": "resolves-to",
+            "type": "IndicatorToIndicator",
+            "entityA": "mydomain1.com",
+            "entityAFamily": "Indicator",
+            "entityAType": "Domain",
+            "entityB": "1.1.1.1",
+            "entityBFamily": "Indicator",
+            "entityBType": "IP",
+            "fields": {},
+        },
+        {
+            "name": "indicator-of",
+            "reverseName": "indicated-by",
+            "type": "IndicatorToIndicator",
+            "entityA": "mydomain1.com",
+            "entityAFamily": "Indicator",
+            "entityAType": "Domain",
+            "entityB": "2.2.2.2",
+            "entityBFamily": "Indicator",
+            "entityBType": "Malware",
+            "fields": {},
+        },
+    ]
+
+    result = create_relationships(reliability=reliability, indicator=indicator)
+    assert result == expected_relationships
+
+
 def test_parse_indicator_for_fetch_success_scenarios(mocker):
     """
     Tests parse_indicator_for_fetch for successful parsing scenarios.
@@ -758,124 +829,159 @@ def test_parse_indicator_for_fetch_error_scenarios(
     assert f"Indicator missing 'type' or 'value': {indicator}" in str(excinfo.value)
 
 
-TEST_CASES_NO_INDICATORS = [
-    {
-        "params": {},  # Use defaults
-        "last_run": {"last_successful_run": "2023-08-01T09:00:00Z"},
-        "mock_http_responses": [{"objects": [], "meta": {"next": None}}],
-        "mock_get_past_time_return": None,
-        "mock_parse_indicator_for_fetch_side_effect": [],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
-        "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
-        "expected_parsed_indicators": [],
-        "expected_exception": None,
-    },
-]
-
-
-@pytest.mark.parametrize("test_case", TEST_CASES_NO_INDICATORS)
-def test_fetch_indicators_command_subsequent_run_no_new_indicators(mocker, test_case):
+def test_fetch_indicators_command_subsequent_run_no_new_indicators(mocker):
     """
-    Tests fetch_indicators_command across various scenarios using parametrization.
-
-    Covers: first run, subsequent runs, pagination, no new indicators,
-    parsing errors, pagination errors, and parameter handling.
+    Tests fetch_indicators_command for a subsequent run where no new indicators
+    are found beyond the initial API call.
 
     Given:
-        - A test_case dictionary containing specific inputs and expected outcomes
-          for client responses, mocked function returns, and log messages.
+        - A 'last_run' timestamp indicating a previous successful fetch.
+        - The client's 'http_request' is mocked to return a single page of
+          indicators with 'meta.next' set to None (no further pages).
+        - 'get_current_utc_time' is mocked to return a fixed timestamp for
+          consistent 'next_run_timestamp' calculation.
     When:
-        - Calling fetch_indicators_command with the test case's parameters.
+        - Calling 'fetch_indicators_command' with the mocked client,
+          parameters, and 'last_run' object.
     Then:
         Verify that:
-        - Verifies that the command returns the expected next run timestamp and parsed indicators.
-        - Asserts that external functions (http_request, get_past_time, parse_indicator_for_fetch)
-          are called correctly based on the scenario.
-        - Handles expected exceptions.
+        - The 'http_request' method is called exactly once (no pagination occurred).
+        - The 'next_run_timestamp' returned matches the mocked current UTC time.
+        - The 'parsed_indicators_list' contains the expected indicators from
+          the single mocked HTTP response.
     """
     from AnomaliThreatStreamFeed import fetch_indicators_command
 
-    client = mock_client()
-    mock_http_request = mocker.patch.object(client, "http_request")
-    # Use a list of responses for http_request to simulate pagination
-    mock_http_request.side_effect = test_case["mock_http_responses"]
-
-    mock_parse_indicator_for_fetch = mocker.patch("AnomaliThreatStreamFeed.parse_indicator_for_fetch")
-    mock_parse_indicator_for_fetch.side_effect = test_case["mock_parse_indicator_for_fetch_side_effect"]
-
-    # Mock datetime.now for consistent timestamps
-    mock_now_dt = test_case["mock_now"]
-    mocker.patch("AnomaliThreatStreamFeed.get_current_utc_time", return_value=mock_now_dt)
-
-    if test_case["expected_exception"]:
-        with pytest.raises(test_case["expected_exception"]):
-            fetch_indicators_command(client, test_case["params"], test_case["last_run"])
-    else:
-        next_run_timestamp, parsed_indicators_list = fetch_indicators_command(client, test_case["params"], test_case["last_run"])
-
-        assert next_run_timestamp == test_case["expected_next_run_timestamp"]
-        assert parsed_indicators_list == test_case["expected_parsed_indicators"]
-
-        assert mock_parse_indicator_for_fetch.call_count == 0  # No indicators to parse
-
-
-TEST_CASES = [
-    {
-        "params": {
-            "createRelationships": True,
-            "tlp_color": "WHITE",
-            "feedReliability": "C - Fairly reliable",
-            "feedFetchInterval": "60",
-        },
-        "last_run": {},
+    test_case = {
+        "params": {},  # Use defaults
+        "last_run": {"last_successful_run": "2023-08-01T09:00:00Z"},
         "mock_http_responses": [
             {
-                "objects": [{"id": "1", "type": "ip", "value": "1.1.1.1", "modified_ts": "2023-08-01T11:00:00.000Z"}],
+                "objects": [
+                    {
+                        "id": "123",
+                        "type": "domain",
+                        "confidence": 90,
+                        "description": "Test domain",
+                        "source": "TestSource",
+                        "value": "mydomain1.com",
+                        "tags": ["malware", "phishing"],
+                        "tlp": "RED",
+                        "country": "US",
+                        "modified_ts": "2023-01-01T12:00:00Z",
+                        "org": "",
+                        "created_ts": "2022-01-01T12:00:00Z",
+                        "expiration_ts": "2024-01-01T12:00:00Z",
+                        "target_industry": ["finance"],
+                        "asn": "AS12345",
+                        "locations": "New York",
+                    },
+                    {
+                        "id": "124",
+                        "type": "ip",
+                        "confidence": 10,
+                        "description": "test ip",
+                        "source": "AnotherSource",
+                        "value": "1.1.1.1",
+                        "tags": ["tag1"],
+                        "tlp": "GREEN",
+                        "country": "FR",
+                        "modified_ts": "2023-02-01T12:00:00Z",
+                        "org": "AnotherOrg",
+                        "created_ts": "2022-02-01T12:00:00Z",
+                        "expiration_ts": "2024-02-01T12:00:00Z",
+                        "target_industry": ["tech"],
+                        "asn": "",
+                        "locations": "London",
+                    },
+                ],
                 "meta": {"next": None},
             }
         ],
-        "mock_get_past_time_return": "2023-08-01T11:00:00.000Z",
-        "mock_parse_indicator_for_fetch_side_effect": {"value": "1.1.1.1", "type": "IP"},
         "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
-        "expected_parsed_indicators": [{"value": "1.1.1.1", "type": "IP"}],
-        "expected_exception": None,
-    },
-]
-
-
-@pytest.mark.parametrize("test_case", TEST_CASES)
-def test_fetch_indicators_command_first_run_with_indicators(mocker, test_case):
-    """
-    Tests fetch_indicators_command across various scenarios using parametrization.
-
-    Covers: first run, subsequent runs, pagination, no new indicators,
-    parsing errors, pagination errors, and parameter handling.
-
-    Given:
-        - A test_case dictionary containing specific inputs and expected outcomes
-          for client responses, mocked function returns, and log messages.
-    When:
-        - Calling fetch_indicators_command with the test case's parameters.
-    Then:
-        Verify that:
-        - Verifies that the command returns the expected next run timestamp and parsed indicators.
-        - Asserts that external functions (http_request, get_past_time, parse_indicator_for_fetch)
-          are called correctly based on the scenario.
-        - Handles expected exceptions.
-    """
-    from AnomaliThreatStreamFeed import fetch_indicators_command
+        "expected_parsed_indicators": [
+            {
+                "value": "mydomain1.com",
+                "type": "Domain",
+                "fields": {
+                    "TargetIndustries": ["finance"],
+                    "Source": "TestSource",
+                    "ThreatStreamID": "123",
+                    "CountryCode": "US",
+                    "Domain": "mydomain1.com",
+                    "Description": "Test domain",
+                    "Modified": "2023-01-01T12:00:00Z",
+                    "Confidence": "90",
+                    "Creation": "2022-01-01T12:00:00Z",
+                    "TrafficLightProtocol": "WHITE",
+                    "Location": "New York",
+                    "ASN": "AS12345",
+                },
+                "rawJSON": {
+                    "id": "123",
+                    "type": "domain",
+                    "confidence": 90,
+                    "description": "Test domain",
+                    "source": "TestSource",
+                    "value": "mydomain1.com",
+                    "tags": ["malware", "phishing"],
+                    "tlp": "RED",
+                    "country": "US",
+                    "modified_ts": "2023-01-01T12:00:00Z",
+                    "org": "",
+                    "created_ts": "2022-01-01T12:00:00Z",
+                    "expiration_ts": "2024-01-01T12:00:00Z",
+                    "target_industry": ["finance"],
+                    "asn": "AS12345",
+                    "locations": "New York",
+                },
+                "score": 3,
+            },
+            {
+                "value": "1.1.1.1",
+                "type": "IP",
+                "fields": {
+                    "TargetIndustries": ["tech"],
+                    "Source": "AnotherSource",
+                    "ThreatStreamID": "124",
+                    "CountryCode": "FR",
+                    "IP": "1.1.1.1",
+                    "Description": "test ip",
+                    "Modified": "2023-02-01T12:00:00Z",
+                    "Organization": "AnotherOrg",
+                    "Confidence": "10",
+                    "Creation": "2022-02-01T12:00:00Z",
+                    "TrafficLightProtocol": "WHITE",
+                    "Location": "London",
+                },
+                "rawJSON": {
+                    "id": "124",
+                    "type": "ip",
+                    "confidence": 10,
+                    "description": "test ip",
+                    "source": "AnotherSource",
+                    "value": "1.1.1.1",
+                    "tags": ["tag1"],
+                    "tlp": "GREEN",
+                    "country": "FR",
+                    "modified_ts": "2023-02-01T12:00:00Z",
+                    "org": "AnotherOrg",
+                    "created_ts": "2022-02-01T12:00:00Z",
+                    "expiration_ts": "2024-02-01T12:00:00Z",
+                    "target_industry": ["tech"],
+                    "asn": "",
+                    "locations": "London",
+                },
+                "score": 1,
+            },
+        ],
+    }
 
     client = mock_client()
     mock_http_request = mocker.patch.object(client, "http_request")
     # Use a list of responses for http_request to simulate pagination
     mock_http_request.side_effect = test_case["mock_http_responses"]
-
-    mock_get_past_time = mocker.patch("AnomaliThreatStreamFeed.get_past_time")
-    mock_get_past_time.return_value = test_case["mock_get_past_time_return"]
-
-    mock_parse_indicator_for_fetch = mocker.patch("AnomaliThreatStreamFeed.parse_indicator_for_fetch")
-    mock_parse_indicator_for_fetch.return_value = test_case["mock_parse_indicator_for_fetch_side_effect"]
 
     # Mock datetime.now for consistent timestamps
     mock_now_dt = test_case["mock_now"]
@@ -885,24 +991,7 @@ def test_fetch_indicators_command_first_run_with_indicators(mocker, test_case):
 
     assert next_run_timestamp == test_case["expected_next_run_timestamp"]
     assert parsed_indicators_list == test_case["expected_parsed_indicators"]
-
-    # If parsing errors can occur, the number of calls might not equal len(expected_parsed_indicators)
-    # It should equal the number of raw indicators in http responses.
-    num_raw_indicators_to_parse = 0
-    for http_resp in test_case["mock_http_responses"]:
-        num_raw_indicators_to_parse += len(http_resp["objects"])
-
-    # If there was a parsing error side effect, reduce the count of expected successful parses
-    if isinstance(test_case["mock_parse_indicator_for_fetch_side_effect"], list):
-        expected_parse_calls = 0
-        for item in test_case["mock_parse_indicator_for_fetch_side_effect"]:
-            if not isinstance(item, Exception):
-                expected_parse_calls += 1
-        assert (
-            mock_parse_indicator_for_fetch.call_count == num_raw_indicators_to_parse
-        )  # All raw indicators are attempted to be parsed
-    else:  # Single return value implies all parsed successfully
-        assert mock_parse_indicator_for_fetch.call_count == num_raw_indicators_to_parse
+    assert mock_http_request.call_count == 1  # Assert that http_request was called exactly once
 
 
 def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
@@ -921,7 +1010,7 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
         - `parse_indicator_for_fetch` is attempted for all raw indicators.
         - The `next_run_timestamp` is correctly updated.
     """
-    from AnomaliThreatStreamFeed import fetch_indicators_command  # Assuming it's in this module
+    from AnomaliThreatStreamFeed import fetch_indicators_command
 
     # Define test data
     first_indicator_raw = {"id": "1", "type": "ip", "value": "1.1.1.1", "modified_ts": "2023-08-01T11:00:00.000Z"}
@@ -959,7 +1048,6 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
         side_effect=test_case_data["mock_parse_indicator_for_fetch_side_effect"],
     )
     mock_demisto_error = mocker.patch("AnomaliThreatStreamFeed.demisto.error")  # Patch demisto.error to assert its call
-
     mock_now_dt = test_case_data["mock_now"]
     mocker.patch("AnomaliThreatStreamFeed.get_current_utc_time", return_value=mock_now_dt)
 

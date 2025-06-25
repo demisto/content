@@ -231,7 +231,7 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     params: dict[str, Any] = {"limit": limit}
     if indicator_type:
         if indicator_type not in ["domain", "email", "ip", "md5", "url"]:
-            demisto.info(f"{THREAT_STREAM} - Invalid indicator type.")
+            demisto.error(f"{THREAT_STREAM} - Invalid indicator type.")
             return CommandResults(
                 readable_output="""### Invalid indicator type. Select one of the following types: domain, email, ip, md5, url."""
             )
@@ -538,7 +538,6 @@ def create_relationships(reliability: str, indicator: dict[str, Any]) -> list[di
 
     # Get the relationship specifications for the current indicator type
     relations_specs = RELATIONSHIPS_MAPPING.get(indicator_type)
-
     if relations_specs:
         for relation_spec in relations_specs:
             raw_field_name = relation_spec["raw_field"]
@@ -546,7 +545,6 @@ def create_relationships(reliability: str, indicator: dict[str, Any]) -> list[di
             relationship_name = relation_spec["name"]
             # Retrieve the value(s) for the related entity from the raw indicator
             entity_b_values = demisto.get(indicator, raw_field_name)
-
             if entity_b_values:
                 relationships.append(
                     EntityRelationship(

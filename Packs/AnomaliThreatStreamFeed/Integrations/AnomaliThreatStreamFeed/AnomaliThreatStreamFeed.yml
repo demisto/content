@@ -132,14 +132,15 @@ script:
       - 'url'
       - 'email'
     - name: limit
-      default: false
-      description: Maximum number of objects to return (default is 10).
+      defaultValue: "10"
+      description: Maximum number of objects to return.
       isArray: false
       required: false
       type: Number
     - name: sort_by 
       auto: PREDEFINED
-      description: Sort the records in descending order according to the Created or Modified Time. The default is Modified.
+      defaultValue: 'Modified Time'
+      description: Sort the records in descending order according to the Created or Modified Time.
       isArray: false
       required: false
       predefined:
