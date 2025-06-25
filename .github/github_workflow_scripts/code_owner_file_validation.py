@@ -47,7 +47,7 @@ if __name__ == "__main__":
     validation_result = validate_codeowners_file(repository_owner, repository_name)
 
     if validation_result.get("error",False):
-        timestamped_print(f"Validation failed: {validation_result['message']}")
+        print(f"Validation failed: {validation_result['message']}")
     else:
         if errors := validation_result.get("errors", []):
             print("CODEOWNERS file has errors:")
