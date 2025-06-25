@@ -505,7 +505,7 @@ class Client(CoreClient):
         }
         update_data = assign_params(severity=severity, status=status, comment=comment)
         request_data["request_data"]["update_data"] = update_data
-        response = self._http_request( 
+        response = self._http_request(
             method="POST",
             url_suffix="/alerts/update_alerts",
             json_data=request_data,
