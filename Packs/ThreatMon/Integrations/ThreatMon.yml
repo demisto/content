@@ -1,0 +1,210 @@
+commonfields:
+  id: Threatmon
+  version: 1
+name: Threatmon
+display: Threatmon
+category: Security Information and Event Management
+description: Integration with Threatmon for vulnerability threat intelligence
+configuration:
+  - display: API URL
+    name: url
+    type: 0
+    required: true
+    defaultvalue: https://external.threatmonit.io/api/threatmon/external/v1
+  - display: API Key
+    name: apikey
+    type: 4
+    required: true
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+  - display: Last Incident ID (for initial fetch)
+    name: lastIncidentId
+    type: 0
+    required: false
+  - display: Fetch incidents
+    name: isFetch
+    type: 8
+    required: false
+  - display: Incidents Fetch Interval
+    name: incidentFetchInterval
+    type: 19
+    required: false
+    defaultvalue: "10 minutes"
+  - display: Incidents fetch limit
+    name: max_fetch
+    type: 0
+    required: false
+    defaultvalue: "50"
+script:
+  script: |
+    import requests
+    import json
+    import time
+    from datetime import datetime
+    from typing import Dict, Any, List, Optional
+
+    # Get configuration from XSOAR
+    API_URL = demisto.params().get("url", "https://external.threatmonit.io/api/threatmon/external/v1")
+    API_KEY = demisto.params().get("apikey")
+
+    class Client:
+        def __init__(self, api_url, api_key):
+            self.api_url = api_url
+            self.headers = {"X-COMPANY-API-KEY": api_key, "accept": "application/json"}
+
+        def get_incidents(self, last_incident_id=None, page=0):
+            """Fetches incidents from Threatmon API using pagination and lastIncidentId filtering."""
+            
+            url = f"{self.api_url}/vulnerabilities/{page}"
+            if last_incident_id:
+                url += "?afterAlarmCode={}".format(last_incident_id)
+
+            response = requests.get(url, headers=self.headers)
+
+            if response.status_code != 200:
+                raise Exception("API Error: {} - {}".format(response.status_code, response.text))
+
+            return response.json()
+
+        def set_status(self, data):
+            """Updates incidents on Threatmon API using PATCH request and pagination."""
+
+            url = f"{self.api_url}/incedent/status"
+            response = requests.patch(url, headers=self.headers, json=data)
+
+            if response.status_code == 200:
+                return {"message": "status updated successfully"}
+            else:
+                raise Exception(f"API Error: {response.status_code} - {response.text}")
+
+    def convert_to_demisto_severity(severity: str) -> int:
+        """Maps Threatmon severity to Cortex XSOAR severity (1 to 4)."""
+        severity_mapping = {
+            'Information': 1,  
+            'Low': 1,  
+            'Medium': 2,  
+            'High': 3,  
+            'Critical': 4  
+        }
+        return severity_mapping.get(severity, 1)
+
+    def fetch_incidents(client: Client, last_run: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Fetches new incidents from Threatmon API using pagination and latest lastIncidentId logic."""
+        
+        last_incident_id =  last_run.get("last_incident_id", None) or demisto.params().get("lastIncidentId", None)
+        page = int(last_run.get("page", 0))  # Get last stored page or default to 0
+        incidents = []
+
+        while True:
+            response = client.get_incidents(last_incident_id=last_incident_id, page=page)
+            
+            alerts = response.get("data", [])
+            total_records = response.get("totalRecords", 0)
+
+            if not alerts:
+                break  # No more data to fetch
+
+            for alert in alerts:
+                incident_id = alert.get("alarmCode")
+                title = alert.get("title", "Unknown Threat")
+                description = alert.get("description", "No description available")
+                severity = alert.get("severity", "Low")
+                status = alert.get("status", "New")
+                alarm_date = alert.get("alarmDate", datetime.utcnow().isoformat())
+
+                # Cortex XSOAR Incident format
+                incident = {
+                    "name": "Threatmon Alert: {}".format(title),
+                    "details": description,
+                    "severity": convert_to_demisto_severity(severity),
+                    "occurred": alarm_date,
+                    "rawJSON": json.dumps(alert),
+                    "labels": [{"type": "Status", "value": status}],
+                }
+                incidents.append(incident)
+
+                # Update the last known incident ID
+                last_incident_id = max(last_incident_id or 0, incident_id)
+
+            # Stop fetching if we reach the last page
+            if len(alerts) < 10 or (total_records and len(incidents) >= total_records):
+                break
+            time.sleep(1)
+        # Store last fetched page and last incident ID in XSOAR
+        last_run["last_incident_id"] = last_incident_id
+        return incidents, last_run
+
+    def test_module(client):
+        """Tests API connectivity and authentication."""
+        try:
+            response = client.get_incidents(page=0)
+            if isinstance(response, dict) and "data" in response:
+                return "ok"
+            return "Unexpected API response"
+        except Exception as e:
+            return_error("Test failed: {}".format(str(e)))
+
+    def change_incident_status(client: Client, args: Dict[str, Any]) -> CommandResults:
+        code = args.get('alarmId')
+        status = args.get('status')
+       
+        if status:
+            data = { "status": status , "alarmIds": [code]}
+            
+            changingStatus = client.set_status(data=data)
+            if changingStatus:
+                return changingStatus
+
+    def main():
+        """Main function called by Cortex XSOAR."""
+        try:
+            client = Client(API_URL, API_KEY)
+            command = demisto.command()
+
+            if command == "test-module":
+                return_results(test_module(client))
+            elif command == "threatmon_update_incident_status":
+                return_results(change_incident_status(client, demisto.args()))
+            elif command == "fetch-incidents":
+                last_run = demisto.getLastRun() or {}
+                incidents, last_run = fetch_incidents(client, last_run)
+                demisto.setLastRun(last_run)
+                demisto.incidents(incidents)
+
+        except Exception as e:
+            return_error("Error in Threatmon integration: {}".format(str(e)))
+
+    if __name__ in ('__main__', 'builtin', 'builtins'):
+        main()
+  type: python
+  commands:
+  - name: test-module
+    description: Tests API connectivity and authentication
+    execution: false
+  - name: threatmon_update_incident_status
+    arguments:
+    - name: alarmId
+      required: true
+      description: Threatmon Incedent Code (ID)
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - In Progress
+      - False Positive
+      - Ignore
+      - Resolved
+      description: 'Incident Status - '
+    description: Update Incident Status endpoint allows you to change/update status
+      of specified Threatmon incidents.
+  isfetch: true
+fromversion: 1
+tests:
+  - No tests
