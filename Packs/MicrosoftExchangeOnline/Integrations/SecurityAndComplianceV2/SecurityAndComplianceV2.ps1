@@ -1041,29 +1041,46 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]GetSearchAction([string]$search_action_name) {
+    [psobject]GetSearchAction(
+        [string]$search_action_name,
+        [string]$error_action = $null
+    ) {
         # Establish session to remote
         $this.CreateDelegatedSession("Get-ComplianceSearchAction")
-
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $search_action_name
+        }
+    
+        if ($error_action) {
+            $cmd_params["ErrorAction"] = $error_action
+        }
+    
         # Execute command
-        $response = Get-ComplianceSearchAction -Identity $search_action_name
-
+        $response = Get-ComplianceSearchAction @cmd_params
+    
         # Close session to remote
         $this.DisconnectSession()
+    
         return $response
+    
         <#
             .DESCRIPTION
             Get compliance search action in the Security & Compliance Center.
-
+    
             .PARAMETER search_action_name
             The name of the compliance search action.
-
+    
+            .PARAMETER error_action
+            Optional. PowerShell error action preference (e.g., "Stop").
+    
             .EXAMPLE
-            $client.GetSearchAction("search-name")
-
+            $client.GetSearchAction("search-name", "Stop")
+    
             .OUTPUTS
             psobject - Raw response.
-
+    
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearchaction?view=exchange-ps
         #>
@@ -1712,7 +1729,7 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $raw_response = @{}
     # ConvertTo-Boolean $kwargs.continue_polling
     if ($continue_polling){
-        $raw_response = $client.GetSearchAction($kwargs.search_action_name)
+        $raw_response = $client.GetSearchAction($kwargs.search_action_name, $null)
         $Status = $raw_response.Status
         if ($Status -eq "Completed") {
             $human_readable = "$script:INTEGRATION_NAME - search action **$($kwargs.search_name)** completed !"
@@ -1792,7 +1809,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $results = ConvertTo-Boolean $kwargs.results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearchAction($kwargs.search_action_name)
+    $raw_response = $client.GetSearchAction($kwargs.search_action_name, $null)
     # Entry context
     $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
@@ -2025,7 +2042,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 $search_action_name = "${search_name}_Purge"
                 $demisto.results("Force is true - creating new search with name: $search_name")
 
-                $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "")
+                $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), $null)
                 $client.StartSearch($search_name)
                 $polling_args.polling_first_run = $false
                 return "$script:INTEGRATION_NAME - Forced search created and started.", $entry_context, $search, $polling_args
@@ -2046,7 +2063,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 }
                 "Completed" {
                     try {
-                        $action = $client.GetSearchAction($search_action_name)
+                        $action = $client.GetSearchAction($search_action_name, "Stop")
                         $demisto.results("GetSearchAction status: " + $action.Status)
                         switch ($action.Status) {
                             $null {

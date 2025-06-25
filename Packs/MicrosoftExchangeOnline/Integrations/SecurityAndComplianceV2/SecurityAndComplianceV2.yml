@@ -1282,7 +1282,7 @@ script:
       prettypredefined:
         All: 'All'
     - name: force
-      description: todo.
+      description: If true, creates a new search even if one already exists.
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
