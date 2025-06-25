@@ -33,7 +33,7 @@ def validate_codeowners_file(owner: str, repo: str, github_token: str) -> dict:
     }
 
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, params={"ref": os.getenv("BRANCH_NAME", "main")})
         response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx)
 
         data = response.json()

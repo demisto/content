@@ -22,14 +22,12 @@ jobs:
       - name: Install python dependencies
         run: |
           poetry install --with github-actions
-      - name: set pythonpath
-        run: |
-          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: code_owner_file_validation
         id: code_owner_file_validation
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref }}
         run: |
           echo "code_owner_file_validation"
           cd .github/github_workflow_scripts
