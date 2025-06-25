@@ -9896,3 +9896,4 @@ Gathers name, expiration date and expiration status of certificates configured l
 >| name | device | subject | expiration_date | expiration_status | location | cert_type | devices_using_certificate |
 >| --- | --- | --- | --- | --- | --- | --- | --- |
 >| ACME Root CA | panorama.test | /CN=acme-root-ca.acme.com | May  9 16:35:16 2026 GMT | Valid | Panorama | Pushed | 111111111111111 |
+
