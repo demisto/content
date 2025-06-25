@@ -795,7 +795,7 @@ def should_close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any],
     return demisto.params().get("close_ticket", False) and bool(closing_reason) and (incident_status == IncidentStatus.DONE)
 
 
-def should_open_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any], incident_status: IncidentStatus) -> bool:
+def should_open_incident_in_remote(delta: Dict[str, Any], incident_status: IncidentStatus) -> bool:
     """
     Opening in the remote system should happen only when both:
         1. The user asked for it - the incident status and the incident data opposing values.
@@ -803,14 +803,13 @@ def should_open_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any], 
 
     Args:
         delta (dict): Contains the keys.
-        data (dict): Default incident data information.
         incident_status (IncidentStatus): The investigation status.
 
     Returns:
         Boolean value - whether to open the ticket or not.
     """
     closing_field = "classification"
-    closing_reason = delta.get(closing_field, data.get(closing_field)) == ""
+    closing_reason = delta.get(closing_field) == ""
     return incident_status == IncidentStatus.ACTIVE and closing_reason
 
 
@@ -913,7 +912,7 @@ def update_remote_incident(
     relevant_keys_delta -= {"classification", "classificationComment"}
     if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
         demisto.debug(f"{incident_status=}")
-        reopen_ticket = should_open_incident_in_remote(delta, data, incident_status)
+        reopen_ticket = should_open_incident_in_remote(delta, incident_status)
         close_ticket = should_close_incident_in_remote(delta, data, incident_status)
         if relevant_keys_delta or reopen_ticket or close_ticket:
             demisto.debug(
