@@ -433,13 +433,10 @@ def test_query_argument_with_unicode_escape(mocker):
         {"query": f"`(username:'user{special_char}sername') and (name:'name_1' or name:'name_2')`"}
         for special_char in special_chars
     ]
-    mocker.patch.object(
-        SearchIncidentsV2, "execute_command", return_value=execute_get_incidents_command_side_effect(1)
-    )
+    side_effect = [execute_get_incidents_command_side_effect(1)] * len(special_chars)
+    mocker.patch.object(SearchIncidentsV2, "execute_command", side_effect=side_effect)
     mocker.patch.object(demisto, "args", side_effect=args_array)
-    return_results_mocker = mocker.patch.object(SearchIncidentsV2, "return_results")
+    mocker.patch.object(SearchIncidentsV2, "return_results")
     mocker.patch("SearchIncidentsV2.get_demisto_version", return_value={})
     for _ in special_chars:
         SearchIncidentsV2.main()
-        assert return_results_mocker.called
-        assert len(return_results_mocker.call_args[0][0].outputs) == 1

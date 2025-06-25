@@ -49,8 +49,10 @@ def is_valid_args(args: Dict):
                         )
                     elif isinstance(value, str):
                         _ = bytes(value, "utf-8").decode("unicode_escape")
-                else:
+                elif _key == "query":
                     _ = bytes(value.replace("\\", "\\\\"), "utf-8").decode("unicode_escape")
+                else:
+                    _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
                 error_msg.append(f'Error while parsing the argument: "{_key}" \nError:\n- "{ex!s}"')
 
