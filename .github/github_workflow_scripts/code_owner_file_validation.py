@@ -55,5 +55,5 @@ if __name__ == "__main__":
                 print(f" - Line {error.get('line', 'N/A')}: {error.get('message', 'No message provided')}\n")
             sys.exit(1)
         else:
-            timestamped_print("\nCODEOWNERS file is valid! No errors found.")
+            print("\nCODEOWNERS file is valid! No errors found.")
 
