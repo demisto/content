@@ -156,7 +156,14 @@ def test_get_accounts_by_connector_id_with_max_results(mocker):
     api_response = {
         "status": 200,
         "data": json.dumps(
-            {"values": [{"account_id": "account-1"}, {"account_id": "account-2"}, {"account_id": "account-3"}], "next_token": ""}
+            {
+                "values": [
+                    {"account_id": "account-1", "account_type": "ACCOUNT"},
+                    {"account_id": "account-2", "account_type": "ACCOUNT"},
+                    {"account_id": "account-3", "account_type": "ORGANIZATION"},
+                ],
+                "next_token": "",
+            }
         ),
     }
     mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
@@ -190,7 +197,7 @@ def test_health_check_error_to_dict():
     # Verify dictionary structure and values
     assert permission_error_dict["account_id"] == "test-account-id"
     assert permission_error_dict["connector_id"] == "test-connector-id"
-    assert permission_error_dict["message"] == "test-account-id: Permission denied"
+    assert permission_error_dict["message"] == "Permission denied"
     assert permission_error_dict["error"] == ErrorType.PERMISSION_ERROR
     assert permission_error_dict["classification"] == HealthStatus.WARNING
 
@@ -263,36 +270,13 @@ def test_check_account_permissions(mocker):
     mock_permission_check = mocker.Mock(return_value="permission_check_result")
 
     # Test with valid account
-    account = {"account_id": "test-account-id"}
+    account_id = "test-account-id"
     shared_creds = {"access_token": "test-token"}
-    result = _check_account_permissions(account, "test-connector-id", shared_creds, mock_permission_check)
+    result = _check_account_permissions(account_id, "test-connector-id", shared_creds, mock_permission_check)
 
     # Verify permission check was called with correct parameters
     mock_permission_check.assert_called_once_with(shared_creds, "test-account-id", "test-connector-id")
     assert result == "permission_check_result"
-
-
-def test_check_account_permissions_no_account_id(mocker):
-    """
-    Given: An account without account_id, connector_id, shared_creds, and permission check function.
-    When: _check_account_permissions is called.
-    Then: It logs a debug message and returns None.
-    """
-    from COOCApiModule import _check_account_permissions
-
-    # Mock permission check function and debug function
-    mock_permission_check = mocker.Mock()
-    mocker.patch.object(demisto, "debug")
-
-    # Test with account missing account_id
-    account = {"name": "test-account"}
-    shared_creds = {"access_token": "test-token"}
-    result = _check_account_permissions(account, "test-connector-id", shared_creds, mock_permission_check)
-
-    # Verify permission check was not called and debug was logged
-    assert not mock_permission_check.called
-    assert demisto.debug.called
-    assert result is None
 
 
 def test_check_account_permissions_exception(mocker):
@@ -308,9 +292,9 @@ def test_check_account_permissions_exception(mocker):
     mocker.patch.object(demisto, "error")
 
     # Test with exception in permission check
-    account = {"account_id": "test-account-id"}
+    account_id = "test-account-id"
     shared_creds = {"access_token": "test-token"}
-    result = _check_account_permissions(account, "test-connector-id", shared_creds, mock_permission_check)
+    result = _check_account_permissions(account_id, "test-connector-id", shared_creds, mock_permission_check)
 
     # Verify error was logged and HealthCheckError returned
     assert demisto.error.called
@@ -367,9 +351,7 @@ def test_run_permissions_check_credentials_failure(mocker):
     mocker.patch("COOCApiModule.HealthCheck", return_value=mock_health_check)
 
     # Call function
-    result = run_permissions_check_for_accounts(
-        connector_id="test-connector-id", cloud_type="AWS", permission_check_func=mocker.Mock()
-    )
+    run_permissions_check_for_accounts(connector_id="test-connector-id", cloud_type="AWS", permission_check_func=mocker.Mock())
 
     # Verify error was handled
     assert mock_health_check.error.called
