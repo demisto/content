@@ -1794,7 +1794,7 @@ def test_check_required_action_on_incident(mocker, delta, data, close_ticket_par
             {"title": "Title", "description": "new desc"},
             {"title": "Title", "description": "old desc", "severity": "Medium", "status": "Active"},
             {"title": "Title", "description": "new desc", "severity": "Medium", "status": "Active"},
-            False,
+            Action.UNCHANGED,
         ),
         (  # Update runStatus (not mirror field) of active incident - shouldn't run the update,
             # and will return {}
@@ -1802,14 +1802,14 @@ def test_check_required_action_on_incident(mocker, delta, data, close_ticket_par
             {"runStatus": "running"},
             {"title": "Title", "description": "old desc", "severity": "Medium", "status": "New"},
             {},
-            False,
+            Action.UNCHANGED,
         ),
         (  # Update runStatus (not mirror field) of Closed incident - should close the ticket,
             {"title": "Title", "description": "old desc", "severity": 1, "status": "New"},
             {"runStatus": "running", "classification": "Undetermined"},
             {"title": "Title", "severity": "Low", "status": "Active"},
             {"title": "Title", "severity": "Low", "status": "Closed", "classification": "Undetermined"},
-            True,
+            Action.CLOSE,
         ),
         (  # Update description and classification and close incident.
             {"title": "Title", "description": "old desc", "severity": 1, "status": "Active"},
@@ -1822,28 +1822,28 @@ def test_check_required_action_on_incident(mocker, delta, data, close_ticket_par
                 "status": "Closed",
                 "classification": "Undetermined",
             },
-            True,
+            Action.CLOSE,
         ),
         (  # Update description and classification of active incident without closing. Result in description update only.
             {"title": "Title", "description": "old desc", "severity": 1, "status": "Active"},
             {"title": "Title", "description": "new desc", "classification": "Undetermined"},
             {"title": "Title", "description": "old desc", "severity": "Low", "status": "Active"},
             {"title": "Title", "description": "new desc", "severity": "Low", "status": "Active"},
-            False,
+            Action.UNCHANGED,
         ),
         (  # Update title and close incident with classification already in data. Result in closing with classification.
             {"title": "Title", "severity": 1, "status": "Active", "classification": "Undetermined"},
             {"title": "Title"},
             {"title": "Title", "severity": "Low", "status": "Active", "classification": "Undetermined"},
             {"title": "Title", "severity": "Low", "status": "Closed", "classification": "Undetermined"},
-            True,
+            Action.CLOSE,
         ),
         (  # Update labels of active incident when no labels exist.
             {"title": "Title", "description": "desc", "severity": 2, "status": "Active", "tags": []},
             {"title": "Title", "tags": ["Test"]},
             {"title": "Title", "description": "desc", "severity": "Medium", "status": "Active"},
             {"title": "Title", "severity": "Medium", "status": "Active", "labels": [{"labelName": "Test", "type": "User"}]},
-            False,
+            Action.UNCHANGED,
         ),
         (  # Update labels of active incident when a label already exist.
             {"title": "Title", "description": "desc", "severity": 2, "status": "Active", "tags": ["Test"]},
@@ -1861,11 +1861,11 @@ def test_check_required_action_on_incident(mocker, delta, data, close_ticket_par
                 "status": "Active",
                 "labels": [{"labelName": "Test", "type": "User"}, {"labelName": "Test2", "type": "User"}],
             },
-            False,
+            Action.UNCHANGED,
         ),
     ],
 )
-def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, close_ticket):
+def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, required_action):
     """
     Given
         - data: The incident data before the update in xsoar.
@@ -1879,7 +1879,7 @@ def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expecte
     client = mock_client()
     mocker.patch.object(client, "http_request", return_value=mocked_fetch_data)
 
-    update_incident_request(client, "id-incident-1", data, delta, close_ticket)
+    update_incident_request(client, "id-incident-1", data, delta, required_action)
     assert not expected_response or client.http_request.call_args[1]["data"].get("properties") == expected_response
 
 
