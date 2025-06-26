@@ -1167,21 +1167,18 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
             message=str(e),
             error_type=ErrorType.CONNECTIVITY_ERROR,
         )
-    # Test all GCP services without performing operations
+    # Perform sample check on GCP services
     service_results = GCPServices.test_all_services(creds, project_id)
-    errors: list[HealthCheckError] = []
-
-    errors.extend(
-        HealthCheckError(
-            account_id=project_id,
-            connector_id=connector_id,
-            message=f"Failed to build {service_name} service client: {error_message}",
-            error_type=ErrorType.CONNECTIVITY_ERROR,
-        )
-        for service_name, success, error_message in service_results
-        if not success
-    )
-    return errors if errors else None
+    for _, success, error_message in service_results:
+        if not success:
+            return HealthCheckError(
+                account_id=project_id,
+                connector_id=connector_id,
+                message=f"Sample check failed for account {project_id}. Please verify GCP project permissions. "
+                f"Error: {error_message}",
+                error_type=ErrorType.PERMISSION_ERROR,
+            )
+    return None
 
 
 def test_module(creds: Credentials, args: dict[str, Any]) -> str:
