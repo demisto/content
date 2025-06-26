@@ -4,7 +4,6 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.oauth2 import service_account as google_service_account
 import urllib3
-from enum import Enum
 from COOCApiModule import *
 
 urllib3.disable_warnings()
@@ -834,16 +833,6 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
         if not token:
             raise DemistoException("Failed to authenticate with GCP - token is missing from credentials")
         creds = Credentials(token=token)
-        if not creds:
-            raise DemistoException("Failed to create credentials object from token")
-
-        # Test core GCP services
-        # Test Compute service (most commonly used)
-        compute = GCPServices.COMPUTE.build(creds)
-        compute.projects().get(project=project_id).execute()
-        # Test Resource Manager (required for IAM operations)
-        resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-        resource_manager.projects().get(name=f"projects/{project_id}").execute()
     except Exception as e:
         return HealthCheckError(
             account_id=project_id,

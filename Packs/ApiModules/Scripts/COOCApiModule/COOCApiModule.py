@@ -43,7 +43,7 @@ class HealthCheckError:
     def __init__(self, account_id: str, connector_id: str, message: str, error_type: str):
         self.account_id = account_id
         self.connector_id = connector_id
-        self.message = f"[{account_id}] {message}" if account_id else message
+        self.message = message
         self.error_type = error_type
         # Determine classification based on error type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
