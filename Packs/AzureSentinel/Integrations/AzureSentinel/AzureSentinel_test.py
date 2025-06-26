@@ -1745,7 +1745,7 @@ def test_update_remote_incident(mocker, incident_status, required_action, delta,
         # Closing after reopened, after data update
         ({}, {"classification": "FalsePositive", "status": "Active"}, True, IncidentStatus.DONE, Action.CLOSE),
         ({"classification": "FalsePositive"}, {}, True, IncidentStatus.ACTIVE, Action.UNCHANGED),
-        ({"classification": ""}, {}, True, IncidentStatus.ACTIVE, Action.OPEN),
+        ({"classification": ""}, {}, True, IncidentStatus.ACTIVE, Action.REOPEN),
         ({"classification": ""}, {}, True, IncidentStatus.DONE, Action.UNCHANGED),
         ({}, {}, False, IncidentStatus.ACTIVE, Action.UNCHANGED),
         (
@@ -1778,7 +1778,7 @@ def test_check_required_action_on_incident(mocker, delta, data, close_ticket_par
     When
         - outgoing mirroring triggered by a change in the incident
     Then
-        - returns one of Action.CLOSE,Action.OPEN,Action.UNCHANGED
+        - returns one of Action.CLOSE,Action.REOPEN,Action.UNCHANGED
     """
     from AzureSentinel import check_required_action_on_incident
 
