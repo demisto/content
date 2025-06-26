@@ -89,7 +89,7 @@ filter
     xdm.observer.action = actResult,
     xdm.network.application_protocol = app,
     xdm.event.type = blocking,
-    xdm.alert.severity = cat,
+    xdm.alert.severity = to_string(cat),
     xdm.source.agent.version = replex(arraystring(json_extract_array(component,  "$."), ", "), "\"", ""),
     xdm.source.process.name = coalesce(deviceProcessName, processName),
     xdm.source.host.mac_addresses = coalesce(split(deviceMacAddress), split(endpointMacAddress), split(interestedMacAddress)),
