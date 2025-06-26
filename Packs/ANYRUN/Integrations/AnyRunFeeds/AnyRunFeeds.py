@@ -1,5 +1,3 @@
-import traceback
-from typing import Callable, Any
 from datetime import datetime
 
 import demistomock as demisto
@@ -10,6 +8,7 @@ from anyrun.iterators import FeedsIterator
 from anyrun import RunTimeException
 
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+VERSION = 'PA-XSOAR:2.0.0'
 
 
 def test_module(params: dict) -> str:
@@ -17,24 +16,6 @@ def test_module(params: dict) -> str:
     with FeedsConnector(params.get('anyrun_auth_token')) as connector:
         connector.check_authorization()
         return 'ok'
-
-
-def handle_exceptions(function: Callable) -> Any:
-    """
-    Handles all exception, formats them, then sends to WarRoom
-
-    :param function: Wrapped function
-    """
-    def wrapper(*args, **kwargs) -> Any:
-        try:
-            return function(*args, **kwargs)
-        except RunTimeException as exception:
-            return_error(exception.description, error=str(exception.json))
-        except Exception:
-            exception = str(traceback.format_exc())
-            return_error(exception, error=exception)
-
-    return wrapper
 
 
 def extract_indicator_data(indicator: dict) -> tuple[str, str]:
@@ -135,23 +116,22 @@ def fetch_indicators_command(params: dict) -> None:
         update_timestamp(connector._taxii_delta_timestamp)
 
 
-@handle_exceptions
 def main():
     """ Main Execution block """
-    command = demisto.command()
     params = demisto.params()
-
     handle_proxy()
 
-    match command:
-        case 'fetch-indicators':
+    try:
+        if demisto.command() == 'fetch-indicators':
             fetch_indicators_command(params)
-        case 'test-module':
-            return_results(test_module(params))
-        case _:
-            raise NotImplementedError(f'Command {command} is not implemented in ANY.RUN')
+        elif demisto.command() ==  'test-module':
+            result = test_module(params)
+            return_results(result)
+        else:
+            return_results(f'Command {demisto.command()} is not implemented in ANY.RUN')
+    except RunTimeException as exception:
+        return_error(exception.description, error=str(exception.json))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    VERSION = 'PA-XSOAR:2.0.0'
     main()
