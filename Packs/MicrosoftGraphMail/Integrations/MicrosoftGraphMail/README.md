@@ -162,14 +162,15 @@ Deletes an email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID or principal ID of the mailbox owner (usually an email address) from which the message should be deleted. | Required | 
-| message_id | The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
-| folder_id | A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders. | Optional | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required |
+| message_id | The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
+| folder_id | A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders. | Optional |
+| ran_once_flag | Flag for rate limit retry. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-list-attachments
 
 ***
