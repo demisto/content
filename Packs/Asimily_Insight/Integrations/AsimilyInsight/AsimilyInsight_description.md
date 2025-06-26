@@ -38,10 +38,12 @@ To reset:
 
 1. Go to the integration instance configuration.
 2. Navigate to **Collect > Advanced Settings**.
-3. Click **Reset** under the "Last Run" section.
+3. Click **Reset the "last run" timestamp** under the "Last Run" section.
+4. Clikc **Reset Now**.
 
 This ensures that incidents related to newly included devices and updated filters are correctly fetched.
 
 #### Configure Pre-Process Rules
 The integration retrieves asset information, anomaly alerts, and CVEs from Asimily Insight—either through scheduled updates or on-demand queries—making it necessary to define a preprocessing rule that discards incoming incidents if they are duplicates.
+
 The integration includes a preprocessing script (**PreProcessAsimilyDedup**) that will drop incoming incident if it is a duplicate. It will search all past incidents with all status.
