@@ -393,7 +393,7 @@ script:
       required: true
       description: A comma-separated list of entries to add to the list (e.g. "Item1,Item2").
       isArray: true
-      prettyname: Email ID
+      prettyname: Email Sender
       prettypredefined:
         Issue email sender: ${issue.xdmemailsender}
     - name: list_type
@@ -2443,7 +2443,7 @@ script:
       required: true
       description: Entries to remove from the list.  Either use this OR 'ids' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
       isArray: true
-      prettyname: Email ID
+      prettyname: Email Sender
       prettypredefined:
         Issue email sender: ${issue.xdmemailsender}
     - name: ids
