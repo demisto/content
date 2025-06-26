@@ -1255,16 +1255,6 @@ script:
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
       description: Case hold policy name.
       type: String
-
-  - name: o365-sc-test-polling
-    polling: true
-    description: test polling.
-    arguments:
-    - name: name
-      required: true
-      defaultValue: 1
-      description: test arg.
-
   dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
   runonce: true
   script: ''
