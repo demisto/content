@@ -1,6 +1,6 @@
 import hashlib
 import secrets
-import string 
+import string
 from datetime import datetime, timedelta
 from itertools import zip_longest
 
