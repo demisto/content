@@ -1209,6 +1209,7 @@ script:
       name: attachCIDs
     - description: The email address from which to send the email.
       name: from
+      prettyname: From
       required: true
     - description: The content (body) of the email (in HTML format).
       name: htmlBody
@@ -1242,7 +1243,7 @@ script:
     description: Sends an email using Microsoft Graph.
     name: send-email-to-recipients-office-365-quick-action
     quickaction: true
-    # hidden: true
+    hidden: true
     prettyname: Send Email to Recipients - Office 365
     outputs:
     - contextPath: MicrosoftGraph.Email.internetMessageHeaders
