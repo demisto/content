@@ -290,6 +290,8 @@ script:
       name: agentId
     description: Releases a specific host from containment.
     name: fireeye-hx-cancel-containment
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: The acquisition script in JSON format.
       name: script
@@ -1150,6 +1152,8 @@ script:
       required: true
     description: Approves pending containment requests made by other components or users. The required permission is api_admin role.
     name: fireeye-hx-approve-containment
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: The Host Set ID - this argument is required.
       name: hostSetId
@@ -1799,7 +1803,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.0.0
 tests:
 - FireEyeHX_v2

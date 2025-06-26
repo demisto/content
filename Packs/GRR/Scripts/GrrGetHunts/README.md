@@ -1,5 +1,7 @@
 Renders the list of available hunts.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -7,13 +9,15 @@ Renders the list of available hunts.
 | Script Type | python |
 | Tags | GRR |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * grr_get_hunts
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,5 +29,6 @@ This script uses the following commands and scripts.
 | active_within | Returns hunts that were active within given time duration. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
