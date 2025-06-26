@@ -9,13 +9,13 @@ def test_check_firewall_and_gp_for_cves_affected_and_unaffected(mocker):
     mock_pan_os_system_info = [
         {
             "hostname": "fw-affected",
-            "ip_address": "192.168.1.10",
+            "ip_address": "1.1.1.1",
             "sw_version": "10.2.3",
             "global_protect_client_package_version": "6.0.1",
         },
         {
             "hostname": "fw-patched",
-            "ip_address": "192.168.1.20",
+            "ip_address": "2.2.2.2",
             "sw_version": "10.2.3-h2",  # Has hotfix
             "global_protect_client_package_version": "6.0.3",
         },
