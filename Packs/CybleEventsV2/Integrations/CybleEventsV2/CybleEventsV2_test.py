@@ -371,91 +371,88 @@ def test_alert_input_structure():
     assert result["where"]["status"]["in"] == expected_statuses
 
 
-class TestUpdateRemoteSystem:
-    """Test update_remote_system function"""
+@patch("CybleEventsV2.UpdateRemoteSystemArgs")
+@patch("CybleEventsV2.INCIDENT_STATUS", {"CLOSED": "CLOSED"})
+def test_update_remote_system_success(self, mock_args_class):
+    """Test with valid delta, status, and severity"""
+    mock_client = Mock()
+    mock_parsed_args = Mock()
+    mock_parsed_args.delta = {"status": "CLOSED", "severity": 3}
+    mock_parsed_args.data = {"id": "alert-123", "service": "compromised_cards"}
+    mock_parsed_args.remote_incident_id = None
 
-    def setUp(self):
-        self.mock_client = Mock()
+    mock_args_class.return_value = mock_parsed_args
 
-    @patch("CybleEventsV2.UpdateRemoteSystemArgs")
-    @patch("CybleEventsV2.UpdateRemoteSystemArgs")
-    @patch("CybleEventsV2.INCIDENT_STATUS", {"CLOSED": "CLOSED"})
-    def test_update_remote_system_success(self, mock_incident_status, mock_args_class):
-        mock_client = Mock()
-        mock_parsed_args = Mock()
-        mock_parsed_args.delta = True
-        mock_parsed_args.data = {
-            "id": "alert-123",
-            "status": "CLOSED",
-            "service": "compromised_cards",
-            "assignee_id": "user-456",
-            "severity": "3",
-        }
-        mock_args_class.return_value = mock_parsed_args
+    update_remote_system(mock_client, "PUT", "token", {"delta": True, "data": mock_parsed_args.data}, "https://test.com")
 
-        mock_client.update_alert = Mock()
+    mock_client.update_alert.assert_called_once()
+    payload = mock_client.update_alert.call_args[0][0]
+    alert = payload["alerts"][0]
 
-        args = {"delta": True, "data": mock_parsed_args.data}
-        update_remote_system(mock_client, "PUT", "token", args, "https://test.com")
+    assert alert["id"] == "alert-123"
+    assert alert["service"] == "compromised_cards"
+    assert alert["status"] == "CLOSED"
+    assert alert["user_severity"] == "HIGH"
 
-        mock_client.update_alert.assert_called_once()
-        call_args = mock_client.update_alert.call_args[0][0]
-        alert_data = call_args["alerts"][0]
+@patch("CybleEventsV2.UpdateRemoteSystemArgs")
+def test_update_remote_system_no_delta(self, mock_args_class):
+    """Should skip update when delta is empty"""
+    mock_client = Mock()
+    mock_parsed_args = Mock()
+    mock_parsed_args.delta = {}
+    mock_parsed_args.data = {"id": "alert-123", "service": "compromised_files"}
+    mock_parsed_args.remote_incident_id = None
 
-        assert alert_data["id"] == "alert-123"
-        assert alert_data["service"] == "compromised_cards"
-        assert alert_data.get("status") == "CLOSED"  # works now
-        assert alert_data["assignee_id"] == "user-456"
-        assert alert_data.get("user_severity") == "HIGH"
+    mock_args_class.return_value = mock_parsed_args
 
-    def test_update_remote_system_no_delta(self, mock_client):
-        """Test update_remote_system with no delta (should not update)"""
-        with patch("CybleEventsV2.UpdateRemoteSystemArgs") as mock_args_class:
-            mock_parsed_args = Mock()
-            mock_parsed_args.delta = False
-            mock_args_class.return_value = mock_parsed_args
+    result = update_remote_system(mock_client, "PUT", "token", {"delta": {}, "data": mock_parsed_args.data}, "https://test.com")
+    assert result == "alert-123"
+    mock_client.update_alert.assert_not_called()
 
-            mock_client.update_alert = Mock()
-            args = {"delta": False}
-            update_remote_system(mock_client, "PUT", "token", args, "https://test.com")
+@patch("CybleEventsV2.UpdateRemoteSystemArgs")
+def test_update_remote_system_partial_data(self, mock_args_class):
+    """Test with only id and service, no status/severity"""
+    mock_client = Mock()
+    mock_parsed_args = Mock()
+    mock_parsed_args.delta = {"other": "value"}  # Unrelated delta
+    mock_parsed_args.data = {"id": "alert-123", "service": "compromised_files"}
+    mock_parsed_args.remote_incident_id = None
 
-            mock_client.update_alert.assert_not_called()
+    mock_args_class.return_value = mock_parsed_args
 
-    @patch("CybleEventsV2.UpdateRemoteSystemArgs")
-    def test_update_remote_system_partial_data(self, mock_args_class, mock_client):
-        """Test update_remote_system with partial data"""
-        mock_parsed_args = Mock()
-        mock_parsed_args.delta = True
-        mock_parsed_args.data = {"id": "alert-123", "service": "compromised_cards"}
-        mock_args_class.return_value = mock_parsed_args
+    result = update_remote_system(mock_client, "PUT", "token", {"delta": {"other": "value"}, "data": mock_parsed_args.data}, "https://test.com")
+    assert result == "alert-123"
+    mock_client.update_alert.assert_not_called()
 
-        mock_client.update_alert = Mock()
-        args = {"delta": True, "data": mock_parsed_args.data}
-        update_remote_system(mock_client, "PUT", "token", args, "https://test.com")
+@patch("CybleEventsV2.UpdateRemoteSystemArgs")
+def test_update_remote_system_invalid_status(self, mock_args_class):
+    """Unmapped status should skip adding status field"""
+    mock_client = Mock()
+    mock_parsed_args = Mock()
+    mock_parsed_args.delta = {"status": "Under Review"}
+    mock_parsed_args.data = {"id": "alert-123", "service": "compromised_files"}
+    mock_parsed_args.remote_incident_id = None
 
-        call_args = mock_client.update_alert.call_args[0][0]
-        alert_data = call_args["alerts"][0]
+    mock_args_class.return_value = mock_parsed_args
 
-        assert alert_data["id"] == "alert-123"
-        assert alert_data["service"] == "compromised_cards"
-        assert alert_data.get("user_severity") is None
+    result = update_remote_system(mock_client, "PUT", "token", {"delta": {"status": "Under Review"}, "data": mock_parsed_args.data}, "https://test.com")
+    assert result == "alert-123"
+    mock_client.update_alert.assert_not_called()
 
-    @patch("CybleEventsV2.UpdateRemoteSystemArgs")
-    def test_update_remote_system_invalid_status(self, mock_args_class, mock_client):
-        """Test update_remote_system with invalid status"""
-        mock_parsed_args = Mock()
-        mock_parsed_args.delta = True
-        mock_parsed_args.data = {"id": "alert-123", "service": "compromised_cards", "status": "InvalidStatus"}
-        mock_args_class.return_value = mock_parsed_args
+@patch("CybleEventsV2.UpdateRemoteSystemArgs")
+def test_update_remote_system_invalid_severity(self, mock_args_class):
+    """Severity outside known range should not set user_severity"""
+    mock_client = Mock()
+    mock_parsed_args = Mock()
+    mock_parsed_args.delta = {"severity": 2}
+    mock_parsed_args.data = {"id": "alert-123", "service": "compromised_files"}
+    mock_parsed_args.remote_incident_id = None
 
-        mock_client.update_alert = Mock()
-        args = {"delta": True, "data": mock_parsed_args.data}
-        update_remote_system(mock_client, "PUT", "token", args, "https://test.com")
+    mock_args_class.return_value = mock_parsed_args
 
-        call_args = mock_client.update_alert.call_args[0][0]
-        alert_data = call_args["alerts"][0]
-
-        assert alert_data.get("status") is None
+    result = update_remote_system(mock_client, "PUT", "token", {"delta": {"severity": 99}, "data": mock_parsed_args.data}, "https://test.com")
+    assert result == "alert-123"
+    mock_client.update_alert.assert_not_called()
 
 
 class TestGetMappingFields:

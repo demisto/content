@@ -60,7 +60,7 @@
                     "simple": "url"
                 },
                 "dbotMirrorDirection": {
-                    "simple": "Both"
+                    "simple": "\"Both\""
                 },
                 "dbotMirrorId": {
                     "simple": "event_id"
