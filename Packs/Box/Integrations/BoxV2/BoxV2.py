@@ -10,6 +10,7 @@ import time
 import secrets
 import jwt
 import re
+import pytz
 from datetime import UTC
 from typing import Any, BinaryIO
 from requests.models import Response
@@ -149,6 +150,7 @@ class Event:
         self.event_id = raw_input.get("event_id")
         self.event_type = raw_input.get("event_type")
         self.labels = raw_input
+        demisto.debug(f"Useful current event info {self.event_id=} {self.event_type=} {raw_input=}")
 
     def format_incident(self):
         incident = {
@@ -682,7 +684,8 @@ class Client(BaseClient):
         self._headers.update({"As-User": validated_as_user})
         return self._http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
-    def list_events(self, as_user: str, stream_type: str, created_after: str = None, limit: int = None, event_type: str = None):
+    def list_events(self, as_user: str, stream_type: str, created_after: str = None, limit: int = None, event_type: str = None,
+                    next_stream_position: str = None):
         """
         Lists the events which have occurred given the as_user argument/parameter. Same endpoint is
         used to also handle the enterprise logs as well.
@@ -692,6 +695,7 @@ class Client(BaseClient):
         :param created_after: str - Is used the return only events created after the given time.
         :param limit: int - The maximum amount of events to return.
         :param event_type: a comma separated list of Event types to return.
+        :param next_stream_position: The location in the event stream to start receiving events from.
         :return: dict - The results for the given logs query.
         """
         url_suffix = "/events/"
@@ -704,6 +708,8 @@ class Client(BaseClient):
             request_params.update({"limit": limit})  # type:ignore
         if event_type:
             request_params.update({"event_type": event_type})
+        if next_stream_position:
+            request_params.update({"stream_position": next_stream_position})
         return self._http_request(method="GET", url_suffix=url_suffix, params=request_params)
 
     def get_current_user(self, as_user: str):
@@ -1709,7 +1715,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
 
 def fetch_incidents(
     client: Client, max_results: int, last_run: dict, first_fetch_time: int, as_user: str, event_type: list = None
-) -> tuple[str, list[dict]]:
+) -> tuple[dict, list[dict]]:
     """
 
     :param client:
@@ -1721,25 +1727,36 @@ def fetch_incidents(
     :return:
     """
     created_after = last_run.get("time", None)
+    next_stream_position = last_run.get("next_stream_position", "")
     incidents = []
     if not created_after:
         created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(DATE_FORMAT)
+    demisto.debug(f"At the beginning of the fetch, {created_after=} {next_stream_position=}")
     event_type_str = ",".join(event_type) if event_type else ""
     demisto.debug(f"{event_type_str=}")
     results = client.list_events(
-        stream_type="admin_logs", as_user=as_user, limit=max_results, created_after=created_after, event_type=event_type_str
+        stream_type="admin_logs", as_user=as_user, limit=max_results, created_after=created_after, event_type=event_type_str, next_stream_position=next_stream_position
     )
     raw_incidents = results.get("entries", [])
+    next_stream_position = results.get("next_stream_position")
     demisto.debug(f"Extracted {len(raw_incidents)} raw incidents from the results.")
-    next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
+    next_run = created_after
     for raw_incident in raw_incidents:
         event = Event(raw_input=raw_incident)
         xsoar_incident = event.format_incident()
         incidents.append(xsoar_incident)
-        if event.created_at > created_after:
-            next_run = event.created_at  # type: ignore[assignment]
+        local_event_time = datetime.fromisoformat(event.created_at)
+        utc_event_time = local_event_time.astimezone(pytz.utc).strftime(DATE_FORMAT)
+        demisto.debug(f"{utc_event_time} >? {created_after}")
+        if utc_event_time > created_after:
+            next_run = utc_event_time
+    last_run = {
+        "time": next_run,
+        "next_stream_position": next_stream_position
+    }
+    demisto.debug(f"The final {last_run=}")
 
-    return next_run, incidents
+    return last_run, incidents
 
 
 def main() -> None:  # pragma: no cover
@@ -1788,7 +1805,7 @@ def main() -> None:  # pragma: no cover
                 as_user=as_user,
                 event_type=event_type,
             )
-            demisto.setLastRun({"time": next_run})
+            demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
         elif demisto.command() == "box-create-file-share-link" or demisto.command() == "box-update-file-share-link":
