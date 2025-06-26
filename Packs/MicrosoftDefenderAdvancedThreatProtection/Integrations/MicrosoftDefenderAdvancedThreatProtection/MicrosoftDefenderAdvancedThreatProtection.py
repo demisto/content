@@ -6047,7 +6047,7 @@ def get_live_response_file_action(client, args):
 def get_file_get_successfull_action_results(client, res, args):
     machine_action_id = res["id"]
     result_filename = "Response Result"
-    preserve_filename = argToBoolean(args.pop("preserve_filename", False))
+    preserve_filename = argToBoolean(args.get("preserve_filename", False))
 
     if preserve_filename:
         try:
