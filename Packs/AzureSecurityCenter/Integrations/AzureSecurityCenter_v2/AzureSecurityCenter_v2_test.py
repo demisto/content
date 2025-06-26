@@ -1,13 +1,20 @@
 import pytest
 import json
-from AzureSecurityCenter_v2 import (MsClient, get_aps_command, get_atp_command, get_secure_scores_command, update_atp_command,
-                                    get_alert_command, list_alerts_command)
+from AzureSecurityCenter_v2 import (
+    MsClient,
+    get_aps_command,
+    get_atp_command,
+    get_secure_scores_command,
+    update_atp_command,
+    get_alert_command,
+    list_alerts_command,
+)
 
-with open('./test_data/integration_test_data.json', 'r') as f:
+with open("./test_data/integration_test_data.json") as f:
     data = json.load(f)
 
-RAW_RESPONSES = data.get('RAW_RESPONSES')
-COMMAND_OUTPUTS = data.get('COMMAND_OUTPUTS')
+RAW_RESPONSES = data.get("RAW_RESPONSES")
+COMMAND_OUTPUTS = data.get("COMMAND_OUTPUTS")
 
 client = MsClient(
     server="url",
