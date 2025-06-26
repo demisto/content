@@ -850,7 +850,7 @@ def get_asset_anomalies_command(client: Client, args, if_from_fetch_incident):
             outputs_prefix="AsimilyInsight.Anomaly",
             outputs_key_field=["asimilydeviceid", "asimilyanomalyname"],
             outputs=asimily_anomaly_list,
-            raw_response=asimily_anomaly_list,
+            raw_response=init_data,
             ignore_auto_extract=True,
         )
         return results
@@ -916,7 +916,7 @@ def get_asset_cves_command(client: Client, args, if_from_fetch_incident):
             outputs_prefix="AsimilyInsight.CVE",
             outputs_key_field=["asimilydeviceid", "asimilycvename"],
             outputs=asimily_cve_list,
-            raw_response=asimily_cve_list,
+            raw_response=init_data,
             ignore_auto_extract=True,
         )
         return results
@@ -958,7 +958,7 @@ def get_asset_details_command(client: Client, args) -> CommandResults:
                 print_debug_msg(f"Failure during converting asset incident: {str(e)}")
 
     msg = (
-        f"Fecthed {len(incidents)} out of {total_elements} assets matching search. "
+        f"Fetched {len(incidents)} out of {total_elements} assets matching search. "
         f"Asset fetch count is limited to avoid server overload."
     )
 
@@ -973,7 +973,7 @@ def get_asset_details_command(client: Client, args) -> CommandResults:
         outputs_prefix="AsimilyInsight.Asset",
         outputs_key_field="asimilydeviceid",
         outputs=asimily_asset_list,
-        raw_response=asimily_asset_list,
+        raw_response=init_data,
         ignore_auto_extract=True,
     )
     return results

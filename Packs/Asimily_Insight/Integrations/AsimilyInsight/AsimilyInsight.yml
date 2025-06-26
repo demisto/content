@@ -71,7 +71,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: High Only
-  display: Fecth Anomaly Criticality
+  display: Fetch Anomaly Criticality
   name: fetchanomalycriticality
   section: Collect
   options:
@@ -87,7 +87,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: High Only
-  display: Fecth CVE Score
+  display: Fetch CVE Score
   name: fetchcvescore
   section: Collect
   options:
@@ -105,12 +105,14 @@ configuration:
 - name: max_fetch
   display: Max Incidents
   defaultvalue: 200
+  hidden: true
   type: 0
   section: Collect
   additionalinfo: The maximum number of incidents to fetch each time.
   required: false
 - name: first_fetch
   display: First Fetch Time Interval
+  hidden: true
   type: 0
   section: Collect
   advanced: true
@@ -122,11 +124,6 @@ configuration:
   section: Collect
   required: false
   type: 13
-- display: Long running instance
-  name: longRunning
-  required: false
-  section: Collect
-  type: 8
 description: Integrate Asimily Insight to ingest security anomalies, CVEs, and leverage detailed asset data for streamlined incident investigation.
 display: Asimily Insight
 name: Asimily Insight

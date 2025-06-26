@@ -4,6 +4,7 @@ commonfields:
 name: AsimilyExtraAssetContextData
 script: ''
 type: python
+comment: Script for extracting Asimily device attributes from incident context data.
 tags:
 - dynamic-section
 enabled: true
