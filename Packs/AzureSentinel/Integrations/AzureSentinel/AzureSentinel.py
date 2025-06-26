@@ -841,7 +841,7 @@ def update_incident_request(
         incident_id (str): the incident ID
         data (Dict[str, Any]): all the data of the incident
         delta (Dict[str, Any]): the delta of the changes in the incident's data
-        required_action Literal[Action.CLOSE, Action.UNCHANGED,Action.REOPEN]: Action.UNCHANGED, Action.REOPEN, Action.CLOSE
+        required_action Literal[Action.CLOSE, Action.UNCHANGED,Action.REOPEN]: Describe the action preformed on the incident.
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
@@ -872,8 +872,9 @@ def update_incident_request(
     properties["labels"] += [{"labelName": label, "type": "User"} for label in delta.get("tags", [])]
 
     if required_action == Action.CLOSE:
+        status = "Closed"
         properties |= {
-            "status": "Closed",
+            "status": status,
             "classification": delta.get("classification") or data.get("classification"),
             "classificationComment": delta.get("classificationComment") or data.get("classificationComment"),
             "classificationReason": extract_classification_reason(delta, data),
