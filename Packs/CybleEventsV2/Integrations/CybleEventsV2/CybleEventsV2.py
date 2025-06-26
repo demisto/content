@@ -361,8 +361,9 @@ class Client(BaseClient):
                 try:
                     response = self.get_data(service, input_params, is_update)
                     demisto.debug(
-                        f"[insert_data_in_cortex] Received response for skip: {input_params['skip']}, items: {len(response.get('data', [])) if 'data' in response else 'N/A'}")
-
+                        f"[insert_data_in_cortex] Received response for skip: {input_params['skip']}, "
+                        f"items: {len(response.get('data', [])) if 'data' in response else 'N/A'}"
+                    )
                 except Exception as e:
                     demisto.error(f"[insert_data_in_cortex] get_data failed for service: {service} with error: {str(e)}")
                     raise
@@ -402,9 +403,9 @@ class Client(BaseClient):
 
                 else:
                     raise Exception(
-                        f"[insert_data_in_cortex] Unable to fetch data for gte: {input_params['gte']}, lte: {input_params['lte']}, skip: {input_params['skip']}, take: {input_params['take']}"
+                        f"[insert_data_in_cortex] Unable to fetch data for gte: {input_params['gte']}, "
+                        f"lte: {input_params['lte']}, skip: {input_params['skip']}, take: {input_params['take']}"
                     )
-
         except Exception as e:
             demisto.error(f"[insert_data_in_cortex] Failed for service '{service}': {str(e)}")
             raise
@@ -450,7 +451,9 @@ class Client(BaseClient):
                 mid_datetime = current_gte + (current_lte - current_gte) / 2
                 que.extend([[current_gte, mid_datetime], [mid_datetime + timedelta(microseconds=1), current_lte]])
                 demisto.debug(
-                    f"[get_data_with_retry] Splitting time range further: {current_gte} to {mid_datetime}, {mid_datetime + timedelta(microseconds=1)} to {current_lte}")
+                    f"[get_data_with_retry] Splitting time range further: {current_gte} to {mid_datetime}, "
+                    f"{mid_datetime + timedelta(microseconds=1)} to {current_lte}"
+                )
             else:
                 demisto.debug(f"[get_data_with_retry] Unable to fetch data for time range: {current_gte} to {current_lte}")
 

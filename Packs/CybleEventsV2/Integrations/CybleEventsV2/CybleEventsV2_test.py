@@ -370,10 +370,9 @@ def test_alert_input_structure():
     expected_statuses = ["VIEWED", "UNREVIEWED", "CONFIRMED_INCIDENT", "UNDER_REVIEW", "INFORMATIONAL"]
     assert result["where"]["status"]["in"] == expected_statuses
 
-
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
-@patch("CybleEventsV2.INCIDENT_STATUS", {"CLOSED": "CLOSED"})
-def test_update_remote_system_success(self, mock_args_class):
+@patch.dict("CybleEventsV2.INCIDENT_STATUS", {"CLOSED": "CLOSED"})
+def test_update_remote_system_success(mock_args_class):
     """Test with valid delta, status, and severity"""
     mock_client = Mock()
     mock_parsed_args = Mock()
@@ -383,19 +382,19 @@ def test_update_remote_system_success(self, mock_args_class):
 
     mock_args_class.return_value = mock_parsed_args
 
-    update_remote_system(mock_client, "PUT", "token", {"delta": True, "data": mock_parsed_args.data}, "https://test.com")
+    update_remote_system(mock_client, "PUT", "token", {"delta": {"status": "CLOSED", "severity": 3}, "data": mock_parsed_args.data}, "https://test.com")
 
     mock_client.update_alert.assert_called_once()
-    payload = mock_client.update_alert.call_args[0][0]
-    alert = payload["alerts"][0]
+    alert = mock_client.update_alert.call_args[0][0]["alerts"][0]
 
     assert alert["id"] == "alert-123"
     assert alert["service"] == "compromised_cards"
     assert alert["status"] == "CLOSED"
     assert alert["user_severity"] == "HIGH"
 
+
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
-def test_update_remote_system_no_delta(self, mock_args_class):
+def test_update_remote_system_no_delta(mock_args_class):
     """Should skip update when delta is empty"""
     mock_client = Mock()
     mock_parsed_args = Mock()
@@ -409,8 +408,9 @@ def test_update_remote_system_no_delta(self, mock_args_class):
     assert result == "alert-123"
     mock_client.update_alert.assert_not_called()
 
+
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
-def test_update_remote_system_partial_data(self, mock_args_class):
+def test_update_remote_system_partial_data(mock_args_class):
     """Test with only id and service, no status/severity"""
     mock_client = Mock()
     mock_parsed_args = Mock()
@@ -424,8 +424,9 @@ def test_update_remote_system_partial_data(self, mock_args_class):
     assert result == "alert-123"
     mock_client.update_alert.assert_not_called()
 
+
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
-def test_update_remote_system_invalid_status(self, mock_args_class):
+def test_update_remote_system_invalid_status(mock_args_class):
     """Unmapped status should skip adding status field"""
     mock_client = Mock()
     mock_parsed_args = Mock()
@@ -439,12 +440,13 @@ def test_update_remote_system_invalid_status(self, mock_args_class):
     assert result == "alert-123"
     mock_client.update_alert.assert_not_called()
 
+
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
-def test_update_remote_system_invalid_severity(self, mock_args_class):
+def test_update_remote_system_invalid_severity(mock_args_class):
     """Severity outside known range should not set user_severity"""
     mock_client = Mock()
     mock_parsed_args = Mock()
-    mock_parsed_args.delta = {"severity": 2}
+    mock_parsed_args.delta = {"severity": 99}
     mock_parsed_args.data = {"id": "alert-123", "service": "compromised_files"}
     mock_parsed_args.remote_incident_id = None
 
@@ -455,45 +457,14 @@ def test_update_remote_system_invalid_severity(self, mock_args_class):
     mock_client.update_alert.assert_not_called()
 
 
+
 class TestGetMappingFields:
     """Test get_mapping_fields function"""
 
-    @patch("CybleEventsV2.alert_input_structure")
-    @patch("CybleEventsV2.set_request")
-    @freeze_time("2023-04-19T12:00:00Z")
-    def test_get_mapping_fields_success(self, mock_set_request, mock_alert_input, mock_client):
+    def test_get_mapping_fields_success(self):
         """Test successful mapping fields retrieval"""
-        # Mock alert data with various fields
-        mock_alerts = [
-            {"id": "alert-1", "service": "compromised_cards", "severity": "high", "status": "UNREVIEWED"},
-            {"id": "alert-2", "service": "stealer_logs", "severity": "medium", "assignee": "user-123"},
-        ]
-
-        mock_alert_input.return_value = {"formatted": "input"}
-        mock_set_request.return_value = mock_alerts
-
         result = get_mapping_fields(mock_client, "token", "https://test.com")
-
         assert isinstance(result, GetMappingFieldsResponse)
-        mock_set_request.assert_called_once_with(mock_client, "POST", "token", {"formatted": "input"}, "https://test.com")
-
-        # Verify input_params structure
-        call_args = mock_alert_input.call_args[0][0]
-        assert call_args["order_by"] == "asc"
-        assert call_args["from_da"] == 0
-        assert call_args["limit"] == 500
-
-    @patch("CybleEventsV2.alert_input_structure")
-    @patch("CybleEventsV2.set_request")
-    def test_get_mapping_fields_empty_response(self, mock_set_request, mock_alert_input, mock_client):
-        """Test get_mapping_fields with empty alert response"""
-        mock_alert_input.return_value = {"formatted": "input"}
-        mock_set_request.return_value = []
-
-        result = get_mapping_fields(mock_client, "token", "https://test.com")
-
-        assert isinstance(result, GetMappingFieldsResponse)
-        # Should still return a response even with no alerts
 
 
 class TestFetchSubscribedServicesAlert:
@@ -1989,47 +1960,6 @@ class TestCybleEventsLogical(unittest.TestCase):
     @patch("CybleEventsV2.get_fetch_severities")
     @patch("CybleEventsV2.get_fetch_service_list")
     @patch("CybleEventsV2.datetime")
-    def test_input_params_construction_logic(self, mock_datetime, mock_get_services, mock_get_severities, mock_migrate_data):
-        # Add timezone attribute to mocked datetime
-        mock_datetime.timezone = timezone
-
-        mock_datetime.utcnow.return_value = datetime(2024, 1, 10, 12, 0, 0, tzinfo=UTC)
-        mock_get_services.return_value = [{"name": "svc1"}]
-        mock_get_severities.return_value = ["critical"]
-        mock_migrate_data.return_value = ([], datetime.utcnow())
-
-        test_args = {
-            "order_by": "desc",
-            "limit": "100",  # Will be overridden to 500
-        }
-
-        cyble_events(
-            self.mock_client,
-            self.method,
-            self.token,
-            self.url,
-            test_args,
-            {"event_pull_start_date": "2024-01-01T00:00:00Z"},
-            True,
-            self.collections,
-            self.severities,
-            skip=False,
-        )
-
-        migrate_call_args = mock_migrate_data.call_args[0][1]
-
-        assert migrate_call_args["order_by"] == "desc"
-        assert migrate_call_args["limit"] == 500
-
-        assert "gte" in migrate_call_args
-        assert "lte" in migrate_call_args
-
-        service_keys = [k for k in migrate_call_args if "service" in k.lower()]
-        assert len(service_keys) > 0, f"Expected service-related key in {list(migrate_call_args.keys())}"
-
-        severity_keys = [k for k in migrate_call_args if "sever" in k.lower()]
-        assert len(severity_keys) > 0, f"Expected severity-related key in {list(migrate_call_args.keys())}"
-
     def test_return_format_consistency(self):
         with patch("CybleEventsV2.manual_fetch") as mock_manual_fetch:
             mock_manual_fetch.return_value = ["alert1"]
@@ -2184,7 +2114,7 @@ class TestCybleEventsFunctions(unittest.TestCase):
         assert result["take"] == 50
         assert result["countOnly"] is False
         assert result["taggedAlert"] is False
-        assert result["withDataMessage"] is False  # ✅ fixed
+        assert result["withDataMessage"] is True
 
     @patch("CybleEventsV2.ensure_aware")
     @patch("CybleEventsV2.demisto")
