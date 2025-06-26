@@ -6052,10 +6052,10 @@ def get_file_get_successfull_action_results(client, res, args):
     if preserve_filename:
         try:
             for command in res["commands"]:
-                if command.get('command').get('type') == "GetFile":
-                    for params in command.get('command').get('params'):
-                        if params.get('key') == "Path":
-                            result_filename = sanitize_path_to_filename(params.get('value'))
+                if command.get("command", {}).get('type', "") == "GetFile":
+                    for params in command.get('command', {}).get("params", {}):
+                        if params.get("key", "") == "Path":
+                            result_filename = sanitize_path_to_filename(params.get("value"))
         except Exception:
             demisto.debug("Could not generate descriptive name for collected file")
 
