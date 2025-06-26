@@ -1147,14 +1147,6 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
     Returns:
         HealthCheckError or None: HealthCheckError if there's an issue, None if successful.
     """
-    if not project_id:
-        return HealthCheckError(
-            account_id=project_id,
-            connector_id=connector_id,
-            message="Missing project ID for GCP integration",
-            error_type=ErrorType.INTERNAL_ERROR,
-        )
-
     try:
         token = shared_creds.get("access_token")
         if not token:
