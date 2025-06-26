@@ -733,159 +733,224 @@ script:
         - contextPath: ANYRUN.SandboxAnalysis.mitre.name
           description: 'MITRE Technic text description.'
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.mitre.phases
+        - contextPath: ANYRUN.SandboxAnalysis.mitre.phases          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.mitre.id
+        - contextPath: ANYRUN.SandboxAnalysis.mitre.id          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.debugStrings
           type: Unknown
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.process
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.process          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.incidents.events.time
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdline
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdline          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.image
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.image          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.v
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.v          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.sid
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.sid          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.tid
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.tid          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.count
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.count          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.incidents.firstSeen
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.source
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.source          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.desc
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.desc          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.title
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.title          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.threatLevel
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.threatLevel          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.typeValue
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.typeValue          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.key
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.key          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.value
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.value          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.name
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.name          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.operation
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.operation          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdParent
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdParent          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdChild
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdChild          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.modified.registry.time
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.process
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.process          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.operation
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.operation          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.value
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.value          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.name
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.name          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.key
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.key          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.process
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.process          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.size
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.size          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.filename
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.filename          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.modified.files.time
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.info.mime
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.info.mime          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.info.file
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.info.file          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.permanentUrl
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.permanentUrl          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.ssdeep
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.ssdeep          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.sha256
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.sha256          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.sha1
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.sha1          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.md5
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.md5          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.threatLevel
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.threatLevel          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.modified.files.type
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.type          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.network.threats
           type: Unknown
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.reputation
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.reputation          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3SFullstring
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3SFullstring          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3S
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3S          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3Fullstring
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3Fullstring          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.network.connections.time
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.asn
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.asn          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.country
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.country          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.protocol
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.protocol          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.port
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.port          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.ip
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.ip          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.process
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.process          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.jarm
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.jarm          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.country
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.country          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.reputation
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.reputation          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.process
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.process          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.httpCode
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.httpCode          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.status
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.status          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.user-agent
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.user-agent          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.proxyDetected
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.proxyDetected          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.port
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.port          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.ip
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.ip          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.url
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.url          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.host
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.host          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.method
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.method          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.time
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.reputationNumber
+        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.reputationNumber          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.reputation
+        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.reputation          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.ips
+        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.ips          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.domain
+        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.domain          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.time
           type: Date
@@ -899,81 +964,119 @@ script:
         - contextPath: ANYRUN.SandboxAnalysis.processes.modules
           type: Unknown
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.processes.hasMalwareConfig
+        - contextPath: ANYRUN.SandboxAnalysis.processes.hasMalwareConfig          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.parentUUID
+        - contextPath: ANYRUN.SandboxAnalysis.processes.parentUUID          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.status
+        - contextPath: ANYRUN.SandboxAnalysis.processes.status          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.malwareConfig
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.malwareConfig          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.privEscalation
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.privEscalation          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.stealing
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.stealing          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.networkLoader
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.networkLoader          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.network
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.network          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.lowAccess
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.lowAccess          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.knownThreat
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.knownThreat          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.injects
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.injects          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.exploitable
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.exploitable          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.executableDropped
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.executableDropped          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.debugOutput
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.debugOutput          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.crashedApps
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.crashedApps          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.autoStart
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.autoStart          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.loadsSusp
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.loadsSusp          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.injected
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.injected          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.dropped
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.dropped          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevelText
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevelText          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevel
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevel          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.score
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.score          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.context.userName
+        - contextPath: ANYRUN.SandboxAnalysis.processes.context.userName          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.context.integrityLevel
+        - contextPath: ANYRUN.SandboxAnalysis.processes.context.integrityLevel          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.context.rebootNumber
+        - contextPath: ANYRUN.SandboxAnalysis.processes.context.rebootNumber          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.version
+        - contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.version          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.description
+        - contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.description          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.company
+        - contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.company          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.mainProcess
+        - contextPath: ANYRUN.SandboxAnalysis.processes.mainProcess          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.fileType
+        - contextPath: ANYRUN.SandboxAnalysis.processes.fileType          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.fileName
+        - contextPath: ANYRUN.SandboxAnalysis.processes.fileName          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.commandLine
+        - contextPath: ANYRUN.SandboxAnalysis.processes.commandLine          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.image
+        - contextPath: ANYRUN.SandboxAnalysis.processes.image          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.uuid
+        - contextPath: ANYRUN.SandboxAnalysis.processes.uuid          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.ppid
+        - contextPath: ANYRUN.SandboxAnalysis.processes.ppid          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.important
+        - contextPath: ANYRUN.SandboxAnalysis.processes.important          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.pid
+        - contextPath: ANYRUN.SandboxAnalysis.processes.pid          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.exitCode
+        - contextPath: ANYRUN.SandboxAnalysis.processes.exitCode          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.processes.times.terminate
           type: Date
@@ -981,209 +1084,305 @@ script:
         - contextPath: ANYRUN.SandboxAnalysis.processes.times.start
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.processes.resolvedCOM.title
+        - contextPath: ANYRUN.SandboxAnalysis.processes.resolvedCOM.title          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.operation
+        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.operation          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.type
+        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.type          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.name
+        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.name          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.time
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.processes.modules.image
+        - contextPath: ANYRUN.SandboxAnalysis.processes.modules.image          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.processes.modules.time
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.monitoringReason
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.monitoringReason          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.processes.times.monitoringSince
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.type.event
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.type.event          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.type.mutex
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.type.mutex          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.operation.create
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.operation.create          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.operation.open
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.operation.open          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.total
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.total          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.delete
+        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.delete          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.write
+        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.write          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.read
+        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.read          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.total
+        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.total          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.files.malicious
+        - contextPath: ANYRUN.SandboxAnalysis.counters.files.malicious          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.files.suspicious
+        - contextPath: ANYRUN.SandboxAnalysis.counters.files.suspicious          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.files.text
+        - contextPath: ANYRUN.SandboxAnalysis.counters.files.text          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.files.unknown
+        - contextPath: ANYRUN.SandboxAnalysis.counters.files.unknown          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.network.threats
+        - contextPath: ANYRUN.SandboxAnalysis.counters.network.threats          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.network.dns
+        - contextPath: ANYRUN.SandboxAnalysis.counters.network.dns          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.network.connections
+        - contextPath: ANYRUN.SandboxAnalysis.counters.network.connections          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.network.http
+        - contextPath: ANYRUN.SandboxAnalysis.counters.network.http          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.malicious
+        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.malicious          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.suspicious
+        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.suspicious          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.monitored
+        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.monitored          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.total
+        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.total          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.hotfixes.title
+        - contextPath: ANYRUN.SandboxAnalysis.environments.hotfixes.title          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.software.version
+        - contextPath: ANYRUN.SandboxAnalysis.environments.software.version          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.software.title
+        - contextPath: ANYRUN.SandboxAnalysis.environments.software.title          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.internetExplorer.kbnum
+        - contextPath: ANYRUN.SandboxAnalysis.environments.internetExplorer.kbnum          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.internetExplorer.version
+        - contextPath: ANYRUN.SandboxAnalysis.environments.internetExplorer.version          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.os.bitness
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.bitness          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.os.softSet
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.softSet          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.os.servicePack
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.servicePack          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.os.major
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.major          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.os.productType
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.productType          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.os.variant
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.variant          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.os.product
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.product          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.os.build
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.build          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.environments.os.title
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.title          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.analysis.content.dumps
           type: Unknown
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.thumbnailUrl
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.thumbnailUrl          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.permanentUrl
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.permanentUrl          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.time
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.time          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.uuid
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.uuid          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.sslkeys.present
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.sslkeys.present          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.pcap.permanentUrl
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.pcap.permanentUrl          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.pcap.present
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.pcap.present          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.video.permanentUrl
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.video.permanentUrl          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.video.present
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.video.present          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.ssdeep
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.ssdeep          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha256
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha256          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha1
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha1          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.md5
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.md5          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.url
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.url          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.type
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.type          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.knownThreat
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.knownThreat          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.malwareConfig
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.malwareConfig          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.notStarted
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.notStarted          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.privEscalation
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.privEscalation          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.torUsed
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.torUsed          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.suspStruct
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.suspStruct          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.stealing
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.stealing          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.staticDetections
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.staticDetections          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.spam
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.spam          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.serviceLauncher
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.serviceLauncher          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.rebooted
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.rebooted          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.networkThreats
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.networkThreats          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.networkLoader
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.networkLoader          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.multiprocessing
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.multiprocessing          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.memOverrun
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.memOverrun          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.lowAccess
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.lowAccess          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.exploitable
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.exploitable          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.executableDropped
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.executableDropped          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.debugOutput
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.debugOutput          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedTask
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedTask          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedApps
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedApps          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.cpuOverrun
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.cpuOverrun          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.autoStart
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.autoStart          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.injects
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.injects          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevelText
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevelText          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevel
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevel          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.score
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.score          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.automatization.uac
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.automatization.uac          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.privateSample
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.privateSample          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.privacy
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.privacy          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.network
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.network          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.hideSource
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.hideSource          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.video
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.video          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.presentation
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.presentation          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.tor.used
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.tor.used          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.mitm
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.mitm          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.heavyEvasion
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.heavyEvasion          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.fakeNet
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.fakeNet          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.additionalTime
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.additionalTime          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.timeout
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.timeout          
+          description: ""
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.analysis.tags
           type: Unknown
@@ -1200,27 +1399,38 @@ script:
         - contextPath: ANYRUN.SandboxAnalysis.analysis.creation
           type: Date
           description: ''
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.duration
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.duration          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.sandbox.plan.name
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.sandbox.plan.name          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.sandbox.name
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.sandbox.name          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.graph
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.graph          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.STIX
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.STIX          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.HTML
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.HTML          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.MISP
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.MISP          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.IOC
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.IOC          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.permanentUrl
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.permanentUrl          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.analysis.uuid
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.uuid          
+          description: ""
           type: String
-        - contextPath: ANYRUN.SandboxAnalysis.status
+        - contextPath: ANYRUN.SandboxAnalysis.status          
+          description: ""
           type: String
     - arguments:
         - description: 'Sandbox task uuid.'
