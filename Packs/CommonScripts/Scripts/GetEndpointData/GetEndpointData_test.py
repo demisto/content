@@ -786,7 +786,7 @@ def test_endpoints_not_found_all_found():
         {"Hostname": [{"Value": "host2"}], "ID": [{"Value": "id2"}], "IPAddress": [{"Value": "ip2"}]},
     ]
     zipped_args = [("id1", "ip1", "host1"), ("id2", "ip2", "host2")]
-    result = create_endpoints_not_found_list(endpoints, zipped_args)
+    result = get_endpoints_not_found_list(endpoints, zipped_args)
     assert result == []
 
 
@@ -801,7 +801,7 @@ def test_endpoints_not_found_some_found():
     """
     endpoints = [{"Hostname": [{"Value": "host1"}], "ID": [{"Value": "id1"}], "IPAddress": [{"Value": "ip1"}]}]
     zipped_args = [("id1", "ip1", "host1"), ("id2", "ip2", "host2")]
-    result = create_endpoints_not_found_list(endpoints, zipped_args)
+    result = get_endpoints_not_found_list(endpoints, zipped_args)
     assert result == [{"Key": "id2, ip2, host2"}]
 
 
@@ -816,5 +816,5 @@ def test_endpoints_not_found_nothing_found(mocker):
     """
     endpoints = []
     zipped_args = [("id1", "ip1", "host1"), ("id2", "ip2", "host2")]
-    result = create_endpoints_not_found_list(endpoints, zipped_args)
+    result = get_endpoints_not_found_list(endpoints, zipped_args)
     assert result == [{"Key": "id1, ip1, host1"}, {"Key": "id2, ip2, host2"}]

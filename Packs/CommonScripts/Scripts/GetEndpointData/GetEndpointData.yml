@@ -14,9 +14,7 @@ args:
   auto: PREDEFINED
   predefined:
   - 'Active Directory Query v2'
-  - 'Cylance Protect v2'
   - 'McAfee ePO v2'
-  - 'ExtraHop v2'
   - 'CrowdstrikeFalcon'
   - 'Cortex XDR - IR'
   - 'Cortex Core - IR'
