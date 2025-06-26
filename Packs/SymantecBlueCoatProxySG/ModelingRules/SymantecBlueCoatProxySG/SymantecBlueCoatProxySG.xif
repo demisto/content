@@ -2,36 +2,14 @@
 /* docs: 
     - log formats: https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/edge-swg/7-4/getting-started/page-help-administration/page-help-logging/log-formats.html#concept26560_Custom
     - default formats: https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/edge-swg/7-4/getting-started/page-help-administration/page-help-logging/log-formats/default-formats.html
-    - field list: date time time-taken c-ip sc-status s-action sc-bytes cs-bytes cs-method cs-uri-scheme cs-host cs-uri-port cs-uri-path cs-uri-query cs-username cs-auth-group s-supplier-name rs(Content-Type) cs(Referer) cs(User-Agent) sc-filter-result cs-categories x-virus-id s-ip
+    - field list: date time time-taken c-ip sc-status s-action sc-bytes cs-bytes cs-method cs-uri-scheme cs-host cs-uri-port cs-uri-path cs-uri-query cs-username cs-auth-group s-supplier-name rs(Content-Type) cs(Referer) cs(User-Agent) sc-filter-result cs-categories x-virus-id s-ip r-ip
 */
 
 // filter out records which contain only metadata 
 filter _raw_log !~= "^#.*" 
 
-// extract log fields which are separated by double quotes e.g., "user agent"
-| alter quoted_fields = regextract(_raw_log, "\"(\S[^\"]+)") 
-
-// inits a character that would be used as a temporary field separator to build a field list 
-| alter field_separator = "###"
-
-// split the raw log into segments, using quotes as a segment delimiter 
-| alter log_segments = split(_raw_log, "\"")
-
- // clean white spaces from the extracted segments
-| alter log_segments_cleaned = arrayfilter(arraymap(log_segments, trim("@element")), len("@element") > 0)
-
-// insert a delimiter between the different fields within each segment 
-| alter field_delimited_log_segments = arraymap(log_segments_cleaned, 
-        // if the segment is originally a quoted string, leave it as is: 
-        if(quoted_fields contains trim("@element"), "@element", 
-        // else, add the defined separator between each field in the segment (separated originally by a space)
-        arraystring(regextract("@element", "\S+"), field_separator)))
-
-// add the field separator between the segments and flatten them to a unified string
-| alter flattened_field_list  = arraystring(field_delimited_log_segments, field_separator)
-
-// split the delimited string of fields into an index-based array 
-| alter field_list = split(flattened_field_list, field_separator)
+| alter // Extract all of the values into Array
+    field_list = arraymap(regextract(_raw_log, "(?:\"[^\"]+\")|[\S]+"), if("@element" ~= "^\"", replex("@element", "\"", ""), "@element"))
 
 | alter // Extract fields based on their relative location in the list
     time_taken = arrayindex(field_list, 2), // Time taken (in milliseconds) to process the request
@@ -68,8 +46,8 @@ filter _raw_log !~= "^#.*"
     r_ip_v6 = if(r_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", r_ip),
 
     // decode url-encoded spaces (%20) back to an ascii space   
-    cs_username_decoded = replace(cs_username, "%20", " "),
-    rs_content_type_decoded = replace(rs_content_type, "%20", " "),
+    cs_username_decoded = replex(cs_username, "\%20", " "),
+    rs_content_type_decoded = replex(rs_content_type, "\%20", " "),
 
     // assure uppercase values for enum mapping
     cs_http_method = uppercase(cs_method),
@@ -108,4 +86,3 @@ filter _raw_log !~= "^#.*"
     xdm.target.resource.name = cs_uri_path,
     xdm.target.sent_bytes = to_integer(sc_bytes), 
     xdm.target.url = cs_url;
-    
