@@ -52,7 +52,7 @@ Each CVE entry should contain:
         "Result": [
             {
                 "Hostname": "fw-affected",
-                "IPAddress": "192.168.1.10", 
+                "IPAddress": "1.1.1.1", 
                 "SWVersion": "10.2.3",
                 "IsFirewallVersionAffected": true, 
                 "GlobalProtectVersion": "6.0.1",                                    
@@ -60,7 +60,7 @@ Each CVE entry should contain:
             }, 
             {
                 "Hostname": "fw-patched",
-                "IPAddress": "192.168.1.12", 
+                "IPAddress": "2.2.2.2", 
                 "SWVersion": "10.2.3-h2",
                 "IsFirewallVersionAffected": false, 
                 "GlobalProtectVersion": "6.0.3",                                    
@@ -77,8 +77,8 @@ Each CVE entry should contain:
 
 | Hostname | IPAddress | SWVersion | IsFirewallVersionAffected | GlobalProtectVersion | IsGlobalProtectVersionAffected |
 |----------|-----------|-----------|---------------------------|----------------------|--------------------------------|
-| fw-affected | 192.168.1.10 | 10.2.3 | True | 6.0.1 | True |
-| fw-patched | 192.168.1.12 | 10.2.3-2 | False | 6.0.3 | False |
+| fw-affected | 1.1.1.1 | 10.2.3 | True | 6.0.1 | True |
+| fw-patched | 2.2.2.2 | 10.2.3-2 | False | 6.0.3 | False |
 
 ## Notes
 
