@@ -1,9 +1,8 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97cl
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: 04275315-7598-4042-8fdb-5f93d3ea97cl
 fromversion: 8.0.0
-description: Perform URL Analysis using Windows VM
+description: Perform URL Analysis using Windows VM.
 starttaskid: "0"
 tasks:
   "0":
@@ -151,6 +150,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -178,6 +178,8 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
     nexttasks:
       '#default#':
       - "5"
@@ -217,8 +219,7 @@ tasks:
       id: 6bda10d8-8658-450e-9c09-071864fe4814
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -255,8 +256,7 @@ tasks:
       id: ef81e54c-6bc4-4b82-b668-f9c1801aee6a
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -300,8 +300,7 @@ tasks:
       id: 6ec11986-da4b-4bc3-b41e-f8375fe86c7b
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected,
-        Suspicious activity, Malicious activity'
+      description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -388,100 +387,97 @@ inputs:
     simple: ${URL.Data}
   required: false
   description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link)'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex:
-    "en-US" or "Brazil"). Case insensitive.'
-  playbookInputQuery: null
+  description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive.'
+  playbookInputQuery:
 - key: env_bitness
   value:
     simple: "64"
   required: false
   description: Bitness of Operation System. Supports 32, 64
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: env_version
   value:
     simple: "10"
   required: false
   description: 'Version of OS. Supports: 7, 10, 11'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: env_type
   value:
     simple: complete
   required: false
-  description: Environment preset type. You can select **development** env for OS
-    Windows 10 x64. For all other cases, **complete** env is required
-  playbookInputQuery: null
+  description: Environment preset type. You can select **development** env for OS Windows 10 x64. For all other cases, **complete** env is required
+  playbookInputQuery:
 - key: opt_network_connect
   value:
     simple: "True"
   required: false
   description: Network connection state.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_fakenet
   value:
     simple: "False"
   required: false
   description: FakeNet feature status.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_tor
   value:
     simple: "False"
   required: false
   description: TOR using.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_geo
   value:
     simple: fastest
   required: false
   description: 'Tor geo location option. Example: US, AU.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_mitm
   value:
     simple: "False"
   required: false
   description: HTTPS MITM proxy option.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_residential_proxy
   value:
     simple: "False"
   required: false
   description: Residential proxy using.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_residential_proxy_geo
   value:
     simple: fastest
   required: false
   description: 'Residential proxy geo location option. Example: US, AU.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
   description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_timeout
   value:
     simple: "60"
   required: false
   description: 'Timeout option. Size range: 10-660.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: obj_ext_browser
   value:
     simple: Google Chrome
   required: false
-  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox, Internet Explorer,
-    Microsoft Edge'
-  playbookInputQuery: null
+  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox, Internet Explorer, Microsoft Edge'
+  playbookInputQuery:
 - key: obj_ext_extension
   value:
     simple: "True"
   required: false
   description: Change extension to valid
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - obj_url
@@ -516,6 +512,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-sourceplaybookid: 52d278a0-2905-4a37-8379-4853a06f65d8
 quiet: true
-dirtyInputs: true
+tests:
+- No tests (auto formatted)
