@@ -984,6 +984,20 @@ class TestTableToMarkdown:
                                      '| 6 | 5 | 4 |\n')
             assert table == expected_table_sorted
 
+    @staticmethod
+    def test_list_integers():
+        """
+        Given:
+            - A dictionary with a list of integers .
+        When:
+            - Calling tableToMarkdown with is_auto_json_transform=True.
+        Then:
+            Validate that the script ran successfully.
+        """
+        data = {'key': 'value', 'listtest': [1, 2, 3, 4]} 
+        table = tableToMarkdown("tableToMarkdown test", data, sort_headers=False, is_auto_json_transform=True)
+        assert table
+
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):

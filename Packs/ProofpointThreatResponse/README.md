@@ -1,14 +1,17 @@
 # Proofpoint Threat Response
+
 <~XSIAM>
+
 ## Overview
+
 Proofpoint Threat Response is a security solution that helps organizations detect, analyze, and respond to threats quickly. It automates threat investigation and incident response to reduce risk and response time. By integrating with other security tools, it streamlines workflows and improves overall security operations.
 
-## This pack includes:
+## This pack includes
+
 - Rest API integration for security incidents
 - Modeling rules
 
 ## Configure Proofpoint Threat Response Event Collector in Cortex XSIAM
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -25,29 +28,31 @@ Proofpoint Threat Response is a security solution that helps organizations detec
 | POST URL of the JSON alert source. | You can find this value by navigating to Sources -&amp;gt; JSON event source -&amp;gt; POST URL. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### proofpoint-trap-get-events
+
 ***
 Retrieves all incident metadata from Threat Response by specifying filter criteria such as the state of the incident or time of closure.
-
 
 #### Base Command
 
 `proofpoint-trap-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Default is false. | Required | 
-| state | The state of the incidents to retrieve. Possible values are: new, open, assigned, closed, ignored. | Optional | 
-| created_after | Retrieve incidents that were created after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.  | Optional | 
-| created_before | Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z. | Optional | 
-| closed_after | Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z. | Optional | 
-| closed_before | Retrieve incidents that were closed before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z. | Optional | 
-| expand_events |If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with a large number of alerts. Possible values are: true, false. | Optional | 
-| limit | The maximum number of incidents to return. Default is 100. | Required | 
-
+| should_push_events | If true, the command will create events, otherwise it will only display them. Default is false. | Required |
+| state | The state of the incidents to retrieve. Possible values are: new, open, assigned, closed, ignored. | Optional |
+| created_after | Retrieve incidents that were created after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.  | Optional |
+| created_before | Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z. | Optional |
+| closed_after | Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z. | Optional |
+| closed_before | Retrieve incidents that were closed before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z. | Optional |
+| expand_events |If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with a large number of alerts. Possible values are: true, false. | Optional |
+| limit | The maximum number of incidents to return. Default is 100. | Required |
 
 #### Context Output
 
