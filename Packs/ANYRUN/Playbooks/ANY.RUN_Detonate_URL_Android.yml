@@ -106,7 +106,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "10"
