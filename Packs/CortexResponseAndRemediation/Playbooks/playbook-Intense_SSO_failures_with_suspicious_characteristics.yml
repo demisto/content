@@ -1,6 +1,7 @@
 id: Intense SSO failures with suspicious characteristics
 version: -1
 name: Intense SSO failures with suspicious characteristics
+issilent: false
 description: |-
   **This playbook addresses the following alert**:
   - Intense SSO failures with suspicious characteristics.
