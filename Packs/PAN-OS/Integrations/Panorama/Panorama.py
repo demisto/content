@@ -14880,7 +14880,7 @@ def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> Comma
             removeNull=True,
         )
 
-        if args.get("show_expired_only"):
+        if args.get("show_expired_only") == True:
             consolidated_cert_details = [cert for cert in consolidated_cert_details if cert.get("expiration_status") == "Expired"]
 
         return CommandResults(
