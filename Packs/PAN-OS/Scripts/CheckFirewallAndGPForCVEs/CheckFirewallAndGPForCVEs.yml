@@ -1,0 +1,36 @@
+args:
+- description: System info of firewalls.
+  isArray: true
+  name: pan_os_system_info_list
+  required: true
+- description: List of CVE with detailed json.
+  isArray: true
+  name: cve_json
+  required: true
+commonfields:
+  id: CheckFirewallAndGPForCVEs
+  version: -1
+dockerimage: demisto/python3:3.12.8.3720084
+enabled: true
+engineinfo: {}
+name: CheckFirewallAndGPForCVEs
+outputs:
+- contextPath: CVE_Check.CVE_ID
+  description: ID of the CVE being checked.
+  type: string
+- contextPath: CVE_Check.Result
+  description: Result of CVE vulnerability assessment for firewalls.
+  type: unknown
+- contextPath: CVE_Check.Severity
+  description: Severity of the CVE being assessed.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
