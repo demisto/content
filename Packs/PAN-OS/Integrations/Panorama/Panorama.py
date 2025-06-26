@@ -6604,7 +6604,7 @@ def panorama_check_latest_dynamic_update_command(args: dict):
                         latest_version = entry
 
             # Check if currently installed is the most recent available
-            is_up_to_date = current_version["version"] == latest_version["version"]
+            is_up_to_date = current_version.get("version") == latest_version.get("version")
 
             context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
 
