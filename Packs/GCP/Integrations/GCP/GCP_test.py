@@ -713,129 +713,130 @@ def test_iam_project_policy_binding_remove(mocker):
     assert "successfully removed" in result.readable_output
 
 
-def test_iam_project_deny_policy_create(mocker):
-    """
-    Given: A GCP project that needs a deny policy created
-    When: iam_project_deny_policy_create is called with policy details
-    Then: The function should call createPolicy with the correct configuration
-    """
-    from GCP import iam_project_deny_policy_create
-
-    # Mock arguments
-    args = {
-        "project_id": "test-project",
-        "policy_id": "test-deny-policy",
-        "display_name": "Test Deny Policy",
-        "denied_principals": "user:test@example.com,serviceAccount:sa@example.com",
-        "denied_permissions": "compute.instances.create,compute.instances.delete",
-    }
-
-    # Mock response
-    mock_response = {
-        "name": "policies/cloudresourcemanager.googleapis.com%2Fprojects%2Ftest-project/denypolicies/test-deny-policy",
-        "displayName": "Test Deny Policy",
-        "createTime": "2023-08-15T12:00:00Z",
-        "updateTime": "2023-08-15T12:00:00Z",
-        "rules": [
-            {
-                "denyRule": {
-                    "deniedPrincipals": ["user:test@example.com", "serviceAccount:sa@example.com"],
-                    "deniedPermissions": ["compute.instances.create", "compute.instances.delete"],
-                }
-            }
-        ],
-    }
-
-    # Use MagicMock for IAM
-    mock_iam = MagicMock()
-    mock_iam.policies().createPolicy().execute.return_value = mock_response
-
-    # Mock the build function
-    mock_creds = mocker.Mock(spec=Credentials)
-    mocker.patch("GCP.build", return_value=mock_iam)
-
-    # Execute the function
-    result = iam_project_deny_policy_create(mock_creds, args)
-
-    # Verify createPolicy was called with correct parameters
-    call_args, call_kwargs = mock_iam.policies().createPolicy.call_args
-
-    assert call_kwargs["parent"] == "policies/cloudresourcemanager.googleapis.com%2Fprojects%2Ftest-project/denypolicies"
-    assert call_kwargs["policyId"] == "test-deny-policy"
-
-    body = call_kwargs["body"]
-    assert body["displayName"] == "Test Deny Policy"
-    assert body["rules"][0]["denyRule"]["deniedPrincipals"] == ["user:test@example.com", "serviceAccount:sa@example.com"]
-    assert body["rules"][0]["denyRule"]["deniedPermissions"] == ["compute.instances.create", "compute.instances.delete"]
-
-    # Check outputs
-    assert result.outputs_prefix == "GCP.IAM.DenyPolicy"
-    assert result.outputs == mock_response
-    assert "test-deny-policy" in result.readable_output
-    assert "successfully created" in result.readable_output
-
-
-def test_iam_service_account_delete(mocker):
-    """
-    Given: A GCP service account that needs to be deleted
-    When: iam_service_account_delete is called with project_id and service_account_email
-    Then: The function should call serviceAccounts().delete with the correct resource name
-    """
-    from GCP import iam_service_account_delete
-
-    # Mock arguments
-    args = {"project_id": "test-project", "service_account_email": "test-sa@test-project.iam.gserviceaccount.com"}
-
-    # Use MagicMock for IAM
-    mock_iam = MagicMock()
-    mock_iam.projects().serviceAccounts().delete().execute.return_value = {}
-
-    # Mock the build function
-    mock_creds = mocker.Mock(spec=Credentials)
-    mocker.patch("GCP.build", return_value=mock_iam)
-
-    # Execute the function
-    result = iam_service_account_delete(mock_creds, args)
-
-    # Verify delete was called with correct name
-    call_args, call_kwargs = mock_iam.projects().serviceAccounts().delete.call_args
-
-    assert call_kwargs["name"] == "projects/test-project/serviceAccounts/test-sa@test-project.iam.gserviceaccount.com"
-
-    # Check readable output
-    assert "test-sa@test-project.iam.gserviceaccount.com" in result.readable_output
-    assert "successfully deleted" in result.readable_output
-
-
-def test_iam_group_membership_delete(mocker):
-    """
-    Given: A Google Cloud Identity group with a member that needs to be removed
-    When: iam_group_membership_delete is called with group_id and membership_id
-    Then: The function should call memberships().delete with the correct membership name
-    """
-    from GCP import iam_group_membership_delete
-
-    # Mock arguments
-    args = {"group_id": "01abc123def456", "membership_id": "member789ghi"}
-
-    # Use MagicMock for Cloud Identity
-    mock_cloud_identity = MagicMock()
-    mock_cloud_identity.groups().memberships().delete().execute.return_value = {}
-
-    # Mock the build function
-    mock_creds = mocker.Mock(spec=Credentials)
-    mocker.patch("GCP.build", return_value=mock_cloud_identity)
-
-    # Execute the function
-    result = iam_group_membership_delete(mock_creds, args)
-
-    # Verify delete was called with correct name
-    call_args, call_kwargs = mock_cloud_identity.groups().memberships().delete.call_args
-
-    assert call_kwargs["name"] == "groups/01abc123def456/memberships/member789ghi"
-
-    # Check readable output
-    assert "Membership member789ghi was deleted from group 01abc123def456" in result.readable_output
+# The following commands are currently unsupported:
+# def test_iam_project_deny_policy_create(mocker):
+#     """
+#     Given: A GCP project that needs a deny policy created
+#     When: iam_project_deny_policy_create is called with policy details
+#     Then: The function should call createPolicy with the correct configuration
+#     """
+#     from GCP import iam_project_deny_policy_create
+#
+#     # Mock arguments
+#     args = {
+#         "project_id": "test-project",
+#         "policy_id": "test-deny-policy",
+#         "display_name": "Test Deny Policy",
+#         "denied_principals": "user:test@example.com,serviceAccount:sa@example.com",
+#         "denied_permissions": "compute.instances.create,compute.instances.delete",
+#     }
+#
+#     # Mock response
+#     mock_response = {
+#         "name": "policies/cloudresourcemanager.googleapis.com%2Fprojects%2Ftest-project/denypolicies/test-deny-policy",
+#         "displayName": "Test Deny Policy",
+#         "createTime": "2023-08-15T12:00:00Z",
+#         "updateTime": "2023-08-15T12:00:00Z",
+#         "rules": [
+#             {
+#                 "denyRule": {
+#                     "deniedPrincipals": ["user:test@example.com", "serviceAccount:sa@example.com"],
+#                     "deniedPermissions": ["compute.instances.create", "compute.instances.delete"],
+#                 }
+#             }
+#         ],
+#     }
+#
+#     # Use MagicMock for IAM
+#     mock_iam = MagicMock()
+#     mock_iam.policies().createPolicy().execute.return_value = mock_response
+#
+#     # Mock the build function
+#     mock_creds = mocker.Mock(spec=Credentials)
+#     mocker.patch("GCP.build", return_value=mock_iam)
+#
+#     # Execute the function
+#     result = iam_project_deny_policy_create(mock_creds, args)
+#
+#     # Verify createPolicy was called with correct parameters
+#     call_args, call_kwargs = mock_iam.policies().createPolicy.call_args
+#
+#     assert call_kwargs["parent"] == "policies/cloudresourcemanager.googleapis.com%2Fprojects%2Ftest-project/denypolicies"
+#     assert call_kwargs["policyId"] == "test-deny-policy"
+#
+#     body = call_kwargs["body"]
+#     assert body["displayName"] == "Test Deny Policy"
+#     assert body["rules"][0]["denyRule"]["deniedPrincipals"] == ["user:test@example.com", "serviceAccount:sa@example.com"]
+#     assert body["rules"][0]["denyRule"]["deniedPermissions"] == ["compute.instances.create", "compute.instances.delete"]
+#
+#     # Check outputs
+#     assert result.outputs_prefix == "GCP.IAM.DenyPolicy"
+#     assert result.outputs == mock_response
+#     assert "test-deny-policy" in result.readable_output
+#     assert "successfully created" in result.readable_output
+#
+#
+# def test_iam_service_account_delete(mocker):
+#     """
+#     Given: A GCP service account that needs to be deleted
+#     When: iam_service_account_delete is called with project_id and service_account_email
+#     Then: The function should call serviceAccounts().delete with the correct resource name
+#     """
+#     from GCP import iam_service_account_delete
+#
+#     # Mock arguments
+#     args = {"project_id": "test-project", "service_account_email": "test-sa@test-project.iam.gserviceaccount.com"}
+#
+#     # Use MagicMock for IAM
+#     mock_iam = MagicMock()
+#     mock_iam.projects().serviceAccounts().delete().execute.return_value = {}
+#
+#     # Mock the build function
+#     mock_creds = mocker.Mock(spec=Credentials)
+#     mocker.patch("GCP.build", return_value=mock_iam)
+#
+#     # Execute the function
+#     result = iam_service_account_delete(mock_creds, args)
+#
+#     # Verify delete was called with correct name
+#     call_args, call_kwargs = mock_iam.projects().serviceAccounts().delete.call_args
+#
+#     assert call_kwargs["name"] == "projects/test-project/serviceAccounts/test-sa@test-project.iam.gserviceaccount.com"
+#
+#     # Check readable output
+#     assert "test-sa@test-project.iam.gserviceaccount.com" in result.readable_output
+#     assert "successfully deleted" in result.readable_output
+#
+#
+# def test_iam_group_membership_delete(mocker):
+#     """
+#     Given: A Google Cloud Identity group with a member that needs to be removed
+#     When: iam_group_membership_delete is called with group_id and membership_id
+#     Then: The function should call memberships().delete with the correct membership name
+#     """
+#     from GCP import iam_group_membership_delete
+#
+#     # Mock arguments
+#     args = {"group_id": "01abc123def456", "membership_id": "member789ghi"}
+#
+#     # Use MagicMock for Cloud Identity
+#     mock_cloud_identity = MagicMock()
+#     mock_cloud_identity.groups().memberships().delete().execute.return_value = {}
+#
+#     # Mock the build function
+#     mock_creds = mocker.Mock(spec=Credentials)
+#     mocker.patch("GCP.build", return_value=mock_cloud_identity)
+#
+#     # Execute the function
+#     result = iam_group_membership_delete(mock_creds, args)
+#
+#     # Verify delete was called with correct name
+#     call_args, call_kwargs = mock_cloud_identity.groups().memberships().delete.call_args
+#
+#     assert call_kwargs["name"] == "groups/01abc123def456/memberships/member789ghi"
+#
+#     # Check readable output
+#     assert "Membership member789ghi was deleted from group 01abc123def456" in result.readable_output
 
 
 def test_check_required_permissions_all_granted(mocker):

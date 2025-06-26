@@ -33,9 +33,6 @@ This integration enforces GCP security best practices by:
 | gcp-container-cluster-security-update       | container.clusters.update, container.clusters.get, container.clusters.list                                                    |
 | **IAM**                                     |                                                                                                                               |
 | gcp-iam-project-policy-binding-remove       | resourcemanager.projects.getIamPolicy, resourcemanager.projects.setIamPolicy                                                  |
-| gcp-iam-project-deny-policy-create          | iam.denypolicies.create                                                                                                       |
-| gcp-iam-group-membership-delete             | cloudidentity.groups.memberships.delete                                                                                           |
-| gcp-iam-service-account-delete              | iam.serviceAccounts.delete                                                                                                    |
 
 
 3. **OAuth Scope Required**:  
