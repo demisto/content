@@ -1229,6 +1229,7 @@ script:
       prettypredefined:
         Issue Internet message ID: ${issue.xdmemailmessageid}
     - name: exchange_location
+      prettyname: Exchange Location
       description: Comma-separated list of mailboxes or groups. Use "All" to target everyone (may be slow).
       isArray: true
       defaultValue: 'All'
@@ -1236,6 +1237,7 @@ script:
       prettypredefined:
         All: 'All'
     - name: force
+      prettyname: Force
       description: If true, creates a new search even if one already exists.
       defaultValue: 'false'
       auto: PREDEFINED

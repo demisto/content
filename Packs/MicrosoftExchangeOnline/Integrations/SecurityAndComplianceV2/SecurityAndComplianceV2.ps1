@@ -1062,16 +1062,13 @@ class SecurityAndComplianceClient {
     
         # Close session to remote
         $this.DisconnectSession()
-    
         return $response
-    
         <#
             .DESCRIPTION
             Get compliance search action in the Security & Compliance Center.
     
             .PARAMETER search_action_name
             The name of the compliance search action.
-    
             .PARAMETER error_action
             Optional. PowerShell error action preference (e.g., "Stop").
     
@@ -1549,7 +1546,6 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if (!$kwargs.search_name -or $kwargs.search_name -eq "") {
         $kwargs.search_name = "XSOAR-$(New-Guid)"
     }
-    $demisto.results("kql: " +  $kwargs.kql)
     # Raw response 
         $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
                                       $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion, $null)
