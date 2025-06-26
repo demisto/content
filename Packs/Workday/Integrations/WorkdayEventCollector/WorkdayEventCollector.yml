@@ -11,7 +11,7 @@ configuration:
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
+  additionalinfo: 'REST API test Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
   section: Connect
 - name: token_url
   display: Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT-NAME/token)

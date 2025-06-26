@@ -13,7 +13,7 @@ configuration:
   type: 0
   section: Connect
 - defaultvalue: api.us.code42.com
-  display: API Gateway URL for your Code42 environment
+  display: API Gateway URL for your Code42 environment test
   name: api_url
   required: true
   type: 0

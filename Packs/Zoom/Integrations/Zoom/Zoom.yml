@@ -1295,7 +1295,7 @@ script:
       - Both
       - FromDemisto
       - ToDemisto
-    - description: The name of the channel. The default is "incident-<incidentID>".
+    - description: The name of the channel. The default is "incident-<incidentID> hello".
       name: channelName
     description: Mirrors the investigation between Zoom and the Cortex XSOAR War Room.
     name: mirror-investigation
