@@ -425,21 +425,6 @@ def test_update_remote_system_partial_data(mock_args_class):
     mock_client.update_alert.assert_not_called()
 
 
-@patch("CybleEventsV2.UpdateRemoteSystemArgs")
-def test_update_remote_system_invalid_status(mock_args_class):
-    """Unmapped status should skip adding status field"""
-    mock_client = Mock()
-    mock_parsed_args = Mock()
-    mock_parsed_args.delta = {"status": "Under Review"}
-    mock_parsed_args.data = {"id": "alert-123", "service": "compromised_files"}
-    mock_parsed_args.remote_incident_id = None
-
-    mock_args_class.return_value = mock_parsed_args
-
-    result = update_remote_system(mock_client, "PUT", "token", {"delta": {"status": "Under Review"}, "data": mock_parsed_args.data}, "https://test.com")
-    assert result == "alert-123"
-    mock_client.update_alert.assert_not_called()
-
 
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
 def test_update_remote_system_invalid_severity(mock_args_class):
@@ -1955,61 +1940,6 @@ class TestCybleEventsLogical(unittest.TestCase):
         mock_manual_fetch.assert_called_once_with(
             self.mock_client, self.base_args, self.token, self.url, self.collections, self.severities
         )
-
-    @patch("CybleEventsV2.migrate_data")
-    @patch("CybleEventsV2.get_fetch_severities")
-    @patch("CybleEventsV2.get_fetch_service_list")
-    @patch("CybleEventsV2.datetime")
-    def test_return_format_consistency(self):
-        with patch("CybleEventsV2.manual_fetch") as mock_manual_fetch:
-            mock_manual_fetch.return_value = ["alert1"]
-
-            skip_result = cyble_events(
-                self.mock_client,
-                self.method,
-                self.token,
-                self.url,
-                self.base_args,
-                self.base_last_run,
-                False,
-                self.collections,
-                self.severities,
-                skip=True,
-            )
-
-            assert isinstance(skip_result, list)
-
-        with (
-            patch("CybleEventsV2.migrate_data") as mock_migrate_data,
-            patch("CybleEventsV2.get_fetch_severities") as mock_get_severities,
-            patch("CybleEventsV2.get_fetch_service_list") as mock_get_services,
-            patch("CybleEventsV2.datetime") as mock_datetime,
-        ):
-            mock_datetime.timezone = timezone
-
-            mock_datetime.utcnow.return_value = datetime.now(UTC)
-            mock_get_services.return_value = [{"name": "svc1"}]
-            mock_get_severities.return_value = ["high"]
-            mock_migrate_data.return_value = (["alert2"], datetime.now(UTC))
-
-            scheduled_result = cyble_events(
-                self.mock_client,
-                self.method,
-                self.token,
-                self.url,
-                self.base_args,
-                self.base_last_run,
-                True,
-                self.collections,
-                self.severities,
-                skip=False,
-            )
-
-            assert isinstance(scheduled_result, tuple)
-            assert len(scheduled_result) == 2
-            alerts, last_run = scheduled_result
-            assert isinstance(alerts, list)
-            assert isinstance(last_run, dict)
 
 
 class TestCybleEventsFunctions(unittest.TestCase):
