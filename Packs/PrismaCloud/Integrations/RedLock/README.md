@@ -1,6 +1,5 @@
 ## Configure Prisma Cloud (RedLock) in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server API URL. See [here](https://api.docs.prismacloud.io/api/cloud/api-urls) for the relevant API URL for your tenant. | True |
@@ -16,22 +15,23 @@
 | proxy | Use system proxy settings | False |
 | unsecure | Trust any certificate \(not secure\) | False |
 
-
 **Note:** Further info on creating access keys for Prisma Cloud is available [here](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin/manage-prisma-cloud-administrators/create-access-keys.html).
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### redlock-search-alerts
+
 ***
 Search alerts on the Prisma Cloud (RedLock) platform.
 If no time-range arguments are given, the search will filter only alerts from the last 7 days.
 
-
 #### Base Command
 
 `redlock-search-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -57,7 +57,6 @@ If no time-range arguments are given, the search will filter only alerts from th
 | policy-type | The policy type | Optional |
 | policy-severity | The policy severity | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -74,11 +73,12 @@ If no time-range arguments are given, the search will filter only alerts from th
 | Redlock.Alert.RiskDetail.Score | string | The risk score |
 | Redlock.Metadata.CountOfAlerts | number | The number of alerts found |
 
-
 #### Command Example
+
 ```!redlock-search-alerts alert-id=P-214016```
 
 #### Context Example
+
 ```
 {
     "Redlock": {
@@ -114,19 +114,20 @@ If no time-range arguments are given, the search will filter only alerts from th
 #### Human Readable Output
 
 >### Alerts
+>
 >|ID|Status|FirstSeen|LastSeen|AlertTime|PolicyName|PolicyType|PolicyDescription|PolicySeverity|PolicyRecommendation|PolicyDeleted|PolicyRemediable|RiskRating|ResourceName|ResourceAccount|ResourceType|ResourceCloudType|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| P-214016 | open | 05/28/2020 01:17:31 | 05/29/2020 14:16:42 | 05/29/2020 14:16:15 | AWS Security groups allow internet traffic gnoy | config | This policy identifies that Security Groups do not allow all traffic from internet. A Security Group acts as a virtual firewall that controls the traffic for one or more instances. Security groups should have restrictive ACLs to only allow incoming traffic from specific IPs to specific ports where the application is listening for connections. | high | If the Security Groups reported indeed need to restrict all traffic, follow the instructions below:<br/>1. Log in to the AWS console<br/>2. In the console, select the specific region from region drop down on the top right corner, for which the alert is generated<br/>3. Navigate to the 'VPC' service<br/>4. Click on the 'Security Group' specific to the alert<br/>5. Click on 'Inbound Rules' and remove the row with the ip value as 0.0.0.0/0 or ::/0 | false | true | F | demo-98787654432 | testAWS | SECURITY_GROUP | aws |
 
-
 ### redlock-get-alert-details
+
 ***
 Gets the details of an alert based on alert ID
-
 
 #### Base Command
 
 `redlock-get-alert-details`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                        | **Required** |
@@ -134,8 +135,6 @@ Gets the details of an alert based on alert ID
 | alert-id          | The alert ID                                                                                                                                                                                                                           | Required     |
 | detailed          | Allows for retrieving entire / trimmed alert model                                                                                                                                                                                     | Optional     |
 | resource_keys     | List of additional keys to return from the resource JSON, specified as a comma separated list (e.g. "key1,key2,key3").<br/>To preview all available resource JSON data, run redlock-get-alert-details with the "raw-response=true" option.  | Optional     |
-
-
 
 #### Context Output
 
@@ -157,11 +156,12 @@ Gets the details of an alert based on alert ID
 | Redlock.Alert.Resource.AccountID | string   | The cloud account ID where the resource resides                                               |
 | Redlock.Alert.Resource.Data      | json     | Additional keys from Resource.Data.  Only appears when *resource_keys* argument is specified. |
 
-
 #### Command Example
+
 ```!redlock-get-alert-details alert-id=P-214016```
 
 #### Context Example
+
 ```
 {
     "Redlock": {
@@ -194,19 +194,20 @@ Gets the details of an alert based on alert ID
 #### Human Readable Output
 
 >### Alert
+>
 >|ID|Status|FirstSeen|LastSeen|AlertTime|PolicyID|PolicyName|PolicyType|PolicySystemDefault|PolicyLabels|PolicyDescription|PolicySeverity|PolicyRecommendation|PolicyDeleted|PolicyRemediable|PolicyLastModifiedOn|PolicyLastModifiedBy|RiskScore|RiskRating|ResourceName|ResourceRRN|ResourceID|ResourceAccount|ResourceAccountID|ResourceType|ResourceRegionID|ResourceApiName|ResourceUrl|ResourceData|ResourceAccessKeyAge|ResourceInactiveSinceTs|ResourceCloudType|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| P-214016 | open | 05/28/2020 01:17:31 | 05/29/2020 14:16:42 | 05/29/2020 14:16:15 |  |  | config | false |  |  |  |  |  | false |  |  | 170 | F | demo-98787654432 |  | sg-98vc98sd76sd | testAWS | 9876654321 | SECURITY_GROUP | us-west-2 | aws-ec2-describe-security-groups |  | vpcId: vpc-0824920b6d19bc<br/>description: EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.<br/>tags: {u'value': u'demo-98787654432', u'key': u'Name'},<br/>{u'value': u'cn-demo', u'key': u'aws:eks:cluster-name'},<br/>{u'value': u'owned', u'key': u'kubernetes.io/cluster/cn-demo'}<br/>ipPermissions: {u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/mtu=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}], u'prefixListIds': [], u'fromPort': 3, u'ipRanges': [u'0.0.0.0/0'], u'toPort': 4, u'ipProtocol': u'icmp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/client=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}, {u'description': u'kubernetes.io/rule/nlb/health=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'192.168.0.0/16'}], u'prefixListIds': [], u'fromPort': 30463, u'ipRanges': [u'0.0.0.0/0', u'192.168.0.0/16'], u'toPort': 30463, u'ipProtocol': u'tcp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'x.x.x.x/16'}], u'ipRanges': [u'x.x.x.x/16'], u'ipProtocol': u'-1', u'userIdGroupPairs': [{u'userId': u'9876654321', u'groupId': u'sg-0ce26260850e500d4', u'description': u'Allow unmanaged nodes to communicate with control plane (all ports)'}, {u'userId': u'9876654321', u'groupId': u'sg-98vc98sd76sd'}], u'ipv6Ranges': []}<br/>groupName: demo-98787654432<br/>ipPermissionsEgress: {u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'0.0.0.0/0'}], u'ipRanges': [u'0.0.0.0/0'], u'ipProtocol': u'-1', u'userIdGroupPairs': [], u'ipv6Ranges': []}<br/>ownerId: 9876654321<br/>groupId: sg-98vc98sd76sd |  |  | aws |
 
-
 ### redlock-dismiss-alerts
+
 ***
 Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
-
 
 #### Base Command
 
 `redlock-dismiss-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -235,18 +236,18 @@ Dismiss the alerts matching the given filter. Must provide either policy IDs or 
 | policy-severity | The policy severity | Optional |
 | policy-id | Comma-separated string of policy IDs | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Redlock.DismissedAlert.ID | string | The IDs of the dismissed alerts |
 
-
 #### Command Example
+
 ```!redlock-dismiss-alerts dismissal-note="testing" alert-id=P-214016```
 
 #### Context Example
+
 ```
 {
     "Redlock": {
@@ -261,16 +262,17 @@ Dismiss the alerts matching the given filter. Must provide either policy IDs or 
 
 #### Human Readable Output
 
->### Alerts dismissed successfully. Dismissal Note: testing.
+>### Alerts dismissed successfully. Dismissal Note: testing
 
 ### redlock-reopen-alerts
+
 ***
 Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
-
 
 #### Base Command
 
 `redlock-reopen-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -295,18 +297,18 @@ Re-open the alerts matching the given filter.  Must provide either policy IDs or
 | policy-type | The policy type | Optional |
 | policy-severity | The policy severity | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Redlock.ReopenedAlert.ID | string | IDs of the re\-opened alerts |
 
-
 #### Command Example
+
 ```!redlock-reopen-alerts alert-id=P-214016```
 
 #### Context Example
+
 ```
 {
     "Redlock": {
@@ -321,30 +323,32 @@ Re-open the alerts matching the given filter.  Must provide either policy IDs or
 
 #### Human Readable Output
 
->### Alerts re-opened successfully.
+>### Alerts re-opened successfully
 
 ### redlock-list-alert-filters
+
 ***
 List the acceptable filters and values for alerts
-
 
 #### Base Command
 
 `redlock-list-alert-filters`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!redlock-list-alert-filters```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -352,6 +356,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Filter options
+>
 >|Name|Options|Static|
 >|---|---|---|
 >| cloud.account |  | false |
@@ -378,21 +383,20 @@ There is no context output for this command.
 >| cloud.service |  | false |
 >| policy.complianceRequirement |  | false |
 
-
 ### redlock-get-remediation-details
+
 ***
 Get remediation details for a given alert
-
 
 #### Base Command
 
 `redlock-get-remediation-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The alert id to get remediation details for | Optional |
-
 
 #### Context Output
 
@@ -402,11 +406,12 @@ Get remediation details for a given alert
 | Redlock.Alert.ID | string | The ID of the alert for which the remediation details applies |
 | Redlock.Alert.Remediation.CLI | string | Exact CLI command string |
 
-
 #### Command Example
+
 ```!redlock-get-remediation-details alert-id=P-214016```
 
 #### Context Example
+
 ```
 {
     "Redlock": {
@@ -424,26 +429,26 @@ Get remediation details for a given alert
 #### Human Readable Output
 
 >### Remediation Details
+>
 >|ID|RemediationCLI|RemediationDescription|
 >|---|---|---|
 >| P-211648 | gcloud compute networks subnets update default --project=project1-111111 --region europe-north2 --enable-flow-logs | This CLI command requires 'compute.securityAdmin' permission. Successful execution will enables GCP VPC Flow logs for subnets to capture information about the IP traffic going to and from network interfaces in VPC Subnets. To resolve the alert from Prisma Cloud's console, add the permission. |
 
-
 ### redlock-get-rql-response
+
 ***
 Run RQL query on Prisma Cloud
-
 
 #### Base Command
 
 `redlock-get-rql-response`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | determines the limit on the results. '; limit search records to {}' is appended to every query where {} is the value of limit or 1 if not passed | Optional |
-| rql | the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1. | Required |
-
+| rql | the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples. Note that `limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1. | Required |
 
 #### Context Output
 
@@ -471,12 +476,12 @@ Run RQL query on Prisma Cloud
 | Redlock.RQL.Response.Service | String | The RQL response service. |
 | Redlock.RQL.Response.StateId | String | The response state ID. |
 
-
 #### Command Example
+
 ```!redlock-get-rql-response rql="config where api.name = 'aws-ec2-describe-instances' as X; config where api.name = 'aws-ec2-describe-security-groups' as Y; config where api.name = 'aws-ec2-describe-vpcs' as Z; filter 'not _Set.intersection($.X.vpcId,$.Y.vpcId) intersects (vpc-5b9a3c33,vpc-b8ba2dd0,vpc-b8ba2dd01)'; show X;"```
 
-
 #### Context Example
+
 ```json
 {
     "Redlock": {
@@ -800,20 +805,21 @@ Run RQL query on Prisma Cloud
 
 #### Human Readable Output
 
->### RQL Output:
+>### RQL Output
+>
 >|Account|Deleted|Region|Resource Name|Service|
 >|---|---|---|---|---|
 >| AWS PAN | false | AWS Ireland | cluster-ng-11111111-Node | Amazon EC2 |
 
-
 ### redlock-search-config
+
 ***
 Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL language
-
 
 #### Base Command
 
 `redlock-search-config`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -824,7 +830,6 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 | time-range-unit | The search unit. Possible values are: "hour", "day", "week", "month", "year", "login", and "epoch". The login and epoch values are only available if the time-range-value argument is not provided. | Optional |
 | query | Query to run in Prisma Cloud config API (use RQL). | Required |
 |limit |The maximum number of entries to return. Default is 100. | Optional |
-
 
 #### Context Output
 
@@ -851,11 +856,12 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 | Redlock.Asset.service | String | The state ID of the asset. |
 | Redlock.Asset.stateId | String | State ID |
 
-
 #### Command Example
+
 ```!redlock-search-config query=`config where cloud.type = "aws" and cloud.service = "Amazon EC2" and api.name = "aws-ec2-describe-instances" and cloud.region="AWS Paris"````
 
 #### Context Example
+
 ```json
 {
     "Redlock": {
@@ -1009,23 +1015,24 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
     }
 }
 ```
+
 #### Human Readable Output
 
->### RQL Output:
+>### RQL Output
+>
 >|Account|Deleted|Region|Resource Name|Service|
 >|---|---|---|---|---|
 >| Felix - AWS - pan-lab | false | AWS Virginia | tl-console | Amazon EC2 |
 
-
-
 ### redlock-search-event
+
 ***
 Search events on the Prisma Cloud (RedLock) platform using RQL language.
-
 
 #### Base Command
 
 `redlock-search-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1037,18 +1044,18 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
 | query | Query to run in Prisma Cloud search API using RQL language. | Required |
 | limit | Maximum number of entries to return. Default is 100. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Redlock.Event | Unknown | Cloud audit events. |
 
-
 #### Command Example
+
 ```!redlock-search-event query=`event from cloud.audit_logs where ip EXISTS AND ip IN (172.31.34.235)` time-range-date-from=10/29/2021 time-range-date-to=10/30/2021```
 
 #### Context Example
+
 ```json
 {
     "Redlock": {
@@ -1083,22 +1090,26 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
     }
 }
 ```
+
 #### Human Readable Output
+>
 >### Event Details
+>
 > Showing 1 out of 1243 events
+>
 >|accessKeyUsed|account|accountName|cityId|cityLatitude|cityLongitude|cityName|countryId|countryName|dynamicData|eventTs|id|internal|ip|location|name|regionId|regionName|source|stateId|stateName|subject|success|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671539 | false | 172.31.34.235 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
 
-
 ### redlock-search-network
+
 ***
 Search networks on the Prisma Cloud (RedLock) platform using RQL language.
-
 
 #### Base Command
 
 `redlock-search-network`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1110,7 +1121,6 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
 | query | Query to run in Prisma Cloud search API using RQL language. | Required |
 | cloud-type | The cloud in which the network should be searched. Possible values are: aws, azure, gcp, alibaba_cloud, oci. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1118,11 +1128,12 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
 | Redlock.Network.Node | Unknown | Cloud network node. |
 | Redlock.Network.Connection | Unknown | Cloud network connection. |
 
-
 #### Command Example
+
 ```!redlock-search-network query="network from vpc.flow_record where bytes > 0" time-range-unit=hour time-range-value=2```
 
 #### Context Example
+
 ```json
 {
     "Redlock": {
@@ -1238,24 +1249,30 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
 ```
 
 #### Human Readable Output
+>
 >## Network Details
+>
 >### Node
+>
 >|grouped|id|ipAddr|metadata|name|suspicious|vulnerable|
 >|---|---|---|---|---|---|---|
 >| false | 1411487329 | 172.31.34.235 | redlock_alert_count: 5<br>vpc_name: {'id': 'https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1', 'name': 'us-central1'}<br>vpc_id: https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1<br>ip_addresses: 172.31.34.235<br>inspector_rba_count: 0<br>secgroup_ids: 7466735050281694697,<br>5386953130680217005<br>guard_duty_iam_count: 0<br>asset_role: VM Instance<br>account_name: gcp-emea-tac<br>region_name: GCP Iowa<br>compliance_count: 0<br>host_vulnerability_count: 0<br>initial: true<br>region_id: us-central1<br>net_iface_id: gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n#nic0<br>guard_duty_host_count: 0<br>tags: {'name': 'gke-oldtac-nopublicclusterhere-fc43a760-node', 'values': ['']},<br>{'name': 'goog-gke-node', 'values': ['']}<br>rrn: rrn::instance:us-central1:tac-prisma-cloud-and-compute:7040cac26d62fa19dea22bcb6cd52dba6c213212:1397701696990493277<br>security_groups: {'id': '7466735050281694697', 'name': 'allow-ingress-from-iap-tac'},<br>{'id': '5386953130680217005', 'name': 'gke-oldtac-nopublicclusterhere-fc43a760-all'}<br>serverless_vulnerability_count: 0<br>instance_id: 1397701696990493277<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>resource_id: 1397701696990493277<br>inspector_sbp_count: 0 | gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n | false | true |
+>
 >### Connection
+>
 >|from|label|metadata|suspicious|to|
 >|---|---|---|---|---|
 >| 1418600304 | Web | bytes_attempted: 1473<br>connection_overview_table: {'port': 'Web (443)', 'traffic_volume': 43694, 'accepted': 'yes'},<br>{'port': 'Web (443)', 'traffic_volume': 1473, 'accepted': 'no'}<br>region_id: us-central1<br>countries: N/A<br>to_ip_addresses: 0.0.0.0<br>flow_class: Web (443)<br>states: N/A<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>asset_role: Internet IPs<br>bytes_accepted: 43694<br>isps: N/A<br>from_ip_addresses: 10.128.0.5<br>bytes_rejected: 0 | false | -1977384788 |
 
 ### redlock-list-scans
+
 ***
 List DevOps Scans
-
 
 #### Base Command
 
 `redlock-list-scans`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1274,7 +1291,6 @@ List DevOps Scans
 | filter_user | User to filter with, example: ayman@example.domain. | Optional |
 | filter_status | Status to filter with, example: passed. Possible values are: . | Optional |
 | relative_time_unit | Relative Time unit. Possible values are: epoch, login, year. Default is login. | Optional |
-
 
 #### Context Output
 
@@ -1308,11 +1324,12 @@ List DevOps Scans
 | Redlock.Scans.links.self | String | Scan links. |
 | Redlock.Scans.relationships.scanResult.links.related | String | Scan relationships scan result links . |
 
-
 #### Command Example
+
 ```!redlock-list-scans filter_type="absolute" filter_start_time="01/01/2021 10:10:10" filter_end_time="10/08/2021 10:10:10" filter_asset_type="GitHub" filter_asset_name="Github Asset Dev" filter_user="user@domain.example"```
 
 #### Context Example
+
 ```json
 {
     "Redlock": {
@@ -1390,26 +1407,26 @@ List DevOps Scans
 
 #### Human Readable Output
 
->### Scans List:
+>### Scans List
+>
 >|ID|Name|Scan Time|Type|User|
 >|---|---|---|---|---|
 >| 81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d | Github Asset Dev | 2021-09-27T11:26:23Z | GitHub | user@domain.example |
 
-
 ### redlock-get-scan-status
+
 ***
 Get scan status
-
 
 #### Base Command
 
 `redlock-get-scan-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scan_id | The scan ID. | Required |
-
 
 #### Context Output
 
@@ -1418,11 +1435,12 @@ Get scan status
 | Redlock.Scans.id | String | Scan ID |
 | Redlock.Scans.status | String | Scan status |
 
-
 #### Command Example
+
 ```!redlock-get-scan-status scan_id="81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"```
 
 #### Context Example
+
 ```json
 {
     "Redlock": {
@@ -1438,26 +1456,26 @@ Get scan status
 
 #### Human Readable Output
 
->### Scan Status:
+>### Scan Status
+>
 >|ID|Status|
 >|---|---|
 >| 81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d | failed |
 
-
 ### redlock-get-scan-results
+
 ***
 Get scan results
-
 
 #### Base Command
 
 `redlock-get-scan-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scan_id | The scan ID. | Required |
-
 
 #### Context Output
 
@@ -1477,11 +1495,12 @@ Get scan results
 | Redlock.Scans.results.attributes.systemDefault | Boolean | Scan results system default |
 | Redlock.Scans.results.id | String | Scan results ID |
 
-
 #### Command Example
+
 ```!redlock-get-scan-results scan_id="81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"```
 
 #### Context Example
+
 ```json
 {
     "Redlock": {
@@ -1526,7 +1545,8 @@ Get scan results
 
 #### Human Readable Output
 
->### Scan Results:
+>### Scan Results
+>
 >|Description|ID|Name|Policy ID|Severity|
 >|---|---|---|---|---|
 >| Ensure that all capabilities are dropped. | cca6bb6a-4e05-47a1-acaa-29f198799aa2 | All capabilities should be dropped | cca6bb6a-4e05-47a1-acaa-29f198799aa2 | high |
