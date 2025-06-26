@@ -19,24 +19,6 @@ def test_module(params: dict) -> str:
         return 'ok'
 
 
-def handle_exceptions(function: Callable) -> Any:
-    """
-    Handles all exception, formats them, then sends to WarRoom
-
-    :param function: Wrapped function
-    """
-    def wrapper(*args, **kwargs) -> Any:
-        try:
-            return function(*args, **kwargs)
-        except RunTimeException as exception:
-            return_error(str(exception.json), error=str(exception.json))
-        except Exception:
-            exception = str(traceback.format_exc())
-            return_error(exception, error=exception)
-
-    return wrapper
-
-
 def get_authentication(params: dict) -> str:
     """
     Builds API verification data using demisto params
@@ -338,7 +320,6 @@ def get_analysis_report(params: dict, args: dict) -> None:
             process_indicators(params, report, task_uuid, incident_id)
 
 
-@handle_exceptions
 def main():
     """ Main Execution block """
     params = demisto.params()

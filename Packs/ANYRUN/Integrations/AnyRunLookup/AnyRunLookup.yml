@@ -8,6 +8,7 @@ configuration:
   name: anyrun_api_key
   required: true
   type: 4
+  section: Connect
 description: TI Lookup is a searchable database of IOCs, IOAs, IOBs, and events for threat hunting and a service for browsing malicious files by their content.
 display: ANY.RUN TI Lookup
 name: ANY.RUN TI Lookup
@@ -336,7 +337,7 @@ script:
           description: 'Indicates if any malicious pattern was detected by static analysis engine.'
           type: Boolean
         - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.susp_struct
-          description: 'Is susp struct'
+          description: 'Is susp struct.'
           type: Boolean
         - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.autostart
           description: 'Indicates if application was added to autostart.'
@@ -381,7 +382,7 @@ script:
           description: 'URL.'
           type: String
         - contextPath: ANYRUN.Lookup.relatedIncidents.event.domainName
-          description: 'Domain name'
+          description: 'Domain name.'
           type: String
         - contextPath: ANYRUN.Lookup.relatedIncidents.event.ruleThreatLevel
           description: 'Rule threat level.'
@@ -639,13 +640,13 @@ script:
           description: 'Indicates if any known exploit was detected.'
           type: Boolean
         - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.static_detections
-          description: 'Indicates if any malicious pattern was detected by static analysis engine'
+          description: 'Indicates if any malicious pattern was detected by static analysis engine.'
           type: Boolean
         - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.susp_struct
           description: 'Is susp struct.'
           type: Boolean
         - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.autostart
-          description: 'Indicates if application was added to autostart'
+          description: 'Indicates if application was added to autostart.'
           type: Boolean
         - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.low_access
           description: 'Indicates if threat uses low level access.'
@@ -708,7 +709,7 @@ script:
           description: 'Threat level.'
           type: Number
         - contextPath: ANYRUN.Lookup.summary.lastSeen
-          description: 'Last Seen Date'
+          description: 'Last Seen Date.'
           type: Date
         - contextPath: ANYRUN.Lookup.summary.detectedType
           description: 'Detected type.'
@@ -726,10 +727,10 @@ script:
           description: 'Threat level.'
           type: Number
         - contextPath: ANYRUN.Lookup.summary.details.lastSeen
-          description: 'Last Seen Date'
+          description: 'Last Seen Date.'
           type: Date
         - contextPath: ANYRUN.Lookup.summary.details.count
-          description: 'Count of iocs/objects by threat level'
+          description: 'Count of iocs/objects by threat level.'
           type: Number
 
   dockerimage: demisto/anyrun-sdk:1.0.0.3815917

@@ -1,17 +1,8 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97cl
-version: 3
-contentitemexportablefields:
-  contentitemfields:
-    packID: ANYRUN
-    packName: ANY.RUN
-    itemVersion: 2.0.0
-    fromServerVersion: 5.0.0
-    toServerVersion: 99.99.99
-    definitionid: ""
-    prevname: ""
-    isoverridable: false
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: ANY.RUN Detonate URL Windows
+name: 04275315-7598-4042-8fdb-5f93d3ea97cl
+fromversion: 5.0.0
 description: Perform URL Analysis using Windows VM
 starttaskid: "0"
 tasks:

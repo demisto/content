@@ -1,17 +1,8 @@
 id: ce53a5d0-8f43-49b0-8467-ed091bcd0be6
-version: 3
-contentitemexportablefields:
-  contentitemfields:
-    packID: ANYRUN
-    packName: ANY.RUN
-    itemVersion: 2.0.0
-    fromServerVersion: 5.0.0
-    toServerVersion: 99.99.99
-    definitionid: ""
-    prevname: ""
-    isoverridable: false
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: ANY.RUN Detonate URL Android
+name: ce53a5d0-8f43-49b0-8467-ed091bcd0be6
+fromversion: 5.0.0
 description: ' Perform URL Analysis using Android VM'
 starttaskid: "0"
 tasks:

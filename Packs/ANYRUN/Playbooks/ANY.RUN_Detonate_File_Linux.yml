@@ -1,17 +1,8 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97ca
-version: 3
-contentitemexportablefields:
-  contentitemfields:
-    packID: ANYRUN
-    packName: ANY.RUN
-    itemVersion: 2.0.0
-    fromServerVersion: 5.0.0
-    toServerVersion: 99.99.99
-    definitionid: ""
-    prevname: ""
-    isoverridable: false
+version: -1
+fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
-name: ANY.RUN Detonate File Linux
+name: 04275315-7598-4042-8fdb-5f93d3ea97ca
 description: This playbook submits a file extracted from an incident attachment to
   the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps
   to automate malware detonation and behavior observation on Ubuntu OS.

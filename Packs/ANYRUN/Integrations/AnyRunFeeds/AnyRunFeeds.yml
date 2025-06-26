@@ -3,23 +3,26 @@ commonfields:
   id: ANY.RUN TI Feeds
   version: -1
 configuration:
-- display: ANY.RUN TI Feeds Basic Token
-  additionalinfo: Example. Basic с2vtio5fbl...l0RvUag==
+- display: ANY.RUN TI Feeds Basic Token.
+  additionalinfo: Example. Basic с2vtio5fbl...l0RvUag==.
   name: anyrun_auth_token
   required: true
   type: 4
-- display: ModifiedAfter
+  section: Connect
+- display: Modified after.
   additionalinfo: Receive IOCs after specified date.
   name: modified_after
   defaultvalue: 2025-01-01
   required: true
   type: 0
-- display: Fetch indicators
+  section: Collect
+- display: Fetch indicators.
   name: feed
   defaultvalue: "true"
   type: 8
   required: false
-- display: Indicator Reputation
+  section: Collect
+- display: Indicator Reputation.
   name: feedReputation
   defaultvalue: Bad
   type: 18
@@ -29,9 +32,9 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
-- display: Source Reliability
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  section: Collect
+- display: Source Reliability.
   name: feedReliability
   defaultvalue: A - Completely reliable
   type: 15
@@ -43,8 +46,10 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  section: Collect
   additionalinfo: Reliability of the source providing the intelligence data.
-- name: feedExpirationPolicy
+- display: ""
+  name: feedExpirationPolicy
   defaultvalue: never
   type: 17
   required: false
@@ -53,16 +58,19 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-- display: Feed expiration interval
+  section: Collect
+- display: ""
   name: feedExpirationInterval
   type: 1
   required: false
-- display: Feed Fetch Interval
+  section: Collect
+- display: Feed Fetch Interval.
   name: feedFetchInterval
   defaultvalue: "120"
   type: 19
   required: false
-- display: Bypass exclusion list
+  section: Collect
+- display: Bypass exclusion list.
   name: feedBypassExclusionList
   defaultvalue: "false"
   type: 8
@@ -70,7 +78,8 @@ configuration:
   additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
-description: Threat Intelligence Feeds provide data on the known indicators of compromise such as malicious IPs, URLs, Domains
+  section: Collect
+description: Threat Intelligence Feeds provide data on the known indicators of compromise such as malicious IPs, URLs, Domains.
 display: ANY.RUN TI Feeds
 name: ANY.RUN TI Feeds
 script:

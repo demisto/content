@@ -8,27 +8,31 @@ configuration:
   name: anyrun_api_key
   required: true
   type: 4
+  section: Connect
 - display: Server's FQDN
   additionalinfo: Go to Settings & Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard.
   name: soar_fqdn
   required: true
   type: 0
+  section: Connect
 - display: XSOAR API-KEY ID
   additionalinfo: In the API Keys table, locate the ID field. Note your corresponding ID number
   name: soar_api_key_id
   required: true
   type: 0
+  section: Connect
 - display: XSOAR API-KEY
   name: soar_api_key
   required: true
   type: 4
+  section: Connect
 description: ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool for detection, monitoring, and research of cyber threats in real time.
 display: ANY.RUN Cloud Sandbox
 name: ANY.RUN Cloud Sandbox
 script:
   commands:
     - arguments:
-        - description: 'XSOAR Incident file data'
+        - description: 'XSOAR Incident file data.'
           name: file
           required: true
           type: Unknown
@@ -53,7 +57,7 @@ script:
             - '64'
         - auto: PREDEFINED
           description: 'Environment preset type. You can select **development** env for OS Windows 10 x64. For all
-            other cases, **complete** env is required'
+            other cases, **complete** env is required.'
           name: env_type
           defaultValue: 'complete'
           required: false
@@ -142,7 +146,7 @@ script:
           defaultValue: 'False'
           required: false
           type: String
-        - description: 'Change extension to valid'
+        - description: 'Change extension to valid.'
           name: obj_ext_extension
           defaultValue: 'True'
           required: false
@@ -179,7 +183,7 @@ script:
             - '64'
         - auto: PREDEFINED
           description: 'Environment preset type. You can select **development** env for OS Windows 10 x64. For all
-            other cases, **complete** env is required'
+            other cases, **complete** env is required.'
           name: env_type
           defaultValue: 'complete'
           required: false
@@ -255,7 +259,7 @@ script:
             - 'Mozilla Firefox'
             - 'Internet Explorer'
             - 'Microsoft Edge'
-        - description: 'Change extension to valid'
+        - description: 'Change extension to valid.'
           name: obj_ext_extension
           defaultValue: 'True'
           required: false
@@ -267,7 +271,7 @@ script:
           description: 'Task UUID.'
           type: String
     - arguments:
-        - description: 'XSOAR Incident file data'
+        - description: 'XSOAR Incident file data.'
           name: file
           required: true
           type: Unknown
@@ -356,7 +360,7 @@ script:
           defaultValue: 'True'
           required: false
           type: String
-        - description: 'Change extension to valid'
+        - description: 'Change extension to valid.'
           name: obj_ext_extension
           defaultValue: 'True'
           required: false
@@ -443,7 +447,7 @@ script:
           predefined:
             - 'Google Chrome'
             - 'Mozilla Firefox'
-        - description: 'Change extension to valid'
+        - description: 'Change extension to valid.'
           name: obj_ext_extension
           defaultValue: 'True'
           required: false
@@ -455,7 +459,7 @@ script:
           description: 'Task UUID.'
           type: String
     - arguments:
-        - description: 'XSOAR Entry ID'
+        - description: 'XSOAR Entry ID.'
           name: file
           required: true
           type: String
@@ -603,8 +607,7 @@ script:
         - contextPath: ANYRUN.TaskID
           description: 'Task UUID.'
           type: String
-    - arguments:
-      name: anyrun-get-user-limits
+    - name: anyrun-get-user-limits
       description: 'Get user available limits to perform the Sandbox analysis.'
       outputs:
         - contextPath: ANYRUN.SandboxLimits.web.minute
@@ -640,15 +643,15 @@ script:
     - arguments:
       - description: 'Leave this field blank to get your history or specify to get team history'
         name: team
-        defaultValue: 'False'
+        defaultValue: 'False.'
         required: false
         type: String
-      - description: 'Skip the specified number of tasks'
+      - description: 'Skip the specified number of tasks.'
         name: skip
         defaultValue: '0'
         required: false
         type: String
-      - description: 'Specify the number of tasks in the result set (not more than 100)'
+      - description: 'Specify the number of tasks in the result set (not more than 100).'
         name: limit
         defaultValue: '25'
         required: false
@@ -720,7 +723,7 @@ script:
             - 'summary'
             - 'html'
             - 'ioc'
-        - description: 'XSOAR Related icnident info'
+        - description: 'XSOAR Related icnident info.'
           name: incident_info
           required: true
           type: Unknown
@@ -728,7 +731,7 @@ script:
       description: 'Returns the analysis report summary.'
       outputs:
         - contextPath: ANYRUN.SandboxAnalysis.mitre.name
-          description: 'MITRE Technic text description'
+          description: 'MITRE Technic text description.'
           type: String
         - contextPath: ANYRUN.SandboxAnalysis.mitre.phases
           type: String
