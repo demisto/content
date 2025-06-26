@@ -2,7 +2,7 @@ id: ce53a5d0-8f43-49b0-8467-ed091bcd0be6
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: ce53a5d0-8f43-49b0-8467-ed091bcd0be6
-fromversion: 5.0.0
+fromversion: 8.0.0
 description: ' Perform URL Analysis using Android VM'
 starttaskid: "0"
 tasks:
@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "7"
