@@ -72,9 +72,6 @@ class Client(BaseClient):
             raise DemistoException(f"{SAP_CLOUD} - The resource was not found. {res.text}")
         raise DemistoException(f"{SAP_CLOUD} - Error in API call {res.status_code} - {res.text}")
 
-""" HELPER FUNCTIONS """
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 """ COMMAND FUNCTIONS """
 
@@ -103,29 +100,9 @@ def test_module(client: Client) -> str:
         str: 'ok' if the test passed, otherwise raises an exception.
     """
     url = """/sap/c4c/odata/ana_businessanalytics_analytics.svc/RPZA9F4655905ABCDBA01BD67QueryResults?"""
-    client.http_request("GET", url_suffix=f"{url}/", params={"$filter": "CTIMESTAMP ge '25.06.2025 17:46:40 INDIA'", "$top": 2,
+    client.http_request("GET", url_suffix=f"{url}", params={"$filter": "CTIMESTAMP ge '25.06.2025 17:46:40 INDIA'", "$top": 2,
                                                              "$format": "json"})
     return "ok"
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(
-    client: Client, args: Dict[str, Any]):
-    # dummy = args.get("dummy")  # dummy is a required argument, no default
-    # dummy2 = args.get("dummy2")  # dummy2 is not a required argument
-
-    # # Call the Client function and get the raw response
-    # result = client.baseintegration_dummy(dummy, dummy2)
-
-    # return CommandResults(
-    #     outputs_prefix="BaseIntegration",
-    #     outputs_key_field="",
-    #     outputs=result,
-    # )
-    pass
-
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 def main():
@@ -145,7 +122,7 @@ def main():
         
         base64String = encode_to_base64(user_name + ":" + password) # type: ignore
         client = Client(
-            base_url=f"{server_url}/api/",
+            base_url=f"{server_url}",
             user_name=user_name,
             password=password,
             base64String = base64String,
@@ -155,9 +132,6 @@ def main():
         if command == "test-module":
             # This call is made when clicking the integration 'Test' button.
             return_results(test_module(client))
-        elif command == "baseintegration-dummy":
-            # result = baseintegration_dummy_command(client, args)
-            pass
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:

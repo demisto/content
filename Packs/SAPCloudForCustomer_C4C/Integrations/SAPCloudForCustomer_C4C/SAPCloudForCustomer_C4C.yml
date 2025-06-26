@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: SAPCloudForCustomer_C4C
   version: -1
@@ -27,46 +30,22 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch events
-  name: isFetchEvents
-  type: 8
-  section: Collect
-  required: false
-  hidden:
-  - xsoar
 - display: Maximum number of audit events per fetch
   name: max_fetch
   type: 0
   section: Collect
   required: false
   defaultValue: '10000'
+- section: Collect
+  display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  required: false
 description: 'The SAP Cloud for Customer solution helps you manage day-to-day sales and service interactions efficiently by sending and receiving signals between front- and back-office solutions and providing a single view of the customer.'
 display: SAP Cloud For Customer C4C
 name: SAPCloudForCustomer_C4C
 script:
-  commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy2
-      required: false
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
-  isfetch: false
+  commands: []
   runonce: false
   script: '-'
   type: python
