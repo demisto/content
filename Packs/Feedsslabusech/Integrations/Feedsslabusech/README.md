@@ -1,8 +1,7 @@
 ## Overview
 
-The SSL Blacklist (SSLBL) is a project of abuse.ch with the goal of detecting malicious SSL connections, by identifying and blacklisting SSL certificates used by botnet C&C servers. 
+The SSL Blacklist (SSLBL) is a project of abuse.ch with the goal of detecting malicious SSL connections, by identifying and blacklisting SSL certificates used by botnet C&C servers.
 For more information, visit: https://sslbl.abuse.ch/
-
 
 ---
 
@@ -13,6 +12,7 @@ Use the abuse.ch SSL Blacklist feed integration to fetch indicators from the fee
 ---
 
 #### Create a required Auth Key for abuse.ch
+>
 > Note: If you already have a profile, you can skip steps 1 and 2.
 
 1. Sign up for an abuse.ch account. You can do this easily by using an existing account that you may already have on X, LinkedIn, Google or Github. Just log in with the authentication provider of your choice here: https://auth.abuse.ch/
@@ -21,7 +21,8 @@ Use the abuse.ch SSL Blacklist feed integration to fetch indicators from the fee
 
 3. Ensure that you hit the "Save profile" button. In the "Optional" section, you can now generate an "Auth-Key". This is your personal Auth-Key that you can now use in the integration.
 
-### Configure Cortex XSOAR 
+### Configure Cortex XSOAR
+
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for abuse.ch SSL Blacklist Feed.
 3. Click __Add instance__ to create and configure a new integration instance.

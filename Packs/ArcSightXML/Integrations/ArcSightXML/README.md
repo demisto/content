@@ -2,14 +2,12 @@ Deprecated. Use the ArcSight ESM v2 integration instead.
 
 ## Configure ArcSight XML in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Fetch incidents | False |
 | Incident type | False |
 | Directory from which to get XML files and create incidents. | True |
 | Directory to which put command XML files. | True |
-
 
 ## Commands
 
@@ -29,9 +27,9 @@ Create an XML to update a case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| caseId | ID of the case. | Required | 
-| name | Name of the case. | Required | 
-| stage | The stage of the case. | Required | 
+| caseId | ID of the case. | Required |
+| name | Name of the case. | Required |
+| stage | The stage of the case. | Required |
 
 ### arcsight-fetch-xml
 

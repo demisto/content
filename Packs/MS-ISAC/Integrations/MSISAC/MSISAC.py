@@ -109,6 +109,43 @@ def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
     return days_param
 
 
+@logger
+def format_stream_data(event: dict[str, list]) -> list[dict]:
+    """Formats the stream data that is returned by get_event().
+
+    Args:
+        event: The raw albert event data returned by get_event().
+
+    Returns:
+        A list containing a single index that is a dict containing the unpacked stream data.
+
+    """
+    # the json_data in the payload is the most verbose and should be our final output
+    # However there are several keys that are not present in json_data we still want/need in the markdown and context
+    stream = []
+    for event_data in event["data"]:
+        stream_data = json.loads(event_data["json_data"])
+        stream_data["time"] = event_data["time"]
+        stream_data["streamdataascii"] = event_data["streamdataascii"]
+        stream_data["streamdatahex"] = event_data["streamdatahex"]
+        stream_data["logical_sensor_id"] = event_data["logical_sensor_id"]
+        stream_data["streamdatalen"] = event_data["streamdatalen"]
+        # Not all responses have the http stream data so we need to make sure we're not referencing non-existant entries
+        http = stream_data.get("http", None)
+        if http:
+            # The data we have in here we want at the root to more easily reference in context paths
+            for entry in stream_data["http"]:
+                stream_data[entry] = stream_data["http"][entry]
+            del stream_data["http"]
+        # Same deal as http, we want this refereanceable in context
+        for data in stream_data["flow"]:
+            stream_data[data] = stream_data["flow"][data]
+        del stream_data["flow"]
+        stream.append(stream_data)
+
+    return stream
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -168,33 +205,10 @@ def get_event_command(client: Client, args: Dict[str, Any]):
             outputs=output,
         )
 
-    # the json_data in the payload is the most verbose and should be our final output
-    # However there are several keys that are not present in json_data we still want/need in the markdown and context
-    stream = []
-    for event_data in event["data"]:
-        stream_data = json.loads(event_data["json_data"])
-        stream_data["time"] = event_data["time"]
-        stream_data["streamdataascii"] = event_data["streamdataascii"]
-        stream_data["streamdatahex"] = event_data["streamdatahex"]
-        stream_data["logical_sensor_id"] = event_data["logical_sensor_id"]
-        stream_data["streamdatalen"] = event_data["streamdatalen"]
-        # Not all responses have the http stream data so we need to make sure we're not referencing non-existant entries
-        http = stream_data.get("http", None)
-        if http:
-            # The data we have in here we want at the root to more easily reference in context paths
-            for entry in stream_data["http"]:
-                stream_data[entry] = stream_data["http"][entry]
-            del stream_data["http"]
-        # Same deal as http, we want this refereanceable in context
-        for data in stream_data["flow"]:
-            stream_data[data] = stream_data["flow"][data]
-        del stream_data["flow"]
-        stream.append(stream_data)
-
-    output["Stream"] = stream
+    output["Stream"] = format_stream_data(event)
 
     return CommandResults(
-        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", stream),
+        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", output["Stream"]),
         raw_response=event,
         outputs_prefix="MSISAC.Event",
         outputs_key_field="event_id",
@@ -295,8 +309,12 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
         for event in retrieve_events_data:
             event_s_time = datetime.strptime(event.get("stime"), MSISAC_S_TIME_FORMAT)
             event_id = event.get("event_id", "")
-            event_description = event.get("description", "")
+
             if event_s_time > fetch_time:  # Make sure event happened after last fetch
+                event_description = event.get("description", "")
+                # Populating stream data for each ingested event.
+                get_event_data = client.get_event(event_id=event_id)
+                event["stream"] = format_stream_data(get_event_data)
                 events_to_fetch.append(
                     {
                         "name": f"{event_id} - {event_description}",
@@ -307,8 +325,17 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
                         "dbotMirrorId": f"{event_id}",
                     }
                 )
+                demisto.debug(f"Albert Event: {event_id} has been fetched.")
                 if event_s_time > latest_event_s_time:
                     latest_event_s_time = event_s_time
+
+            else:
+                demisto.debug(f"""
+                    Albert Event: {event_id} was not fetched.
+                    Event S_Time: {event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                    Fetch Start Time: {fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                    Fetch End Time: {datetime.now().strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                    """)
 
     else:
         demisto.debug(f"Here is the event data that was returned: {retrieve_events_data}")
