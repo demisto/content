@@ -59,6 +59,9 @@ INCIDENT_HEADERS = [
     "FirstActivityTimeGenerated",
     "LastActivityTimeGenerated",
 ]
+SHOULD_CLOSE_INCIDENT = 1
+SHOULD_OPEN_INCIDENT = 2
+NO_ACTION_NEEDED = 3
 
 COMMENT_HEADERS = [
     "ID",
@@ -784,6 +787,23 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
+def check_required_action_on_incident(delta: Dict[str, Any], data: Dict[str, Any], incident_status: IncidentStatus) -> int:
+    """
+    Checking if we need to close the incident or re-open in the remote system.
+        1. should close the incident - will return SHOULD_CLOSE_INCIDENT
+        2. should open the incident - will return SHOULD_OPEN_INCIDENT
+        3. no action needed - will return NO_ACTION_NEEDED
+    """
+    closing_field = "classification"
+    if incident_status == IncidentStatus.DONE:
+        closing_reason = bool(delta.get(closing_field, data.get(closing_field, "")))
+        return SHOULD_CLOSE_INCIDENT if demisto.params().get("close_ticket", False) and closing_reason else NO_ACTION_NEEDED
+    elif incident_status == IncidentStatus.ACTIVE:
+        return SHOULD_OPEN_INCIDENT if delta.get(closing_field) == "" else NO_ACTION_NEEDED
+    else:
+        return NO_ACTION_NEEDED
+
+
 def should_close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any], incident_status: IncidentStatus) -> bool:
     """
     Closing in the remote system should happen only when both:
@@ -836,8 +856,7 @@ def update_incident_request(
     incident_id: str,
     data: Dict[str, Any],
     delta: Dict[str, Any],
-    close_ticket: bool = False,
-    open_ticket: bool = False,
+    required_action: int = NO_ACTION_NEEDED,
 ) -> Dict[str, Any]:
     """
     Args:
@@ -862,7 +881,7 @@ def update_incident_request(
 
     severity = data.get("severity", "")
     status = data.get("status", "Active")
-    if open_ticket:
+    if required_action == SHOULD_OPEN_INCIDENT:
         # classification='' it's mean the XSOAR incident was reopen
         # need to update the remote incident status to Active
         demisto.debug(f"Reopen remote incident {incident_id}, set status to Active")
@@ -880,7 +899,7 @@ def update_incident_request(
 
     properties["labels"] += [{"labelName": label, "type": "User"} for label in delta.get("tags", [])]
 
-    if close_ticket:
+    if required_action == SHOULD_CLOSE_INCIDENT:
         properties |= {
             "status": "Closed",
             "classification": delta.get("classification") or data.get("classification"),
@@ -912,14 +931,13 @@ def update_remote_incident(
     relevant_keys_delta -= {"classification", "classificationComment"}
     if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
         demisto.debug(f"{incident_status=}")
-        reopen_ticket = should_open_incident_in_remote(delta, incident_status)
-        close_ticket = should_close_incident_in_remote(delta, data, incident_status)
-        if relevant_keys_delta or reopen_ticket or close_ticket:
+        required_action = check_required_action_on_incident(delta, data, incident_status)
+        # close_ticket = check_required_action_on_incident(delta, data, incident_status)
+        if relevant_keys_delta or required_action != NO_ACTION_NEEDED:
             demisto.debug(
-                f"Updating incident with remote ID {incident_id} in "
-                f"remote system {reopen_ticket=}, {close_ticket=}, {relevant_keys_delta=}."
+                f"Updating incident with remote ID {incident_id} in " f"remote system {required_action=}, {relevant_keys_delta=}."
             )
-            return str(update_incident_request(client, incident_id, data, delta, close_ticket, reopen_ticket))
+            return str(update_incident_request(client, incident_id, data, delta, required_action))
         else:
             demisto.debug(f"No relevant changes detected for the incident with remote ID {incident_id}, not updating.")
 
