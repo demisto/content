@@ -104,6 +104,40 @@ When searching by name, results are limited to 500 records.
 !wiz-get-resource resource_name="test_vm"
 ```
 
+### wiz-get-resources
+
+***
+Get details of multiple resources based on various filters.
+
+<h4> Base Command </h4>
+
+`wiz-get-resources`
+
+<h4> Input </h4>
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Filter by free text search on cloud resource name. | Optional |
+| entity_type | Filter cloud resources by specific entity types. Possible values are: ACCESS_ROLE, ACCESS_ROLE_BINDING, ACCESS_ROLE_PERMISSION, API_GATEWAY, APPLICATION, AUTHENTICATION_CONFIGURATION, BACKUP_SERVICE, BUCKET, CDN, CERTIFICATE, CICD_SERVICE, CLOUD_LOG_CONFIGURATION, CLOUD_ORGANIZATION, COMPUTE_INSTANCE_GROUP, CONFIG_MAP, CONTAINER, CONTAINER_GROUP, CONTAINER_IMAGE, CONTAINER_REGISTRY, CONTAINER_SERVICE, DAEMON_SET, DATABASE, DATA_WORKLOAD, DB_SERVER, DEPLOYMENT, DNS_RECORD, DNS_ZONE, DOMAIN, EMAIL_SERVICE, ENCRYPTION_KEY, ENDPOINT, FILE_SYSTEM_SERVICE, FIREWALL, GATEWAY, GOVERNANCE_POLICY, GOVERNANCE_POLICY_GROUP, HOSTED_APPLICATION, IAM_BINDING, IP_RANGE, KUBERNETES_CLUSTER, KUBERNETES_CRON_JOB, KUBERNETES_INGRESS, KUBERNETES_INGRESS_CONTROLLER, KUBERNETES_JOB, KUBERNETES_NETWORK_POLICY, KUBERNETES_NODE, KUBERNETES_PERSISTENT_VOLUME, KUBERNETES_PERSISTENT_VOLUME_CLAIM, KUBERNETES_POD_SECURITY_POLICY, KUBERNETES_SERVICE, KUBERNETES_STORAGE_CLASS, KUBERNETES_VOLUME, LOAD_BALANCER, MANAGED_CERTIFICATE, MANAGEMENT_SERVICE, NETWORK_ADDRESS, NETWORK_INTERFACE, NETWORK_ROUTING_RULE, NETWORK_SECURITY_RULE, PEERING, POD, PORT_RANGE, PRIVATE_ENDPOINT, PROXY, PROXY_RULE, RAW_ACCESS_POLICY, REGISTERED_DOMAIN, REPLICA_SET, RESOURCE_GROUP, SEARCH_INDEX, SECRET, SECRET_CONTAINER, SERVERLESS, SERVERLESS_PACKAGE, SERVICE_ACCOUNT, STORAGE_ACCOUNT, SUBNET, SUBSCRIPTION, SWITCH, USER_ACCOUNT, VIRTUAL_DESKTOP, VIRTUAL_MACHINE, VIRTUAL_MACHINE_IMAGE, VIRTUAL_NETWORK, VOLUME, WEB_SERVICE, DATA_WORKFLOW. | Optional |
+| subscription_external_ids | Filter cloud resources according to these external subscription IDs (AWS Account, Azure Subscription, GCP Project, and OCI Compartment). You can provide multiple IDs separated by commas. | Optional |
+| provider_unique_ids | Filter cloud resources according to these cloud service provider unique IDs. You can provide multiple IDs separated by commas. | Optional |
+
+*At least one parameter must be provided.*
+
+<h4> Context Output </h4>
+
+This command returns the raw response data from the Wiz API. The response includes resource details in JSON format.
+
+#### Command Example
+
+```
+!wiz-get-resources search="web-server"
+!wiz-get-resources entity_type="VIRTUAL_MACHINE"
+!wiz-get-resources subscription_external_ids="123456789,987654321"
+!wiz-get-resources provider_unique_ids="i-0g03j4h5gd123d456"
+!wiz-get-resources entity_type="BUCKET" search="backup"
+```
+
 ### wiz-issue-in-progress
 
 ***
