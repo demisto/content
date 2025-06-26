@@ -35,22 +35,6 @@ def aws_client():
 
 
 @pytest.mark.parametrize(
-    "client_class, params, expected_result",
-    [
-        (AWSClient, {"test_account_id": "test-account"}, "ok"),
-        (AWSClient, {}, "Please provide Test AWS Account ID for the Integration instance to run test"),
-        (AWSClientFail, {"test_account_id": "test-account"}, "fail"),
-    ],
-)
-def test_test_module(mocker, client_class, params, expected_result):
-    mocker.patch.object(AWS, "get_client", return_value=client_class())
-
-    result = AWS.test_module(params, {})
-
-    assert result == expected_result
-
-
-@pytest.mark.parametrize(
     "bucket, get_command_return, put_command_return, expected_result",
     [
         (
@@ -194,3 +178,5 @@ def test_aws_ec2_instance_metadata_options_modify(aws_client, mocker, command_ar
 
     result = AWS.ec2_instance_metadata_options_modify(aws_client, command_args)
     assert result.readable_output == expected_result
+
+

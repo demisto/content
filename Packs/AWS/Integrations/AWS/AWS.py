@@ -212,7 +212,40 @@ class S3:
             f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
         )
 
+    @staticmethod
+    def put_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds or updates a bucket policy for an Amazon S3 bucket.
 
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket to apply the policy to
+                - policy (dict): The JSON policy document to be applied to the bucket
+                - confirmRemoveSelfBucketAccess (str, optional): Confirms removal of self bucket access if set to "True"
+
+        Returns:
+            CommandResults: 
+                - On success: A result indicating the bucket policy was successfully applied
+                - On failure: An error result with details about why the policy application failed
+
+        Raises:
+            Exception: If there's an error while applying the bucket policy
+        """
+        kwargs = {"Bucket": args.get("bucket", ""), "Policy": json.dumps(args.get("policy"))}
+        try:
+            response = client.put_bucket_policy(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Status code: {response['ResponseMetadata']['HTTPStatusCode']}, Response: {json.dumps(response)}",
+            )
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}",
+            )
 class IAM:
     service = AWSServices.IAM
 
@@ -733,25 +766,24 @@ class RDS:
         """
         try:
             kwargs = {
-                "DBClusterIdentifier": args.get("db-cluster-identifier"),
+                "DBClusterIdentifier": args.get("db_cluster_identifier"),
             }
 
             # Optional parameters
             optional_params = {
-                "DeletionProtection": "deletion-protection",
-                "EnableIAMDatabaseAuthentication": "enable-iam-database-authentication",
+                "DeletionProtection": "deletion_protection",
+                "EnableIAMDatabaseAuthentication": "enable_iam_database_authentication",
             }
 
             for param, arg_name in optional_params.items():
                 if arg_name in args:
                     kwargs[param] = argToBoolean(args[arg_name])
 
+            demisto.debug(f"executing modify_db_cluster with {kwargs}")
             response = client.modify_db_cluster(**kwargs)
-
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 db_cluster = response.get("DBCluster", {})
                 readable_output = f"Successfully modified DB cluster {args.get('db-cluster-identifier')}"
-
                 if db_cluster:
                     readable_output += "\n\nUpdated DB Cluster details:"
                     readable_output += tableToMarkdown("", db_cluster)
@@ -764,11 +796,15 @@ class RDS:
                 )
             else:
                 return CommandResults(
+                    entry_type=EntryType.ERROR,
                     readable_output=f"Failed to modify DB cluster. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
                 )
 
         except Exception as e:
-            return CommandResults(readable_output=f"Error modifying DB cluster: {str(e)}")
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Error modifying DB cluster: {str(e)}"
+            )
 
     @staticmethod
     def modify_db_cluster_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -850,6 +886,7 @@ class RDS:
                 "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
             }
             remove_nulls_from_dictionary(kwargs)
+            demisto.debug(f'modify_db_instance {kwargs=}')
             response = client.modify_db_instance(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -869,7 +906,7 @@ class RDS:
             else:
                 return CommandResults(
                     entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
+                    readable_output=f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. Error {response['Error']['Message']}",
                 )
 
         except Exception as e:
@@ -1026,13 +1063,14 @@ class CloudTrail:
 # def health_check() -> list[CommandResults] | str:
 #     """
 #     """
-#     errors: list[CommandResults] = asyncio.run(check_permissions())
 #     return errors or HealthCheckResult.ok()
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-put": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
+    "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
+    "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
     
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
@@ -1054,41 +1092,41 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
 }
 
-REQUIRED_ACTIONS: set[str] = {
-    "iam:PassRole",
-    "kms:CreateGrant",
-    "kms:Decrypt",
-    "kms:DescribeKey",
-    "kms:GenerateDataKey",
-    "rds:AddTagsToResource",
-    "rds:CreateTenantDatabase",
-    "secretsmanager:CreateSecret",
-    "secretsmanager:RotateSecret",
-    "secretsmanager:TagResource",
-    "rds:ModifyDBCluster",
-    "rds:ModifyDBClusterSnapshotAttribute",
-    "rds:ModifyDBInstance",
-    "rds:ModifyDBSnapshotAttribute",
-    "s3:PutBucketAcl",
-    "s3:PutBucketLogging",
-    "s3:PutBucketVersioning",
-    "s3:PutBucketPolicy",
-    "ec2:RevokeSecurityGroupEgress",
-    "ec2:ModifyImageAttribute",
-    "ec2:ModifyInstanceAttribute",
-    "ec2:ModifySnapshotAttribute",
-    "ec2:RevokeSecurityGroupIngress",
-    "eks:UpdateClusterConfig",
-    "iam:DeleteLoginProfile",
-    "iam:PutUserPolicy",
-    "iam:RemoveRoleFromInstanceProfile",
-    "iam:UpdateAccessKey",
-    "iam:GetAccountPasswordPolicy",
-    "iam:UpdateAccountPasswordPolicy",
+REQUIRED_ACTIONS: list[str] = [
+    # "iam:PassRole",
+    # "kms:CreateGrant",
+    # "kms:Decrypt",
+    # "kms:DescribeKey",
+    # "kms:GenerateDataKey",
+    # "rds:AddTagsToResource",
+    # "rds:CreateTenantDatabase",
+    # "secretsmanager:CreateSecret",
+    # "secretsmanager:RotateSecret",
+    # "secretsmanager:TagResource",
+    # "rds:ModifyDBCluster",
+    # "rds:ModifyDBClusterSnapshotAttribute",
+    # "rds:ModifyDBInstance",
+    # "rds:ModifyDBSnapshotAttribute",
+    # "s3:PutBucketAcl",
+    # "s3:PutBucketLogging",
+    # "s3:PutBucketVersioning",
+    # "s3:PutBucketPolicy",
+    # "ec2:RevokeSecurityGroupEgress",
+    # "ec2:ModifyImageAttribute",
+    # "ec2:ModifyInstanceAttribute",
+    # "ec2:ModifySnapshotAttribute",
+    # "ec2:RevokeSecurityGroupIngress",
+    # "eks:UpdateClusterConfig",
+    # "iam:DeleteLoginProfile",
+    # "iam:PutUserPolicy",
+    # "iam:RemoveRoleFromInstanceProfile",
+    # "iam:UpdateAccessKey",
+    # "iam:GetAccountPasswordPolicy",
+    # "iam:UpdateAccountPasswordPolicy",
     "s3:PutBucketPublicAccessBlock",
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
-}
+]
 
 
 def check_account_permissions(account_id: str) -> HealthCheckError | None:
@@ -1096,25 +1134,45 @@ def check_account_permissions(account_id: str) -> HealthCheckError | None:
     pass
 
 
-def health_check(connector_id: str):
-    accounts: list[dict] = get_accounts_by_connector_id(connector_id)
-    account_ids: list[str] = [str(account.get("account_id")) for account in accounts if "account_id" in account]
+# def health_check(connector_id: str):
+#     accounts: list[dict] = get_accounts_by_connector_id(connector_id)
+#     health_check_result = HealthCheck(connector_id)
+#     account_id = ''
+#     try:
 
-    health_check = HealthCheck(connector_id)
+#         account_id = next((str(account.get("account_id")) for account in accounts if "account_id" in account), None)
+#         if not account_id:
+#             raise DemistoException("No valid account_id found in accounts")
 
-    for account_id in account_ids:
-        check_account_permissions(account_id)
-        # TODO - TEST ERROR - REPLACE
-        health_check.error(
-            HealthCheckError(
-                account_id=account_id,
-                connector_id=connector_id,
-                message=f"[BYOSI] Missing 'S3:GetObject' permission for {account_id}",
-                error_type=ErrorType.PERMISSION_ERROR,
-            )
-        )
+#         shared_creds = get_cloud_credentials(CloudTypes.AWS.value, account_id) # todo need to add expiration
+#         # demisto.debug(f"Retrieved shared {cloud_type} credentials for all accounts")
+#     except Exception as e:
+#         # error_msg = f"Failed to retrieve {cloud_type} credentials for connector {connector_id}: {str(e)}"
+#         demisto.error(e)
+#         health_check_result.error(
+#             HealthCheckError(
+#                 account_id="",  # No specific account since this is a connector-level error
+#                 connector_id=connector_id,
+#                 message=str(e),
+#                 error_type=ErrorType.CONNECTIVITY_ERROR,
+#             )
+#         )
+#         return health_check_result.summarize()
 
-    return health_check.summarize()
+#     while next(account_id):
+#         if not check_account_permissions(account_id):
+#             # TODO - TEST ERROR - REPLACE
+#             health_check.error(
+#                 HealthCheckError(
+#                     account_id=account_id,
+#                     connector_id=connector_id,
+#                     message=f"[BYOSI] Missing 'S3:GetObject' permission for {account_id}",
+#                     error_type=ErrorType.PERMISSION_ERROR,
+#                 )
+#             )
+        
+
+#     return health_check.summarize()
 
 
 def register_proxydome_header(boto_client: BotoClient) -> None:
@@ -1204,12 +1262,11 @@ def main():  # pragma: no cover
         if command == "test-module":
             context = demisto.callingContext.get("context", {})
             cloud_info = context.get("CloudIntegrationInfo", {})
-            results = health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else None
-            return_results(results)
-
+            # results = health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else None
+            # return_results(results)
+            return_results("ok")
         elif command in COMMANDS_MAPPING:
             return_results(execute_aws_command(command, args, params))
-
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 

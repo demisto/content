@@ -180,7 +180,7 @@ script:
       - 'false'
   
   - name: aws-s3-bucket-acl-put
-    description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs.
+    description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security.
     arguments:
     - name: account_id
       description: The AWS account ID.
