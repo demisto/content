@@ -1,6 +1,5 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97co
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 fromversion: 8.0.0
 name: 04275315-7598-4042-8fdb-5f93d3ea97co
 description: This playbook submits a file extracted from an incident attachment to

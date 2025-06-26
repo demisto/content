@@ -1,7 +1,6 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97ce
 version: -1
 fromversion: 8.0.0
-vcShouldKeepItemLegacyProdMachine: false
 name: 04275315-7598-4042-8fdb-5f93d3ea97ce
 description: This playbook submits a file extracted from an incident attachment to
   the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It helps
