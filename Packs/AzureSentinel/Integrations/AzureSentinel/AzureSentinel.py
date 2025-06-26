@@ -904,7 +904,7 @@ def update_remote_incident(
     if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
         demisto.debug(f"{incident_status=}")
         required_action = check_required_action_on_incident(delta, data, incident_status)
-        # close_ticket = check_required_action_on_incident(delta, data, incident_status)
+
         if relevant_keys_delta or required_action != Action.UNCHANGED:
             demisto.debug(
                 f"Updating incident with remote ID {incident_id} in " f"remote system {required_action=}, {relevant_keys_delta=}."

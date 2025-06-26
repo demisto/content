@@ -1787,7 +1787,7 @@ def test_check_required_action_on_incident(mocker, delta, data, close_ticket_par
 
 
 @pytest.mark.parametrize(
-    "data, delta, mocked_fetch_data, expected_response, close_ticket",
+    "data, delta, mocked_fetch_data, expected_response, required_action",
     [
         (  # Update description of active incident.
             {"title": "Title", "description": "old desc", "severity": 2, "status": "Active"},
