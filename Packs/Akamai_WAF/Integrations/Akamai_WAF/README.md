@@ -1903,6 +1903,7 @@ Akamai Generic API Call.
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-list-idam-properties
 
 ***
@@ -2137,4 +2138,3 @@ Creates a stream configuration. Within a stream configuration, you can select pr
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Akamai.DataStream | unknown | Akamai DataStream. |
-
