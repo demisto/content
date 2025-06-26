@@ -1207,7 +1207,7 @@ script:
     - description: A comma-separated list of CIDs to embed attachments within the actual email.
       isArray: true
       name: attachCIDs
-    - description: The email address from which to send the email.
+    - description: The email address from which to send the email. Must be internal.
       name: from
       prettyname: From
       required: true
