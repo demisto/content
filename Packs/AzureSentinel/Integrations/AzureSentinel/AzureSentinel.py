@@ -1,4 +1,3 @@
-from typing import Literal
 import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
@@ -12,6 +11,7 @@ import dateparser
 import uuid
 from enum import Enum
 from MicrosoftApiModule import *  # noqa: E402
+from typing import Literal
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
