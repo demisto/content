@@ -1654,6 +1654,24 @@ class TestClientMethods(unittest.TestCase):
         self.test_payload = {"key": "value"}
         self.test_service = "test_service"
 
+    @patch("CybleEventsV2.get_alert_payload", return_value={"dummy": "payload"})
+    @patch("CybleEventsV2.demisto")
+    def test_get_data_success(self, mock_demisto, mock_get_alert_payload):
+        input_params = {
+            "url": self.test_url,
+            "api_key": self.test_api_key,
+        }
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"result": "ok"}
+
+        with patch.object(self.client, "make_request", return_value=mock_response) as mock_make_request:
+            result = self.client.get_data(self.test_service, input_params)
+
+            assert result == {"result": "ok"}
+            mock_make_request.assert_called_once_with(self.test_url, self.test_api_key, "POST", json.dumps({"dummy": "payload"}))
+            assert mock_demisto.debug.called
+
     def test_insert_data_in_cortex_successful_processing(self):
         test_input_params = {"limit": "10", "hce": False}
 
