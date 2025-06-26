@@ -3851,7 +3851,6 @@ Upload an attachment to an incident in TOPdesk.
 >|---|---|---|---|---|---|
 >|some-id|tiny_upload_file|/tas/api/incidents/id/some-incident-id/attachments/some-id/download|False|2021-03-24T13:40:47.000+0000|xsoar operator a|
 
-
 ### topdesk-assets-list
 
 ***
@@ -3905,10 +3904,10 @@ Get list of assets.
 #### Human Readable Output
 
 > ### TOPdesk assets
+>
 >| Archived | Etag                    | Id                                  | Text      |
 >|----------|-------------------------|-------------------------------------|-----------|
 >| false    | 2025-06-18T14:18:59.111 | 4a5ef5e0-41fa-4a25-a5f4-8c4ea2780c6 | test.host |
-
 
 ### topdesk-asset-update
 
@@ -3931,7 +3930,6 @@ Update Asset Fields.
 | **Path**      | **Type** | **Description**                                  |
 |---------------|----------|--------------------------------------------------|
 | TOPdesk.Asset | Dict     | Dictionary of all Asset Data specific to company |
-
 
 #### Command Example
 
