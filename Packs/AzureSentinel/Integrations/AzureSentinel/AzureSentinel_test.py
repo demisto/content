@@ -1729,7 +1729,7 @@ def test_update_remote_incident(mocker, incident_status, required_action, delta,
         - ensure the function call only when the incident status is DONE and should_close_incident_in_remote is True
           or when the incident status is ACTIVE
     """
-    mocker.patch("AzureSentinel.test_check_required_action_on_incident", return_value=required_action)
+    mocker.patch("AzureSentinel.check_required_action_on_incident", return_value=required_action)
     mock_update_status = mocker.patch("AzureSentinel.update_incident_request")
     update_remote_incident(mock_client(), {}, delta, incident_status, "incident-1")
     assert mock_update_status.called == expected_update_call

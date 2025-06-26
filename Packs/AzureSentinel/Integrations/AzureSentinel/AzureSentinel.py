@@ -9,7 +9,7 @@ import urllib3
 import requests
 import dateparser
 import uuid
-
+from enum import Enum
 from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
@@ -59,9 +59,6 @@ INCIDENT_HEADERS = [
     "FirstActivityTimeGenerated",
     "LastActivityTimeGenerated",
 ]
-SHOULD_CLOSE_INCIDENT = 1
-SHOULD_OPEN_INCIDENT = 2
-NO_ACTION_NEEDED = 3
 
 COMMENT_HEADERS = [
     "ID",
@@ -168,6 +165,16 @@ CLASSIFICATION_REASON = {
     "TruePositive": "SuspiciousActivity",
     "BenignPositive": "SuspiciousButExpected",
 }
+
+SHOULD_CLOSE_INCIDENT = 1
+SHOULD_OPEN_INCIDENT = 2
+NO_ACTION_NEEDED = 3
+
+
+class Action(Enum):
+    CLOSE = 1
+    REOPEN = 2
+    UNCHANGE = 3
 
 
 class AzureSentinelClient:
