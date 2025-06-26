@@ -1832,8 +1832,10 @@ def test_should_open_incident_in_remote(delta, incident_status, to_open):
         ({}, {}, False, IncidentStatus.ACTIVE, NO_ACTION_NEEDED),
         (
             {"classification": "FalsePositive"},
-            IncidentStatus.DONE,
+            {},
             False,
+            IncidentStatus.DONE,
+            NO_ACTION_NEEDED,
         ),
     ],
     ids=[
