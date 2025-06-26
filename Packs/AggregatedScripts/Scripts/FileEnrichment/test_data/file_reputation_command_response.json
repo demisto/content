@@ -1,0 +1,73 @@
+[
+    {
+        "Type": 1,
+        "HumanReadable": "### Results of file hash sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2\n|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|\n|—|—|—|—|—|—|—|—|\n| sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1 | sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2 | md5md5md5md5md5md5md5md5md5md5md5md5md5m | 未確認 639898.crdownload | jar | 2025-02-02 12:54:47Z | -208 | 43/76 |\n",
+        "EntryContext": {
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                {
+                    "Indicator": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                    "Reliability": "C - Fairly reliable",
+                    "Score": 3,
+                    "Type": "file",
+                    "Vendor": "VirusTotal (API v3)"
+                }
+            ],
+            "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+                {
+                    "Extension": "zip",
+                    "Hashes": [
+                        {
+                            "type": "MD5",
+                            "value": "md5md5md5md5md5md5md5md5md5md5md5md5md5m"
+                        },
+                        {
+                            "type": "SHA1",
+                            "value": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1"
+                        },
+                        {
+                            "type": "SHA256",
+                            "value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
+                        },
+                        {
+                            "type": "SSDeep",
+                            "value": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm"
+                        }
+                    ],
+                    "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
+                    "Relationships": [
+                        {
+                            "EntityA": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                            "EntityAType": "File",
+                            "EntityB": "test123.com",
+                            "EntityBType": "Domain",
+                            "Relationship": "communicates-with"
+                        }
+                    ],
+                    "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+                    "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                    "SSDeep": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
+                    "Size": 262291,
+                    "Tags": [
+                        "jar",
+                        "checks-cpu-name",
+                        "sets-process-name",
+                        "detect-debug-environment",
+                        "checks-hostname"
+                    ],
+                    "Type": "application/zip",
+                    "VTVendors": {
+                        "EngineDetectionNames": [
+                            "Trojan.ZIP.Java.m!c",
+                            "Malicious (score: 99)"
+                        ],
+                        "EngineDetections": 43,
+                        "EngineVendors": [
+                            "CTX",
+                            "AVG"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+]
