@@ -718,8 +718,7 @@ script:
     - contextPath: ANYRUN.Lookup.summary.details.count
       description: 'Count of iocs/objects by threat level.'
       type: Number
-
-  dockerimage: demisto/anyrun-sdk:1.0.0.3815917
+  dockerimage: demisto/anyrun-sdk:1.0.0.3970895
   subtype: python3
   runonce: false
   script: '-'
