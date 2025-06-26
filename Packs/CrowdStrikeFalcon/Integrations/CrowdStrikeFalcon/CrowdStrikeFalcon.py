@@ -417,8 +417,8 @@ class IncidentType(Enum):
     IOA_EVENTS = "ioa_events"
     ON_DEMAND = "ods"
     OFP = "ofp"
-    NGSIEM = ":ngsiem:"
-    THIRD_PARTY = ":thirdparty:"
+    NGSIEM = "ngsiem"
+    THIRD_PARTY = "thirdparty"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
@@ -3562,7 +3562,7 @@ def fetch_detections_by_product_type(
     start_time_key: str,
     is_fetch_events: bool = False,
 ) -> tuple[List, dict]:
-    """The fetch logic for idp, ods and mobile detections.
+    """The fetch logic for detection types.
 
     Args:
         current_fetch_info (dict): The last run object.
@@ -3618,7 +3618,7 @@ def fetch_detections_by_product_type(
         detections = (
             truncate_long_time_str(detections, "occurred")
             if product_type
-            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
+            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM.value, IncidentType.THIRD_PARTY.value}
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
