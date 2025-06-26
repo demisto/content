@@ -864,12 +864,7 @@ def update_incident_request(
         incident_id (str): the incident ID
         data (Dict[str, Any]): all the data of the incident
         delta (Dict[str, Any]): the delta of the changes in the incident's data
-        close_ticket (bool, optional): whether to close the ticket or not (defined by the should_close_incident_in_remote).
-                                       Defaults to False.
-        open_ticket (bool, optional): whether to open the ticket in azure sentinel or not
-                                      (defined by the should_open_incident_in_remote).
-                                       Defaults to False.
-
+        required_action (int, optional): NO_ACTION_NEEDED, SHOULD_OPEN_INCIDENT, SHOULD_CLOSE_INCIDENT
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
