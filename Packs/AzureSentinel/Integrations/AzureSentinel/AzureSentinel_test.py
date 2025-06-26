@@ -9,13 +9,10 @@ from AzureSentinel import (
     DEFAULT_SOURCE,
     NEXT_LINK_DESCRIPTION,
     XSOAR_USER_AGENT,
-    SHOULD_CLOSE_INCIDENT,
-    SHOULD_OPEN_INCIDENT,
-    NO_ACTION_NEEDED,
+    Action,
     AzureSentinelClient,
     append_tags_threat_indicator_command,
     build_threat_indicator_data,
-    should_close_incident_in_remote,
     create_and_update_alert_rule_command,
     create_data_for_alert_rule,
     create_incident_command,
@@ -57,7 +54,6 @@ from AzureSentinel import (
     update_remote_system_command,
     update_threat_indicator_command,
     validate_required_arguments_for_alert_rule,
-    should_open_incident_in_remote,
 )
 from CommonServerPython import CommandResults, IncidentStatus, pascalToSpace, tableToMarkdown
 
@@ -1710,13 +1706,13 @@ def test_update_remote_system_command(mocker):
 @pytest.mark.parametrize(
     "incident_status, required_action, delta, expected_update_call",
     [
-        (IncidentStatus.DONE, SHOULD_CLOSE_INCIDENT, {}, True),
-        (IncidentStatus.DONE, NO_ACTION_NEEDED, {}, False),  # delta is empty
-        (IncidentStatus.DONE, NO_ACTION_NEEDED, {"classification": "FalsePositive"}, False),  # delta have only closing fields
-        (IncidentStatus.DONE, NO_ACTION_NEEDED, {"title": "Title"}, True),  # delta have fields except closing fields
-        (IncidentStatus.ACTIVE, NO_ACTION_NEEDED, {}, False),  # delta is empty and required action is NO_ACTION_NEEDED
-        (IncidentStatus.ACTIVE, NO_ACTION_NEEDED, {"title": "Title"}, True),
-        (IncidentStatus.PENDING, SHOULD_CLOSE_INCIDENT, {}, False),
+        (IncidentStatus.DONE, Action.CLOSE, {}, True),
+        (IncidentStatus.DONE, Action.UNCHANGED, {}, False),  # delta is empty
+        (IncidentStatus.DONE, Action.UNCHANGED, {"classification": "FalsePositive"}, False),  # delta have only closing fields
+        (IncidentStatus.DONE, Action.UNCHANGED, {"title": "Title"}, True),  # delta have fields except closing fields
+        (IncidentStatus.ACTIVE, Action.UNCHANGED, {}, False),  # delta is empty and required action is Action.UNCHANGED
+        (IncidentStatus.ACTIVE, Action.UNCHANGED, {"title": "Title"}, True),
+        (IncidentStatus.PENDING, Action.CLOSE, {}, False),
     ],
 )
 def test_update_remote_incident(mocker, incident_status, required_action, delta, expected_update_call):
@@ -1736,106 +1732,28 @@ def test_update_remote_incident(mocker, incident_status, required_action, delta,
 
 
 @pytest.mark.parametrize(
-    "delta, data, close_ticket_param, incident_status, to_close",
-    [
-        ({"classification": "FalsePositive"}, {}, True, IncidentStatus.DONE, True),
-        ({"classification": "FalsePositive"}, {}, False, IncidentStatus.DONE, False),
-        ({}, {}, True, IncidentStatus.DONE, False),
-        ({}, {}, False, IncidentStatus.DONE, False),
-        # Closing after classification is already present in the data.
-        ({}, {"classification": "FalsePositive"}, True, IncidentStatus.DONE, True),
-        # Closing after reopened, before data update
-        ({}, {"classification": "FalsePositive", "status": "Closed"}, True, IncidentStatus.DONE, True),
-        # Closing after reopened, after data update
-        ({}, {"classification": "FalsePositive", "status": "Active"}, True, IncidentStatus.DONE, True),
-    ],
-    ids=[
-        "1#-close_incident_close_ticket_param_is_true",
-        "2#-close_incident_close_ticket_param_is_false",
-        "3#-close_incident_without_classification_close_ticket_param_is_true",
-        "4#-close_incident_without_classification_close_ticket_param_is_false",
-        "5#-close_incident_classification_already_in_data",
-        "6#-close_incident_after_reopen_before_data_update",
-        "7#-close_incident_after_reopen_after_data_update",
-    ],
-)
-def test_should_close_incident_in_remote(mocker, delta, data, close_ticket_param, incident_status, to_close):
-    """
-    Given
-        - one of the close parameters
-    When
-        - outgoing mirroring triggered by a change in the incident
-    Then
-        - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
-    """
-    mocker.patch.object(demisto, "params", return_value={"close_ticket": close_ticket_param})
-    assert should_close_incident_in_remote(delta, data, incident_status) == to_close
-
-
-@pytest.mark.parametrize(
-    "delta, incident_status, to_open",
-    [
-        ({"classification": "FalsePositive"}, IncidentStatus.ACTIVE, False),
-        ({"classification": ""}, IncidentStatus.ACTIVE, True),
-        ({"classification": ""}, IncidentStatus.DONE, False),
-        ({}, IncidentStatus.ACTIVE, False),
-        (
-            {"classification": "FalsePositive"},
-            IncidentStatus.DONE,
-            False,
-        ),
-    ],
-    ids=[
-        "1#-the_incident_is_open_classification_changed",
-        "2#-the_incident_is_reopened",
-        "3#-the_incident_is_close_classification_removed",
-        "4#-the_incident_is_open",
-        "5#-the_incident_is_close_classification_changed",
-    ],
-)
-def test_should_open_incident_in_remote(delta, incident_status, to_open):
-    """
-    Given
-        - case 1: The incident is open and the classification was changed.
-        - case 2: The incident is re-opened.
-        - case 3: The incident is closed and the classification was changed.
-        - case 4: The incident is open and the classification was not changed.
-        - case 5: The incident is close and the classification was changed.
-    When
-        - outgoing mirroring triggered by a change in the incident
-    Then
-        - case 1: We expect to process the incident, so its ID exists in the expected result.
-        - case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
-        - case 3: We expect to process the incident, so its ID exists in the expected result.
-        - case 4: We expect to process the incident, so its ID exists in the expected result.
-        - case 5: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
-    """
-    assert should_open_incident_in_remote(delta, incident_status) == to_open
-
-
-@pytest.mark.parametrize(
     "delta, data, close_ticket_param, incident_status, action",
     [
-        ({"classification": "FalsePositive"}, {}, True, IncidentStatus.DONE, SHOULD_CLOSE_INCIDENT),
-        ({"classification": "FalsePositive"}, {}, False, IncidentStatus.DONE, NO_ACTION_NEEDED),
-        ({}, {}, True, IncidentStatus.DONE, NO_ACTION_NEEDED),
-        ({}, {}, False, IncidentStatus.DONE, NO_ACTION_NEEDED),
+        ({"classification": "FalsePositive"}, {}, True, IncidentStatus.DONE, Action.CLOSE),
+        ({"classification": "FalsePositive"}, {}, False, IncidentStatus.DONE, Action.UNCHANGED),
+        ({}, {}, True, IncidentStatus.DONE, Action.UNCHANGED),
+        ({}, {}, False, IncidentStatus.DONE, Action.UNCHANGED),
         # Closing after classification is already present in the data.
-        ({}, {"classification": "FalsePositive"}, True, IncidentStatus.DONE, SHOULD_CLOSE_INCIDENT),
+        ({}, {"classification": "FalsePositive"}, True, IncidentStatus.DONE, Action.CLOSE),
         # Closing after reopened, before data update
-        ({}, {"classification": "FalsePositive", "status": "Closed"}, True, IncidentStatus.DONE, SHOULD_CLOSE_INCIDENT),
+        ({}, {"classification": "FalsePositive", "status": "Closed"}, True, IncidentStatus.DONE, Action.CLOSE),
         # Closing after reopened, after data update
-        ({}, {"classification": "FalsePositive", "status": "Active"}, True, IncidentStatus.DONE, SHOULD_CLOSE_INCIDENT),
-        ({"classification": "FalsePositive"}, {}, True, IncidentStatus.ACTIVE, NO_ACTION_NEEDED),
-        ({"classification": ""}, {}, True, IncidentStatus.ACTIVE, SHOULD_OPEN_INCIDENT),
-        ({"classification": ""}, {}, True, IncidentStatus.DONE, NO_ACTION_NEEDED),
-        ({}, {}, False, IncidentStatus.ACTIVE, NO_ACTION_NEEDED),
+        ({}, {"classification": "FalsePositive", "status": "Active"}, True, IncidentStatus.DONE, Action.CLOSE),
+        ({"classification": "FalsePositive"}, {}, True, IncidentStatus.ACTIVE, Action.UNCHANGED),
+        ({"classification": ""}, {}, True, IncidentStatus.ACTIVE, Action.OPEN),
+        ({"classification": ""}, {}, True, IncidentStatus.DONE, Action.UNCHANGED),
+        ({}, {}, False, IncidentStatus.ACTIVE, Action.UNCHANGED),
         (
             {"classification": "FalsePositive"},
             {},
             False,
             IncidentStatus.DONE,
-            NO_ACTION_NEEDED,
+            Action.UNCHANGED,
         ),
     ],
     ids=[
@@ -1860,7 +1778,7 @@ def test_check_required_action_on_incident(mocker, delta, data, close_ticket_par
     When
         - outgoing mirroring triggered by a change in the incident
     Then
-        - returns one of SHOULD_CLOSE_INCIDENT,SHOULD_OPEN_INCIDENT,NO_ACTION_NEEDED
+        - returns one of Action.CLOSE,Action.OPEN,Action.UNCHANGED
     """
     from AzureSentinel import check_required_action_on_incident
 

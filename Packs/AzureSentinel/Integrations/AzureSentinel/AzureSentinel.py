@@ -1,3 +1,4 @@
+from typing import Literal
 import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
@@ -166,15 +167,11 @@ CLASSIFICATION_REASON = {
     "BenignPositive": "SuspiciousButExpected",
 }
 
-SHOULD_CLOSE_INCIDENT = 1
-SHOULD_OPEN_INCIDENT = 2
-NO_ACTION_NEEDED = 3
-
 
 class Action(Enum):
     CLOSE = 1
     REOPEN = 2
-    UNCHANGE = 3
+    UNCHANGED = 3
 
 
 class AzureSentinelClient:
@@ -794,50 +791,23 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def check_required_action_on_incident(delta: Dict[str, Any], data: Dict[str, Any], incident_status: IncidentStatus) -> int:
+def check_required_action_on_incident(
+    delta: Dict[str, Any], data: Dict[str, Any], incident_status: IncidentStatus
+) -> Literal[Action.CLOSE, Action.UNCHANGED, Action.REOPEN]:
     """
     Checking if we need to close the incident or re-open in the remote system.
-        1. should close the incident - will return SHOULD_CLOSE_INCIDENT
-        2. should open the incident - will return SHOULD_OPEN_INCIDENT
-        3. no action needed - will return NO_ACTION_NEEDED
+        1. should close the incident - will return Action.CLOSE
+        2. should open the incident - will return Action.REOPEN
+        3. no action needed - will return Action.UNCHANGED
     """
     closing_field = "classification"
     if incident_status == IncidentStatus.DONE:
         closing_reason = bool(delta.get(closing_field, data.get(closing_field, "")))
-        return SHOULD_CLOSE_INCIDENT if demisto.params().get("close_ticket", False) and closing_reason else NO_ACTION_NEEDED
+        return Action.CLOSE if demisto.params().get("close_ticket", False) and closing_reason else Action.UNCHANGED
     elif incident_status == IncidentStatus.ACTIVE:
-        return SHOULD_OPEN_INCIDENT if delta.get(closing_field) == "" else NO_ACTION_NEEDED
+        return Action.REOPEN if delta.get(closing_field) == "" else Action.UNCHANGED
     else:
-        return NO_ACTION_NEEDED
-
-
-def should_close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any], incident_status: IncidentStatus) -> bool:
-    """
-    Closing in the remote system should happen only when both:
-        1. The user asked for it
-        2. A closing reason was provided (either in the delta or before in the data).
-    """
-    closing_field = "classification"
-    closing_reason = delta.get(closing_field, data.get(closing_field, ""))
-    return demisto.params().get("close_ticket", False) and bool(closing_reason) and (incident_status == IncidentStatus.DONE)
-
-
-def should_open_incident_in_remote(delta: Dict[str, Any], incident_status: IncidentStatus) -> bool:
-    """
-    Opening in the remote system should happen only when both:
-        1. The user asked for it - the incident status and the incident data opposing values.
-        2. Classification value is empty.
-
-    Args:
-        delta (dict): Contains the keys.
-        incident_status (IncidentStatus): The investigation status.
-
-    Returns:
-        Boolean value - whether to open the ticket or not.
-    """
-    closing_field = "classification"
-    closing_reason = delta.get(closing_field) == ""
-    return incident_status == IncidentStatus.ACTIVE and closing_reason
+        return Action.UNCHANGED
 
 
 def extract_classification_reason(delta: Dict[str, str], data: Dict[str, str]):
@@ -863,7 +833,7 @@ def update_incident_request(
     incident_id: str,
     data: Dict[str, Any],
     delta: Dict[str, Any],
-    required_action: int = NO_ACTION_NEEDED,
+    required_action: Literal[Action.CLOSE, Action.UNCHANGED, Action.REOPEN] = Action.UNCHANGED,
 ) -> Dict[str, Any]:
     """
     Args:
@@ -871,7 +841,7 @@ def update_incident_request(
         incident_id (str): the incident ID
         data (Dict[str, Any]): all the data of the incident
         delta (Dict[str, Any]): the delta of the changes in the incident's data
-        required_action (int, optional): NO_ACTION_NEEDED, SHOULD_OPEN_INCIDENT, SHOULD_CLOSE_INCIDENT
+        required_action Literal[Action.CLOSE, Action.UNCHANGED,Action.REOPEN]: Action.UNCHANGED, Action.REOPEN, Action.CLOSE
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
@@ -883,7 +853,7 @@ def update_incident_request(
 
     severity = data.get("severity", "")
     status = data.get("status", "Active")
-    if required_action == SHOULD_OPEN_INCIDENT:
+    if required_action == Action.REOPEN:
         # classification='' it's mean the XSOAR incident was reopen
         # need to update the remote incident status to Active
         demisto.debug(f"Reopen remote incident {incident_id}, set status to Active")
@@ -901,7 +871,7 @@ def update_incident_request(
 
     properties["labels"] += [{"labelName": label, "type": "User"} for label in delta.get("tags", [])]
 
-    if required_action == SHOULD_CLOSE_INCIDENT:
+    if required_action == Action.CLOSE:
         properties |= {
             "status": "Closed",
             "classification": delta.get("classification") or data.get("classification"),
@@ -935,7 +905,7 @@ def update_remote_incident(
         demisto.debug(f"{incident_status=}")
         required_action = check_required_action_on_incident(delta, data, incident_status)
         # close_ticket = check_required_action_on_incident(delta, data, incident_status)
-        if relevant_keys_delta or required_action != NO_ACTION_NEEDED:
+        if relevant_keys_delta or required_action != Action.UNCHANGED:
             demisto.debug(
                 f"Updating incident with remote ID {incident_id} in " f"remote system {required_action=}, {relevant_keys_delta=}."
             )
