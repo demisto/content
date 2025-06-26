@@ -1708,18 +1708,18 @@ def test_update_remote_system_command(mocker):
 
 
 @pytest.mark.parametrize(
-    "incident_status, should_close_incident_in_remote, delta, expected_update_call",
+    "incident_status, required_action, delta, expected_update_call",
     [
         (IncidentStatus.DONE, SHOULD_CLOSE_INCIDENT, {}, True),
         (IncidentStatus.DONE, NO_ACTION_NEEDED, {}, False),  # delta is empty
         (IncidentStatus.DONE, NO_ACTION_NEEDED, {"classification": "FalsePositive"}, False),  # delta have only closing fields
         (IncidentStatus.DONE, NO_ACTION_NEEDED, {"title": "Title"}, True),  # delta have fields except closing fields
-        (IncidentStatus.ACTIVE, NO_ACTION_NEEDED, {}, False),  # delta is empty and should_close_incident_in_remote is False
+        (IncidentStatus.ACTIVE, NO_ACTION_NEEDED, {}, False),  # delta is empty and required action is NO_ACTION_NEEDED
         (IncidentStatus.ACTIVE, NO_ACTION_NEEDED, {"title": "Title"}, True),
         (IncidentStatus.PENDING, SHOULD_CLOSE_INCIDENT, {}, False),
     ],
 )
-def test_update_remote_incident(mocker, incident_status, should_close_incident_in_remote, delta, expected_update_call):
+def test_update_remote_incident(mocker, incident_status, required_action, delta, expected_update_call):
     """
     Given
         - incident status
@@ -1729,7 +1729,7 @@ def test_update_remote_incident(mocker, incident_status, should_close_incident_i
         - ensure the function call only when the incident status is DONE and should_close_incident_in_remote is True
           or when the incident status is ACTIVE
     """
-    mocker.patch("AzureSentinel.test_check_required_action_on_incident", return_value=should_close_incident_in_remote)
+    mocker.patch("AzureSentinel.test_check_required_action_on_incident", return_value=required_action)
     mock_update_status = mocker.patch("AzureSentinel.update_incident_request")
     update_remote_incident(mock_client(), {}, delta, incident_status, "incident-1")
     assert mock_update_status.called == expected_update_call
@@ -1829,7 +1829,7 @@ def test_should_open_incident_in_remote(delta, incident_status, to_open):
         ({"classification": "FalsePositive"}, {}, True, IncidentStatus.ACTIVE, NO_ACTION_NEEDED),
         ({"classification": ""}, {}, True, IncidentStatus.ACTIVE, SHOULD_OPEN_INCIDENT),
         ({"classification": ""}, {}, True, IncidentStatus.DONE, NO_ACTION_NEEDED),
-        ({}, IncidentStatus.ACTIVE, NO_ACTION_NEEDED),
+        ({}, {}, False, IncidentStatus.ACTIVE, NO_ACTION_NEEDED),
         (
             {"classification": "FalsePositive"},
             IncidentStatus.DONE,

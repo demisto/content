@@ -922,7 +922,7 @@ def update_remote_incident(
     # (or closingUserId was changed meaning the incident wa reopened) or need to close the remote ticket
     relevant_keys_delta = OUTGOING_MIRRORED_FIELDS.keys() | {"closingUserId"}
     relevant_keys_delta &= delta.keys()
-    # those fields are close incident fields and handled separately in should_close_incident_in_remote
+    # those fields are close incident fields and handled separately in check_required_action_on_incident
     relevant_keys_delta -= {"classification", "classificationComment"}
     if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
         demisto.debug(f"{incident_status=}")
