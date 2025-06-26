@@ -7,7 +7,7 @@ from itertools import zip_longest
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
- 
+
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
