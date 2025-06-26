@@ -548,7 +548,6 @@ function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawRe
         # if RawResponse was not provided but outputs were provided then set Contents as outputs
         $entry.Contents = $Outputs
     }
-    # $Demisto.results("entry: $(($entry | ConvertTo-Json -Depth 3))")
     $demisto.Results($entry) | Out-Null
     return $entry
 }
@@ -613,7 +612,6 @@ function ReturnPollingOutputs(
         # if RawResponse was not provided but outputs were provided then set Contents as outputs
         $entry.Contents = $Outputs
     }
-    # $Demisto.results("entry: $(($entry | ConvertTo-Json -Depth 3))")
     $demisto.Results($entry) | Out-Null
     return $entry
 }
