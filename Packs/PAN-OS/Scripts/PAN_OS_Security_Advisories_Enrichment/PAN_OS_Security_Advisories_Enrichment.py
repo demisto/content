@@ -2,8 +2,6 @@ import re
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-CONSTANT_PACK_VERSION = "1.0.0"
-
 OUTPUT_PREFIX = "PAN_OS_Security_Advisories"
 BASE_URL = "https://security.paloaltonetworks.com"
 CVE_JSON = "/json/"
