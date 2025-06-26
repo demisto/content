@@ -109,12 +109,12 @@ def get_connector_id() -> str | None:
         str | None: The connector ID if available in the context, otherwise None.
     """
     cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
-    demisto.info(f"Cloud credentials request context: {cloud_info_context}")
+    demisto.info(f"[COOC API] Cloud credentials request context: {cloud_info_context}")
 
     if connector_id := cloud_info_context.get("connectorID"):
-        demisto.debug(f"Retrieved connector ID from context: {connector_id}")
+        demisto.debug(f"[COOC API] Retrieved connector ID from context: {connector_id}")
     else:
-        demisto.debug("No connector ID found in context")
+        demisto.debug("[COOC API] No connector ID found in context")
 
     return connector_id
 
@@ -161,7 +161,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
     if scopes:
         request_data["scopes"] = scopes
 
-    demisto.info(f"Request data for credentials retrieval: {request_data}")
+    demisto.info(f"[COOC API] Request data for credentials retrieval: {request_data}")
     response = None
 
     try:
@@ -183,22 +183,22 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
             raise KeyError("Did not receive any credentials from CTS.")
 
         expiration_time = credentials.get("expiration_time")
-        demisto.info(f"{account_id}: Received credentials. Expiration time: {expiration_time}")
+        demisto.info(f"[COOC API] {account_id}: Received credentials. Expiration time: {expiration_time}")
         return credentials
 
     except Exception as e:
-        demisto.debug(f"{account_id}: Error while retrieving credentials: {str(e)}. Response: {response}")
+        demisto.debug(f"[COOC API] {account_id}: Error while retrieving credentials: {str(e)}. Response: {response}")
         raise DemistoException(f"Failed to get credentials from CTS: {str(e)}. Response: {response}")
 
 
-def get_accounts_by_connector_id(connector_id: str, max_results: int | None = None) -> list:
+def get_accounts_by_connector_id(connector_id: str, max_results: int | None = 1) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
     Args:
         connector_id (str): The ID of the connector to fetch accounts for.
         max_results (int, optional): Maximum number of results to return. Defaults to None (all results).
     Returns:
-        list: List of accounts associated with the specified connector.
+        list: List of accounts (only of type ACCOUNT) associated with the specified connector.
     """
     all_accounts = []
     next_token = ""
@@ -211,15 +211,12 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = No
             result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
             res_json = json.loads(result["data"])
             accounts = res_json.get("values", [])
-            all_accounts.extend(accounts)
+            all_accounts.extend([a for a in accounts if a.get("account_type") == "ACCOUNT" and a.get("account_id")])
             next_token = res_json.get("next_token", "")
-
-            demisto.debug(f"Fetched {len(accounts)} accounts")
-
             if not next_token or (max_results and len(all_accounts) >= max_results):
                 break
     except Exception as e:
-        demisto.error(f"Failed to fetch accounts for connector {connector_id}: {str(e)}")
+        raise DemistoException(f"Failed to fetch accounts for connector: {str(e)}")
 
     if max_results:
         return all_accounts[:max_results]
@@ -227,7 +224,7 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = No
 
 
 def _check_account_permissions(
-    account: dict, connector_id: str, shared_creds: dict, permission_check_func: Callable[[dict, str, str], HealthCheckError]
+    account_id: str, connector_id: str, shared_creds: dict, permission_check_func: Callable[[dict, str, str], HealthCheckError]
 ) -> HealthCheckError | None:
     """Helper function to check permissions for a single account.
 
@@ -240,15 +237,11 @@ def _check_account_permissions(
     Returns:
         HealthCheckError | None: Result of the permission check, or None if account has no ID.
     """
-    account_id = account.get("account_id")
-    if not account_id:
-        demisto.debug(f"Account without ID found for connector {connector_id}: {account}")
-        return None
 
     try:
         return permission_check_func(shared_creds, account_id, connector_id)
     except Exception as e:
-        demisto.error(f"Error checking permissions for account {account_id}: {str(e)}")
+        demisto.error(f"[COOC API] Error checking permissions for account {account_id}: {str(e)}")
         return HealthCheckError(
             account_id=account_id,
             connector_id=connector_id,
@@ -275,23 +268,16 @@ def run_permissions_check_for_accounts(
     Raises:
         DemistoException: If the account retrieval fails.
     """
-    accounts = get_accounts_by_connector_id(connector_id)
-    demisto.debug(f"Processing {len(accounts)} accounts for {cloud_type}")
-
-    if not accounts:
-        demisto.debug(f"No accounts found for connector ID: {connector_id}")
-        return HealthStatus.OK
-
     health_check_result = HealthCheck(connector_id)
-
-    # Get credentials once for all accounts since they share the same creds
     try:
-        account_id = next((a["account_id"] for a in accounts if a.get("account_id")), None)
-        if not account_id:
-            raise DemistoException("No valid account_id found in accounts")
+        accounts = get_accounts_by_connector_id(connector_id)
+        if not accounts:
+            demisto.debug(f"[COOC API] No accounts found for connector ID: {connector_id}")
+            return HealthStatus.OK
 
-        shared_creds = get_cloud_credentials(cloud_type, account_id) # todo need to add expiration
-        demisto.debug(f"Retrieved shared {cloud_type} credentials for all accounts")
+        account_id = accounts[0]
+        shared_creds = get_cloud_credentials(cloud_type, account_id)
+        demisto.debug(f"[COOC API] Retrieved shared {cloud_type} credentials for all accounts")
 
     except Exception as e:
         error_msg = f"Failed to retrieve {cloud_type} credentials for connector {connector_id}: {str(e)}"
@@ -306,16 +292,11 @@ def run_permissions_check_for_accounts(
         )
         return health_check_result.summarize()
 
-    # Process accounts sequentially
-    for i, account in enumerate(accounts, 1):
-        account_id = account.get("account_id", "unknown")
-        demisto.debug(f"Processing account {i}/{len(accounts)}: {account_id}")
+    result = _check_account_permissions(account_id, connector_id, shared_creds, permission_check_func)
+    if result is not None:
+        health_check_result.error(result)
 
-        result = _check_account_permissions(account, connector_id, shared_creds, permission_check_func)
-        if result is not None:
-            health_check_result.error(result)
-
-    demisto.info(f"Completed processing {len(accounts)} accounts")
+    demisto.info(f"[COOC API] Completed processing {account_id}")
     return health_check_result.summarize()
 
 
