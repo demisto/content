@@ -43,7 +43,7 @@ class HealthCheckError:
     def __init__(self, account_id: str, connector_id: str, message: str, error_type: str):
         self.account_id = account_id
         self.connector_id = connector_id
-        self.message = f"[{account_id}] {message}"
+        self.message = f"[{account_id}] {message}" if account_id else message
         self.error_type = error_type
         # Determine classification based on error type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
@@ -275,7 +275,7 @@ def run_permissions_check_for_accounts(
             demisto.debug(f"[COOC API] No accounts found for connector ID: {connector_id}")
             return HealthStatus.OK
 
-        account_id = accounts[0]
+        account_id = accounts[0]["account_id"]
         shared_creds = get_cloud_credentials(cloud_type, account_id)
         demisto.debug(f"[COOC API] Retrieved shared {cloud_type} credentials for all accounts")
 
