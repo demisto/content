@@ -116,7 +116,7 @@ def get_alert_payload(service, input_params: dict[str, Any], is_update=False):
             "take": input_params["take"],
             "countOnly": False,
             "taggedAlert": False,
-            "withDataMessage": True
+            "withDataMessage": True,
         }
     except Exception as e:
         demisto.error(f"Error in formatting: {e}")
@@ -460,7 +460,9 @@ class Client(BaseClient):
             latest_created_time = datetime.utcnow()
             demisto.debug("No data processed, using current time as latest_created_time")
 
-        demisto.debug(f"[get_data_with_retry] Finished. Total alerts: {len(all_alerts)}, latest_created_time: {latest_created_time}")
+        demisto.debug(
+            f"[get_data_with_retry] Finished. Total alerts: {len(all_alerts)}, latest_created_time: {latest_created_time}"
+        )
         return all_alerts, latest_created_time + timedelta(microseconds=1)
 
     def get_ids_with_retry(self, service, input_params, is_update=False):
@@ -540,44 +542,6 @@ def validate_iocs_input(args):
             raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
     except Exception as e:
         demisto.error(f"Failed to process validate_iocs_input with {str(e)}")
-
-
-def alert_input_structure(input_params):
-    input_params_alerts = {
-        "orderBy": [{"created_at": input_params["order_by"]}],
-        "select": {
-            "alert_group_id": True,
-            "archive_date": True,
-            "archived": True,
-            "assignee_id": True,
-            "assignment_date": True,
-            "created_at": True,
-            "data_id": True,
-            "deleted_at": True,
-            "description": True,
-            "hash": True,
-            "id": True,
-            "metadata": True,
-            "risk_score": True,
-            "service": True,
-            "severity": True,
-            "status": True,
-            "tags": True,
-            "updated_at": True,
-            "user_severity": True,
-        },
-        "skip": input_params["from_da"],
-        "take": input_params["limit"],
-        "withDataMessage": True,
-        "where": {
-            "created_at": {
-                "gte": input_params["start_date"],
-                "lte": input_params["end_date"],
-            },
-            "status": {"in": ["VIEWED", "UNREVIEWED", "CONFIRMED_INCIDENT", "UNDER_REVIEW", "INFORMATIONAL"]},
-        },
-    }
-    return input_params_alerts
 
 
 def set_request(client, method, token, input_params, url):
@@ -729,7 +693,6 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
         return [], datetime.utcnow()
 
     demisto.debug(f"[migrate_data] Services to process: {services}")
-
 
     chunkedServices = [services[i : i + MAX_THREADS] for i in range(0, len(services), MAX_THREADS)]
     last_fetched = ensure_aware(datetime.utcnow())
@@ -892,7 +855,6 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
         input_params["gte"] = last_run["event_pull_start_date"]
         demisto.debug(f"[cyble_events] event_pull_start_date found in last_run: {input_params['gte']}")
 
-
     input_params["lte"] = datetime.utcnow().astimezone().isoformat()
 
     fetch_services = get_fetch_service_list(client, incident_collections, url, token)
@@ -913,12 +875,13 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
             "lte": input_params["lte"],
             "gte": input_params["gte"],
         }
-
     )
     demisto.debug(f"[cyble_events] Final input_params after update: {json.dumps(input_params)}")
 
     all_alerts, latest_created_time = migrate_data(client, input_params, False)
-    demisto.debug(f"[cyble_events] migrate_data returned {len(all_alerts)} alerts, latest_created_time: {latest_created_time.isoformat()}")
+    demisto.debug(
+        f"[cyble_events] migrate_data returned {len(all_alerts)} alerts, latest_created_time: {latest_created_time.isoformat()}"
+    )
 
     last_run = {"event_pull_start_date": latest_created_time.astimezone().isoformat()}
     demisto.debug(f"[cyble_events] Updated last_run: {last_run}")
@@ -1070,10 +1033,7 @@ def update_remote_system(client, method, token, args, url):
 
         demisto.debug(f"[update_remote_system] Delta received: {parsed_args.delta}")
 
-        update_payload = {
-            "id": incident_id,
-            "service": service
-        }
+        update_payload = {"id": incident_id, "service": service}
 
         # Handle status
         status = parsed_args.delta.get("status")

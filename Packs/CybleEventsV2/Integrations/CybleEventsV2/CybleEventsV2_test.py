@@ -8,7 +8,6 @@ from CybleEventsV2 import (
     Client,
     get_remote_data_command,
     manual_fetch,
-    alert_input_structure,
     update_remote_system,
     get_mapping_fields,
     fetch_subscribed_services_alert,
@@ -41,7 +40,7 @@ import pytest
 
 from unittest.mock import Mock, patch, call
 
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 import json
 
 try:
@@ -331,45 +330,6 @@ class TestManualFetch:
         assert call_args["take"] == DEFAULT_TAKE_LIMIT
 
 
-def test_alert_input_structure():
-    input_params = {
-        "order_by": "desc",
-        "from_da": 10,
-        "limit": 5,
-        "start_date": "2025-01-01T00:00:00Z",
-        "end_date": "2025-01-02T00:00:00Z",
-    }
-
-    result = alert_input_structure(input_params)
-
-    # Check top-level keys exist
-    assert "orderBy" in result
-    assert "select" in result
-    assert "skip" in result
-    assert "take" in result
-    assert "withDataMessage" in result
-    assert "where" in result
-
-    # Check orderBy structure and value
-    assert isinstance(result["orderBy"], list)
-    assert result["orderBy"][0]["created_at"] == "desc"
-
-    # Check select keys all True
-    for _key, val in result["select"].items():
-        assert val is True
-
-    # Check pagination values
-    assert result["skip"] == 10
-    assert result["take"] == 5
-
-    # Check date filters
-    assert result["where"]["created_at"]["gte"] == "2025-01-01T00:00:00Z"
-    assert result["where"]["created_at"]["lte"] == "2025-01-02T00:00:00Z"
-
-    # Check status filter list
-    expected_statuses = ["VIEWED", "UNREVIEWED", "CONFIRMED_INCIDENT", "UNDER_REVIEW", "INFORMATIONAL"]
-    assert result["where"]["status"]["in"] == expected_statuses
-
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
 @patch.dict("CybleEventsV2.INCIDENT_STATUS", {"CLOSED": "CLOSED"})
 def test_update_remote_system_success(mock_args_class):
@@ -382,7 +342,13 @@ def test_update_remote_system_success(mock_args_class):
 
     mock_args_class.return_value = mock_parsed_args
 
-    update_remote_system(mock_client, "PUT", "token", {"delta": {"status": "CLOSED", "severity": 3}, "data": mock_parsed_args.data}, "https://test.com")
+    update_remote_system(
+        mock_client,
+        "PUT",
+        "token",
+        {"delta": {"status": "CLOSED", "severity": 3}, "data": mock_parsed_args.data},
+        "https://test.com",
+    )
 
     mock_client.update_alert.assert_called_once()
     alert = mock_client.update_alert.call_args[0][0]["alerts"][0]
@@ -420,10 +386,11 @@ def test_update_remote_system_partial_data(mock_args_class):
 
     mock_args_class.return_value = mock_parsed_args
 
-    result = update_remote_system(mock_client, "PUT", "token", {"delta": {"other": "value"}, "data": mock_parsed_args.data}, "https://test.com")
+    result = update_remote_system(
+        mock_client, "PUT", "token", {"delta": {"other": "value"}, "data": mock_parsed_args.data}, "https://test.com"
+    )
     assert result == "alert-123"
     mock_client.update_alert.assert_not_called()
-
 
 
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
@@ -437,10 +404,11 @@ def test_update_remote_system_invalid_severity(mock_args_class):
 
     mock_args_class.return_value = mock_parsed_args
 
-    result = update_remote_system(mock_client, "PUT", "token", {"delta": {"severity": 99}, "data": mock_parsed_args.data}, "https://test.com")
+    result = update_remote_system(
+        mock_client, "PUT", "token", {"delta": {"severity": 99}, "data": mock_parsed_args.data}, "https://test.com"
+    )
     assert result == "alert-123"
     mock_client.update_alert.assert_not_called()
-
 
 
 class TestGetMappingFields:
