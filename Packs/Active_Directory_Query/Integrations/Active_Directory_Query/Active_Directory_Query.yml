@@ -102,14 +102,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Raise an error on empty arguments in the ad-get-user command
-  additionalinfo: If checked, will raise an error on empty arguments in the ad-get-user command.
-  name: fail_on_empty_args
-  type: 8
+- display: Default base query to use in the ad-get-user command
+  additionalinfo: This value will be used when no arguments were given to the ad-get-user command.
+  name: default_base_query
+  type: 0
   section: Connect
   advanced: true
   required: false
-  defaultvalue: 'false'
+  defaultvalue: '(&(objectClass=User)(objectCategory=person))'
 script:
   script: ''
   type: python
