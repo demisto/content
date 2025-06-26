@@ -603,6 +603,7 @@ script:
         - contextPath: ANYRUN.TaskID
           description: 'Task UUID.'
           type: String
+    - arguments:
       name: anyrun-get-user-limits
       description: 'Get user available limits to perform the Sandbox analysis.'
       outputs:

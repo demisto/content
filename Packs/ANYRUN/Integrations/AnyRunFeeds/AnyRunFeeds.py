@@ -11,6 +11,7 @@ from anyrun import RunTimeException
 
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
+
 def test_module(params: dict) -> str:
     """ Performs ANY.RUN API call to verify integration is operational """
     with FeedsConnector(params.get('anyrun_auth_token')) as connector:
@@ -61,6 +62,7 @@ def get_timestamp(params: dict) -> str:
         return demisto.getLastRun().get('next_fetch')
     return params.get('modified_after')
 
+
 def update_timestamp(new_timestamp: datetime | None) -> None:
     """
     Updates fetch timestamp if exists
@@ -75,6 +77,7 @@ def update_timestamp(new_timestamp: datetime | None) -> None:
                 demisto.setLastRun({'next_fetch': new_timestamp.strftime(DATE_TIME_FORMAT)})
         else:
             demisto.setLastRun({'next_fetch': new_timestamp.strftime(DATE_TIME_FORMAT)})
+
 
 def convert_indicators(indicators: list[dict]) -> list[dict]:
     """
@@ -104,6 +107,7 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
         converted_indicators.append(indicator_payload)
 
     return converted_indicators
+
 
 def fetch_indicators_command(params: dict) -> None:
     """

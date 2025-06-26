@@ -1,6 +1,7 @@
 TI Lookup is a searchable database of IOCs, IOAs, IOBs, and events for threat hunting and a service for browsing malicious files by their content.
 
 ## Use Cases
+
 Perform deep searches, look up threats online, and enrich your security solutions.
 
 

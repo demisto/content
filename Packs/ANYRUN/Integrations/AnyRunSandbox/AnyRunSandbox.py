@@ -46,6 +46,7 @@ def get_authentication(params: dict) -> str:
     """
     return f"API-KEY {params.get('anyrun_api_key')}"
 
+
 def get_file_content(args: dict[str, Any]) -> dict[str, Any]:
     entry_id = args.pop('file')
     file_obj = demisto.getFilePath(entry_id)
@@ -238,8 +239,10 @@ def get_analysis_history(params: dict, args: dict) -> None:
         )
     )
 
+
 def get_indicator_type(indicator: dict) -> str:
     return {'ip': 'IP', 'url': 'URL', 'domain': 'Domain', 'sha256': 'File SHA-256'}.get(indicator.get('type'))
+
 
 def convert_indicator_score(reputation: int) -> str:
     return {0: 'Unknown', 1: 'Suspicious', 2: 'Malicious'}.get(reputation)
@@ -373,6 +376,7 @@ def main():
             get_analysis_report(params, args)
         case 'test-module':
             return_results(test_module(params))
+
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     VERSION = 'PA-XSOAR:2.0.0'
