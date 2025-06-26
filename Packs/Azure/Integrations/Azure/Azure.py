@@ -1196,6 +1196,7 @@ class AzureClient:
             f"providers/Microsoft.Authorization/roleAssignments?$filter=principalId eq '{object_id}'"
         )
         params = {"api-version": PERMISSIONS_VERSION}
+        demisto.debug(f"Getting role assignments for {self.subscription_id}.")
         return self.http_request(method="GET", full_url=full_url, params=params)
 
     def get_role_permissions(self, role_definition_id):
@@ -2171,7 +2172,7 @@ def check_required_permissions(
             perm: [cmd.strip() for cmd in PERMISSIONS_TO_COMMANDS.get(perm, []) for cmd in cmd.split(',')]
             for perm in missing_permissions
         }
-        error_lines = [f"- {perm} (required for: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
+        error_lines = [f"{perm} missing for {'command' if len(cmds) == 1 else 'commands'}: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
         if connector_id:
             return [
                 HealthCheckError(
@@ -2188,7 +2189,7 @@ def check_required_permissions(
     return None
 
 
-def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> HealthCheckError | None:
+def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> list[HealthCheckError] | HealthCheckError | None:
     """
     Tests connectivity to Azure and checks for required permissions.
     This function is specifically used for COOC (Connect on our Cloud) health checks
@@ -2309,7 +2310,7 @@ def main():
             client, token = get_azure_client(params, args, command)
 
         if command == "test-module" and connector_id:
-            demisto.debug(f"Running permissions check for the accounts of {connector_id}")
+            demisto.debug(f"Running health check for connector ID: {connector_id}")
             return_results(run_permissions_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
         elif command == "test-module":
             return_results(test_module(client, token))
