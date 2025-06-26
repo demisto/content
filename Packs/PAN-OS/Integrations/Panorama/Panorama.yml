@@ -9829,7 +9829,7 @@ script:
       required: true
       isArray: false
   - name: pan-os-get-certificate-info
-    description: 'Gathers name, expiration date and expiration status of certificates configured locally on a Firewall or pushed from Panorama, as seen under Certificate Management.'
+    description: Gathers the name, expiration date, and expiration status of certificates configured locally on a Firewall or pushed from Panorama, as seen under Certificate Management.
     arguments:
     - description: Show only expired certificates.
       name: show_expired_only
@@ -9855,7 +9855,7 @@ script:
       description: Where this certificate was configured - Firewall or Panorama.
     - contextPath: Panorama.Certificate.cert_type
       type: String
-      description: If this certificate was Pushed from Panorama, Local to Firewall or Predefined on Panorama or Firewall.
+      description: Whether this certificate was pushed from Panorama, Local to Firewall, or predefined on Panorama or a Firewall.
     - contextPath: Panorama.Certificate.devices_using_certificate
       type: Unknown
       description: List of devices using this certificate if it was pushed from Panorama.

@@ -9837,7 +9837,7 @@ There are no input arguments for this command.
 ### pan-os-get-certificate-info
 
 ***
-Gathers name, expiration date and expiration status of certificates configured locally on a Firewall or pushed from Panorama, as seen under Certificate Management.
+Gathers the name, expiration date, and expiration status of certificates configured locally on a Firewall or pushed from Panorama, as seen under Certificate Management.
 
 #### Base Command
 
@@ -9863,7 +9863,7 @@ Gathers name, expiration date and expiration status of certificates configured l
 | Panorama.Certificate.expiration_date | String | Expiration date of the certificate. |
 | Panorama.Certificate.expiration_status | String | Status of certificate - Expired, Expiring in 30 days, Expiring in 60 days, Expiring in 90 days or Valid. |
 | Panorama.Certificate.location | String | Where this certificate was configured - Firewall or Panorama. |
-| Panorama.Certificate.cert_type | String | If this certificate was Pushed from Panorama, Local to Firewall or Predefined on Panorama or Firewall. |
+| Panorama.Certificate.cert_type | String | Whether this certificate was pushed from Panorama, Local to Firewall, or Predefined on Panorama or a Firewall. |
 | Panorama.Certificate.devices_using_certificate | Unknown | List of devices using this certificate if it was pushed from Panorama. |
 
 #### Context Example
