@@ -1160,6 +1160,8 @@ script:
     - description: A comma-separated list of email addresses for the 'bcc' field.
       isArray: true
       name: bcc
+      prettyname: BCC
+      required: true
       prettypredefined:
         Email Recipients: ${issue.xdmemailrecipients}
     - description: The subject of the email.
