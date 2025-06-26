@@ -2,7 +2,7 @@ import hashlib
 import secrets
 import string
 from datetime import datetime, timedelta
-from itertools import zip_longest
+from itertools import zip_longest 
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
