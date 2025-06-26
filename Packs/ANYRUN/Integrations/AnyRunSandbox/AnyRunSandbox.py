@@ -1,6 +1,4 @@
 import time
-import traceback
-from typing import Callable, Any, Union
 
 import demistomock as demisto
 import requests
@@ -10,6 +8,8 @@ from anyrun import RunTimeException
 from anyrun.connectors import SandboxConnector
 from anyrun.connectors.sandbox.base_connector import BaseSandboxConnector
 from anyrun.connectors.sandbox.operation_systems import WindowsConnector, LinuxConnector, AndroidConnector
+
+VERSION = 'PA-XSOAR:2.0.0'
 
 
 def test_module(params: dict) -> str:
@@ -47,7 +47,7 @@ def get_authentication(params: dict) -> str:
     return f"API-KEY {params.get('anyrun_api_key')}"
 
 
-def get_file_content(args: dict[str, Any]) -> dict[str, Any]:
+def get_file_content(args: dict) -> dict:
     entry_id = args.pop('file')
     file_obj = demisto.getFilePath(entry_id)
 
@@ -60,7 +60,7 @@ def get_file_content(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def make_api_call(
-    params: dict[str, Any],
+    params: dict,
     method: str,
     endpoint_url: str,
     payload: dict
@@ -87,9 +87,9 @@ def make_api_call(
 
 
 def wait_for_the_task_to_complete(
-    args: dict[str, Any],
+    args: dict,
     analysis_type: str,
-    connector: Union[WindowsConnector, LinuxConnector, AndroidConnector]
+    connector: WindowsConnector | LinuxConnector | AndroidConnector
 ) -> None:
     """
     Process Sandbox analysis
@@ -341,43 +341,46 @@ def get_analysis_report(params: dict, args: dict) -> None:
 @handle_exceptions
 def main():
     """ Main Execution block """
-    command = demisto.command()
     params = demisto.params()
     args = demisto.args()
 
     handle_proxy()
-
-    match command:
-        case 'anyrun-delete-task':
+    
+    try:
+        if demisto.command() == 'anyrun-delete-task':
             delete_task(params, args)
-        case 'anyrun-download-analysis-pcap':
+        elif demisto.command() == 'anyrun-download-analysis-pcap':
             download_analysis_sample(params, args, 'pcap')
-        case 'anyrun-download-analysis-sample':
+        elif demisto.command() == 'anyrun-download-analysis-sample':
             download_analysis_sample(params, args, 'file')
-        case 'anyrun-get-analysis-verdict':
+        elif demisto.command() == 'anyrun-get-analysis-verdict':
             get_analysis_verdict(params, args)
-        case 'anyrun-get-user-limits':
+        elif demisto.command() == 'anyrun-get-user-limits':
             get_user_limits(params)
-        case 'anyrun-get-analysis-history':
+        elif demisto.command() == 'anyrun-get-analysis-history':
             get_analysis_history(params, args)
-        case 'anyrun-detonate-file-windows':
+        elif demisto.command() == 'anyrun-detonate-file-windows':
             detonate_file_widows(params, args)
-        case 'anyrun-detonate-url-windows':
+        elif demisto.command() == 'anyrun-detonate-url-windows':
             detonate_url_widows(params, args)
-        case 'anyrun-detonate-file-linux':
+        elif demisto.command() == 'anyrun-detonate-file-linux':
             detonate_file_linux(params, args)
-        case 'anyrun-detonate-url-linux':
+        elif demisto.command() == 'anyrun-detonate-url-linux':
             detonate_url_linux(params, args)
-        case 'anyrun-detonate-file-android':
+        elif demisto.command() == 'anyrun-detonate-file-android':
             detonate_file_android(params, args)
-        case 'anyrun-detonate-url-android':
+        elif demisto.command() == 'anyrun-detonate-url-android':
             detonate_url_android(params, args)
-        case 'anyrun-get-analysis-report':
+        elif demisto.command() == 'anyrun-get-analysis-report':
             get_analysis_report(params, args)
-        case 'test-module':
-            return_results(test_module(params))
-
+        elif demisto.command() == 'test-module':
+            result = test_module(params)
+            return_results(result)
+        else:
+            return_results(f'Command {demisto.command()} is not implemented in ANY.RUN')
+    except RunTimeException as exception:
+        return_error(exception.description, error=str(exception.json))
+    
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    VERSION = 'PA-XSOAR:2.0.0'
     main()

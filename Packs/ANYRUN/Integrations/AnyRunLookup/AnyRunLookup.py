@@ -1,35 +1,17 @@
-import traceback
-from typing import Callable, Any
-
 import demistomock as demisto
 from CommonServerPython import *
 
 from anyrun.connectors import LookupConnector
 from anyrun import RunTimeException
 
+VERSION = 'PA-XSOAR:2.0.0'
+
+
 def test_module(params: dict) -> str:
     """ Performs ANY.RUN API call to verify integration is operational """
     with LookupConnector(get_authentication(params)) as connector:
         connector.check_authorization()
         return 'ok'
-
-
-def handle_exceptions(function: Callable) -> Any:
-    """
-    Handles all exception, formats them, then sends to WarRoom
-
-    :param function: Wrapped function
-    """
-    def wrapper(*args, **kwargs) -> Any:
-        try:
-            return function(*args, **kwargs)
-        except RunTimeException as exception:
-            return_error(exception.description, error=str(exception.json))
-        except Exception:
-            exception = str(traceback.format_exc())
-            return_error(exception, error=exception)
-
-    return wrapper
 
 
 def get_authentication(params: dict) -> str:
@@ -64,24 +46,23 @@ def get_intelligence(params: dict, args: dict) -> None:
     return_results(command_results)
 
 
-@handle_exceptions
 def main():
     """ Main Execution block """
-    command = demisto.command()
     params = demisto.params()
     args = demisto.args()
-
     handle_proxy()
 
-    match command:
-        case 'anyrun-get-intelligence':
+    try:
+        if demisto.command() == 'anyrun-get-intelligence':
             get_intelligence(params, args)
-        case 'test-module':
-            return_results(test_module(params))
-        case _:
-            raise NotImplementedError(f'Command {command} is not implemented in ANY.RUN')
+        elif demisto.command() == 'test-module':
+            result = test_module(params)
+            return_results(result)
+        else:
+            return_results(f'Command {demisto.command()} is not implemented in ANY.RUN')
+    except RunTimeException as exception:
+        return_error(exception.description, error=str(exception.json))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    VERSION = 'PA-XSOAR:2.0.0'
     main()
