@@ -1889,6 +1889,105 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
+
+function SearchAndRecoveryEmailCommand {
+    param (
+        [SecurityAndComplianceClient]$client,
+        [hashtable]$kwargs
+    )
+
+    $Demisto.results("=== Starting RestoreEmailByInternetMessageId ===")
+    $Demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
+
+    $internet_message_id = $kwargs.internet_message_id
+    if (-not $internet_message_id) {
+        throw "Missing required argument: internet_message_id"
+    }
+
+    $search_name = $internet_message_id -replace '[<>]', ''
+    $search_action_name = "${search_name}_Preview"
+    $entry_context = @{}
+    $polling_args = $kwargs
+
+    try {
+        $search = $client.GetSearch($search_name)
+        $Demisto.results("Found existing search: $search_name with status $($search.Status)")
+    } catch {
+        $Demisto.results("Search not found. Creating new search: $search_name")
+        $kql = "internetMessageId:`"$internet_message_id`""
+        $description = "Restore email by internetMessageId"
+        $exchange_location = @("All")
+
+        $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), $null)
+        $client.StartSearch($search_name)
+        $Demisto.results("Search created and started: $search_name")
+
+        return "$script:INTEGRATION_NAME - New search created and started.", $entry_context, $search, $polling_args
+    }
+
+    switch ($search.Status) {
+        "NotStarted" {
+            $Demisto.results("Search not started. Starting now.")
+            $client.StartSearch($search_name)
+            return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
+        }
+        "Starting" | "InProgress" {
+            $Demisto.results("Search is running. Waiting for completion.")
+            return "$script:INTEGRATION_NAME - Search is in progress.", $entry_context, $search, $polling_args
+        }
+        "Completed" {
+            if ($search.Items -eq 0) {
+                $Demisto.results("Search completed. No items found.")
+                return "$script:INTEGRATION_NAME - Search completed. No items to restore.", $entry_context, $search
+            }
+
+            try {
+                $action = $client.GetSearchAction($search_action_name, "Stop")
+                $Demisto.results("Found search action: $search_action_name with status $($action.Status)")
+            } catch {
+                $Demisto.results("No existing Preview action. Creating one.")
+                $action = $client.NewSearchAction(
+                    $search_name,
+                    "Preview",
+                    "SoftDelete",
+                    $null,
+                    $null,
+                    $null,
+                    $null,
+                    $null,
+                    $null,
+                    $null
+                )
+                return "$script:INTEGRATION_NAME - Created Preview action.", $entry_context, $action, $polling_args
+            }
+
+            switch ($action.Status) {
+                "NotStarted" {
+                    $Demisto.results("Preview action not started. Waiting.")
+                    return "$script:INTEGRATION_NAME - Preview action not started.", $entry_context, $action, $polling_args
+                }
+                "Starting" | "InProgress" {
+                    $Demisto.results("Preview action in progress.")
+                    return "$script:INTEGRATION_NAME - Preview in progress.", $entry_context, $action, $polling_args
+                }
+                "Completed" {
+                    $Demisto.results("Preview completed. Running Restore.")
+                    Restore-RecoverableItems -Identity $search_name -Confirm:$false
+                    $Demisto.results("Restore completed.")
+                    return "$script:INTEGRATION_NAME - Restore completed successfully.", $entry_context
+                }
+                default {
+                    throw "Unhandled search action status: $($action.Status)"
+                }
+            }
+        }
+        default {
+            throw "Unhandled search status: $($search.Status)"
+        }
+    }
+}
+
+
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
@@ -2004,6 +2103,9 @@ function Main {
             }
             "$script:COMMAND_PREFIX-case-hold-policy-set" {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-search-and-recovery-email-office-365-quick-action" {
+                ($human_readable, $entry_context, $raw_response) = RestoreEmailByInternetMessageId $cs_client $command_arguments
             }
         }
 
