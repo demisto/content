@@ -46,4 +46,4 @@ This ensures that incidents related to newly included devices and updated filter
 #### Configure Pre-Process Rules
 The integration retrieves asset information, anomaly alerts, and CVEs from Asimily Insight—either through scheduled updates or on-demand queries—making it necessary to define a preprocessing rule that discards incoming incidents if they are duplicates.
 
-The integration includes a preprocessing script (**PreProcessAsimilyDedup**) that will drop incoming incident if it is a duplicate. It will search all past incidents with all status.
+The integration includes a preprocessing script (**PreProcessAsimilyDedup**) that will drop incoming incident if it is a duplicate. It will search all past incidents with all status. The script can be used for configuring Pre-Process Rules to avoid duplication.
