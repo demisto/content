@@ -32,7 +32,7 @@ You can enable and filter these incidents with the following options:
 
 #### Resetting the "Last Run" Timestamp
 
-If you modify any of the fetch filters (*Device Family Filter*, *Device Tags Filter*, *Fetch Anomaly Criticality*, *Fetch CVE Score*), this means there may be new devices included to fetch incidents or there will be new incidents included for existing devices. It is strongly recommended to **Reset the "last run" timestamp**. 
+If you modify any of the fetch filters (*Fetch Anomaly Alerts*, *Fetch Device CVEs*, *Device Family Filter*, *Device Tags Filter*, *Fetch Anomaly Criticality*, *Fetch CVE Score*), this means there may be new devices included to fetch incidents or there will be new incidents included for existing devices. It is strongly recommended to **Reset the "last run" timestamp**. 
 
 To reset:
 
