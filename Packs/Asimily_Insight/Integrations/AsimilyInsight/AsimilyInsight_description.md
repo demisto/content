@@ -38,7 +38,7 @@ To reset:
 
 1. Go to the integration instance configuration.
 2. Navigate to **Collect > Advanced Settings**.
-3. Click **Reset the "last run" timestamp** under the "Last Run" section.
+3. Click **Reset the "last run" timestamp**.
 4. Clikc **Reset Now**.
 
 This ensures that incidents related to newly included devices and updated filters are correctly fetched.
