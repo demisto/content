@@ -30,7 +30,9 @@ class TestClientFunctions:
             - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
             - Make sure the pagination logic performs as expected.
         """
-        first_response = {"data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}]}}
+        first_response = {
+            "data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}], "total": "Many"}
+        }
 
         second_response = {"data": {"next": 2, "results": [{"unique_id": "2", "time": "2023-01-01T01:00:20.123456+00:00"}]}}
 
@@ -44,12 +46,13 @@ class TestClientFunctions:
             "method": "GET",
             "params": {
                 "aql": "example_query after:2023-01-01T00:59:00",
-                "includeTotal": "true",
+                "includeTotal": "false",
                 "length": 1,
                 "orderBy": "time",
                 "from": 1,
             },
             "headers": {"Authorization": "test_access_token", "Accept": "application/json"},
+            "timeout": 180,
         }
 
         mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=[first_response, second_response])
@@ -77,7 +80,9 @@ class TestClientFunctions:
             - Make sure the 'from' aql parameter request is sent with the given from argument.
             - Make sure the pagination logic performs as expected.
         """
-        first_response = {"data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}]}}
+        first_response = {
+            "data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}], "total": "Many"}
+        }
 
         second_response = {"data": {"next": None, "results": [{"unique_id": "2", "time": "2023-01-01T01:00:20.123456+00:00"}]}}
 
@@ -91,12 +96,13 @@ class TestClientFunctions:
             "method": "GET",
             "params": {
                 "aql": "example_query after:2023-01-01T01:00:01",
-                "includeTotal": "true",
+                "includeTotal": "false",
                 "length": 2,
                 "orderBy": "time",
                 "from": 1,
             },
             "headers": {"Authorization": "test_access_token", "Accept": "application/json"},
+            "timeout": 180,
         }
 
         from_arg = arg_to_datetime("2023-01-01T01:00:01")

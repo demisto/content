@@ -3848,6 +3848,7 @@ script:
   runonce: false
 tests:
 - Prisma Cloud V2 Test
+- Prisma Cloud V2 Basic Test
 defaultmapperin: RedLock-mapper
 defaultclassifier: RedLock
 fromversion: 6.5.0
