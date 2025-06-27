@@ -54,6 +54,6 @@
         "EM"
     ],
     "supportedModules": [
-        "TODO-EM-ASM"
+        "exposure_management"
     ]
 }
