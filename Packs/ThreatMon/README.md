@@ -68,6 +68,7 @@ This integration is designed to help security teams streamline incident enrichme
 ## Support
 
 This is a **community-supported integration**. For issues or feature requests:
+
 - Open a GitHub issue under the [Demisto/content](https://github.com/demisto/content/issues) repository.
 - Or contact the ThreatMon team at [integration@threatmonit.io](mailto:integration@threatmonit.io).
 
@@ -78,4 +79,3 @@ This is a **community-supported integration**. For issues or feature requests:
 ThreatMon Security Intelligence Team  
 Website: [https://www.threatmon.io](https://www.threatmon.io)  
 Support: [integration@threatmonit.io](mailto:integration@threatmonit.io)
-
