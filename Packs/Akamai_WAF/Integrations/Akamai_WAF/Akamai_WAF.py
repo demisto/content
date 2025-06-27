@@ -5701,7 +5701,7 @@ def list_appsec_configuration_activation_history_command(
 @logger
 def list_papi_property_by_hostname_command(
     client: Client,
-    hostname: str = None,
+    hostname: str,
     network: str = None,
     contract_id: str = None,
     group_id: str = None,
