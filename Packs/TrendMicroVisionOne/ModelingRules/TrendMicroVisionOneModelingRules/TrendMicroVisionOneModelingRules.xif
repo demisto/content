@@ -87,7 +87,7 @@ filter
     xdm.source.port = to_integer(spt),
     xdm.alert.original_alert_id = uuid,
     xdm.observer.action = actResult,
-    xdm.network.application_protocol = app,
+    xdm.network.application_protocol = app,,
     xdm.event.type = blocking,
     xdm.alert.severity = to_string(cat),
     xdm.source.agent.version = replex(arraystring(json_extract_array(component,  "$."), ", "), "\"", ""),
