@@ -44,7 +44,8 @@ To reset:
 
 1. Go to the integration instance configuration.
 2. Navigate to **Collect > Advanced Settings**.
-3. Click **Reset** under the "Last Run" section.
+3. Click **Reset the "last run" timestamp**.
+4. Click **Reset Now**.
 
 This ensures that incidents related to newly included devices and updated filters are correctly fetched.
 
@@ -266,7 +267,7 @@ Fetch device CVEs from Asimily Insight. You can add argument filters.
 
 #### Incident Criticality Mapping
 
-1. XSOAR incidents have 4 level of criticality:
+1. XSOAR incidents have 4 levels of criticality:
     - Informational (0)
     - Low (1) 
     - Medium (2) 
