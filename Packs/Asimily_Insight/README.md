@@ -26,5 +26,5 @@ Specifically, this pack includes:
 
 - **Custom Scripts**:
 
-  - **PreProcessAsimilyDedup**: A preprocessing script to prevent incident duplication, searching all past incidents to ensure unique anomaly alerts or CVEs generate new incidents.
+  - **PreProcessAsimilyDedup**: A preprocessing script to prevent incident duplication, searching all past incidents to ensure unique anomaly alerts or CVEs generate new incidents. The script can be used for configuring Pre-Process Rules to avoid duplication.
   - **Asset Information Extraction**: The implicit `asimily-get-asset-details` command (which functions as a script/command) is used by the playbook to extract and store detailed asset information.
