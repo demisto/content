@@ -22,9 +22,9 @@ Specifically, this pack includes:
 
 - **Custom Incident Layouts**: Two custom layouts for the new incident types, including a dedicated section to display the fetched asset, anomaly, and CVE information, making it readily accessible for analysts.
 
-- **Default Playbook for Asset Enrichment**: A ready-to-use playbook that automatically calls the asimily-get-asset-details command to enrich incidents with corresponding asset information, storing it in the incident's Context Data (under Asimily > Asset). Users can modify this playbook or create similar ones.
+- **Default Playbook for Asset Enrichment**: A ready-to-use playbook that automatically calls the `asimily-get-asset-details` command to enrich incidents with corresponding asset information, storing it in the incident's Context Data (under `Asimily` > `Asset`). Users can modify this playbook or create similar ones.
 
 - **Custom Scripts**:
 
   - **PreProcessAsimilyDedup**: A preprocessing script to prevent incident duplication, searching all past incidents to ensure unique anomaly alerts or CVEs generate new incidents.
-  - **Asset Information Extraction**: The implicit asimily-get-asset-details command (which functions as a script/command) is used by the playbook to extract and store detailed asset information.
+  - **Asset Information Extraction**: The implicit `asimily-get-asset-details` command (which functions as a script/command) is used by the playbook to extract and store detailed asset information.
