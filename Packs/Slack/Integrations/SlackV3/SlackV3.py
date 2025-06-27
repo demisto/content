@@ -95,7 +95,7 @@ EXTENSIVE_LOGGING: bool
 
 def get_war_room_url(url: str) -> str:
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
-    if is_xsiam():
+    if is_xsiam() or is_platform():
         incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
         incident_url = urlparse(url)
         war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
@@ -154,7 +154,7 @@ def test_module():
         )
 
     # validation for permitted_notifications since not all the options are supported by xsiam
-    if is_xsiam():
+    if is_xsiam() or is_platform():
         xsiam_permitted_notification_types = {
             "investigationClosed",
             "investigationDeleted",
@@ -2540,7 +2540,7 @@ def get_user():
     # Check if the input might be an email or a user ID
     if re.match(emailRegex, user_input):
         slack_user = get_user_by_email(user_input)
-    elif re.match("^[UW](?=.*\d)[A-Z0-9]{7,10}$", user_input):
+    elif re.match(r"^[UW](?=.*\d)[A-Z0-9]{7,10}$", user_input):
         slack_user = get_user_by_id(user_input)
     else:
         slack_user = get_user_by_name(user_input)

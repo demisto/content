@@ -1,6 +1,7 @@
 A context script for email entities.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ A context script for email entities.
 | Script Type | python |
 | Tags | enhancement |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +18,6 @@ A context script for email entities.
 | email | The email address to look up. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

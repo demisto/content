@@ -1,6 +1,7 @@
 Retrieves users who are currently on call.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Retrieves users who are currently on call.
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Retrieves users who are currently on call.
 | listname | The name of the out-of-office XSOAR list. Default is "OOO List". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
