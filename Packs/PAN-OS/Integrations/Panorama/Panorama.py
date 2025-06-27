@@ -6611,7 +6611,7 @@ def panorama_check_latest_dynamic_update_command(args: dict):
                         latest_version = entry
 
             # Check if currently installed is the most recent available
-            is_up_to_date = current_version["version"] == latest_version["version"]
+            is_up_to_date = current_version.get("version") == latest_version.get("version")
 
             context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
 
@@ -9356,7 +9356,7 @@ class Topology:
             if connected == "yes":
                 new_firewall_object = Firewall(serial=serial_number)
                 device.add(new_firewall_object)
-                self.add_device_object(new_firewall_object)
+                self.add_device_object(new_firewall_object, getting_children=True)
                 ha_peer_serial_element = device_entry.find("./ha/peer/serial")
                 ha_peer_serial = None
                 if ha_peer_serial_element is not None and hasattr(ha_peer_serial_element, "text"):
@@ -9378,13 +9378,14 @@ class Topology:
         else:
             self.ha_pair_serials = ha_pair_dict
 
-    def add_device_object(self, device: Union[PanDevice, Panorama, Firewall]):
+    def add_device_object(self, device: Union[PanDevice, Panorama, Firewall], getting_children: bool = False):
         """
         Given a PANdevice device object, works out how to add it to this Topology instance.
         Firewalls get added directly to the object. If `device` is Panorama, then it's queried for all
         connected Firewalls, which are then also added to the object.
         This function also checks the HA state of all firewalls using the Panorama output.
         :param device: Either Panorama or Firewall Pandevice instance
+        :param getting_children: Whether this is being called while enumerating connected devices from a Panorama instance
         """
         if isinstance(device, Panorama):
             serial_number_or_hostname = device.serial if device.serial else device.hostname
@@ -9429,6 +9430,55 @@ class Topology:
             return
 
         elif isinstance(device, Firewall):
+            # Check HA state for directly connected Firewall devices
+            serial_number = device.serial
+            
+            # Only proceed to get device HA state data if this method is not called during enumeration of Panorama child devices
+            if not getting_children:
+                try:
+                    firewall_ha_state_result = run_op_command(device, "show high-availability state")
+                    enabled = firewall_ha_state_result.find("./result/enabled")
+                    
+                    if enabled is not None:
+                        if enabled.text == "yes":
+                            # HA is enabled on this firewall
+                            try:
+                                state = find_text_in_element(firewall_ha_state_result, "./result/group/local-info/state")
+                                peer_serial = None
+                                
+                                # Try to get peer serial number
+                                try:
+                                    peer_serial = find_text_in_element(firewall_ha_state_result, "./result/group/peer-info/serial-num")
+                                except LookupError:
+                                    # If serial not available, try getting peer IP as fallback
+                                    try:
+                                        peer_serial = find_text_in_element(firewall_ha_state_result, "./result/group/peer-info/mgmt-ip")
+                                    except LookupError:
+                                        peer_serial = None
+                                
+                                if "active" in state:
+                                    self.ha_active_devices[serial_number] = peer_serial
+                                    if peer_serial:
+                                        self.ha_pair_serials[serial_number] = peer_serial
+                                        self.ha_pair_serials[peer_serial] = serial_number
+                                else:
+                                    # This is a passive device, mark the peer as active if we have it
+                                    if peer_serial:
+                                        self.ha_active_devices[peer_serial] = serial_number
+                                        self.ha_pair_serials[serial_number] = peer_serial
+                                        self.ha_pair_serials[peer_serial] = serial_number
+                                    
+                            except LookupError:
+                                # Could not determine HA state, treat as standalone
+                                self.ha_active_devices[serial_number] = "STANDALONE"
+                    else:
+                        # HA is not enabled, treat as standalone
+                        self.ha_active_devices[serial_number] = "STANDALONE"
+                        
+                except Exception:
+                    # If we can't query HA state, treat as standalone
+                    self.ha_active_devices[serial_number] = "STANDALONE"
+            
             self.firewall_objects[device.serial] = device
             return
 
@@ -9594,7 +9644,7 @@ class Topology:
                     )
                 # Set the timeout
                 device.timeout = DEVICE_TIMEOUT
-                topology.add_device_object(device)
+                topology.add_device_object(device, getting_children=False)
             except (panos.errors.PanURLError, panos.errors.PanXapiError, HTTPError) as e:
                 if isinstance(e, panos.errors.PanURLError) and "403" in e.message:
                     raise Exception("Request Failed. Invalid Credentials.")
@@ -9623,7 +9673,7 @@ class Topology:
         # Set the timeout
         device.timeout = DEVICE_TIMEOUT
         topology = cls()
-        topology.add_device_object(device)
+        topology.add_device_object(device, getting_children=False)
 
         topology.username = username
         topology.password = password

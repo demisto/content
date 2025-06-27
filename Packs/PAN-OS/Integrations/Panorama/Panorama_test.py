@@ -8974,6 +8974,18 @@ class TestDynamicUpdateCommands:
     ],
 )
 def test_get_rule_hitcounts(vsys, rules, no_new_hits_since, expected_cmd, expected_datetime, mock_topology, mocker):
+    """Test the get_rule_hitcounts function with various parameter combinations.  Verify that it properly
+        constructs the API call to retrieve the specified rule hitcount data.
+
+    Args:
+        vsys: Virtual system name or "all" for all virtual systems
+        rules: Rule names (single rule, multiple comma-separated rules, or "all")
+        no_new_hits_since: Date string for filtering rules with no new hits since this time
+        expected_cmd: Expected XML command that should be generated
+        expected_datetime: Expected parsed datetime object from no_new_hits_since
+        mock_topology: Mocked topology fixture
+        mocker: Pytest mocker fixture
+    """
     from Panorama import get_rule_hitcounts
 
     mock_get_hitcounts = mocker.patch("Panorama.FirewallCommand.get_hitcounts", return_value=True)
@@ -8985,3 +8997,41 @@ def test_get_rule_hitcounts(vsys, rules, no_new_hits_since, expected_cmd, expect
 
     assert cmd_result == expected_cmd
     assert no_new_hits_since_dt == expected_datetime
+
+
+@freeze_time("2025-06-26 13:00:00 UTC")
+@pytest.mark.parametrize(
+    ("rulebase_type", "unused_only", "no_new_hits_since_dt", "length_expected"),
+    [
+        ("security", "false", None, 10),  # Should result in 10 returned records.
+        ("security", "true", None, 6),  # Should result in 6 returned records.
+        ("security", "false", datetime.strptime("2025/06/26 00:00:00Z", "%Y/%m/%d %H:%M:%SZ"), 8)  # Should result in 8 returned records.
+    ]
+)
+def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_expected, mock_topology, mocker):
+    """Test the FirewallCommand.get_hitcounts method with various filter parameters.  Verify it returns the correct
+        number of rules from the sample data based on the filter conditions.
+
+    Args:
+        rulebase_type: The type of rulebase to query (e.g., "security")
+        unused_only: Whether to filter for unused rules only ("true"/"false")
+        no_new_hits_since_dt: Optional datetime to filter rules with no new hits since this time
+        length_expected: Expected number of rules in the result
+        mock_topology: Mocked topology fixture
+        mocker: Pytest mocker fixture
+    """
+    from Panorama import FirewallCommand
+
+    rule_hitcounts_data = "test_data/get_rule_hitcounts_rule_hits.xml"
+    pushed_policy_data = "test_data/get_rule_hitcounts_pushed_policy.xml"
+    mocker.patch(
+        "Panorama.run_op_command",
+        side_effect=[
+            load_xml_root_from_test_file(rule_hitcounts_data),
+            load_xml_root_from_test_file(pushed_policy_data),
+        ],
+    )
+
+    result = FirewallCommand.get_hitcounts(mock_topology, "", rulebase_type, no_new_hits_since_dt, None, None, unused_only)
+    assert result is not None
+    assert len(result) == length_expected
