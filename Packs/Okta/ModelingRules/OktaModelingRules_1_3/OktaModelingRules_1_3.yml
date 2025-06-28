@@ -1,4 +1,4 @@
-fromversion: 6.10.0
+fromversion: 6.0.0
 id: Okta_ModelingRule
 name: Okta Modeling Rule
 rules: ''
