@@ -216,11 +216,11 @@ class PychromeEventHandler:
         self.is_private_network_url = False
 
     def page_frame_started_loading(self, frameId):
-        demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}")
+        demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}, {self.tab.id=}, {self.path=}")
         self.start_frame = frameId
         if self.request_id:
             # We're in redirect
-            demisto.debug(f"Frame (reload) started loading: {frameId}, clearing {self.request_id=}")
+            demisto.debug(f"Frame (reload) started loading: {frameId}, clearing {self.request_id=}, {self.tab.id=}, {self.path=}")
             self.request_id = None
             self.response_received = False
             # self.start_frame = None
@@ -228,12 +228,12 @@ class PychromeEventHandler:
             demisto.debug(f"Frame started loading: {frameId}, no request_id")
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
-        demisto.debug(f"PychromeEventHandler.network_data_received, {requestId=}")
+        demisto.debug(f"PychromeEventHandler.network_data_received, {requestId=}, {self.tab.id=}, {self.path=}")
         if requestId and not self.request_id:
-            demisto.debug(f"PychromeEventHandler.network_data_received, Using {requestId=}")
+            demisto.debug(f"PychromeEventHandler.network_data_received, Using {requestId=}, {self.tab.id=}, {self.path=}")
             self.request_id = requestId
         else:
-            demisto.debug(f"PychromeEventHandler.network_data_received, Not using {requestId=}")
+            demisto.debug(f"PychromeEventHandler.network_data_received, Not using {requestId=}, {self.tab.id=}, {self.path=}")
 
     def page_frame_stopped_loading(self, frameId):
         """
