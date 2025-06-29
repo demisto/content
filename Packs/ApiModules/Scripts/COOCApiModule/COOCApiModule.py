@@ -313,7 +313,7 @@ def get_proxydome_token() -> str:
         requests.RequestException: If the request to the metadata server fails.
     """
     url = "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity"
-    params = {"audience": "cortex.platform.local"}
+    params = {"audience": os.getenv("CORTEX_AUDIENCE")}
     headers = {"Metadata-Flavor": "Google"}
     proxies = {"http": "", "https": ""}
 
