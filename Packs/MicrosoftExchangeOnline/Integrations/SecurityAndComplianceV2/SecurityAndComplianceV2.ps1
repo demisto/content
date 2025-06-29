@@ -640,8 +640,8 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
-                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
-
+                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion, [string]$error_action = $null) {
+                        
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearch")
         # Import and Execute command
@@ -655,6 +655,10 @@ class SecurityAndComplianceClient {
             "PublicFolderLocation" = $public_folder_location
             "SharePointLocation" = $share_point_location
             "SharePointLocationExclusion" = $share_point_location_exclusion
+            # "ErrorAction" = $error_action
+        }
+        if ($error_action) {
+            $cmd_params.ErrorAction = $error_action
         }
         $response = New-ComplianceSearch @cmd_params
         # Close session to remote
@@ -1037,29 +1041,43 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]GetSearchAction([string]$search_action_name) {
+    [psobject]GetSearchAction(
+        [string]$search_action_name,
+        [string]$error_action = $null
+    ) {
         # Establish session to remote
         $this.CreateDelegatedSession("Get-ComplianceSearchAction")
-
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $search_action_name
+        }
+    
+        if ($error_action) {
+            $cmd_params["ErrorAction"] = $error_action
+        }
+    
         # Execute command
-        $response = Get-ComplianceSearchAction -Identity $search_action_name
-
+        $response = Get-ComplianceSearchAction @cmd_params
+    
         # Close session to remote
         $this.DisconnectSession()
         return $response
         <#
             .DESCRIPTION
             Get compliance search action in the Security & Compliance Center.
-
+    
             .PARAMETER search_action_name
             The name of the compliance search action.
-
+            .PARAMETER error_action
+            Optional. PowerShell error action preference (e.g., "Stop").
+    
             .EXAMPLE
-            $client.GetSearchAction("search-name")
-
+            $client.GetSearchAction("search-name", "Stop")
+    
             .OUTPUTS
             psobject - Raw response.
-
+    
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearchaction?view=exchange-ps
         #>
@@ -1528,9 +1546,9 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if (!$kwargs.search_name -or $kwargs.search_name -eq "") {
         $kwargs.search_name = "XSOAR-$(New-Guid)"
     }
-    # Raw response
-    $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
-                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+    # Raw response 
+        $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
+                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion, $null)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
     $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($kwargs.search_name)' created"
@@ -1693,7 +1711,7 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
         $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
         return $human_readable, $entry_context, $raw_response
     }
-
+    
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($raw_response.Name)' created"
@@ -1723,7 +1741,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $results = ConvertTo-Boolean $kwargs.results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearchAction($kwargs.search_action_name)
+    $raw_response = $client.GetSearchAction($kwargs.search_action_name, $null)
     # Entry context
     $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
@@ -1889,7 +1907,6 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
-
 function SearchAndRecoveryEmailCommand {
     param (
         [SecurityAndComplianceClient]$client,
@@ -1900,79 +1917,96 @@ function SearchAndRecoveryEmailCommand {
     $Demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
 
     $internet_message_id = $kwargs.internet_message_id
-    if (-not $internet_message_id) {
-        throw "Missing required argument: internet_message_id"
-    }
-
     $search_name = $internet_message_id -replace '[<>]', ''
     $search_action_name = "${search_name}_Preview"
     $entry_context = @{}
     $polling_args = $kwargs
 
-    try {
-        $search = $client.GetSearch($search_name)
-        $Demisto.results("Found existing search: $search_name with status $($search.Status)")
-    } catch {
+    $search = $client.GetSearch($search_name)
+    if (-not $search) {
         $Demisto.results("Search not found. Creating new search: $search_name")
-        $kql = "internetMessageId:`"$internet_message_id`""
+    $kql = "internetMessageId:`"$internet_message_id`""
         $description = "Restore email by internetMessageId"
         $exchange_location = @("All")
 
         $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), $null)
-        $client.StartSearch($search_name)
+            $client.StartSearch($search_name)
         $Demisto.results("Search created and started: $search_name")
 
-        return "$script:INTEGRATION_NAME - New search created and started.", $entry_context, $search, $polling_args
+            return "$script:INTEGRATION_NAME - New search created and started.", $entry_context, $search, $polling_args
     }
 
+    $Demisto.results("Found existing search: $search_name with status $($search.Status)")
+
     switch ($search.Status) {
-        "NotStarted" {
+                "NotStarted" {
             $Demisto.results("Search not started. Starting now.")
-            $client.StartSearch($search_name)
+                    $client.StartSearch($search_name)
             return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
-        }
-        "Starting" | "InProgress" {
+                }
+                "Starting" {
             $Demisto.results("Search is running. Waiting for completion.")
             return "$script:INTEGRATION_NAME - Search is in progress.", $entry_context, $search, $polling_args
-        }
-        "Completed" {
+                            }
+                            "InProgress" {
+            $Demisto.results("Search is running. Waiting for completion.")
+            return "$script:INTEGRATION_NAME - Search is in progress.", $entry_context, $search, $polling_args
+                            }
+                            "Completed" {
             if ($search.Items -eq 0) {
                 $Demisto.results("Search completed. No items found.")
                 return "$script:INTEGRATION_NAME - Search completed. No items to restore.", $entry_context, $search
             }
 
-            try {
-                $action = $client.GetSearchAction($search_action_name, "Stop")
-                $Demisto.results("Found search action: $search_action_name with status $($action.Status)")
-            } catch {
+            $action = $client.GetSearchAction($search_action_name, $null)
+            $Demisto.results("Search action details: " + (ConvertTo-Json $action -Depth 5))
+
+            if (-not $action) {
                 $Demisto.results("No existing Preview action. Creating one.")
-                $action = $client.NewSearchAction(
-                    $search_name,
+                    $action = $client.NewSearchAction(
+                        $search_name,
                     "Preview",
-                    "SoftDelete",
-                    $null,
-                    $null,
-                    $null,
-                    $null,
-                    $null,
-                    $null,
-                    $null
+                        "SoftDelete",
+                    $null, $null, $null, $null, $null, $null, $null
                 )
+
+                if (-not $action) {
+                    return "$script:INTEGRATION_NAME - Failed to create Preview action.", $entry_context
+                }
+
                 return "$script:INTEGRATION_NAME - Created Preview action.", $entry_context, $action, $polling_args
-            }
+                }
+
+            $Demisto.results("Found search action: $search_action_name with status $($action.Status)")
 
             switch ($action.Status) {
-                "NotStarted" {
-                    $Demisto.results("Preview action not started. Waiting.")
-                    return "$script:INTEGRATION_NAME - Preview action not started.", $entry_context, $action, $polling_args
-                }
-                "Starting" | "InProgress" {
+        "Starting" {
+                    $Demisto.results("Preview action in starting.")
+                    return "$script:INTEGRATION_NAME - Preview in progress.", $entry_context, $action, $polling_args
+                    }
+                    "InProgress" {
                     $Demisto.results("Preview action in progress.")
                     return "$script:INTEGRATION_NAME - Preview in progress.", $entry_context, $action, $polling_args
-                }
-                "Completed" {
-                    $Demisto.results("Preview completed. Running Restore.")
-                    Restore-RecoverableItems -Identity $search_name -Confirm:$false
+                    }
+                    "Completed" {
+                        if ($action.Items -eq 0) {
+                            $Demisto.results("Preview completed. No items found to restore.")
+                            return "$script:INTEGRATION_NAME - Preview completed. No items to restore.", $entry_context, $action
+                        }
+                    $Demisto.results("Preview completed. Running restore operation. Items:" + $action.Items)
+                    $recipients = $action.ExchangeLocation -join ','
+                    $subject = ""
+                    if ($action.Results) {
+                        if ($action.Results -match "Subject: ([^;]+);") {
+                            $subject = $matches[1]
+                        }
+                    }
+                    $Demisto.results("Subject: $subject Recipients: $recipients")
+
+
+                    # Restore-RecoverableItems -Identity $recipients -SubjectContains $subject
+                    Get-RecoverableItems -Identity $recipients -SubjectContains $subject
+
                     $Demisto.results("Restore completed.")
                     return "$script:INTEGRATION_NAME - Restore completed successfully.", $entry_context
                 }
@@ -1986,6 +2020,7 @@ function SearchAndRecoveryEmailCommand {
         }
     }
 }
+
 
 
 #### INTEGRATION COMMANDS MANAGER ####
@@ -2105,15 +2140,27 @@ function Main {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-search-and-recovery-email-office-365-quick-action" {
-                ($human_readable, $entry_context, $raw_response) = RestoreEmailByInternetMessageId $cs_client $command_arguments
+                ($human_readable, $entry_context, $raw_response, $polling_args) = SearchAndRecoveryEmailCommand $cs_client $command_arguments
             }
+            
         }
 
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
 
         # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        # $Demisto.results("polling_args: " + (ConvertTo-Json $polling_args -Depth 3))
+        if ($polling_args) {
+            ReturnPollingOutputs `
+            -ReadableOutput $human_readable `
+            -Outputs $entry_context `
+            -RawResponse $raw_response `
+            -CommandName $command `
+            -PollingArgs $polling_args | Out-Null
+        }
+        else {
+            ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        }
         if ($file_entry) {
             $Demisto.results($file_entry)
         }
