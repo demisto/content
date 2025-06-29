@@ -10,7 +10,6 @@ import time
 import secrets
 import jwt
 import re
-import pytz
 from datetime import UTC
 from typing import Any, BinaryIO
 from requests.models import Response
@@ -144,7 +143,7 @@ class Event:
         #  Created at time is stored in either or two locations, never both.
         demisto.debug(f"Event init: created_at={raw_input.get('created_at')}, source exists= {bool(raw_input.get('source'))}")
         created_at = raw_input.get("created_at")
-        _created_at = raw_input.get("source", {}).get("created_at") if raw_input.get("source") else None
+        _created_at = raw_input.get("source", {}).get("created_at") if raw_input.get("source") else ""
         self.created_at = created_at if created_at is not None else _created_at
         demisto.debug(f"Event init:{self.created_at=}")
         self.event_id = raw_input.get("event_id")
@@ -684,8 +683,15 @@ class Client(BaseClient):
         self._headers.update({"As-User": validated_as_user})
         return self._http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
-    def list_events(self, as_user: str, stream_type: str, created_after: str = None, limit: int = None, event_type: str = None,
-                    next_stream_position: str = None):
+    def list_events(
+        self,
+        as_user: str,
+        stream_type: str,
+        created_after: str = None,
+        limit: int = None,
+        event_type: str = None,
+        next_stream_position: str = None,
+    ):
         """
         Lists the events which have occurred given the as_user argument/parameter. Same endpoint is
         used to also handle the enterprise logs as well.
@@ -710,6 +716,7 @@ class Client(BaseClient):
             request_params.update({"event_type": event_type})
         if next_stream_position:
             request_params.update({"stream_position": next_stream_position})
+        demisto.debug(f"The command with {url_suffix=}, params are {request_params=}")
         return self._http_request(method="GET", url_suffix=url_suffix, params=request_params)
 
     def get_current_user(self, as_user: str):
@@ -1735,7 +1742,12 @@ def fetch_incidents(
     event_type_str = ",".join(event_type) if event_type else ""
     demisto.debug(f"{event_type_str=}")
     results = client.list_events(
-        stream_type="admin_logs", as_user=as_user, limit=max_results, created_after=created_after, event_type=event_type_str, next_stream_position=next_stream_position
+        stream_type="admin_logs",
+        as_user=as_user,
+        limit=max_results,
+        created_after=created_after,
+        event_type=event_type_str,
+        next_stream_position=next_stream_position,
     )
     raw_incidents = results.get("entries", [])
     next_stream_position = results.get("next_stream_position")
@@ -1745,15 +1757,14 @@ def fetch_incidents(
         event = Event(raw_input=raw_incident)
         xsoar_incident = event.format_incident()
         incidents.append(xsoar_incident)
-        local_event_time = datetime.fromisoformat(event.created_at)
-        utc_event_time = local_event_time.astimezone(pytz.utc).strftime(DATE_FORMAT)
-        demisto.debug(f"{utc_event_time} >? {created_after}")
-        if utc_event_time > created_after:
+        utc_event_time = arg_to_datetime(event.created_at)
+        utc_event_time = utc_event_time.strftime(DATE_FORMAT) if utc_event_time else ""
+        next_run = arg_to_datetime(next_run)
+        next_run = next_run.strftime(DATE_FORMAT) if next_run else ""
+        demisto.debug(f"{utc_event_time=} >? {next_run=}")
+        if utc_event_time > next_run:
             next_run = utc_event_time
-    last_run = {
-        "time": next_run,
-        "next_stream_position": next_stream_position
-    }
+    last_run = {"time": next_run, "next_stream_position": next_stream_position}
     demisto.debug(f"The final {last_run=}")
 
     return last_run, incidents
