@@ -56,42 +56,42 @@ class Client:
 
     def _get_api_url(self, log_type: str) -> str:
         """
-         Get the full API URL for a specific log type.
+        Get the full API URL for a specific log type.
 
-         Args:
-             log_type (str): The type of log (audit, syslog transactions, case)
+        Args:
+            log_type (str): The type of log (audit, syslog transactions, case)
 
-         Returns:
-             str: The complete API URL for the log type
+        Returns:
+            str: The complete API URL for the log type
 
-         Examples:
-             With server_url="https://dev12345.service-now.com" and api_version="v1":
+        Examples:
+            With server_url="https://dev12345.service-now.com" and api_version="v1":
 
-             >>> client._get_api_url("audit")
-             "https://dev12345.service-now.com/api/now/v1/table/sys_audit"
+            >>> client._get_api_url("audit")
+            "https://dev12345.service-now.com/api/now/v1/table/sys_audit"
 
-             >>> client._get_api_url("syslog transactions")
-             "https://dev12345.service-now.com/api/now/v1/table/syslog_transaction"
+            >>> client._get_api_url("syslog transactions")
+            "https://dev12345.service-now.com/api/now/v1/table/syslog_transaction"
 
-             >>> client._get_api_url("case")
-             "https://dev12345.service-now.com/api/sn_customerservice/v1/case"
+            >>> client._get_api_url("case")
+            "https://dev12345.service-now.com/api/sn_customerservice/v1/case"
 
-             With server_url="https://prod98765.service-now.com" and api_version=None:
+            With server_url="https://prod98765.service-now.com" and api_version=None:
 
-             >>> client._get_api_url("audit")
-             "https://prod98765.service-now.com/api/now/table/sys_audit"
+            >>> client._get_api_url("audit")
+            "https://prod98765.service-now.com/api/now/table/sys_audit"
 
-             >>> client._get_api_url("syslog transactions")
-             "https://prod98765.service-now.com/api/now/table/syslog_transaction"
+            >>> client._get_api_url("syslog transactions")
+            "https://prod98765.service-now.com/api/now/table/syslog_transaction"
 
-             >>> client._get_api_url("case")
-             "https://prod98765.service-now.com/api/sn_customerservice/case"
+            >>> client._get_api_url("case")
+            "https://prod98765.service-now.com/api/sn_customerservice/case"
 
-         Notes:
-             - Audit and Syslog Transactions use the standard ServiceNow API (/api/now/)
-             - Case logs use a different API endpoint (/api/sn_customerservice/)
-             - API version is automatically inserted when provided in configuration
-         """
+        Notes:
+            - Audit and Syslog Transactions use the standard ServiceNow API (/api/now/)
+            - Case logs use a different API endpoint (/api/sn_customerservice/)
+            - API version is automatically inserted when provided in configuration
+        """
         api_config = API_CONFIG[log_type]
         api_base = api_config["api_base"]
 
@@ -99,10 +99,6 @@ class Client:
             # Insert version into the path: /api/now/ becomes /api/now/{version}/
             # For case: /api/sn_customerservice/ becomes /api/sn_customerservice/{version}/
             api_base = api_base.rstrip("/") + f"/{self.api_version}/"
-
-        demisto.debug(
-            f"Retrieving the full api URL for log_type: {log_type} to be: {self.server_url}{api_base}{api_config['endpoint']}"
-        )
 
         return f"{self.server_url}{api_base}{api_config['endpoint']}"
 
@@ -116,21 +112,16 @@ class Client:
                 CASE: self.fetch_limit_case,
             }
             limit = limit_mapping.get(log_type)
-            demisto.debug(f"No limit provided, defaulting to {limit}")
 
         params = {
             "sysparm_limit": limit,
             "sysparm_offset": offset,
+            "sysparm_query": f"sys_created_on>{from_time}",
         }
-
-        if log_type == CASE:
-            params["sysparm_query"] = f"ORDERBYDESCsys_created_on^sys_created_on>{from_time}"
-        else:
-            params["sysparm_query"] = f"sys_created_on>{from_time}"
 
         full_url = self._get_api_url(log_type)
 
-        demisto.debug(f"will make a GET request to: {full_url} with params: {params}")
+        demisto.debug(f"ServiceNowEventCollector will make a GET request to: {full_url} with params: {params}")
 
         res = self.sn_client.http_request(method="GET", full_url=full_url, url_suffix=None, params=remove_empty_elements(params))
 
@@ -154,6 +145,7 @@ def handle_log_types(event_types_to_fetch: list) -> list:
               If an event type title is not found, an exception is raised.
     """
     log_types = []
+
     VALID_EVENT_TITLES = ["Audit", "Syslog Transactions", "Case"]
     titles_to_types = {"Audit": AUDIT, "Syslog Transactions": SYSLOG_TRANSACTIONS, "Case": CASE}
     for type_title in event_types_to_fetch:
@@ -163,6 +155,7 @@ def handle_log_types(event_types_to_fetch: list) -> list:
             raise DemistoException(
                 f"'{type_title}' is not valid event type, please select from the following list: {VALID_EVENT_TITLES}"
             )
+
     return log_types
 
 
@@ -179,6 +172,7 @@ def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: st
     Returns:
         Dict[str, Any]: Updated dictionary containing the last run details.
     """
+    demisto.debug(f"Updating last run details for {log_type}: {last_event_time}")
     last_run[LAST_FETCH_TIME[log_type]] = last_event_time
     last_run[PREVIOUS_RUN_IDS[log_type]] = previous_run_ids
     return last_run
@@ -196,16 +190,12 @@ def initialize_from_date(last_run: dict[str, Any], log_type: str) -> str:
         str: The start timestamp for fetching logs.
     """
     start_timestamp = last_run.get(LAST_FETCH_TIME[log_type])
-    demisto.debug(f"retrieved the last run start_timestamp: {start_timestamp} for log_type: {log_type}")
+
     if not start_timestamp:
-        demisto.debug(f"No start timestamp found for log_type: {log_type}")
         current_time = datetime.utcnow()
         first_fetch_time = current_time - timedelta(minutes=1)
         first_fetch_str = first_fetch_time.strftime(LOGS_DATE_FORMAT)
         from_date = first_fetch_str
-        demisto.debug(
-            f"Because there was no start timestamp found for log_type: {log_type}, we set the start timestamp to {from_date}"
-        )
     else:
         from_date = start_timestamp
 
@@ -347,8 +337,8 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
             last_fetch_time = events[-1].get("sys_created_on") if events else from_date
             last_run = update_last_run(last_run, log_type, last_fetch_time, list(previous_run_ids))
             collected_events.extend(events)
-        else:
-            demisto.debug(f"No new events found for {log_type} from {from_date}.")
+
+        demisto.debug(f"Finished getting all events for log: {log_type}")
 
     return collected_events, last_run
 
@@ -462,7 +452,6 @@ def main() -> None:  # pragma: no cover
             events, next_run = fetch_events_command(client=client, last_run=last_run, log_types=log_types)
 
             demisto.debug("Done fetching events, sending to XSIAM.")
-            demisto.debug(f"Events length: {len(events)}")
 
             if events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
