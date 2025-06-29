@@ -1,7 +1,8 @@
-ThreatFox is a platform from abuse.ch and Spamhaus dedicated to sharing indicators of compromise (IOCs) associated with malware, with the infosec community, AV vendors and cyber threat intelligence providers. 
+ThreatFox is a platform from abuse.ch and Spamhaus dedicated to sharing indicators of compromise (IOCs) associated with malware, with the infosec community, AV vendors and cyber threat intelligence providers.
 For more information visit: https://threatfox.abuse.ch/
 
 #### Create an Auth Key for abuse.ch
+>
 > Note: If you already have a profile, you can skip steps 1 and 2.
 
 1. Sign up for an abuse.ch account. You can do this easily by using an existing account that you may already have on X, LinkedIn, Google or Github. Just log in with the authentication provider of your choice here: https://auth.abuse.ch/
