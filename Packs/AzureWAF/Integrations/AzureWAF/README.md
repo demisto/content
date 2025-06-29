@@ -55,13 +55,17 @@ You only need to fill in your subscription ID and resource group name. You can f
 subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
 
 ## Azure Managed Identities Authentication
-##### Note: This option is relevant only if the integration is running on Azure VM.
+
+##### Note: This option is relevant only if the integration is running on Azure VM
+
 Follow one of these steps for authentication based on Azure Managed Identities:
 
 - ##### To use System Assigned Managed Identity
-   - In the **Authentication Type** drop-down list, select **Azure Managed Identities** and leave the **Azure Managed Identities Client ID** field empty.
+
+  - In the **Authentication Type** drop-down list, select **Azure Managed Identities** and leave the **Azure Managed Identities Client ID** field empty.
 
 - ##### To use User Assigned Managed Identity
+
    1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
    2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities client id** field in the instance configuration.
    3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
