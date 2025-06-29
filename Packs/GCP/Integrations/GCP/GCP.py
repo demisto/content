@@ -1116,9 +1116,8 @@ def check_required_permissions(
 
 
 def health_check(shared_creds: dict, project_id: str, connector_id: str) -> HealthCheckError | list[HealthCheckError] | None:
-    """Tests connectivity to GCP and checks.
-
-    This function is specifically used for COOC (Connect on our Cloud) health checks
+    """Tests connectivity to GCP.
+    This function is specifically used for COOC health checks
     to verify connectivity.
 
     Args:
