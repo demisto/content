@@ -22,7 +22,7 @@ DEFAULT_TOP = 1000
 
 class Client(BaseClient):
     """
-    Client to use in the Anomali ThreatStream Feed integration. Overrides BaseClient
+    Client to use in the SAP Cloud for Customer integration. Overrides BaseClient
     """
 
     def __init__(self, base_url, base64String, verify):
@@ -63,7 +63,7 @@ class Client(BaseClient):
         )
         return res
 
-    def error_handler(self, res: requests.Response):  # pragma: no cover
+    def error_handler(self, res: requests.Response) -> None:  # pragma: no cover
         """
         Error handler to call by super()._http_request in case an error was occurred.
         Handles specific HTTP status codes and raises a DemistoException.
@@ -76,13 +76,13 @@ class Client(BaseClient):
         elif res.status_code == 204:
             return
         elif res.status_code == 404:
-            raise DemistoException(f"{SAP_CLOUD} - The resource was not found. {res.text}")
+            raise DemistoException(f"{SAP_CLOUD} - The resource was not found at {res.url}. {res.text}")
         raise DemistoException(f"{SAP_CLOUD} - Error in API call {res.status_code} - {res.text}")
     
 
 """ COMMAND FUNCTIONS """
 
-def encode_to_base64(input_string):
+def encode_to_base64(input_string: str) -> str:
   """
   Encodes a given string into its Base64 representation.
 
@@ -156,7 +156,7 @@ def get_events(client: Client, report_id: str, start_date: str, skip: int, top: 
     return res.get('d', {}).get('results', [])
 
 
-def fetch_events(client: Client, params: dict, last_run: dict):
+def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[str, list[Any]]:
     """
     Fetches events from SAP Cloud API.
     Args:
@@ -169,7 +169,7 @@ def fetch_events(client: Client, params: dict, last_run: dict):
     """
     max_events_per_fetch = arg_to_number(params.get("max_fetch")) or 10000
     report_id = params.get("report_id")
-    all_events = []
+    all_events: list[dict[str, Any]] = []
     skip_count = INIT_SKIP
     top_count = DEFAULT_TOP
     now = get_current_utc_time()
@@ -177,7 +177,7 @@ def fetch_events(client: Client, params: dict, last_run: dict):
     demisto.debug(f"{last_run=}")
     
     # Get last_fetch time from last_run or set to FIRST_FETCH (e.g., "one minute ago")
-    start_date_str = last_run.get("lastRun")
+    start_date_str = last_run.get("last_fetch")
     
     if start_date_str: # last_fetch will be in ISO format
         # Parse and format to DD-MM-YYYY HH:MM:SS for the SAP API filter
@@ -191,7 +191,6 @@ def fetch_events(client: Client, params: dict, last_run: dict):
     else:
         # For the very first fetch or if last_run is empty
         start_date_for_filter = dateparser.parse(FIRST_FETCH).strftime(STRFTIME_FORMAT)
-    
     
     demisto.debug(f"Getting events from: {start_date_for_filter}")
 
@@ -208,7 +207,7 @@ def fetch_events(client: Client, params: dict, last_run: dict):
 
     demisto.debug(f"Fetched {len(all_events)} events.")
     # next_run will be the current time when the fetch started, in ISO format for Demisto's last_run
-    next_run = now.strftime(ISO_8601_FORMAT),
+    next_run = now.strftime(ISO_8601_FORMAT)
     return next_run, all_events
 
 
@@ -237,10 +236,7 @@ def main():
         if command == "test-module":
             # This call is made when clicking the integration 'Test' button.
             report_id = params.get("report_id")
-            if report_id:
-                return_results(test_module(client, report_id))
-            else:
-                demisto.info(f"Invalid Report ID:{report_id}")
+            return_results(test_module(client, report_id)) # Let test_module handle validation
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun() or {}
