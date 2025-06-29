@@ -101,9 +101,7 @@ def get_connector_id() -> str | None:
     """
     Retrieves the connector ID from the calling context.
 
-    This function extracts the connector ID from the CloudIntegrationInfo
-    in the calling context. This is useful for integration commands that
-    need to know which connector they're associated with.
+    This function extracts the connector ID from the CloudIntegrationInfo in the calling context.
 
     Returns:
         str | None: The connector ID if available in the context, otherwise None.
@@ -161,7 +159,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
     if scopes:
         request_data["scopes"] = scopes
 
-    demisto.info(f"[COOC API] Request data for credentials retrieval: {request_data}")
+    demisto.debug(f"[COOC API] Request data for credentials retrieval: {request_data}")
     response = None
 
     try:
