@@ -100,6 +100,7 @@ Converts the contents of a URL to an image file or a PDF file.
 ```
 
 #### Passing Multiple URLs
+
 If you want to pass several URLs as an argument when one or more of them contains comma, provide them as a JSON list. Make sure the list is formatted as a string, like this:
  ```"[\"https://www.a.com\", \"https://www.b.com\"]"```
 
@@ -111,7 +112,6 @@ for example:
 This format ensures proper parsing and avoids conflicts caused by nested quotation marks.
 
  This allows the integration to parse and handle multiple URLs correctly. Be sure to wrap the list in quotes (") so it is interpreted as a single argument.
-
 
 #### Human Readable Output
 
@@ -326,6 +326,5 @@ Converts an html file to a PDF or PNG file.
     }
 }
 ```
-
 
 #### Human Readable Output
