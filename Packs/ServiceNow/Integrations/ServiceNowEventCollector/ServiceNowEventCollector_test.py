@@ -6,6 +6,7 @@ import ServiceNowEventCollector
 from CommonServerPython import DemistoException
 from ServiceNowEventCollector import (
     AUDIT,
+    CASE,
     DATE_FORMAT,
     LAST_FETCH_TIME,
     LOGS_DATE_FORMAT,
@@ -39,12 +40,13 @@ class TestFetchActivity:
             credentials={"username": "test", "password": "test"},
             client_id="test_id",
             client_secret="test_secret",
-            url=self.base_url,
+            server_url=self.base_url,
             verify=False,
             proxy=False,
-            api_server_url=f"{self.base_url}/api/now",
+            api_version=None,
             fetch_limit_audit=10,
             fetch_limit_syslog=10,
+            fetch_limit_case=10,
         )
 
     @staticmethod
@@ -115,6 +117,7 @@ class TestFetchActivity:
         assert isinstance(command_results.readable_output, str)
         assert "Audit Events" in command_results.readable_output
         assert "Syslog Transactions Events" not in command_results.readable_output
+        assert "Case Events" not in command_results.readable_output
 
     def test_get_events_command_empty_response(self, mocker):
         """
@@ -266,28 +269,32 @@ class TestFetchActivity:
         Then:
             - Validates that the function processes both log types and updates last_run accordingly.
         """
-        log_types = [AUDIT, SYSLOG_TRANSACTIONS]
+        log_types = [AUDIT, SYSLOG_TRANSACTIONS, CASE]
         last_run = {
             "previous_run_ids": [],
             "previous_run_ids_syslog": [],
+            "previous_run_ids_case": [],
         }
         mock_audit_events = [{"event_id": 1, "sys_created_on": "2023-01-01 01:00:00"}]
         mock_syslog_events = [{"event_id": 2, "sys_created_on": "2023-01-01T02:00:00Z"}]
+        mock_case_events = [{"event_id": 3, "sys_created_on": "2023-01-04 01:03:00"}]
 
         mocker.patch(
-            "ServiceNowEventCollector.initialize_from_date", side_effect=["2023-01-01T00:00:00Z", "2023-01-01T00:00:00Z"]
+            "ServiceNowEventCollector.initialize_from_date",
+            side_effect=["2023-01-01T00:00:00Z", "2023-01-01T00:00:00Z", "2023-01-01T00:00:00Z"],
         )
-        mocker.patch.object(self.client, "search_events", side_effect=[mock_audit_events, mock_syslog_events])
+        mocker.patch.object(self.client, "search_events", side_effect=[mock_audit_events, mock_syslog_events, mock_case_events])
         mocker.patch(
             "ServiceNowEventCollector.process_and_filter_events",
-            side_effect=[(mock_audit_events, {"1"}), (mock_syslog_events, {"2"})],
+            side_effect=[(mock_audit_events, {"1"}), (mock_syslog_events, {"2"}), (mock_case_events, {"3"})],
         )
 
         collected_events, updated_last_run = fetch_events_command(self.client, last_run, log_types)
 
-        assert collected_events == mock_audit_events + mock_syslog_events
+        assert collected_events == mock_audit_events + mock_syslog_events + mock_case_events
         assert updated_last_run[LAST_FETCH_TIME[AUDIT]] == "2023-01-01 01:00:00"
         assert updated_last_run[LAST_FETCH_TIME[SYSLOG_TRANSACTIONS]] == "2023-01-01T02:00:00Z"
+        assert updated_last_run[LAST_FETCH_TIME[CASE]] == "2023-01-04 01:03:00"
 
     def test_fetch_events_command_empty_log_types(self):
         """
@@ -306,6 +313,47 @@ class TestFetchActivity:
 
         assert collected_events == []
         assert updated_last_run == last_run
+
+    @pytest.mark.parametrize(
+        "log_type, api_version, expected_url",
+        [
+            # Test cases without an API version
+            (AUDIT, None, "https://test.com/api/now/table/sys_audit"),
+            (SYSLOG_TRANSACTIONS, None, "https://test.com/api/now/table/syslog_transaction"),
+            (CASE, None, "https://test.com/api/sn_customerservice/case"),
+            # Test cases with an API version provided
+            (AUDIT, "v2", "https://test.com/api/now/v2/table/sys_audit"),
+            (SYSLOG_TRANSACTIONS, "v1", "https://test.com/api/now/v1/table/syslog_transaction"),
+            (CASE, "v_custom", "https://test.com/api/sn_customerservice/v_custom/case"),
+        ],
+    )
+    def test_get_api_url(self, log_type, api_version, expected_url):
+        """
+        Given:
+            - A log type and an API version (or None).
+        When:
+            - The _get_api_url method is called.
+        Then:
+            - The method returns the correctly constructed full API URL.
+        """
+        # Arrange: Create a new client with the specific api_version for this test case
+        client = Client(
+            use_oauth=True,
+            credentials={"username": "test", "password": "test"},
+            client_id="test_id",
+            client_secret="test_secret",
+            server_url=self.base_url,
+            verify=False,
+            proxy=False,
+            api_version=api_version,  # Use the parameterized version
+            fetch_limit_audit=10,
+            fetch_limit_syslog=10,
+            fetch_limit_case=10,
+        )
+
+        actual_url = client._get_api_url(log_type)
+
+        assert actual_url == expected_url
 
 
 def test_process_and_filter_events_standard_case():
@@ -476,12 +524,13 @@ def test_get_limit_with_args():
         credentials={"username": "test", "password": "test"},
         client_id="test_id",
         client_secret="test_secret",
-        url="https://test.com",
+        server_url="https://test.com",
         verify=False,
         proxy=False,
-        api_server_url="https://test.com/api/now",
+        api_version=None,
         fetch_limit_audit=300,
         fetch_limit_syslog=400,
+        fetch_limit_case=250,
     )
 
     limit = get_limit(args, client)
@@ -509,12 +558,13 @@ def test_get_limit_with_client_default():
         credentials={"username": "test", "password": "test"},
         client_id="test_id",
         client_secret="test_secret",
-        url="https://test.com",
+        server_url="https://test.com",
         verify=False,
         proxy=False,
-        api_server_url="https://test.com/api/now",
+        api_version=None,
         fetch_limit_audit=300,
         fetch_limit_syslog=400,
+        fetch_limit_case=250,
     )
     limit = get_limit(args, client)
 
@@ -541,12 +591,13 @@ def test_get_limit_with_no_args_or_client_default():
         credentials={"username": "test", "password": "test"},
         client_id="test_id",
         client_secret="test_secret",
-        url="https://test.com",
+        server_url="https://test.com",
         verify=False,
         proxy=False,
-        api_server_url="https://test.com/api/now",
+        api_version=None,
         fetch_limit_audit=None,
         fetch_limit_syslog=400,
+        fetch_limit_case=250,
     )
     limit = get_limit(args, client)
 
@@ -841,17 +892,24 @@ def test_update_multiple_log_types():
         "previous_run_ids": ["id1", "id2"],
         "last_fetch_time_syslog": "2023-01-01T00:00:00Z",
         "previous_run_ids_syslog": ["id3", "id4"],
+        "last_fetch_time_case": "2023-01-01T00:00:00Z",
+        "previous_run_ids_case": ["id5", "id6"],
     }
 
     # Update audit logs
-    updated_last_run = update_last_run(last_run, "audit", "2023-01-02T00:00:00Z", ["id5", "id6"])
+    updated_last_run = update_last_run(last_run, "audit", "2023-01-02T00:00:00Z", ["id7", "id8"])
     assert updated_last_run[LAST_FETCH_TIME[AUDIT]] == "2023-01-02T00:00:00Z"
-    assert updated_last_run[PREVIOUS_RUN_IDS[AUDIT]] == ["id5", "id6"]
+    assert updated_last_run[PREVIOUS_RUN_IDS[AUDIT]] == ["id7", "id8"]
 
     # Update syslog transactions
-    updated_last_run = update_last_run(last_run, "syslog transactions", "2023-01-03T00:00:00Z", ["id7", "id8"])
+    updated_last_run = update_last_run(last_run, "syslog transactions", "2023-01-03T00:00:00Z", ["id9", "id10"])
     assert updated_last_run[LAST_FETCH_TIME[SYSLOG_TRANSACTIONS]] == "2023-01-03T00:00:00Z"
-    assert updated_last_run[PREVIOUS_RUN_IDS[SYSLOG_TRANSACTIONS]] == ["id7", "id8"]
+    assert updated_last_run[PREVIOUS_RUN_IDS[SYSLOG_TRANSACTIONS]] == ["id9", "id10"]
+
+    # Update case logs
+    updated_last_run = update_last_run(last_run, "case", "2023-01-04T00:00:00Z", ["id11", "id12"])
+    assert updated_last_run[LAST_FETCH_TIME[CASE]] == "2023-01-04T00:00:00Z"
+    assert updated_last_run[PREVIOUS_RUN_IDS[CASE]] == ["id11", "id12"]
 
 
 def test_handle_log_types_valid_titles():
@@ -865,8 +923,8 @@ def test_handle_log_types_valid_titles():
     Then:
         - Returns a list of corresponding log types.
     """
-    event_types_to_fetch = ["Audit", "Syslog Transactions"]
-    expected_log_types = [AUDIT, SYSLOG_TRANSACTIONS]
+    event_types_to_fetch = ["Audit", "Syslog Transactions", "Case"]
+    expected_log_types = [AUDIT, SYSLOG_TRANSACTIONS, CASE]
     assert handle_log_types(event_types_to_fetch) == expected_log_types
 
 
@@ -998,12 +1056,13 @@ def test_module_of_testing_success_and_failure(mocker):
         credentials={"username": "test", "password": "test"},
         client_id="id",
         client_secret="secret",
-        url="https://example.com",
+        server_url="https://example.com",
         verify=False,
         proxy=False,
-        api_server_url="https://example.com/api/now",
+        api_version=None,
         fetch_limit_audit=10,
         fetch_limit_syslog=10,
+        fetch_limit_case=10,
     )
 
     mocker.patch("ServiceNowEventCollector.fetch_events_command", return_value=([], {}))
