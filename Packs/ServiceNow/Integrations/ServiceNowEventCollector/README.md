@@ -1,23 +1,24 @@
-Use this integration to fetch audit and syslog transactions logs from ServiceNow as Cortex XSIAM events.
+Use this integration to fetch audit, case and syslog transactions logs from ServiceNow as Cortex XSIAM events.
 This integration was integrated and tested with Vancouver version of ServiceNow API.
 
 ## Configure ServiceNow Event Collector in Cortex
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| ServiceNow URL, in the format https://company.service-now.com/ |  | True |
-| Username |  | True |
-| Password |  | True |
-| Client ID |  | False |
-| Client Secret |  | False |
-| ServiceNow API Version (e.g., 'v1') |  | False |
-| Use OAuth Login | Select this checkbox to use OAuth 2.0 authentication. | False |
-| Event Types To Fetch | Event types to fetch. Defaults to 'Audit' if no type is specified. | False |
-| Maximum audit events to fetch | Maximum number of audit events per fetch. | False |
-| Maximum syslog transactions events to fetch | Maximum number of syslog transactions events per fetch. | False |
-| Events Fetch Interval |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| **Parameter**                                                 | **Description**                                                    | **Required** |
+|---------------------------------------------------------------|--------------------------------------------------------------------| --- |
+| ServiceNow URL, in the format https://company.service-now.com/ |                                                                    | True |
+| Username                                                      |                                                                    | True |
+| Password                                                      |                                                                    | True |
+| Client ID                                                     |                                                                    | False |
+| Client Secret                                                 |                                                                    | False |
+| ServiceNow API Version (e.g., 'v1')                           |                                                                    | False |
+| Use OAuth Login                                               | Select this checkbox to use OAuth 2.0 authentication.              | False |
+| Event Types To Fetch                                          | Event types to fetch. Defaults to 'Audit' if no type is specified. | False |
+| Maximum audit events to fetch                                 | Maximum number of audit events per fetch.                          | False |
+| Maximum syslog transactions events to fetch                   | Maximum number of syslog transactions events per fetch.            | False |
+| Maximum case events to fetch                                  | Maximum number of case events per fetch.                           | False |
+| Events Fetch Interval                                         |                                                                    | False |
+| Trust any certificate (not secure)                            |                                                                    | False |
+| Use system proxy settings                                     |                                                                    | False |
 
 ## Commands
 
