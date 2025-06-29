@@ -203,13 +203,19 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
     response = client.send_chat_message(prompt, model, history)
 
     content = ""
+    finish_reason = ""
     if (candidates := response.get("candidates")) and len(candidates) > 0:
         parts = demisto.get(candidates[0], "content.parts")
         if parts and isinstance(parts, list) and len(parts) > 0 and isinstance(parts[0], dict):
             content = parts[0].get("text")  # type: ignore[assignment]
+        else:
+            finish_reason  = demisto.get(candidates[0], "finishReason")
 
     if not content:
         content = "No response generated."
+        if finish_reason:
+            return_warning(
+                f"The model finished before completing the full response, due to {finish_reason}")
 
     outputs = {"Prompt": prompt, "Response": content, "Model": model or client.model, "Temperature": client.temperature}
     if save_conversation:
