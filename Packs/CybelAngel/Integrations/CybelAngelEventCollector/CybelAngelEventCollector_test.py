@@ -342,7 +342,7 @@ def test_get_events_command_command(mocker, params_mocker):
     Given:
      - limit is 9.
      - server holds 10 events.
-     - is_fetch_events = true.
+     - should_push_events = true.
      - fetching reports.
 
     When:
@@ -360,7 +360,7 @@ def test_get_events_command_command(mocker, params_mocker):
     mocker.patch.object(
         demisto,
         "args",
-        return_value={"start_date": "2024-02-29T13:48:32", "limit": 9, "is_fetch_events": True},
+        return_value={"start_date": "2024-02-29T13:48:32", "limit": 9, "should_push_events": True},
     )
     mocker.patch.object(demisto, "command", return_value="cybelangel-get-events")
 
