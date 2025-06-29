@@ -101,15 +101,13 @@ def get_connector_id() -> str | None:
     """
     Retrieves the connector ID from the calling context.
 
-    This function extracts the connector ID from the CloudIntegrationInfo
-    in the calling context. This is useful for integration commands that
-    need to know which connector they're associated with.
+    This function extracts the connector ID from the CloudIntegrationInfo in the calling context.
 
     Returns:
         str | None: The connector ID if available in the context, otherwise None.
     """
     cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
-    demisto.info(f"[COOC API] Cloud credentials request context: {cloud_info_context}")
+    demisto.debug(f"[COOC API] Cloud credentials request context: {cloud_info_context}")
 
     if connector_id := cloud_info_context.get("connectorID"):
         demisto.debug(f"[COOC API] Retrieved connector ID from context: {connector_id}")
@@ -161,7 +159,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
     if scopes:
         request_data["scopes"] = scopes
 
-    demisto.info(f"[COOC API] Request data for credentials retrieval: {request_data}")
+    demisto.debug(f"[COOC API] Request data for credentials retrieval: {request_data}")
     response = None
 
     try:
@@ -183,7 +181,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
             raise KeyError("Did not receive any credentials from CTS.")
 
         expiration_time = credentials.get("expiration_time")
-        demisto.info(f"[COOC API] {account_id}: Received credentials. Expiration time: {expiration_time}")
+        demisto.debug(f"[COOC API] {account_id}: Received credentials. Expiration time: {expiration_time}")
         return credentials
 
     except Exception as e:
@@ -226,26 +224,26 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = 1)
 def _check_account(
     account_id: str, connector_id: str, shared_creds: dict, health_check_func: Callable[[dict, str, str], HealthCheckError]
 ) -> HealthCheckError | None:
-    """Helper function to check permissions for a single account.
+    """Helper function to check a single account.
 
     Args:
         account_id (str): The Account ID.
         connector_id (str): The connector ID.
         shared_creds (dict): Pre-fetched credentials to reuse across all accounts.
-        health_check_func (callable): Function that implements the permission check.
+        health_check_func (callable): Function that implements the health check.
 
     Returns:
-        HealthCheckError | None: Result of the permission check, or None if account has no ID.
+        HealthCheckError | None: Result of the health check, or None if account has no ID.
     """
 
     try:
         return health_check_func(shared_creds, account_id, connector_id)
     except Exception as e:
-        demisto.error(f"[COOC API] Error checking permissions for account {account_id}: {str(e)}")
+        demisto.error(f"[COOC API] Error checking account {account_id}: {str(e)}")
         return HealthCheckError(
             account_id=account_id,
             connector_id=connector_id,
-            message=f"Failed to check permissions: {str(e)}",
+            message=f"Failed to check account: {str(e)}",
             error_type=ErrorType.INTERNAL_ERROR,
         )
 
@@ -258,7 +256,7 @@ def run_health_check_for_accounts(
     Args:
         connector_id (str): The ID of the connector to fetch accounts for.
         cloud_type (str): The cloud provider type (AWS, GCP, AZURE, OCI).
-        health_check_func (callable): Function that implements the permission check.
+        health_check_func (callable): Function that implements the health check.
                                         Should accept shared_creds, account_id and connector_id parameters
                                         and return a HealthCheckError or None.
 
@@ -296,7 +294,7 @@ def run_health_check_for_accounts(
     if result is not None:
         health_check_result.error(result)
 
-    demisto.info(f"[COOC API] Completed processing {account_id}")
+    demisto.debug(f"[COOC API] Completed processing {account_id}")
     return health_check_result.summarize()
 
 
@@ -315,7 +313,7 @@ def get_proxydome_token() -> str:
         requests.RequestException: If the request to the metadata server fails.
     """
     url = "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity"
-    params = {"audience": "cortex.platform.local"}
+    params = {"audience": os.getenv("CORTEX_AUDIENCE")}
     headers = {"Metadata-Flavor": "Google"}
     proxies = {"http": "", "https": ""}
 
