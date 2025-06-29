@@ -1348,6 +1348,65 @@ class SecurityAndComplianceClient {
         https://learn.microsoft.com/en-us/powershell/module/exchange/remove-caseholdpolicy?view=exchange-ps
         #>
     }
+    
+
+    [psobject]GetRecoverableItems(
+        [string[]]$identity,
+        [string]$subject_contains = $null,
+        [datetime]$start_date = $null,
+        [datetime]$end_date = $null
+    ) {
+        # Establish session to remote Exchange Online
+        $this.CreateDelegatedSession("Get-RecoverableItems")
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $identity
+        }
+    
+        if ($subject_contains) {
+            $cmd_params["SubjectContains"] = $subject_contains
+        }
+    
+        if ($start_date -ne $null) {
+            $cmd_params["StartDate"] = $start_date
+        }
+    
+        if ($end_date -ne $null) {
+            $cmd_params["EndDate"] = $end_date
+        }
+    
+        # Execute the command
+        $response = Get-RecoverableItems @cmd_params
+    
+        # Disconnect the session
+        $this.DisconnectSession()
+    
+        return $response
+    
+        <#
+            .DESCRIPTION
+            Retrieves recoverable items (e.g., deleted emails) from mailbox(es) using Get-RecoverableItems.
+    
+            .PARAMETER identity
+            One or more mailbox identities to retrieve recoverable items from.
+    
+            .PARAMETER subject_contains
+            Optional. Filter emails containing this string in the subject.
+    
+            .PARAMETER start_date
+            Optional. Start date for filtering recoverable items.
+    
+            .PARAMETER end_date
+            Optional. End date for filtering recoverable items.
+    
+            .EXAMPLE
+            $client.GetRecoverableItems("user@example.com", "invoice", (Get-Date).AddDays(-7), (Get-Date))
+    
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/get-recoverableitems?view=exchange-ps
+        #>
+    }
 
 
     CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
@@ -1994,18 +2053,21 @@ function SearchAndRecoveryEmailCommand {
                             return "$script:INTEGRATION_NAME - Preview completed. No items to restore.", $entry_context, $action
                         }
                     $Demisto.results("Preview completed. Running restore operation. Items:" + $action.Items)
-                    $recipients = $action.ExchangeLocation -join ','
+                    $recipients = $action.ExchangeLocation
                     $subject = ""
                     if ($action.Results) {
                         if ($action.Results -match "Subject: ([^;]+);") {
                             $subject = $matches[1]
                         }
                     }
-                    $Demisto.results("Subject: $subject Recipients: $recipients")
+                    $Demisto.results("Subject: $subject Recipients: $($recipients -join ',')")
 
 
                     # Restore-RecoverableItems -Identity $recipients -SubjectContains $subject
-                    Get-RecoverableItems -Identity $recipients -SubjectContains $subject
+                    # RecoverableItems -Identity $recipients -SubjectContains $subject
+                    $response = $client.GetRecoverableItems($recipients, $subject)
+                    $Demisto.results("GetRecoverableItems response:")
+                    $Demisto.results(($response | ConvertTo-Json -Depth 5))
 
                     $Demisto.results("Restore completed.")
                     return "$script:INTEGRATION_NAME - Restore completed successfully.", $entry_context
