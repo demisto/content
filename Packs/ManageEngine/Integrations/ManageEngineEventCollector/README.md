@@ -4,7 +4,6 @@ ManageEngine Endpoint Central is a Unified Endpoint Management solution that hel
 
 Endpoint Central cloud is hosted at multiple data centers, and therefore available on different domains. There are several domains for Endpoint Central Cloud APIs, so you can use the one that is applicable to you.
 
-
 | Data Centre  | Domain | EndpointCentral Server URI                 |
 |-------------:|:-------|:-------------------------------------------|
 | United States| .com   | https://endpointcentral.manageengine.com   |
@@ -18,7 +17,6 @@ Endpoint Central cloud is hosted at multiple data centers, and therefore availab
 The APIs on this page are intended for organizations hosted on the **.com** domain. If your organization is on a different domain, replace “.com” with the appropriate domain for the API endpoints before using them.  
 Note: You can also find out which domain you’re accessing by checking the URL while logged in to Endpoint Central.
 
-
 ## Setting Up the Instance
 
 ### Step 1: Generate Client ID and Client Secret
@@ -29,8 +27,9 @@ Note: You can also find out which domain you’re accessing by checking the URL 
 
 ### Step 2: Authorization by generating the grant token
 
-After generating `Client_ID` and `Client_Secret`, a grant code has to be generated. 
+After generating `Client_ID` and `Client_Secret`, a grant code has to be generated.
 Self Client Method - For Self Client type.
+
 - After registration, click the `Self Client` method available on the Applications list.
 - Enter a valid scope: DesktopCentralCloud.Admin.READ
 
@@ -40,9 +39,7 @@ Click Create to generate `Code`.
 
 To test the configuration, run the !manage-engine-test command instead of using the Test button.
 
-
 ## Configure ManageEngine in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -82,10 +79,10 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events. Otherwise, it will only display them. Used for debugging purposes.| Required | 
-| limit              | Maximum number of results to return.                                                                       | Optional | 
-| start_date         | Date from which to get events, For example '2018-11-06T08:56:41.000Z'.                                         | Optional | 
-| end_date           | Date to which to get events , For example '2018-11-06T08:56:41.000Z'.                                          | Optional | 
+| should_push_events | If true, the command will create events. Otherwise, it will only display them. Used for debugging purposes.| Required |
+| limit              | Maximum number of results to return.                                                                       | Optional |
+| start_date         | Date from which to get events, For example '2018-11-06T08:56:41.000Z'.                                         | Optional |
+| end_date           | Date to which to get events , For example '2018-11-06T08:56:41.000Z'.                                          | Optional |
 
 #### Context Output
 
