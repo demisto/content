@@ -1164,9 +1164,11 @@ Updates a group.
 The following arguments were removed in this version:
 
 In the *tc-tag-indicator* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-get-indicator* command:
+
 - *indicator_type* - this argument was redundant.
 - *owners* - this argument was redundant.
 - *ratingThreshold* - this argument was redundant.
@@ -1178,72 +1180,93 @@ In the *tc-get-indicator* command:
 - *indicator_attributes* - this argument was redundant.
 
 In the *tc-add-indicator* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-create-incident* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-fetch-incidents* command:
+
 - *incidentName* - this argument was redundant.
 
 In the *tc-incident-associate-indicator* command:
+
 - *indicatorType* - this argument was redundant.
 - *owner* - this argument was redundant.
 
 In the *tc-get-incident-associate-indicators* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-update-indicator* command:
+
 - *observations* - this argument was redundant.
 - *threatAssessConfidence* - this argument was redundant.
 - *threatAssessRating* - this argument was redundant.
 - *owner* - this argument was redundant.
 
 In the *tc-create-campaign* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-create-event* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-delete-group* command:
+
 - *type* - this argument was redundant.
 
 In the *tc-add-group-attribute* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-add-group-security-label* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-add-group-tag* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-group-associate-indicator* command:
+
 - *indicator_type* - this argument was redundant.
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group-attributes* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group-security-labels* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group-tags* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group-indicators* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-associated-groups* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-associate-group-to-group* command:
+
 - *group_type* - this argument was redundant.
 - *associated_group_type* - this argument was redundant.
 
 In the *tc-download-report* command:
+
 - *group_type* - this argument was redundant.
 
 ## Additional Considerations for this version
