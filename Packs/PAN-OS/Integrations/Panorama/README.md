@@ -9847,7 +9847,7 @@ Gathers the name, expiration date, and expiration status of certificates configu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| show_expired_only | Show only expired certificates. | Optional | 
+| show_expired_only | Show only expired certificates. | Optional |
 
 #### Command example
 
@@ -9896,4 +9896,3 @@ Gathers the name, expiration date, and expiration status of certificates configu
 >| name | device | subject | expiration_date | expiration_status | location | cert_type | devices_using_certificate |
 >| --- | --- | --- | --- | --- | --- | --- | --- |
 >| ACME Root CA | panorama.test | /CN=acme-root-ca.acme.com | May  9 16:35:16 2026 GMT | Valid | Panorama | Pushed | 111111111111111 |
-
