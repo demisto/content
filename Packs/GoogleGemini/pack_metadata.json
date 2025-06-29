@@ -1,10 +1,10 @@
 {
     "name": "Google Gemini",
     "description": "Leverage Google's advanced AI models for intelligent analysis, content generation, and conversational capabilities in your workflows.",
-    "support": "developer",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "Mu Wang",
-    "url": "https://github.com/warm200/content/issues",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Cloud Services"
@@ -30,6 +30,15 @@
         "analysis",
         "content generation"
     ],
-    "marketplaces": [],
-    "githubUser": ["warm200"]
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

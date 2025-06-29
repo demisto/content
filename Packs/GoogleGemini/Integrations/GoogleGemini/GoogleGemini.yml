@@ -13,7 +13,7 @@ configuration:
   section: Connect
   type: 0
 - name: api_key
-  displaypassword: Api Key
+  displaypassword: API Key
   required: true
   defaultvalue:
   type: 9
@@ -121,21 +121,24 @@ script:
     description: Send a chat message to the Gemini AI model.
     name: google-gemini-send-message
     outputs:
-    - contextPath: GoogleGemini.Chat.prompt
+    - contextPath: GoogleGemini.Chat.Prompt
       description: The original prompt sent to the model.
       type: String
-    - contextPath: GoogleGemini.Chat.response
+    - contextPath: GoogleGemini.Chat.Response
       description: The AI model's response.
       type: String
-    - contextPath: GoogleGemini.Chat.model
+    - contextPath: GoogleGemini.Chat.Model
       description: The model used for generation.
       type: String
-    - contextPath: GoogleGemini.Chat.temperature
+    - contextPath: GoogleGemini.Chat.Temperature
       description: The temperature setting used.
       type: Number
-    - contextPath: GoogleGemini.History
+    - contextPath: GoogleGemini.Chat.History
       description: Complete conversation history in Gemini format, updated when save_conversation=true. Can be used as input for the history argument in subsequent calls.
       type: Unknown
+    - contextPath: GoogleGemini.Chat.ConversationId
+      description: A unique identifier, used to identify the chat session.
+      type: String
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''

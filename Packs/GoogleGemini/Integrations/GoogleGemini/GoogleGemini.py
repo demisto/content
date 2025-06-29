@@ -10,6 +10,7 @@ from CommonServerUserPython import *  # noqa
 """ IMPORTS """
 import json
 from typing import Any
+from uuid import uuid4
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601
@@ -121,7 +122,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client):
     """Tests API connectivity and authentication.
 
     Uses a simple chat message to verify that the API is reachable and the provided token is valid.
@@ -130,13 +131,15 @@ def test_module(client: Client) -> str:
     :return: 'ok' if successful, or an error message string.
     """
     try:
-        response = client.send_chat_message("Hello, please respond with 'OK' to test connectivity.")
-        if response.get("error"):
-            raise Exception(response.get("error"))
+        client.send_chat_message("Hello, please respond with 'OK' to test connectivity.")
         return "ok"
-    except Exception as e:
-        return_error(f"An unexpected error occurred during connectivity test: {str(e)}")
-        return ""
+    except DemistoException as e:
+        err_msg = e.message
+        try:
+            err_msg = demisto.get(e.res.json(), "error.message", err_msg)
+        except Exception:
+            pass
+        return_error(f"An unexpected error occurred during connectivity test: {err_msg}")
 
 
 def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
@@ -172,41 +175,43 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
         except json.JSONDecodeError:
             raise ValueError("History must be valid JSON array of conversation objects.")
 
+    conversation_id = None
+    outputs_key_field = "prompt"
     if save_conversation:
         context = demisto.context()
         existing_history = None
 
-        if "GoogleGemini" in context:
-            google_gemini = context["GoogleGemini"]
-            if isinstance(google_gemini, dict) and "History" in google_gemini:
-                existing_history = google_gemini["History"]
-            elif isinstance(google_gemini, list) and len(google_gemini) > 0:
-                for item in reversed(google_gemini):
+        if google_gemini_context := demisto.get(context, "GoogleGemini.Chat"):
+            if isinstance(google_gemini_context, dict) and "History" in google_gemini_context:
+                existing_history = google_gemini_context["History"]
+                conversation_id = google_gemini_context["ConversationId"]
+
+            elif isinstance(google_gemini_context, list):
+                for item in reversed(google_gemini_context):
                     if isinstance(item, dict) and "History" in item:
                         existing_history = item["History"]
+                        conversation_id = item["ConversationId"]
                         break
 
-        if existing_history and isinstance(existing_history, list) and len(existing_history) >= 2:
-            history = existing_history[-2:]
-        elif existing_history and isinstance(existing_history, list) and len(existing_history) == 1:
-            history = existing_history[-1:]
+        # trying to take the last 2 entries
+        if existing_history and isinstance(existing_history, list):
+            if len(existing_history) >= 2:
+                history = existing_history[-2:]
+            else:
+                history = existing_history
 
     response = client.send_chat_message(prompt, model, history)
-
-    if response.get("error"):
-        raise Exception(f"API Error: {response.get('error')}")
 
     content = ""
     if (candidates := response.get("candidates")) and len(candidates) > 0:
         parts = demisto.get(candidates[0], "content.parts")
         if parts and isinstance(parts, list) and len(parts) > 0 and isinstance(parts[0], dict):
-            content = parts[0].get("text")
+            content = parts[0].get("text")  # type: ignore[assignment]
 
     if not content:
         content = "No response generated."
 
-    chat_outputs = {"prompt": prompt, "response": content, "model": model or client.model, "temperature": client.temperature}
-    outputs: dict[str, Any] = {"Chat": chat_outputs}
+    outputs = {"Prompt": prompt, "Response": content, "Model": model or client.model, "Temperature": client.temperature}
     if save_conversation:
         current_conversation = history.copy() if history else []
         current_conversation.append({"role": "user", "parts": [{"text": prompt}]})
@@ -215,10 +220,12 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
             current_conversation.append({"role": "model", "parts": [{"text": content}]})
 
         outputs["History"] = current_conversation
+        outputs["ConversationId"] = conversation_id or str(uuid4())
+        outputs_key_field = "ConversationId"
 
     return CommandResults(
-        outputs_prefix="GoogleGemini",
-        outputs_key_field="",
+        outputs_prefix="GoogleGemini.Chat",
+        outputs_key_field=outputs_key_field,
         outputs=outputs,
         raw_response=response,
         readable_output=content,

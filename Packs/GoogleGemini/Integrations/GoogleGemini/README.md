@@ -28,6 +28,7 @@ This integration provides access to Google Gemini's large language models for AI
 The integration supports various Gemini models including:
 
 **Stable Models:**
+
 - gemini-2.0-flash
 - gemini-2.0-flash-lite  
 - gemini-1.5-flash
@@ -35,17 +36,20 @@ The integration supports various Gemini models including:
 - gemini-1.5-pro
 
 **Preview Models:**
+
 - gemini-2.5-flash-preview-05-20
 - gemini-2.5-pro-preview-06-05
 - gemini-2.0-flash-preview-image-generation
 
 **Audio/TTS Models:**
+
 - gemini-2.5-flash-preview-native-audio-dialog
 - gemini-2.5-flash-exp-native-audio-thinking-dialog
 - gemini-2.5-flash-preview-tts
 - gemini-2.5-pro-preview-tts
 
 **Specialized Models:**
+
 - text-embedding-004 (for embeddings)
 - models/embedding-001 (for embeddings)
 - models/aqa (for attributed question-answering)
@@ -79,11 +83,11 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleGemini.Chat.prompt | String | The original prompt sent to the model |
-| GoogleGemini.Chat.response | String | The AI model's response |
-| GoogleGemini.Chat.model | String | The model used for generation |
-| GoogleGemini.Chat.temperature | Number | The temperature parameter used for response generation |
-| GoogleGemini.History | Array | Complete conversation history (when save_conversation=true) |
+| GoogleGemini.Chat.Prompt | String | The original prompt sent to the model |
+| GoogleGemini.Chat.Response | String | The AI model's response |
+| GoogleGemini.Chat.Model | String | The model used for generation |
+| GoogleGemini.Chat.Temperature | Number | The temperature parameter used for response generation |
+| GoogleGemini.Chat.History | Array | Complete conversation history (when save_conversation=true) |
 
 #### Command Examples
 
@@ -98,6 +102,7 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 #### Conversation History Management
 
 When `save_conversation=true`, the integration:
+
 - Automatically retrieves existing conversation history from context
 - Uses the last exchange (user + model response) to provide context for the current request
 - Saves the complete updated conversation history to `GoogleGemini.History`

@@ -150,7 +150,7 @@ def test_test_module_exception(client_fixture, mocker):
 
 def test_test_module_api_error(client_fixture, mocker):
     """Test test_module function with API error response"""
-    client_fixture._http_request.return_value = {"error": {"message": "Invalid API key"}}
+    client_fixture._http_request.side_effect = DemistoException(message="{'message': 'Invalid API key'}")
     mock_return_error = mocker.patch.object(GoogleGemini, "return_error")
 
     GoogleGemini.test_module(client_fixture)
@@ -168,13 +168,13 @@ def test_google_gemini_send_message_command_success(client_fixture):
     result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "GoogleGemini"
-    assert result.outputs_key_field == ""
+    assert result.outputs_prefix == "GoogleGemini.Chat"
+    assert result.outputs_key_field == "prompt"
     assert result.outputs is not None
     assert isinstance(result.outputs, dict)
-    assert result.outputs["Chat"]["prompt"] == "What is AI?"
-    assert result.outputs["Chat"]["response"] == "Hello! This is a test response from Gemini."
-    assert result.outputs["Chat"]["model"] == "gemini-2.0-flash"
+    assert result.outputs["Prompt"] == "What is AI?"
+    assert result.outputs["Response"] == "Hello! This is a test response from Gemini."
+    assert result.outputs["Model"] == "gemini-2.0-flash"
     assert result.readable_output == "Hello! This is a test response from Gemini."
 
 
@@ -196,11 +196,11 @@ def test_google_gemini_send_message_command_unsupported_model(client_fixture):
     result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_key_field == ""
+    assert result.outputs_key_field == "prompt"
     assert result.outputs is not None
     assert isinstance(result.outputs, dict)
-    assert result.outputs["Chat"]["prompt"] == "Test prompt"
-    assert result.outputs["Chat"]["model"] == "unsupported-model"
+    assert result.outputs["Prompt"] == "Test prompt"
+    assert result.outputs["Model"] == "unsupported-model"
 
 
 def test_google_gemini_send_message_command_with_history_string(client_fixture):
@@ -217,10 +217,10 @@ def test_google_gemini_send_message_command_with_history_string(client_fixture):
     result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_key_field == ""
+    assert result.outputs_key_field == "prompt"
     assert result.outputs is not None
     assert isinstance(result.outputs, dict)
-    assert result.outputs["Chat"]["prompt"] == "Follow-up question"
+    assert result.outputs["Prompt"] == "Follow-up question"
 
 
 def test_google_gemini_send_message_command_with_history_list(client_fixture):
@@ -234,10 +234,10 @@ def test_google_gemini_send_message_command_with_history_list(client_fixture):
     result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_key_field == ""
+    assert result.outputs_key_field == "prompt"
     assert result.outputs is not None
     assert isinstance(result.outputs, dict)
-    assert result.outputs["Chat"]["prompt"] == "Follow-up question"
+    assert result.outputs["Prompt"] == "Follow-up question"
 
 
 def test_google_gemini_send_message_command_invalid_history(client_fixture):
@@ -251,12 +251,13 @@ def test_google_gemini_send_message_command_invalid_history(client_fixture):
 
 def test_google_gemini_send_message_command_api_error(client_fixture):
     """Test google_gemini_send_message_command with API error"""
-    client_fixture._http_request.return_value = MOCK_ERROR_RESPONSE
+    # client_fixture._http_request.return_value = MOCK_ERROR_RESPONSE
+    client_fixture._http_request.side_effect = DemistoException(message=str(MOCK_ERROR_RESPONSE))
     args = {"prompt": "Test prompt"}
 
     with pytest.raises(Exception) as e:
         GoogleGemini.google_gemini_send_message_command(client_fixture, args)
-    assert "API Error:" in str(e.value)
+    assert "Invalid request parameters" in str(e.value)
 
 
 def test_google_gemini_send_message_command_no_response_content(client_fixture):
@@ -266,9 +267,9 @@ def test_google_gemini_send_message_command_no_response_content(client_fixture):
 
     result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
 
-    assert result.outputs_key_field == ""
+    assert result.outputs_key_field == "prompt"
     assert isinstance(result.outputs, dict)
-    assert result.outputs["Chat"]["response"] == "No response generated."
+    assert result.outputs["Response"] == "No response generated."
     assert result.readable_output == "No response generated."
 
 
@@ -279,9 +280,9 @@ def test_google_gemini_send_message_command_no_text_in_response(client_fixture):
 
     result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
 
-    assert result.outputs_key_field == ""
+    assert result.outputs_key_field == "prompt"
     assert isinstance(result.outputs, dict)
-    assert result.outputs["Chat"]["response"] == "No response generated."
+    assert result.outputs["Response"] == "No response generated."
     assert result.readable_output == "No response generated."
 
 
@@ -292,9 +293,9 @@ def test_google_gemini_send_message_command_default_values(client_fixture):
 
     result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
 
-    assert result.outputs_key_field == ""
+    assert result.outputs_key_field == "prompt"
     assert isinstance(result.outputs, dict)
-    assert result.outputs["Chat"]["model"] == client_fixture.model
+    assert result.outputs["Model"] == client_fixture.model
 
     # Check that instance default values were used in the API call
     call_args = client_fixture._http_request.call_args[1]["json_data"]
@@ -305,13 +306,15 @@ def test_google_gemini_send_message_command_default_values(client_fixture):
 def test_google_gemini_send_message_command_save_conversation_false(client_fixture, mocker):
     """Test google_gemini_send_message_command with save_conversation=false"""
     client_fixture._http_request.return_value = MOCK_SUCCESSFUL_CHAT_RESPONSE
-    args = {"prompt": "Test prompt", "save_conversation": "false"}
+    prompt = "Test prompt"
+    args = {"prompt": prompt, "save_conversation": "false"}
 
     result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
 
     assert isinstance(result, CommandResults)
     assert isinstance(result.outputs, dict)
-    assert "Chat" in result.outputs
+    assert result.outputs["Prompt"] == prompt
+    assert "Response" in result.outputs
     assert "History" not in result.outputs
 
 
@@ -328,8 +331,9 @@ def test_google_gemini_send_message_command_save_conversation_true(client_fixtur
 
     assert isinstance(result, CommandResults)
     assert isinstance(result.outputs, dict)
-    assert "Chat" in result.outputs
+    assert "Response" in result.outputs
     assert "History" in result.outputs
+    assert result.outputs_key_field == "ConversationId"
     assert isinstance(result.outputs["History"], list)
     assert len(result.outputs["History"]) == 2  # user prompt + model response
     assert result.outputs["History"][0]["role"] == "user"
@@ -344,8 +348,8 @@ def test_google_gemini_send_message_command_save_conversation_with_existing_hist
         {"role": "user", "parts": [{"text": "Previous question"}]},
         {"role": "model", "parts": [{"text": "Previous answer"}]},
     ]
-
-    mocker.patch.object(GoogleGemini.demisto, "context", return_value={"GoogleGemini": {"History": existing_history}})
+    mocked_context = {"GoogleGemini": {"Chat": {"History": existing_history, "ConversationId": "123abc"}}}
+    mocker.patch.object(GoogleGemini.demisto, "context", return_value=mocked_context)
 
     args = {"prompt": "Follow-up question", "save_conversation": "true"}
 
@@ -366,7 +370,8 @@ def test_google_gemini_send_message_command_save_conversation_with_existing_hist
         {"role": "model", "parts": [{"text": "Previous answer"}]},
     ]
 
-    mocker.patch.object(GoogleGemini.demisto, "context", return_value={"GoogleGemini": [{"History": existing_history}]})
+    mocked_context = {"GoogleGemini": {"Chat": {"History": existing_history, "ConversationId": "123abc"}}}
+    mocker.patch.object(GoogleGemini.demisto, "context", return_value=mocked_context)
 
     args = {"prompt": "Follow-up question", "save_conversation": "true"}
 
@@ -384,7 +389,8 @@ def test_google_gemini_send_message_command_save_conversation_single_existing_it
 
     existing_history = [{"role": "user", "parts": [{"text": "Previous question"}]}]
 
-    mocker.patch.object(GoogleGemini.demisto, "context", return_value={"GoogleGemini": {"History": existing_history}})
+    mocked_context = {"GoogleGemini": {"Chat": {"History": existing_history, "ConversationId": "123abc"}}}
+    mocker.patch.object(GoogleGemini.demisto, "context", return_value=mocked_context)
 
     args = {"prompt": "Follow-up question", "save_conversation": "true"}
 
@@ -705,7 +711,7 @@ def test_malformed_response_no_candidates():
         mock_request.return_value = malformed_response
         result = GoogleGemini.google_gemini_send_message_command(client, {"prompt": "test"})
         assert isinstance(result.outputs, dict)
-        assert result.outputs["Chat"]["response"] == "No response generated."
+        assert result.outputs["Response"] == "No response generated."
 
 
 def test_malformed_response_candidates_not_list():
@@ -720,7 +726,7 @@ def test_malformed_response_candidates_not_list():
         mock_request.return_value = malformed_response
         result = GoogleGemini.google_gemini_send_message_command(client, {"prompt": "test"})
         assert isinstance(result.outputs, dict)
-        assert result.outputs["Chat"]["response"] == "No response generated."
+        assert result.outputs["Response"] == "No response generated."
 
 
 def test_malformed_response_missing_content():
@@ -735,7 +741,7 @@ def test_malformed_response_missing_content():
         mock_request.return_value = malformed_response
         result = GoogleGemini.google_gemini_send_message_command(client, {"prompt": "test"})
         assert isinstance(result.outputs, dict)
-        assert result.outputs["Chat"]["response"] == "No response generated."
+        assert result.outputs["Response"] == "No response generated."
 
 
 def test_malformed_response_missing_parts():
@@ -750,7 +756,7 @@ def test_malformed_response_missing_parts():
         mock_request.return_value = malformed_response
         result = GoogleGemini.google_gemini_send_message_command(client, {"prompt": "test"})
         assert isinstance(result.outputs, dict)
-        assert result.outputs["Chat"]["response"] == "No response generated."
+        assert result.outputs["Response"] == "No response generated."
 
 
 def test_malformed_response_parts_not_list():
@@ -765,7 +771,7 @@ def test_malformed_response_parts_not_list():
         mock_request.return_value = malformed_response
         result = GoogleGemini.google_gemini_send_message_command(client, {"prompt": "test"})
         assert isinstance(result.outputs, dict)
-        assert result.outputs["Chat"]["response"] == "No response generated."
+        assert result.outputs["Response"] == "No response generated."
 
 
 def test_malformed_response_missing_text():
@@ -780,4 +786,4 @@ def test_malformed_response_missing_text():
         mock_request.return_value = malformed_response
         result = GoogleGemini.google_gemini_send_message_command(client, {"prompt": "test"})
         assert isinstance(result.outputs, dict)
-        assert result.outputs["Chat"]["response"] == "No response generated."
+        assert result.outputs["Response"] == "No response generated."
