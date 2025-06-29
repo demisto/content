@@ -434,8 +434,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
 
     base_url = params.get("url", "")
-    client_id = params.get("client_id", "")
-    client_secret = params.get("client_secret", {}).get("password")
+    client_id = params.get("credentials", {}).get("identifier")
+    client_secret = params.get("credentials", {}).get("password")
     application_id = params.get("application_id", "")
     verify = argToBoolean(not params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
