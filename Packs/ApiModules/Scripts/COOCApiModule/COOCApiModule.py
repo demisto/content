@@ -251,7 +251,7 @@ def _check_account(
 def run_health_check_for_accounts(
     connector_id: str, cloud_type: str, health_check_func: Callable[[dict, str, str], Any]
 ) -> str | CommandResults:
-    """Runs a permission check function for each account associated with a connector sequentially.
+    """Runs a health check function for each account associated with a connector sequentially.
 
     Args:
         connector_id (str): The ID of the connector to fetch accounts for.
