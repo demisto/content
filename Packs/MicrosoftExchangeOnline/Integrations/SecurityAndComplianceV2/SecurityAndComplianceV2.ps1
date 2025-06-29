@@ -2109,7 +2109,7 @@ function SearchAndRecoveryEmailCommand {
                     # Restore-RecoverableItems -Identity $recipients -SubjectContains $subject
                     # RecoverableItems -Identity $recipients -SubjectContains $subject
                     # $response = $client.RestoreRecoverableItems($recipients, $subject)
-                    $response = $client.Get-RecoverableItems($recipients, $subject)
+                    $response = $client.GetRecoverableItems($recipients, $subject)
                     $Demisto.results("GetRecoverableItems response:")
                     $Demisto.results(($response | ConvertTo-Json -Depth 5))
 
