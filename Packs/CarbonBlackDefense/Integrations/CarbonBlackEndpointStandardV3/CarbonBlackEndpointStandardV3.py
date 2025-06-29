@@ -1614,6 +1614,27 @@ def format_policy_response(response: dict) -> dict:
     )
 
 
+@polling_function(name="test-polling-args", interval=5, timeout=60, poll_message="Polling for test", requires_polling_arg=False)
+def test_polling_args_command(args: dict, client: Client):
+    print(f"{args=}")
+    
+    rows = arg_to_number(args.get("rows", 1)) or 1
+
+    if rows >= 5:
+        return PollResult(
+            continue_to_poll=False,
+            response=CommandResults(readable_output=f"Polling finished at rows={rows}")
+        )
+    
+    args_for_next_run = {"rows": rows + 1}
+    print(f"{args_for_next_run=}")
+    return PollResult(
+        continue_to_poll=True,
+        args_for_next_run=args_for_next_run,
+        response=CommandResults(readable_output=f"Polling iteration with rows={rows}")
+    )
+
+
 """ MAIN FUNCTION """
 
 
@@ -1700,6 +1721,8 @@ def main() -> None:  # pragma: no cover
             results = device_policy_update_command(client=client, args=args)
         elif command == "cbd-device-update-sensor-version":
             results = device_update_sensor_version_command(client=client, args=args)
+        elif command == "test-polling-args":
+            results = test_polling_args_command(client=client, args=args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 
