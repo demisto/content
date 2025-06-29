@@ -917,11 +917,11 @@ def test_fetch_incidents_event_type(mocker, last_run_time):
     last_run = {"time": last_run_time, "next_stream_position": ""}
     event_type = ["FILE_MARKED_MALICIOUS", "FILE_MARKED_MALICIOUS2"]
     first_fetch_time = 1607935741
-    expexted_event_type = "FILE_MARKED_MALICIOUS,FILE_MARKED_MALICIOUS2"
+    expected_event_type = "FILE_MARKED_MALICIOUS,FILE_MARKED_MALICIOUS2"
     expected_params = {
         "created_after": last_run.get("time"),
         "limit": max_results,
-        "event_type": expexted_event_type,
+        "event_type": expected_event_type,
         "stream_type": "admin_logs",
     }
 
