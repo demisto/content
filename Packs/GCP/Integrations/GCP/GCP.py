@@ -1210,8 +1210,8 @@ def get_credentials(args: dict, params: dict) -> Credentials:
                 args["project_id"] = service_account_info.get("project_id")
             demisto.debug("Using service account credentials")
             return creds
-        except json.JSONDecodeError:
-            raise DemistoException("Invalid service account JSON format")
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Invalid service account JSON format: {str(e)}")
         except Exception as e:
             demisto.debug(f"Error creating service account credentials: {str(e)}")
 
