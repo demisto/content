@@ -74,7 +74,7 @@ def test_add_fields_to_events_basic(event_type_name):
     When:
         - Calling add_fields_to_events.
     Then:
-        - Each event has a '_time' ISO string and 'SOURCE_LOG_TYPE', and order is chronological.
+        - Each event has a '_time' ISO string and 'SOURCE_LOG_TYPE'.
     """
     event_type = EVENT_TYPE[event_type_name]
     events = [
