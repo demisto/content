@@ -1,8 +1,7 @@
 Radware Cloud Service provides customers and partners with the ability to programmatically perform service-related actions. The integration can be used to automate application and assets creation and day-to-day management to retrieve up-to-date data about Security Events and Operational Alerts
-This integration was integrated and tested with version 1 of Radware Cloud DDoS Protection Services.
+This integration was integrated and tested with version 25.3.1 of Radware Cloud DDoS Protection Services.
 
 ## Configure Radware Cloud DDoS Protection Services in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |

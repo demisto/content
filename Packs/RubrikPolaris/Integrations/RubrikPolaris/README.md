@@ -2667,8 +2667,8 @@ Retrieve the suspicious list of files for a snapshot ID with detected file anoma
 | RubrikPolaris.SuspiciousFile.detectionTime | Date | The detection time of the anomaly. |
 | RubrikPolaris.SuspiciousFile.snapshotDate | Date | The snapshot date of the anomaly. |
 | RubrikPolaris.SuspiciousFile.encryption | String | The encryption standard of the anomaly. |
-| RubrikPolaris.SuspiciousFile.resolutionStatus | String | The resolution status of the anomaly. | 
-| RubrikPolaris.SuspiciousFile.anomalyType | String | The type of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.resolutionStatus | String | The resolution status of the anomaly. |
+| RubrikPolaris.SuspiciousFile.anomalyType | String | The type of the anomaly. |
 | RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.strainId | String | The ID of the Ransomware Strain. |
 | RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalAffectedFiles | Number | The total number of affected files. |
 | RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalRansomwareNotes | Number | The total number of ransomware notes. |
@@ -3252,27 +3252,30 @@ Note: Run the "rubrik-radar-suspicious-file-list" command first to check the res
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| anomaly_type | The type of the anomaly.<br/><br/>Note: For Anomaly Type, users can execute the "rubrik-radar-suspicious-file-list" command. Possible values are: FILESYSTEM, HYPERVISOR. | Required | 
-| anomaly_id | The ID of the Anomaly or Activity Series ID.<br/><br/>Note: For Activity Series ID, users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY". | Required | 
-| workload_id | The workload ID (Snappable ID).<br/><br/>Note: Users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY" and get the value of "fid" from the context. | Required | 
-| false_positive_type | The type for marking the anomaly as a false positive. Possible values are: FP_TYPE_UNSPECIFIED, OS_UPDATE, APPLICATION_UPDATE, LOG_ROTATION, OTHER, NFA_SCHEDULED_MAINTENANCE, NFA_UNSCHEDULED_MAINTENANCE. | Optional | 
-| false_positive_reason | The reason for marking the anomaly as a false positive when the "false_positive_type" argument is set to OTHER. | Optional | 
+| anomaly_type | The type of the anomaly.<br/><br/>Note: For Anomaly Type, users can execute the "rubrik-radar-suspicious-file-list" command. Possible values are: FILESYSTEM, HYPERVISOR. | Required |
+| anomaly_id | The ID of the Anomaly or Activity Series ID.<br/><br/>Note: For Activity Series ID, users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY". | Required |
+| workload_id | The workload ID (Snappable ID).<br/><br/>Note: Users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY" and get the value of "fid" from the context. | Required |
+| false_positive_type | The type for marking the anomaly as a false positive. Possible values are: FP_TYPE_UNSPECIFIED, OS_UPDATE, APPLICATION_UPDATE, LOG_ROTATION, OTHER, NFA_SCHEDULED_MAINTENANCE, NFA_UNSCHEDULED_MAINTENANCE. | Optional |
+| false_positive_reason | The reason for marking the anomaly as a false positive when the "false_positive_type" argument is set to OTHER. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RubrikPolaris.AnomalyStatus.command_name | String | The name of the command. | 
-| RubrikPolaris.AnomalyStatus.anomaly_type | String | The type of the Anomaly. | 
-| RubrikPolaris.AnomalyStatus.anomaly_id | String | The ID of the Anomaly. | 
-| RubrikPolaris.AnomalyStatus.workload_id | String | The workload ID. | 
-| RubrikPolaris.AnomalyStatus.is_resloved | Boolean | Whether the Anomaly is resolved. | 
-| RubrikPolaris.AnomalyStatus.false_positive_type | String | The type of the false positive. | 
-| RubrikPolaris.AnomalyStatus.false_positive_reason | String | The reason for marking the Anomaly detection snapshot as a false positive. | 
+| RubrikPolaris.AnomalyStatus.command_name | String | The name of the command. |
+| RubrikPolaris.AnomalyStatus.anomaly_type | String | The type of the Anomaly. |
+| RubrikPolaris.AnomalyStatus.anomaly_id | String | The ID of the Anomaly. |
+| RubrikPolaris.AnomalyStatus.workload_id | String | The workload ID. |
+| RubrikPolaris.AnomalyStatus.is_resloved | Boolean | Whether the Anomaly is resolved. |
+| RubrikPolaris.AnomalyStatus.false_positive_type | String | The type of the false positive. |
+| RubrikPolaris.AnomalyStatus.false_positive_reason | String | The reason for marking the Anomaly detection snapshot as a false positive. |
 
 #### Command example
+
 ```!rubrik-radar-anomaly-status-update anomaly_id=00000000-0000-0000-0000-000000000001 anomaly_type=FILESYSTEM workload_id=00000000-0000-0000-0000-000000000002```
+
 #### Context Example
+
 ```json
 {
     "RubrikPolaris": {
@@ -3289,4 +3292,4 @@ Note: Run the "rubrik-radar-suspicious-file-list" command first to check the res
 
 #### Human Readable Output
 
->### Anomaly detection with the ID 00000000-0000-0000-0000-000000000001 resolved successfully.
+>### Anomaly detection with the ID 00000000-0000-0000-0000-000000000001 resolved successfully

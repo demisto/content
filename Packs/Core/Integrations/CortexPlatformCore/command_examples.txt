@@ -1,0 +1,1 @@
+!core-get-asset-details asset_id=123
