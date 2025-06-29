@@ -267,7 +267,8 @@ class PychromeEventHandler:
                         self.retry_loading()
                     else:
                         demisto.debug(
-                            f"PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, {self.tab.id=}, {self.path=}"
+                            "PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, "
+                            f" {self.tab.id=}, {self.path=}"
                         )
                         self.tab_ready_event.set()
                 else:
@@ -345,7 +346,8 @@ class PychromeEventHandler:
                 return
 
             demisto.debug(
-                f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. {self.tab.id=}, {self.path=}"
+                "Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. "
+                f"{self.tab.id=}, {self.path=}"
             )
 
         demisto.debug(f"Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not load the page. {self.tab.id=}, {self.path=}")
