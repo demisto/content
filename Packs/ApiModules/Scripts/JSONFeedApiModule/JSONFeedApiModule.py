@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 """ IMPORTS """
 from collections.abc import Callable
+from functools import cache
 
 import jmespath
 import urllib3
@@ -26,9 +27,9 @@ class Client:
         insecure: bool = False,
         cert_file: str = None,
         key_file: str = None,
-        headers: dict | str = None, # type: ignore[assignment]
+        headers: dict | str = None,  # type: ignore[assignment]
         tlp_color: str | None = None,
-        data: str | dict = None,    # type: ignore[assignment]
+        data: str | dict = None,  # type: ignore[assignment]
         **_,
     ):
         """
@@ -157,12 +158,7 @@ class Client:
                 self.headers["If-Modified-Since"] = last_modified
 
         result: list[dict] = []
-        if not self.post_data:
-            r = requests.get(url=url, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs)
-        else:
-            r = requests.post(
-                url=url, data=self.post_data, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs
-            )
+        r = self.http_request(url, **kwargs)
 
         try:
             r.raise_for_status()
@@ -178,6 +174,16 @@ class Client:
         if is_demisto_version_ge("6.5.0"):
             return result, get_no_update_value(r, feed_name)
         return result, True
+
+    @cache
+    def http_request(self, url, **kwargs) -> requests.Response:
+        if not self.post_data:
+            r = requests.get(url=url, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs)
+        else:
+            r = requests.post(
+                url=url, data=self.post_data, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs
+            )
+        return r
 
 
 def get_no_update_value(response: requests.Response, feed_name: str) -> bool:

@@ -15,6 +15,8 @@ Ensure you have the below prerequisites:
 
 See this [doc](https://docs.umbrella.com/deployment-umbrella/docs/setting-up-an-amazon-s3-bucket#prerequisites) for further instructions on how to create a S3 bucket, and how to configure it for your needs.
 
+Alternatively, use a Terraform module to set up the AWS infrastructure needed to ingest Cisco Umbrella logs into Cortex XSIAM. See the Terraform module's [README](https://github.com/PaloAltoNetworks/terraform-umbrella-s3-to-xsiam-ingestion-module/tree/main) for setup instructions.
+
 **On Cisco Umbrella cloud security**
 
 1. Navigate to **Admin** > **Log Management** and select **Use your company-managed Amazon S3 bucket**.
@@ -40,7 +42,7 @@ More information can be found [here](https://docs.umbrella.com/deployment-umbrel
 2. Click **Amazon S3**.
 3. Click **Connect** or **Connect Another Instance**.
 4. Set the following values:
-   - SQS URL - Refer to Configure an Amazon Simple Queue Service (SQS) [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
+   - SQS URL - Refer to Configure an Amazon Simple Queue Service (SQS) [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3).
    - Name as `Cisco Umbrella`
    - AWS Client ID
    - AWS Client Secret
@@ -51,6 +53,6 @@ More information can be found [here](https://docs.umbrella.com/deployment-umbrel
    - Compression as `gzip`
    - Multiline Parsing Regex as `^\"\d{4,}`
 
-For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
+For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3).
 
 </~XSIAM>

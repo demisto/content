@@ -119,6 +119,7 @@ configuration:
 - display: API Token (Deprecated)
   name: token
   type: 4
+  hidden: true
   section: Connect
   required: false
   additionalinfo: Use the "API Token (Recommended)" parameter instead.

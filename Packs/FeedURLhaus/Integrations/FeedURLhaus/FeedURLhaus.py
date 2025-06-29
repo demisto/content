@@ -28,6 +28,9 @@ def main():  # pragma: no cover
         params["indicator_type"] = FeedIndicatorType.URL
         params["ignore_regex"] = "#"
         params["url"] = chosen_urls
+        auth_key = params.get("credentials", {}).get("password")
+        params["credentials"] = {"password": auth_key, "identifier": "_header:Auth-Key"}
+
         feed_main("URLhaus Feed", params, "urlhaus-")
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")

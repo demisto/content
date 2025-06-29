@@ -33,6 +33,9 @@ def main():
     params["delimiter"] = ","
     params["create_relationships"] = True
 
+    auth_key = params.get("credentials", {}).get("password")
+    params["credentials"] = {"password": auth_key, "identifier": "_header:Auth-Key"}
+
     # Main execution of the CSV API Module.
     # This function allows to add to or override this execution.
     feed_main("SSL Blacklist Feed", params, "sslbl")

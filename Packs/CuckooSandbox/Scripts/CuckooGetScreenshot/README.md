@@ -3,6 +3,7 @@ Deprecated. Use 'cuckoo-task-screenshot' command instead.
 Retrieves screenshots taken during a task analysis
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,13 +11,15 @@ Retrieves screenshots taken during a task analysis
 | Script Type | python |
 | Tags | cuckoo |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * cuckoo-task-screenshot
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,5 +28,6 @@ This script uses the following commands and scripts.
 | screenshot | The numerical identifier of a single screenshot. For example, 0001, 0002. (optional). |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

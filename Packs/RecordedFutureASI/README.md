@@ -7,6 +7,7 @@
 - Sync XSOAR incidents with Risk Rules in SecurityTrails Attack Surface Intelligence
 
 ### Available Actions
+
 - Attack Surface Intelligence Risk actions
   - Get the current issues for a project
   - Get issues added to a project after a certain timestamp

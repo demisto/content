@@ -1,7 +1,13 @@
 import pytest
 from CommonServerPython import *
 from freezegun import freeze_time
-from SendEmailReply import get_unique_code
+from SendEmailReply import (
+    get_unique_code,
+    apply_direction,
+    process_directions,
+    ensure_markdown_tables_have_spacing,
+    replace_atlassian_tags,
+)
 
 
 def util_open_file(path):
@@ -1465,8 +1471,9 @@ def test_main(new_thread, mocker):
         # Test ID: #3 - Table conversion
         (
             "| Header1 | Header2 |\n| ------- | ------- |\n| Cell1   | Cell2   |",
-            "<table>\n<thead>\n<tr>\n<th>Header1</th>\n<th>Header2</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Cell1</td>\n"
-            "<td>Cell2</td>\n</tr>\n</tbody>\n</table>",
+            '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; border: 1px solid #999;">\n'
+            "<thead>\n<tr>\n<th>Header1</th>\n<th>Header2</th>\n</tr>\n</thead>\n"
+            "<tbody>\n<tr>\n<td>Cell1</td>\n<td>Cell2</td>\n</tr>\n</tbody>\n</table>",
             "table_conversion",
         ),
         # Test ID: #4 - Emphasis conversion using legacy syntax
@@ -1591,3 +1598,87 @@ def test_format_body(mocker):
         '<p><img alt="image" src="data:image/png;base64,c29tZSBiaW5hcnkgZGF0YQ==" /></p>',
     )
     assert result == expected_result
+
+
+def test_apply_direction():
+    """
+    Test that apply_direction correctly transforms lines with direction tags
+    into the expected HTML div wrappers, and leaves other lines unchanged.
+    """
+    # Center alignment
+    assert apply_direction("<-:->Centered text") == '<div style="text-align:center;">Centered text</div>'
+    # Leading spaces should be ignored for detecting tags
+    assert apply_direction("   <-:->Indented center") == '<div style="text-align:center;">Indented center</div>'
+    # Left-to-right direction
+    assert apply_direction("<--:>LTR text") == '<div dir="ltr">LTR text</div>'
+    # Right-to-left direction
+    assert apply_direction("<:-->RTL text") == '<div dir="rtl">RTL text</div>'
+    # No direction tag, returns original line
+    assert apply_direction("No special tag") == "No special tag"
+    # Tag-like but not at start after stripping
+    assert apply_direction("  some text <-:-> not a tag") == "  some text <-:-> not a tag"
+
+
+def test_process_directions():
+    """
+    Test that process_directions applies apply_direction line-by-line on multiline text.
+    """
+    md = """Line 1
+<-:->Center
+Some text
+<--:>LTR line
+<:-->RTL line"""
+
+    expected = (
+        "Line 1\n"
+        '<div style="text-align:center;">Center</div>\n'
+        "Some text\n"
+        '<div dir="ltr">LTR line</div>\n'
+        '<div dir="rtl">RTL line</div>'
+    )
+    assert process_directions(md) == expected
+
+
+def test_ensure_markdown_tables_have_spacing():
+    """
+    Test that ensure_markdown_tables_have_spacing adds blank lines before and after markdown tables.
+    It should not add extra blank lines if already present.
+    """
+    # Single table without blank lines
+    md = "Paragraph\n| Header |\n|--------|\n| Row    |\nParagraph2"
+    expected = "Paragraph\n\n| Header |\n|--------|\n| Row    |\n\nParagraph2"
+    assert ensure_markdown_tables_have_spacing(md) == expected
+
+    # Table already has blank lines
+    md2 = "Para\n\n| H |\n|---|\n| R |\n\nPara2"
+    expected2 = md2
+    assert ensure_markdown_tables_have_spacing(md2) == expected2
+
+    # Multiple tables with some blank lines missing
+    md3 = "| H1 |\n|----|\n| R1 |\nPara\n| H2 |\n|----|\n| R2 |"
+    expected3 = "| H1 |\n" "|----|\n" "| R1 |\n" "\n" "Para\n" "\n" "| H2 |\n" "|----|\n" "| R2 |"
+    assert ensure_markdown_tables_have_spacing(md3).rstrip() == expected3.rstrip()
+
+
+def test_replace_atlassian_tags():
+    """
+    Test that replace_atlassian_tags converts Atlassian color and background tags into HTML span tags.
+    """
+    # Color tag
+    input_md = "{{color:#FF0000}}(red text)"
+    expected = '<span style="color:#FF0000;">red text</span>'
+    assert replace_atlassian_tags(input_md) == expected
+
+    # Background tag
+    input_md2 = "{{background:#00FF00}}(green background)"
+    expected2 = '<span style="background-color:#00FF00;">green background</span>'
+    assert replace_atlassian_tags(input_md2) == expected2
+
+    # Both tags in one string
+    input_md3 = "Text {{color:#123456}}(colored) and {{background:#654321}}(background)"
+    expected3 = 'Text <span style="color:#123456;">colored</span> and <span style="background-color:#654321;">background</span>'
+    assert replace_atlassian_tags(input_md3) == expected3
+
+    # No tags remain unchanged
+    input_md4 = "No tags here"
+    assert replace_atlassian_tags(input_md4) == input_md4

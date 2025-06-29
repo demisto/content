@@ -91,6 +91,13 @@ configuration:
   type: 0
   required: false
   section: Collect
+
+- displaypassword: Auth Key
+  hiddenusername: true
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

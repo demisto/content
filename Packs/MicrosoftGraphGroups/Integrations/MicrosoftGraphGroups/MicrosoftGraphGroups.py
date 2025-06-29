@@ -489,7 +489,7 @@ def main():
     base_url = params.get("url", "").rstrip("/") + "/v1.0/"
     tenant = params.get("creds_tenant_id", {}).get("password", "") or params.get("tenant_id") or params.get("_tenant_id")
     auth_and_token_url = params.get("creds_auth_id", {}).get("password", "") or params.get("auth_id") or params.get("_auth_id")
-    enc_key = params.get("enc_key") or params.get("credentials", {}).get("password")
+    enc_key = params.get("credentials", {}).get("password") or params.get("enc_key")
     verify = not params.get("insecure", False)
     redirect_uri = params.get("redirect_uri", "")
     auth_code = params.get("creds_auth_code", {}).get("password", "") or params.get("auth_code", "")

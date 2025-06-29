@@ -62,6 +62,8 @@ commentable
 jpg
 png
 rgba
+Onboarder
+nocase
 
 [file:playbook-Report_Categorization_-_Cofense_Triage_v3.yml]
 ignore=GR107

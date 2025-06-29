@@ -894,6 +894,154 @@ class RecoClient(BaseClient):
             raise e
         return invalid_token_string
 
+    def get_app_discovery(
+        self,
+        before: datetime | None = None,
+        after: datetime | None = None,
+        limit: int = 1000,
+    ) -> list[dict[str, Any]]:
+        """
+        Fetch app discovery data from Reco API with pagination support
+        :param before: The maximum date of the apps to fetch
+        :param after: The minimum date of the apps to fetch
+        :param limit: int (page size for each request)
+        :return: list
+        """
+        demisto.info("Get app discovery, enter")
+        all_apps: list[dict[str, Any]] = []
+        page_size = min(limit, PAGE_SIZE)  # Use PAGE_SIZE (1000) as max page size
+        page_number = 0
+
+        # First, get the total count to determine how many pages we need
+        count_params = self._create_app_discovery_params(page_size, page_number, before, after)
+
+        demisto.info("Getting total count of apps from Reco API")
+        try:
+            count_response = self._http_request(
+                method="PUT",
+                url_suffix="/asset-management/count",
+                data=json.dumps(count_params),
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+            )
+            total_count = count_response.get("getTableResponse", {}).get("totalNumberOfResults", 0)
+            demisto.debug(f"Total number of apps: {total_count}")
+        except Exception as e:
+            demisto.error(f"Failed to get app count: {str(e)}")
+            total_count = 0
+
+        if total_count == 0:
+            demisto.info("No apps found")
+            return all_apps
+
+        # Calculate total pages needed
+        total_pages = (total_count + page_size - 1) // page_size
+        demisto.info(f"Will fetch {total_pages} pages with page size {page_size}")
+
+        # Fetch all pages
+        for page_number in range(total_pages):
+            demisto.info(f"Fetching page {page_number + 1} of {total_pages}")
+
+            params = self._create_app_discovery_params(page_size, page_number, before, after)
+
+            try:
+                response = self._http_request(
+                    method="PUT",
+                    url_suffix="/asset-management/query",
+                    data=json.dumps(params),
+                    timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                )
+                apps = extract_response(response)
+
+                # Add metadata to each app
+                for app in apps:
+                    if isinstance(app, dict):
+                        app["total_apps_count"] = total_count
+                        app["data_source"] = "app_discovery"
+                        app["page_number"] = page_number
+
+                all_apps.extend(apps)
+                demisto.info(f"Fetched {len(apps)} apps from page {page_number + 1}")
+
+            except Exception as e:
+                demisto.error(f"App Discovery Request error on page {page_number + 1}: {str(e)}")
+                # Continue with next page instead of failing completely
+                continue
+
+        demisto.info(f"Done fetching RECO app discovery, fetched {len(all_apps)} total apps")
+        return all_apps
+
+    def _create_app_discovery_params(
+        self, page_size: int, page_number: int, before: datetime | None = None, after: datetime | None = None
+    ) -> dict[str, Any]:
+        """Create request parameters for app discovery with pagination."""
+        params: dict[str, Any] = {
+            "getTableRequest": {
+                "tableName": "app_discovery",
+                "pageSize": page_size,
+                "pageNumber": page_number,
+                "fieldSorts": {"sorts": [{"sortBy": "updated_at", "sortDirection": "SORT_DIRECTION_ASC"}]},
+            }
+        }
+
+        # Add time filters if provided
+        if before or after:
+            params["getTableRequest"]["fieldFilters"] = {
+                "relationship": FILTER_RELATIONSHIP_AND,
+                "filters": {"filters": []},
+            }
+
+            if before:
+                params["getTableRequest"]["fieldFilters"]["filters"]["filters"].append(
+                    {
+                        "field": "updated_at",
+                        "before": {"value": before.strftime("%Y-%m-%dT%H:%M:%SZ")},
+                    }
+                )
+            if after:
+                params["getTableRequest"]["fieldFilters"]["filters"]["filters"].append(
+                    {
+                        "field": "updated_at",
+                        "after": {"value": after.strftime("%Y-%m-%dT%H:%M:%SZ")},
+                    }
+                )
+
+        return params
+
+    def set_app_authorization_status(self, app_id: str, authorization_status: str) -> Any:
+        """
+        Set authorization status for an application in Reco
+        :param app_id: The application ID to update
+        :param authorization_status: The authorization status to set
+        :return: dict
+        """
+        demisto.info(f"Setting app authorization status for {app_id} to {authorization_status}")
+
+        params = {"appAuth": [{"appId": app_id, "authorizationStatus": authorization_status}]}
+
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/app-risk-management/insert-risk-management-app",
+                data=json.dumps(params),
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+            )
+
+            # Validate response format
+            if not isinstance(response, dict) or "rows" not in response:
+                demisto.error(f"Unexpected response format: {response}")
+                raise Exception(f"Unexpected response format: {response}")
+
+            rows_updated = response.get("rows", 0)
+            if rows_updated != 1:
+                demisto.debug(f"Expected 1 row to be updated, but got {rows_updated}")
+
+        except Exception as e:
+            demisto.error(f"Set app authorization status error: {str(e)}")
+            raise e
+
+        demisto.debug(f"App {app_id} authorization status updated to {authorization_status}. Rows updated: {rows_updated}")
+        return response
+
 
 def parse_table_row_to_dict(alert: list[dict[str, Any]]) -> dict[str, Any]:
     if alert is None:
@@ -1451,6 +1599,57 @@ def get_private_email_list_with_access(reco_client):
     )
 
 
+def get_apps_command(
+    reco_client: RecoClient, before: datetime | None = None, after: datetime | None = None, limit: int = 1000
+) -> CommandResults:
+    """Get app discovery data from Reco."""
+    apps = reco_client.get_app_discovery(before=before, after=after, limit=limit)
+    apps_list = []
+    for app in apps:
+        app_as_dict = parse_table_row_to_dict(app.get("cells", {}))
+        apps_list.append(app_as_dict)
+
+    # Define headers for the table based on common app discovery fields
+    headers = ["app_name", "app_id", "category", "risk_score", "users_count", "data_access", "updated_at", "created_at", "status"]
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "App Discovery",
+            apps_list,
+            headers=headers,
+        ),
+        outputs_prefix="Reco.Apps",
+        outputs_key_field="app_id",
+        outputs=apps_list,
+        raw_response=apps,
+    )
+
+
+def set_app_authorization_status_command(reco_client: RecoClient, app_id: str, authorization_status: str) -> CommandResults:
+    """Set app authorization status in Reco."""
+    response = reco_client.set_app_authorization_status(app_id, authorization_status)
+
+    rows_updated = response.get("rows", 0)
+    success = rows_updated == 1
+
+    if success:
+        readable_message = f"App {app_id} authorization status updated successfully to {authorization_status}"
+    else:
+        readable_message = f"App {app_id} authorization status update completed with {rows_updated} rows affected"
+
+    return CommandResults(
+        raw_response=response,
+        readable_output=readable_message,
+        outputs_prefix="Reco.AppAuthorization",
+        outputs={
+            "app_id": app_id,
+            "authorization_status": authorization_status,
+            "updated": success,
+            "rows_affected": rows_updated,
+        },
+    )
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -1465,6 +1664,11 @@ def main() -> None:
         api_token = params.get("api_token")
         verify_certificate = not params.get("insecure", False)
         proxy = params.get("proxy", False)
+
+        if not api_url:
+            raise ValueError("Server URL is required")
+        if not api_token:
+            raise ValueError("API Token is required")
 
         max_fetch = get_max_fetch(int(params.get("max_fetch", "200")))
 
@@ -1593,6 +1797,24 @@ def main() -> None:
             return_results(result)
         elif command == "reco-get-alert-ai-summary":
             result = get_alert_ai_summary(reco_client, demisto.args().get("alert_id", ""))
+            return_results(result)
+        elif command == "reco-get-apps":
+            # Parse datetime arguments if provided
+            before = None
+            after = None
+            before_str = demisto.args().get("before")
+            after_str = demisto.args().get("after")
+            if before_str:
+                before = dateparser.parse(before_str)
+            if after_str:
+                after = dateparser.parse(after_str)
+            limit = int(demisto.args().get("limit") or "1000")
+            result = get_apps_command(reco_client, before=before, after=after, limit=limit)
+            return_results(result)
+        elif command == "reco-set-app-authorization-status":
+            app_id = demisto.args()["app_id"]
+            authorization_status = demisto.args()["authorization_status"]
+            result = set_app_authorization_status_command(reco_client, app_id, authorization_status)
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")

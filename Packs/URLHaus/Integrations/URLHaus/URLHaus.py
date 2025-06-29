@@ -761,6 +761,9 @@ def main():
     try:
         demisto_params = demisto.params()
         command = demisto.command()
+        auth_key = demisto_params.get("credentials", {}).get("password")
+
+        HEADERS["Auth-Key"] = auth_key
 
         params = {
             "api_url": demisto_params["url"].rstrip("/"),
