@@ -29,7 +29,7 @@ Updates the specified firewall rule with the data included in the request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | GCP project ID. | Required | 
-| resource_name | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required | 
+| resource_name | Name of the firewall rule to update. | Required | 
 | description | An optional description of this resource. Provide this property when you create the resource. | Optional | 
 | network | URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used. | Optional | 
 | priority | Priority for this rule. This is an integer between 0 and 65535, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules having equal priority. | Optional | 
