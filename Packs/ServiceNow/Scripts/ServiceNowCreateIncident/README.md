@@ -1,6 +1,7 @@
 Wraps the generic `create-record` command in ServiceNow. Fields can be added that create the record with a script argument or in the code and work with the records.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,14 +9,16 @@ Wraps the generic `create-record` command in ServiceNow. Fields can be added tha
 | Script Type | python |
 | Tags | servicenow |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * servicenow-query-table
 * servicenow-create-record
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,6 +29,7 @@ This script uses the following commands and scripts.
 | assigned_group | The incident assigned group name. For example, "Incident Management Group". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

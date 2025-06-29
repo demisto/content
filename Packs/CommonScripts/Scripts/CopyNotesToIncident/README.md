@@ -1,6 +1,7 @@
 Copy all entries marked as notes from current incident to another incident.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Copy all entries marked as notes from current incident to another incident.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,14 +20,16 @@ Copy all entries marked as notes from current incident to another incident.
 | tags | Replicate only notes with these tags \(array or comma separated\). |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!CopyNotesToIncident target_incident=20723```
 
 ## Context Example
+
 ```json
 {}
 ```
