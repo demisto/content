@@ -189,6 +189,59 @@ response_idp_detection = {
     "updated_timestamp": "2023-06-27T09:29:52.448779709Z",
 }
 
+response_ngsiem_detection = {
+    "aggregate_id": "",
+    "cid": None,
+    "comment": None,
+    "comments": [
+        {"falcon_user_id": "1", "timestamp": "2025-06-10T10:39:02.408980782Z", "value": "1"},
+    ],
+    "composite_id": "b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:ngsiem:b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:98998998998998998998998998998933",
+    "correlation_rule_execution_id": None,
+    "correlation_rule_id": None,
+    "correlation_rule_user_id": None,
+    "correlation_rule_user_uuid": None,
+    "crawled_timestamp": None,
+    "created_timestamp": "2025-06-10T10:37:06.018923024Z",
+    "data_domains": ["Endpoint"],
+    "detection_id": None,
+    "display_name": "ngsiem display name",
+    "end_time": None,
+    "enriched_entities": {},
+    "falcon_host_link": None,
+    "has_truncated_entities": False,
+    "id": None,
+    "name": None,
+    "original_correlation_rules_entities_count": None,
+    "original_indicator_entities_count": None,
+    "pattern_id": None,
+    "poly_id": None,
+    "product": "ngsiem",
+    "seconds_to_resolved": None,
+    "seconds_to_triaged": 0,
+    "severity": 70,
+    "severity_name": "High",
+    "show_in_ui": True,
+    "source_ips": [None],
+    "source_products": [None],
+    "source_vendors": [None],
+    "start_time": "2025-06-10T10:36:00Z",
+    "status": "new",
+    "tactic": "Impact",
+    "tactic_id": None,
+    "tags": ["Original"],
+    "technique": "Encrypt",
+    "technique_id": None,
+    "timestamp": "2025-06-10T10:37:01Z",
+    "type": "detection",
+    "updated_timestamp": "2025-06-17T14:48:59.465950243Z",
+    "usernames": [None],
+    "users": [
+        {"full_name": "", "full_name_is_enriched": False, "idp_id": "", "idp_id_is_enriched": False, "sid": "", "user_name": None}
+    ],
+    "vendor_pattern_id": None,
+}
+
 response_mobile_detection = {
     "agent_id": "111...111",
     "agent_load_flags": "0",
@@ -289,6 +342,12 @@ remote_detection_id = "ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668"
 remote_idp_detection_id = "20879a8064904e:ind:20879a8064904ecfbb62c118a6a19411:26DF54C9-8803-4F97-AD22-A725EE820EA9"
 remote_mobile_detection_id = "1111111111111111111"
 remote_detection_id_new_version = "1234"
+remote_ngsiem_detection_id = (
+    "b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:ngsiem:b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:98998998998998998998998998998933"
+)
+remote_third_party_detection_id = (
+    "cb28a1bf5xxxxxxxxx698253914:thirdparty:cb28a1bf5axxxxxxxxxx698253914:5efcd0feb3xxxxxxxxxxab190ab39a"
+)
 
 # remote_id, close_incident, incident_status, detection_status, mirrored_object, entries
 get_remote_incident = (
