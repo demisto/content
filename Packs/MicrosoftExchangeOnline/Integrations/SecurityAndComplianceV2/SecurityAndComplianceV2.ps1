@@ -2108,7 +2108,8 @@ function SearchAndRecoveryEmailCommand {
 
                     # Restore-RecoverableItems -Identity $recipients -SubjectContains $subject
                     # RecoverableItems -Identity $recipients -SubjectContains $subject
-                    $response = $client.RestoreRecoverableItems($recipients, $subject)
+                    # $response = $client.RestoreRecoverableItems($recipients, $subject)
+                    $response = $client.Get-RecoverableItems($recipients, $subject)
                     $Demisto.results("GetRecoverableItems response:")
                     $Demisto.results(($response | ConvertTo-Json -Depth 5))
 
@@ -2274,7 +2275,7 @@ function Main {
 Command: $command
 Arguments: $($command_arguments | ConvertTo-Json)
 Error: $($_.Exception.Message)")
-        if ($_.Exception.Message -like "*Unable to open a web page using xdg-open*" ) {
+if ($_.Exception.Message -like "*Unable to open a web page using xdg-open*" ) {
            Write-Host "It looks like the access token has expired. Please run the command !$script:COMMAND_PREFIX-auth-start, before running this command."
         } elseif ($command -ne "test-module") {
             ReturnError "Error:
