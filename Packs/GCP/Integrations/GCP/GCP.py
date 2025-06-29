@@ -1102,14 +1102,6 @@ def check_required_permissions(
                     errors.append(message)
         except Exception as e:
             error_message = f"Failed to test permissions for GCP integration: {str(e)}"
-            if connector_id:
-                return HealthCheckError(
-                    account_id=project_id,
-                    connector_id=connector_id,
-                    message=error_message,
-                    error_type=ErrorType.PERMISSION_ERROR,
-                )
-
             raise DemistoException(error_message)
 
     for api in validate_apis_enabled(creds, project_id, apis):
@@ -1118,16 +1110,6 @@ def check_required_permissions(
         errors.append(message)
 
     if errors:
-        if connector_id:
-            return [
-                HealthCheckError(
-                    account_id=project_id,
-                    connector_id=connector_id,
-                    message=error,
-                    error_type=ErrorType.PERMISSION_ERROR,
-                )
-                for error in errors
-            ]
         raise DemistoException("Missing required permissions/API for GCP integration:\n-" + "\n-".join(errors))
 
     return None
@@ -1168,7 +1150,7 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
                 connector_id=connector_id,
                 message=f"Sample check failed for account {project_id}. Please verify GCP project permissions. "
                 f"Error: {error_message}",
-                error_type=ErrorType.PERMISSION_ERROR,
+                error_type=ErrorType.CONNECTIVITY_ERROR,
             )
     return None
 

@@ -1599,8 +1599,5 @@ script:
   dockerimage: demisto/googleapi-python3:1.0.0.3869138
 fromversion: 6.10.0
 isCloudProviderIntegration: true
-marketplaces:
-- xsoar
-- platform
 tests:
 - No tests (auto formatted)

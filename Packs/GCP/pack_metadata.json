@@ -15,10 +15,10 @@
     "supportedModules": [
         "C1",
         "C3",
-        "X5"
+        "X5",
+        "ENT_PLUS"
     ],
     "marketplaces": [
-        "platform",
-        "xsoar"
+        "platform"
     ]
 }
