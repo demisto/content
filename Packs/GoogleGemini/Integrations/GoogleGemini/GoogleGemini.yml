@@ -15,8 +15,8 @@ configuration:
 - name: api_key
   displaypassword: API Key
   required: true
-  defaultvalue:
   type: 9
+  section: Connect
   hiddenusername: true
   additionalinfo: "API Key to access the service REST API."
 - defaultvalue: gemini-2.5-flash-preview-05-20
@@ -111,7 +111,7 @@ script:
       name: history
       required: false
     - defaultValue: false
-      description: If true, saves the complete conversation (including the current exchange) to context under GoogleGemini.History for reuse in subsequent calls.
+      description: If true, saves the complete conversation (including the current exchange) to context under GoogleGemini.Chat.History for reuse in subsequent calls.
       name: save_conversation
       required: false
       auto: PREDEFINED
@@ -145,5 +145,5 @@ script:
   subtype: python3
   type: python
 tests:
-- playbook-GoogleGemini_Test
+- GoogleGemini-Test
 fromversion: 6.10.0

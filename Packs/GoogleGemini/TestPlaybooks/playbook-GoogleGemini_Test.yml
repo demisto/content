@@ -1,7 +1,7 @@
-id: GoogleGemini
-version: 2
+id: GoogleGemini-Test
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: GoogleGemini
+name: GoogleGemini-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -122,17 +122,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleGemini.Chat.prompt
+              simple: GoogleGemini.Chat.Prompt
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleGemini.Chat.response
+              simple: GoogleGemini.Chat.Response
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleGemini.Chat.model
+              simple: GoogleGemini.Chat.Model
             iscontext: true
     continueonerrortype: ""
     view: |-

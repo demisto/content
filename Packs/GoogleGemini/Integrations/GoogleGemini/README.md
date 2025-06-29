@@ -88,6 +88,7 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 | GoogleGemini.Chat.Model | String | The model used for generation |
 | GoogleGemini.Chat.Temperature | Number | The temperature parameter used for response generation |
 | GoogleGemini.Chat.History | Array | Complete conversation history (when save_conversation=true) |
+| GoogleGemini.Chat.ConversationId | String | A unique identifier, used to identify the chat session |
 
 #### Command Examples
 
@@ -105,7 +106,7 @@ When `save_conversation=true`, the integration:
 
 - Automatically retrieves existing conversation history from context
 - Uses the last exchange (user + model response) to provide context for the current request
-- Saves the complete updated conversation history to `GoogleGemini.History`
+- Saves the complete updated conversation history to `GoogleGemini.Chat.History`
 - Allows analysts to maintain conversation continuity without manually managing JSON history
 
 #### Human Readable Output

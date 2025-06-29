@@ -69,7 +69,7 @@ Enable conversation history management to automatically maintain context:
 
 When `save_conversation` is enabled, the integration automatically:
 
-- Retrieves previous conversation context from `${GoogleGemini.History}`
+- Retrieves previous conversation context from `${GoogleGemini.Chat.History}`
 - Includes the last exchange (user + model response) for context
 - Saves the complete updated conversation history for future use
 
