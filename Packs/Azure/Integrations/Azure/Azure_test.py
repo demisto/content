@@ -22,14 +22,10 @@ from Azure import (
     sql_db_threat_policy_update_command,
     sql_db_tde_set_command,
     cosmosdb_update_command,
-    get_role_assignments,
     get_token,
     remove_member_from_group_command,
-    get_role_definitions_permissions,
     health_check,
     get_azure_client,
-    check_required_permissions,
-    check_all_permissions,
     is_azure,
     remove_member_from_role,
     REQUIRED_ROLE_PERMISSIONS,
@@ -37,6 +33,8 @@ from Azure import (
     HealthCheckError,
     ErrorType,
     DemistoException,
+    CloudTypes,
+    SCOPE_BY_CONNECTION
 )
 
 
@@ -713,37 +711,6 @@ def test_update_security_rule_command_rule_not_found(mocker, client, mock_params
     assert error_message in str(e.value)
 
 
-def test_client_initialization_with_app_id_containing_refresh_token(mocker):
-    """
-    Given: App ID containing a refresh token.
-    When: AzureClient is initialized.
-    Then: The client should extract and store the refresh token in the integration context.
-    """
-    from Azure import AzureClient
-
-    # Mock set_integration_context
-    mocker.patch("Azure.get_integration_context", return_value={})
-    mock_set_integration_context = mocker.patch("Azure.set_integration_context")
-    mocker.patch("MicrosoftApiModule.MicrosoftClient")
-
-    # Initialize client with app_id containing refresh token
-    app_id_with_token = "test_app_id@refresh_token_123"
-
-    AzureClient(
-        app_id=app_id_with_token,
-        subscription_id="test_subscription_id",
-        resource_group_name="test_resource_group",
-        verify=True,
-        proxy=False,
-        tenant_id="test_tenant_id",
-        enc_key="test_enc_key",
-    )
-
-    # Verify that set_integration_context was called with the expected arguments
-    expected_context = {"current_refresh_token": "refresh_token_123"}
-    mock_set_integration_context.assert_called_once_with(expected_context)
-
-
 def test_main_function_success(mocker):
     """
     Given: A command and valid parameters.
@@ -791,91 +758,6 @@ def test_main_function_success(mocker):
     mock_return_results.assert_called_once_with(mock_cmd_result)
 
 
-def test_main_function_error_handling(mocker):
-    """
-    Given: A command that raises an exception.
-    When: The main function is called.
-    Then: The error should be caught and returned using return_error.
-    """
-    from Azure import main
-
-    # Mock demisto functions
-    mocker.patch.object(demisto, "command", return_value="azure-storage-account-update")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "app_id": "test_app_id",
-            "subscription_id": "test_subscription_id",
-            "resource_group_name": "test_resource_group",
-            "auth_type": "Client Credentials",
-            "tenant_id": "test_tenant_id",
-            "credentials": {"password": "test_enc_key"},
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={"account_name": "teststorage"})
-
-    # Mock return_error
-    mock_return_error = mocker.patch("Azure.return_error")
-
-    # Mock AzureClient
-    mock_client = mocker.Mock()
-    mocker.patch("Azure.AzureClient", return_value=mock_client)
-
-    # Mock storage_account_update_command to raise an exception
-    error_message = "Some API error occurred"
-    mocker.patch("Azure.storage_account_update_command", side_effect=Exception(error_message))
-
-    # Call main function
-    main()
-
-    # Verify that return_error was called with the expected error message
-    mock_return_error.assert_called_once()
-    call_args = mock_return_error.call_args[0][0]
-    assert "Failed to execute azure-storage-account-update command" in call_args
-    assert error_message in call_args
-
-
-def test_main_function_not_implemented_command(mocker):
-    """
-    Given: A command that is not implemented.
-    When: The main function is called.
-    Then: A NotImplementedError should be raised and handled.
-    """
-    from Azure import main
-
-    # Mock demisto functions
-    mocker.patch.object(demisto, "command", return_value="azure-not-implemented-command")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "app_id": "test_app_id",
-            "subscription_id": "test_subscription_id",
-            "resource_group_name": "test_resource_group",
-            "auth_type": "Client Credentials",
-            "tenant_id": "test_tenant_id",
-            "credentials": {"password": "test_enc_key"},
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={})
-
-    # Mock return_error
-    mock_return_error = mocker.patch("Azure.return_error")
-
-    # Mock AzureClient
-    mocker.patch("Azure.AzureClient")
-
-    # Call main function
-    main()
-
-    # Verify that return_error was called with the expected error message
-    mock_return_error.assert_called_once()
-    call_args = mock_return_error.call_args[0][0]
-    assert "Failed to execute azure-not-implemented-command command" in call_args
-    assert "is not implemented" in call_args
-
-
 def test_storage_blob_service_properties_set_command_empty_values(mocker, client, mock_params):
     """
     Given: An Azure client and a request to set blob service properties with empty values.
@@ -907,76 +789,6 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     client.storage_blob_service_properties_set_request.assert_called_once_with(
         mock_params.get("subscription_id"), mock_params.get("resource_group_name"), "teststorage", None, None
     )
-
-
-def test_get_role_assignments(mocker, client):
-    """
-    Given: An Azure client and an object ID.
-    When: The get_role_assignments function is called.
-    Then: The function should return the role assignments for the object ID.
-    """
-    # Mock data
-    object_id = "mock_object_id"
-    mock_response = {
-        "value": [
-            {
-                "id": "/subscriptions/sub1/providers/Microsoft.Authorization/roleAssignments/assignment1",
-                "properties": {
-                    "roleDefinitionId": "/subscriptions/sub1/providers/Microsoft.Authorization/roleDefinitions/role1",
-                    "principalId": object_id,
-                },
-            }
-        ]
-    }
-
-    # Mock the get_role_assignments_call method
-    mocker.patch.object(client, "get_role_assignments_call", return_value=mock_response)
-
-    # Call the function
-    result = get_role_assignments(client, object_id)
-
-    # Verify results
-    assert result == mock_response["value"]
-    client.get_role_assignments_call.assert_called_once_with(object_id)
-
-
-def test_get_role_definitions_permissions(mocker, client):
-    """
-    Given: An Azure client and a list of role assignments.
-    When: The get_role_definitions_permissions function is called.
-    Then: The function should return a list of permissions for the roles.
-    """
-    # Mock role assignments
-    role_assignments = [
-        {"properties": {"roleDefinitionId": "/subscriptions/sub1/providers/Microsoft.Authorization/roleDefinitions/role1"}},
-        {"properties": {"roleDefinitionId": "/subscriptions/sub1/providers/Microsoft.Authorization/roleDefinitions/role2"}},
-    ]
-
-    # Mock responses for get_role_permissions
-    role1_response = {"properties": {"permissions": [{"actions": ["Microsoft.Storage/*/read", "Microsoft.Storage/*/write"]}]}}
-    role2_response = {"properties": {"permissions": [{"actions": ["Microsoft.Network/*/read", "Microsoft.Network/*/write"]}]}}
-
-    # Set up the mock to return different responses based on the role ID
-    def mock_get_role_permissions(role_id):
-        if role_id == "role1":
-            return role1_response
-        else:
-            return role2_response
-
-    mocker.patch.object(client, "get_role_permissions", side_effect=mock_get_role_permissions)
-
-    # Call the function
-    result = get_role_definitions_permissions(client, role_assignments)
-
-    # Verify results
-    expected_permissions = [
-        "Microsoft.Storage/*/read",
-        "Microsoft.Storage/*/write",
-        "Microsoft.Network/*/read",
-        "Microsoft.Network/*/write",
-    ]
-    assert set(result) == set(expected_permissions)
-    assert client.get_role_permissions.call_count == 2
 
 
 def test_is_azure():
@@ -1065,236 +877,6 @@ def test_get_token(mocker):
     assert result == expected_decoded
     jwt.decode.assert_called_once_with(mock_token, options={"verify_signature": False})
 
-
-def test_check_all_permissions():
-    """
-    Given: Lists of role permissions and API permissions.
-    When: The check_all_permissions function is called.
-    Then: The function should return a list of missing required permissions.
-    """
-    # Test case 1: All permissions are granted with wildcard patterns
-    # These wildcard patterns should match all the required permissions
-    role_permissions = [
-        "Microsoft.Network/*/read",
-        "Microsoft.Network/*/write",
-        "Microsoft.Storage/*/read",
-        "Microsoft.Storage/*/write",
-        "Microsoft.Authorization/*/read",
-        "Microsoft.Authorization/*/write",
-        "Microsoft.DBforPostgreSQL/*/read",
-        "Microsoft.DBforPostgreSQL/*/write",
-        "Microsoft.Web/*/read",
-        "Microsoft.Web/*/write",
-        "Microsoft.DBforMySQL/*/read",
-        "Microsoft.DBforMySQL/*/write",
-        "Microsoft.Insights/*/read",
-        "Microsoft.Insights/*/write",
-        "Microsoft.Compute/*/read",
-        "Microsoft.Compute/*/write",
-        "Microsoft.ContainerRegistry/*/read",
-        "Microsoft.ContainerRegistry/*/write",
-        "Microsoft.KeyVault/*/read",
-        "Microsoft.KeyVault/*/write",
-        "Microsoft.Sql/*/read",
-        "Microsoft.Sql/*/write",
-        "Microsoft.DocumentDB/*/read",
-        "Microsoft.DocumentDB/*/write",
-    ]
-
-    api_permissions = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
-
-    missing_permissions = check_all_permissions(role_permissions, api_permissions)
-    assert len(missing_permissions) == 0, f"Expected no missing permissions, but got: {missing_permissions}"
-
-    # Test case 2: All specific permissions from REQUIRED_ROLE_PERMISSIONS are granted
-    role_permissions = REQUIRED_ROLE_PERMISSIONS.copy()  # Use the exact list of required permissions
-    missing_permissions = check_all_permissions(role_permissions, api_permissions)
-    assert len(missing_permissions) == 0, f"Expected no missing permissions, but got: {missing_permissions}"
-
-    # Test case 3: Some permissions are missing
-    limited_role_permissions = [
-        "Microsoft.Network/networkSecurityGroups/securityRules/read",
-        "Microsoft.Storage/storageAccounts/read",
-    ]
-    limited_api_permissions = []
-
-    missing_permissions = check_all_permissions(limited_role_permissions, limited_api_permissions)
-    assert len(missing_permissions) > 0, "Expected missing permissions but got none"
-
-    # Check that write permissions are detected as missing
-    assert "Microsoft.Network/networkSecurityGroups/securityRules/write" in missing_permissions
-    assert "Microsoft.Storage/storageAccounts/write" in missing_permissions
-
-    # Verify that we catch at least 10 missing permissions
-    # This ensures our test is thorough enough
-    assert len(missing_permissions) >= 10, f"Expected at least 10 missing permissions, but only found {len(missing_permissions)}"
-
-    # Test case 5: Edge case - empty permissions
-    missing_permissions = check_all_permissions([], [])
-    assert len(missing_permissions) == len(REQUIRED_ROLE_PERMISSIONS)
-
-    # Test case 6: Edge case - exact matching vs pattern matching
-    # Make sure wildcards work correctly
-    wildcard_permissions = ["Microsoft.*/*/read", "Microsoft.*/*/write"]
-    missing_permissions = check_all_permissions(wildcard_permissions, api_permissions)
-    assert (
-        len(missing_permissions) == 0
-    ), f"Wildcard patterns should match all required permissions, but got missing: {missing_permissions}"
-
-
-def test_health_check(mocker):
-    """
-    Given: A subscription ID and connector ID.
-    When: The health_check function is called.
-    Then: The function should verify connectivity and permissions to Azure.
-    """
-    # Mock parameters
-    subscription_id = "test-subscription-id"
-    connector_id = "test-connector-id"
-
-    # Mock successful credential retrieval
-    mock_token = "mock_token"
-    mock_credentials = {"access_token": mock_token}
-    mocker.patch("Azure.get_cloud_credentials", return_value=mock_credentials)
-
-    # Mock successful permission check
-    mocker.patch("Azure.check_required_permissions", return_value=None)
-
-    # Call function with successful scenario
-    result = health_check(subscription_id, connector_id)
-    assert result is None  # No error means success
-
-    # Mock missing subscription ID
-    result = health_check("", connector_id)
-    assert isinstance(result, HealthCheckError)
-    assert result.error_type == ErrorType.INTERNAL_ERROR
-
-    # Mock missing token
-    mocker.patch("Azure.get_cloud_credentials", return_value={})
-    result = health_check(subscription_id, connector_id)
-    assert isinstance(result, HealthCheckError)
-    assert result.error_type == ErrorType.CONNECTIVITY_ERROR
-
-    # Mock exception during credential retrieval
-    mocker.patch("Azure.get_cloud_credentials", side_effect=Exception("Connection error"))
-    result = health_check(subscription_id, connector_id)
-    assert isinstance(result, HealthCheckError)
-    assert result.error_type == ErrorType.CONNECTIVITY_ERROR
-
-
-def test_check_required_permissions(mocker):
-    """
-    Given: A token, subscription ID, and connector ID.
-    When: The check_required_permissions function is called.
-    Then: The function should check if the token has all required permissions.
-    """
-    # Mock parameters
-    token = "mock_token"
-    subscription_id = "test-subscription-id"
-    connector_id = "test-connector-id"
-
-    # Mock token decoding
-    mock_decoded_token = {"oid": "mock_object_id"}
-    mocker.patch("Azure.get_token", return_value=mock_decoded_token)
-
-    # Mock AzureClient initialization and its required methods
-    mock_client = AzureClient()
-    mocker.patch("Azure.AzureClient", return_value=mock_client)
-
-    # Mock successful role assignments and permissions check
-    mock_role_assignments = [{"properties": {"roleDefinitionId": "role1"}}]
-    mocker.patch("Azure.get_role_assignments", return_value=mock_role_assignments)
-
-    mock_permissions = ["Microsoft.*/*/read", "Microsoft.*/*/write"]
-    mocker.patch("Azure.get_role_definitions_permissions", return_value=mock_permissions)
-
-    # Successful case - no permissions missing
-    mocker.patch("Azure.check_all_permissions", return_value=[])
-    result = check_required_permissions(token, subscription_id, connector_id)
-    assert result is None
-
-    # Missing permissions case
-    missing_permissions = ["Microsoft.Storage/storageAccounts/write"]
-    mocker.patch("Azure.check_all_permissions", return_value=missing_permissions)
-    result = check_required_permissions(token, subscription_id, connector_id)
-    assert isinstance(result, HealthCheckError)
-    assert result.error_type == ErrorType.PERMISSION_ERROR
-    assert "Missing required permissions" in result.message
-
-    # Test exception handling
-    mocker.patch("Azure.get_role_assignments", side_effect=Exception("Failed to get role assignments"))
-    result = check_required_permissions(token, subscription_id, connector_id)
-    assert isinstance(result, HealthCheckError)
-    assert result.error_type == ErrorType.PERMISSION_ERROR
-
-    # Test without connector_id (should raise exception)
-    mocker.patch("Azure.check_all_permissions", return_value=missing_permissions)
-    with pytest.raises(DemistoException):
-        check_required_permissions(token, subscription_id, None)
-
-
-def test_get_azure_client_with_stored_credentials(mocker, mock_params):
-    """
-    Given: Parameters with credentials, arguments, and a command.
-    When: The get_azure_client function is called.
-    Then: The function should return an initialized Azure client using credentials.
-    """
-    # Setup mocks
-    args = {"subscription_id": "arg_subscription_id"}
-    command = "azure-storage-account-update"
-    mock_client = mocker.Mock()
-
-    mocker.patch("Azure.get_from_args_or_params", return_value="mocked_subscription_id")
-
-    # Mock AzureClient to return a single value, not a tuple
-    mocker.patch("Azure.AzureClient", return_value=mock_client)
-
-    # Test with credentials
-    params = mock_params.copy()
-    params["credentials"] = {"password": "test_password"}
-
-    # Call the function
-    result = get_azure_client(params, args, command)
-
-    # Verify results
-    assert result[0] == mock_client  # First item in returned tuple is the client
-    assert result[1] == ""  # Second item is the token
-    Azure.AzureClient.assert_called_once()
-
-
-def test_get_azure_client_with_cloud_credentials(mocker, mock_params):
-    """
-    Given: Parameters without credentials, arguments, and a command.
-    When: The get_azure_client function is called.
-    Then: The function should retrieve cloud credentials and return a client.
-    """
-    # Setup mocks
-    args = {"subscription_id": "arg_subscription_id"}
-    command = "azure-storage-account-update"
-    mock_client = mocker.Mock()
-    mock_token = "mock_token"
-
-    mocker.patch("Azure.get_from_args_or_params", return_value="mocked_subscription_id")
-    mocker.patch("Azure.get_cloud_credentials", return_value={"access_token": mock_token})
-    mocker.patch("Azure.get_proxydome_token", return_value="proxy_token")
-
-    # Mock AzureClient to return a single value, not a tuple
-    mocker.patch("Azure.AzureClient", return_value=mock_client)
-
-    # Test without credentials
-    params = mock_params.copy()
-    params["credentials"] = {}
-
-    # Call the function
-    result = get_azure_client(params, args, command)
-
-    # Verify results
-    assert result[0] == mock_client  # First item in returned tuple is the client
-    assert result[1] == mock_token  # Second item is the token
-    Azure.get_cloud_credentials.assert_called_once()
-    Azure.AzureClient.assert_called_once()
-
-
 def test_get_azure_client_no_token(mocker, mock_params):
     """
     Given: Parameters without credentials and no token from cloud credentials.
@@ -1317,3 +899,231 @@ def test_get_azure_client_no_token(mocker, mock_params):
         get_azure_client(params, args, command)
 
     assert "Failed to retrieve AZURE access token" in str(excinfo.value)
+
+def test_get_azure_client_with_stored_credentials(mocker, mock_params):
+    """
+    Given: Parameters with stored credentials, arguments, and an Azure command.
+    When: The get_azure_client function is called.
+    Then: The function should return an initialized Azure client using stored credentials without cloud authentication.
+    """
+    # Setup mocks
+    args = {"subscription_id": "arg_subscription_id"}
+    command = "azure-storage-account-update"
+    mock_client = mocker.Mock()
+
+    mocker.patch("Azure.is_azure", return_value=True)
+    mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
+
+    # Test with credentials (stored credentials path)
+    params = mock_params.copy()
+    params["credentials"] = {"password": "test_password"}
+
+    # Call the function
+    result = get_azure_client(params, args, command)
+
+    # Verify results
+    assert result == mock_client
+    
+    # Verify AzureClient was instantiated with correct parameters
+    mock_azure_client_constructor.assert_called_once_with(
+        app_id=params["app_id"],
+        subscription_id=params["subscription_id"],
+        resource_group_name=params["resource_group_name"],
+        verify=not params["insecure"],
+        proxy=params["proxy"],
+        tenant_id=params["tenant_id"],
+        enc_key="test_password",
+        scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
+        headers={}
+    )
+
+
+def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_params):
+    """
+    Given: Parameters without stored credentials, arguments, and an Azure command.
+    When: The get_azure_client function is called.
+    Then: The function should retrieve cloud credentials and return a client with proper headers and scope.
+    """
+    # Setup mocks
+    args = {"subscription_id": "arg_subscription_id"}
+    command = "azure-storage-account-update"
+    mock_client = mocker.Mock()
+    mock_token = "mock_access_token"
+
+    mocker.patch("Azure.is_azure", return_value=True)
+    mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
+    mocker.patch("Azure.get_cloud_credentials", return_value={"access_token": mock_token})
+    mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
+
+    # Test without stored credentials (cloud credentials path)
+    params = mock_params.copy()
+    params["credentials"] = {}  # No stored credentials
+
+    # Call the function
+    result = get_azure_client(params, args, command)
+
+    # Verify results
+    assert result == mock_client
+    
+    # Verify cloud credentials were retrieved with correct parameters
+    Azure.get_cloud_credentials.assert_called_once_with(
+        CloudTypes.AZURE.value,
+        "test_subscription_id",
+        ["DEFAULT", "GRAPH"]
+    )
+    
+    # Verify AzureClient was instantiated with correct parameters including headers
+    expected_headers = {
+        "Authorization": f"Bearer {mock_token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+    mock_azure_client_constructor.assert_called_once_with(
+        app_id=params["app_id"],
+        subscription_id=params["subscription_id"],
+        resource_group_name=params["resource_group_name"],
+        verify=not params["insecure"],
+        proxy=params["proxy"],
+        tenant_id=params["tenant_id"],
+        enc_key=None,
+        scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
+        headers=expected_headers
+    )
+
+
+def test_get_azure_client_with_cloud_credentials_non_azure_command(mocker, mock_params):
+    """
+    Given: Parameters without stored credentials, arguments, and a non-Azure command.
+    When: The get_azure_client function is called.
+    Then: The function should retrieve cloud credentials and return a client without Azure scope.
+    """
+    # Setup mocks
+    args = {"subscription_id": "arg_subscription_id"}
+    command = "azure-remove-member-from-group"  # Non-Azure command
+    mock_client = mocker.Mock()
+    mock_token = "mock_access_token"
+
+    mocker.patch("Azure.is_azure", return_value=False)
+    mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
+    mocker.patch("Azure.get_cloud_credentials", return_value={"access_token": mock_token})
+    mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
+
+    # Test without stored credentials (cloud credentials path)
+    params = mock_params.copy()
+    params["credentials"] = {}  # No stored credentials
+
+    # Call the function
+    result = get_azure_client(params, args, command)
+
+    # Verify results
+    assert result == mock_client
+    
+    # Verify AzureClient was instantiated without Azure scope for non-Azure commands
+    expected_headers = {
+        "Authorization": f"Bearer {mock_token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+    mock_azure_client_constructor.assert_called_once_with(
+        app_id=params["app_id"],
+        subscription_id=params["subscription_id"],
+        resource_group_name=params["resource_group_name"],
+        verify=not params["insecure"],
+        proxy=params["proxy"],
+        tenant_id=params["tenant_id"],
+        enc_key=None,
+        scope=None,  # No scope for non-Azure commands
+        headers=expected_headers
+    )
+
+
+def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
+    """
+    Given: Parameters without stored credentials and cloud credentials that return no token.
+    When: The get_azure_client function is called.
+    Then: The function should raise a DemistoException about missing token.
+    """
+    # Setup mocks
+    args = {"subscription_id": "arg_subscription_id"}
+    command = "azure-storage-account-update"
+
+    mocker.patch("Azure.is_azure", return_value=True)
+    mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
+    mocker.patch("Azure.get_cloud_credentials", return_value={})  # No access_token
+
+    # Test without credentials and no token
+    params = mock_params.copy()
+    params["credentials"] = {}
+
+    # Verify exception is raised
+    with pytest.raises(DemistoException) as excinfo:
+        get_azure_client(params, args, command)
+
+    assert "Failed to retrieve AZURE access token - token is missing from credentials" in str(excinfo.value)
+
+
+def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
+    """
+    Given: Parameters with insecure=True and proxy=True settings.
+    When: The get_azure_client function is called.
+    Then: The function should pass the correct verify and proxy parameters to AzureClient.
+    """
+    # Setup mocks
+    args = {"subscription_id": "arg_subscription_id"}
+    command = "azure-storage-account-update"
+    mock_client = mocker.Mock()
+
+    mocker.patch("Azure.is_azure", return_value=True)
+    mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
+
+    # Test with insecure and proxy settings
+    params = mock_params.copy()
+    params["insecure"] = True
+    params["proxy"] = True
+    params["credentials"] = {"password": "test_password"}
+
+    # Call the function
+    result = get_azure_client(params, args, command)
+
+    # Verify results
+    assert result == mock_client
+    
+    # Verify correct verify and proxy parameters
+    call_args = mock_azure_client_constructor.call_args
+    assert call_args[1]["verify"] is False  # insecure=True means verify=False
+    assert call_args[1]["proxy"] is True
+
+
+def test_get_azure_client_missing_optional_params(mocker):
+    """
+    Given: Parameters with missing optional fields.
+    When: The get_azure_client function is called.
+    Then: The function should handle missing parameters gracefully with default values.
+    """
+    # Setup mocks
+    args = {}
+    command = "azure-storage-account-update"
+    mock_client = mocker.Mock()
+
+    mocker.patch("Azure.is_azure", return_value=True)
+    mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
+
+    # Test with minimal parameters
+    params = {
+        "credentials": {"password": "test_password"}
+    }
+
+    # Call the function
+    result = get_azure_client(params, args, command)
+
+    # Verify results
+    assert result == mock_client
+    
+    # Verify default values were used
+    call_args = mock_azure_client_constructor.call_args
+    assert call_args[1]["app_id"] == ""
+    assert call_args[1]["subscription_id"] == ""
+    assert call_args[1]["resource_group_name"] == ""
+    assert call_args[1]["verify"] is True  # Default for insecure=False
+    assert call_args[1]["proxy"] is False  # Default
+    assert call_args[1]["tenant_id"] is None

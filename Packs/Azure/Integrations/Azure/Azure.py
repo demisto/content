@@ -6,6 +6,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
+from requests.exceptions import ConnectionError, Timeout
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -25,6 +27,7 @@ SCOPE_BY_CONNECTION = {
     "Authorization Code": "https://management.azure.com/.default",
     "Client Credentials": "https://management.azure.com/.default",
 }
+SCOPE_AZURE = "https://management.azure.com/.default"
 
 PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
@@ -187,17 +190,11 @@ class AzureClient:
         resource_group_name: str = "",
         verify: bool = False,
         proxy: bool = False,
-        tenant_id: str = None,
-        enc_key: str = None,
-        scope: str = None,
-        headers: dict = None,
+        tenant_id: str | None = None,
+        enc_key: str | None = None,
+        scope: str | None = None,
+        headers: dict | None = None,
     ):
-        if "@" in app_id:
-            app_id, refresh_token = app_id.split("@")
-            integration_context = get_integration_context()
-            integration_context.update(current_refresh_token=refresh_token)
-            set_integration_context(integration_context)
-
         if not headers:
             ms_client_args = assign_params(
                 self_deployed=True,
@@ -227,11 +224,11 @@ class AzureClient:
     def http_request(
         self,
         method: str,
-        url_suffix: str = None,
-        full_url: str = None,
-        params: dict = None,
+        url_suffix: str | None = None,
+        full_url: str | None = None,
+        params: dict | None = None,
         resp_type: str = "json",
-        json_data: dict = None,
+        json_data: dict | None = None,
     ) -> requests.Response:
         params = params or {}
         if not params.get("api-version"):
@@ -1190,22 +1187,6 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
-    def get_role_assignments_call(self, object_id):
-        full_url = (
-            f"{PREFIX_URL_AZURE}{self.subscription_id}/"
-            f"providers/Microsoft.Authorization/roleAssignments?$filter=principalId eq '{object_id}'"
-        )
-        params = {"api-version": PERMISSIONS_VERSION}
-        demisto.debug(f"Getting role assignments for {self.subscription_id}.")
-        return self.http_request(method="GET", full_url=full_url, params=params)
-
-    def get_role_permissions(self, role_definition_id):
-        full_url = (
-            f"{PREFIX_URL_AZURE}{self.subscription_id}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}"
-        )
-        params = {"api-version": PERMISSIONS_VERSION}
-        return self.http_request(method="GET", full_url=full_url, params=params)
-
 
 """ HELPER FUNCTIONS """
 
@@ -1576,7 +1557,6 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     enabled = args.get("enabled")
     current = client.get_webapp_auth(name, subscription_id, resource_group_name)
-
     current["properties"]["enabled"] = enabled if enabled else current.get("properties", {}).get("enabled")
     response = client.update_webapp_auth(name, subscription_id, resource_group_name, current)
     demisto.debug("Updated webapp auth settings.")
@@ -2058,49 +2038,7 @@ def get_token(access_token: str) -> dict:
     return decoded_token
 
 
-def get_role_assignments(client, object_id: str):
-    role_assignments = client.get_role_assignments_call(object_id)
-    return role_assignments.get("value", [])
-
-
-def get_role_definitions_permissions(client: AzureClient, list_role_assignments: list) -> list:
-    """
-    Get role definitions for the given role assignments.
-
-    Args:
-        client: Azure client object
-        list_role_assignments: List of role assignments to retrieve definitions for
-
-    Returns:
-        List of role definitions
-    """
-    role_definitions_permissions = []
-    for assignment in list_role_assignments:
-        demisto.debug(f"Searching permissions of role assignment '{assignment}'.")
-        role_definition_id = assignment.get("properties", {}).get("roleDefinitionId", "").split("/")[-1]
-        current_role_permissions = (
-            client.get_role_permissions(role_definition_id).get("properties", {}).get("permissions")[0].get("actions")
-        )
-        role_definitions_permissions.extend(current_role_permissions)
-
-    demisto.debug(f"Found the following role permissions: {role_definitions_permissions}")
-    return role_definitions_permissions
-
-
-def check_all_permissions(role_permissions: list, api_permissions: list) -> list:
-    missing_permissions = []
-    for required_role_permission in REQUIRED_ROLE_PERMISSIONS:
-        if not any(fnmatch.fnmatch(required_role_permission, granted) for granted in role_permissions):
-            missing_permissions.append(required_role_permission)
-
-    # for required_api_permission in REQUIRED_API_PERMISSIONS:
-    #     if required_api_permission not in api_permissions:
-    #         missing_permissions.append(required_api_permission)
-
-    return missing_permissions
-
-
-def test_module(client: AzureClient, token: str = "") -> str:
+def test_module(client) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -2110,86 +2048,14 @@ def test_module(client: AzureClient, token: str = "") -> str:
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
-    access_token = token if token else client.ms_client.get_access_token()
-    decoded_token = get_token(access_token)
-    object_id = decoded_token.get("oid", "")
-    list_api_permissions = decoded_token.get("roles", [])
-    list_role_assignments = get_role_assignments(client, object_id)
-    list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
-
-    missing_permissions = check_all_permissions(list_roles_permissions, list_api_permissions)
-    if not missing_permissions:
-        return "ok"
-
-    else:
-        raise Exception(f"Missing the following permissions: {missing_permissions}.")
-
-
-def check_required_permissions(
-    token: str, subscription_id: str, connector_id: str
-    ) -> list[HealthCheckError] | HealthCheckError | None:
-    """
-    Checks if the current credentials have all required permissions.
-
-    This function is used specifically for Cloud On Our Cloud (COOC) health checks
-    to verify permissions.
-
-    Args:
-        token (str): The Azure bearer token
-        subscription_id (str): The Azure subscription ID
-        connector_id (str): The identifier for the cloud connector
-
-    Returns:
-        HealthCheckError or None: Error details if missing permissions, None if successful
-
-    Raises:
-        DemistoException: When permissions check fails and connector_id is not provided
-    """
-    decoded_token = get_token(token)
-    object_id = decoded_token.get("oid", "")
-    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
-    client = AzureClient(subscription_id=subscription_id, headers=headers)
     try:
-        demisto.debug("Start checking permissions.")
-        list_role_assignments: list = get_role_assignments(client, object_id)
-        list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
-        missing_permissions = check_all_permissions(list_roles_permissions, [])
-        demisto.debug(f"Missing the following permissions: {missing_permissions}")
-    except Exception as e:
-        error_message = f"Failed to test permissions for Azure integration: {str(e)}"
-        if connector_id:
-            return HealthCheckError(
-                account_id=subscription_id,
-                connector_id=connector_id,
-                message=error_message,
-                error_type=ErrorType.PERMISSION_ERROR,
-            )
-
-        raise DemistoException(error_message)
-
-    if missing_permissions:
-        perm_to_cmds = {
-            perm: [cmd.strip() for cmd in PERMISSIONS_TO_COMMANDS.get(perm, []) for cmd in cmd.split(',')]
-            for perm in missing_permissions
-        }
-        error_lines = [f"{perm} missing for {'command' if len(cmds) == 1 else 'commands'}: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
-        if connector_id:
-            return [
-                HealthCheckError(
-                    account_id=subscription_id,
-                    connector_id=connector_id,
-                    message=f"Missing required permission {line}",
-                    error_type=ErrorType.PERMISSION_ERROR,
-                )
-                for line in error_lines
-            ]
-
-        raise DemistoException("Missing required permissions for Azure integration:\n" + "\n".join(error_lines))
-    
-    return None
+        client.http_request(method="GET", full_url=f"{PREFIX_URL_AZURE}{client.subscription_id}/providers/Microsoft.Authorization/roleAssignments", params = {"api-version": PERMISSIONS_VERSION})
+    except (ConnectionError, Timeout) as conn_err:
+        raise Exception("Connectivity Error: Cannot reach Azure endpoint") from conn_err
+    return "ok"
 
 
-def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> list[HealthCheckError] | HealthCheckError | None:
+def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> list[HealthCheckError] | HealthCheckError | None | str:
     """
     Tests connectivity to Azure and checks for required permissions.
     This function is specifically used for COOC (Connect on our Cloud) health checks
@@ -2219,7 +2085,9 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
             )
 
         demisto.debug("Using token-based credentials for health check")
-        return check_required_permissions(token, subscription_id, connector_id)
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
+        client = AzureClient(subscription_id=subscription_id, headers=headers)
+        test_module(client)
 
     except Exception as e:
         return HealthCheckError(
@@ -2239,8 +2107,7 @@ def is_azure(command) -> bool:
     """
     msgraph_commands = [
         "azure-remove-member-from-role",
-        "azure-remove-member-from-group",
-        # "test-module"
+        "azure-remove-member-from-group"
     ]
     return command not in msgraph_commands
 
@@ -2266,10 +2133,10 @@ def get_azure_client(params, args, command):
         proxy=params.get("proxy", False),
         tenant_id=params.get("tenant_id"),
         enc_key=params.get("credentials", {}).get("password"),
-        scope=SCOPE_BY_CONNECTION.get("Client Credentials") if is_azure_command else None,  # the issue!
+        scope=SCOPE_AZURE if is_azure_command else None,
         headers=headers,
     )
-    return client, token
+    return client
 
 
 def main():
@@ -2306,14 +2173,15 @@ def main():
             "azure-remove-member-from-role": remove_member_from_role,
             "azure-remove-member-from-group": remove_member_from_group_command,
         }
+        
         if command != "test-module" or not connector_id:
-            client, token = get_azure_client(params, args, command)
-
+            client = get_azure_client(params, args, command)
+        
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
             return_results(run_permissions_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
         elif command == "test-module":
-            return_results(test_module(client, token))
+            return_results(test_module(client))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         elif command in commands_with_args:

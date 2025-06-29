@@ -46,18 +46,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- name: auth_type
-  display: Authentication Type
-  required: true
-  defaultvalue: Device Code
-  type: 15
-  additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow or Azure Managed Identities.
-  options:
-  - Authorization Code
-  - Client Credentials
-  - Device Code
-  - Azure Managed Identities
-  section: Connect
 - name: tenant_id
   display: Tenant ID
   defaultvalue:
@@ -72,31 +60,6 @@ configuration:
   additionalinfo: ""
   displaypassword: Client Secret
   hiddenusername: true
-  section: Connect
-  required: false
-- name: redirect_uri
-  display: Application redirect URI
-  defaultvalue:
-  type: 0
-  additionalinfo: ""
-  section: Connect
-  advanced: true
-  required: false
-- name: auth_code
-  display: Authorization code
-  defaultvalue:
-  type: 9
-  additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section.
-  displaypassword: Authorization code
-  hiddenusername: true
-  section: Connect
-  advanced: true
-  required: false
-- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID
-  name: managed_identities_client_id
-  hiddenusername: true
-  type: 9
   section: Connect
   required: false
 description: Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select Azure, then in Advanced Settings > Security Capabilities, enable "Automation".
