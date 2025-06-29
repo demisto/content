@@ -553,38 +553,6 @@ def test_search__no_control_exist(mocker):
     assert "**No entries.**" in demisto.results.call_args[0][0]["HumanReadable"]
 
 
-def test_search__fail_on_empty_args(mocker):
-    """
-    Given:
-         Empty arg value
-    When:
-        Run any search query
-    Then:
-        Throws an exception
-
-    """
-    import Active_Directory_Query
-
-    class ConnectionMocker:
-        entries = []
-        result = {}
-
-        def search(self, *args, **kwargs):
-            return
-
-    mocker.patch.object(demisto, "results")
-    mocker.patch.object(demisto, "args", return_value={"limit": "20", "name": ""})
-    mocker.patch.object(demisto, "params", return_value={"fail_on_empty_args": "true"})
-    Active_Directory_Query.connection = ConnectionMocker()
-
-    with pytest.raises(Exception) as err:
-        Active_Directory_Query.search_users("dc=test,dc=test_1", page_size=20)
-    assert (
-        err.value.args[0]
-        == "Got empty values for arguments: ['name']. Remove those values or uncheck the *Error on empty arguments* parameter\n"
-    )  # noqa: E501
-
-
 def test_search_attributes_to_exclude(mocker):
     """
     Given:
