@@ -77,7 +77,7 @@ tasks:
     task:
       id: bd8ae30b-c004-4dff-8c76-cb6bc0bd4b52
       version: -1
-      name: Analyze Commandlines
+      name: Analyze Command-line
       description: |-
         This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
 
@@ -542,7 +542,7 @@ tasks:
       id: 00e621e6-25f8-4084-937a-eb6747ab8351
       version: -1
       name: Check Investigation findings
-      description: This task evaluates investigation findings to determine if the detected activity is malicious
+      description: "This task evaluates investigation findings including \n-  Malicious Reputation score \n-  Suspicious Causality Chain indication\n-  Command-line Risk Score analysis."
       type: condition
       iscommand: false
       brand: ""
@@ -557,14 +557,14 @@ tasks:
     conditions:
     - label: Malicious
       condition:
-      - - operator: greaterThanOrEqual
+      - - operator: isEqualNumber
           left:
             value:
               simple: DBotScore.Score
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "3"
         - operator: isNotEmpty
           left:
             value:
@@ -612,12 +612,7 @@ tasks:
       id: dbd01301-9205-46e5-8037-26318ef94143
       version: -1
       name: Search for related alerts by alert caseID
-      description: |-
-        This task searches for Cortex XSIAM suspicious alerts related to the current alert by Mitre Technique, indicating that the alert is part of an attack pattern.
-
-        Focus on identifying alerts associated with the following MITRE techniques:
-        - Any Agent Alerts within this alert.
-        - T1059 - Command and Scripting Interpreter.
+      description: "Search alerts related to the current alert by alert name, indicating that the alert is part of an attack pattern.\n\nFocus on identifying the following alerts \n- Rundll32.exe was used to run JavaScript \n- Process calls ActiveX Object with a shell command \n- Regsvr32 may have run code from an untrusted source\n- Pubprn.vbs signed script proxy execution\n- Windows LOLBIN scripting engine connected to a rare external host"
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -702,7 +697,7 @@ tasks:
       id: aa0ac47c-eeca-4a75-8b01-b1dac80823b7
       version: -1
       name: Check Suspicious Causality Chain
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Check for suspicious causality chain related to this alert to enrich context and verdict decision.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1172,6 +1167,8 @@ tasks:
                   simple: "3"
           transformers:
           - operator: uniq
+      incident_id:
+        simple: ${alert.internal_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1236,6 +1233,9 @@ tasks:
       version: -1
       name: Manual Task - Analyst Decision for Next Actions
       description: |-
+        Based on the investigation the following findings were found:
+        - command-line risk score: **Suspicious (10 <x< 60)**
+
         Analyst approval is required for the following remediation actions:
         - Kill causality process tree
         - Block malicious indicators
@@ -1321,10 +1321,10 @@ tasks:
       - "15"
       FP:
       - "35"
-      Remediate:
-      - "10"
       No Action:
       - "15"
+      Remediate:
+      - "10"
     separatecontext: false
     conditions:
     - label: Remediate
