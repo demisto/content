@@ -2243,11 +2243,14 @@ function Main {
         # $Demisto.results("polling_args: " + (ConvertTo-Json $polling_args -Depth 3))
         if ($polling_args) {
             ReturnPollingOutputs `
-            -ReadableOutput $human_readable `
-            -Outputs $entry_context `
-            -RawResponse $raw_response `
-            -CommandName $command `
-            -PollingArgs $polling_args | Out-Null
+                -ReadableOutput $human_readable `
+                -Outputs $entry_context `
+                -RawResponse $raw_response `
+                -CommandName $command `
+                -PollingArgs $polling_args `
+                -RemoveSelfRefs $true `
+                -NextRun "30" `
+                -Timeout "600" | Out-Null
         }
         else {
             ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
