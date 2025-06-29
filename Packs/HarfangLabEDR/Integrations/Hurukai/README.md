@@ -1510,7 +1510,7 @@ Start a job to search for IOCs on a host (Windows / Linux)
 
 #### Command example
 
-```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" registry="DLLPath" ```
+```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" registry="DLLPath"```
 
 #### Context Example
 
@@ -1536,7 +1536,7 @@ Start a job to search for IOCs on a host (Windows / Linux)
 
 #### Command example
 
-```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" registry="hmmapi" ```
+```!harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" registry="hmmapi"```
 
 #### Context Example
 
