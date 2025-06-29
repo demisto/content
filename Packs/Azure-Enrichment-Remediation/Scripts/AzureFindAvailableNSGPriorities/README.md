@@ -1,4 +1,4 @@
-This script takes in a list of numbers that represent Azure priorities for NSG rules, a target priority number, and a number available priorities to return available priorities from the provided list. 
+This script takes in a list of numbers that represent Azure priorities for NSG rules, a target priority number, and a number available priorities to return available priorities from the provided list.
 
 ## Script Data
 
@@ -13,6 +13,7 @@ This script takes in a list of numbers that represent Azure priorities for NSG r
 
 ---
 This script is used in the following playbooks and scripts.
+
 - Azure - Network Security Group Remediation
 
 ## Inputs

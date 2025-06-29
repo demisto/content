@@ -1,6 +1,7 @@
 Adds new events to an existing NetWitness SA incident.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,13 +9,15 @@ Adds new events to an existing NetWitness SA incident.
 | Script Type | python |
 | Tags | RSA NetWitness Security Analytics |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * nw-add-events-to-incident
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -27,5 +30,6 @@ This script uses the following commands and scripts.
 | incidentManagementId | The ID of the NetWitness INCIDENT_MANAGEMENT device/component ID. It can be received by running `nw-get-component` command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server. (optional number) |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

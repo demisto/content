@@ -1,7 +1,8 @@
 # Ataya Harmony
-Use the Ataya Harmony integration, we can achieve the security access control which assign the user through the api access token.
-## Configure Ataya Harmony in Cortex
 
+Use the Ataya Harmony integration, we can achieve the security access control which assign the user through the api access token.
+
+## Configure Ataya Harmony in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -10,23 +11,25 @@ Use the Ataya Harmony integration, we can achieve the security access control wh
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
-
-
 ## Commands
+
 You can execute these commands from the CLI, or in a playbook.
 
 ### ataya-assign-user
+
 ***
 After assign the user on ataya harmony, user can successfully register to harmony
 
 #### Base Command
 
 `ataya-assign-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| imsi | A user imsi which need to be assigned | Required | 
+| imsi | A user imsi which need to be assigned | Required |
 
 #### Command Example
+
 ```!ataya-assign-user imsi="001010000000001"```

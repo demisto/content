@@ -28,6 +28,17 @@ def client():
     return client
 
 
+@pytest.fixture()
+def context_cache_with_mirroring():
+    alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    return {"mirroring_cache": [{"alert": alert, "entries": {}}]}
+
+
+@pytest.fixture()
+def context_cache_without_mirroring():
+    return {}
+
+
 """ TEST HELPER FUNCTIONS """
 
 
@@ -124,6 +135,86 @@ def test_filter_dict_by_keys_with_empty_dict():
     keys_to_keep = ["key1", "key3"]
     expected_result = {}
     assert SekoiaXDR.filter_dict_by_keys(dict, keys_to_keep) == expected_result
+
+
+def test_check_id_in_context_with_mirroring(context_cache_with_mirroring):
+    assert SekoiaXDR.check_id_in_context("ALL1A4SKUiU2", context_cache_with_mirroring) == (
+        context_cache_with_mirroring["mirroring_cache"][0],
+        0,
+    )
+
+
+def test_fetch_alerts_with_pagination(client, requests_mock):
+    first_mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_first_offset_call.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/alerts?limit=1&sort=created_at&offset=0",
+        json=first_mock_response,
+    )
+
+    second_mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_second_offset_call.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/alerts?limit=1&sort=created_at&offset=1",
+        json=second_mock_response,
+    )
+
+    args = {
+        "alert_status": None,
+        "alert_urgency": None,
+        "alert_type": None,
+        "max_results": 1,
+        "alerts_created_at": None,
+        "alerts_updated_at": None,
+        "sort_by": "created_at",
+    }
+    result = SekoiaXDR.fetch_alerts_with_pagination(client=client, **args)
+
+    assert len(result) == 2
+    assert result[0]["uuid"] == "80ee2ccc-11e3-4416"
+    assert result[1]["uuid"] == "07fe3fc0-ddb7-44f3"
+
+
+def test_handle_alert_events_query_finished_status(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_query_events.json")
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response)
+
+    mock_response_query_events_status = util_load_json("test_data/SekoiaXDR_query_events_status.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=mock_response_query_events_status,
+    )
+
+    mock_response_retrieve_events = util_load_json("test_data/SekoiaXDR_retrieve_events.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f/events",
+        json=mock_response_retrieve_events,
+    )
+
+    alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    args = {
+        "client": client,
+        "alert": alert,
+        "earliest_time": "2024-04-25T10:00:23",
+        "latest_time": "2024-04-25T15:00:23",
+        "events_term": "sekoiaio.intake.uuid:834a2d7f-3623-4b26",
+    }
+
+    result = SekoiaXDR.handle_alert_events_query(**args)
+    assert result["events"]
+
+
+def test_handle_alert_events_query_in_progress_status(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_query_events.json")
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response)
+
+    mock_response_query_events_status = util_load_json("test_data/SekoiaXDR_query_events_status_in_progress.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=mock_response_query_events_status,
+    )
+
+
+def test_check_id_in_context_without_mirroring(context_cache_without_mirroring):
+    assert not SekoiaXDR.check_id_in_context("ALL1A4SKUiU2", context_cache_without_mirroring)
 
 
 """ TEST COMMANDS FUNCTIONS """
@@ -613,4 +704,15 @@ def test_fetch_incidents(
     )
 
     assert results[0]["last_fetch"]
+    assert len(results[1]) == 2
+
+
+def test_fetch_incidents_with_same_time(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_same_time.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
+
+    last_run = {"last_fetch": 1714036855}
+    results = SekoiaXDR.fetch_incidents(client, 100, last_run, None, None, None, None, None, None, None, None)
+
+    assert results[0]["last_fetch"] == 1747057948
     assert len(results[1]) == 2

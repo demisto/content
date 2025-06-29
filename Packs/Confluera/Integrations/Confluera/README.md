@@ -11,9 +11,7 @@ This integration was tested against product version 2.2.3
 
 Supported Product Versions: 2.2.3 and above.
 
-
 ## Configure Confluera in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -23,26 +21,25 @@ Supported Product Versions: 2.2.3 and above.
 | Username |Usernme \(e.g. username@confluera.com\) | True|
 | Password | Password \(e.g. userpassword\) | True |
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### confluera-fetch-detections
+
 ***
 Fetches list of detections in confluera for past x hours.
-
 
 #### Base Command
 
 `confluera-fetch-detections`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hours | Specifies the time duration for which detections need to be fetched  | Optional | 
-
-
+| hours | Specifies the time duration for which detections need to be fetched  | Optional |
 
 #### Context Output
 
@@ -50,11 +47,12 @@ Fetches list of detections in confluera for past x hours.
 | --- | --- | --- |
 | Confluera.Detections | Unknown | Detections Response |
 
-
 #### Command Example
+
 ```!confluera-fetch-detections hours="23"```
 
 #### Context Example
+
 ```
 [
   {
@@ -107,26 +105,28 @@ Fetches list of detections in confluera for past x hours.
 #### Human Readable Output
 
 >### Results
+>
 >|agentId |allowListId |attackIdList|iocDetail |iocHash|iocSummary| iocTactic| ruleid|scoreContribution|seenTime |trailId|trailIocInfoType |trailList | trailStateList |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|prod_0_7_.agent-39 || 985860| ["prod_0_7_.agent-39:16351"] | InfluencedBy-9a56be0d76fe58f2373d64c4910aa40b-1618511546260570882 | Uses tainted file (/var/lib/amazon/ssm/i-0736b112f2496f381/document/state/current/fd2b1a18-2c09-47f2-afc3-fe013a364250) influencerTrails ["prod_0_7_.agent-39:16351"] | Defense Evasion|0 |2 |1618511546260570882 | 22016|DETECTION| prod_0_7_.agent-39:22016|ACTIVE |
 >|prod_0_7_.agent-39 || 985860| ["prod_0_7_.agent-39:16351"] | InfluencedBy-9a56be0d76fe58f2373d64c4910aa40b-1618511546260570882 | Uses tainted file (/var/lib/amazon/ssm/i-0736b112f2496f381/document/state/current/fd2b1a18-2c09-47f2-afc3-fe013a364250) influencerTrails ["prod_0_7_.agent-39:16351"] | Defense Evasion|0 |2 |1618511546260570882 | 22016|DETECTION| prod_0_7_.agent-39:22016|ACTIVE |
 >|prod_0_7_.agent-39 || 972763| User  accessing website | Edge-ae3b3d9a3c5d4b17491d3f6d924bd3b8-1618509851233674054 | Long sleep executed by process| Lateral Movement|0 |2 |1618511546260570882 | 22016|DETECTION| prod_0_7_.agent-39:22016|ACTIVE |
 >|prod_0_7_.agent-39 || 972763| User  accessing website | InfluencedBy-9a56be0d76fe58f2373d64c4910aa40b-1618511546260570882 | Uses tainted file (/var/lib/amazon/ssm/i-0736b112f2496f381/document/state/current/fd2b1a18-2c09-47f2-afc3-fe013a364250) influencerTrails ["prod_0_7_.agent-39:16351"] | Defense Evasion|0 |2 |1618511546260570882 | 22016|DETECTION| prod_0_7_.agent-39:22016|ACTIVE |
+>
 ### confluera-fetch-progressions
+
 ***
 Fetches list of progressions in confluera for past x hours.
-
 
 #### Base Command
 
 `confluera-fetch-progressions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 |hours|Specifies the time duration for which progressions need to be fetched |Optional|
-
 
 #### Context Output
 
@@ -134,11 +134,12 @@ Fetches list of progressions in confluera for past x hours.
 | --- | --- | --- |
 | Confluera.Progressions | Unknown | Progressions response |
 
-
 #### Command Example
+
 ```!confluera-fetch-progressions hours="72"```
 
 #### Context Example
+
 ```
 [
   {
@@ -234,11 +235,14 @@ Fetches list of progressions in confluera for past x hours.
 
 #### Human Readable Output
 
->### Progressions Log:
+>### Progressions Log
+>
 >|Progression URL|Total Progressions|
 >|---|---|
 >||19|
->### Successfully fetched 19 progressions.
+>
+>### Successfully fetched 19 progressions
+>
 >|agentId|attackId|containsAnchor|fingerprint|hostTimeInfoMap|lastIocSeenTime|lastIocSeenTimeInternal|lastMitigatedTime|local|mitigateTime|numberOfDetections|numberOfHosts|numberOfLateralMovements|riskMomentum|riskScore|startTime|state|trailIdHash|trailRiskHistInfoList|trailTacticSet|trailTechniqueSet|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|prod_0_26_.agent-26|942184|true|34386ee468f53dc45582f45ed15f204794d|prod_0_26_.agent-26: 1618466218792013459|1618466218792013459|0|0|true|1618466218792013459|1|1|0|0|10|1618466218792013459|ACTIVE|prod_0_26_.agent-26:164626437|{'agentId': 'prod_0_26_.agent-26', 'scoreContribution': 0, 'seenTime': 1618466218792013459, 'trailId': '164626437'}|command_and_control|T1219|
@@ -246,19 +250,19 @@ Fetches list of progressions in confluera for past x hours.
 >|prod_0_26_.agent-26|769367|true|34386ee468f53dc45582f45ed15f204794d|prod_0_26_.agent-26: 1618417629053160077|1618417629053160077|0|0|true|1618417629053160077|4|1|0|0|40|1618419753818041182|ACTIVE|prod_0_26_.agent-26:162529286|{'agentId': 'prod_0_26_.agent-26', 'scoreContribution': 10, 'seenTime': 1618419753818041182, 'trailId': '162529286'}|command_and_control|T1219|
 
 ### confluera-fetch-trail-details
+
 ***
 Fetches progression details of which provided trailId is a part of.
-
 
 #### Base Command
 
 `confluera-fetch-trail-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| trail_id| Id of a detection in iq-hub protal. | Required | 
-
+| trail_id| Id of a detection in iq-hub protal. | Required |
 
 #### Context Output
 
@@ -266,11 +270,12 @@ Fetches progression details of which provided trailId is a part of.
 | --- | --- | --- |
 | Confluera.TrailDetails | Unknown | Progression Details |
 
-
 #### Command Example
+
 ```!confluera-fetch-trail-details trail-id="22796349"```
 
 #### Context Example
+
 ```
 {
   "attackId": 7164528,
@@ -403,13 +408,12 @@ Fetches progression details of which provided trailId is a part of.
 
 #### Human Readable Output
 
->### Trail Details:
+>### Trail Details
+>
 >|agentId|attackId|containsAnchor|fingerprint|hostTimeInfoMap|lastIocSeenTime|lastIocSeenTimeInternal|lastMitigatedTime|local|mitigateTime|numberOfDetections|numberOfHosts|numberOfLateralMovements|riskMomentum|riskScore|startTime|state|trailIdHash|trailRiskHistInfoList|trailTacticSet|trailTechniqueSet|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|prod_0_26_.agent-26|942184|true|34386ee468f53dc45582f45ed15f204794d|prod_0_26_.agent-26: 1618466218792013459|1618466218792013459|0|0|true|1618466218792013459|1|1|0|0|10|1618466218792013459|ACTIVE|prod_0_26_.agent-26:164626437|{'agentId': 'prod_0_26_.agent-26', 'scoreContribution': 0, 'seenTime': 1618466218792013459, 'trailId': '164626437'}|command_and_control|T1219|
 >|prod_0_26_.agent-26|559633|true|2fca6467a9dccd2729ace9ce1832334386ee468f53dc45582f45ed15f204794d|prod_0_26_.agent-26: 1618378594837195479|1618378594837195479|0|0|true|1618379630722739179|1|1|0|0|10|1618466218792013459|ACTIVE|prod_0_26_.agent-26:157286403|{'agentId': 'prod_0_26_.agent-26', 'scoreContribution': 0, 'seenTime': 1618378594837195479, 'trailId': '157286403'}|command_and_control|T1219|
 >|prod_0_26_.agent-26|769367|true|34386ee468f53dc45582f45ed15f204794d|prod_0_26_.agent-26: 1618417629053160077|1618417629053160077|0|0|true|1618417629053160077|4|1|0|0|40|1618419753818041182|ACTIVE|prod_0_26_.agent-26:162529286|{'agentId': 'prod_0_26_.agent-26', 'scoreContribution': 10, 'seenTime': 1618419753818041182, 'trailId': '162529286'}|command_and_control|T1219|
-
-
 
 ---

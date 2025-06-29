@@ -6,7 +6,6 @@ This integration is fully compatible with the Kafka v2 integration.
 
 ## Configure Kafka v3 in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093 |  | True |
@@ -32,39 +31,41 @@ This integration is fully compatible with the Kafka v2 integration.
 | Schema Registry Username |  | False |
 | Schema Registry Password |  | False |
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### kafka-print-topics
+
 ***
 Prints all topics and their partitions.
-
 
 #### Base Command
 
 `kafka-print-topics`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| include_offsets | Whether to include the first and last offset for a topic, when printing a list of topics and partitions. Possible values are: true, false. Default is true. | Optional | 
-
+| include_offsets | Whether to include the first and last offset for a topic, when printing a list of topics and partitions. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kafka.Topic.Name | String | Kafka topic name. | 
-| Kafka.Topic.Partitions.ID | Number | Topic partition ID. | 
-| Kafka.Topic.Partitions.EarliestOffset | Number | Topic partition earliest offset. | 
-| Kafka.Topic.Partitions.LatestOffset | Number | Topic partition latest offset. | 
-
+| Kafka.Topic.Name | String | Kafka topic name. |
+| Kafka.Topic.Partitions.ID | Number | Topic partition ID. |
+| Kafka.Topic.Partitions.EarliestOffset | Number | Topic partition earliest offset. |
+| Kafka.Topic.Partitions.LatestOffset | Number | Topic partition latest offset. |
 
 #### Command Example
+
 ```!kafka-print-topics```
 
 #### Context Example
+
 ```
 {
     "Kafka": {
@@ -94,11 +95,13 @@ Prints all topics and their partitions.
 ```
 
 #### Human Readable Output
+
 ##### Kafka Topics
+
 | **Name** | **Partitions** |
 | --- | --- |
 | test-topic1 | {'ID': 0} |
-| test-topic2 | {'ID': 0, 'EarliestOffset': 0, 'OldestOffset': 3}, {'ID': 1, 'EarliestOffset': 0, 'OldestOffset': 4} | 
+| test-topic2 | {'ID': 0, 'EarliestOffset': 0, 'OldestOffset': 3}, {'ID': 1, 'EarliestOffset': 0, 'OldestOffset': 4} |
 
 ### kafka-publish-msg
 
@@ -113,12 +116,12 @@ Publishes a message to Kafka.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic | A topic to publish messages to. | Required | 
-| value | Message value (string). | Required | 
-| partitioning_key | Message partition (number). | Optional | 
-| value_schema_type | Value schema type. If not set, no schema is used, and schema-related arguments are ignored. Possible values are: AVRO. | Optional | 
-| value_schema_str | Value schema in string format. Used only if `schema_type` is provided and `schema_subject_name` is not. Mutually exclusive with `schema_subject_name`. | Optional | 
-| value_schema_subject_name | Value schema subject name to retrieve the latest schema version from the registry. Used only if `schema_type` is provided and `schema_str` is not. Mutually exclusive with `schema_str`. | Optional | 
+| topic | A topic to publish messages to. | Required |
+| value | Message value (string). | Required |
+| partitioning_key | Message partition (number). | Optional |
+| value_schema_type | Value schema type. If not set, no schema is used, and schema-related arguments are ignored. Possible values are: AVRO. | Optional |
+| value_schema_str | Value schema in string format. Used only if `schema_type` is provided and `schema_subject_name` is not. Mutually exclusive with `schema_subject_name`. | Optional |
+| value_schema_subject_name | Value schema subject name to retrieve the latest schema version from the registry. Used only if `schema_type` is provided and `schema_str` is not. Mutually exclusive with `schema_str`. | Optional |
 
 #### Context Output
 
@@ -133,36 +136,37 @@ There is no context output for this command.
 Message was successfully produced to topic 'test-topic', partition 0
 
 ### kafka-consume-msg
+
 ***
 Consumes a single Kafka message.
-
 
 #### Base Command
 
 `kafka-consume-msg`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic | A topic to get messages from. | Required | 
-| offset | Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number. Default is Earliest. | Optional | 
-| partition | Partition (number). | Optional | 
+| topic | A topic to get messages from. | Required |
+| offset | Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number. Default is Earliest. | Optional |
+| partition | Partition (number). | Optional |
 | poll_timeout | Poll timeout to consume the message. | Optional |
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kafka.Topic.Name | string | Name of the topic. | 
-| Kafka.Topic.Message.Value | string | Value of the message. | 
-| Kafka.Topic.Message.Offset | number | Offset of the value in the topic. | 
-
+| Kafka.Topic.Name | string | Name of the topic. |
+| Kafka.Topic.Message.Value | string | Value of the message. |
+| Kafka.Topic.Message.Offset | number | Offset of the value in the topic. |
 
 #### Command Example
+
 ```!kafka-consume-msg topic=test-topic offset=latest```
 
 #### Context Example
+
 ```
 {
     "Kafka": {
@@ -178,39 +182,41 @@ Consumes a single Kafka message.
 ```
 
 #### Human Readable Output
+
 ##### Message consumed from topic 'test'
+
 | **Offset** | **Message** |
 | --- | --- |
 | 11 | test message |
 
-
 ### kafka-fetch-partitions
+
 ***
 Fetches partitions for a topic.
-
 
 #### Base Command
 
 `kafka-fetch-partitions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic | A topic to fetch partitions for. | Required | 
-
+| topic | A topic to fetch partitions for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kafka.Topic.Name | string | Name of topic. | 
-| Kafka.Topic.Partition | number | Prints all partitions for a topic. | 
-
+| Kafka.Topic.Name | string | Name of topic. |
+| Kafka.Topic.Partition | number | Prints all partitions for a topic. |
 
 #### Command Example
+
 ```!kafka-fetch-partitions topic=test```
 
 ### Context Example
+
 ```
 {
     "Kafka": {
@@ -227,14 +233,17 @@ Fetches partitions for a topic.
 ```
 
 #### Human Readable Output
+
 ##### Available partitions for topic 'test'
+
 | **Partitions** |
 | --- |
 | 0 |
 | 1 |
 | 2 |
 
-## Configuration of SASL_SSL PLAIN:
+## Configuration of SASL_SSL PLAIN
+
 1. Make sure you have the broker port which supports SSL connection.
 2. Add 'broker_address:port' to the brokers list.
 3. Provide the CA root certificate in the 'CA certificate of Kafka server (.cer)' section.

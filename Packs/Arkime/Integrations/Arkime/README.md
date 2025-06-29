@@ -1,9 +1,8 @@
 Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search tool.
-This integration was integrated and tested with version 3.4.1 (API v3) of Arkime. 
-For older versions, see the Moloch pack (deprecated). 
+This integration was integrated and tested with version 3.4.1 (API v3) of Arkime.
+For older versions, see the Moloch pack (deprecated).
 
 ## Configure Arkime in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -14,61 +13,66 @@ For older versions, see the Moloch pack (deprecated).
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### arkime-connection-list
+
 ***
 Gets a list of nodes and links and returns them to the client.
-
 
 #### Base Command
 
 `arkime-connection-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| source_field | The source database field name. | Optional | 
-| destination_field | The destination database field name. | Optional | 
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | "last"	Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-| baseline_date | The baseline date range to compare connections against. Default is 0, disabled. Options include: 1x - 1 times query range. 2x - 2 times query range. 4x - 4 times query range. 6x - 6 times query range. 8x - 8 times query range. 10x - 10 times query range. 1 - 1 hour. 6 - 6 hours. 24 - 1 day. 48 - 2 days. 72 - 3 days. 168 - 1 week. 336 - 2 weeks. 720 - 1 month. 1440 - 2 months. 4380 - 6 months. 8760 - 1 year. | Optional | 
-| baseline_view | Which connections to display when a baseline date range is applied. Default is all. Options include: ‘all’ - All Nodes: all nodes are visible. ‘actual’ - Actual Nodes: nodes present in the “current” timeframe query results are visible. ‘actualold’ - Baseline Nodes: nodes present in the “baseline” timeframe query results are visible. ‘new’ - New Nodes Only: nodes present in the “current” but NOT the “baseline” timeframe are visible. ‘old’ - Baseline Nodes Only: nodes present in the “baseline” but NOT the “current” timeframe are visible. | Optional | 
-
+| source_field | The source database field name. | Optional |
+| destination_field | The destination database field name. | Optional |
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | "last" Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
+| baseline_date | The baseline date range to compare connections against. Default is 0, disabled. Options include: 1x - 1 times query range. 2x - 2 times query range. 4x - 4 times query range. 6x - 6 times query range. 8x - 8 times query range. 10x - 10 times query range. 1 - 1 hour. 6 - 6 hours. 24 - 1 day. 48 - 2 days. 72 - 3 days. 168 - 1 week. 336 - 2 weeks. 720 - 1 month. 1440 - 2 months. 4380 - 6 months. 8760 - 1 year. | Optional |
+| baseline_view | Which connections to display when a baseline date range is applied. Default is all. Options include: ‘all’ - All Nodes: all nodes are visible. ‘actual’ - Actual Nodes: nodes present in the “current” timeframe query results are visible. ‘actualold’ - Baseline Nodes: nodes present in the “baseline” timeframe query results are visible. ‘new’ - New Nodes Only: nodes present in the “current” but NOT the “baseline” timeframe are visible. ‘old’ - Baseline Nodes Only: nodes present in the “baseline” but NOT the “current” timeframe are visible. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.Connection.nodes.id | String | The source ip. | 
-| Arkime.Connection.nodes.cnt | Number | Number of appearances. | 
-| Arkime.Connection.nodes.sessions | Number | Number of sessions | 
-| Arkime.Connection.nodes.inresult | Number | The inresult. | 
-| Arkime.Connection.nodes.type | Number | Connection type. | 
-| Arkime.Connection.nodes.network.bytes | Number | The bytes. | 
-| Arkime.Connection.nodes.totDataBytes | Number | The totDataBytes. | 
-| Arkime.Connection.nodes.network.packets | Number | The packets. | 
-| Arkime.Connection.nodes.node | String | The node. | 
-| Arkime.Connection.nodes.pos | Number | The pos. | 
-| Arkime.Connection.links.value | Number | The value. | 
-| Arkime.Connection.links.source | Number | The source. | 
-| Arkime.Connection.links.target | Number | The target. | 
-| Arkime.Connection.links.network.bytes | Number | The bytes. | 
-| Arkime.Connection.links.totDataBytes | Number | The totDataBytes. | 
-| Arkime.Connection.links.network.packets | Number | The packets. | 
-| Arkime.Connection.links.node | String | The node. | 
-| Arkime.Connection.recordsFiltered | Number | The number of history items returned in this result. | 
+| Arkime.Connection.nodes.id | String | The source ip. |
+| Arkime.Connection.nodes.cnt | Number | Number of appearances. |
+| Arkime.Connection.nodes.sessions | Number | Number of sessions |
+| Arkime.Connection.nodes.inresult | Number | The inresult. |
+| Arkime.Connection.nodes.type | Number | Connection type. |
+| Arkime.Connection.nodes.network.bytes | Number | The bytes. |
+| Arkime.Connection.nodes.totDataBytes | Number | The totDataBytes. |
+| Arkime.Connection.nodes.network.packets | Number | The packets. |
+| Arkime.Connection.nodes.node | String | The node. |
+| Arkime.Connection.nodes.pos | Number | The pos. |
+| Arkime.Connection.links.value | Number | The value. |
+| Arkime.Connection.links.source | Number | The source. |
+| Arkime.Connection.links.target | Number | The target. |
+| Arkime.Connection.links.network.bytes | Number | The bytes. |
+| Arkime.Connection.links.totDataBytes | Number | The totDataBytes. |
+| Arkime.Connection.links.network.packets | Number | The packets. |
+| Arkime.Connection.links.node | String | The node. |
+| Arkime.Connection.recordsFiltered | Number | The number of history items returned in this result. |
 
 #### Command example
+
 ```!arkime-connection-list baseline_date=720 start_time=1648817940 stop_time=1649595540```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -110,52 +114,54 @@ Gets a list of nodes and links and returns them to the client.
 
 #### Human Readable Output
 
->### Connection Results:
+>### Connection Results
+>
 >|Source IP|Count|Sessions|Node|
 >|---|---|---|---|
 >| 1.1.1.1 | 1 | 2 | localhost |
 
-
-
 ### arkime-connection-csv-get
+
 ***
 Gets a list of nodes and links in csv format and returns them to the client.
-
 
 #### Base Command
 
 `arkime-connection-csv-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| source_field | The source database field name. | Optional | 
-| destination_field | The destination database field name. | Optional | 
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-
+| source_field | The source database field name. | Optional |
+| destination_field | The destination database field name. | Optional |
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.Connection.InfoFile.Name | String | The file name. | 
-| Arkime.Connection.InfoFile.EntryID | String | The ID for locating the file in the War Room. | 
-| Arkime.Connection.InfoFile.Size | Number | The size of the file \(in bytes\). | 
-| Arkime.Connection.InfoFile.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
-| Arkime.Connection.InfoFile.Extension | String | The file extension. | 
-| Arkime.Connection.InfoFile.Info | String | Basic information about the file. | 
+| Arkime.Connection.InfoFile.Name | String | The file name. |
+| Arkime.Connection.InfoFile.EntryID | String | The ID for locating the file in the War Room. |
+| Arkime.Connection.InfoFile.Size | Number | The size of the file \(in bytes\). |
+| Arkime.Connection.InfoFile.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). |
+| Arkime.Connection.InfoFile.Extension | String | The file extension. |
+| Arkime.Connection.InfoFile.Info | String | Basic information about the file. |
 
 #### Command example
+
 ```!arkime-connection-csv-get start_time=1648817940 stop_time=1649595540```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -171,40 +177,41 @@ Gets a list of nodes and links in csv format and returns them to the client.
 
 #### Human Readable Output
 
-
-
 ### arkime-session-pcap-get
+
 ***
 Retrieve the raw session data in pcap format.
-
 
 #### Base Command
 
 `arkime-session-pcap-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The list of ids to return. | Required | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-
+| ids | The list of ids to return. | Required |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.PcapFile.data.node | String | The node. | 
-| Arkime.PcapFile.data.num | Number | The number. | 
-| Arkime.PcapFile.data.name | String | The name. | 
-| Arkime.PcapFile.data.first | Number | The first. | 
-| Arkime.PcapFile.data.fileSize | Number | The file size. | 
-| Arkime.PcapFile.data.packetSize | Number | The packet size. | 
+| Arkime.PcapFile.data.node | String | The node. |
+| Arkime.PcapFile.data.num | Number | The number. |
+| Arkime.PcapFile.data.name | String | The name. |
+| Arkime.PcapFile.data.first | Number | The first. |
+| Arkime.PcapFile.data.fileSize | Number | The file size. |
+| Arkime.PcapFile.data.packetSize | Number | The packet size. |
 
 #### Command example
+
 ```!arkime-session-pcap-get ids=220516-QHSdz21pJ_xCtJGoL8mbmyNv```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -220,47 +227,48 @@ Retrieve the raw session data in pcap format.
 
 #### Human Readable Output
 
-
-
 ### arkime-session-csv-get
+
 ***
 Gets a list of sessions and returns them as CSV to the client.
-
 
 #### Base Command
 
 `arkime-session-csv-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | "last"	Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional | 
-| offset | The entry to start at. Defaults to 0. Default is 0. | Optional | 
-
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | "last" Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
+| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional |
+| offset | The entry to start at. Defaults to 0. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.Session.InfoFile.Name | String | The file name. | 
-| Arkime.Session.InfoFile.EntryID | String | The ID for locating the file in the War Room. | 
-| Arkime.Session.InfoFile.Size | Number | The size of the file \(in bytes\). | 
-| Arkime.Session.InfoFile.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
-| Arkime.Session.InfoFile.Extension | String | The file extension. | 
-| Arkime.Session.InfoFile.Info | String | Basic information about the file. | 
+| Arkime.Session.InfoFile.Name | String | The file name. |
+| Arkime.Session.InfoFile.EntryID | String | The ID for locating the file in the War Room. |
+| Arkime.Session.InfoFile.Size | Number | The size of the file \(in bytes\). |
+| Arkime.Session.InfoFile.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). |
+| Arkime.Session.InfoFile.Extension | String | The file extension. |
+| Arkime.Session.InfoFile.Info | String | Basic information about the file. |
 
 #### Command example
+
 ```!arkime-session-csv-get start_time=1650190238 stop_time=1650363038 limit=2```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -276,70 +284,71 @@ Gets a list of sessions and returns them as CSV to the client.
 
 #### Human Readable Output
 
-
-
 ### arkime-session-list
+
 ***
 Gets a list of sessions and returns them to the client.
-
 
 #### Base Command
 
 `arkime-session-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | "last"	Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional | 
-| page_number | The page at which to start. The default is 0. | Optional | 
-| page_size | Page size. Minimum page size is 1, maximum is 100. | Optional | 
-
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | "last" Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
+| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional |
+| page_number | The page at which to start. The default is 0. | Optional |
+| page_size | Page size. Minimum page size is 1, maximum is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.Session.data.firstPacket | Date | The first packet. | 
-| Arkime.Session.data.rootId | String | The root Id. | 
-| Arkime.Session.data.totDataBytes | Number | The totDataBytes. | 
-| Arkime.Session.data.ipProtocol | Number | The IP Protocol. | 
-| Arkime.Session.data.node | String | The node. | 
-| Arkime.Session.data.lastPacket | Date | The last packet. | 
-| Arkime.Session.data.source.packets | Number | The source packets. | 
-| Arkime.Session.data.source.port | Number | The source port. | 
-| Arkime.Session.data.source.ip | String | The source ip. | 
-| Arkime.Session.data.source.bytes | Number | The source bytes. | 
-| Arkime.Session.data.destination.port | Number | The destination port. | 
-| Arkime.Session.data.destination.ip | String | The destination ip. | 
-| Arkime.Session.data.destination.packets | Number | The destination packets | 
-| Arkime.Session.data.destination.bytes | Number | The destination bytes. | 
-| Arkime.Session.data.client.bytes | Number | The client bytes. | 
-| Arkime.Session.data.server.bytes | Number | The server bytes. | 
-| Arkime.Session.data.network.packets | Number | The network packets. | 
-| Arkime.Session.data.network.bytes | Number | The network bytes. | 
-| Arkime.Session.data.id | String | The data id. | 
-| Arkime.Session.graph.xmin | Date | The graph xmin. | 
-| Arkime.Session.graph.xmax | Date | The graph xmax. | 
-| Arkime.Session.graph.interval | Number | The graph interval. | 
-| Arkime.Session.graph.sessionsTotal | Number | The graph sessions total. | 
-| Arkime.Session.graph.network.packetsTotal | Number | The network packets total. | 
-| Arkime.Session.graph.network.bytesTotal | Number | The network bytes total. | 
-| Arkime.Session.graph.totDataBytesTotal | Number | The totDataBytesTotal. | 
-| Arkime.Session.recordsTotal | Number | The total number of history results stored. | 
-| Arkime.Session.recordsFiltered | Number | The number of history items returned in this result. | 
+| Arkime.Session.data.firstPacket | Date | The first packet. |
+| Arkime.Session.data.rootId | String | The root Id. |
+| Arkime.Session.data.totDataBytes | Number | The totDataBytes. |
+| Arkime.Session.data.ipProtocol | Number | The IP Protocol. |
+| Arkime.Session.data.node | String | The node. |
+| Arkime.Session.data.lastPacket | Date | The last packet. |
+| Arkime.Session.data.source.packets | Number | The source packets. |
+| Arkime.Session.data.source.port | Number | The source port. |
+| Arkime.Session.data.source.ip | String | The source ip. |
+| Arkime.Session.data.source.bytes | Number | The source bytes. |
+| Arkime.Session.data.destination.port | Number | The destination port. |
+| Arkime.Session.data.destination.ip | String | The destination ip. |
+| Arkime.Session.data.destination.packets | Number | The destination packets |
+| Arkime.Session.data.destination.bytes | Number | The destination bytes. |
+| Arkime.Session.data.client.bytes | Number | The client bytes. |
+| Arkime.Session.data.server.bytes | Number | The server bytes. |
+| Arkime.Session.data.network.packets | Number | The network packets. |
+| Arkime.Session.data.network.bytes | Number | The network bytes. |
+| Arkime.Session.data.id | String | The data id. |
+| Arkime.Session.graph.xmin | Date | The graph xmin. |
+| Arkime.Session.graph.xmax | Date | The graph xmax. |
+| Arkime.Session.graph.interval | Number | The graph interval. |
+| Arkime.Session.graph.sessionsTotal | Number | The graph sessions total. |
+| Arkime.Session.graph.network.packetsTotal | Number | The network packets total. |
+| Arkime.Session.graph.network.bytesTotal | Number | The network bytes total. |
+| Arkime.Session.graph.totDataBytesTotal | Number | The totDataBytesTotal. |
+| Arkime.Session.recordsTotal | Number | The total number of history results stored. |
+| Arkime.Session.recordsFiltered | Number | The number of history items returned in this result. |
 
 #### Command example
+
 ```!arkime-session-list start_time=1650190238 stop_time=1650363038 limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -401,51 +410,55 @@ Gets a list of sessions and returns them to the client.
 #### Human Readable Output
 
 >Showing 2 results, limit=2
->### Session List Result:
+>
+>### Session List Result
+>
 >|ID|IP Protocol|Start Time|Stop Time|Source IP|Source Port| Destination IP |Destination Port|Node|
 >|---|---|---|---|---|----------------|---|---|---|
 >| 3@220417-Yg7OpiE4Pi1PFaRqu8lztuA6 | 6 | 2022-04-14 07:26:39 | 2022-04-17 10:15:31 | 1.1.1.1 | 22 | 1.1.1.1        | 41096 | localhost |
 >| 3@220417-Yg5Kx3oHIahAPJJVD8QwphkQ | 6 | 2022-04-14 07:26:39 | 2022-04-17 10:16:19 | 1.1.1.1 | 22 | 1.1.1.1        | 41096 | localhost |
 
-
 ### arkime-unique-field-list
+
 ***
 Gets a list of unique field values (with or without counts) and sends them to the client.
-
 
 #### Base Command
 
 `arkime-unique-field-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| counts | Whether to return counts with he list of unique field values. Defaults to 0. 0 = no counts, 1 - counts. | Optional | 
-| expression_field_names | Comma separated list of expression field names to return. | Required | 
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional | 
-| page_number | The page at which to start. The default is 0. | Optional | 
-| page_size | Page size. Minimum page size is 1, maximum is 100. | Optional | 
-
+| counts | Whether to return counts with he list of unique field values. Defaults to 0. 0 = no counts, 1 - counts. | Optional |
+| expression_field_names | Comma separated list of expression field names to return. | Required |
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
+| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional |
+| page_number | The page at which to start. The default is 0. | Optional |
+| page_size | Page size. Minimum page size is 1, maximum is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.UniqueField.Field | String | The field. | 
-| Arkime.UniqueField.Count | Boolean | The count. | 
+| Arkime.UniqueField.Field | String | The field. |
+| Arkime.UniqueField.Count | Boolean | The count. |
 
 #### Command example
+
 ```!arkime-unique-field-list expression_field_names=dns.ASN counts=0 limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -464,16 +477,20 @@ Gets a list of unique field values (with or without counts) and sends them to th
 #### Human Readable Output
 
 >Showing 2 results, limit=2
->### Unique Field Results:
+>
+>### Unique Field Results
+>
 >|Field|Count|
 >|---|---|
 >| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  |
 >| AS15169 GOOGLE |  |
 
-
 #### Command example
+
 ```!arkime-unique-field-list expression_field_names=dns.ASN counts=1 limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -494,52 +511,56 @@ Gets a list of unique field values (with or without counts) and sends them to th
 #### Human Readable Output
 
 >Showing 2 results, limit=2
->### Unique Field Results:
+>
+>### Unique Field Results
+>
 >|Field|Count|
 >|---|---|
 >| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  241 |
 >| AS15169 GOOGLE |  183 |
 
-
 ### arkime-multi-unique-field-list
+
 ***
 Gets an intersection of unique field values (with or without counts) and sends them to the client.
-
 
 #### Base Command
 
 `arkime-multi-unique-field-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| counts | Whether to return counts with he list of unique field values. Defaults to 0. 0 = no counts, 1 - counts. | Optional | 
-| expression_field_names | Comma separated list of expression field names to return. | Required | 
-| database_field | The database field to return unique data for. Either exp or field is required, field is given priority if both are present. | Optional | 
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional | 
-| page_number | The page at which to start. The default is 0. | Optional | 
-| page_size | Page size. Minimum page size is 1, maximum is 100. | Optional | 
-
+| counts | Whether to return counts with he list of unique field values. Defaults to 0. 0 = no counts, 1 - counts. | Optional |
+| expression_field_names | Comma separated list of expression field names to return. | Required |
+| database_field | The database field to return unique data for. Either exp or field is required, field is given priority if both are present. | Optional |
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
+| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional |
+| page_number | The page at which to start. The default is 0. | Optional |
+| page_size | Page size. Minimum page size is 1, maximum is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.UniqueField.Field | String | The field. | 
-| Arkime.UniqueField.Count | Boolean | The count. | 
+| Arkime.UniqueField.Field | String | The field. |
+| Arkime.UniqueField.Count | Boolean | The count. |
 
 #### Command example
+
 ```!arkime-multi-unique-field-list expression_field_names=destination.ip counts=1 database_field=dns.ASN limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -560,16 +581,20 @@ Gets an intersection of unique field values (with or without counts) and sends t
 #### Human Readable Output
 
 >Showing 2 results, limit=2
->### Unique Field Results:
+>
+>### Unique Field Results
+>
 >| Field        |Count|
 --------------|---|---|
 >| 1.1.1.1      |  10153 |
 >| 1.1.1.1 |  1957 |
 
-
 #### Command example
+
 ```!arkime-multi-unique-field-list expression_field_names=destination.ip counts=0 database_field=dns.ASN limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -588,41 +613,45 @@ Gets an intersection of unique field values (with or without counts) and sends t
 #### Human Readable Output
 
 >Showing 2 results, limit=2
->### Unique Field Results:
+>
+>### Unique Field Results
+>
 >| Field        |Count|
 --------------|---|---|
 >| 1.1.1.1      |  |
 >| 1.1.1.1 |  |
 
-
 ### arkime-field-list
+
 ***
 Gets available database field objects pertaining to sessions.
-
 
 #### Base Command
 
 `arkime-field-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| array_response | Whether to return an array of fields, otherwise returns a map. | Optional | 
-
+| array_response | Whether to return an array of fields, otherwise returns a map. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.Field.friendlyName | String | The friendly name. | 
-| Arkime.Field.type | String | The type. | 
-| Arkime.Field.group | String | The group. | 
-| Arkime.Field.help | String | The help. | 
-| Arkime.Field.dbField | String | The dbField. | 
+| Arkime.Field.friendlyName | String | The friendly name. |
+| Arkime.Field.type | String | The type. |
+| Arkime.Field.group | String | The group. |
+| Arkime.Field.help | String | The help. |
+| Arkime.Field.dbField | String | The dbField. |
 
 #### Command example
+
 ```!arkime-field-list```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -644,7 +673,8 @@ Gets available database field objects pertaining to sessions.
 
 #### Human Readable Output
 
->### Fields Results:
+>### Fields Results
+>
 >|Friendly Name|Type|Group|Help|DB Field|
 >|---|---|---|---|---|
 >| All ASN fields | termfield | general | Search all ASN fields | asnall |
@@ -999,56 +1029,58 @@ Gets available database field objects pertaining to sessions.
 >| VLan | integer | general | vlan value | network.vlan.id |
 >| VLan Cnt | integer | general | Unique number of vlan value | network.vlan.id-cnt |
 
-
 ### arkime-spigraph-get
+
 ***
 Gets a list of values for a field with counts and graph data and returns them to the client.
-
 
 #### Base Command
 
 `arkime-spigraph-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | The database field to get data for. Defaults to “node”. | Required | 
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | "last"	Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-
+| field | The database field to get data for. Defaults to “node”. | Required |
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | "last" Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.SpiGraph.items.name | String | The name. | 
-| Arkime.SpiGraph.items.count | Number | The count. | 
-| Arkime.SpiGraph.items.graph.xmin | Date | The graph xmin. | 
-| Arkime.SpiGraph.items.graph.xmax | Date | The graph xmax. | 
-| Arkime.SpiGraph.items.graph.interval | Number | The graph interval. | 
-| Arkime.SpiGraph.items.graph.sessionsTotal | Number | The sessions total. | 
-| Arkime.SpiGraph.items.graph.network.packetsTotal | Number | The network packets total. | 
-| Arkime.SpiGraph.items.graph.network.bytesTotal | Date | The network bytesTotal. | 
-| Arkime.SpiGraph.items.graph.totDataBytesTotal | Date | The graph totDataBytesTotal. | 
-| Arkime.SpiGraph.graph.xmin | Date | The graph xmin. | 
-| Arkime.SpiGraph.graph.xmax | Date | The graph xmax. | 
-| Arkime.SpiGraph.graph.interval | Number | The graph interval. | 
-| Arkime.SpiGraph.graph.sessionsTotal | Number | The graph sessionsTotal. | 
-| Arkime.SpiGraph.graph.network.packetsTotal | Number | The network packetsTotal. | 
-| Arkime.SpiGraph.graph.network.bytesTotal | Date | The network bytesTotal. | 
-| Arkime.SpiGraph.graph.totDataBytesTotal | Date | The graph totDataBytesTotal. | 
-| Arkime.SpiGraph.recordsTotal | Number | The total number of history results stored. | 
-| Arkime.SpiGraph.recordsFiltered | Number | The number of hunts returned in this result. | 
+| Arkime.SpiGraph.items.name | String | The name. |
+| Arkime.SpiGraph.items.count | Number | The count. |
+| Arkime.SpiGraph.items.graph.xmin | Date | The graph xmin. |
+| Arkime.SpiGraph.items.graph.xmax | Date | The graph xmax. |
+| Arkime.SpiGraph.items.graph.interval | Number | The graph interval. |
+| Arkime.SpiGraph.items.graph.sessionsTotal | Number | The sessions total. |
+| Arkime.SpiGraph.items.graph.network.packetsTotal | Number | The network packets total. |
+| Arkime.SpiGraph.items.graph.network.bytesTotal | Date | The network bytesTotal. |
+| Arkime.SpiGraph.items.graph.totDataBytesTotal | Date | The graph totDataBytesTotal. |
+| Arkime.SpiGraph.graph.xmin | Date | The graph xmin. |
+| Arkime.SpiGraph.graph.xmax | Date | The graph xmax. |
+| Arkime.SpiGraph.graph.interval | Number | The graph interval. |
+| Arkime.SpiGraph.graph.sessionsTotal | Number | The graph sessionsTotal. |
+| Arkime.SpiGraph.graph.network.packetsTotal | Number | The network packetsTotal. |
+| Arkime.SpiGraph.graph.network.bytesTotal | Date | The network bytesTotal. |
+| Arkime.SpiGraph.graph.totDataBytesTotal | Date | The graph totDataBytesTotal. |
+| Arkime.SpiGraph.recordsTotal | Number | The total number of history results stored. |
+| Arkime.SpiGraph.recordsFiltered | Number | The number of hunts returned in this result. |
 
 #### Command example
+
 ```!arkime-spigraph-get field=220516-QHSdz21pJ_xCtJGoL8mbmyNv```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -1064,46 +1096,47 @@ Gets a list of values for a field with counts and graph data and returns them to
 
 #### Human Readable Output
 
-
-
 ### arkime-spiview-get
+
 ***
 Gets a list of field values with counts and returns them to the client.
-
 
 #### Base Command
 
 `arkime-spiview-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| spi | Comma separated list of db fields to return. Optionally can be followed by :{count} to specify the number of values returned for the field (defaults to 100). | Required | 
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-
+| spi | Comma separated list of db fields to return. Optionally can be followed by :{count} to specify the number of values returned for the field (defaults to 100). | Required |
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.SpiView.spi.destination.ip.doc_count_error_upper_bound | Number | Destination ip - doc_count_error_upper_bound. | 
-| Arkime.SpiView.spi.destination.ip.sum_other_doc_count | Number | Destination ip - sum_other_doc_count. | 
-| Arkime.SpiView.spi.destination.ip.buckets.key | String | Destination ip - buckets key. | 
-| Arkime.SpiView.spi.destination.ip.buckets.doc_count | Number | Destination ip - buckets doc_count. | 
-| Arkime.SpiView.error | Unknown | The SpiView error. | 
-| Arkime.SpiView.recordsTotal | Number | The total number of history results stored. | 
-| Arkime.SpiView.recordsFiltered | Number | The number of history items returned in this result. | 
+| Arkime.SpiView.spi.destination.ip.doc_count_error_upper_bound | Number | Destination ip - doc_count_error_upper_bound. |
+| Arkime.SpiView.spi.destination.ip.sum_other_doc_count | Number | Destination ip - sum_other_doc_count. |
+| Arkime.SpiView.spi.destination.ip.buckets.key | String | Destination ip - buckets key. |
+| Arkime.SpiView.spi.destination.ip.buckets.doc_count | Number | Destination ip - buckets doc_count. |
+| Arkime.SpiView.error | Unknown | The SpiView error. |
+| Arkime.SpiView.recordsTotal | Number | The total number of history results stored. |
+| Arkime.SpiView.recordsFiltered | Number | The number of history items returned in this result. |
 
 #### Command example
+
 ```!arkime-spiview-get spi=220516-QHSdz21pJ_xCtJGoL8mbmyNv```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -1119,44 +1152,45 @@ Gets a list of field values with counts and returns them to the client.
 
 #### Human Readable Output
 
-
-
 ### arkime-session-tag-add
+
 ***
 Add tag(s) to individual session(s) by id or by query.
-
 
 #### Base Command
 
 `arkime-session-tag-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tags | Comma separated list of tags to add to session(s). | Required | 
-| session_ids | Comma separated list of sessions to add tag(s) to. | Optional | 
-| segments | Whether to add tags to linked session segments. Default is no. Options include: no - Don’t add tags to linked segments all - Add tags to all linked segments time - Add tags to segments occurring in the same time period. | Optional | 
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | 	When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-
+| tags | Comma separated list of tags to add to session(s). | Required |
+| session_ids | Comma separated list of sessions to add tag(s) to. | Optional |
+| segments | Whether to add tags to linked session segments. Default is no. Options include: no - Don’t add tags to linked segments all - Add tags to all linked segments time - Add tags to segments occurring in the same time period. | Optional |
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly |  When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.AddSessionTags.success | Boolean | Success status. | 
-| Arkime.AddSessionTags.text | String | Text from response | 
+| Arkime.AddSessionTags.success | Boolean | Success status. |
+| Arkime.AddSessionTags.text | String | Text from response |
 
 #### Command example
+
 ```!arkime-session-tag-add tags=test ids=220425-L2AXYh6W4UJOSqilt0i3iDIL segments=time```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -1170,48 +1204,51 @@ Add tag(s) to individual session(s) by id or by query.
 
 #### Human Readable Output
 
->### Session Tag Results:
+>### Session Tag Results
+>
 >|Success|Text|
 >|---|---|
 >| true | Tags added successfully |
 
-
 ### arkime-session-tag-remove
+
 ***
 Removes tag(s) from individual session(s) by id or by query.
-
 
 #### Base Command
 
 `arkime-session-tag-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tags | Comma separated list of tags to add to session(s). | Required | 
-| session_ids | Comma separated list of sessions to add tag(s) to. | Optional | 
-| segments | Whether to add tags to linked session segments. Default is no. Options include: no - Don’t add tags to linked segments all - Add tags to all linked segments time - Add tags to segments occurring in the same time period. | Optional | 
-| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional | 
-| expression | The search expression string. | Optional | 
-| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional | 
-| view | The view name to apply before the expression. | Optional | 
-| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional | 
-| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
-| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
-| strictly | 	When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-
+| tags | Comma separated list of tags to add to session(s). | Required |
+| session_ids | Comma separated list of sessions to add tag(s) to. | Optional |
+| segments | Whether to add tags to linked session segments. Default is no. Options include: no - Don’t add tags to linked segments all - Add tags to all linked segments time - Add tags to segments occurring in the same time period. | Optional |
+| date | The number of hours of data to return (-1 means all data). Defaults to 1. | Optional |
+| expression | The search expression string. | Optional |
+| start_time | If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC. | Optional |
+| stop_time | If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC. | Optional |
+| view | The view name to apply before the expression. | Optional |
+| order | Comma separated list of db field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting. | Optional |
+| fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional |
+| bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional |
+| strictly |  When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.AddSessionTags.success | Boolean | Success status. | 
-| Arkime.AddSessionTags.text | String | Text from response. | 
+| Arkime.AddSessionTags.success | Boolean | Success status. |
+| Arkime.AddSessionTags.text | String | Text from response. |
 
 #### Command example
+
 ```!arkime-session-tag-remove tags=test ids=220425-L2AXYh6W4UJOSqilt0i3iDIL segments=time```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -1225,49 +1262,52 @@ Removes tag(s) from individual session(s) by id or by query.
 
 #### Human Readable Output
 
->### Session Tag Results:
+>### Session Tag Results
+>
 >|Success|Text|
 >|---|---|
 >| true | Tags removed successfully |
 
-
 ### arkime-pcap-file-list
+
 ***
 Gets a list of PCAP files that Arkime knows about.
-
 
 #### Base Command
 
 `arkime-pcap-file-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of items to return. Defaults to 100, Max is 10,000. | Optional | 
-| page_number | The page at which to start. The default is 0. | Optional | 
-| page_size | Page size. Minimum page size is 1, maximum is 100. | Optional | 
-
+| limit | The number of items to return. Defaults to 100, Max is 10,000. | Optional |
+| page_number | The page at which to start. The default is 0. | Optional |
+| page_size | Page size. Minimum page size is 1, maximum is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.File.recordsTotal | Number | The total number of hunts Arkime has. | 
-| Arkime.File.recordsFiltered | Number | The number of hunts returned in this result. | 
-| Arkime.File.data.node | String | The file data node. | 
-| Arkime.File.data.packetPosEncoding | String | The file data packetPosEncoding. | 
-| Arkime.File.data.num | Number | The data number. | 
-| Arkime.File.data.name | String | The data name. | 
-| Arkime.File.data.locked | Number | The file data locked. | 
-| Arkime.File.data.first | Number | The file data first. | 
-| Arkime.File.data.compression | Number | The file data compression. | 
-| Arkime.File.data.packetsSize | Number | The file data packets size. | 
-| Arkime.File.data.filesize | Number | The file data file size. | 
-| Arkime.File.data.packets | Number | The file data packets. | 
+| Arkime.File.recordsTotal | Number | The total number of hunts Arkime has. |
+| Arkime.File.recordsFiltered | Number | The number of hunts returned in this result. |
+| Arkime.File.data.node | String | The file data node. |
+| Arkime.File.data.packetPosEncoding | String | The file data packetPosEncoding. |
+| Arkime.File.data.num | Number | The data number. |
+| Arkime.File.data.name | String | The data name. |
+| Arkime.File.data.locked | Number | The file data locked. |
+| Arkime.File.data.first | Number | The file data first. |
+| Arkime.File.data.compression | Number | The file data compression. |
+| Arkime.File.data.packetsSize | Number | The file data packets size. |
+| Arkime.File.data.filesize | Number | The file data file size. |
+| Arkime.File.data.packets | Number | The file data packets. |
 
 #### Command example
+
 ```!arkime-pcap-file-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "Arkime": {
@@ -1305,7 +1345,9 @@ Gets a list of PCAP files that Arkime knows about.
 #### Human Readable Output
 
 >Showing 2 results, limit=2
->### Files List Result:
+>
+>### Files List Result
+>
 >|Node|Name|Number|First|File Size|Packet Size|
 >|---|---|---|---|---|---|
 >| localhost | /opt/arkime/raw/localhost-220621-00000384.pcap | 384 | 1970-01-20 03:57:24 | 1073744628 | 1073744628 |

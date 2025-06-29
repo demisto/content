@@ -10,8 +10,10 @@ This integration was integrated and tested with version 6.8 of Microsoft Teams v
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ms-teams-message
 
 ***
@@ -37,6 +39,7 @@ Send a message to Microsoft Teams via Incoming Webhook.
 There is no context output for this command.
 
 ## Troubleshooting
+
 By default the message is being sent with a message template: `X Used a Workflow template to send this card`.
 In order to eliminate this line you can use the following approach:
 

@@ -2,7 +2,6 @@ This is the Zero Networks event collector integration for Cortex XSIAM.
 
 ## Configure Zero Networks Segment Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -13,7 +12,6 @@ This is the Zero Networks event collector integration for Cortex XSIAM.
 | Maximum network activities events to fetch | Maximum number of network activities events per fetch. The default value is 2000. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 

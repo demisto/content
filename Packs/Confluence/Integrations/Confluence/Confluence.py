@@ -20,19 +20,41 @@ BASE_URL = SERVER + "/rest/api"
 VERIFY_CERTIFICATE = not demisto.params().get("unsecure", False)
 
 # Support Credentials
-USERNAME = demisto.params()["credentials"]["identifier"]
-PASSWORD = demisto.params()["credentials"]["password"]
-HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
+USERNAME = demisto.params().get("credentials", {}).get("identifier")
+PASSWORD = demisto.params().get("credentials", {}).get("password")
+PERSONAL_ACCESS_TOKEN = demisto.params().get("personal_access_token", {}).get("password")
+if not ((USERNAME and PASSWORD) or PERSONAL_ACCESS_TOKEN):
+    return_error("You must provide either both Username and Password, or a Personal Access Token.")
+HEADERS = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "X-Atlassian-Token": "no-check",
+}
+if PERSONAL_ACCESS_TOKEN:
+    HEADERS["Authorization"] = f"Bearer {PERSONAL_ACCESS_TOKEN}"
 
 """
 Helper Functions
 """
 
 
-def http_request(method, full_url, data=None, params=None, is_test=False):  # pragma: no cover
+def http_request(
+    method,
+    full_url,
+    data=None,
+    params=None,
+    is_test=False,
+    resp_type: str = "json",
+):  # pragma: no cover
     try:
         res = requests.request(
-            method, full_url, verify=VERIFY_CERTIFICATE, auth=(USERNAME, PASSWORD), data=data, headers=HEADERS, params=params
+            method,
+            full_url,
+            verify=VERIFY_CERTIFICATE,
+            auth=(USERNAME, PASSWORD) if not PERSONAL_ACCESS_TOKEN else None,
+            data=data,
+            headers=HEADERS,
+            params=params,
         )
     except requests.exceptions.RequestException:  # This is the correct syntax
         return_error(f"Failed to connect to - {full_url} - Please check the URL")
@@ -42,12 +64,23 @@ def http_request(method, full_url, data=None, params=None, is_test=False):  # pr
         if is_test:
             return res
 
-        return_error(f"Failed to execute command.\nURL: {full_url}, Status Code: {res.status_code}\nResponse: {res.text}")
+        return_error(
+            f"Failed to execute command.\n"
+            f"URL: {res.url}\n"
+            f"Params: {params}\n"
+            f"Status Code: {res.status_code}\n"
+            f"Response: {res.text}"
+        )
 
     if is_test:
         return res
     try:
-        return res.json()
+        if resp_type == "json":
+            return res.json()
+        elif resp_type == "content":
+            return res.content
+        else:
+            return res
 
     except ValueError as err:
         return_error(f"Failed to parse response from service, received the following error:\n{err!s}")
@@ -90,7 +123,12 @@ def update_content_command():
     content_version = int(demisto.args().get("currentversion")) + 1
 
     raw_content = update_content(page_id, content_title, space_key, content_body, content_type, content_version)
-    content = {"ID": page_id, "Title": content_title, "Type": content_type, "Body": content_body}
+    content = {
+        "ID": page_id,
+        "Title": content_title,
+        "Type": content_type,
+        "Body": content_body,
+    }
 
     # create markdown table string from context
     # the outputs must be array in order the tableToMarkdown to work
@@ -134,7 +172,12 @@ def create_content_command():
 
     raw_content = create_content(content_type, content_title, space_key, content_body)
 
-    content = {"ID": raw_content["id"], "Title": content_title, "Type": content_type, "Body": content_body}
+    content = {
+        "ID": raw_content["id"],
+        "Title": content_title,
+        "Type": content_type,
+        "Body": content_body,
+    }
 
     # create markdown table string from context
     # the outputs must be array in order the tableToMarkdown to work
@@ -205,6 +248,15 @@ def get_content(key, title):
     return res
 
 
+def get_pdf(page_id):
+    params = {"pageId": page_id}
+
+    full_url = SERVER + "/spaces/flyingpdf/pdfpageexport.action"
+    res = http_request("GET", full_url, None, params=params, resp_type="content")
+
+    return res
+
+
 def get_content_command():
     """
     Confluence Get Content method
@@ -237,6 +289,16 @@ def get_content_command():
             "EntryContext": {"Confluence.Content(val.ID == obj.ID)": content_list},
         }
     )
+
+
+def get_page_as_pdf_command():
+    """
+    Confluence Get Page as PDF command method
+    """
+    page_id = demisto.args().get("pageid")
+    pdf = get_pdf(page_id)
+
+    demisto.results(fileResult(f"Confluence_page_{page_id}.pdf", pdf))
 
 
 def search_content(cql, cql_context, expand, start, limit):
@@ -353,7 +415,10 @@ def list_spaces_command():
 def delete_content(content_id):
     full_url = BASE_URL + "/content/" + content_id
     http_request("DELETE", full_url, is_test=True)
-    result = {"Results": "Successfully Deleted Content ID " + content_id, "ID": content_id}
+    result = {
+        "Results": "Successfully Deleted Content ID " + content_id,
+        "ID": content_id,
+    }
     return result
 
 
@@ -418,6 +483,9 @@ try:
 
     elif demisto.command() == "confluence-get-content":
         get_content_command()
+
+    elif demisto.command() == "confluence-get-page-as-pdf":
+        get_page_as_pdf_command()
 
     elif demisto.command() == "confluence-list-spaces":
         list_spaces_command()

@@ -3,7 +3,6 @@ This integration was integrated and tested with version 2.5 of Cortex Xpanse.
 
 ## Configure Xpanse Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
@@ -13,12 +12,14 @@ This integration was integrated and tested with version 2.5 of Cortex Xpanse.
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+|  |  | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 | Tags | Supports CSV values. | False |
+|  |  | False |
 | Feed Fetch Interval |  | False |
-
+| Indicators types to fetch | Indicator types to fetch. | True |
 
 ## Commands
 
@@ -38,22 +39,25 @@ Retrieves a limited number of indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. | Required | 
-| ip | Retrieve discovered IPs. Default is yes. | Optional | 
-| domain | Retrieve discovered domains. Default is yes. | Optional | 
-| certificate | Retrieve discovered certificates. Default is yes. | Optional | 
+| limit | The maximum number of indicators to return. | Required |
+| ip | Retrieve discovered IPs. Default is yes. | Optional |
+| domain | Retrieve discovered domains. Default is yes. | Optional |
+| certificate | Retrieve discovered certificates. Default is yes. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.Indicators.Name | String | The name of the indicator. | 
-| ASM.Indicators.Description | String | The description of the indicator. | 
-| ASM.Indicators.Type | String | The type of the indicator. | 
+| ASM.Indicators.Name | String | The name of the indicator. |
+| ASM.Indicators.Description | String | The description of the indicator. |
+| ASM.Indicators.Type | String | The type of the indicator. |
 
 #### Command example
+
 ```!xpanse-get-indicators limit=1 ip=yes certificate=no domain=no```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -69,6 +73,7 @@ Retrieves a limited number of indicators.
 #### Human Readable Output
 
 >### Xpanse indicators
+>
 >|Name|Type|Description|
 >|---|---|---|
 >| 1.1.1.1 | IP | 1.1.1.1 indicator of asset type IP from Cortex Xpanse |
