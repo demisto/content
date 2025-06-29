@@ -1,10 +1,10 @@
 AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs moment to moment. No other solution offers application modernization, cloud and hybrid monitoring, and application security with business context.
 
-## API Clients:
+## API Clients
 
 To create API clients, you are required to be assigned to the role of an **Account Owner or an Administer**. You can view the API Client settings in the Settings > Administration page of the Controller.
 
-## How to Create API Clients:
+## How to Create API Clients
 
 You can create new API Client identity types that can be used to generate OAuth tokens.
 
@@ -13,12 +13,11 @@ You can create new API Client identity types that can be used to generate OAuth 
 3. Click the API Clients tab to view the list of existing clients.
 4. Click + Create.
 5. Enter the Client Name and Description.
-6. Click Generate Secret to populate the Client Secret. 
-7. This will generate a UUID as the secret of the API Client. 
+6. Click Generate Secret to populate the Client Secret.
+7. This will generate a UUID as the secret of the API Client.
 8. Set the Default API-generated Token Expiration. This expiration only applies to authentication tokens generated through the /controller/api/oauth/access_token REST API, not to Temporary Access Tokens generated from the UI. See Using the Access Token.
-9. Add the Roles you would like to associate with this API Client. You can add or remove roles at any time. 
+9. Add the Roles you would like to associate with this API Client. You can add or remove roles at any time.
 10. Click Save at the top right.
-
 
 ## Configure Cisco AppDynamics on Cortex XSOAR
 
@@ -58,8 +57,8 @@ Retrieves a list of events from the cisappdynamics instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events   | Set this argument to True in order to create events, otherwise it will only display them. Possible values are: True, False.                  | Required | 
-| limit                | The maximum number of events to fetch. Default is 1000.                                                                                      | Optional | 
-| events_type_to_fetch | Which events to fetch. Possible values are: Audit, Healthrule Violations Events. Default is Audit,Healthrule Violations Events.              | Optional | 
-| start_date           | The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08. | Optional | 
-| end_date             | The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08.         | Optional | 
+| should_push_events   | Set this argument to True in order to create events, otherwise it will only display them. Possible values are: True, False.                  | Required |
+| limit                | The maximum number of events to fetch. Default is 1000.                                                                                      | Optional |
+| events_type_to_fetch | Which events to fetch. Possible values are: Audit, Healthrule Violations Events. Default is Audit,Healthrule Violations Events.              | Optional |
+| start_date           | The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08. | Optional |
+| end_date             | The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08.         | Optional |
