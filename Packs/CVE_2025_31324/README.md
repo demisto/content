@@ -11,4 +11,5 @@ CVE-2025-31324 is a critical zero-day vulnerability affecting the Metadata Uploa
 - **Exploitability**: Unauthenticated remote attackers can exploit this without user interaction  
 
 This flaw allows unauthenticated attackers to upload arbitrary files (e.g., JSP web shells), enabling remote code execution with the same privileges as the SAP application server process.  
+
 [Source: Unit42 - Palo Alto Networks](https://unit42.paloaltonetworks.com/threat-brief-sap-netweaver-cve-2025-31324/)
