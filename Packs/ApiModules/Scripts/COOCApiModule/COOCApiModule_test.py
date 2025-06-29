@@ -258,13 +258,13 @@ def test_health_check_summarize_with_errors():
     assert result.entry_type == EntryType.WARNING
 
 
-def test_check_account_permissions(mocker):
+def test_check_account(mocker):
     """
     Given: An account, connector_id, shared_creds, and permission check function.
-    When: _check_account_permissions is called.
+    When: _check_account is called.
     Then: It calls the permission check function with the correct parameters and returns its result.
     """
-    from COOCApiModule import _check_account_permissions
+    from COOCApiModule import _check_account
 
     # Mock permission check function
     mock_permission_check = mocker.Mock(return_value="permission_check_result")
@@ -272,20 +272,20 @@ def test_check_account_permissions(mocker):
     # Test with valid account
     account_id = "test-account-id"
     shared_creds = {"access_token": "test-token"}
-    result = _check_account_permissions(account_id, "test-connector-id", shared_creds, mock_permission_check)
+    result = _check_account(account_id, "test-connector-id", shared_creds, mock_permission_check)
 
     # Verify permission check was called with correct parameters
     mock_permission_check.assert_called_once_with(shared_creds, "test-account-id", "test-connector-id")
     assert result == "permission_check_result"
 
 
-def test_check_account_permissions_exception(mocker):
+def test_check_account_exception(mocker):
     """
     Given: An account, connector_id, shared_creds, and permission check function that raises an exception.
-    When: _check_account_permissions is called.
+    When: _check_account is called.
     Then: It handles the exception and returns a HealthCheckError.
     """
-    from COOCApiModule import _check_account_permissions
+    from COOCApiModule import _check_account
 
     # Mock permission check function to raise exception
     mock_permission_check = mocker.Mock(side_effect=Exception("Test error"))
@@ -294,7 +294,7 @@ def test_check_account_permissions_exception(mocker):
     # Test with exception in permission check
     account_id = "test-account-id"
     shared_creds = {"access_token": "test-token"}
-    result = _check_account_permissions(account_id, "test-connector-id", shared_creds, mock_permission_check)
+    result = _check_account(account_id, "test-connector-id", shared_creds, mock_permission_check)
 
     # Verify error was logged and HealthCheckError returned
     assert demisto.error.called
@@ -305,21 +305,21 @@ def test_check_account_permissions_exception(mocker):
     assert result.error_type == ErrorType.INTERNAL_ERROR
 
 
-def test_run_permissions_check_no_accounts(mocker):
+def test_run_health_check_no_accounts(mocker):
     """
     Given: A connector_id with no associated accounts.
-    When: run_permissions_check_for_accounts is called.
+    When: run_health_check_for_accounts is called.
     Then: It returns "ok" without running any permission checks.
     """
-    from COOCApiModule import run_permissions_check_for_accounts
+    from COOCApiModule import run_health_check_for_accounts
 
     # Mock get_accounts_by_connector_id to return empty list
     mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=[])
     mocker.patch.object(demisto, "debug")
 
     # Call function
-    result = run_permissions_check_for_accounts(
-        connector_id="test-connector-id", cloud_type="AWS", permission_check_func=mocker.Mock()
+    result = run_health_check_for_accounts(
+        connector_id="test-connector-id", cloud_type="AWS", health_check_func=mocker.Mock()
     )
 
     # Verify results
@@ -327,13 +327,13 @@ def test_run_permissions_check_no_accounts(mocker):
     assert demisto.debug.called
 
 
-def test_run_permissions_check_credentials_failure(mocker):
+def test_run_health_check_credentials_failure(mocker):
     """
     Given: A connector_id with accounts but credential retrieval fails.
-    When: run_permissions_check_for_accounts is called.
+    When: run_health_check_for_accounts is called.
     Then: It returns CommandResults with connectivity error.
     """
-    from COOCApiModule import run_permissions_check_for_accounts
+    from COOCApiModule import run_health_check_for_accounts
 
     # Mock get_accounts_by_connector_id
     accounts = [{"account_id": "account-1"}]
@@ -351,7 +351,7 @@ def test_run_permissions_check_credentials_failure(mocker):
     mocker.patch("COOCApiModule.HealthCheck", return_value=mock_health_check)
 
     # Call function
-    run_permissions_check_for_accounts(connector_id="test-connector-id", cloud_type="AWS", permission_check_func=mocker.Mock())
+    run_health_check_for_accounts(connector_id="test-connector-id", cloud_type="AWS", health_check_func=mocker.Mock())
 
     # Verify error was handled
     assert mock_health_check.error.called
