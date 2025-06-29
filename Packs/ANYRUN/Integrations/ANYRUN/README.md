@@ -344,11 +344,11 @@ Submit a file or url for analysis.
 | file | EntryID of the file to analyze. | Optional |
 | obj_url | URL, used only if 'obj_type' command argument is 'url' or 'download'. Permitted size is 5-512 characters long. | Optional |
 | env_bitness | Bitness of OS. Possible values are: 32, 64. Default is 32. | Optional |
-| env_version | Version of Windows OS. Possible values are: Windows Vista, Windows 7, Windows 8.1, Windows 10. Default is Windows 7. | Optional |
+| env_version | Version of Windows OS. Possible values are: Windows Vista, Windows 7, Windows 8.1, Windows 10, Windows 11. Default is Windows 7. | Optional |
 | env_type | Environment preset type. Possible values are: complete, clean, office. Default is complete. | Optional |
 | opt_network_connect | Network connection state. Possible values are: true, false. Default is true. | Optional |
 | opt_kernel_heavyevasion | Heavy evasion option. Possible values are: true, false. Default is false. | Optional |
-| opt_privacy_type | Privacy settings for generated task. Possible values are: owner, bylink, public. Default is owner. | Optional |
+| opt_privacy_type | Privacy settings for generated task. Possible values are: owner, bylink, public, byteam. Default is owner. | Optional |
 | obj_ext_browser | Browser name, used only for "url" type. Possible values are: Internet Explorer, Google Chrome, Mozilla Firefox, Opera, Microsoft Edge. | Optional |
 | obj_ext_cmd | Command line, used only if 'obj_type' command argument is 'file' or 'download'. Permitted size is 2-256 characters long. | Optional |
 
