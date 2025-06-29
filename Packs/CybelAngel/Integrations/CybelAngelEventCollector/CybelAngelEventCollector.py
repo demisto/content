@@ -605,11 +605,11 @@ def fetch_events(client: Client, events_type_to_fetch: list[EventType]) -> tuple
     return all_events, last_run
 
 
-def get_events_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get events from Cybel Angel, used mainly for debugging purposes
     """
-    event_type = EVENT_TYPE.get(params.get("events_type_to_fetch", "")) or REPORT
+    event_type = EVENT_TYPE.get(args.get("events_type_to_fetch", "")) or REPORT
     limit = int(args.get("limit", 50))
 
     now = datetime.now()
@@ -627,7 +627,7 @@ def get_events_command(client: Client, args: dict[str, Any], params: dict[str, A
 
     events = event_fetch_function[event_type.name](start_date=start_date, end_date=end_date, limit=limit)
     events = events[:limit]
-    if argToBoolean(args.get("is_fetch_events") or False):
+    if argToBoolean(args.get("should_push_events") or False):
         send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=events)
         demisto.debug(f"Successfully send {len(events)} to XSIAM.")
     return CommandResults(
@@ -1054,7 +1054,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
             demisto.setLastRun(last_run)
         elif command == "cybelangel-get-events":
-            return_results(get_events_command(client, args, params))
+            return_results(get_events_command(client, args))
         elif command in commands:
             return_results(commands[command](client, args))
     except Exception as e:
