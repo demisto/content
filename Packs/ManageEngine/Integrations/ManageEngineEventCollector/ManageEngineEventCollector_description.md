@@ -2,7 +2,6 @@
 
 Endpoint Central cloud is hosted at multiple data centers, and therefore available on different domains. There are several domains for Endpoint Central Cloud APIs, so you can use the one that is applicable to you.
 
-
 | Data Centre  | Domain | EndpointCentral Server URI                 |
 |-------------:|:-------|:-------------------------------------------|
 | United States| .com   | https://endpointcentral.manageengine.com   |
@@ -16,7 +15,6 @@ Endpoint Central cloud is hosted at multiple data centers, and therefore availab
 The APIs on this page are intended for organizations hosted on the **.com** domain. If your organization is on a different domain, replace “.com” with the appropriate domain for the API endpoints before using them.  
 Note: You can also find out which domain you’re accessing by checking the URL while logged in to Endpoint Central.
 
-
 ## Setting Up the Instance
 
 ### Step 1: Generate Client ID and Client Secret
@@ -27,8 +25,9 @@ Note: You can also find out which domain you’re accessing by checking the URL 
 
 ### Step 2: Authorization by generating the grant token
 
-After generating `Client_ID` and `Client_Secret`, a grant code has to be generated. 
+After generating `Client_ID` and `Client_Secret`, a grant code has to be generated.
 Self Client Method - For Self Client type.
+
 - After registration, click the `Self Client` method available on the Applications list.
 - Enter a valid scope: DesktopCentralCloud.Admin.READ
 
