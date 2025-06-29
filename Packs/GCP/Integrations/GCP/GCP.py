@@ -1144,12 +1144,11 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
     # Perform sample check on GCP services
     service_results = GCPServices.test_all_services(creds, project_id)
     for _, success, error_message in service_results:
-        if not success:
+        if not success and "Permission" not in error_message:
             return HealthCheckError(
                 account_id=project_id,
                 connector_id=connector_id,
-                message=f"Sample check failed for account {project_id}. Please verify GCP project permissions. "
-                f"Error: {error_message}",
+                message=f"Sample check failed for account {project_id}. Error: {error_message}",
                 error_type=ErrorType.CONNECTIVITY_ERROR,
             )
     return None
