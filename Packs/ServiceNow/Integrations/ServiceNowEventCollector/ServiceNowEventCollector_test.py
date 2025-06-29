@@ -315,6 +315,55 @@ class TestFetchActivity:
         assert updated_last_run == last_run
 
     @pytest.mark.parametrize(
+        "log_type, expected_default_limit",
+        [
+            (AUDIT, 50),
+            (SYSLOG_TRANSACTIONS, 60),
+            (CASE, 70),
+        ],
+    )
+    def test_search_events_uses_client_default_limit_when_limit_is_none(self, mocker, log_type, expected_default_limit):
+        """
+        Given:
+            - A Client object with default fetch limits configured for each log type.
+        When:
+            - search_events is called for a specific log type with the `limit` parameter set to None.
+        Then:
+            - The underlying http_request should be called with the 'sysparm_limit' parameter set to the
+              client's default limit for that specific log type.
+        """
+        # Arrange
+        # Create a client with specific, non-default limits to make the test clear.
+        client = Client(
+            use_oauth=True,
+            credentials={"username": "test", "password": "test"},
+            client_id="test_id",
+            client_secret="test_secret",
+            server_url=self.base_url,
+            verify=False,
+            proxy=False,
+            api_version=None,
+            fetch_limit_audit=50,
+            fetch_limit_syslog=60,
+            fetch_limit_case=70,
+        )
+        mock_http_request = mocker.patch.object(client.sn_client, "http_request", return_value={"result": []})
+
+        # Call the method under test with limit=None.
+        client.search_events(from_time="2025-01-01 00:00:00", log_type=log_type, limit=None)
+
+        # Assert
+        # 1. Ensure the API call was actually made.
+        mock_http_request.assert_called_once()
+
+        # 2. Inspect the keyword arguments passed to the mocked http_request.
+        called_kwargs = mock_http_request.call_args.kwargs
+
+        # 3. Verify that the 'sysparm_limit' in the 'params' dictionary matches the expected default.
+        assert "params" in called_kwargs
+        assert called_kwargs["params"].get("sysparm_limit") == expected_default_limit
+
+    @pytest.mark.parametrize(
         "log_type, api_version, expected_url",
         [
             # Test cases without an API version

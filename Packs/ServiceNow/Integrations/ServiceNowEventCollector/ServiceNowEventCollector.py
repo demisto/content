@@ -103,7 +103,7 @@ class Client:
         return f"{self.server_url}{api_base}{api_config['endpoint']}"
 
     def search_events(self, from_time: str, log_type: str, limit: Optional[int] = None, offset: int = 0):
-        """Make a request to the ServiceNow REST API to retrieve audit and syslog transactions logs"""
+        """Make a request to the ServiceNow REST API to retrieve audit, syslog transactions and case logs"""
 
         if limit is None:
             limit_mapping = {
