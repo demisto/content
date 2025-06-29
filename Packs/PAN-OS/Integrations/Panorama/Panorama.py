@@ -14604,10 +14604,10 @@ def pan_os_get_master_key_details_command() -> CommandResults:
 def expiration_status_check(cert_expiration: datetime) -> str:
     """
     Returns the expiration status of a certificate based on its expiration date.
-    
+
     Args:
         cert_expiration (datetime): The expiration date and time of the certificate
-        
+
     Returns:
         str: The expiration status, one of:
             - "Expired": Certificate has already expired
@@ -14634,7 +14634,7 @@ def compile_certificate_details(
 ) -> List[dict]:
     """
     Extract and consolidate certificate details from XML certificate entries into structured dictionaries.
-    
+
     Args:
         cert_list (List): List of XML certificate entry elements to process
         cert_type (str): Type of certificate, one of:
@@ -14643,7 +14643,7 @@ def compile_certificate_details(
             - "Predefined": System predefined certificates
         device (str): Device identifier (hostname, serial number, etc.) where certificates are found
         devices_using_certificate (Optional[List], optional): List of devices that use these certificates. Defaults to None.
-    
+
     Returns:
         List[dict]: List of dictionaries containing certificate details. Each dictionary contains:
             - name (str): Certificate name
@@ -14655,7 +14655,7 @@ def compile_certificate_details(
             - cert_type (str): The certificate type passed as input
             - devices_using_certificate (List): Included only if devices_using_certificate is provided
     """
-    
+
     cert_details = []
     if cert_type == "Pushed":
         location = "Panorama"
