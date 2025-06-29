@@ -1116,10 +1116,10 @@ def check_required_permissions(
 
 
 def health_check(shared_creds: dict, project_id: str, connector_id: str) -> HealthCheckError | list[HealthCheckError] | None:
-    """Tests connectivity to GCP and checks for required permissions.
+    """Tests connectivity to GCP and checks.
 
     This function is specifically used for COOC (Connect on our Cloud) health checks
-    to verify connectivity and permissions.
+    to verify connectivity.
 
     Args:
         shared_creds (dict): Pre-fetched cloud credentials (format varies by provider).
@@ -1176,7 +1176,6 @@ def test_module(creds: Credentials, args: dict[str, Any]) -> str:
         raise DemistoException("Missing required parameter 'project_id'")
 
     try:
-        # Check permissions without using the health check result handler
         check_required_permissions(creds, project_id)
         return "ok"
     except Exception as e:
@@ -1272,7 +1271,7 @@ def main():  # pragma: no cover
 
         if command == "test-module" and (connector_id := get_connector_id()):
             demisto.debug(f"Running health check for connector ID: {connector_id}")
-            return_results(run_permissions_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
+            return_results(run_health_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
 
         elif command in command_map:
             creds = get_credentials(args, params)
