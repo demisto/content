@@ -266,10 +266,14 @@ class PychromeEventHandler:
                         demisto.debug(f"Encountered chrome-error {frame_url=}, {self.tab.id=}, {self.path=} retrying...")
                         self.retry_loading()
                     else:
-                        demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, {self.tab.id=}, {self.path=}")
+                        demisto.debug(
+                            f"PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, {self.tab.id=}, {self.path=}"
+                        )
                         self.tab_ready_event.set()
                 else:
-                    demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, {self.tab.id=}, {self.path=}")
+                    demisto.debug(
+                        f"PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, {self.tab.id=}, {self.path=}"
+                    )
                     self.tab_ready_event.set()
             except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
                 demisto.debug(f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped: {ex}")
@@ -288,7 +292,9 @@ class PychromeEventHandler:
         try:
             frame_tree_result = self.tab.Page.getFrameTree()
             frame_url = frame_tree_result.get("frameTree", {}).get("frame", {}).get("url", "")
-            demisto.debug(f"PychromeEventHandler.get_frame_tree_url, Frame URL: {frame_url}, Original path: {self.path}, {self.tab.id}")
+            demisto.debug(
+                f"PychromeEventHandler.get_frame_tree_url, Frame URL: {frame_url}, Original path: {self.path}, {self.tab.id}"
+            )
             return frame_url
         except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
             # The tab is already stopping or has been stopped
@@ -315,7 +321,9 @@ class PychromeEventHandler:
                 else:
                     self.tab.Page.navigate(url=self.path)
             except Exception as e:
-                demisto.debug(f"Error during navigation to {self.tab.id=}, {self.path=} attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}")
+                demisto.debug(
+                    f"Error during navigation to {self.tab.id=}, {self.path=} attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}"
+                )
 
             safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
 
@@ -336,7 +344,9 @@ class PychromeEventHandler:
                 self.tab_ready_event.set()
                 return
 
-            demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. {self.tab.id=}, {self.path=}")
+            demisto.debug(
+                f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. {self.tab.id=}, {self.path=}"
+            )
 
         demisto.debug(f"Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not load the page. {self.tab.id=}, {self.path=}")
         # Ensure we always set the event to prevent hanging
@@ -888,7 +898,9 @@ def screenshot_image(
         if full_screen:
             viewport = css_content_size
             viewport["scale"] = 1
-            screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True, _timeout=SCREENSHOT_TIMEOUT)["data"]
+            screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True, _timeout=SCREENSHOT_TIMEOUT)[
+                "data"
+            ]
         else:
             screenshot_data = tab.Page.captureScreenshot(_timeout=SCREENSHOT_TIMEOUT)["data"]
     except Exception as ex:
@@ -950,7 +962,9 @@ def screenshot_image(
 
             response_body, operation_time = backoff(response_body)
             if response_body:
-                demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}, {tab.id=}, {path=}")
+                demisto.debug(
+                    f"Response Body available after {operation_time} seconds, {len(response_body)=}, {tab.id=}, {path=}"
+                )
             else:
                 demisto.info(f"Response Body not available after {operation_time} seconds, {tab.id=}, {path=}.")
 
