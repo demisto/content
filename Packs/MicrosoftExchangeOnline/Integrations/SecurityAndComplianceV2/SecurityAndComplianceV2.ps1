@@ -1348,13 +1348,10 @@ class SecurityAndComplianceClient {
         https://learn.microsoft.com/en-us/powershell/module/exchange/remove-caseholdpolicy?view=exchange-ps
         #>
     }
-    
 
     [psobject]GetRecoverableItems(
         [string[]]$identity,
-        [string]$subject_contains = $null,
-        [datetime]$start_date = $null,
-        [datetime]$end_date = $null
+        [string]$subject_contains = $null
     ) {
         # Establish session to remote Exchange Online
         $this.CreateDelegatedSession("Get-RecoverableItems")
@@ -1368,14 +1365,6 @@ class SecurityAndComplianceClient {
             $cmd_params["SubjectContains"] = $subject_contains
         }
     
-        if ($start_date -ne $null) {
-            $cmd_params["StartDate"] = $start_date
-        }
-    
-        if ($end_date -ne $null) {
-            $cmd_params["EndDate"] = $end_date
-        }
-    
         # Execute the command
         $response = Get-RecoverableItems @cmd_params
     
@@ -1385,26 +1374,80 @@ class SecurityAndComplianceClient {
         return $response
     
         <#
-            .DESCRIPTION
-            Retrieves recoverable items (e.g., deleted emails) from mailbox(es) using Get-RecoverableItems.
+        .SYNOPSIS
+        Retrieves recoverable (soft-deleted) items from mailbox(es).
     
-            .PARAMETER identity
-            One or more mailbox identities to retrieve recoverable items from.
+        .DESCRIPTION
+        Retrieves recoverable items such as deleted emails from the Recoverable Items folder
+        of one or more specified mailboxes using the Get-RecoverableItems cmdlet.
     
-            .PARAMETER subject_contains
-            Optional. Filter emails containing this string in the subject.
+        .PARAMETER identity
+        One or more mailbox identities to retrieve recoverable items from.
     
-            .PARAMETER start_date
-            Optional. Start date for filtering recoverable items.
+        .PARAMETER subject_contains
+        Optional. Filters results to include only items with subjects containing this string.
     
-            .PARAMETER end_date
-            Optional. End date for filtering recoverable items.
+        .EXAMPLE
+        $client.GetRecoverableItems("user@example.com")
+        Retrieves all recoverable items for the specified mailbox.
     
-            .EXAMPLE
-            $client.GetRecoverableItems("user@example.com", "invoice", (Get-Date).AddDays(-7), (Get-Date))
+        .EXAMPLE
+        $client.GetRecoverableItems(@("user1@example.com", "user2@example.com"), "invoice")
+        Retrieves recoverable items that contain "invoice" in the subject from two mailboxes.
     
-            .LINK
-            https://learn.microsoft.com/en-us/powershell/module/exchange/get-recoverableitems?view=exchange-ps
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-recoverableitems?view=exchange-ps
+        #>
+    }
+
+    [psobject]RestoreRecoverableItems(
+        [string[]]$identity,
+        [string]$subject_contains = $null
+    ) {
+        # Establish session to remote Exchange Online
+        $this.CreateDelegatedSession("Restore-RecoverableItems")
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $identity
+        }
+    
+        if ($subject_contains) {
+            $cmd_params["SubjectContains"] = $subject_contains
+        }
+    
+        # Execute the command
+        $response = Restore-RecoverableItems @cmd_params
+    
+        # Disconnect the session
+        $this.DisconnectSession()
+    
+        return $response
+    
+        <#
+        .SYNOPSIS
+        Restores recoverable (soft-deleted) items back to the mailbox.
+    
+        .DESCRIPTION
+        Uses the Restore-RecoverableItems cmdlet to restore soft-deleted messages
+        (from the Recoverable Items folder) to their original location in the mailbox.
+    
+        .PARAMETER identity
+        One or more mailbox identities to restore items to.
+    
+        .PARAMETER subject_contains
+        Optional. Restores only items whose subject contains this string.
+    
+        .EXAMPLE
+        $client.RestoreRecoverableItems("user@example.com")
+        Restores all recoverable items for the specified mailbox.
+    
+        .EXAMPLE
+        $client.RestoreRecoverableItems("user@example.com", "invoice")
+        Restores only recoverable items with "invoice" in the subject.
+    
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/restore-recoverableitems?view=exchange-ps
         #>
     }
 
@@ -1998,24 +2041,28 @@ function SearchAndRecoveryEmailCommand {
     $Demisto.results("Found existing search: $search_name with status $($search.Status)")
 
     switch ($search.Status) {
-                "NotStarted" {
+            "NotStarted" {
             $Demisto.results("Search not started. Starting now.")
                     $client.StartSearch($search_name)
             return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
-                }
-                "Starting" {
+            }
+            "Starting" {
             $Demisto.results("Search is running. Waiting for completion.")
             return "$script:INTEGRATION_NAME - Search is in progress.", $entry_context, $search, $polling_args
-                            }
-                            "InProgress" {
+            }
+            "InProgress" {
             $Demisto.results("Search is running. Waiting for completion.")
             return "$script:INTEGRATION_NAME - Search is in progress.", $entry_context, $search, $polling_args
-                            }
-                            "Completed" {
+            }
+            "Completed" {
             if ($search.Items -eq 0) {
                 $Demisto.results("Search completed. No items found.")
                 return "$script:INTEGRATION_NAME - Search completed. No items to restore.", $entry_context, $search
             }
+
+            $Demisto.results("Search completed. items:" + $search.Items)
+
+
 
             $action = $client.GetSearchAction($search_action_name, $null)
             $Demisto.results("Search action details: " + (ConvertTo-Json $action -Depth 5))
@@ -2039,7 +2086,7 @@ function SearchAndRecoveryEmailCommand {
             $Demisto.results("Found search action: $search_action_name with status $($action.Status)")
 
             switch ($action.Status) {
-        "Starting" {
+                    "Starting" {
                     $Demisto.results("Preview action in starting.")
                     return "$script:INTEGRATION_NAME - Preview in progress.", $entry_context, $action, $polling_args
                     }
@@ -2048,11 +2095,7 @@ function SearchAndRecoveryEmailCommand {
                     return "$script:INTEGRATION_NAME - Preview in progress.", $entry_context, $action, $polling_args
                     }
                     "Completed" {
-                        if ($action.Items -eq 0) {
-                            $Demisto.results("Preview completed. No items found to restore.")
-                            return "$script:INTEGRATION_NAME - Preview completed. No items to restore.", $entry_context, $action
-                        }
-                    $Demisto.results("Preview completed. Running restore operation. Items:" + $action.Items)
+                    $Demisto.results("Preview completed. Running restore operation.")
                     $recipients = $action.ExchangeLocation
                     $subject = ""
                     if ($action.Results) {
@@ -2065,7 +2108,7 @@ function SearchAndRecoveryEmailCommand {
 
                     # Restore-RecoverableItems -Identity $recipients -SubjectContains $subject
                     # RecoverableItems -Identity $recipients -SubjectContains $subject
-                    $response = $client.GetRecoverableItems($recipients, $subject)
+                    $response = $client.RestoreRecoverableItems($recipients, $subject)
                     $Demisto.results("GetRecoverableItems response:")
                     $Demisto.results(($response | ConvertTo-Json -Depth 5))
 
