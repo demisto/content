@@ -1168,7 +1168,7 @@ tasks:
           transformers:
           - operator: uniq
       incident_id:
-        simple: ${alert.internal_id}
+        simple: ${alert.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
