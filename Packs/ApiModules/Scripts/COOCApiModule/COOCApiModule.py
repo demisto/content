@@ -101,15 +101,13 @@ def get_connector_id() -> str | None:
     """
     Retrieves the connector ID from the calling context.
 
-    This function extracts the connector ID from the CloudIntegrationInfo
-    in the calling context. This is useful for integration commands that
-    need to know which connector they're associated with.
+    This function extracts the connector ID from the CloudIntegrationInfo in the calling context.
 
     Returns:
         str | None: The connector ID if available in the context, otherwise None.
     """
     cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
-    demisto.info(f"[COOC API] Cloud credentials request context: {cloud_info_context}")
+    demisto.debug(f"[COOC API] Cloud credentials request context: {cloud_info_context}")
 
     if connector_id := cloud_info_context.get("connectorID"):
         demisto.debug(f"[COOC API] Retrieved connector ID from context: {connector_id}")
@@ -161,7 +159,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
     if scopes:
         request_data["scopes"] = scopes
 
-    demisto.info(f"[COOC API] Request data for credentials retrieval: {request_data}")
+    demisto.debug(f"[COOC API] Request data for credentials retrieval: {request_data}")
     response = None
 
     try:
@@ -183,7 +181,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
             raise KeyError("Did not receive any credentials from CTS.")
 
         expiration_time = credentials.get("expiration_time")
-        demisto.info(f"[COOC API] {account_id}: Received credentials. Expiration time: {expiration_time}")
+        demisto.debug(f"[COOC API] {account_id}: Received credentials. Expiration time: {expiration_time}")
         return credentials
 
     except Exception as e:
@@ -296,7 +294,7 @@ def run_permissions_check_for_accounts(
     if result is not None:
         health_check_result.error(result)
 
-    demisto.info(f"[COOC API] Completed processing {account_id}")
+    demisto.debug(f"[COOC API] Completed processing {account_id}")
     return health_check_result.summarize()
 
 
@@ -315,7 +313,7 @@ def get_proxydome_token() -> str:
         requests.RequestException: If the request to the metadata server fails.
     """
     url = "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity"
-    params = {"audience": "cortex.platform.local"}
+    params = {"audience": os.getenv("CORTEX_AUDIENCE")}
     headers = {"Metadata-Flavor": "Google"}
     proxies = {"http": "", "https": ""}
 
