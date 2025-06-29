@@ -338,8 +338,6 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
             last_run = update_last_run(last_run, log_type, last_fetch_time, list(previous_run_ids))
             collected_events.extend(events)
 
-        demisto.debug(f"Finished getting all events for log: {log_type}")
-
     return collected_events, last_run
 
 
