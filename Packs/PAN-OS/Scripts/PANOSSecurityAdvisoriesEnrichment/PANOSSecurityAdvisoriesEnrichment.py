@@ -40,14 +40,14 @@ class Client:
         return response.json()
 
 
-def parse_version(version):
+def parse_version(version: str) -> tuple[int, int, int, int]:
     parts = re.match(r"(\d+)\.(\d+)\.(\d+)(?:-h(\d+))?", version)
     if parts:
         return tuple(int(p) if p else 0 for p in parts.groups())
     return (0, 0, 0, 0)
 
 
-def sort_versions_and_changes(data):
+def sort_versions_and_changes(data: List[Dict]) -> List[Dict]:
     for item in data:
         if "versions" in item:
             item["versions"] = sorted(item["versions"], key=lambda x: parse_version(x["version"]), reverse=True)
@@ -57,7 +57,7 @@ def sort_versions_and_changes(data):
     return data
 
 
-def create_product_platform_tables(sorted_data):
+def create_product_platform_tables(sorted_data: List[Dict]) -> Dict[str, List[str]]:
     result = []
 
     for item in sorted_data:
@@ -177,7 +177,7 @@ def flatten_advisory_dict(advisory_dict: dict, external_cves: list) -> Dict:
         return {}
 
 
-def get_external_cves(client, pan_sa_id: str) -> List[Dict[str, str]]:
+def get_external_cves(client: Client, pan_sa_id: str) -> List[Dict[str, str]]:
     if not re.match(r"^PAN-SA-\d{4}-\d{4}$", pan_sa_id):
         raise ValueError("Invalid PAN-SA ID format")
 

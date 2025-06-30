@@ -3,7 +3,9 @@ from unittest.mock import Mock, patch
 from CommonServerPython import *
 
 # Import the module under test
-from PANOSSecurityAdvisoriesEnrichment import Client, enrich_cve
+from PANOSSecurityAdvisoriesEnrichment import (
+    Client, enrich_cve, flatten_advisory_dict, parse_version, sort_versions_and_changes, get_external_cves
+)
 class TestClient:
     """Test class for the Client class"""
     
@@ -182,4 +184,114 @@ class TestEnrichCVE:
         with pytest.raises(DemistoException, match="CVE not found"):
             enrich_cve(mock_client, cve_id)
 
+class TestVersionParsing:
+    """Test class for version parsing functions"""
+
+    @pytest.mark.parametrize("version,expected", [
+        ("10.0.0", (10, 0, 0, 0)),
+        ("9.1.5-h1", (9, 1, 5, 1)),
+        ("11.2.3-h10", (11, 2, 3, 10)),
+        ("invalid-version", (0, 0, 0, 0)),
+        ("", (0, 0, 0, 0))
+    ])
+    def test_parse_version(self, version, expected):
+        """Test version parsing with various inputs"""
+        result = parse_version(version)
+        assert result == expected
+
+    def test_sort_versions_and_changes(self):
+        """Test sorting of versions and changes"""
+        data = [
+            {
+                "versions": [
+                    {"version": "10.0.0", "changes": [{"at": "10.0.5"}, {"at": "10.0.2"}]},
+                    {"version": "9.1.0"},
+                    {"version": "11.0.0"}
+                ]
+            }
+        ]
+        
+        result = sort_versions_and_changes(data)
+        
+        # Should be sorted in descending order
+        versions = result[0]["versions"]
+        assert versions[0]["version"] == "11.0.0"
+        assert versions[1]["version"] == "10.0.0"
+        assert versions[2]["version"] == "9.1.0"
+class TestFlattenAdvisoryDict:
+    """Test class for flatten_advisory_dict function"""
     
+    def test_flatten_advisory_dict_empty_data(self):
+        """Test with empty or malformed data"""
+        result = flatten_advisory_dict({}, [])
+        assert result == {}
+    
+    def test_flatten_advisory_dict_missing_fields(self):
+        """Test with missing optional fields"""
+        minimal_data = {
+            "cveMetadata": {"cveId": "CVE-2023-1234"},
+            "containers": {"cna": {}}
+        }
+        result = flatten_advisory_dict(minimal_data, [])
+        
+        assert result["cve_id"] == "CVE-2023-1234"
+        assert result["title"] == ""
+        assert result["description"] == ""
+        assert result["cvss_score"] is None
+
+    def test_flatten_advisory_dict_multiple_metrics(self):
+        """Test with multiple CVSS metrics (should pick highest score)"""
+        data_with_multiple_metrics = {
+            "cveMetadata": {"cveId": "CVE-2023-1234"},
+            "containers": {
+                "cna": {
+                    "metrics": [
+                        {"cvssV3_1": {"baseScore": 5.0, "baseSeverity": "MEDIUM"}},
+                        {"cvssV3_1": {"baseScore": 9.0, "baseSeverity": "CRITICAL"}},
+                        {"cvssV3_1": {"baseScore": 7.0, "baseSeverity": "HIGH"}}
+                    ]
+                }
+            }
+        }
+        result = flatten_advisory_dict(data_with_multiple_metrics, [])
+        
+        assert result["cvss_score"] == 9.0
+        assert result["cvss_severity"] == "CRITICAL"
+
+class TestGetExternalCves:
+    """Test class for get_external_cves function"""
+    
+    def test_get_external_cves_invalid_format(self, mock_client):
+        """Test with invalid PAN-SA ID format"""
+        with pytest.raises(ValueError, match="Invalid PAN-SA ID format"):
+            get_external_cves(mock_client, "INVALID-FORMAT")
+    
+    def test_get_external_cves_csaf_not_available(self, mock_client):
+        """Test when CSAF data is not available"""
+        mock_client.get_pan_sa_advisories.return_value = "CSAF not available for PAN-SA-2023-0001"
+        
+        result = get_external_cves(mock_client, "PAN-SA-2023-0001")
+        assert result == []
+    
+    def test_get_external_cves_no_vulnerabilities(self, mock_client):
+        """Test with response containing no vulnerabilities"""
+        mock_client.get_pan_sa_advisories.return_value = {"other_data": "value"}
+        
+        result = get_external_cves(mock_client, "PAN-SA-2023-0001")
+        assert result == []
+
+    def test_get_external_cves_incomplete_data(self, mock_client):
+        """Test with incomplete vulnerability data"""
+        incomplete_data = {
+            "vulnerabilities": [
+                {"cve": "CVE-2023-1234"},  # Missing references and notes
+                {  # Missing CVE ID
+                    "references": [{"category": "external", "url": "http://example.com"}],
+                    "notes": [{"category": "description", "text": "Description"}]
+                }
+            ]
+        }
+        mock_client.get_pan_sa_advisories.return_value = incomplete_data
+        
+        result = get_external_cves(mock_client, "PAN-SA-2023-0001")
+        assert result == []  # Should return empty list for incomplete data
