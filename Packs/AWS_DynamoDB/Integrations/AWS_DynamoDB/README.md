@@ -776,9 +776,10 @@ Returns the current provisioned-capacity limits for your AWS account in a Region
  6.  Call ListTables to obtain a list of all your DynamoDB tables.
  8.  For each table name listed by ListTables, do the following:
   *Call DescribeTable with the table name.
-  *  Use the data returned by DescribeTable to add the read capacity units and write capacity units provisioned for the table itself to your variables.
-  *  If the table has one or more global secondary indexes (GSIs), loop over these GSIs and add their provisioned capacity values to your variables as well.
-   
+
+* Use the data returned by DescribeTable to add the read capacity units and write capacity units provisioned for the table itself to your variables.
+* If the table has one or more global secondary indexes (GSIs), loop over these GSIs and add their provisioned capacity values to your variables as well.
+
  10. Report the account limits for that Region returned by DescribeLimits, along with the total current provisioned capacity levels you have calculated.
   This will let you see whether you are getting close to your account-level limits. The per-table limits apply only when you are creating a new table. They restrict the sum of the provisioned capacity of the new table itself and all its global secondary indexes. For existing tables and their GSIs, DynamoDB doesn't let you increase provisioned capacity extremely rapidly. But the only upper limit that applies is that the aggregate provisioned capacity over all your tables and GSIs cannot exceed either of the per-account limits.   DescribeLimits should only be called periodically. You can expect throttling errors if you call it more than once in a minute.  The DescribeLimits Request element has no content.
 
