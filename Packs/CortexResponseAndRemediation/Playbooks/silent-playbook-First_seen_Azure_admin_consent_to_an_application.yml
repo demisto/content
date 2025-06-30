@@ -2838,6 +2838,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       additional details:
       - "140"
