@@ -1137,7 +1137,7 @@ def test_health_check_missing_token(mocker):
     assert result.account_id == project_id
     assert result.connector_id == connector_id
     assert "token is missing from credentials" in result.message
-    assert result.error_type == 'Connectivity Error'
+    assert result.error_type == "Connectivity Error"
 
 
 def test_health_check_service_connectivity_failure(mocker):
@@ -1171,7 +1171,7 @@ def test_health_check_service_connectivity_failure(mocker):
     assert result.connector_id == connector_id
     assert "Sample check failed" in result.message
     assert "Network timeout occurred" in result.message
-    assert result.error_type == 'Connectivity Error'
+    assert result.error_type == "Connectivity Error"
 
 
 def test_health_check_service_permission_failure_ignored(mocker):
@@ -1227,4 +1227,4 @@ def test_health_check_credentials_creation_failure(mocker):
     assert result.account_id == project_id
     assert result.connector_id == connector_id
     assert "Invalid token format" in result.message
-    assert result.error_type == 'Connectivity Error'
+    assert result.error_type == "Connectivity Error"
