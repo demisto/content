@@ -2550,7 +2550,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = r"\`*_{}[]()#+-!|"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!|~"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
