@@ -11,8 +11,8 @@ from boto3 import Session
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
-DEFAULT_PROXYDOME_CERTFICATE_PATH = "/etc/certs/egress.crt"
-DEFAULT_PROXYDOME = "10.181.0.100:11117"
+DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv('EGRESSPROXY_CA_PATH') or "/etc/certs/egress.crt"
+DEFAULT_PROXYDOME = os.getenv('CRTX_HTTP_PROXY') or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=5, read_timeout=10)
 
 
@@ -45,7 +45,7 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
-class AWSServices(str):
+class AWSServices(str, Enum):
     S3 = "s3"
     IAM = "iam"
     EC2 = "ec2"
@@ -53,6 +53,7 @@ class AWSServices(str):
     EKS = "eks"
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
+    STS = "sts"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -1193,7 +1194,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
-    "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_command,
+    "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
@@ -1241,19 +1242,15 @@ def test_module():
     pass
 
 
-def health_check(connector_id: str) -> list[CommandResults] | str:
+def health_check(credentials, account_id, connector_id) -> list[CommandResults] | str:
     """ """
-    try:
-        creds = get_cloud_credentials("aws", connector_id)
-    except Exception as ex:  # noqa: BLE001
-        return f"Cannot fetch credentials for connector {connector_id}: {ex}"
-
-    session = Session(
-        aws_access_key_id=creds["access_key_id"],
-        aws_secret_access_key=creds["secret_access_key"],
-        aws_session_token=creds.get("session_token"),
-    )
-    return HealthStatus.OK
+    
+    sts_client, session = get_service_client(credentials, service_name=AWSServices.STS.value)
+    
+    for service in AWSServices:
+        client, _ = get_service_client(session=session, service_name=service)
+        url = client.meta.endpoint_url
+        requests.head(url, timeout=5, allow_redirects=False)
 
 
 def register_proxydome_header(boto_client: BotoClient) -> None:
@@ -1276,7 +1273,7 @@ def register_proxydome_header(boto_client: BotoClient) -> None:
     event_system.register_last("before-send.*.*", _add_proxydome_header)
 
 
-def get_service_client(params: dict, args: dict, command: str, credentials: dict) -> BotoClient:
+def get_service_client(credentials: dict = {}, params: dict = {}, args: dict = {}, command: str = "", session: Optional[Session] = None, service_name: str = "", config: Optional[Config] = None) -> tuple[BotoClient, Optional[Session]]:
     """
     Create and configure a boto3 client for the specified AWS service.
 
@@ -1288,24 +1285,29 @@ def get_service_client(params: dict, args: dict, command: str, credentials: dict
 
     Returns:
         BotoClient: Configured boto3 client with ProxyDome headers and proxy settings
+        Session: Boto3 session object
     """
-    aws_session: Session = Session(
+    aws_session: Session = session or Session(
         aws_access_key_id=credentials.get("key") or params.get("access_key_id"),
         aws_secret_access_key=credentials.get("access_token") or params.get("secret_access_key", {}).get("password"),
         aws_session_token=credentials.get("session_token"),
         region_name=args.get("region") or params.get("region", ""),
     )
 
-    service = AWSServices(command.split("-")[1])
+    # Resolve service name
+    service_name = service_name or command.split("-")[1]
+    service = AWSServices(service_name)
 
-    client_config = Config(
+    if config:
+        config.proxies = {"https": DEFAULT_PROXYDOME}
+    client_config =  Config(
         proxies={"https": DEFAULT_PROXYDOME}, proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH}
     )
     client = aws_session.client(service, verify=False, config=client_config)
 
     register_proxydome_header(client)
 
-    return client
+    return client, session
 
 
 def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
@@ -1324,7 +1326,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     account_id: str = args.get("account_id", "")
 
     credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if True else {}
-    service_client: BotoClient = get_service_client(params, args, command, credentials)
+    service_client, _ = get_service_client(credentials, params, args, command)
     return COMMANDS_MAPPING[command](service_client, args)
 
 
@@ -1336,11 +1338,11 @@ def main():  # pragma: no cover
     demisto.debug(f"Params: {params}")
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
-    skip_proxy()
+    handle_proxy()
 
     try:
         if command == "test-module":
-            results = health_check(connector_id) if (connector_id := get_connector_id()) else test_module()
+            results = run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check) if (connector_id := get_connector_id()) else test_module()
             return_results(results)
         elif command in COMMANDS_MAPPING:
             return_results(execute_aws_command(command, args, params))
