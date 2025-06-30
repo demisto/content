@@ -136,7 +136,7 @@
 <tr>
 <td style="width: 377px;">SigSciences.Corp.Site.Whitelist.CreatedDate</td>
 <td style="width: 59px;">date</td>
-<td style="width: 304px;">The created date timestamp</td>
+<td style="width: 304px;">The created date timestamp.</td>
 </tr>
 <tr>
 <td style="width: 377px;">SigSciences.Corp.Site.Whitelist.CreatedBy</td>
@@ -233,7 +233,7 @@
 <tbody>
 <tr>
 <td style="width: 172px;">siteName</td>
-<td style="width: 468px;">The site that holds the block list you wish to get</td>
+<td style="width: 468px;">The site that holds the block list you wish to get.</td>
 <td style="width: 100px;">Required</td>
 </tr>
 </tbody>
@@ -435,7 +435,7 @@
 <tr>
 <td style="width: 387px;">SigSciences.Corp.Site.Whitelist.CreatedDate</td>
 <td style="width: 57px;">date</td>
-<td style="width: 296px;">The created date timestamp</td>
+<td style="width: 296px;">The created date timestamp.</td>
 </tr>
 <tr>
 <td style="width: 387px;">SigSciences.Corp.Site.Whitelist.ExpiryDate</td>
@@ -528,7 +528,7 @@
 <tbody>
 <tr>
 <td style="width: 141px;">siteName</td>
-<td style="width: 528px;">The site that holds the block list you wish to add to</td>
+<td style="width: 528px;">The site that holds the block list you wish to add to.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
