@@ -909,7 +909,7 @@ def test_handle_request_paused(mocker: MockerFixture):
     mock_fetch.disable = MagicMock()
     mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
     mock_tab.Fetch = mock_fetch
-    mock_tab.id =  "mock_tab_id"
+    mock_tab.id = "mock_tab_id"
     tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
 
     tab_event_handler.handle_request_paused(**kwargs)
