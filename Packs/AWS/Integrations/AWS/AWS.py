@@ -15,6 +15,7 @@ DEFAULT_SESSION_NAME = "cortex-session"
 DEFAULT_PROXYDOME_CERTFICATE_PATH = "/etc/certs/egress.crt"
 DEFAULT_PROXYDOME = "10.181.0.100:11117"
 
+
 # TODO - Remove >>
 def arg_to_bool_or_none(value):
     """
@@ -31,6 +32,7 @@ def arg_to_bool_or_none(value):
         return None
     else:
         return argToBoolean(value)
+
 
 # <<
 
@@ -51,6 +53,7 @@ class AWSServices(StrEnum):
     EKS = "eks"
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
+
 
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
@@ -139,7 +142,7 @@ class S3:
     def put_bucket_logging_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Enables/configures logging for an S3 bucket.
-        
+
         Args:
             args (Dict[str, Any]): Command arguments including:
                 - bucket (str): The name of the bucket to configure logging for
@@ -155,14 +158,10 @@ class S3:
             return CommandResults(readable_output="Error: 'bucket' parameter is required")
 
         try:
-            
             if target_bucket := args.get("target_bucket"):
                 # Build logging configuration.
                 bucket_logging_status = {
-                    "LoggingEnabled": {
-                        "TargetBucket": target_bucket,
-                        "TargetPrefix": args.get("target_prefix", "")
-                    }
+                    "LoggingEnabled": {"TargetBucket": target_bucket, "TargetPrefix": args.get("target_prefix", "")}
                 }
             else:
                 # If neither full config nor target bucket provided, disable logging
@@ -189,7 +188,7 @@ class S3:
             return CommandResults(
                 entry_type=EntryType.ERROR, readable_output=f"Failed to configure logging for bucket '{bucket}'. Error: {str(e)}"
             )
-   
+
     @staticmethod
     def put_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -225,7 +224,7 @@ class S3:
                 - confirmRemoveSelfBucketAccess (str, optional): Confirms removal of self bucket access if set to "True"
 
         Returns:
-            CommandResults: 
+            CommandResults:
                 - On success: A result indicating the bucket policy was successfully applied
                 - On failure: An error result with details about why the policy application failed
 
@@ -329,37 +328,31 @@ class IAM:
             return CommandResults(
                 readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}"
             )
-    
+
     @staticmethod
     def put_role_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Adds or updates an inline policy document that is embedded in the specified IAM role.
-    
+
         Args:
             client (BotoClient): The boto3 client for IAM service
             args (Dict[str, Any]): Command arguments including policy_document, policy_name, and role_name
-            
+
         Returns:
             CommandResults: Results of the operation with success/failure message
         """
-        policy_document: str = args.get('policy_document', '')
-        policy_name: str = args.get('policy_name', '')
-        role_name: str = args.get('role_name', '')
-        kwargs = {
-            "PolicyDocument": policy_document,
-            "PolicyName": policy_name,
-            "RoleName": role_name
-        }
+        policy_document: str = args.get("policy_document", "")
+        policy_name: str = args.get("policy_name", "")
+        role_name: str = args.get("role_name", "")
+        kwargs = {"PolicyDocument": policy_document, "PolicyName": policy_name, "RoleName": role_name}
 
         try:
             response = client.put_user_policy(**kwargs)
             human_readable = f"Policy '{policy_name}' was successfully added to role '{role_name}'"
             return CommandResults(raw_response=response, readable_output=human_readable)
         except Exception as e:
-            raise DemistoException(
-                f"Failed to add policy '{policy_name}' to role '{role_name}'. Error: {str(e)}"
-            )
-   
+            raise DemistoException(f"Failed to add policy '{policy_name}' to role '{role_name}'. Error: {str(e)}")
+
     @staticmethod
     def delete_login_profile_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -374,25 +367,22 @@ class IAM:
             CommandResults: Results of the operation with success/failure message
         """
         user_name = args.get("user_name", "")
-        
+
         try:
             response = client.delete_login_profile(UserName=user_name)
-            
+
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                return CommandResults(
-                    readable_output=f"Successfully deleted login profile for user '{user_name}'"
-                )
+                return CommandResults(readable_output=f"Successfully deleted login profile for user '{user_name}'")
             else:
                 return CommandResults(
                     entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to delete login profile for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                    readable_output=f"Failed to delete login profile for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
                 )
         except Exception as e:
             return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Error deleting login profile for user '{user_name}': {str(e)}"
+                entry_type=EntryType.ERROR, readable_output=f"Error deleting login profile for user '{user_name}': {str(e)}"
             )
-    
+
     @staticmethod
     def put_user_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -411,29 +401,27 @@ class IAM:
         user_name = args.get("user_name", "")
         policy_name = args.get("policy_name", "")
         policy_document = args.get("policy_document", "")
-        
+
         try:
             response = client.put_user_policy(
                 UserName=user_name,
                 PolicyName=policy_name,
-                PolicyDocument=json.dumps(policy_document) if isinstance(policy_document, dict) else policy_document
+                PolicyDocument=json.dumps(policy_document) if isinstance(policy_document, dict) else policy_document,
             )
-            
+
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                return CommandResults(
-                    readable_output=f"Successfully added/updated policy '{policy_name}' for user '{user_name}'"
-                )
+                return CommandResults(readable_output=f"Successfully added/updated policy '{policy_name}' for user '{user_name}'")
             else:
                 return CommandResults(
                     entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to add/update policy '{policy_name}' for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                    readable_output=f"Failed to add/update policy '{policy_name}' for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
                 )
         except Exception as e:
             return CommandResults(
                 entry_type=EntryType.ERROR,
-                readable_output=f"Error adding/updating policy '{policy_name}' for user '{user_name}': {str(e)}"
+                readable_output=f"Error adding/updating policy '{policy_name}' for user '{user_name}': {str(e)}",
             )
-    
+
     @staticmethod
     def remove_role_from_instance_profile_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -450,13 +438,10 @@ class IAM:
         """
         instance_profile_name = args.get("instance_profile_name", "")
         role_name = args.get("role_name", "")
-        
+
         try:
-            response = client.remove_role_from_instance_profile(
-                InstanceProfileName=instance_profile_name,
-                RoleName=role_name
-            )
-            
+            response = client.remove_role_from_instance_profile(InstanceProfileName=instance_profile_name, RoleName=role_name)
+
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 return CommandResults(
                     readable_output=f"Successfully removed role '{role_name}' from instance profile '{instance_profile_name}'"
@@ -464,14 +449,14 @@ class IAM:
             else:
                 return CommandResults(
                     entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                    readable_output=f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
                 )
         except Exception as e:
             return CommandResults(
                 entry_type=EntryType.ERROR,
-                readable_output=f"Error removing role '{role_name}' from instance profile '{instance_profile_name}': {str(e)}"
+                readable_output=f"Error removing role '{role_name}' from instance profile '{instance_profile_name}': {str(e)}",
             )
-    
+
     @staticmethod
     def update_access_key_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -490,18 +475,15 @@ class IAM:
         access_key_id = args.get("access_key_id", "")
         status = args.get("status", "")
         user_name = args.get("user_name")
-        
-        kwargs = {
-            "AccessKeyId": access_key_id,
-            "Status": status
-        }
-        
+
+        kwargs = {"AccessKeyId": access_key_id, "Status": status}
+
         if user_name:
             kwargs["UserName"] = user_name
-        
+
         try:
             response = client.update_access_key(**kwargs)
-            
+
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 user_info = f" for user '{user_name}'" if user_name else ""
                 return CommandResults(
@@ -510,14 +492,13 @@ class IAM:
             else:
                 return CommandResults(
                     entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to update access key '{access_key_id}' status. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                    readable_output=f"Failed to update access key '{access_key_id}' status. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
                 )
         except Exception as e:
             return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Error updating access key '{access_key_id}' status: {str(e)}"
+                entry_type=EntryType.ERROR, readable_output=f"Error updating access key '{access_key_id}' status: {str(e)}"
             )
-    
+
 
 class EC2:
     service = AWSServices.EC2
@@ -600,7 +581,7 @@ class EC2:
                 - operation_type (str): The operation to perform (add or remove)
                 - user_ids (str, optional): Comma-separated list of AWS account IDs
                 - group (str, optional): The group to add/remove (e.g., 'all')
-        
+
         Returns:
             CommandResults: Results of the operation with success message
         """
@@ -616,17 +597,17 @@ class EC2:
 
         # Build accounts parameter using assign_params to handle None values
         accounts = assign_params(GroupNames=group_names_list, UserIds=user_ids_list)
-        
+
         response = client.modify_snapshot_attribute(
             Attribute=args.get("attribute"),
             SnapshotId=args.get("snapshot_id"),
             OperationType=args.get("operation_type"),
             **accounts,
         )
-        
+
         if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
             raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
-        
+
         return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions was successfully updated.")
 
     @staticmethod
@@ -635,9 +616,9 @@ class EC2:
         Modify the specified attribute of an Amazon Machine Image (AMI).
         """
         kwargs = {
-            "Attribute":        args.get("attribute"),
-            "ImageId":          args.get("image_id"),
-            "OperationType":    args.get("operation_type"),
+            "Attribute": args.get("attribute"),
+            "ImageId": args.get("image_id"),
+            "OperationType": args.get("operation_type"),
         }
 
         if desc := args.get("description"):
@@ -656,12 +637,12 @@ class EC2:
         # Build LaunchPermission block from snake_case args
         launch_perm: dict[str, list[dict[str, str]]] = {"Add": [], "Remove": []}
         perm_config = [
-            ("launch_permission_add_group",    "Group",   "Add"),
-            ("launch_permission_add_user_id",  "UserId",  "Add"),
-            ("launch_permission_remove_group", "Group",   "Remove"),
-            ("launch_permission_remove_user_id", "UserId","Remove"),
+            ("launch_permission_add_group", "Group", "Add"),
+            ("launch_permission_add_user_id", "UserId", "Add"),
+            ("launch_permission_remove_group", "Group", "Remove"),
+            ("launch_permission_remove_user_id", "UserId", "Remove"),
         ]
-        
+
         for arg_key, perm_key, action in perm_config:
             if val := args.get(arg_key):
                 launch_perm[action].append({perm_key: val})
@@ -676,7 +657,6 @@ class EC2:
             raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
 
         return CommandResults(readable_output="Image attribute successfully modified")
-
 
     @staticmethod
     def revoke_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -787,7 +767,7 @@ class EC2:
         1) Full mode: use `ip_permissions` JSON
         2) Simple mode: protocol, port, cidr → build IpPermissions
         """
-        
+
         def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
             """Parse port argument which can be a single port or range (min-max)."""
             if not port:
@@ -799,7 +779,7 @@ class EC2:
             else:
                 _port: int = int(port.strip())
                 return _port, _port
-            
+
         group_id = args.get("group_id")
         ip_permissions_arg = args.get("ip_permissions")
 
@@ -814,17 +794,9 @@ class EC2:
             proto = args.get("protocol")
             from_port, to_port = parse_port_range(args.get("port", ""))
             cidr = args.get("cidr")
-            ip_perms = [{
-                "IpProtocol": proto,
-                "FromPort": from_port,
-                "ToPort": to_port,
-                "IpRanges": [{"CidrIp": cidr}]
-            }]
+            ip_perms = [{"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}]}]
 
-        kwargs = {
-            "GroupId": group_id,
-            "IpPermissions": ip_perms
-        }
+        kwargs = {"GroupId": group_id, "IpPermissions": ip_perms}
 
         try:
             resp = client.revoke_security_group_egress(**kwargs)
@@ -975,14 +947,11 @@ class RDS:
             else:
                 return CommandResults(
                     entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to modify DB cluster. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                    readable_output=f"Failed to modify DB cluster. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
                 )
 
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Error modifying DB cluster: {str(e)}"
-            )
+            return CommandResults(entry_type=EntryType.ERROR, readable_output=f"Error modifying DB cluster: {str(e)}")
 
     @staticmethod
     def modify_db_cluster_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1064,7 +1033,7 @@ class RDS:
                 "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
             }
             remove_nulls_from_dictionary(kwargs)
-            demisto.debug(f'modify_db_instance {kwargs=}')
+            demisto.debug(f"modify_db_instance {kwargs=}")
             response = client.modify_db_instance(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -1133,21 +1102,16 @@ class CloudTrail:
         """
         Starts the recording of AWS API calls and log file delivery for a trail.
         """
-        name = args.get('name')
-        
+        name = args.get("name")
+
         try:
             response = client.start_logging(Name=name)
-            
-            return CommandResults(
-                readable_output=f"Successfully started logging for CloudTrail: {name}",
-                raw_response=response
-            )
+
+            return CommandResults(readable_output=f"Successfully started logging for CloudTrail: {name}", raw_response=response)
         except Exception as e:
             return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Error starting logging for CloudTrail {name}: {str(e)}"
+                entry_type=EntryType.ERROR, readable_output=f"Error starting logging for CloudTrail {name}: {str(e)}"
             )
-
 
     @staticmethod
     def update_trail_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1175,37 +1139,36 @@ class CloudTrail:
                 "CloudWatchLogsRoleArn": args.get("cloud_watch_logs_role_arn"),
                 "KMSKeyId": args.get("kms_key_id"),
             }
-            
+
             remove_nulls_from_dictionary(kwargs)
-            
+
             response = client.update_trail(**kwargs)
-            
+
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 trail_data = response.get("Trail", {})
                 readable_output = f"Successfully updated CloudTrail: {args.get('name')}"
-                
+
                 if trail_data:
                     readable_output += "\n\nUpdated Trail Details:"
                     readable_output += tableToMarkdown("", trail_data)
-                
+
                 return CommandResults(
                     readable_output=readable_output,
                     outputs_prefix="AWS.CloudTrail.Trail",
                     outputs=trail_data,
                     outputs_key_field="TrailARN",
-                    raw_response=response
+                    raw_response=response,
                 )
             else:
                 return CommandResults(
                     entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to update CloudTrail. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                    readable_output=f"Failed to update CloudTrail. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
                 )
-                
+
         except Exception as e:
             return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Error updating CloudTrail {args.get('name')}: {str(e)}"
-            )        
+                entry_type=EntryType.ERROR, readable_output=f"Error updating CloudTrail {args.get('name')}: {str(e)}"
+            )
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
@@ -1214,7 +1177,6 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
-    
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -1222,7 +1184,6 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-user-policy-put": IAM.put_user_policy_command,
     "aws-iam-role-from-instance-profile-remove": IAM.remove_role_from_instance_profile_command,
     "aws-iam-access-key-update": IAM.update_access_key_command,
-    
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
     "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
@@ -1230,16 +1191,13 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
-    
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
-    
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
-    
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
-    "aws-cloudtrail-trail-update": CloudTrail.update_trail_command
+    "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -1284,8 +1242,7 @@ def test_module():
 
 
 def health_check(connector_id: str) -> list[CommandResults] | str:
-    """
-    """
+    """ """
     return HealthStatus.OK
 
 
@@ -1332,8 +1289,8 @@ def get_service_client(params: dict, args: dict, command: str, credentials: dict
     service = AWSServices(command.split("-")[1])
 
     client_config = Config(
-        proxies={"https": DEFAULT_PROXYDOME}, 
-        proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH})
+        proxies={"https": DEFAULT_PROXYDOME}, proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH}
+    )
     client = aws_session.client(service, verify=False, config=client_config)
 
     register_proxydome_header(client)
@@ -1343,7 +1300,7 @@ def get_service_client(params: dict, args: dict, command: str, credentials: dict
 
 def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
     """
-    Execute an AWS command by retrieving credentials, creating a service client, 
+    Execute an AWS command by retrieving credentials, creating a service client,
     and routing to the appropriate service handler.
 
     Args:

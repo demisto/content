@@ -178,5 +178,3 @@ def test_aws_ec2_instance_metadata_options_modify(aws_client, mocker, command_ar
 
     result = AWS.ec2_instance_metadata_options_modify(aws_client, command_args)
     assert result.readable_output == expected_result
-
-
