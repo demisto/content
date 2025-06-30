@@ -157,14 +157,6 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
     if not prompt:
         raise ValueError("The 'prompt' argument is required.")
 
-    if model and model not in SUPPORTED_MODELS:
-        warning_message = (
-            f"Warning: Model '{model}' is not in the list of officially supported models by this integration version. "
-            f"Attempting to use it, but it may not work as expected or could be deprecated. "
-            f"Known models at the time of this integration version are: {', '.join(SUPPORTED_MODELS)}"
-        )
-        return_warning(warning_message)
-
     history = []
     if history_arg:
         try:
@@ -209,13 +201,12 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
         if parts and isinstance(parts, list) and len(parts) > 0 and isinstance(parts[0], dict):
             content = parts[0].get("text")  # type: ignore[assignment]
         else:
-            finish_reason  = demisto.get(candidates[0], "finishReason")
+            finish_reason = demisto.get(candidates[0], "finishReason")
 
     if not content:
         content = "No response generated."
         if finish_reason:
-            return_warning(
-                f"The model finished before completing the full response, due to {finish_reason}")
+            return_warning(f"The model finished before completing the full response, due to {finish_reason}")
 
     outputs = {"Prompt": prompt, "Response": content, "Model": model or client.model, "Temperature": client.temperature}
     if save_conversation:
@@ -249,11 +240,7 @@ def main():
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     api_key = params.get("api_key", {}).get("password")
-    # Use freetext model if provided, otherwise use dropdown selection
-    model_freetext = params.get("model-freetext", "").strip()
-    model_dropdown = params.get("model", "").strip()
-    model = model_freetext or model_dropdown or "gemini-2.5-flash-preview-05-20"
-
+    model = params.get("model", ["gemini-2.5-flash-preview-05-20"])  # use multi select to enable adding custom val
     max_tokens = arg_to_number(params.get("max_tokens", 1024)) or 1024
 
     # Handle optional parameters - use defaults if empty or not provided
@@ -269,12 +256,14 @@ def main():
     demisto.debug(f"Command being called is {command}")
 
     try:
+        if len(model) > 1:
+            raise DemistoException("Please select one model only.")
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             api_key=api_key,
-            model=model,
+            model=model[0],
             max_tokens=max_tokens,
             temperature=temperature,
             top_p=top_p,

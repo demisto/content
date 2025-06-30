@@ -429,7 +429,7 @@ def demisto_mocker_fixture(mocker):
         return_value={
             "url": "https://generativelanguage.googleapis.com",
             "api_key": {"password": "test_api_key"},  # Fixed: API key as dict with password
-            "model": "gemini-2.0-flash",
+            "model": ["gemini-2.0-flash"],
             "model-freetext": "",
             "max_tokens": "1024",
             "temperature": "0.7",
@@ -523,15 +523,16 @@ def test_main_exception_handling(demisto_mocker_fixture, mocker):
 
 
 def test_main_model_freetext_override(mocker):
-    """Test main function when model-freetext overrides dropdown selection"""
+    """Test main function when multi values selected fr model"""
     mocker.patch.object(GoogleGemini, "demisto", demisto)
+    mock_return_error = mocker.patch.object(GoogleGemini, "return_error")
     mocker.patch.object(
         demisto,
         "params",
         return_value={
             "url": "https://generativelanguage.googleapis.com",
             "api_key": {"password": "test_api_key"},
-            "model": "gemini-2.0-flash",
+            "model": ["gemini-2.0-flash", "test"],
             "model-freetext": "gemini-1.5-pro",
             "max_tokens": "2048",
             "temperature": "0.8",
@@ -541,89 +542,10 @@ def test_main_model_freetext_override(mocker):
             "proxy": False,
         },
     )
-    mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mock_test_module = mocker.patch.object(GoogleGemini, "test_module", return_value="ok")
-    mocker.patch.object(GoogleGemini, "return_results")
 
     GoogleGemini.main()
 
-    mock_test_module.assert_called_once()
-    client_arg = mock_test_module.call_args[0][0]
-    assert client_arg.model == "gemini-1.5-pro"
-    assert client_arg.max_tokens == 2048
-    assert client_arg.temperature == 0  # arg_to_number("0.8") returns 0 for float strings
-    assert client_arg.top_p == 0  # arg_to_number("0.9") returns 0 for float strings
-    assert client_arg.top_k == 40  # arg_to_number("40") returns 40 for integer strings
-
-
-def test_main_model_dropdown_fallback(mocker):
-    """Test main function when model-freetext is empty and falls back to dropdown"""
-    mocker.patch.object(GoogleGemini, "demisto", demisto)
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": "https://generativelanguage.googleapis.com",
-            "api_key": {"password": "test_api_key"},
-            "model": "gemini-2.0-flash",
-            "model-freetext": "",
-            "max_tokens": "1024",
-            "temperature": "",
-            "top_p": "",
-            "top_k": "",
-            "insecure": False,
-            "proxy": False,
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mock_test_module = mocker.patch.object(GoogleGemini, "test_module", return_value="ok")
-    mocker.patch.object(GoogleGemini, "return_results")
-
-    GoogleGemini.main()
-
-    # Verify the client was created with the dropdown model
-    mock_test_module.assert_called_once()
-    client_arg = mock_test_module.call_args[0][0]
-    assert client_arg.model == "gemini-2.0-flash"
-    assert client_arg.max_tokens == 1024
-    assert client_arg.temperature is None
-    assert client_arg.top_p is None
-    assert client_arg.top_k is None
-
-
-def test_main_model_default_fallback(mocker):
-    """Test main function when both model fields are empty and falls back to default"""
-    mocker.patch.object(GoogleGemini, "demisto", demisto)
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": "https://generativelanguage.googleapis.com",
-            "api_key": {"password": "test_api_key"},
-            "model": "",
-            "model-freetext": "",
-            "max_tokens": "512",
-            "temperature": "",
-            "top_p": "",
-            "top_k": "",
-            "insecure": False,
-            "proxy": False,
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mock_test_module = mocker.patch.object(GoogleGemini, "test_module", return_value="ok")
-    mocker.patch.object(GoogleGemini, "return_results")
-
-    GoogleGemini.main()
-
-    # Verify the client was created with the default model
-    mock_test_module.assert_called_once()
-    client_arg = mock_test_module.call_args[0][0]
-    assert client_arg.model == "gemini-2.5-flash-preview-05-20"
-    assert client_arg.max_tokens == 512
+    mock_return_error.assert_called_once()
 
 
 def test_supported_models_list():

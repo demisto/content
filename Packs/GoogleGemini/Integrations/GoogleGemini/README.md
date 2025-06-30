@@ -12,10 +12,9 @@ This integration provides access to Google Gemini's large language models for AI
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API URL | The base URL for the Gemini API (default: https://generativelanguage.googleapis.com) | True |
+| Server URL | The base URL for the Gemini API (default: https://generativelanguage.googleapis.com) | True |
 | API Key | Your Google AI API key with Generative Language API access | True |
-| Model | Select a Gemini model from the dropdown | False |
-| Model (Freetext) | Enter any model name (overrides dropdown selection) | False |
+| Model | Select a Gemini model from the dropdown | True |
 | Max Tokens | Maximum number of tokens in the response (default: 1024) | False |
 | Temperature | Controls randomness in responses (0.0-1.0) | False |
 | Top P | Nucleus sampling parameter | False |

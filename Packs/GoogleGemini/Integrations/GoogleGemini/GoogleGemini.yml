@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://generativelanguage.googleapis.com
-  display: Gemini API URL
+  display: Server URL
   name: url
   required: true
   section: Connect
@@ -20,6 +20,7 @@ configuration:
   hiddenusername: true
   additionalinfo: "API Key to access the service REST API."
 - defaultvalue: gemini-2.5-flash-preview-05-20
+  additionalinfo: Please choose only one model, or select another from the list https://ai.google.dev/models.
   display: Default Model
   name: model
   options:
@@ -38,15 +39,9 @@ configuration:
   - models/embedding-001
   # Other specialized models
   - models/aqa
-  required: false
+  required: true
   section: Collect
-  type: 15
-- additionalinfo: The model that will process the inputs and generate the response.
-  display: Model (Optional - overrides selected choice)
-  name: model-freetext
-  required: false
-  section: Collect
-  type: 0
+  type: 16
 - additionalinfo: The maximum number of tokens that can be generated for the response (1-10000). Defaults to 1024.
   defaultvalue: '1024'
   display: Max tokens
