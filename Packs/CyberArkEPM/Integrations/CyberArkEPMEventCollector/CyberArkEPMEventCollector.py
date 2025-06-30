@@ -222,8 +222,9 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
     context_set_items = get_integration_context().get("set_items", {})
-
+    demisto.debug(f"CyberArkEPM: {context_set_items=} {set(set_names)=}")
     if context_set_items.keys() != set(set_names):
+        demisto.debug(f"CyberArkEPM: context_set_items is empty")
         result = client.get_set_list()
         context_set_items = {
             set_item.get("Name"): set_item.get("Id") for set_item in result.get("Sets", []) if set_item.get("Name") in set_names
@@ -271,11 +272,11 @@ def get_events(client_function: Callable, event_type: str, last_run_per_id: dict
         (dict) A dict of {'set_id': {'events' [list events associated with a list of set names], 'next_cursor': '123456'}}.
     """
     events: dict[str, dict[str, str | list]] = {}
-
     for set_id, last_run in last_run_per_id.items():
         events[set_id] = {}
         from_date = last_run.get(event_type).get("from_date")
         next_cursor = last_run.get(event_type).get("next_cursor")
+        demisto.debug(f"CyberArkEPM: calling client function for {event_type=} with: {set_id=} {from_date=} {next_cursor=} {limit=}")
 
         results = client_function(set_id, from_date, limit, next_cursor)
         events[set_id]["events"] = results.get("events", [])
@@ -286,6 +287,7 @@ def get_events(client_function: Callable, event_type: str, last_run_per_id: dict
 
         add_fields_to_events(events[set_id]["events"], "arrivalTime", event_type)  # type: ignore
         events[set_id]["next_cursor"] = next_cursor or "start"
+        demisto.debug(f"CyberArkEPM: for {set_id=} {event_type=} fetched events: {events[set_id][:25]}")
 
     return events
 
