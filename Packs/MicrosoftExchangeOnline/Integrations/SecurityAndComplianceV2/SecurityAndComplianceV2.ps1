@@ -2102,7 +2102,7 @@ function SearchAndRecoveryEmailCommand {
                 return "$script:INTEGRATION_NAME - Search completed. No items to restore.", $entry_context, $search
             }
 
-            $action = $client.GetSearchAction($search_action_name, $null)
+            $action = $client.GetSearchAction($search_action_name, "SilentlyContinue")
             if (-not $action) {
                 $Demisto.results("No existing Preview action. Creating one.")
                 $action = $client.NewSearchAction(
