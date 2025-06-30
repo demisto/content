@@ -213,7 +213,7 @@ class AzureClient:
             self.ms_client = MicrosoftClient(**ms_client_args)
         else:
             base_client_args = assign_params(
-                base_url=f"{PREFIX_URL_AZURE}", verify="/etc/certs/egress.crt", proxy=proxy, headers=headers
+                base_url=f"{PREFIX_URL_AZURE}", verify=os.environ.get('EGRESSPROXY_CA_PATH'), proxy=proxy, headers=headers
             )
             self.base_client = BaseClient(**base_client_args)
 
@@ -234,7 +234,7 @@ class AzureClient:
         if not params.get("api-version"):
             params["api-version"] = API_VERSION
 
-        proxies = {"http": "10.181.0.100:11117", "https": "10.181.0.100:11117"}
+        proxies = {"http": os.environ.get('CRTX_HTTP_PROXY'), "https": os.environ.get('CRTX_HTTP_PROXY')}
 
         if self.headers:
             self.headers |= {"x-caller-id": get_proxydome_token()}
