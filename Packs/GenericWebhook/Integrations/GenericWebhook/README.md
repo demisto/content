@@ -77,7 +77,7 @@ The Generic Webhook integration accepts POST HTTP queries, with the following op
 
 **Note**: The cURL examples below are formatted for macOS. For Windows machines, modify as needed. 
 
-### Examples: ###
+### Examples:
 
 Triggers the webhook using cURL:<br><br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
