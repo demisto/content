@@ -8,7 +8,6 @@ GITHUB_API_BASE_URL = "https://api.github.com"
 GITHUB_API_VERSION = "2022-11-28"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 BRANCH_NAME = os.getenv("BRANCH_NAME", "main")
-CODEOWNERS = "CODEOWNERS"
 print = timestamped_print
 
 

@@ -30,4 +30,4 @@ jobs:
         run: |
           echo "code_owner_file_validation"
           cd .github/github_workflow_scripts
-          poetry run python code_owner_file_validation.py
+          poetry run python codeowners_file_validation.py
