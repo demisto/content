@@ -52,6 +52,7 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
+  - platform
   required: false
   options:
   - incidentAssigned
@@ -171,6 +172,7 @@ configuration:
   hidden:
   - marketplacev2
   - xsoar
+  - platform
 - display: Enable DMs to the bot
   name: enable_dm
   type: 8
@@ -448,6 +450,8 @@ script:
       required: true
     description: Reset user session token in Slack.
     name: slack-user-session-reset
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: 'Supply this argument to only return channels with this name.'
       name: name_filter
@@ -519,10 +523,10 @@ script:
     hidden: true
     quickaction: true
     outputs:
-      - contextPath: Slack.Thread.ID
-        description: The Slack thread ID.
-        type: String
-  dockerimage: demisto/slackv3:1.0.0.3040830
+    - contextPath: Slack.Thread.ID
+      description: The Slack thread ID.
+      type: String
+  dockerimage: demisto/slackv3:1.0.0.3638862
   longRunning: true
   runonce: false
   script: '-'
