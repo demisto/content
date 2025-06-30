@@ -942,7 +942,8 @@ tasks:
         simple: AppID
       value:
         complex:
-          root: Core.OriginalAlert.event.raw_log.additionalDetails.value
+          root: Core.OriginalAlert.event.raw_log.additionalDetails
+          accessor: value
           filters:
           - - operator: isEqualString
               left:
@@ -953,7 +954,6 @@ tasks:
                 value:
                   simple: AppId
               ignorecase: true
-          accessor: value
     separatecontext: false
     continueonerrortype: ""
     view: |-
