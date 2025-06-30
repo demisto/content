@@ -954,6 +954,8 @@ tasks:
                 value:
                   simple: AppId
               ignorecase: true
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
