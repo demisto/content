@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: SAPCloudForCustomer_C4C
+  id: SAPCloudForCustomerC4C
   version: -1
 configuration:
 - defaultvalue: https://my313577.crm.ondemand.com
@@ -43,16 +43,17 @@ configuration:
   required: false
 description: 'The SAP Cloud for Customer solution helps you manage day-to-day sales and service interactions efficiently by sending and receiving signals between front- and back-office solutions and providing a single view of the customer.'
 display: SAP Cloud For Customer C4C
-name: SAPCloudForCustomer_C4C
+name: SAPCloudForCustomerC4C
 script:
   commands: []
+  isFetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.9.8.24399
-fromversion: 6.1.0
+  dockerimage: demisto/python3:3.12.11.3982393
+fromversion: 8.0.0
 marketplaces:
 - xsoar
 - marketplacev2

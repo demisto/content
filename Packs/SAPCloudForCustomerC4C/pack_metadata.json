@@ -12,7 +12,7 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "defaultDataSource": "SAPCloudForCustomer_C4C",
+    "defaultDataSource": "SAPCloudForCustomerC4C",
     "marketplaces": [
         "xsoar",
         "marketplacev2"

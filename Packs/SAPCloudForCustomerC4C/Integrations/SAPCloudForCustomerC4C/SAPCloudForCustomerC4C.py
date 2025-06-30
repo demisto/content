@@ -20,6 +20,7 @@ DEFAULT_TOP = 1000
 
 """ CLIENT CLASS """
 
+
 class Client(BaseClient):
     """
     Client to use in the SAP Cloud for Customer integration. Overrides BaseClient
@@ -27,9 +28,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url, base64String, verify):
         super().__init__(base_url=base_url, verify=verify, ok_codes=(200, 201, 202))
-        self.credentials = {
-             "Authorization": "Basic " + base64String, "Content-Type": "application/json"
-        }
+        self.credentials = {"Authorization": "Basic " + base64String, "Content-Type": "application/json"}
 
     def http_request(
         self,
@@ -78,24 +77,25 @@ class Client(BaseClient):
         elif res.status_code == 404:
             raise DemistoException(f"{SAP_CLOUD} - The resource was not found at {res.url}. {res.text}")
         raise DemistoException(f"{SAP_CLOUD} - Error in API call {res.status_code} - {res.text}")
-    
+
 
 """ COMMAND FUNCTIONS """
 
+
 def encode_to_base64(input_string: str) -> str:
-  """
-  Encodes a given string into its Base64 representation.
+    """
+    Encodes a given string into its Base64 representation.
 
-  Args:
-    input_string: The string to be encoded.
+    Args:
+      input_string: The string to be encoded.
 
-  Returns:
-    The Base64 encoded string.
-  """
-  bytes_string = input_string.encode('utf-8')
-  encoded_bytes = base64.b64encode(bytes_string)
-  encoded_string = encoded_bytes.decode('utf-8')
-  return encoded_string
+    Returns:
+      The Base64 encoded string.
+    """
+    bytes_string = input_string.encode("utf-8")
+    encoded_bytes = base64.b64encode(bytes_string)
+    encoded_string = encoded_bytes.decode("utf-8")
+    return encoded_string
 
 
 def test_module(client: Client, report_id: str) -> str:
@@ -109,13 +109,16 @@ def test_module(client: Client, report_id: str) -> str:
     """
     if not report_id:
         raise DemistoException("Report ID is a mandatory parameter for test-module. Please provide a Report ID.")
-    
+
     url_suffix = f"{URL_SUFFIX}{report_id}?"
-    client.http_request("GET", url_suffix=f"{url_suffix}", params={"$inlinecount": "allpages", "$filter": "CUSER eq 'ASAHAYA'",
-                                                            "$top": 2, "$format": "json"})
+    client.http_request(
+        "GET",
+        url_suffix=f"{url_suffix}",
+        params={"$inlinecount": "allpages", "$filter": "CUSER eq 'ASAHAYA'", "$top": 2, "$format": "json"},
+    )
     return "ok"
-    
-    
+
+
 def get_current_utc_time():
     """
     Returns the current UTC time as an aware datetime object.
@@ -124,6 +127,7 @@ def get_current_utc_time():
         datetime: The current time in UTC with timezone information.
     """
     return datetime.now(timezone.utc)
+
 
 def get_events(client: Client, report_id: str, start_date: str, skip: int, top: int) -> dict[str, Any]:
     """
@@ -140,20 +144,19 @@ def get_events(client: Client, report_id: str, start_date: str, skip: int, top: 
         Dict[str, Any]: A list of events.
     """
     params = {
-            "$filter": f"CTIMESTAMP ge '{start_date} INDIA'", #TODO will be fixes once the client returns a response
-            "$skip": skip,
-            "$top": top,
-            "$format": "json"
-        }
+        "$filter": f"CTIMESTAMP ge '{start_date} INDIA'",  # TODO will be fixes once the client returns a response
+        "$skip": skip,
+        "$top": top,
+        "$format": "json",
+    }
 
-    
-    res =  client.http_request(
+    res = client.http_request(
         method="GET",
         url_suffix=f"{URL_SUFFIX}{report_id}?",
         params=params,
     )
-    
-    return res.get('d', {}).get('results', [])
+
+    return res.get("d", {}).get("results", [])
 
 
 def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[str, list[Any]]:
@@ -173,13 +176,13 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[str, lis
     skip_count = INIT_SKIP
     top_count = DEFAULT_TOP
     now = get_current_utc_time()
-    
+
     demisto.debug(f"{last_run=}")
-    
+
     # Get last_fetch time from last_run or set to FIRST_FETCH (e.g., "one minute ago")
     start_date_str = last_run.get("last_fetch")
-    
-    if start_date_str: # last_fetch will be in ISO format
+
+    if start_date_str:  # last_fetch will be in ISO format
         # Parse and format to DD-MM-YYYY HH:MM:SS for the SAP API filter
         parsed_start_date = dateparser.parse(start_date_str)
         if parsed_start_date:
@@ -190,8 +193,11 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[str, lis
             start_date_for_filter = dateparser.parse(FIRST_FETCH).strftime(STRFTIME_FORMAT)
     else:
         # For the very first fetch or if last_run is empty
-        start_date_for_filter = dateparser.parse(FIRST_FETCH).strftime(STRFTIME_FORMAT)
-    
+        start_date_for_filter = dateparser.parse(
+            FIRST_FETCH,
+            settings={"TIMEZONE": "Asia/Jerusalem", "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "Asia/Jerusalem"},
+        ).strftime(STRFTIME_FORMAT)
+
     demisto.debug(f"Getting events from: {start_date_for_filter}")
 
     while max_events_per_fetch > 0:
@@ -225,29 +231,29 @@ def main():
     password = demisto.get(params, "username.password")
     server_url = params.get("url", "").strip("/")
     try:
-        
-        base64String = encode_to_base64(user_name + ":" + password) # type: ignore
+        base64String = encode_to_base64(user_name + ":" + password)  # type: ignore
         client = Client(
             base_url=f"{server_url}",
-            base64String = base64String,
+            base64String=base64String,
             verify=not params.get("insecure", False),
         )
 
         if command == "test-module":
             # This call is made when clicking the integration 'Test' button.
             report_id = params.get("report_id")
-            return_results(test_module(client, report_id)) # Let test_module handle validation
+            return_results(test_module(client, report_id))  # Let test_module handle validation
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun() or {}
             next_run, events = fetch_events(client, params, last_run)
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            if events:
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
             demisto.debug(f"Successfully saved last_run= {demisto.getLastRun()}")
-            
+
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        
+
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
