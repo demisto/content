@@ -429,7 +429,7 @@ def test_get_proxydome_token_success(mocker):
     requests.get.assert_called_once_with(
         "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity",
         headers={"Metadata-Flavor": "Google"},
-        params={"audience": "cortex.platform.local"},
+        params={"audience": None},
         proxies={"http": "", "https": ""},
     )
 
