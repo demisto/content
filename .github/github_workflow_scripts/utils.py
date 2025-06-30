@@ -14,7 +14,9 @@ from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_metadata
 import git
 
-
+# Constants
+BRANCH_NAME = "BRANCH_NAME"
+GITHUB_TOKEN = "GITHUB_TOKEN"
 DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
@@ -25,7 +27,10 @@ GITHUB_HIDDEN_DIR = ".github"
 CONTENT_ROLES_BLOB_MASTER_URL = (
     f"https://raw.githubusercontent.com/demisto/content/master/{GITHUB_HIDDEN_DIR}/{CONTENT_ROLES_FILENAME}"
 )
-
+GITHUB_API_BASE_URL = "https://api.github.com"
+GITHUB_API_VERSION = "2022-11-28"
+ORGANIZATION_NAME = "demisto"
+REPO_NAME = "content"
 LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
 
 # override print so we have a timestamp with each print

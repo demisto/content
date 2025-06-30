@@ -1,13 +1,17 @@
 import requests
-from utils import timestamped_print
-import os
+from utils import (
+    timestamped_print,
+    GITHUB_API_BASE_URL,
+    GITHUB_API_VERSION,
+    get_env_var,
+    GITHUB_TOKEN,
+    BRANCH_NAME,
+    ORGANIZATION_NAME,
+    REPO_NAME,
+)
 import sys
 
 # Constants
-GITHUB_API_BASE_URL = "https://api.github.com"
-GITHUB_API_VERSION = "2022-11-28"
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
-BRANCH_NAME = os.getenv("BRANCH_NAME", "main")
 print = timestamped_print
 
 
@@ -25,12 +29,12 @@ def validate_codeowners_file(owner: str, repo: str) -> dict:
     url = f"{GITHUB_API_BASE_URL}/repos/{owner}/{repo}/codeowners/errors"
     headers = {
         "Accept": "application/vnd.github+json",
-        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Authorization": f"Bearer {get_env_var(GITHUB_TOKEN)}",
         "X-GitHub-Api-Version": GITHUB_API_VERSION,
     }
 
     try:
-        response = requests.get(url, headers=headers, params={"ref": BRANCH_NAME})
+        response = requests.get(url, headers=headers, params={"ref": get_env_var(BRANCH_NAME)})
         response.raise_for_status()
         return response.json()
 
@@ -39,11 +43,8 @@ def validate_codeowners_file(owner: str, repo: str) -> dict:
 
 
 def main() -> int:
-    repository_owner = "demisto"
-    repository_name = "content"
-
     try:
-        validation_result = validate_codeowners_file(repository_owner, repository_name)
+        validation_result = validate_codeowners_file(ORGANIZATION_NAME, REPO_NAME)
 
         if validation_result.get("error", False):
             print(f"CODEOWNERS Validation failed: {validation_result.get('message')}")
