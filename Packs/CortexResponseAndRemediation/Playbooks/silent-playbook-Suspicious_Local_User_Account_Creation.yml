@@ -1,6 +1,5 @@
-id: adfd1cc3-6eb8-414f-86d8-d06965210573
-version: 14
-vcShouldKeepItemLegacyProdMachine: false
+id: silent-Suspicious Local User Account Creation
+version: -1
 name: silent-Suspicious Local User Account Creation
 description: |-
   This playbook addresses the following alerts:
@@ -9,11 +8,11 @@ description: |-
   Playbook Stages:
 
   Triage:
-  
+
   - Retrieve extra information about the alert, such as the SID of the created user.
 
   Investigation:
-  
+
   - Get host risk level for the machine where the user was created.
   - Search for related alerts in the incident that hint of privilege escalation or persistence.
   - Retrieve local user password expiration status using PowerShell commands.
@@ -23,7 +22,7 @@ description: |-
   - Check creator's historical user creation patterns.
 
   Containment:
-  
+
   - Analyze evidence using multiple indicators to determine if the alert is a true positive, false positive, or inconclusive.
   - For true positives: Automatically disable the suspicious local user account.
   - Present analyst review with comprehensive findings including related alerts, privileged groups, host/user risk levels, and suspicious command lines.
@@ -33,7 +32,7 @@ description: |-
 
   For response actions, you need the following integrations:
   - Cortex Core - Investigation and Response
-  - Active Directory Query v2
+  - Active Directory Query v2.
 starttaskid: "0"
 tasks:
   "0":
@@ -46,6 +45,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -73,8 +73,7 @@ tasks:
       id: 2c5df0e1-83d1-4db9-960d-86176d054ac5
       version: -1
       name: Get event information
-      description: Retrieves extra information about the alert, such as the SID of
-        the created user.
+      description: Retrieves extra information about the alert, such as the SID of the created user.
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
@@ -114,6 +113,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -144,6 +144,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -239,12 +240,7 @@ tasks:
                   simple: 'caseid:'
               suffix:
                 value:
-                  simple: ' and (name:"Masquerading as a default local account for
-                    the first time" or name:"Execution of an uncommon process with
-                    a local/domain user SID at an early startup stage with suspicious
-                    characteristics" or name:"Privilege Escalation - 1216127025" or
-                    name:"Suspicious disablement of the Windows Firewall" or name:"PowerShell
-                    runs suspicious base64-encoded commands")'
+                  simple: ' and (name:"Masquerading as a default local account for the first time" or name:"Execution of an uncommon process with a local/domain user SID at an early startup stage with suspicious characteristics" or name:"Privilege Escalation - 1216127025" or name:"Suspicious disablement of the Windows Firewall" or name:"PowerShell runs suspicious base64-encoded commands")'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -269,8 +265,7 @@ tasks:
       id: ceabad22-9b7a-46d4-a02a-ad731ca6a548
       version: -1
       name: Retrieve local user password status
-      description: Runs a Powershell code snipper on the endpoint where the user was
-        created, in order to retrieve the PASSWORDEXPIRES attribute of the local user.
+      description: Runs a Powershell code snipper on the endpoint where the user was created, in order to retrieve the PASSWORDEXPIRES attribute of the local user.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
@@ -328,6 +323,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -358,6 +354,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -420,8 +417,7 @@ tasks:
       id: a609f7b8-f826-4407-9926-1edd3954855b
       version: -1
       name: Save attribute to evidence
-      description: Extracts and saves the PASSWORDEXPIRES value of the locally created
-        user from the results of the Powershell script execution.
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -449,8 +445,7 @@ tasks:
             args:
               dt:
                 value:
-                  simple: '.=val.includes("Never") || val.includes("%%1794") ? "True"
-                    : "False"'
+                  simple: '.=val.includes("Never") || val.includes("%%1794") ? "True" : "False"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -478,6 +473,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -505,8 +501,7 @@ tasks:
       id: ab482efa-fcd5-48f1-a5d7-872654ee8b2e
       version: -1
       name: Check XQL Query Engine availability
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -720,13 +715,7 @@ tasks:
       id: bcc3a330-244b-4034-b267-ca61ea7f0e14
       version: -1
       name: Save found privileged groups
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -783,13 +772,7 @@ tasks:
       id: 1ca5ab03-8c84-485b-801c-74f3d2d7b38e
       version: -1
       name: Save related alerts to evidence
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -829,6 +812,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -856,8 +840,7 @@ tasks:
       id: f7e4bfc9-1265-415d-abb1-ac6d729376d7
       version: -1
       name: Save host risk to evidence
-      description: Extracts and saves the PASSWORDEXPIRES value of the locally created
-        user from the results of the Powershell script execution.
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -989,8 +972,7 @@ tasks:
       id: 510f4f7f-69ca-44de-b4de-24775e7277ff
       version: -1
       name: Save privileged group to evidence
-      description: Extracts and saves the PASSWORDEXPIRES value of the locally created
-        user from the results of the Powershell script execution.
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1027,13 +1009,7 @@ tasks:
       id: 14370b3d-69fc-44b7-ac6e-6fbc0e026c4f
       version: -1
       name: Save suspicious commandlines list
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1081,13 +1057,7 @@ tasks:
       id: b91a28fd-342a-46fc-8e58-220ea95c61d0
       version: -1
       name: Save post login count to evidence
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1217,13 +1187,7 @@ tasks:
       id: 76ad3515-4931-4b31-bb3b-4d4d1d9bf8ce
       version: -1
       name: Save close reason - true positive
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1265,6 +1229,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "45"
@@ -1393,8 +1358,8 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         complex:
           root: Core.OriginalAlert.event.action_evtlog_data_fields
@@ -1408,8 +1373,8 @@ tasks:
               suffix: {}
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1431,8 +1396,7 @@ tasks:
       id: f1ca7797-cc29-4871-9c30-f1337130efc1
       version: -1
       name: Disable local user
-      description: Runs Powershell code on the affected host to disable the local
-        user on the machine.
+      description: Runs Powershell code on the affected host to disable the local user on the machine.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
@@ -1491,6 +1455,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1518,6 +1483,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -1545,9 +1511,7 @@ tasks:
       id: afa2e31c-a222-4b52-85b8-0f99b239ac5f
       version: -1
       name: Get creator user risk level
-      description: Retrieve the risk score of a specific user or list of users with
-        the highest risk score in the environment along with the reason affecting
-        each score.
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
       script: '|||core-list-risky-users'
       type: regular
       iscommand: true
@@ -1582,8 +1546,7 @@ tasks:
       id: 69c50e13-2d1b-4894-8b97-cdf511817bf0
       version: -1
       name: Save creator user risk to evidence
-      description: Extracts and saves the PASSWORDEXPIRES value of the locally created
-        user from the results of the Powershell script execution.
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1632,6 +1595,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -1663,6 +1627,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "53"
@@ -1915,13 +1880,7 @@ tasks:
       id: b828409f-a20d-454d-ab28-6af3adfb2d1e
       version: -1
       name: Save suspicious commandlines list
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1969,13 +1928,7 @@ tasks:
       id: d13c2472-ddbf-4761-9893-7b6a4d634e38
       version: -1
       name: Save post login count to evidence
-      description: "Set a value in context under the key you entered. If no value
-        is entered, the script doesn't do anything.\n\nThis automation runs using
-        the default Limited User role, unless you explicitly change the permissions.\nFor
-        more information, see the section about permissions here:\n- For Cortex XSOAR
-        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2029,11 +1982,7 @@ tasks:
       - "64"
     scriptarguments:
       query:
-        simple: "dataset = xdr_data\n| filter event_type = ENUM.EVENT_LOG and action_evtlog_event_id
-          = 4720\n| alter \n    Subject_User_SID = action_evtlog_data_fields -> SubjectUserSid,
-          \n    Subject_Username = action_evtlog_data_fields -> SubjectUserName\n|
-          filter lowercase(Subject_User_SID) = lowercase(\"${Core.OriginalAlert.event.action_evtlog_data_fields.SubjectUserSid}\")\n|
-          comp count() as user_creation_count"
+        simple: "dataset = xdr_data\n| filter event_type = ENUM.EVENT_LOG and action_evtlog_event_id = 4720\n| alter \n    Subject_User_SID = action_evtlog_data_fields -> SubjectUserSid, \n    Subject_Username = action_evtlog_data_fields -> SubjectUserName\n| filter lowercase(Subject_User_SID) = lowercase(\"${Core.OriginalAlert.event.action_evtlog_data_fields.SubjectUserSid}\")\n| comp count() as user_creation_count"
       query_name:
         simple: Get user creation history for a user
       time_frame:
@@ -2108,8 +2057,7 @@ tasks:
       id: 75aa5508-cc37-4a17-a0db-1e605f604882
       version: -1
       name: Save past creations count
-      description: Extracts and saves the PASSWORDEXPIRES value of the locally created
-        user from the results of the Powershell script execution.
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2160,6 +2108,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "68"
@@ -2187,8 +2136,7 @@ tasks:
       id: 4e06f579-a56a-447f-838c-7f5a98db85f3
       version: -1
       name: Disable creator locally
-      description: Runs Powershell code on the affected host to disable the local
-        user on the machine.
+      description: Runs Powershell code on the affected host to disable the local user on the machine.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
@@ -2244,8 +2192,7 @@ tasks:
       id: 971323dd-1c06-4fb6-8574-0542edec8d86
       version: -1
       name: Check Active Directory availability
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2282,9 +2229,7 @@ tasks:
       id: 1a251d63-830b-4137-9418-dbe014dcf3e1
       version: -1
       name: Attempt to get creator from AD
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -2456,4 +2401,7 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 7b326d8f-7ab8-43d0-88e3-92258de83a01
+issilent: true
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
