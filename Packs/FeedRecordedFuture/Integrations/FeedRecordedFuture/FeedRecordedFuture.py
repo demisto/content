@@ -406,6 +406,7 @@ def ip_to_indicator_type(ip):
 
 def calculate_recorded_future_criticality_label(risk_from_feed):
     risk_from_feed = int(risk_from_feed)
+    demisto.debug(f"RF: The risk from feed is: {risk_from_feed}")
     if risk_from_feed >= RF_CRITICALITY_LABELS["Very_Malicious"]:
         return "Very Malicious"
     elif risk_from_feed >= RF_CRITICALITY_LABELS["Malicious"]:
@@ -475,7 +476,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 risk = item.get("Risk")
                 if isinstance(risk, str) and risk.isdigit():
                     raw_json["score"] = score = client.calculate_indicator_score(risk)
-                    raw_json["Criticality Label"] = calculate_recorded_future_criticality_label(risk)
+                    raw_json["Criticality Label"] = criticality_label = calculate_recorded_future_criticality_label(risk)
                     # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
                     if not client.check_indicator_risk_score(risk):
                         continue
@@ -491,6 +492,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 risk_string = item.get("RiskString")
                 if isinstance(risk_string, str):
                     raw_json["RiskString"] = format_risk_string(risk_string)
+                demisto.debug(f"RF: Updating threat assessment field to {criticality_label}")
                 indicator_obj = {
                     "value": value,
                     "type": raw_json["type"],
@@ -500,7 +502,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                         "tags": client.tags,
                         "recordedfutureriskscore": risk,
                         "recordedfutureriskrulecount": raw_json["RiskString"],
-                        "recordedfuturethreatassessment": raw_json["Criticality Label"]
+                        "recordedfuturethreatassessment": criticality_label
                     },
                     "score": score,
                 }
