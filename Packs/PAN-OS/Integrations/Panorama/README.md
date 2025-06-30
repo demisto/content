@@ -9833,3 +9833,66 @@ There are no input arguments for this command.
 >| Auto-renew master key | Encrypted on HSM | Remind at | Expire at |
 >| --- | --- | --- | --- |
 >| 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |
+
+### pan-os-get-certificate-info
+
+***
+Gathers the name, expiration date, and expiration status of certificates configured locally on a Firewall or pushed from Panorama, as seen under Certificate Management.
+
+#### Base Command
+
+`pan-os-get-certificate-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| show_expired_only | Show only expired certificates. | Optional |
+
+#### Command example
+
+```!pan-os-get-certificate-info show_expired_only=true```
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Certificate.name | String | Name of the certificate. |
+| Panorama.Certificate.device | String | Device where this certificate was found. |
+| Panorama.Certificate.subject | String | Subject of the certificate. |
+| Panorama.Certificate.expiration_date | String | Expiration date of the certificate. |
+| Panorama.Certificate.expiration_status | String | Status of certificate - Expired, Expiring in 30 days, Expiring in 60 days, Expiring in 90 days or Valid. |
+| Panorama.Certificate.location | String | Where this certificate was configured - Firewall or Panorama. |
+| Panorama.Certificate.cert_type | String | Whether this certificate was pushed from Panorama, Local to Firewall, or Predefined on Panorama or a Firewall. |
+| Panorama.Certificate.devices_using_certificate | Unknown | List of devices using this certificate if it was pushed from Panorama. |
+
+#### Context Example
+
+```json
+{
+    "Panorama": {
+        "Certificate": [
+            {
+                "name": "ACME Root CA",
+                "device": "panorama.test",
+                "subject": "/CN=acme-root-ca.acme.com",
+                "expiration_date": "May  9 16:35:16 2026 GMT",
+                "expiration_status": "Valid",
+                "location": "Panorama",
+                "cert_type": "Pushed",
+                "devices_using_certificate": [
+                                                "111111111111111"
+                                            ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Certificates Information
+>
+>| name | device | subject | expiration_date | expiration_status | location | cert_type | devices_using_certificate |
+>| --- | --- | --- | --- | --- | --- | --- | --- |
+>| ACME Root CA | panorama.test | /CN=acme-root-ca.acme.com | May  9 16:35:16 2026 GMT | Valid | Panorama | Pushed | 111111111111111 |
