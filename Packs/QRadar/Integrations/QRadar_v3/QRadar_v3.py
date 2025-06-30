@@ -4,6 +4,8 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
+from deepmerge import always_merger
+
 
 import pytz
 import urllib3
@@ -1139,7 +1141,7 @@ def get_remote_events(
 
     elif offense_id in offenses_queried:
         search_id = offenses_queried[offense_id]
-        events, status = poll_offense_events(client, search_id, True, int(offense_id))
+        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
         if status == QueryStatus.SUCCESS.value:
             del offenses_queried[offense_id]
             changed_ids_ctx.append(offense_id)
@@ -1217,14 +1219,9 @@ def insert_to_updated_context(
 
 def deep_merge_context_changes(current_ctx: dict, changes: dict) -> None:
     """
-    Recursively merges 'changes' into 'current_ctx'.
-    If a value is a dict, merges sub-keys. Otherwise overwrites.
+    Recursively merges 'changes' into 'current_ctx' using the deepmerge package.
     """
-    for k, v in changes.items():
-        if isinstance(v, dict) and isinstance(current_ctx.get(k), dict):
-            deep_merge_context_changes(current_ctx[k], v)
-        else:
-            current_ctx[k] = v
+    always_merger.merge(current_ctx, changes)
 
 
 def safely_update_context_data_partial(changes: dict, attempts=5) -> None:
@@ -1239,6 +1236,7 @@ def safely_update_context_data_partial(changes: dict, attempts=5) -> None:
         deep_merge_context_changes(merged, changes)
 
         try:
+            demisto.debug(f"Merging partial data to context {merged}")
             set_integration_context(merged, version=version)
             return  # success
         except Exception as e:
@@ -4263,11 +4261,11 @@ def add_modified_remote_offenses(
         partial_changes[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = mirrored_offenses_queries
         partial_changes[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = finished_offenses_queue
 
-    # Do final logging for debugging if desired
-    print_context_data_stats(context_data, "Get Modified Remote Data - After update")
-
     # Now safely merge these partial changes.
     safely_update_context_data_partial(partial_changes)
+
+    # Do final logging for debugging if desired
+    print_context_data_stats(context_data, "Get Modified Remote Data - After update")
 
     return new_modified_records_ids
 
