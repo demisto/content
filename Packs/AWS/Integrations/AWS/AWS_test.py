@@ -27,7 +27,7 @@ def test_arg_to_bool_or_none_with_string():
     """
     from AWS import arg_to_bool_or_none
 
-    result = arg_to_bool_or_none('true')
+    result = arg_to_bool_or_none("true")
     assert result is True
 
 
@@ -92,15 +92,9 @@ def test_s3_put_public_access_block_command_success(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.put_public_access_block.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_public_access_block.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "bucket": "test-bucket",
-        "block_public_acls": "true",
-        "ignore_public_acls": "false"
-    }
+    args = {"bucket": "test-bucket", "block_public_acls": "true", "ignore_public_acls": "false"}
 
     result = S3.put_public_access_block_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -116,14 +110,9 @@ def test_s3_put_public_access_block_command_failure(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.put_public_access_block.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
-    }
+    mock_client.put_public_access_block.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
 
-    args = {
-        "bucket": "test-bucket",
-        "block_public_acls": "true"
-    }
+    args = {"bucket": "test-bucket", "block_public_acls": "true"}
 
     result = S3.put_public_access_block_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -139,15 +128,9 @@ def test_s3_put_bucket_versioning_command_success(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.put_bucket_versioning.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_bucket_versioning.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "bucket": "test-bucket",
-        "status": "Enabled",
-        "mfa_delete": "Disabled"
-    }
+    args = {"bucket": "test-bucket", "status": "Enabled", "mfa_delete": "Disabled"}
 
     result = S3.put_bucket_versioning_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -165,10 +148,7 @@ def test_s3_put_bucket_versioning_command_exception(mocker):
     mock_client = mocker.Mock()
     mock_client.put_bucket_versioning.side_effect = Exception("Test error")
 
-    args = {
-        "bucket": "test-bucket",
-        "status": "Enabled"
-    }
+    args = {"bucket": "test-bucket", "status": "Enabled"}
 
     result = S3.put_bucket_versioning_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -184,15 +164,9 @@ def test_s3_put_bucket_logging_command_enable_logging(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.put_bucket_logging.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_bucket_logging.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "bucket": "test-bucket",
-        "target_bucket": "log-bucket",
-        "target_prefix": "logs/"
-    }
+    args = {"bucket": "test-bucket", "target_bucket": "log-bucket", "target_prefix": "logs/"}
 
     result = S3.put_bucket_logging_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -208,9 +182,7 @@ def test_s3_put_bucket_logging_command_disable_logging(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.put_bucket_logging.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_bucket_logging.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
     args = {"bucket": "test-bucket"}
 
@@ -228,14 +200,9 @@ def test_s3_put_bucket_acl_command_success(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.put_bucket_acl.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_bucket_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "bucket": "test-bucket",
-        "acl": "private"
-    }
+    args = {"bucket": "test-bucket", "acl": "private"}
 
     result = S3.put_bucket_acl_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -251,14 +218,9 @@ def test_s3_put_bucket_acl_command_unexpected_status(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.put_bucket_acl.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
-    }
+    mock_client.put_bucket_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
 
-    args = {
-        "bucket": "test-bucket",
-        "acl": "private"
-    }
+    args = {"bucket": "test-bucket", "acl": "private"}
 
     result = S3.put_bucket_acl_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -274,14 +236,9 @@ def test_s3_put_bucket_policy_command_success(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.put_bucket_policy.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "bucket": "test-bucket",
-        "policy": {"Version": "2012-10-17", "Statement": []}
-    }
+    args = {"bucket": "test-bucket", "policy": {"Version": "2012-10-17", "Statement": []}}
 
     result = S3.put_bucket_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -299,10 +256,7 @@ def test_s3_put_bucket_policy_command_exception(mocker):
     mock_client = mocker.Mock()
     mock_client.put_bucket_policy.side_effect = Exception("Test error")
 
-    args = {
-        "bucket": "test-bucket",
-        "policy": {"Version": "2012-10-17"}
-    }
+    args = {"bucket": "test-bucket", "policy": {"Version": "2012-10-17"}}
 
     result = S3.put_bucket_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -319,10 +273,7 @@ def test_iam_get_account_password_policy_command_success(mocker):
 
     mock_client = mocker.Mock()
     mock_client.get_account_password_policy.return_value = {
-        "PasswordPolicy": {
-            "MinimumPasswordLength": 8,
-            "RequireSymbols": True
-        }
+        "PasswordPolicy": {"MinimumPasswordLength": 8, "RequireSymbols": True}
     }
 
     args = {"account_id": "123456789"}
@@ -342,10 +293,7 @@ def test_iam_get_account_password_policy_command_with_datetime(mocker):
 
     mock_client = mocker.Mock()
     mock_client.get_account_password_policy.return_value = {
-        "PasswordPolicy": {
-            "MinimumPasswordLength": 8,
-            "CreatedDate": datetime(2023, 10, 15)
-        }
+        "PasswordPolicy": {"MinimumPasswordLength": 8, "CreatedDate": datetime(2023, 10, 15)}
     }
 
     args = {"account_id": "123456789"}
@@ -364,18 +312,10 @@ def test_iam_update_account_password_policy_command_success(mocker):
     from AWS import IAM
 
     mock_client = mocker.Mock()
-    mock_client.get_account_password_policy.return_value = {
-        "PasswordPolicy": {"MinimumPasswordLength": 6}
-    }
-    mock_client.update_account_password_policy.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.get_account_password_policy.return_value = {"PasswordPolicy": {"MinimumPasswordLength": 6}}
+    mock_client.update_account_password_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "account_id": "123456789",
-        "minimum_password_length": "8",
-        "require_symbols": "true"
-    }
+    args = {"account_id": "123456789", "minimum_password_length": "8", "require_symbols": "true"}
 
     result = IAM.update_account_password_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -409,15 +349,9 @@ def test_iam_put_role_policy_command_success(mocker):
     from AWS import IAM
 
     mock_client = mocker.Mock()
-    mock_client.put_user_policy.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_user_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "policy_document": '{"Version": "2012-10-17"}',
-        "policy_name": "test-policy",
-        "role_name": "test-role"
-    }
+    args = {"policy_document": '{"Version": "2012-10-17"}', "policy_name": "test-policy", "role_name": "test-role"}
 
     result = IAM.put_role_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -435,11 +369,7 @@ def test_iam_put_role_policy_command_exception(mocker):
     mock_client = mocker.Mock()
     mock_client.put_user_policy.side_effect = Exception("Access denied")
 
-    args = {
-        "policy_document": '{"Version": "2012-10-17"}',
-        "policy_name": "test-policy",
-        "role_name": "test-role"
-    }
+    args = {"policy_document": '{"Version": "2012-10-17"}', "policy_name": "test-policy", "role_name": "test-role"}
 
     with pytest.raises(DemistoException):
         IAM.put_role_policy_command(mock_client, args)
@@ -454,9 +384,7 @@ def test_iam_delete_login_profile_command_success(mocker):
     from AWS import IAM
 
     mock_client = mocker.Mock()
-    mock_client.delete_login_profile.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.delete_login_profile.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
     args = {"user_name": "test-user"}
 
@@ -492,15 +420,9 @@ def test_iam_put_user_policy_command_success(mocker):
     from AWS import IAM
 
     mock_client = mocker.Mock()
-    mock_client.put_user_policy.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_user_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "user_name": "test-user",
-        "policy_name": "test-policy",
-        "policy_document": '{"Version": "2012-10-17"}'
-    }
+    args = {"user_name": "test-user", "policy_name": "test-policy", "policy_document": '{"Version": "2012-10-17"}'}
 
     result = IAM.put_user_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -516,15 +438,9 @@ def test_iam_put_user_policy_command_with_dict_policy(mocker):
     from AWS import IAM
 
     mock_client = mocker.Mock()
-    mock_client.put_user_policy.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_user_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "user_name": "test-user",
-        "policy_name": "test-policy",
-        "policy_document": {"Version": "2012-10-17"}
-    }
+    args = {"user_name": "test-user", "policy_name": "test-policy", "policy_document": {"Version": "2012-10-17"}}
 
     result = IAM.put_user_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -540,14 +456,9 @@ def test_iam_remove_role_from_instance_profile_command_success(mocker):
     from AWS import IAM
 
     mock_client = mocker.Mock()
-    mock_client.remove_role_from_instance_profile.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.remove_role_from_instance_profile.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "instance_profile_name": "test-profile",
-        "role_name": "test-role"
-    }
+    args = {"instance_profile_name": "test-profile", "role_name": "test-role"}
 
     result = IAM.remove_role_from_instance_profile_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -565,10 +476,7 @@ def test_iam_remove_role_from_instance_profile_command_exception(mocker):
     mock_client = mocker.Mock()
     mock_client.remove_role_from_instance_profile.side_effect = Exception("Profile not found")
 
-    args = {
-        "instance_profile_name": "test-profile",
-        "role_name": "test-role"
-    }
+    args = {"instance_profile_name": "test-profile", "role_name": "test-role"}
 
     result = IAM.remove_role_from_instance_profile_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -584,15 +492,9 @@ def test_iam_update_access_key_command_success(mocker):
     from AWS import IAM
 
     mock_client = mocker.Mock()
-    mock_client.update_access_key.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.update_access_key.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "access_key_id": "AKIATEST123",
-        "status": "Inactive",
-        "user_name": "test-user"
-    }
+    args = {"access_key_id": "AKIATEST123", "status": "Inactive", "user_name": "test-user"}
 
     result = IAM.update_access_key_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -608,14 +510,9 @@ def test_iam_update_access_key_command_without_user(mocker):
     from AWS import IAM
 
     mock_client = mocker.Mock()
-    mock_client.update_access_key.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.update_access_key.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "access_key_id": "AKIATEST123",
-        "status": "Active"
-    }
+    args = {"access_key_id": "AKIATEST123", "status": "Active"}
 
     result = IAM.update_access_key_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -631,15 +528,9 @@ def test_ec2_modify_instance_metadata_options_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_instance_metadata_options.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.modify_instance_metadata_options.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "instance_id": "i-1234567890abcdef0",
-        "http_tokens": "required",
-        "http_endpoint": "enabled"
-    }
+    args = {"instance_id": "i-1234567890abcdef0", "http_tokens": "required", "http_endpoint": "enabled"}
 
     result = EC2.modify_instance_metadata_options_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -655,14 +546,9 @@ def test_ec2_modify_instance_metadata_options_command_failure(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_instance_metadata_options.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
-    }
+    mock_client.modify_instance_metadata_options.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
 
-    args = {
-        "instance_id": "i-1234567890abcdef0",
-        "http_tokens": "required"
-    }
+    args = {"instance_id": "i-1234567890abcdef0", "http_tokens": "required"}
 
     result = EC2.modify_instance_metadata_options_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -678,15 +564,9 @@ def test_ec2_modify_instance_attribute_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_instance_attribute.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.modify_instance_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "instance_id": "i-1234567890abcdef0",
-        "attribute": "instanceType",
-        "value": "t3.micro"
-    }
+    args = {"instance_id": "i-1234567890abcdef0", "attribute": "instanceType", "value": "t3.micro"}
 
     result = EC2.modify_instance_attribute_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -702,14 +582,9 @@ def test_ec2_modify_instance_attribute_command_with_groups(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_instance_attribute.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.modify_instance_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "instance_id": "i-1234567890abcdef0",
-        "groups": "sg-123, sg-456, sg-789"
-    }
+    args = {"instance_id": "i-1234567890abcdef0", "groups": "sg-123, sg-456, sg-789"}
 
     result = EC2.modify_instance_attribute_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -725,15 +600,13 @@ def test_ec2_modify_snapshot_attribute_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_snapshot_attribute.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.modify_snapshot_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
     args = {
         "snapshot_id": "snap-1234567890abcdef0",
         "attribute": "createVolumePermission",
         "operation_type": "add",
-        "user_ids": "123456789012, 987654321098"
+        "user_ids": "123456789012, 987654321098",
     }
 
     result = EC2.modify_snapshot_attribute_command(mock_client, args)
@@ -750,15 +623,9 @@ def test_ec2_modify_snapshot_attribute_command_unexpected_response(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_snapshot_attribute.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
-    }
+    mock_client.modify_snapshot_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
 
-    args = {
-        "snapshot_id": "snap-1234567890abcdef0",
-        "attribute": "createVolumePermission",
-        "operation_type": "add"
-    }
+    args = {"snapshot_id": "snap-1234567890abcdef0", "attribute": "createVolumePermission", "operation_type": "add"}
 
     with pytest.raises(DemistoException):
         EC2.modify_snapshot_attribute_command(mock_client, args)
@@ -773,15 +640,13 @@ def test_ec2_modify_image_attribute_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_image_attribute.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.modify_image_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
     args = {
         "image_id": "ami-1234567890abcdef0",
         "attribute": "launchPermission",
         "operation_type": "add",
-        "launch_permission_add_user_id": "123456789012"
+        "launch_permission_add_user_id": "123456789012",
     }
 
     result = EC2.modify_image_attribute_command(mock_client, args)
@@ -798,15 +663,9 @@ def test_ec2_modify_image_attribute_command_with_description(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_image_attribute.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.modify_image_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "image_id": "ami-1234567890abcdef0",
-        "attribute": "description",
-        "description": "Updated AMI description"
-    }
+    args = {"image_id": "ami-1234567890abcdef0", "attribute": "description", "description": "Updated AMI description"}
 
     result = EC2.modify_image_attribute_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -824,15 +683,10 @@ def test_ec2_revoke_security_group_ingress_command_success(mocker):
     mock_client = mocker.Mock()
     mock_client.revoke_security_group_ingress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "Return": True
+        "Return": True,
     }
 
-    args = {
-        "group_id": "sg-1234567890abcdef0",
-        "protocol": "tcp",
-        "port": "80",
-        "cidr": "0.0.0.0/0"
-    }
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "port": "80", "cidr": "0.0.0.0/0"}
 
     result = EC2.revoke_security_group_ingress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -850,20 +704,12 @@ def test_ec2_revoke_security_group_ingress_command_with_ip_permissions(mocker):
     mock_client = mocker.Mock()
     mock_client.revoke_security_group_ingress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "Return": True
+        "Return": True,
     }
 
-    ip_permissions = json.dumps([{
-        "IpProtocol": "tcp",
-        "FromPort": 80,
-        "ToPort": 80,
-        "IpRanges": [{"CidrIp": "0.0.0.0/0"}]
-    }])
+    ip_permissions = json.dumps([{"IpProtocol": "tcp", "FromPort": 80, "ToPort": 80, "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}])
 
-    args = {
-        "group_id": "sg-1234567890abcdef0",
-        "ip_permissions": ip_permissions
-    }
+    args = {"group_id": "sg-1234567890abcdef0", "ip_permissions": ip_permissions}
 
     result = EC2.revoke_security_group_ingress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -881,15 +727,10 @@ def test_ec2_authorize_security_group_ingress_command_success(mocker):
     mock_client = mocker.Mock()
     mock_client.authorize_security_group_ingress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "Return": True
+        "Return": True,
     }
 
-    args = {
-        "group_id": "sg-1234567890abcdef0",
-        "protocol": "tcp",
-        "port": "443",
-        "cidr": "10.0.0.0/8"
-    }
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "port": "443", "cidr": "10.0.0.0/8"}
 
     result = EC2.authorize_security_group_ingress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -907,12 +748,7 @@ def test_ec2_authorize_security_group_ingress_command_duplicate_rule(mocker):
     mock_client = mocker.Mock()
     mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidPermission.Duplicate")
 
-    args = {
-        "group_id": "sg-1234567890abcdef0",
-        "protocol": "tcp",
-        "port": "80",
-        "cidr": "0.0.0.0/0"
-    }
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "port": "80", "cidr": "0.0.0.0/0"}
 
     with pytest.raises(DemistoException, match="already exists"):
         EC2.authorize_security_group_ingress_command(mock_client, args)
@@ -929,15 +765,10 @@ def test_ec2_revoke_security_group_egress_command_success(mocker):
     mock_client = mocker.Mock()
     mock_client.revoke_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "Return": True
+        "Return": True,
     }
 
-    args = {
-        "group_id": "sg-1234567890abcdef0",
-        "protocol": "tcp",
-        "port": "80-443",
-        "cidr": "0.0.0.0/0"
-    }
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "port": "80-443", "cidr": "0.0.0.0/0"}
 
     result = EC2.revoke_security_group_egress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -955,20 +786,12 @@ def test_ec2_revoke_security_group_egress_command_with_ip_permissions(mocker):
     mock_client = mocker.Mock()
     mock_client.revoke_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "Return": True
+        "Return": True,
     }
 
-    ip_permissions = json.dumps([{
-        "IpProtocol": "tcp",
-        "FromPort": 80,
-        "ToPort": 80,
-        "IpRanges": [{"CidrIp": "0.0.0.0/0"}]
-    }])
+    ip_permissions = json.dumps([{"IpProtocol": "tcp", "FromPort": 80, "ToPort": 80, "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}])
 
-    args = {
-        "group_id": "sg-1234567890abcdef0",
-        "ip_permissions": ip_permissions
-    }
+    args = {"group_id": "sg-1234567890abcdef0", "ip_permissions": ip_permissions}
 
     result = EC2.revoke_security_group_egress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -989,14 +812,11 @@ def test_eks_update_cluster_config_command_success(mocker):
             "id": "update-123",
             "status": "InProgress",
             "type": "ConfigUpdate",
-            "createdAt": datetime(2023, 10, 15, 14, 30, 45)
+            "createdAt": datetime(2023, 10, 15, 14, 30, 45),
         }
     }
 
-    args = {
-        "cluster_name": "test-cluster",
-        "logging": '{"enable": ["api", "audit"]}'
-    }
+    args = {"cluster_name": "test-cluster", "logging": '{"enable": ["api", "audit"]}'}
 
     result = EKS.update_cluster_config_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1014,10 +834,7 @@ def test_eks_update_cluster_config_command_no_changes_needed(mocker):
     mock_client = mocker.Mock()
     mock_client.update_cluster_config.side_effect = Exception("No changes needed")
 
-    args = {
-        "cluster_name": "test-cluster",
-        "logging": '{"enable": ["api"]}'
-    }
+    args = {"cluster_name": "test-cluster", "logging": '{"enable": ["api"]}'}
 
     result = EKS.update_cluster_config_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1035,16 +852,10 @@ def test_rds_modify_db_cluster_command_success(mocker):
     mock_client = mocker.Mock()
     mock_client.modify_db_cluster.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "DBCluster": {
-            "DBClusterIdentifier": "test-cluster",
-            "DeletionProtection": True
-        }
+        "DBCluster": {"DBClusterIdentifier": "test-cluster", "DeletionProtection": True},
     }
 
-    args = {
-        "db_cluster_identifier": "test-cluster",
-        "deletion_protection": "true"
-    }
+    args = {"db_cluster_identifier": "test-cluster", "deletion_protection": "true"}
 
     result = RDS.modify_db_cluster_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1062,10 +873,7 @@ def test_rds_modify_db_cluster_command_exception(mocker):
     mock_client = mocker.Mock()
     mock_client.modify_db_cluster.side_effect = Exception("Cluster not found")
 
-    args = {
-        "db_cluster_identifier": "test-cluster",
-        "deletion_protection": "true"
-    }
+    args = {"db_cluster_identifier": "test-cluster", "deletion_protection": "true"}
 
     result = RDS.modify_db_cluster_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1083,17 +891,10 @@ def test_rds_modify_db_cluster_snapshot_attribute_command_success(mocker):
     mock_client = mocker.Mock()
     mock_client.modify_db_cluster_snapshot_attribute.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "DBClusterSnapshotAttributesResult": {
-            "DBClusterSnapshotIdentifier": "test-snapshot",
-            "DBClusterSnapshotAttributes": []
-        }
+        "DBClusterSnapshotAttributesResult": {"DBClusterSnapshotIdentifier": "test-snapshot", "DBClusterSnapshotAttributes": []},
     }
 
-    args = {
-        "db_cluster_snapshot_identifier": "test-snapshot",
-        "attribute_name": "restore",
-        "values_to_add": ["123456789012"]
-    }
+    args = {"db_cluster_snapshot_identifier": "test-snapshot", "attribute_name": "restore", "values_to_add": ["123456789012"]}
 
     result = RDS.modify_db_cluster_snapshot_attribute_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1113,10 +914,7 @@ def test_rds_modify_db_cluster_snapshot_attribute_command_failure(mocker):
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
     }
 
-    args = {
-        "db_cluster_snapshot_identifier": "test-snapshot",
-        "attribute_name": "restore"
-    }
+    args = {"db_cluster_snapshot_identifier": "test-snapshot", "attribute_name": "restore"}
 
     result = RDS.modify_db_cluster_snapshot_attribute_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1134,17 +932,10 @@ def test_rds_modify_db_instance_command_success(mocker):
     mock_client = mocker.Mock()
     mock_client.modify_db_instance.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "DBInstance": {
-            "DBInstanceIdentifier": "test-instance",
-            "MultiAZ": True
-        }
+        "DBInstance": {"DBInstanceIdentifier": "test-instance", "MultiAZ": True},
     }
 
-    args = {
-        "db_instance_identifier": "test-instance",
-        "multi_az": "true",
-        "apply_immediately": "true"
-    }
+    args = {"db_instance_identifier": "test-instance", "multi_az": "true", "apply_immediately": "true"}
 
     result = RDS.modify_db_instance_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1162,10 +953,7 @@ def test_rds_modify_db_instance_command_exception(mocker):
     mock_client = mocker.Mock()
     mock_client.modify_db_instance.side_effect = Exception("Instance not found")
 
-    args = {
-        "db_instance_identifier": "test-instance",
-        "multi_az": "true"
-    }
+    args = {"db_instance_identifier": "test-instance", "multi_az": "true"}
 
     result = RDS.modify_db_instance_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1181,14 +969,12 @@ def test_rds_modify_db_snapshot_attribute_command_success(mocker):
     from AWS import RDS
 
     mock_client = mocker.Mock()
-    mock_client.modify_db_snapshot_attribute.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.modify_db_snapshot_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
     args = {
         "db_snapshot_identifier": "test-snapshot",
         "attribute_name": "restore",
-        "values_to_add": ["123456789012", "987654321098"]
+        "values_to_add": ["123456789012", "987654321098"],
     }
 
     result = RDS.modify_db_snapshot_attribute_command(mock_client, args)
@@ -1205,15 +991,9 @@ def test_rds_modify_db_snapshot_attribute_command_failure(mocker):
     from AWS import RDS
 
     mock_client = mocker.Mock()
-    mock_client.modify_db_snapshot_attribute.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
-    }
+    mock_client.modify_db_snapshot_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
 
-    args = {
-        "db_snapshot_identifier": "test-snapshot",
-        "attribute_name": "restore",
-        "values_to_remove": ["123456789012"]
-    }
+    args = {"db_snapshot_identifier": "test-snapshot", "attribute_name": "restore", "values_to_remove": ["123456789012"]}
 
     result = RDS.modify_db_snapshot_attribute_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1229,9 +1009,7 @@ def test_cloudtrail_start_logging_command_success(mocker):
     from AWS import CloudTrail
 
     mock_client = mocker.Mock()
-    mock_client.start_logging.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.start_logging.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
     args = {"name": "test-trail"}
 
@@ -1272,15 +1050,11 @@ def test_cloudtrail_update_trail_command_success(mocker):
         "Trail": {
             "Name": "test-trail",
             "S3BucketName": "test-bucket",
-            "TrailARN": "arn:aws:cloudtrail:us-east-1:123456789012:trail/test-trail"
-        }
+            "TrailARN": "arn:aws:cloudtrail:us-east-1:123456789012:trail/test-trail",
+        },
     }
 
-    args = {
-        "name": "test-trail",
-        "s3_bucket_name": "test-bucket",
-        "include_global_service_events": "true"
-    }
+    args = {"name": "test-trail", "s3_bucket_name": "test-bucket", "include_global_service_events": "true"}
 
     result = CloudTrail.update_trail_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1299,10 +1073,7 @@ def test_cloudtrail_update_trail_command_exception(mocker):
     mock_client = mocker.Mock()
     mock_client.update_trail.side_effect = Exception("Access denied")
 
-    args = {
-        "name": "test-trail",
-        "s3_bucket_name": "test-bucket"
-    }
+    args = {"name": "test-trail", "s3_bucket_name": "test-bucket"}
 
     result = CloudTrail.update_trail_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1345,7 +1116,7 @@ def test_register_proxydome_header(mocker):
     mock_event_system = mocker.Mock()
     mock_client.meta.events = mock_event_system
 
-    mocker.patch('AWS.get_proxydome_token', return_value='test-token')
+    mocker.patch("AWS.get_proxydome_token", return_value="test-token")
 
     register_proxydome_header(mock_client)
 
@@ -1365,7 +1136,7 @@ def test_register_proxydome_header_adds_correct_header(mocker):
     mock_event_system = mocker.Mock()
     mock_client.meta.events = mock_event_system
 
-    mocker.patch('AWS.get_proxydome_token', return_value='test-token-123')
+    mocker.patch("AWS.get_proxydome_token", return_value="test-token-123")
 
     register_proxydome_header(mock_client)
 
@@ -1378,6 +1149,7 @@ def test_register_proxydome_header_adds_correct_header(mocker):
     header_function(mock_request)
 
     assert mock_request.headers["x-caller-id"] == "test-token-123"
+
 
 def test_execute_aws_command_success(mocker):
     """
@@ -1392,12 +1164,10 @@ def test_execute_aws_command_success(mocker):
     mock_client = mocker.Mock()
 
     # Mock the client's response with the expected structure
-    mock_client.put_public_access_block.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
-    }
+    mock_client.put_public_access_block.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    mocker.patch('AWS.get_cloud_credentials', return_value=mock_credentials)
-    mocker.patch('AWS.get_service_client', return_value=mock_client)
+    mocker.patch("AWS.get_cloud_credentials", return_value=mock_credentials)
+    mocker.patch("AWS.get_service_client", return_value=mock_client)
 
     command = "aws-s3-public-access-block-put"
     args = {"account_id": "123456789012", "bucket": "test-bucket"}
@@ -1436,12 +1206,12 @@ def test_execute_aws_command_with_account_id(mocker):
             "ExpirePasswords": False,
             "MaxPasswordAge": 90,
             "PasswordReusePrevention": 3,
-            "HardExpiry": False
+            "HardExpiry": False,
         }
     }
 
-    mocker.patch('AWS.get_cloud_credentials', return_value=mock_credentials)
-    mocker.patch('AWS.get_service_client', return_value=mock_client)
+    mocker.patch("AWS.get_cloud_credentials", return_value=mock_credentials)
+    mocker.patch("AWS.get_service_client", return_value=mock_client)
 
     command = "aws-iam-account-password-policy-get"
     args = {"account_id": "987654321098"}
@@ -1457,7 +1227,3 @@ def test_execute_aws_command_with_account_id(mocker):
 
     # Verify the mock was called correctly
     mock_client.get_account_password_policy.assert_called_once()
-
-
-
-

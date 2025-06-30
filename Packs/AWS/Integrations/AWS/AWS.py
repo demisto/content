@@ -32,6 +32,8 @@ def arg_to_bool_or_none(value):
         return None
     else:
         return argToBoolean(value)
+
+
 # <<
 
 
