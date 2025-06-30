@@ -1261,7 +1261,8 @@ def _get_error_result(client: Client, ioc_id: str, ioc_type: str, message: str) 
     )
     options: dict[str, Common.DBotScore | str] = {"dbot_score": dbot}
     if dbot_type == "FILE":
-        options[get_hash_type(ioc_id)] = ioc_id
+        if (hash_type := get_hash_type(ioc_id)) != "Unknown":
+            options[hash_type] = ioc_id
     else:
         options[dbot_type.lower()] = ioc_id
     return CommandResults(indicator=getattr(Common, common_type)(**options), readable_output=desc)
