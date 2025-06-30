@@ -6,9 +6,44 @@ from CommonServerPython import *  # noqa: F401
 from docx import Document
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.opc.exceptions import PackageNotFoundError
+from docx.document import Document as DocumentObject
+
+import subprocess
+from tempfile import TemporaryDirectory
+from pathlib import Path
+
+def convert_to_docx(doc_path, output_dir):
+    """Convert a document to ".docx". Used for old files that can't be parsed conventionally."""
+    command = [
+        'soffice',
+        '--headless',
+        '--convert-to', 'docx',
+        '--outdir', output_dir,
+        doc_path
+    ]
+
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    demisto.debug(f"LibreOffice stdout: {result.stdout.strip()!r}, stderr: {result.stderr.strip()}")
 
 
-def extract_urls_xml(file_path):
+def get_document_urls(file_path: str) -> tuple[DocumentObject, list[str]]:
+    try:
+        document = Document(file_path)
+        return document, extract_urls_xml(file_path) + extract_urls_docx(document)
+    except Exception as e:
+        if "themeManager+xm1" in str(e):
+            demisto.debug(f'Unable to parse doc: "{e}". Retrying with LibreOffice')
+            with TemporaryDirectory() as d:
+                convert_to_docx(file_path, d)
+                file_path = str(Path(d) / replace_suffix(file_path, 'docx'))
+                document = Document(file_path)
+                return document, extract_urls_xml(file_path) + extract_urls_docx(document)
+        else:
+            raise
+
+
+def extract_urls_xml(file_path: str) -> list[str]:
     urls = []
     document = zipfile.ZipFile(file_path)
     xml_content = document.read("word/document.xml")
@@ -22,7 +57,7 @@ def extract_urls_xml(file_path):
     return urls
 
 
-def extract_urls_docx(document):
+def extract_urls_docx(document: DocumentObject) -> list[str]:
     urls = []
     rels = document.part.rels
     for rel in rels.values():
@@ -31,28 +66,28 @@ def extract_urls_docx(document):
     return urls
 
 
+def replace_suffix(file_name: str, new_suffix: str) -> str:
+    return f"{file_name.partition('.')[0]}.{new_suffix}"
+
+
 def parse_word_doc(entry_id):
-    res = []
-    errEntry = {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": ""}
 
     try:
         cmd_res = demisto.getFilePath(entry_id)
-        file_path = cmd_res.get("path")
-        document = Document(file_path)
-        file_data = "\n".join([para.text for para in document.paragraphs])
-
-        urls = extract_urls_xml(file_path) + extract_urls_docx(document)
-        file_data = file_data + "\n\n\nExtracted links:\n* " + "\n* ".join(list(urls))
-
-        file_name = cmd_res.get("name")
-        output_file_name = file_name[0 : file_name.rfind(".")] + ".txt"
-        res = fileResult(output_file_name, file_data.encode("utf8"))
+        file_path = cast(str, cmd_res.get("path"))
+        demisto.debug(f'{file_path=}')
+        document, urls = get_document_urls(file_path)
     except PackageNotFoundError:
-        errEntry["Contents"] = "Input file is not a valid docx/doc file."
-        demisto.results(errEntry)
+        return_error("Input file is not a valid docx/doc file.")
     except BaseException as e:
-        errEntry["Contents"] = "Error occurred while parsing input file.\nException info: " + str(e)
-        demisto.results(errEntry)
+        return_error(f"Error occurred while parsing input file.\nException info: {e}")
+
+    file_data = (
+        "\n".join(para.text for para in document.paragraphs)
+        + "\n\n\nExtracted links:\n* "
+        + "\n* ".join(urls))
+    file_name = replace_suffix(cmd_res['name'], "txt")
+    res = fileResult(file_name, file_data.encode("utf8"))
 
     demisto.results(res)
 
