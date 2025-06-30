@@ -1228,33 +1228,24 @@ script:
       auto: PREDEFINED
       prettypredefined:
         Issue Internet message ID: ${issue.xdmemailmessageid}
-    # - name: exchange_location
-    #   prettyname: Exchange Location
-    #   description: Comma-separated list of mailboxes or groups. Use "All" to target everyone (may be slow).
-    #   isArray: true
-    #   defaultValue: 'All'
-    #   auto: PREDEFINED
-    #   prettypredefined:
-    #     All: 'All'
-    # - name: force
-    #   prettyname: Force
-    #   description: If true, creates a new search even if one already exists.
-    #   defaultValue: 'false'
-    #   auto: PREDEFINED
-    #   predefined:
-    #   - 'false'
-    #   - 'true'
-    # - name: polling_first_run
-    #   description: For polling use.
-    #   defaultValue: true
-    #   hidden: true
-    # - name: search_name
-    #   description: For polling use.
-    #   hidden: true
+    - name: exchange_location
+      prettyname: Exchange Location
+      description: Comma-separated list of mailboxes or groups. Use "All" to target everyone (may be slow).
+      isArray: true
+      defaultValue: 'All'
+      auto: PREDEFINED
+      prettypredefined:
+        All: 'All'
+    - name: force
+      prettyname: Force
+      description: If true, creates a new search even if one already exists.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
     outputs:
-    - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
-      description: Case hold policy name.
-      type: String
+
   dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
   runonce: true
   script: ''

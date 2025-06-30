@@ -2009,6 +2009,14 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
+function Get-ShortHash($inputString, $length = 12) {
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($inputString)
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    $hashBytes = $sha256.ComputeHash($bytes)
+    $hashString = -join ($hashBytes | ForEach-Object { $_.ToString("x2") })
+    return $hashString.Substring(0, $length)
+}
+
 function SearchAndRecoveryEmailCommand {
     param (
         [SecurityAndComplianceClient]$client,
@@ -2019,7 +2027,16 @@ function SearchAndRecoveryEmailCommand {
     $Demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
 
     $internet_message_id = $kwargs.internet_message_id
-    $search_name = $internet_message_id -replace '[<>]', ''
+    $exchange_location = ArgToList $kwargs.exchange_location
+    $force = ConvertTo-Boolean $kwargs.force
+
+    $baseName = $internet_message_id -replace '[<>]', ''
+    if ($kwargs.exchange_location -ne "All") {
+        $joined = $exchange_location -join ","
+        $search_name = $baseName + ":" + (Get-ShortHash $joined)
+    } else {
+        $search_name = $baseName
+    }
     $search_action_name = "${search_name}_Preview"
     $entry_context = @{}
     $polling_args = $kwargs
@@ -2027,52 +2044,51 @@ function SearchAndRecoveryEmailCommand {
     $search = $client.GetSearch($search_name)
     if (-not $search) {
         $Demisto.results("Search not found. Creating new search: $search_name")
-    $kql = "internetMessageId:`"$internet_message_id`""
+        $kql = "internetMessageId:`"$internet_message_id`""
         $description = "Restore email by internetMessageId"
-        $exchange_location = @("All")
 
         $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), $null)
-            $client.StartSearch($search_name)
+        $client.StartSearch($search_name)
         $Demisto.results("Search created and started: $search_name")
 
-            return "$script:INTEGRATION_NAME - New search created and started.", $entry_context, $search, $polling_args
+        return "$script:INTEGRATION_NAME - New search created and started.", $entry_context, $search, $polling_args
     }
 
     $Demisto.results("Found existing search: $search_name with status $($search.Status)")
 
     switch ($search.Status) {
-            "NotStarted" {
+        "NotStarted" {
             $Demisto.results("Search not started. Starting now.")
-                    $client.StartSearch($search_name)
+            $client.StartSearch($search_name)
             return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
-            }
-            "Starting" {
+        }
+        "Starting" {
             $Demisto.results("Search is running. Waiting for completion.")
             return "$script:INTEGRATION_NAME - Search is in progress.", $entry_context, $search, $polling_args
-            }
-            "InProgress" {
+        }
+        "InProgress" {
             $Demisto.results("Search is running. Waiting for completion.")
             return "$script:INTEGRATION_NAME - Search is in progress.", $entry_context, $search, $polling_args
+        }
+        "Completed" {
+            if ($force) {
+                $Demisto.results("Force is true. Restarting search.")
+                $client.StartSearch($search_name)
+                $polling_args.force = $false
+                return "$script:INTEGRATION_NAME - Search restarted due to force=true.", $entry_context, $search, $polling_args
             }
-            "Completed" {
+
             if ($search.Items -eq 0) {
-                $Demisto.results("Search completed. No items found.")
                 return "$script:INTEGRATION_NAME - Search completed. No items to restore.", $entry_context, $search
             }
 
-            $Demisto.results("Search completed. items:" + $search.Items)
-
-
-
             $action = $client.GetSearchAction($search_action_name, $null)
-            $Demisto.results("Search action details: " + (ConvertTo-Json $action -Depth 5))
-
             if (-not $action) {
                 $Demisto.results("No existing Preview action. Creating one.")
-                    $action = $client.NewSearchAction(
-                        $search_name,
+                $action = $client.NewSearchAction(
+                    $search_name,
                     "Preview",
-                        "SoftDelete",
+                    "SoftDelete",
                     $null, $null, $null, $null, $null, $null, $null
                 )
 
@@ -2081,27 +2097,27 @@ function SearchAndRecoveryEmailCommand {
                 }
 
                 return "$script:INTEGRATION_NAME - Created Preview action.", $entry_context, $action, $polling_args
-                }
+            }
 
             $Demisto.results("Found search action: $search_action_name with status $($action.Status)")
 
             switch ($action.Status) {
-                    "Starting" {
+                "Starting" {
                     $Demisto.results("Preview action in starting.")
                     return "$script:INTEGRATION_NAME - Preview in progress.", $entry_context, $action, $polling_args
-                    }
-                    "InProgress" {
+                }
+                "InProgress" {
                     $Demisto.results("Preview action in progress.")
                     return "$script:INTEGRATION_NAME - Preview in progress.", $entry_context, $action, $polling_args
-                    }
-                    "Completed" {
+                }
+                "Completed" {
                     $Demisto.results("Preview completed. Running restore operation.")
                     $recipients = $action.ExchangeLocation
                     $subject = ""
                     if ($action.Results) {
-                        if ($action.Results -match "Subject: ([^;]+);") {
-                            $subject = $matches[1]
-                        }
+                    if ($action.Results -match "Subject: ([^;]+);") {
+                        $subject = $matches[1]
+                    }
                     }
                     $Demisto.results("Subject: $subject Recipients: $($recipients -join ',')")
 
