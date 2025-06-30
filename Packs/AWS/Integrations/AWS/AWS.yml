@@ -1,10 +1,16 @@
 category: Cloud Services
 description: The AWS Integration automates management and security configurations across core AWS services—including S3, EC2, EKS, RDS, IAM, and related resources.
-display: AWS
+display: Amazon Web Services
 name: AWS
+
 commonfields:
   id: AWS
   version: -1
+
+sectionOrder:
+- Connect
+- Collect
+
 configuration:
 - display: Main Role
   name: role_name
@@ -1669,10 +1675,6 @@ script:
   subtype: python3
   dockerimage: demisto/boto3py3:1.0.0.3575453
 fromversion: 5.5.0
+IsCloudProviderIntegration: true
 tests:
 - No test - No playbook part of this release.
-IsCloudProviderIntegration: true
-sectionOrder:
-- Connect
-- Collect
-  

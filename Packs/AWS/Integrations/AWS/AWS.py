@@ -6,13 +6,15 @@ from datetime import date
 from collections.abc import Callable
 from enum import StrEnum
 from botocore.client import BaseClient as BotoClient
+from botocore.config import Config
+
 from boto3 import Session
-import botocore
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
 DEFAULT_PROXYDOME_CERTFICATE_PATH = "/etc/certs/egress.crt"
 DEFAULT_PROXYDOME = "10.181.0.100:11117"
+TIMEOUT_CONFIG = Config(connect_timeout=5, read_timeout=10)
 
 
 # TODO - Remove >>
@@ -31,8 +33,6 @@ def arg_to_bool_or_none(value):
         return None
     else:
         return argToBoolean(value)
-
-
 # <<
 
 
@@ -1242,6 +1242,16 @@ def test_module():
 
 def health_check(connector_id: str) -> list[CommandResults] | str:
     """ """
+    try:
+        creds = get_cloud_credentials("aws", connector_id)
+    except Exception as ex:  # noqa: BLE001
+        return f"Cannot fetch credentials for connector {connector_id}: {ex}"
+
+    session = Session(
+        aws_access_key_id=creds["access_key_id"],
+        aws_secret_access_key=creds["secret_access_key"],
+        aws_session_token=creds.get("session_token"),
+    )
     return HealthStatus.OK
 
 
