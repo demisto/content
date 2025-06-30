@@ -955,3 +955,276 @@ def test_check_required_permissions_missing_permissions(mocker):
     for missing_perm in missing_permissions:
         assert missing_perm in str(e.value)
     assert "Missing required permissions" in str(e.value)
+
+
+def test_validate_apis_enabled_all_enabled(mocker):
+    """
+    Given: A GCP project with all required APIs enabled
+    When: validate_apis_enabled is called with a list of API endpoints
+    Then: The function should return an empty list indicating all APIs are enabled
+    """
+    from GCP import validate_apis_enabled
+
+    # Mock credentials and project
+    mock_creds = mocker.Mock(spec=Credentials)
+    project_id = "test-project"
+    apis = ["compute.googleapis.com", "storage.googleapis.com"]
+
+    # Mock API responses showing enabled state
+    mock_service_usage = mocker.MagicMock()
+    mock_service_usage.services().get().execute.return_value = {"state": "ENABLED"}
+
+    mocker.patch("GCP.GCPServices.SERVICE_USAGE.build", return_value=mock_service_usage)
+
+    # Execute the function
+    result = validate_apis_enabled(mock_creds, project_id, apis)
+
+    # Verify all APIs were checked
+    assert mock_service_usage.services().get.call_count == 3
+
+    # Verify correct API names were used
+    call_args_list = mock_service_usage.services().get.call_args_list
+    assert call_args_list[1][1]["name"] == "projects/test-project/services/compute.googleapis.com"
+    assert call_args_list[2][1]["name"] == "projects/test-project/services/storage.googleapis.com"
+
+    # Should return empty list when all APIs are enabled
+    assert result == []
+
+
+def test_validate_apis_enabled_some_disabled(mocker):
+    """
+    Given: A GCP project with some APIs disabled and some enabled
+    When: validate_apis_enabled is called with a list of API endpoints
+    Then: The function should return a list of disabled API endpoints
+    """
+    from GCP import validate_apis_enabled
+
+    # Mock credentials and project
+    mock_creds = mocker.Mock(spec=Credentials)
+    project_id = "test-project"
+    apis = ["compute.googleapis.com", "storage.googleapis.com", "container.googleapis.com"]
+
+    # Mock API responses with mixed states
+    def mock_api_response(name, **kwargs):
+        if "compute" in name:
+            return mocker.MagicMock(**{"execute.return_value": {"state": "ENABLED"}})
+        elif "storage" in name:
+            return mocker.MagicMock(**{"execute.return_value": {"state": "DISABLED"}})
+        else:  # container
+            return mocker.MagicMock(**{"execute.return_value": {"state": "SUSPENDED"}})
+
+    mock_service_usage = mocker.MagicMock()
+    mock_service_usage.services().get.side_effect = mock_api_response
+
+    mocker.patch("GCP.GCPServices.SERVICE_USAGE.build", return_value=mock_service_usage)
+
+    # Execute the function
+    result = validate_apis_enabled(mock_creds, project_id, apis)
+
+    # Should return the disabled APIs
+    assert "storage.googleapis.com" in result
+    assert "container.googleapis.com" in result
+    assert "compute.googleapis.com" not in result
+    assert len(result) == 2
+
+
+def test_validate_apis_enabled_api_check_fails(mocker):
+    """
+    Given: A GCP project where API status checks fail with exceptions
+    When: validate_apis_enabled is called and some API checks raise exceptions
+    Then: The function should treat failed checks as disabled APIs and include them in the result
+    """
+    from GCP import validate_apis_enabled
+
+    # Mock credentials and project
+    mock_creds = mocker.Mock(spec=Credentials)
+    project_id = "test-project"
+    apis = ["compute.googleapis.com", "storage.googleapis.com"]
+
+    # Mock API responses with one success and one failure
+    def mock_api_response(name, **kwargs):
+        if "compute" in name:
+            return mocker.MagicMock(**{"execute.return_value": {"state": "ENABLED"}})
+        else:  # storage - will raise exception
+            mock_response = mocker.MagicMock()
+            mock_response.execute.side_effect = Exception("API access denied")
+            return mock_response
+
+    mock_service_usage = mocker.MagicMock()
+    mock_service_usage.services().get.side_effect = mock_api_response
+
+    mocker.patch("GCP.GCPServices.SERVICE_USAGE.build", return_value=mock_service_usage)
+
+    # Execute the function
+    result = validate_apis_enabled(mock_creds, project_id, apis)
+
+    # Should return the API that failed the check
+    assert "storage.googleapis.com" in result
+    assert "compute.googleapis.com" not in result
+    assert len(result) == 1
+
+
+def test_validate_apis_enabled_service_usage_unavailable(mocker):
+    """
+    Given: A GCP project where the Service Usage API itself is unavailable
+    When: validate_apis_enabled is called and building the service fails
+    Then: The function should return an empty list to skip validation
+    """
+    from GCP import validate_apis_enabled
+
+    # Mock credentials and project
+    mock_creds = mocker.Mock(spec=Credentials)
+    project_id = "test-project"
+    apis = ["compute.googleapis.com", "storage.googleapis.com"]
+
+    # Mock Service Usage API build failure
+    mocker.patch("GCP.GCPServices.SERVICE_USAGE.build", side_effect=Exception("Service Usage API not available"))
+
+    # Execute the function
+    result = validate_apis_enabled(mock_creds, project_id, apis)
+
+    # Should return empty list when Service Usage API is unavailable
+    assert result == []
+
+
+def test_health_check_successful(mocker):
+    """
+    Given: Valid GCP credentials and a project with accessible services
+    When: health_check is called with proper shared credentials
+    Then: The function should return None indicating successful connectivity
+    """
+    from GCP import health_check
+
+    # Mock shared credentials
+    shared_creds = {"access_token": "valid-token-123"}
+    project_id = "test-project"
+    connector_id = "connector-123"
+
+    # Mock successful service tests
+    mock_service_results = [
+        ("compute", True, ""),
+        ("storage", True, ""),
+        ("container", True, ""),
+    ]
+
+    mocker.patch("GCP.GCPServices.test_all_services", return_value=mock_service_results)
+
+    # Execute the function
+    result = health_check(shared_creds, project_id, connector_id)
+
+    # Should return None for successful health check
+    assert result is None
+
+
+def test_health_check_missing_token(mocker):
+    """
+    Given: Shared credentials that are missing the access token
+    When: health_check is called with invalid credentials
+    Then: The function should return a HealthCheckError with connectivity error type
+    """
+    from GCP import health_check
+
+    # Mock shared credentials without token
+    shared_creds = {"some_other_field": "value"}
+    project_id = "test-project"
+    connector_id = "connector-123"
+
+    # Execute the function
+    result = health_check(shared_creds, project_id, connector_id)
+
+    # Should return HealthCheckError for missing token
+    assert result is not None
+    assert result.account_id == project_id
+    assert result.connector_id == connector_id
+    assert "token is missing from credentials" in result.message
+    assert result.error_type == 'Connectivity Error'
+
+
+def test_health_check_service_connectivity_failure(mocker):
+    """
+    Given: Valid credentials but GCP services are not accessible
+    When: health_check is called and service tests fail with non-permission errors
+    Then: The function should return a HealthCheckError indicating connectivity issues
+    """
+    from GCP import health_check
+
+    # Mock shared credentials
+    shared_creds = {"access_token": "valid-token-123"}
+    project_id = "test-project"
+    connector_id = "connector-123"
+
+    # Mock service test failure (non-permission related)
+    mock_service_results = [
+        ("compute", True, ""),
+        ("storage", False, "Network timeout occurred"),
+        ("container", True, ""),
+    ]
+
+    mocker.patch("GCP.GCPServices.test_all_services", return_value=mock_service_results)
+
+    # Execute the function
+    result = health_check(shared_creds, project_id, connector_id)
+
+    # Should return HealthCheckError for service connectivity failure
+    assert result is not None
+    assert result.account_id == project_id
+    assert result.connector_id == connector_id
+    assert "Sample check failed" in result.message
+    assert "Network timeout occurred" in result.message
+    assert result.error_type == 'Connectivity Error'
+
+
+def test_health_check_service_permission_failure_ignored(mocker):
+    """
+    Given: Valid credentials but services fail with permission-related errors
+    When: health_check is called and service tests fail with permission errors
+    Then: The function should return None as permission errors are expected and ignored
+    """
+    from GCP import health_check
+
+    # Mock shared credentials
+    shared_creds = {"access_token": "valid-token-123"}
+    project_id = "test-project"
+    connector_id = "connector-123"
+
+    # Mock service test failure (permission related - should be ignored)
+    mock_service_results = [
+        ("compute", True, ""),
+        ("storage", False, "Permission denied for storage.buckets.list"),
+        ("container", False, "Insufficient Permission to access container API"),
+    ]
+
+    mocker.patch("GCP.GCPServices.test_all_services", return_value=mock_service_results)
+
+    # Execute the function
+    result = health_check(shared_creds, project_id, connector_id)
+
+    # Should return None as permission errors are ignored in health checks
+    assert result is None
+
+
+def test_health_check_credentials_creation_failure(mocker):
+    """
+    Given: Shared credentials that cause an exception during Credentials object creation
+    When: health_check is called and credential creation fails
+    Then: The function should return a HealthCheckError with the exception details
+    """
+    from GCP import health_check
+
+    # Mock shared credentials
+    shared_creds = {"access_token": "invalid-token"}
+    project_id = "test-project"
+    connector_id = "connector-123"
+
+    # Mock Credentials creation failure
+    mocker.patch("GCP.Credentials", side_effect=ValueError("Invalid token format"))
+
+    # Execute the function
+    result = health_check(shared_creds, project_id, connector_id)
+
+    # Should return HealthCheckError for credential creation failure
+    assert result is not None
+    assert result.account_id == project_id
+    assert result.connector_id == connector_id
+    assert "Invalid token format" in result.message
+    assert result.error_type == 'Connectivity Error'

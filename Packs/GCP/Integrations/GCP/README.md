@@ -1,5 +1,5 @@
 The GCP Integration automates management and security configurations for Compute Engine, Storage, and Container resources on GCP.
-This integration was integrated and tested with version v1 (Compute, Storage, Container, IAM, Cloud Identity), v2 (IAM), v3 (Resource Manager).
+This integration was integrated and tested with version v1 (Compute, Storage, Container, SERVICE_USAGE), v3 (Resource Manager).
 
 ## Configure GCP in Cortex
 
