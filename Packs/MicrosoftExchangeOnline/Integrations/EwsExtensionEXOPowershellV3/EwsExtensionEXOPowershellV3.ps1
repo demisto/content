@@ -223,7 +223,7 @@ class ExchangeOnlinePowershellV3Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox,Get-RecoverableItems -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession()
     {
@@ -1782,6 +1782,32 @@ class ExchangeOnlinePowershellV3Client
         https://learn.microsoft.com/en-us/powershell/module/exchange/set-mailbox?view=exchange-ps
         #>
     }
+  
+
+    [PSObject] GetRecoverableItems([string]$identity)
+    {
+        $response = $null
+        try {
+            # Create remote session
+            $this.CreateSession()
+    
+            # Prepare command parameters
+            $cmd_params = @{}
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+    
+            # Execute the command to get recoverable items
+            $response = Get-RecoverableItems @cmd_params
+
+        }
+        finally {
+            # Disconnect the session
+            $this.DisconnectSession()
+        }
+        return $response
+    }
+
 }
 
 function Remove-EmptyItems {
@@ -2462,7 +2488,7 @@ function DisableMailForwardingCommand {
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
-    $raw_response = $client.DisableMailForwarding($identity)
+    $raw_response = $client.GetRecoverableItems($identity)
     $human_readable = "Mail forwarding for user $identity has been disabled successfully"
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
