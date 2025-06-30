@@ -1,5 +1,5 @@
 {
-    "name": "SAP Cloud for Customer (C4C)",
+    "name": "SAP Cloud For Customer C4C",
     "description": "## FILL MANDATORY FIELD ##",
     "support": "xsoar",
     "currentVersion": "1.0.0",
@@ -12,7 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "defaultDataSource": "SAPCloudForCustomerC4C",
     "marketplaces": [
         "xsoar",
         "marketplacev2"
