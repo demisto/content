@@ -1,5 +1,4 @@
 import demistomock as demisto  # noqa: F401
-from AWSApiModule import *  # noqa: E402
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
@@ -1330,9 +1329,7 @@ def main():  # pragma: no cover
 
     try:
         if command == "test-module":
-            context = demisto.callingContext.get("context", {})
-            cloud_info = context.get("CloudIntegrationInfo", {})
-            results = health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else test_module()
+            results = health_check(connector_id) if (connector_id := get_connector_id()) else test_module()
             return_results(results)
         elif command in COMMANDS_MAPPING:
             return_results(execute_aws_command(command, args, params))
