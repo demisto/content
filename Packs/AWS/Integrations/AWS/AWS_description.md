@@ -36,7 +36,28 @@ EC2 instance should have `sts:AssumeRole` permission over target AWS roles.
 
 | Command | Required Permissions |
 | ------------- | ------------- |
-| aws-s3-public-access-block-update  | s3:GetBucketPublicAccessBlock <br> s3:PutBucketPublicAccessBlock  |
-| aws-iam-account-password-policy-get  | iam:GetAccountPasswordPolicy  |
-| aws-iam-account-password-policy-update  | iam:GetAccountPasswordPolicy <br> iam:UpdateAccountPasswordPolicy  |
-| aws-ec2-instance-metadata-options-modify  | ec2:ModifyInstanceMetadataOptions  |
+| aws-rds-db-cluster-modify | rds:ModifyDBCluster |
+| aws-rds-db-cluster-snapshot-attribute-modify | rds:ModifyDBClusterSnapshotAttribute |
+| aws-rds-db-instance-modify | rds:ModifyDBInstance |
+| aws-rds-db-snapshot-attribute-modify | rds:ModifyDBSnapshotAttribute |
+| aws-s3-bucket-acl-put | s3:PutBucketAcl |
+| aws-s3-bucket-logging-put | s3:PutBucketLogging |
+| aws-s3-bucket-versioning-put | s3:PutBucketVersioning |
+| aws-s3-bucket-policy-put | s3:PutBucketPolicy |
+| aws-s3-public-access-block-update | s3:GetBucketPublicAccessBlock <br> s3:PutBucketPublicAccessBlock |
+| aws-ec2-security-group-egress-revoke | ec2:RevokeSecurityGroupEgress |
+| aws-ec2-image-attribute-modify | ec2:ModifyImageAttribute |
+| aws-ec2-instance-attribute-modify | ec2:ModifyInstanceAttribute |
+| aws-ec2-instance-metadata-options-modify | ec2:ModifyInstanceMetadataOptions |
+| aws-ec2-snapshot-attribute-modify | ec2:ModifySnapshotAttribute |
+| aws-ec2-security-group-ingress-revoke | ec2:RevokeSecurityGroupIngress |
+| aws-ec2-security-group-ingress-authorize | ec2:AuthorizeSecurityGroupIngress |
+| aws-eks-cluster-config-update | eks:UpdateClusterConfig |
+| aws-cloudtrail-trail-update | cloudtrail:UpdateTrail |
+| aws-cloudtrail-logging-start | cloudtrail:StartLogging |
+| aws-iam-login-profile-delete | iam:DeleteLoginProfile |
+| aws-iam-user-policy-put | iam:PutUserPolicy |
+| aws-iam-role-from-instance-profile-remove | iam:RemoveRoleFromInstanceProfile |
+| aws-iam-access-key-update | iam:UpdateAccessKey |
+| aws-iam-account-password-policy-get | iam:GetAccountPasswordPolicy |
+| aws-iam-account-password-policy-update | iam:UpdateAccountPasswordPolicy |

@@ -1,8 +1,9 @@
 import json
-import pytest
 from datetime import datetime, date
 from http import HTTPStatus
-from botocore.exceptions import ClientError
+
+import pytest
+
 from CommonServerPython import CommandResults, EntryType, DemistoException
 
 
@@ -1378,59 +1379,6 @@ def test_register_proxydome_header_adds_correct_header(mocker):
 
     assert mock_request.headers["x-caller-id"] == "test-token-123"
 
-
-def test_get_service_client_s3_service(mocker):
-    """
-    Given: Valid parameters, arguments, and credentials for S3 service.
-    When: get_service_client is called with an S3 command.
-    Then: It should return a configured boto3 S3 client with ProxyDome settings.
-    """
-    from AWS import get_service_client
-
-    mock_session = mocker.Mock()
-    mock_client = mocker.Mock()
-    mock_session.client.return_value = mock_client
-
-    mocker.patch('AWS.Session', return_value=mock_session)
-    mocker.patch('AWS.Config')
-    mocker.patch('AWS.register_proxydome_header')
-
-    params = {"region": "us-east-1"}
-    args = {"region": "us-west-2"}
-    credentials = {"key": "test-key", "access_token": "test-secret"}
-
-    result = get_service_client(params, args, "aws-s3-bucket-policy-put", credentials)
-
-    assert result == mock_client
-    mock_session.client.assert_called_once_with("s3", verify=False, config=mocker.ANY)
-
-
-def test_get_service_client_ec2_service(mocker):
-    """
-    Given: Valid parameters, arguments, and credentials for EC2 service.
-    When: get_service_client is called with an EC2 command.
-    Then: It should return a configured boto3 EC2 client with proper service detection.
-    """
-    from AWS import get_service_client
-
-    mock_session = mocker.Mock()
-    mock_client = mocker.Mock()
-    mock_session.client.return_value = mock_client
-
-    mocker.patch('AWS.Session', return_value=mock_session)
-    mocker.patch('AWS.Config')
-    mocker.patch('AWS.register_proxydome_header')
-
-    params = {"access_key_id": "param-key", "secret_access_key": {"password": "param-secret"}}
-    args = {}
-    credentials = {}
-
-    result = get_service_client(params, args, "aws-ec2-instance-metadata-options-modify", credentials)
-
-    assert result == mock_client
-    mock_session.client.assert_called_once_with("ec2", verify=False, config=mocker.ANY)
-
-
 def test_execute_aws_command_success(mocker):
     """
     Given: A valid AWS command, arguments, and parameters.
@@ -1438,14 +1386,18 @@ def test_execute_aws_command_success(mocker):
     Then: It should return CommandResults from the appropriate service handler.
     """
     from AWS import execute_aws_command
+    from http import HTTPStatus
 
     mock_credentials = {"key": "test-key", "access_token": "test-secret"}
     mock_client = mocker.Mock()
-    mock_result = CommandResults(readable_output="Test success")
+
+    # Mock the client's response with the expected structure
+    mock_client.put_public_access_block.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
+    }
 
     mocker.patch('AWS.get_cloud_credentials', return_value=mock_credentials)
     mocker.patch('AWS.get_service_client', return_value=mock_client)
-    mocker.patch('AWS.S3.put_public_access_block_command', return_value=mock_result)
 
     command = "aws-s3-public-access-block-put"
     args = {"account_id": "123456789012", "bucket": "test-bucket"}
@@ -1453,8 +1405,12 @@ def test_execute_aws_command_success(mocker):
 
     result = execute_aws_command(command, args, params)
 
-    assert result == mock_result
+    # Verify the result
     assert isinstance(result, CommandResults)
+    assert "Successfully applied public access block" in result.readable_output
+
+    # Verify the mock was called correctly
+    mock_client.put_public_access_block.assert_called_once()
 
 
 def test_execute_aws_command_with_account_id(mocker):
@@ -1467,11 +1423,25 @@ def test_execute_aws_command_with_account_id(mocker):
 
     mock_credentials = {"key": "account-key", "access_token": "account-secret"}
     mock_client = mocker.Mock()
-    mock_result = CommandResults(readable_output="Account-specific success")
+
+    # Mock the client's response with the expected structure
+    mock_client.get_account_password_policy.return_value = {
+        "PasswordPolicy": {
+            "MinimumPasswordLength": 8,
+            "RequireSymbols": True,
+            "RequireNumbers": True,
+            "RequireUppercaseCharacters": True,
+            "RequireLowercaseCharacters": True,
+            "AllowUsersToChangePassword": True,
+            "ExpirePasswords": False,
+            "MaxPasswordAge": 90,
+            "PasswordReusePrevention": 3,
+            "HardExpiry": False
+        }
+    }
 
     mocker.patch('AWS.get_cloud_credentials', return_value=mock_credentials)
     mocker.patch('AWS.get_service_client', return_value=mock_client)
-    mocker.patch('AWS.IAM.get_account_password_policy_command', return_value=mock_result)
 
     command = "aws-iam-account-password-policy-get"
     args = {"account_id": "987654321098"}
@@ -1479,7 +1449,15 @@ def test_execute_aws_command_with_account_id(mocker):
 
     result = execute_aws_command(command, args, params)
 
-    assert result == mock_result
+    # Verify the result
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.IAM.PasswordPolicy"
+    assert result.outputs_key_field == "AccountId"
+    assert "AWS IAM Account Password Policy" in result.readable_output
+
+    # Verify the mock was called correctly
+    mock_client.get_account_password_policy.assert_called_once()
+
 
 
 

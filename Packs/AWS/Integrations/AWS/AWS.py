@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from datetime import date
 from collections.abc import Callable
-from enum import StrEnum
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
 
@@ -44,7 +43,7 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
-class AWSServices(StrEnum):
+class AWSServices(str):
     S3 = "s3"
     IAM = "iam"
     EC2 = "ec2"
@@ -205,9 +204,9 @@ class S3:
         acl, bucket = args.get("acl"), args.get("bucket")
         response = client.put_bucket_acl(Bucket=bucket, ACL=acl)
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-            return CommandResults(f"Successfully updated ACL for bucket {bucket} to '{acl}'")
+            return CommandResults(readable_output=f"Successfully updated ACL for bucket {bucket} to '{acl}'")
         return CommandResults(
-            f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+            readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
         )
 
     @staticmethod
