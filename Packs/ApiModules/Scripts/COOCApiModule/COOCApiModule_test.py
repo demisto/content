@@ -318,9 +318,7 @@ def test_run_health_check_no_accounts(mocker):
     mocker.patch.object(demisto, "debug")
 
     # Call function
-    result = run_health_check_for_accounts(
-        connector_id="test-connector-id", cloud_type="AWS", health_check_func=mocker.Mock()
-    )
+    result = run_health_check_for_accounts(connector_id="test-connector-id", cloud_type="AWS", health_check_func=mocker.Mock())
 
     # Verify results
     assert result == HealthStatus.OK
