@@ -26,20 +26,4 @@
     "marketplaces": [
         "xsoar"
     ]
-}{
-    "name": "## FILL MANDATORY FIELD ##",
-    "description": "## FILL MANDATORY FIELD ##",
-    "support": "xsoar",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
 }
