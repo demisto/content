@@ -86,8 +86,8 @@ class TestEnrichCVE:
         assert result["ContentsFormat"] == formats["json"]
 
         # Check EntryContext structure
-        assert "PAN_OS_Security_Advisories.Advisory" in result["EntryContext"]
-        advisory = result["EntryContext"]["PAN_OS_Security_Advisories.Advisory"]
+        assert "PAN-OS_Security_Advisories.Advisory" in result["EntryContext"]
+        advisory = result["EntryContext"]["PAN-OS_Security_Advisories.Advisory"]
 
         # Assert specific advisory content
         assert advisory["cve_id"] == "CVE-2072-1234"
@@ -113,7 +113,7 @@ class TestEnrichCVE:
         
         # Assert
         assert isinstance(result, dict)
-        advisory = result["EntryContext"]["PAN_OS_Security_Advisories.Advisory"]
+        advisory = result["EntryContext"]["PAN-OS_Security_Advisories.Advisory"]
         
         # Should contain the external CVE from sample_pan_sa_data
         assert len(advisory["external_cve_list"]) == 1

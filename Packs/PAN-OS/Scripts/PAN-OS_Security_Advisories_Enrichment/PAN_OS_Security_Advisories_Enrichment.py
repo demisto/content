@@ -2,7 +2,7 @@ import re
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-OUTPUT_PREFIX = "PAN_OS_Security_Advisories"
+OUTPUT_PREFIX = "PAN-OS_Security_Advisories"
 BASE_URL = "https://security.paloaltonetworks.com"
 CVE_JSON = "/json/"
 CVE_CSAF = "/csaf/"
