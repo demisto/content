@@ -1,6 +1,7 @@
 import concurrent.futures
 import copy
 import secrets
+import uuid
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
@@ -1152,7 +1153,7 @@ def get_remote_events(
     partial_changes = {
         MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried,
         MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished,
-        MIRRORED_OFFENSES_FETCHED_CTX_KEY: offenses_fetched
+        MIRRORED_OFFENSES_FETCHED_CTX_KEY: offenses_fetched,
     }
 
     safely_update_context_data_partial(partial_changes)
@@ -2030,20 +2031,20 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
         ctx, version = get_integration_context_with_version()
 
     if ctx and RESET_KEY in ctx:
-        print_debug_msg('Reset fetch-incidents.')
+        print_debug_msg("Reset fetch-incidents.")
         demisto.setLastRun({LAST_FETCH_KEY: 0})
 
         ctx.pop(RESET_KEY, None)
 
         ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = {}
         ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = {}
-        ctx['samples'] = []
+        ctx["samples"] = []
 
         partial_changes = {
             # We do NOT set RESET_KEY, effectively removing it from context
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY],
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY],
-            'samples': ctx['samples']
+            "samples": ctx["samples"],
         }
 
         safely_update_context_data_partial(partial_changes)
@@ -2400,7 +2401,6 @@ def delete_offense_from_context(offense_id: str):
     safely_update_context_data_partial(partial_changes)
 
 
-
 def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str, events_limit: int, events: list[dict]) -> bool:
     """
     This function checks if all events were fetched for a specific offense.
@@ -2530,15 +2530,12 @@ def prepare_context_for_events(offenses_with_metadata):
 
     for offense, is_success in offenses_with_metadata:
         if not is_success:
-            offense_id = str(offense.get('id'))
+            offense_id = str(offense.get("id"))
             mirrored_offenses_queried[offense_id] = QueryStatus.WAIT.value
 
-    partial_changes = {
-        MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queried
-    }
+    partial_changes = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queried}
 
     safely_update_context_data_partial(partial_changes)
-
 
 
 def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional[str]) -> List[dict]:
@@ -2648,18 +2645,18 @@ def perform_long_running_loop(
         assets_limit=assets_limit,
     )
 
-    print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
+    print_debug_msg(f"Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}")
 
     # Refresh context to see if something changed in parallel
     context_data, ctx_version = get_integration_context_with_version()
 
     if incidents and new_highest_id:
-        incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else context_data.get('samples', [])
+        incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else context_data.get("samples", [])
         # Actually create the incidents in XSOAR
         demisto.createIncidents(incidents, {LAST_FETCH_KEY: str(new_highest_id)})
         partial_changes = {}
         if incident_batch_for_sample:
-            partial_changes['samples'] = incident_batch_for_sample
+            partial_changes["samples"] = incident_batch_for_sample
         # Always update LAST_FETCH_KEY
         partial_changes[LAST_FETCH_KEY] = int(new_highest_id)
 
@@ -2685,26 +2682,21 @@ def recover_from_last_run(ctx: dict | None = None, version: Any = None):
 
     last_run = demisto.getLastRun() or {}
     last_highest_id_last_run = int(last_run.get(LAST_FETCH_KEY, 0))
-    print_debug_msg(f'Last highest ID from last run: {last_highest_id_last_run}')
+    print_debug_msg(f"Last highest ID from last run: {last_highest_id_last_run}")
 
     last_highest_id_context = int(ctx.get(LAST_FETCH_KEY, 0))
     if last_highest_id_last_run != last_highest_id_context and last_highest_id_last_run > 0:
         # There's an inconsistency: we want to force the integration context to reflect last_run's ID.
         print_debug_msg(
-            f'Updating context data with last highest ID from last run: {last_highest_id_last_run}. '
-            f'ID from context: {last_highest_id_context}'
+            f"Updating context data with last highest ID from last run: {last_highest_id_last_run}. "
+            f"ID from context: {last_highest_id_context}"
         )
 
-        partial_changes = {
-            LAST_FETCH_KEY: last_highest_id_last_run,
-            'samples': ctx.get('samples', [])
-        }
+        partial_changes = {LAST_FETCH_KEY: last_highest_id_last_run, "samples": ctx.get("samples", [])}
 
         safely_update_context_data_partial(partial_changes)
 
-        print_debug_msg(
-            f'Updated context last-fetch key from {last_highest_id_context} to {last_highest_id_last_run}.'
-        )
+        print_debug_msg(f"Updated context last-fetch key from {last_highest_id_context} to {last_highest_id_last_run}.")
 
 
 def long_running_execution_command(client: Client, params: dict):
@@ -3875,7 +3867,7 @@ def qradar_reset_last_run_command() -> str:
     partial_changes = {RESET_KEY: True}
     safely_update_context_data_partial(partial_changes)
 
-    return 'fetch-incidents was reset successfully.'
+    return "fetch-incidents was reset successfully."
 
 
 def qradar_get_mapping_fields_command(client: Client) -> dict:
