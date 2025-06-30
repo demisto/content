@@ -55,7 +55,7 @@ def main() -> int:
             for error in errors:
                 suggestion = f"; Fix Suggestion: {error.get('suggestion')}" if error.get("suggestion") else ""
                 print(
-                    f"Line {error.get('line', 'N/A')} ERROR: {error.get('kind')}: {error.get('source','')}{suggestion}".rstrip()
+                    f"Line {error.get('line', 'N/A')} ERROR: {error.get('kind')}: {error.get('source','').rstrip()}{suggestion}"
                 )
             return 1
         else:
