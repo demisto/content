@@ -1,0 +1,57 @@
+commonfields:
+  id: Threatmon
+  version: 1
+name: Threatmon
+display: Threatmon
+category: Security Information and Event Management
+description: Integration with Threatmon for vulnerability threat intelligence
+configuration:
+  - display: API URL
+    name: url
+    type: 0
+    required: true
+    defaultvalue: https://external.threatmonit.io/api/threatmon/external/v1
+  - display: API Key
+    name: apikey
+    type: 4
+    required: true
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+  - display: Last Incident ID (for initial fetch)
+    name: lastIncidentId
+    type: 0
+    required: false
+script:
+  script: ''    
+  type: python
+  commands:
+  - name: test-module
+    description: Tests API connectivity and authentication
+    execution: false
+  - name: threatmon_update_incident_status
+    arguments:
+    - name: alarmId
+      required: true
+      description: Threatmon Incedent Code (ID)
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - In Progress
+      - False Positive
+      - Ignore
+      - Resolved
+      description: 'Incident Status - '
+    description: Update Incident Status endpoint allows you to change/update status
+      of specified Threatmon incidents.
+  isfetch: true
+fromversion: 1
+tests:
+  - No tests
