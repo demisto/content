@@ -3,7 +3,8 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: SecurityAndComplianceV2-dev
+  id: SecurityAndComplianceV2
+  # id: SecurityAndComplianceV2-dev
   version: -1
 configuration:
 - display: Certificate Password
@@ -104,8 +105,10 @@ configuration:
   advanced: true
   required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search v2-dev
-name: SecurityAndComplianceV2-dev
+display: O365 - Security And Compliance - Content Search v2
+# display: O365 - Security And Compliance - Content Search v2-dev
+name: SecurityAndComplianceV2
+# name: SecurityAndComplianceV2-dev
 script:
   commands:
   - description: OAuth2.0 - Start authorization.
@@ -1216,8 +1219,8 @@ script:
     name: o365-sc-case-hold-policy-set
   - name: o365-sc-search-and-delete-email-office-365-quick-action
     prettyname: Search And Delete Email - Office 365
-    hidden: true
-    quickaction: true
+    # hidden: true
+    # quickaction: true
     polling: true
     description: Deletes an email for all recipients.
     arguments:

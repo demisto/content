@@ -655,7 +655,6 @@ class SecurityAndComplianceClient {
             "PublicFolderLocation" = $public_folder_location
             "SharePointLocation" = $share_point_location
             "SharePointLocationExclusion" = $share_point_location_exclusion
-            # "ErrorAction" = $error_action
         }
         if ($error_action) {
             $cmd_params.ErrorAction = $error_action
@@ -1907,7 +1906,7 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
-function Get-ShortHash($inputString, $length = 12) {
+function GetShortHash($inputString, $length = 12) {
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($inputString)
     $sha256 = [System.Security.Cryptography.SHA256]::Create()
     $hashBytes = $sha256.ComputeHash($bytes)
@@ -1915,6 +1914,21 @@ function Get-ShortHash($inputString, $length = 12) {
     return $hashString.Substring(0, $length)
 }
 
+function MakeSearchName(
+    [string]$internetMessageId,
+    [string[]]$exchangeLocation,
+    [string]$overrideName = $null
+) {
+    if ($overrideName) {
+        return $overrideName
+    }
+    $baseName = $internetMessageId -replace '[<>]', ''
+    if ($exchangeLocation -ne "All") {
+        $hash = GetShortHash ($exchangeLocation -join ",")
+        return "${baseName}:${hash}"
+    }
+    return $baseName
+}
 
 function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # $demisto.results("=== Starting SearchAndDeleteEmailCommand ===")
@@ -1929,24 +1943,12 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     $internet_message_id = $kwargs.internet_message_id
     $kql = "internetMessageId:`"$internet_message_id`""
 
-    $search_name = if ($kwargs.search_name) {
-        $kwargs.search_name
-    } else {
-        $baseName = $internet_message_id -replace '[<>]', ''
-    
-        if ($kwargs.exchange_location -ne "All") {
-            $combined = $baseName + ":" + ($exchange_location -join ",")
-            Get-ShortHash $combined
-        } else {
-            $baseName
-        }
-    }
-
-    $search_action_name = "${search_name}_Purge"
     $polling_args = $kwargs
+    $search_name = MakeSearchName $internet_message_id $exchange_location $kwargs.search_name
     $polling_args.search_name = $search_name
+    $search_action_name = "${search_name}_Purge"
 
-    # $demisto.results("search_name: $search_name")
+    $demisto.results("search_name: $search_name")
 
 
     if ($polling_first_run) {
