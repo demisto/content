@@ -502,8 +502,11 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
             "or 'enable_master_authorized_networks', not both."
         )
 
-    if args.get("enable_master_authorized_networks") and not cidrs:
-        raise DemistoException("CIDRs must be provided when enabling master authorized networks.")
+    if cidrs and not args.get("enable_master_authorized_networks"):
+        raise DemistoException(
+            "You provided CIDRs, but 'enable_master_authorized_networks' is not enabled. "
+            "To apply CIDRs, you must enable Master Authorized Networks."
+        )
 
     container = GCPServices.CONTAINER.build(creds)
     update_fields: dict[str, Any] = {}

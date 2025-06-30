@@ -295,7 +295,7 @@ script:
     - name: cidrs
       description: |
         Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
-        Required if `enable_master_authorized_networks` is true.
+        If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
       isArray: true
     outputs:
     - contextPath: GCP.Container.Operations.name
