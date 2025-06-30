@@ -3,7 +3,7 @@ version: -1
 name: silent-Suspicious Local User Account Creation
 description: |-
   This playbook addresses the following alerts:
-  - Suspicious Local User Account Creation
+  - Suspicious local user account creation
 
   Playbook Stages:
 
