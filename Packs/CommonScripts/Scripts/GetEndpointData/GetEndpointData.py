@@ -5,6 +5,11 @@ from typing import Any
 from CommonServerPython import *
 
 
+GENERIC_COMMAND_BRAND = "Generic Command"
+COMMAND_SUCCESS_MSG = "Command successful"
+COMMAND_FAILED_MSG = "Command failed - no endpoint found"
+
+
 class Command:
     def __init__(
         self,
@@ -13,7 +18,9 @@ class Command:
         output_keys: List[str],
         args_mapping: dict,
         output_mapping: dict | Callable,
-        post_processing: Callable = None,
+        not_found_checker: str = "No entries.",
+        prepare_args_mapping: Callable[[dict[str, str]], dict[str, str]] | None = None,
+        post_processing: Callable | None = None,
     ):
         """
         Initialize a MappedCommand object.
@@ -28,7 +35,14 @@ class Command:
         self.output_keys = output_keys
         self.args_mapping = args_mapping
         self.output_mapping = output_mapping
+        self.not_found_checker = not_found_checker
+        self.prepare_args_mapping = prepare_args_mapping
         self.post_processing = post_processing
+
+        if not self.args_mapping and prepare_args_mapping is None:
+            raise ValueError(
+                "Either 'args_mapping' must be provided (not empty) or 'prepare_args_mapping' must be provided (not None)."
+            )
 
     def __repr__(self):
         return f"{{ name: {self.name}, brand: {self.brand} }}"
@@ -55,7 +69,7 @@ class ModuleManager:
         self._brands_to_run = brands_to_run
         self._enabled_brands = {
             module.get("brand") for module in self.modules_context.values() if module.get("state") == "active"
-        }
+        } | {GENERIC_COMMAND_BRAND}
 
     def is_brand_in_brands_to_run(self, command: Command) -> bool:
         """
@@ -86,8 +100,37 @@ class ModuleManager:
         return False if not self.is_brand_in_brands_to_run(command) else command.brand in self._enabled_brands
 
 
+def get_endpoint_not_found(
+    command: Command, human_readable: str, endpoints: list[dict[str, Any]], endpoint_args: dict[str, str]
+) -> list[dict[str, Any]]:
+    zipped_args = list(
+        zip_longest(
+            endpoint_args["endpoint_id"].split(","),
+            endpoint_args["endpoint_ip"].split(","),
+            endpoint_args["endpoint_hostname"].split(","),
+            fillvalue="",
+        )
+    )
+    endpoints_not_found_list = get_endpoints_not_found_list(endpoints, zipped_args)
+
+    # Logic to identify "not found" scenarios:
+    # 1. If command's human-readable output explicitly indicates 'no entries' (global not found).
+    # 2. Or, if some endpoints were found but fewer than requested (partial not found for some inputs).
+    if command.not_found_checker in human_readable or (
+        endpoints and len(endpoints) < len(zipped_args)
+    ):
+        return [
+            create_endpoint(
+                endpoint_not_found, {"ID": "ID", "Hostname": "Hostname", "IPAddress": "IPAddress"}, command.brand, False, True
+            )
+            for endpoint_not_found in endpoints_not_found_list
+        ]
+    else:
+        return []
+
+
 class EndpointCommandRunner:
-    def __init__(self, module_manager: ModuleManager) -> None:
+    def __init__(self, module_manager: ModuleManager, add_additional_fields: bool) -> None:
         """
         Initializes the instance of EndpointCommandRunner.
 
@@ -96,25 +139,27 @@ class EndpointCommandRunner:
 
         Attributes:
             module_manager (ModuleManager): Stores the provided ModuleManager instance.
+            add_additional_fields (bool): Flag to determine whether additional fields should be added to the results.
         """
         self.module_manager = module_manager
+        self.add_additional_fields = add_additional_fields
 
-    def run_command(
-        self, command: Command, endpoint_args: dict[str, list[str] | str]
-    ) -> tuple[list[CommandResults], list[dict[str, dict]]]:
+    def run_command(self, command: Command, endpoint_args: dict[str, str]) -> tuple[list[CommandResults], list[dict[str, Any]]]:
         """
         Runs the given command with the provided arguments and returns the results.
         Args:
             command (Command): An instance of the Command class containing the command details.
-            endpoint_args (dict[str, list[str] | str]): A dictionary containing the arguments for the endpoint script.
+            endpoint_args (dict[str, str]): A dictionary containing the arguments for the endpoint script.
 
         Returns:
-            tuple[list[CommandResults], list[dict[str, dict]]]:
+            tuple[list[CommandResults], list[dict[str, Any]]]:
                 - A list of CommandResults objects, which contain the results of the command execution.
                 - A list of dictionaries, where each dictionary represents an endpoint and contains the raw output.
         """
-        args = prepare_args(command, endpoint_args)
-        demisto.debug(f"run command {command.name} with args={args}")
+        args = (
+            command.prepare_args_mapping(endpoint_args) if command.prepare_args_mapping else prepare_args(command, endpoint_args)
+        )
+        demisto.debug(f"run command '{command.name}' with args={args}")
 
         if not self.is_command_runnable(command, args):
             return [], []
@@ -123,9 +168,11 @@ class EndpointCommandRunner:
         entry_context, human_readable, readable_errors = self.get_command_results(command.name, raw_outputs, args)
 
         if not entry_context:
-            return readable_errors, []
+            endpoints = get_endpoint_not_found(command, readable_errors[0].readable_output or "", [], endpoint_args)
+            return readable_errors, endpoints
+        endpoints = entry_context_to_endpoints(command, entry_context, self.add_additional_fields)
+        endpoints.extend(get_endpoint_not_found(command, human_readable[0].readable_output or "", endpoints, endpoint_args))
 
-        endpoints = entry_context_to_endpoints(command, entry_context)
         if command.post_processing:
             demisto.debug(f"command with post processing: {command.name}")
             endpoints = command.post_processing(endpoints, endpoint_args)
@@ -149,11 +196,11 @@ class EndpointCommandRunner:
         """
         # checks if the integration required for the command is installed and active
         if not self.module_manager.is_brand_available(command):
-            demisto.debug(f'Skipping command "{command.name}" since the brand {command.brand} is not available.')
+            demisto.debug(f'Skipping command "{command.name}" since the brand "{command.brand}" is not available.')
             return False
 
         # checks if the command has argument mapping
-        if command.args_mapping and not args.values():
+        if not args.values():
             demisto.debug(f'Skipping command "{command.name}" since the provided arguments does not match the command.')
             return False
 
@@ -174,7 +221,9 @@ class EndpointCommandRunner:
         return to_list(demisto.executeCommand(command.name, args))
 
     @staticmethod
-    def get_command_results(command: str, results: list[dict[str, Any]], args: dict[str, Any]) -> tuple[list, list, list]:
+    def get_command_results(
+        command: str, results: list[dict[str, Any]], args: dict[str, Any]
+    ) -> tuple[list[dict[str, Any]], list[CommandResults], list[CommandResults]]:
         """
         Processes the results of a previously executed command and extracts relevant outputs.
 
@@ -191,24 +240,24 @@ class EndpointCommandRunner:
                 - A list of command error outputs.
         """
 
-        command_context_outputs = []
-        human_readable_outputs = []
-        command_error_outputs = []
+        command_context_outputs: list[dict[str, Any]] = []
+        human_readable_outputs: list[str] = []
+        command_error_outputs: list[CommandResults] = []
         demisto.debug(f'get_commands_outputs for command "{command}" with {len(results)} entry results')
 
         for entry in results:
             if is_error(entry):
-                command_error_outputs.append(hr_to_command_results(command, args, get_error(entry), is_error=True))
+                command_error_outputs.append(hr_to_command_results(command, args, get_error(entry), is_error=True))  # type: ignore[arg-type]
             else:
                 command_context_outputs.append(entry.get("EntryContext", {}))
                 human_readable_outputs.append(entry.get("HumanReadable") or "")
 
         human_readable = "\n".join(human_readable_outputs)
-        human_readable = [hr] if (hr := hr_to_command_results(command, args, human_readable)) else []
-        return command_context_outputs, human_readable, command_error_outputs
+        human_readable_entry: list[CommandResults] = [hr] if (hr := hr_to_command_results(command, args, human_readable)) else []
+        return command_context_outputs, human_readable_entry, command_error_outputs
 
 
-def to_list(var):
+def to_list(var) -> list:
     """
     Converts the input variable to a list if it is not already a list.
     """
@@ -217,79 +266,144 @@ def to_list(var):
     return [var] if not isinstance(var, list) else var
 
 
-def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandRunner, list[Command], list[Command]]:
+def is_private_ip(ip_address: str) -> bool:
+    """
+    Checks if an IPv4 address is a private (local) IP using regex.
+    This regex validates the octets to be 0-255 within the private ranges.
+    """
+    octet = r"(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)"  # Regex for a single octet (0-255)
+
+    # Regex for Class A Private (10.0.0.0 - 10.255.255.255)
+    private_a = rf"^10\.{octet}\.{octet}\.{octet}$"
+
+    # Regex for Class B Private (172.16.0.0 - 172.31.255.255)
+    private_b = rf"^172\.(?:1[6-9]|2\d|3[01])\.{octet}\.{octet}$"
+
+    # Regex for Class C Private (192.168.0.0 - 192.168.255.255)
+    private_c = rf"^192\.168\.{octet}\.{octet}$"
+
+    # Regex for Loopback (127.0.0.0 - 127.255.255.255)
+    loopback = rf"^127\.{octet}\.{octet}\.{octet}$"
+
+    # Regex for Link-Local (169.254.0.0 - 169.254.255.255)
+    link_local = rf"^169\.254\.{octet}\.{octet}$"
+
+    # Combine all private ranges with OR |
+    full_private_regex = re.compile(f"{private_a}|{private_b}|{private_c}|{loopback}|{link_local}")
+
+    return bool(full_private_regex.match(ip_address))
+
+
+def prepare_cs_falcon_args(args: dict[str, str]) -> dict[str, str]:
+    ips = []
+    for ip in argToList(args.get("endpoint_ip", [])):
+        if is_private_ip(ip):
+            ips.append(f"local_ip:'{ip}'")
+        else:
+            ips.append(f"external_ip:'{ip}'")
+
+    return {"ids": args.get("endpoint_id", ""), "hostname": args.get("endpoint_hostname", ""), "filter": ",".join(ips)}
+
+
+def prepare_epo_args(args: dict[str, str]) -> dict[str, str]:
+    value = args.get("endpoint_hostname") or args.get("endpoint_id") or args.get("endpoint_ip")
+    if value:
+        return {"searchText": value}
+
+    else:
+        return {}
+
+
+def initialize_commands(
+    module_manager: ModuleManager, add_additional_fields: bool
+) -> tuple[EndpointCommandRunner, list[Command], list[Command]]:
     """
     Initializes the EndpointCommandRunner and the lists of single-argument and multi-argument commands.
     single-argument commands are commands that accept only single values as arguments.
     multi-argument commands are commands that accept comma-seperated lists of values as arguments.
     Args:
         module_manager (ModuleManager): The ModuleManager instance used to check the availability of integrations.
+        add_additional_fields (bool):  Flag to determine whether additional fields should be added to the results.
 
     Returns:
         tuple[EndpointCommandRunner, list[Command], list[Command]]:
         The initialized EndpointCommandRunner instance, the list of single-argument commands, and the list of
         multi-argument commands.
     """
-    command_runner = EndpointCommandRunner(module_manager=module_manager)
+    command_runner = EndpointCommandRunner(module_manager=module_manager, add_additional_fields=add_additional_fields)
 
     single_args_commands = [
         Command(
-            brand="VMware Carbon Black EDR v2",
-            name="cb-edr-sensors-list",
-            output_keys=["CarbonBlackEDR.Sensor"],
-            args_mapping={"hostname": "agent_hostname", "id": "agent_id", "ip": "agent_ip"},
-            output_mapping={"id": "ID", "computer_name": "Hostname", "status": "Status"},
-        ),
-        Command(
             brand="Cortex Core - IR",
             name="core-get-endpoints",
-            output_keys=["Endpoint", "Account"],
-            args_mapping={"endpoint_id_list": "agent_id", "ip_list": "agent_ip", "hostname": "agent_hostname"},
-            output_mapping={},
+            output_keys=["Endpoint", "Account", "Core.Endpoint"],
+            args_mapping={"endpoint_id_list": "endpoint_id", "ip_list": "endpoint_ip", "hostname": "endpoint_hostname"},
+            output_mapping={
+                "ID": "ID",
+                "Hostname": "Hostname",
+                "IPAddress": "IPAddress",
+                "Status": "Status",
+                "IsIsolated": "IsIsolated",
+            },
         ),
         Command(
-            brand="Generic Command",
+            brand=GENERIC_COMMAND_BRAND,
             name="endpoint",
             output_keys=["Endpoint"],
-            args_mapping={"id": "agent_id", "ip": "agent_ip", "name": "agent_hostname"},
-            output_mapping={},
+            args_mapping={"id": "endpoint_id", "ip": "endpoint_ip", "hostname": "endpoint_hostname"},
+            output_mapping={
+                "ID": "ID",
+                "Hostname": "Hostname",
+                "IPAddress": "IPAddress",
+                "Status": "Status",
+                "IsIsolated": "IsIsolated",
+                "Vendor": "Brand",
+            },
         ),
         Command(
             brand="Active Directory Query v2",
             name="ad-get-computer",
-            output_keys=["Endpoint"],
-            args_mapping={"name": "agent_hostname"},
-            output_mapping={},
+            output_keys=["Endpoint", "ActiveDirectory.Computers"],
+            args_mapping={"name": "endpoint_hostname"},
+            output_mapping={"ID": "ID", "Hostname": "Hostname"},
             post_processing=active_directory_post,
         ),
         Command(
             brand="McAfee ePO v2",
             name="epo-find-system",
-            output_keys=["Endpoint"],
-            args_mapping={"searchText": "agent_hostname"},
-            output_mapping={},
+            output_keys=["Endpoint", "McAfee.ePO.Endpoint"],
+            args_mapping={},
+            prepare_args_mapping=prepare_epo_args,
+            output_mapping={"ID": "ID", "Hostname": "Hostname", "IPAddress": "IPAddress"},
+            not_found_checker="No systems found",
         ),
-        Command(
-            brand="ExtraHop v2",
-            name="extrahop-devices-search",
-            output_keys=["ExtraHop.Device"],
-            args_mapping={"name": "agent_hostname"},
-            output_mapping=extra_hop_mapping,
-        ),
+        # Command(
+        #     brand="ExtraHop v2",
+        #     name="extrahop-devices-search",
+        #     output_keys=["ExtraHop.Device"],
+        #     args_mapping={"name": "endpoint_hostname"},
+        #     output_mapping=extra_hop_mapping,
+        # ),
         Command(
             brand="Cortex XDR - IR",
             name="xdr-list-risky-hosts",
             output_keys=["PaloAltoNetworksXDR.RiskyHost"],
-            args_mapping={"host_id": "agent_id"},
+            args_mapping={"host_id": "endpoint_id"},
             output_mapping={"id": "ID"},
+            not_found_checker="was not found",
         ),
         Command(
-            brand="Cylance Protect v2",
-            name="cylance-protect-get-devices",
-            output_keys=["Endpoint"],
-            args_mapping={},
-            output_mapping={},
-            post_processing=cylance_filtering,
+            brand="FireEyeHX v2",
+            name="fireeye-hx-get-host-information",
+            output_keys=["FireEyeHX.Hosts"],
+            args_mapping={"agentId": "endpoint_id", "hostName": "endpoint_hostname"},
+            output_mapping={
+                "_id": "ID",
+                "hostname": "Hostname",
+                "primary_ip_address": "IPAddress",
+                "containment_state": "Status",
+            },
+            not_found_checker="is not correct",
         ),
     ]
 
@@ -297,35 +411,54 @@ def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandR
         Command(
             brand="Cortex XDR - IR",
             name="xdr-get-endpoints",
-            output_keys=["Endpoint", "Account"],
-            args_mapping={"endpoint_id_list": "agent_id", "ip_list": "agent_ip", "hostname": "agent_hostname"},
-            output_mapping={},
+            output_keys=["Endpoint", "PaloAltoNetworksXDR.Endpoint"],
+            args_mapping={"endpoint_id_list": "endpoint_id", "ip_list": "endpoint_ip", "hostname": "endpoint_hostname"},
+            output_mapping={
+                "ID": "ID",
+                "Hostname": "Hostname",
+                "IPAddress": "IPAddress",
+                "Status": "Status",
+                "IsIsolated": "IsIsolated",
+            },
         ),
         Command(
             brand="Cortex Core - IR",
             name="core-list-risky-hosts",
             output_keys=["Endpoint"],
-            args_mapping={"host_id": "agent_id"},
+            args_mapping={"host_id": "endpoint_id"},
             output_mapping={"id": "ID"},
         ),
         Command(
             brand="CrowdstrikeFalcon",
             name="cs-falcon-search-device",
-            output_keys=["Endpoint"],
-            args_mapping={"ids": "agent_id", "hostname": "agent_hostname"},
-            output_mapping={},
+            output_keys=["Endpoint", "CrowdStrike.Device"],
+            args_mapping={"ids": "endpoint_id", "hostname": "endpoint_hostname"},
+            prepare_args_mapping=prepare_cs_falcon_args,
+            output_mapping={
+                "ID": "ID",
+                "Hostname": "Hostname",
+                "IPAddress": "IPAddress",
+                "Status": "Status",
+                "IsIsolated": "IsIsolated",
+            },
+            not_found_checker="Could not find any devices.",
         ),
     ]
 
     return command_runner, single_args_commands, list_args_commands
 
 
-def run_single_args_commands(zipped_args, single_args_commands, command_runner, verbose, endpoint_outputs_list):
+def run_single_args_commands(
+    zipped_args,
+    single_args_commands,
+    command_runner: EndpointCommandRunner,
+    verbose: bool,
+):
     """
     Runs the single-argument commands and returns the command results, human-readable outputs, and a list of endpoints
     that were not found.
     Args:
-        zipped_args (Iterable[Tuple[Any, Any, Any]]): A list of tuples containing agent ID, agent IP, and agent hostname.
+        zipped_args (Iterable[Tuple[Any, Any, Any]]): A list of tuples containing endpoint ID, endpoint IP, and endpoint hostname.
         single_args_commands (List[Command]): A list of single-argument commands to run.
         command_runner (EndpointCommandRunner): The EndpointCommandRunner instance to use for running the commands.
         verbose (bool): A flag indicating whether to print verbose output.
@@ -335,31 +468,34 @@ def run_single_args_commands(zipped_args, single_args_commands, command_runner, 
         The endpoints that were successfully found, list of endpoints that were not found, and a list of command results.
     """
     command_results_list = []
-    for agent_id, agent_ip, agent_hostname in zipped_args:
-        single_endpoint_outputs = []
-        single_endpoint_readable_outputs = []
+    endpoint_outputs_list = []
+    for endpoint_id, endpoint_ip, endpoint_hostname in zipped_args:
+        single_endpoint_readable_outputs: list[CommandResults] = []
 
         for command in single_args_commands:
             readable_outputs, endpoint_output = command_runner.run_command(
-                command=command, endpoint_args={"agent_id": agent_id, "agent_ip": agent_ip, "agent_hostname": agent_hostname}
+                command=command,
+                endpoint_args={"endpoint_id": endpoint_id, "endpoint_ip": endpoint_ip, "endpoint_hostname": endpoint_hostname},
             )
 
             if endpoint_output:
-                single_endpoint_outputs.append(endpoint_output)
+                endpoint_outputs_list.extend(endpoint_output)
             single_endpoint_readable_outputs.extend(readable_outputs)
 
         if verbose:
             command_results_list.extend(single_endpoint_readable_outputs)
-
-        merged_endpoints = merge_endpoint_outputs(single_endpoint_outputs)
-        endpoint_outputs_list.extend(merged_endpoints)
 
     demisto.debug(f"ending single arg loop with {len(endpoint_outputs_list)} endpoints")
     return endpoint_outputs_list, command_results_list
 
 
 def run_list_args_commands(
-    list_args_commands, command_runner, agent_ids, agent_ips, agent_hostnames, endpoint_outputs_list, verbose
+    list_args_commands,
+    command_runner: EndpointCommandRunner,
+    endpoint_id,
+    endpoint_ips,
+    endpoint_hostnames,
+    verbose,
 ):
     """
     Runs the list-argument commands and returns the command results, human-readable outputs, and a list of
@@ -367,10 +503,10 @@ def run_list_args_commands(
     Args:
         list_args_commands (List[Command]): A list of list-argument commands to run.
         command_runner (EndpointCommandRunner): The EndpointCommandRunner instance to use for running the commands.
-        agent_ids (List[str]): A list of agent IDs.
-        agent_ips (List[str]): A list of agent IPs.
-        agent_hostnames (List[str]): A list of agent hostnames.
-        zipped_args (Iterable[Tuple[Any, Any, Any]]): A list of tuples containing agent ID, agent IP, and agent hostname.
+        endpoint_id (List[str]): A list of endpoint IDs.
+        endpoint_ips (List[str]): A list of endpoint IPs.
+        endpoint_hostnamees (List[str]): A list of endpoint hostnames.
+        zipped_args (Iterable[Tuple[Any, Any, Any]]): A list of tuples containing endpoint ID, endpoint IP, and endpoint hostname.
         endpoint_outputs_list (List[Dict[str, Any]]): A list to store the output from the commands.
         verbose (bool): A flag indicating whether to print verbose output.
     Returns:
@@ -378,23 +514,24 @@ def run_list_args_commands(
         The endpoints that were successfully found and a list of command results.
     """
     multiple_endpoint_outputs = []
-    multiple_endpoint_readable_outputs = []
+    multiple_endpoint_readable_outputs: list[CommandResults] = []
 
     for command in list_args_commands:
         readable_outputs, endpoint_output = command_runner.run_command(
             command,
-            {"agent_id": ",".join(agent_ids), "agent_ip": ",".join(agent_ips), "agent_hostname": ",".join(agent_hostnames)},
+            {
+                "endpoint_id": ",".join(endpoint_id),
+                "endpoint_ip": ",".join(endpoint_ips),
+                "endpoint_hostname": ",".join(endpoint_hostnames),
+            },
         )
 
         if endpoint_output:
-            multiple_endpoint_outputs.append(endpoint_output)
+            multiple_endpoint_outputs.extend(endpoint_output)
         if verbose:
             multiple_endpoint_readable_outputs.extend(readable_outputs)
 
-    merged_endpoints = merge_endpoint_outputs(multiple_endpoint_outputs)
-    endpoint_outputs_list.extend(merged_endpoints)
-
-    return endpoint_outputs_list, multiple_endpoint_readable_outputs
+    return multiple_endpoint_outputs, multiple_endpoint_readable_outputs
 
 
 def safe_list_get(lst: list, idx: int, default: Any):
@@ -415,30 +552,46 @@ def safe_list_get(lst: list, idx: int, default: Any):
         return default
 
 
-def create_endpoint(command_output: dict[str, Any], output_mapping: dict[str, str], source: str) -> dict[str, Any]:
+def create_endpoint(
+    command_output: dict[str, Any],
+    output_mapping: dict[str, str],
+    brand: str,
+    add_additional_fields: bool,
+    is_failed: bool = False,
+) -> dict[str, Any]:
     """
-    Creates an endpoint dictionary from command output, output mapping, and source.
+    Creates an endpoint dictionary from command output, output mapping, and brand.
 
     This function processes the command output and creates a structured endpoint dictionary.
     It maps the command output keys to endpoint keys based on the provided output mapping,
-    and includes the source information for each value.
+    and includes the brand information for each value.
 
     Args:
         command_output (dict[str, Any]): The output from a command execution.
         output_mapping (dict[str, str] | Callable): A mapping of command output keys to endpoint keys.
             If a function is passed, the function does nothing and returns the result of the passed function.
-        source (str): The source of the data.
+        brand (str): The brand of the data.
+        add_additional_fields (bool): Flag to include additional fields in the endpoint dictionary.
+        is_failed (bool, optional): Flag to indicate if the command failed. Defaults to False.
 
     Returns:
-        dict[str, Any]: A structured endpoint dictionary with values and their sources.
+        dict[str, Any]: A structured endpoint dictionary with values and their brands.
     """
     if not command_output:
         return {}
+    message = COMMAND_SUCCESS_MSG if not is_failed else COMMAND_FAILED_MSG
+    endpoint: dict[str, Any] = {"Message": message}
+    additional_fields = {}
 
-    endpoint = {}
     for key, value in command_output.items():
-        endpoint_key = mapped_key if (mapped_key := output_mapping.get(key)) else key
-        endpoint[endpoint_key] = {"Value": value, "Source": source}
+        if mapped_key := output_mapping.get(key):
+            endpoint[mapped_key] = value
+        else:
+            additional_fields[key] = value
+    if "Brand" not in endpoint:  # in case of not "Generic Command"
+        endpoint["Brand"] = brand
+    if add_additional_fields:
+        endpoint["AdditionalFields"] = additional_fields
 
     return endpoint
 
@@ -484,7 +637,7 @@ def hr_to_command_results(
     result = None
     if human_readable:
         command = f'!{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
-        result_type = EntryType.ERROR if is_error else None
+        result_type = EntryType.ERROR if is_error else EntryType.NOTE
         result_message = f"#### {'Error' if is_error else 'Result'} for {command}\n{human_readable}"
         result = CommandResults(readable_output=result_message, entry_type=result_type, mark_as_note=True)
     return result
@@ -585,7 +738,7 @@ def get_raw_endpoints(output_keys: list[str], raw_context: list[dict[str, Any]])
     """
     Merges data structures from different output keys into a single endpoint.
 
-    This function processes data from different sources with varying structures
+    This function processes data from different brands with varying structures
     and merges it into a list of dictionaries. Each dictionary represents a single
     endpoint, combining data from different keys.
 
@@ -593,7 +746,7 @@ def get_raw_endpoints(output_keys: list[str], raw_context: list[dict[str, Any]])
         output_keys (list of str): A list of strings representing the keys to access
                                    in the dictionaries within `raw_context`.
         raw_context (list of dict): A list of dictionaries where each dictionary
-                                    contains data from different sources.
+                                    contains data from different brands.
 
     Returns:
         list of dict: A consolidated list where each dictionary represents a single
@@ -659,13 +812,16 @@ def get_raw_endpoints(output_keys: list[str], raw_context: list[dict[str, Any]])
     return raw_endpoints
 
 
-def create_endpoints(raw_endpoints: list[dict[str, Any]], output_mapping: dict | Callable, brand: str) -> list[dict[str, Any]]:
+def create_endpoints(
+    raw_endpoints: list[dict[str, Any]], output_mapping: dict | Callable, brand: str, add_additional_fields: bool
+) -> list[dict[str, Any]]:
     """
     Creates a list of endpoint dictionaries from the raw endpoint data.
     Args:
         raw_endpoints (list[dict[str, Any]]): The raw endpoint data to be processed.
         output_mapping (dict | Callable): A dictionary or a callable that maps the raw data to the desired output format.
         brand (str): The brand associated with the endpoints.
+        add_additional_fields (bool): Flag to determine whether to add additional fields to the endpoint.
 
     Returns:
         list[dict[str, Any]]: A list of endpoint dictionaries.
@@ -673,22 +829,23 @@ def create_endpoints(raw_endpoints: list[dict[str, Any]], output_mapping: dict |
     endpoints = []
     for raw_endpoint in raw_endpoints:
         output_map = output_mapping(raw_endpoint) if callable(output_mapping) else output_mapping
-        endpoints.append(create_endpoint(raw_endpoint, output_map, brand))
+        endpoints.append(create_endpoint(raw_endpoint, output_map, brand, add_additional_fields))
     return endpoints
 
 
-def entry_context_to_endpoints(command: Command, entry_context: list) -> list[dict[str, Any]]:
+def entry_context_to_endpoints(command: Command, entry_context: list, add_additional_fields: bool) -> list[dict[str, Any]]:
     """
     Processes the entry context and generates a list of endpoint dictionaries.
     Args:
         command (Command): A Command object containing the necessary configuration for the endpoint generation.
         entry_context (list): The entry context data to be processed.
+        add_additional_fields (bool): Flag to determine whether to add additional fields to the endpoints.
 
     Returns:
         list[dict[str, Any]]: A list of endpoint dictionaries generated from the entry context.
     """
     raw_endpoints = get_raw_endpoints(command.output_keys, entry_context)
-    endpoints = create_endpoints(raw_endpoints, command.output_mapping, command.brand)
+    endpoints = create_endpoints(raw_endpoints, command.output_mapping, command.brand, add_additional_fields)
     demisto.debug(f"Returning {len(endpoints)} endpoints")
     return endpoints
 
@@ -698,7 +855,7 @@ def merge_endpoint_outputs(endpoint_outputs: list[list[dict[str, Any]]]) -> list
     Merges a list of lists of endpoint dictionaries into a single list of merged endpoint dictionaries.
     Args:
         endpoint_outputs (list[list[dict[str, Any]]]): A list of lists of endpoint dictionaries, where each inner list
-        represents the endpoint data from a different source.
+        represents the endpoint data from a different brand.
 
     Returns:
         list[dict[str, Any]]: A list of merged endpoint dictionaries.
@@ -713,69 +870,63 @@ def merge_endpoint_outputs(endpoint_outputs: list[list[dict[str, Any]]]) -> list
     return merged_endpoints
 
 
-def create_endpoints_not_found_list(endpoints: list[dict[str, Any]], zipped_args: list[tuple]) -> list[dict[str, str]]:
+def get_endpoints_not_found_list(endpoints: list[dict[str, Any]], zipped_args: list[tuple]) -> list[dict[str, str]]:
     """
     Identify endpoints not found in the provided endpoints.
 
     Args:
         endpoints (list of dict): List of endpoint dictionaries with 'Hostname', 'ID', and 'IPAddress' keys.
-        zipped_args (list of tuple): List of tuples, each containing (agent_id, agent_ip, agent_hostname).
+        zipped_args (list of tuple): List of tuples, each containing (endpoint_id, endpoint_ip, endpoint_hostname).
 
     Returns:
-        list of dict: List of dictionaries with 'Key' for agents not found, containing comma-separated agent_id, agent_ip,
-        and agent_hostname.
+        list of dict: List of dictionaries with 'Key' for endpoints not found, containing comma-separated endpoint_id, endpoint_ip
+        and endpoint_hostname.
     """
     endpoints_not_found = []
     hostnames = set()
     ids = set()
     ips = set()
     for endpoint in endpoints:
-        hostnames_list = [hostname["Value"] for hostname in to_list(endpoint.get("Hostname"))]
-        ids_list = [id["Value"] for id in to_list(endpoint.get("ID"))]
-        ips_list = [ip["Value"] for ip in to_list(endpoint.get("IPAddress"))]
+        if endpoint["Message"] == COMMAND_FAILED_MSG:
+            continue
+        hostnames_list = to_list(endpoint.get("Hostname"))
+        ids_list = to_list(endpoint.get("ID"))
+        ips_list = to_list(endpoint.get("IPAddress"))
         hostnames.update(hostnames_list)
         ids.update(ids_list)
         ips.update(ips_list)
-    for agent_id, agent_ip, agent_hostname in zipped_args:
-        if agent_id not in ids and agent_ip not in ips and agent_hostname not in hostnames:
-            keys = (agent_id, agent_ip, agent_hostname)
-            endpoints_not_found.append({"Key": ", ".join([key for key in keys if key])})
+
+    for endpoint_id, endpoint_ip, endpoint_hostname in zipped_args:
+        if endpoint_id not in ids and endpoint_ip not in ips and endpoint_hostname not in hostnames:
+            endpoints_not_found.append({"ID": endpoint_id, "Hostname": endpoint_hostname, "IPAddress": endpoint_ip})
     return endpoints_not_found
 
 
-def extra_hop_mapping(outputs: dict[str, Any]) -> dict[str, str]:
-    output_mapping = {"Macaddr": "MACAddress", "Vendor": "Vendor", "Id": "ID", "DhcpName": "DHCPServer", "DnsName": "Domain"}
-    if outputs.get("Ipaddr6", None) and not outputs.get("Ipaddr4", None):
-        output_mapping["Ipaddr6"] = "IPAddress"
-    else:
-        output_mapping["Ipaddr4"] = "IPAddress"
-    return output_mapping
-
-
-def cylance_filtering(endpoints: list[dict[str, Any]], args: dict[str, Any]) -> list[dict[str, Any]]:
-    filtered_endpoints = []
-    hostnames = to_list(args.get("agent_hostname", []))
-    if not hostnames:
-        return endpoints
-    for endpoint in endpoints:
-        endpoint_hostname = endpoint["Hostname"]["Value"]
-        if endpoint_hostname in hostnames:
-            filtered_endpoints.append(endpoint)
-    return filtered_endpoints
+# def extra_hop_mapping(outputs: dict[str, Any]) -> dict[str, str]:
+#     output_mapping = {"Id": "ID"}
+#     if outputs.get("Ipaddr6", None) and not outputs.get("Ipaddr4", None):
+#         output_mapping["Ipaddr6"] = "IPAddress"
+#     else:
+#         output_mapping["Ipaddr4"] = "IPAddress"
+#     return output_mapping
 
 
 def active_directory_post(endpoints: list[dict[str, Any]], args: dict[str, Any]) -> list[dict[str, Any]]:
     fixed_endpoints = []
     for endpoint in endpoints:
-        endpoint_hostname = endpoint["Hostname"]["Value"]
+        endpoint_hostname = endpoint["Hostname"]
         if isinstance(endpoint_hostname, str):
             fixed_endpoints.append(endpoint)
         elif isinstance(endpoint_hostname, list) and len(endpoint_hostname) == 1:
-            endpoint["Hostname"]["Value"] = endpoint_hostname[0]
+            endpoint["Hostname"] = endpoint_hostname[0]
             fixed_endpoints.append(endpoint)
         else:
             raise ValueError("Invalid hostname")
     return fixed_endpoints
+
+
+def convert_none_to_empty_string(item: str | None) -> str:
+    return "" if item is None else item
 
 
 """ MAIN FUNCTION """
@@ -784,39 +935,42 @@ def active_directory_post(endpoints: list[dict[str, Any]], args: dict[str, Any])
 def main():
     try:
         args = demisto.args()
-        agent_ids = argToList(args.get("agent_id", []))
-        agent_ips = argToList(args.get("agent_ip", []))
-        agent_hostnames = argToList(args.get("agent_hostname", []))
+        endpoint_ids = argToList(args.get("endpoint_id", []), transform=convert_none_to_empty_string)
+        endpoint_ips = argToList(args.get("endpoint_ip", []), transform=convert_none_to_empty_string)
+        endpoint_hostnames = argToList(args.get("endpoint_hostname", []), transform=convert_none_to_empty_string)
         verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get("brands", []))
+        add_additional_fields = argToBoolean(args.get("additional_fields", False))
         module_manager = ModuleManager(demisto.getModules(), brands_to_run)
 
-        if not any((agent_ids, agent_ips, agent_hostnames)):
-            raise ValueError("At least one of the following arguments must be specified: agent_id, agent_ip or agent_hostname.")
+        if not any((endpoint_ids, endpoint_ips, endpoint_hostnames)):
+            raise ValueError(
+                "At least one of the following arguments must be specified: endpoint_id, endpoint_ip or endpoint_hostname."
+            )
 
         endpoint_outputs_list: list[dict[str, Any]] = []
-        endpoints_not_found_list: list[dict] = []
+        command_results_list: list[CommandResults] = []
 
-        command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager)
-        zipped_args: list[tuple] = list(zip_longest(agent_ids, agent_ips, agent_hostnames, fillvalue=""))
+        command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager, add_additional_fields)
+        zipped_args: list[tuple] = list(zip_longest(endpoint_ids, endpoint_ips, endpoint_hostnames, fillvalue=""))
 
-        endpoint_outputs_list, command_results_list = run_single_args_commands(
-            zipped_args, single_args_commands, command_runner, verbose, endpoint_outputs_list
+        endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
+            zipped_args, single_args_commands, command_runner, verbose
         )
+        endpoint_outputs_list.extend(endpoint_outputs_single_commands)
+        command_results_list.extend(command_results_single_commands)
 
-        endpoint_outputs_list, command_results_list = run_list_args_commands(
-            list_args_commands, command_runner, agent_ids, agent_ips, agent_hostnames, endpoint_outputs_list, verbose
+        endpoint_outputs_list_commands, command_results_list_commands = run_list_args_commands(
+            list_args_commands, command_runner, endpoint_ids, endpoint_ips, endpoint_hostnames, verbose
         )
+        endpoint_outputs_list.extend(endpoint_outputs_list_commands)
+        command_results_list.extend(command_results_list_commands)
 
-        if len(endpoint_outputs_list) < len(zipped_args):
-            endpoints_not_found_list.extend(create_endpoints_not_found_list(endpoint_outputs_list, zipped_args))
-
-        if endpoints_not_found_list:
+        if endpoints_not_found_list := get_endpoints_not_found_list(endpoint_outputs_list, zipped_args):
             command_results_list.append(
                 CommandResults(
                     readable_output=tableToMarkdown(
                         name="Endpoint(s) not found",
-                        headers=["Key"],
                         t=endpoints_not_found_list,
                     )
                 )
@@ -824,13 +978,13 @@ def main():
         if endpoint_outputs_list:
             command_results_list.append(
                 CommandResults(
-                    outputs_prefix="Endpoint",
-                    outputs_key_field="Hostname.Value",
+                    outputs_prefix="EndpointData",
+                    outputs_key_field=["Brand", "ID", "Hostname"],  # TODO, "IPAddress"],
                     outputs=endpoint_outputs_list,
                     readable_output=tableToMarkdown(
                         name="Endpoint(s) data",
-                        t=endpoint_outputs_list,
-                        headers=["ID", "IPAddress", "Hostname"],
+                        t=list(filter(lambda ep: COMMAND_FAILED_MSG not in ep["Message"], endpoint_outputs_list)),
+                        headers=["Brand", "ID", "Hostname", "IPAddress", "Status", "IsIsolated", "Message"],
                         removeNull=True,
                     ),
                 )
