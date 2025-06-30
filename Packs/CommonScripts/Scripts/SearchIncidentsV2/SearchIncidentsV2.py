@@ -3,7 +3,6 @@ from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-special = ["n", "t", "\\", '"', "'", "7", "r"]
 DEFAULT_LIMIT = 100
 DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
@@ -50,6 +49,8 @@ def is_valid_args(args: Dict):
                         )
                     elif isinstance(value, str):
                         _ = bytes(value, "utf-8").decode("unicode_escape")
+                elif _key == "query":
+                    _ = bytes(value.replace("\\", "\\\\"), "utf-8").decode("unicode_escape")
                 else:
                     _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
