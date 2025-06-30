@@ -246,6 +246,8 @@ class S3:
                 entry_type=EntryType.ERROR,
                 readable_output=f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}",
             )
+
+
 class IAM:
     service = AWSServices.IAM
 
@@ -357,7 +359,165 @@ class IAM:
             raise DemistoException(
                 f"Failed to add policy '{policy_name}' to role '{role_name}'. Error: {str(e)}"
             )
+   
+    @staticmethod
+    def delete_login_profile_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
 
+        Args:
+            client (BotoClient): The boto3 client for IAM service
+            args (Dict[str, Any]): Command arguments including:
+                - user_name (str): The name of the user whose password you want to delete
+
+        Returns:
+            CommandResults: Results of the operation with success/failure message
+        """
+        user_name = args.get("user_name", "")
+        
+        try:
+            response = client.delete_login_profile(UserName=user_name)
+            
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                return CommandResults(
+                    readable_output=f"Successfully deleted login profile for user '{user_name}'"
+                )
+            else:
+                return CommandResults(
+                    entry_type=EntryType.ERROR,
+                    readable_output=f"Failed to delete login profile for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                )
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Error deleting login profile for user '{user_name}': {str(e)}"
+            )
+    
+    @staticmethod
+    def put_user_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds or updates an inline policy document that is embedded in the specified IAM user.
+
+        Args:
+            client (BotoClient): The boto3 client for IAM service
+            args (Dict[str, Any]): Command arguments including:
+                - user_name (str): The name of the user to associate the policy with
+                - policy_name (str): The name of the policy document
+                - policy_document (str): The policy document in JSON format
+
+        Returns:
+            CommandResults: Results of the operation with success/failure message
+        """
+        user_name = args.get("user_name", "")
+        policy_name = args.get("policy_name", "")
+        policy_document = args.get("policy_document", "")
+        
+        try:
+            response = client.put_user_policy(
+                UserName=user_name,
+                PolicyName=policy_name,
+                PolicyDocument=json.dumps(policy_document) if isinstance(policy_document, dict) else policy_document
+            )
+            
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                return CommandResults(
+                    readable_output=f"Successfully added/updated policy '{policy_name}' for user '{user_name}'"
+                )
+            else:
+                return CommandResults(
+                    entry_type=EntryType.ERROR,
+                    readable_output=f"Failed to add/update policy '{policy_name}' for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                )
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Error adding/updating policy '{policy_name}' for user '{user_name}': {str(e)}"
+            )
+    
+    @staticmethod
+    def remove_role_from_instance_profile_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Removes the specified IAM role from the specified EC2 instance profile.
+
+        Args:
+            client (BotoClient): The boto3 client for IAM service
+            args (Dict[str, Any]): Command arguments including:
+                - instance_profile_name (str): The name of the instance profile to update
+                - role_name (str): The name of the role to remove
+
+        Returns:
+            CommandResults: Results of the operation with success/failure message
+        """
+        instance_profile_name = args.get("instance_profile_name", "")
+        role_name = args.get("role_name", "")
+        
+        try:
+            response = client.remove_role_from_instance_profile(
+                InstanceProfileName=instance_profile_name,
+                RoleName=role_name
+            )
+            
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                return CommandResults(
+                    readable_output=f"Successfully removed role '{role_name}' from instance profile '{instance_profile_name}'"
+                )
+            else:
+                return CommandResults(
+                    entry_type=EntryType.ERROR,
+                    readable_output=f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                )
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Error removing role '{role_name}' from instance profile '{instance_profile_name}': {str(e)}"
+            )
+    
+    @staticmethod
+    def update_access_key_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's access key as part of a key rotation workflow.
+
+        Args:
+            client (BotoClient): The boto3 client for IAM service
+            args (Dict[str, Any]): Command arguments including:
+                - access_key_id (str): The access key ID of the secret access key you want to update
+                - status (str): The status you want to assign to the secret access key (Active/Inactive)
+                - user_name (str, optional): The name of the user whose key you want to update
+
+        Returns:
+            CommandResults: Results of the operation with success/failure message
+        """
+        access_key_id = args.get("access_key_id", "")
+        status = args.get("status", "")
+        user_name = args.get("user_name")
+        
+        kwargs = {
+            "AccessKeyId": access_key_id,
+            "Status": status
+        }
+        
+        if user_name:
+            kwargs["UserName"] = user_name
+        
+        try:
+            response = client.update_access_key(**kwargs)
+            
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                user_info = f" for user '{user_name}'" if user_name else ""
+                return CommandResults(
+                    readable_output=f"Successfully updated access key '{access_key_id}' status to '{status}'{user_info}"
+                )
+            else:
+                return CommandResults(
+                    entry_type=EntryType.ERROR,
+                    readable_output=f"Failed to update access key '{access_key_id}' status. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                )
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Error updating access key '{access_key_id}' status: {str(e)}"
+            )
+    
 
 class EC2:
     service = AWSServices.EC2
@@ -474,46 +634,49 @@ class EC2:
         """
         Modify the specified attribute of an Amazon Machine Image (AMI).
         """
-        # Build the base kwargs dictionary
         kwargs = {
-            "Attribute": args.get("Attribute"),
-            "ImageId": args.get("ImageId"),
-            "Value": args.get("Value"),
-            "OperationType": args.get("OperationType"),
+            "Attribute":        args.get("attribute"),
+            "ImageId":          args.get("image_id"),
+            "OperationType":    args.get("operation_type"),
         }
 
-        # Add description if provided
-        if args.get("Description"):
-            kwargs["Description"] = {"Value": args.get("Description")}
+        if desc := args.get("description"):
+            kwargs["Description"] = {"Value": desc}
 
-        # Parse resource IDs
-        for resource_type in ["UserIds", "UserGroups", "ProductCodes"]:
-            if args.get(resource_type):
-                kwargs[resource_type] = parse_resource_ids(args.get(resource_type))
+        # Map snake_case arg names → CapitalCase boto3 params
+        resource_mapping = {
+            "user_ids": "UserIds",
+            "user_groups": "UserGroups",
+            "product_codes": "ProductCodes",
+        }
+        for snake, capital in resource_mapping.items():
+            if ids := args.get(snake):
+                kwargs[capital] = parse_resource_ids(ids)
 
-        # Handle LaunchPermission configuration
-        launch_permission = {"Add": [], "Remove": []}
+        # Build LaunchPermission block from snake_case args
+        launch_perm: dict[str, list[dict[str, str]]] = {"Add": [], "Remove": []}
+        perm_config = [
+            ("launch_permission_add_group",    "Group",   "Add"),
+            ("launch_permission_add_user_id",  "UserId",  "Add"),
+            ("launch_permission_remove_group", "Group",   "Remove"),
+            ("launch_permission_remove_user_id", "UserId","Remove"),
+        ]
+        
+        for arg_key, perm_key, action in perm_config:
+            if val := args.get(arg_key):
+                launch_perm[action].append({perm_key: val})
 
-        # Process Add permissions
-        for permission_type in ["Group", "UserId"]:
-            if value := args.get(f"LaunchPermission-Add-{permission_type}"):
-                launch_permission["Add"].append({permission_type: value})
-
-        # Process Remove permissions
-        for permission_type in ["Group", "UserId"]:
-            if value := args.get(f"LaunchPermission-Remove-{permission_type}"):
-                launch_permission["Remove"].append({permission_type: value})
-
-        # Only add LaunchPermission if any values were added
-        if launch_permission["Add"] or launch_permission["Remove"]:
-            kwargs["LaunchPermission"] = launch_permission
+        if launch_perm["Add"] or launch_perm["Remove"]:
+            kwargs["LaunchPermission"] = launch_perm
 
         remove_nulls_from_dictionary(kwargs)
 
         response = client.modify_image_attribute(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
             raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+
         return CommandResults(readable_output="Image attribute successfully modified")
+
 
     @staticmethod
     def revoke_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -620,11 +783,11 @@ class EC2:
         """
         Revokes an egress rule from a security group.
 
-        The command supports two modes:
-        1. Simple mode: using protocol, port, and cidr arguments
-        2. Full mode: using ip_permissions for complex configurations
+        Modes:
+        1) Full mode: use `ip_permissions` JSON
+        2) Simple mode: protocol, port, cidr → build IpPermissions
         """
-
+        
         def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
             """Parse port argument which can be a single port or range (min-max)."""
             if not port:
@@ -636,34 +799,49 @@ class EC2:
             else:
                 _port: int = int(port.strip())
                 return _port, _port
+            
+        group_id = args.get("group_id")
+        ip_permissions_arg = args.get("ip_permissions")
 
-        kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
-
-        if ip_permissions := args.get("ip_permissions"):
+        if ip_permissions_arg:
+            # Full mode: user provided the entire IpPermissions JSON
             try:
-                kwargs["IpPermissions"] = json.loads(ip_permissions)
+                ip_perms = json.loads(ip_permissions_arg)
             except json.JSONDecodeError as e:
-                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
+                raise DemistoException(f"Invalid `ip_permissions` JSON: {e}")
+        else:
+            # Simple mode: build a single rule descriptor
+            proto = args.get("protocol")
+            from_port, to_port = parse_port_range(args.get("port", ""))
+            cidr = args.get("cidr")
+            ip_perms = [{
+                "IpProtocol": proto,
+                "FromPort": from_port,
+                "ToPort": to_port,
+                "IpRanges": [{"CidrIp": cidr}]
+            }]
 
-        remove_nulls_from_dictionary(kwargs)
+        kwargs = {
+            "GroupId": group_id,
+            "IpPermissions": ip_perms
+        }
+
         try:
-            response = client.revoke_security_group_egress(**kwargs)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
-                if "UnknownIpPermissions" in response:
-                    raise DemistoException("Security Group egress rule not found.")
-                return CommandResults(readable_output="The Security Group egress rule was revoked")
+            resp = client.revoke_security_group_egress(**kwargs)
+            status = resp.get("Return")
+            if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and status:
+                return CommandResults(readable_output="Egress rule revoked successfully.")
             else:
-                raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
-
-        except Exception as e:
-            if "InvalidGroup.NotFound" in str(e):
-                raise DemistoException(f"Security group {kwargs['GroupId']} not found")
-            elif "InvalidGroupId.NotFound" in str(e):
-                raise DemistoException(f"Invalid security group ID: {kwargs['GroupId']}")
-            else:
-                raise DemistoException(f"Failed to revoke security group egress rule: {str(e)}")
+                # If no exception but Return is False, AWS may report unknown perms
+                unknown = resp.get("UnknownIpPermissions")
+                if unknown:
+                    raise DemistoException("Specified egress rule not found.")
+                raise DemistoException(f"Unexpected response: {resp}")
+        except botocore.exceptions.ClientError as e:
+            code = e.response["Error"]["Code"]
+            if code in ("InvalidGroup.NotFound", "InvalidGroupId.NotFound"):
+                raise DemistoException(f"Security group {group_id} not found.")
+            raise DemistoException(f"Failed to revoke egress rule: {e}")
 
 
 class EKS:
@@ -946,6 +1124,7 @@ class RDS:
                 readable_output=f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}",
             )
 
+
 class CloudTrail:
     service = AWSServices.CloudTrail
 
@@ -1027,43 +1206,7 @@ class CloudTrail:
                 entry_type=EntryType.ERROR,
                 readable_output=f"Error updating CloudTrail {args.get('name')}: {str(e)}"
             )        
-# CONCURRENCY_LIMIT = 25           # Rate limit by AWS
-# SEMAPHORE = asyncio.Semaphore(CONCURRENCY_LIMIT)
 
-# async def fetch_permissions_for_account(account_id: str) -> set:
-#     async with SEMAPHORE:
-#         # TODO
-#         await asyncio.sleep(0) # placeholder for the real awaitable
-
-#     return set()
-
-# async def check_permissions():
-#     errors: list[CommandResults] = []
-
-#     accounts: list[str] = get_accounts_by_connector_id(connector_id='1')
-#     tasks = [asyncio.create_task(fetch_permissions_for_account(account)) for account in accounts]
-
-#     for task in asyncio.as_completed(tasks):
-#         try:
-#             account_permissions = await task
-
-#             for missing in REQUIRED_PERMISSIONS - account_permissions:
-#                 errors.append(HealthCheckResult.error(
-#                     account_id=account,
-#                     connector_id=connector_id,
-#                     message=f"Missing permission {missing}",
-#                     error="ErrPermissionMissing", # TODO - enum it
-#                     error_type=ErrorType.PERMISSION_ERROR,
-#                 ))
-#         except Exception as exc:
-#             # Prefer logging to stdout/stderr or struct-logging here
-#             print(f"[WARN] Account task failed: {exc!r}")
-#     return []
-
-# def health_check() -> list[CommandResults] | str:
-#     """
-#     """
-#     return errors or HealthCheckResult.ok()
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-put": S3.put_public_access_block_command,
@@ -1075,6 +1218,10 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
+    "aws-iam-login-profile-delete": IAM.delete_login_profile_command,
+    "aws-iam-user-policy-put": IAM.put_user_policy_command,
+    "aws-iam-role-from-instance-profile-remove": IAM.remove_role_from_instance_profile_command,
+    "aws-iam-access-key-update": IAM.update_access_key_command,
     
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
@@ -1090,89 +1237,56 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
+    
+    "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
+    "aws-cloudtrail-trail-update": CloudTrail.update_trail_command
 }
 
 REQUIRED_ACTIONS: list[str] = [
-    # "iam:PassRole",
-    # "kms:CreateGrant",
-    # "kms:Decrypt",
-    # "kms:DescribeKey",
-    # "kms:GenerateDataKey",
-    # "rds:AddTagsToResource",
-    # "rds:CreateTenantDatabase",
-    # "secretsmanager:CreateSecret",
-    # "secretsmanager:RotateSecret",
-    # "secretsmanager:TagResource",
-    # "rds:ModifyDBCluster",
-    # "rds:ModifyDBClusterSnapshotAttribute",
-    # "rds:ModifyDBInstance",
-    # "rds:ModifyDBSnapshotAttribute",
-    # "s3:PutBucketAcl",
-    # "s3:PutBucketLogging",
-    # "s3:PutBucketVersioning",
-    # "s3:PutBucketPolicy",
-    # "ec2:RevokeSecurityGroupEgress",
-    # "ec2:ModifyImageAttribute",
-    # "ec2:ModifyInstanceAttribute",
-    # "ec2:ModifySnapshotAttribute",
-    # "ec2:RevokeSecurityGroupIngress",
-    # "eks:UpdateClusterConfig",
-    # "iam:DeleteLoginProfile",
-    # "iam:PutUserPolicy",
-    # "iam:RemoveRoleFromInstanceProfile",
-    # "iam:UpdateAccessKey",
-    # "iam:GetAccountPasswordPolicy",
-    # "iam:UpdateAccountPasswordPolicy",
+    "iam:PassRole",
+    "kms:CreateGrant",
+    "kms:Decrypt",
+    "kms:DescribeKey",
+    "kms:GenerateDataKey",
+    "rds:AddTagsToResource",
+    "rds:CreateTenantDatabase",
+    "secretsmanager:CreateSecret",
+    "secretsmanager:RotateSecret",
+    "secretsmanager:TagResource",
+    "rds:ModifyDBCluster",
+    "rds:ModifyDBClusterSnapshotAttribute",
+    "rds:ModifyDBInstance",
+    "rds:ModifyDBSnapshotAttribute",
+    "s3:PutBucketAcl",
+    "s3:PutBucketLogging",
+    "s3:PutBucketVersioning",
+    "s3:PutBucketPolicy",
+    "ec2:RevokeSecurityGroupEgress",
+    "ec2:ModifyImageAttribute",
+    "ec2:ModifyInstanceAttribute",
+    "ec2:ModifySnapshotAttribute",
+    "ec2:RevokeSecurityGroupIngress",
+    "eks:UpdateClusterConfig",
+    "iam:DeleteLoginProfile",
+    "iam:PutUserPolicy",
+    "iam:RemoveRoleFromInstanceProfile",
+    "iam:UpdateAccessKey",
+    "iam:GetAccountPasswordPolicy",
+    "iam:UpdateAccountPasswordPolicy",
     "s3:PutBucketPublicAccessBlock",
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
 ]
 
 
-def check_account_permissions(account_id: str) -> HealthCheckError | None:
-    """_summary_"""
+def test_module():
     pass
 
 
-# def health_check(connector_id: str):
-#     accounts: list[dict] = get_accounts_by_connector_id(connector_id)
-#     health_check_result = HealthCheck(connector_id)
-#     account_id = ''
-#     try:
-
-#         account_id = next((str(account.get("account_id")) for account in accounts if "account_id" in account), None)
-#         if not account_id:
-#             raise DemistoException("No valid account_id found in accounts")
-
-#         shared_creds = get_cloud_credentials(CloudTypes.AWS.value, account_id) # todo need to add expiration
-#         # demisto.debug(f"Retrieved shared {cloud_type} credentials for all accounts")
-#     except Exception as e:
-#         # error_msg = f"Failed to retrieve {cloud_type} credentials for connector {connector_id}: {str(e)}"
-#         demisto.error(e)
-#         health_check_result.error(
-#             HealthCheckError(
-#                 account_id="",  # No specific account since this is a connector-level error
-#                 connector_id=connector_id,
-#                 message=str(e),
-#                 error_type=ErrorType.CONNECTIVITY_ERROR,
-#             )
-#         )
-#         return health_check_result.summarize()
-
-#     while next(account_id):
-#         if not check_account_permissions(account_id):
-#             # TODO - TEST ERROR - REPLACE
-#             health_check.error(
-#                 HealthCheckError(
-#                     account_id=account_id,
-#                     connector_id=connector_id,
-#                     message=f"[BYOSI] Missing 'S3:GetObject' permission for {account_id}",
-#                     error_type=ErrorType.PERMISSION_ERROR,
-#                 )
-#             )
-        
-
-#     return health_check.summarize()
+def health_check(connector_id: str) -> list[CommandResults] | str:
+    """
+    """
+    return HealthStatus.OK
 
 
 def register_proxydome_header(boto_client: BotoClient) -> None:
@@ -1243,7 +1357,6 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     account_id: str = args.get("account_id", "")
 
     credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if True else {}
-    demisto.debug(f"cloud_creds: {json.dumps(credentials, indent=4)}")  # TODO - Remove
     service_client: BotoClient = get_service_client(params, args, command, credentials)
     return COMMANDS_MAPPING[command](service_client, args)
 
@@ -1262,9 +1375,8 @@ def main():  # pragma: no cover
         if command == "test-module":
             context = demisto.callingContext.get("context", {})
             cloud_info = context.get("CloudIntegrationInfo", {})
-            # results = health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else None
-            # return_results(results)
-            return_results("ok")
+            results = health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else test_module()
+            return_results(results)
         elif command in COMMANDS_MAPPING:
             return_results(execute_aws_command(command, args, params))
         else:

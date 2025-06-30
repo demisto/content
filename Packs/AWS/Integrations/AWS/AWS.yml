@@ -540,6 +540,212 @@ script:
       description: 'The policy document in JSON format. Must be a valid IAM policy document that defines the permissions for the role.'
       required: true
 
+  - name: aws-iam-login-profile-delete
+    description: Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: user_name
+      description: The name of the user whose password you want to delete.
+      required: true
+
+  - name: aws-iam-user-policy-put
+    description: Adds or updates an inline policy document that is embedded in the specified IAM user.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: user_name
+      description: The name of the user to associate the policy with.
+      required: true
+    - name: policy_name
+      description: The name of the policy document.
+      required: true
+    - name: policy_document
+      description: The policy document in JSON format. Must be a valid IAM policy document that defines the permissions for the user.
+      required: true
+
+  - name: aws-iam-role-from-instance-profile-remove
+    description: Removes the specified IAM role from the specified EC2 instance profile.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: instance_profile_name
+      description: The name of the instance profile to update.
+      required: true
+    - name: role_name
+      description: The name of the role to remove.
+      required: true
+
+  - name: aws-iam-access-key-update
+    description: Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's access key as part of a key rotation workflow.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: access_key_id
+      description: The access key ID of the secret access key you want to update.
+      required: true
+    - name: status
+      description: The status you want to assign to the secret access key.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'Active'
+      - 'Inactive'
+    - name: user_name
+      description: The name of the user whose key you want to update. If you do not specify a user name, IAM determines the user name implicitly based on the AWS access key ID signing the request.
+      required: false
 
   - name: aws-eks-cluster-config-update
     description: 'Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call.'
@@ -1047,7 +1253,7 @@ script:
       required: false
 
   - name: aws-ec2-snapshot-attribute-modify
-    description: 'Adds or removes permission settings for the specified snapshot.'
+    description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared—use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1107,7 +1313,7 @@ script:
       - 'add'
       - 'remove'
     - name: user_ids
-      description: 'The IDs of the AWS accounts to add to or remove from the list of users that have permission to create EBS volumes from the snapshot.'
+      description: 'CSV list of  AWS accounts IDs to add to or remove from the list of users that have permission to create EBS volumes from the snapshot.'
       required: false
     - name: group
       description: 'The groups to add to or remove from the list of entities that have permission to create volumes from the snapshot.'
@@ -1163,6 +1369,13 @@ script:
     - name: instance_id
       description: 'The ID of the instance.'
       required: true
+    - name: disable_api_stop
+      description: Indicates whether an instance is enabled for stop protection.
+      predefined:
+      - 'true'
+      - 'false'
+    - name: groups
+      description:  CSV list. Replaces the security groups of the instance with the specified security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC.
     - name: attribute
       description: 'The name of the attribute to modify. Possible values: sourceDestCheck, groupSet, ebsOptimized, sriovNetSupport, enaSupport, enclaveOptions, disableApiStop'
       predefined:
@@ -1184,14 +1397,7 @@ script:
       - 'disableApiStop'
     - name: value
       description: A new value for the attribute. Use only with the kernel, ramdisk, userData, disableApiTermination, or instanceInitiatedShutdownBehavior attribute.
-    - name: disable_api_stop
-      description: Indicates whether an instance is enabled for stop protection.
-      predefined:
-      - 'true'
-      - 'false'
-    - name: groups
-      description:  CSV list. Replaces the security groups of the instance with the specified security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC.
-  
+    
   - name: aws-ec2-image-attribute-modify
     description: 'Modifies the specified attribute of the specified AMI.'
     arguments:
