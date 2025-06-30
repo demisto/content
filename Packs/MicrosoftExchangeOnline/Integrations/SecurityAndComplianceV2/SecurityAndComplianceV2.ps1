@@ -839,33 +839,52 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]GetSearch([string]$search_name) {
+    [psobject]GetSearch(
+        [string]$search_name,
+        [string]$error_action = $null
+    ) {
         # Establish session to remote
         $this.CreateDelegatedSession("Get-ComplianceSearch")
-        # Import and Execute command
-        $response = Get-ComplianceSearch -Identity $search_name
-
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $search_name
+        }
+    
+        if ($error_action) {
+            $cmd_params["ErrorAction"] = $error_action
+        }
+    
+        # Execute command
+        $response = Get-ComplianceSearch @cmd_params
+    
         # Close session to remote
         $this.DisconnectSession()
-
+    
         return $response
-        <#
-            .DESCRIPTION
-            Get compliance search by name from the Security & Compliance Center.
+    <#
+        .DESCRIPTION
+        Get compliance search by name from the Security & Compliance Center.
 
-            .PARAMETER search_name
-            The name of the compliance search.
+        .PARAMETER search_name
+        The name of the compliance search.
 
-            .EXAMPLE
-            $client.GetSearch("new-search")
+        .PARAMETER error_action
+        Specifies what action to take if the command encounters an error.
 
-            .OUTPUTS
-            psobject - Raw response.
+        .EXAMPLE
+        $client.GetSearch("new-search")
 
-            .LINK
-            https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearch?view=exchange-ps
-        #>
-    }
+        .EXAMPLE
+        $client.GetSearch("new-search", "SilentlyContinue")
+
+        .OUTPUTS
+        psobject - Raw response.
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearch?view=exchange-ps
+    #>
+}
 
     StartSearch([string]$search_name) {
         # Establish session to remote
@@ -1731,7 +1750,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $all_results = ConvertTo-Boolean $kwargs.all_results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearch($kwargs.search_name)
+    $raw_response = $client.GetSearch($kwargs.search_name, "")
     # Check if raw_response is null
     if ($null -eq $raw_response) {
         # Handle the scenerio if a search is not found:
@@ -2037,11 +2056,12 @@ function SearchAndRecoveryEmailCommand {
     } else {
         $search_name = $baseName
     }
+    $Demisto.results("search_name: " + $search_name)
     $search_action_name = "${search_name}_Preview"
     $entry_context = @{}
     $polling_args = $kwargs
 
-    $search = $client.GetSearch($search_name)
+    $search = $client.GetSearch($search_name, "SilentlyContinue")
     if (-not $search) {
         $Demisto.results("Search not found. Creating new search: $search_name")
         $kql = "internetMessageId:`"$internet_message_id`""
@@ -2278,7 +2298,10 @@ function Main {
             -Outputs $entry_context `
             -RawResponse $raw_response `
             -CommandName $command `
-            -PollingArgs $polling_args | Out-Null
+            -PollingArgs $polling_args `
+            -RemoveSelfRefs $true `
+            -NextRun "30" `
+            -Timeout "120" | Out-Null
         }
         else {
             ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
