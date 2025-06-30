@@ -268,7 +268,7 @@ class PychromeEventHandler:
                     else:
                         demisto.debug(
                             "PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, "
-                            f" {self.tab.id=}, {self.path=}"
+                            f"{self.tab.id=}, {self.path=}"
                         )
                         self.tab_ready_event.set()
                 else:
