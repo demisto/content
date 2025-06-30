@@ -161,9 +161,8 @@ class Client(BaseClient):  # pragma: no cover
                     f"Test-IronScales: first and last incidents ids for page num {str(page-1)}:\
                     {str(new_incidents[0])}, {str(new_incidents[-1])}"
                 )
-                if (
-                    last_id and new_incidents[-1] <= last_id
-                ):  # Make that there is at least 1 new incident in the fetch. WATCH OUT -
+                if last_id and new_incidents[-1] <= last_id:
+                    # Make that there is at least 1 new incident in the fetch. WATCH OUT -
                     # AFTER SECOND MEETING, THIS CONDITION MIGHT COUS BUGS!
                     demisto.debug("Test-IronScales: already seen all the ids, not adding any incidents")
                     if break_condition:
