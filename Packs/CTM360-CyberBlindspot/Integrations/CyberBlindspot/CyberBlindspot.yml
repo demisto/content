@@ -18,6 +18,7 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - defaultvalue: Incidents
@@ -35,6 +36,7 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
+  - platform
 - name: retrieve_screenshots
   required: false
   type: 8
