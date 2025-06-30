@@ -10,7 +10,7 @@ args:
 commonfields:
   id: CheckFirewallAndGPForCVEs
   version: -1
-dockerimage: demisto/python3:3.12.8.3720084
+dockerimage: demisto/python3:3.12.11.3982393
 enabled: true
 engineinfo: {}
 name: CheckFirewallAndGPForCVEs

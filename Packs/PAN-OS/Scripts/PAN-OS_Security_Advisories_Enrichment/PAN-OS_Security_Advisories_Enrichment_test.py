@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 from CommonServerPython import *
 
 # Import the module under test
@@ -46,7 +46,7 @@ class TestEnrichCVE:
                 }
             },
         }
-        
+
     @pytest.fixture
     def sample_pan_sa_data(self):
         """Sample PAN-SA CSAF data response"""
@@ -55,21 +55,12 @@ class TestEnrichCVE:
                 {
                     "cve": "CVE-2023-5678",
                     "references": [
-                        {
-                            "category": "external",
-                            "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-5678"
-                        }
+                        {"category": "external", "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-5678"}
                     ],
-                    "notes": [
-                        {
-                            "category": "description",
-                            "text": "External CVE description"
-                        }
-                    ]
+                    "notes": [{"category": "description", "text": "External CVE description"}],
                 }
             ]
         }
-            
 
     def test_enrich_cve_standard_cve(self, mock_client, sample_cve_data):
         """Test enriching a standard CVE (not PAN-SA)"""
@@ -104,23 +95,23 @@ class TestEnrichCVE:
         """Test enriching a PAN-SA CVE"""
         # Setup
         cve_id = "PAN-SA-2023-0001"
-        
+
         mock_client.get_cve.return_value = sample_cve_data
         mock_client.get_pan_sa_advisories.return_value = sample_pan_sa_data
-        
+
         # Execute
         result = enrich_cve(mock_client, cve_id)
-        
+
         # Assert
         assert isinstance(result, dict)
         advisory = result["EntryContext"]["PAN-OS_Security_Advisories.Advisory"]
-        
+
         # Should contain the external CVE from sample_pan_sa_data
         assert len(advisory["external_cve_list"]) == 1
         assert advisory["external_cve_list"][0]["id"] == "CVE-2023-5678"
         assert advisory["external_cve_list"][0]["link"] == "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-5678"
         assert advisory["external_cve_list"][0]["description"] == "External CVE description"
-        
+
         # Verify both client methods were called
         mock_client.get_cve.assert_called_once_with(cve_id)
         mock_client.get_pan_sa_advisories.assert_called_once_with(cve_id)
