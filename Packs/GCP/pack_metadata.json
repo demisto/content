@@ -15,8 +15,7 @@
     "supportedModules": [
         "C1",
         "C3",
-        "X5",
-        "ENT_PLUS"
+        "X5"
     ],
     "marketplaces": [
         "platform"
