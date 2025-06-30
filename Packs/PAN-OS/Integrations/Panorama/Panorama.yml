@@ -9828,6 +9828,37 @@ script:
       type: Number
       required: true
       isArray: false
+  - name: pan-os-get-certificate-info
+    description: Gathers the name, expiration date, and expiration status of certificates configured locally on a Firewall or pushed from Panorama, as seen under Certificate Management.
+    arguments:
+    - description: Show only expired certificates.
+      name: show_expired_only
+      type: Boolean
+    outputs:
+    - contextPath: Panorama.Certificate.name
+      type: String
+      description: Name of the certificate.
+    - contextPath: Panorama.Certificate.device
+      type: String
+      description: Device where this certificate was found.
+    - contextPath: Panorama.Certificate.subject
+      type: String
+      description: Subject of the certificate.
+    - contextPath: Panorama.Certificate.expiration_date
+      type: String
+      description: Expiration date of the certificate.
+    - contextPath: Panorama.Certificate.expiration_status
+      type: String
+      description: Status of certificate - Expired, Expiring in 30 days, Expiring in 60 days, Expiring in 90 days or Valid.
+    - contextPath: Panorama.Certificate.location
+      type: String
+      description: Where this certificate was configured - Firewall or Panorama.
+    - contextPath: Panorama.Certificate.cert_type
+      type: String
+      description: Whether this certificate was pushed from Panorama, Local to Firewall, or predefined on Panorama or a Firewall.
+    - contextPath: Panorama.Certificate.devices_using_certificate
+      type: Unknown
+      description: List of devices using this certificate if it was pushed from Panorama.
   dockerimage: demisto/pan-os-python:1.0.0.3545654
   isfetch: true
   runonce: false

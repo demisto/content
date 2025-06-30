@@ -32,8 +32,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
-                                get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text,
-                                execute_polling_command,
+                                get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD, execute_polling_command
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -10096,6 +10095,16 @@ def test_find_and_remove_sensitive_text__not_found(mocker):
 
     mock_remove_from_logs.assert_not_called()
 
+
+def test_stringEscapeMD():
+    """
+    Given: A string with the char ~, that should be escaped.
+    When: Using the function stringEscapeMD.
+    Then: The special char is escaped.
+    """
+    st = "somethig~issue~"
+    result = stringEscapeMD(st)
+    assert result == "somethig\~issue\~"
 
 def test_execute_polling_command(mocker):
     """
