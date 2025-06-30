@@ -3,8 +3,8 @@ Audit log events can be used for security audits, to track usage of and changes 
 
 ## Required Permissions
 
-[Required Permissions for collecting Audit Logs](https://docs.oracle.com/en-us/iaas/Content/Logging/Concepts/audit_logs.htm#audit_logs__reqd-perm-auditlogs)
-[Required IAM policy for collecting Audit Logs](https://docs.oracle.com/en-us/iaas/Content/Audit/Tasks/viewinglogevents.htm)
+[Required Permissions for collecting audit logs](https://docs.oracle.com/en-us/iaas/Content/Logging/Concepts/audit_logs.htm#audit_logs__reqd-perm-auditlogs)
+[Required IAM policy for collecting audit logs](https://docs.oracle.com/en-us/iaas/Content/Audit/Tasks/viewinglogevents.htm)
 [Oracle Cloud Infrastructure Audit API Endpoints (available Regions)](https://docs.oracle.com/en-us/iaas/api/#/en/audit/20190901)
 
 ## Configure Oracle Cloud Infrastructure Event Collector in Cortex
