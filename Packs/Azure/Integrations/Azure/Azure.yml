@@ -1777,8 +1777,5 @@ script:
   dockerimage: demisto/crypto:1.0.0.3174650
 IsCloudProviderIntegration: true
 fromversion: 6.1.0
-marketplaces:
-- xsoar
-- marketplacev2
 tests:
 - No tests (auto formatted)
