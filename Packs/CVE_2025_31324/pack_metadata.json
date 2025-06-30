@@ -25,7 +25,7 @@
     },
     "marketplaces": [
         "xsoar",
-        "xsiam",
+        "marketplacev2",
         "platform"
     ],
     "supportedModules": [
