@@ -1,10 +1,68 @@
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from CommonServerPython import *
 
 # Import the module under test
 from PANOSSecurityAdvisoriesEnrichment import Client, enrich_cve
+class TestClient:
+    """Test class for the Client class"""
+    
+    def test_client_initialization(self):
+        """Test client initialization with correct URLs"""
+        client = Client()
+        assert client.base_url == "https://security.paloaltonetworks.com"
+        assert client.advisories_url == "https://security.paloaltonetworks.com/json/"
+        assert client.csaf_url == "https://security.paloaltonetworks.com/csaf/"
 
+    @patch('requests.get')
+    def test_get_cve_success(self, mock_get):
+        """Test successful CVE retrieval"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"cveId": "CVE-2023-1234"}
+        mock_get.return_value = mock_response
+        
+        client = Client()
+        result = client.get_cve("CVE-2023-1234")
+        
+        assert result == {"cveId": "CVE-2023-1234"}
+        mock_get.assert_called_once_with("https://security.paloaltonetworks.com/json/CVE-2023-1234")
+
+    @patch('requests.get')
+    def test_get_cve_404_error(self, mock_get):
+        """Test 404 error handling in get_cve"""
+        mock_response = Mock()
+        mock_response.status_code = 404
+        mock_get.return_value = mock_response
+        
+        client = Client()
+        with pytest.raises(DemistoException, match="CVE not found"):
+            client.get_cve("INVALID-CVE")
+
+    @patch('requests.get')
+    def test_get_pan_sa_advisories_success(self, mock_get):
+        """Test successful PAN-SA advisory retrieval"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"vulnerabilities": []}
+        mock_get.return_value = mock_response
+        
+        client = Client()
+        result = client.get_pan_sa_advisories("PAN-SA-2023-0001")
+        
+        assert result == {"vulnerabilities": []}
+
+    @patch('requests.get')
+    def test_get_pan_sa_advisories_404(self, mock_get):
+        """Test 404 handling in get_pan_sa_advisories"""
+        mock_response = Mock()
+        mock_response.status_code = 404
+        mock_get.return_value = mock_response
+        
+        client = Client()
+        result = client.get_pan_sa_advisories("PAN-SA-2023-0001")
+        
+        assert result == "CSAF not available for PAN-SA-2023-0001"
 
 class TestEnrichCVE:
     """Test class for the enrich_cve function"""
@@ -115,3 +173,13 @@ class TestEnrichCVE:
         # Verify both client methods were called
         mock_client.get_cve.assert_called_once_with(cve_id)
         mock_client.get_pan_sa_advisories.assert_called_once_with(cve_id)
+
+    def test_enrich_cve_404_error(self, mock_client):
+        """Test handling of 404 error when CVE not found"""
+        cve_id = "CVE-2023-INVALID"
+        mock_client.get_cve.side_effect = DemistoException("CVE not found: This is not a valid Palo Alto Networks CVE ID.")
+        
+        with pytest.raises(DemistoException, match="CVE not found"):
+            enrich_cve(mock_client, cve_id)
+
+    
