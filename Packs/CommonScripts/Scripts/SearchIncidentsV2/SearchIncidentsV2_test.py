@@ -416,9 +416,9 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected
 
 def test_search_with_duplicates(mocker):
     """
-    Given: Duplicated incidents from executing getIncidents.
-    When: Running the command
-    Then: Return incidents without duplications.
+    Given: Duplicated incidents from executing getIncidents command to the platform in 2 different requests in a row.
+    When: Running the command with limit that is larger than the page size (100).
+    Then: Validate that the command return incident list without duplications.
     """
     import SearchIncidentsV2
 
