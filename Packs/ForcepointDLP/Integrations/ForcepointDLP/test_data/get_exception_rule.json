@@ -1,0 +1,54 @@
+{
+    "parent_policy_name": "test_policy",
+    "parent_rule_name": "test_rule",
+    "policy_type": "DLP",
+    "exception_rules": [
+        {
+            "exception_rule_name": "testbeniex",
+            "enabled": "false",
+            "description": "",
+            "display_description": "",
+            "condition_enabled": "true",
+            "source_enabled": "false",
+            "destination_enabled": "false",
+            "parts_count_type": "CROSS_COUNT",
+            "condition_relation_type": "AND",
+            "classifiers": [
+                {
+                    "classifier_name": ".htpasswd File Name",
+                    "predefined": "true",
+                    "position": 1,
+                    "threshold_type": "CHECK_GREATER_THAN",
+                    "threshold_value_from": 1,
+                    "threshold_calculate_type": "UNIQUE"
+                }
+            ],
+            "severity_action": {
+                "max_matches": "GREATEST_NUMBER",
+                "classifier_details": [
+                    {
+                        "selected": "true",
+                        "number_of_matches": 0,
+                        "severity_type": "MEDIUM",
+                        "dup_severity_type": "MEDIUM",
+                        "action_plan": "Audit Only"
+                    },
+                    {
+                        "selected": "false",
+                        "number_of_matches": 2,
+                        "severity_type": "MEDIUM",
+                        "dup_severity_type": "MEDIUM",
+                        "action_plan": "Audit Only"
+                    },
+                    {
+                        "selected": "false",
+                        "number_of_matches": 3,
+                        "severity_type": "MEDIUM",
+                        "dup_severity_type": "MEDIUM",
+                        "action_plan": "Audit Only"
+                    }
+                ]
+            }
+        }
+    ]
+}
