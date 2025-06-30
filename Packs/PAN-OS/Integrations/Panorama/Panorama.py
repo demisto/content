@@ -6637,8 +6637,8 @@ def panorama_check_latest_dynamic_update_command(args: dict):
             {
                 "Update Type": update_type,
                 "Is Up To Date": "True" if data["IsUpToDate"] else "False",
-                "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),
-                "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),
+                "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),  # type: ignore[union-attr]
+                "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),  # type: ignore[union-attr]
             }
         )
 
