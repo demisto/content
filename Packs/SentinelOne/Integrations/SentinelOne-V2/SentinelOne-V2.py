@@ -131,21 +131,45 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix="restrictions", json_data=body)
         return response.get("data") or {}
 
-    def add_hash_to_blocklists_request(self, value, os_type, site_ids, description="", source="") -> dict:
+    def add_hash_to_blocklists_request(
+        self,
+        value,
+        os_type,
+        site_ids=None,
+        description="",
+        source="",
+        group_ids=None,
+        account_ids=None,
+    ) -> dict:
         """
         Supports adding hashes to multiple scoped site blocklists
         """
-        demisto.debug(f"Site ids: {site_ids}")
-        # We do not use the assign_params function, because if these values are empty or None, we still want them
-        # sent to the server
-        for site_id in site_ids:
-            data = {"value": value, "source": source, "osType": os_type, "type": "black_hash", "description": description}
+        site_ids = site_ids or []
+        group_ids = group_ids or []
+        account_ids = account_ids or []
 
-            filt = {"siteIds": [site_id], "tenant": True}
+        # Build the filter dict with all possible scopes
+        filter_dict: Dict[str, Any] = {"tenant": True}
+        # Only assign if the value is a list and not a bool
+        if isinstance(site_ids, list) and not isinstance(site_ids, bool) and site_ids:
+            filter_dict["siteIds"] = site_ids
+        if isinstance(group_ids, list) and not isinstance(group_ids, bool) and group_ids:
+            filter_dict["groupIds"] = group_ids
+        if isinstance(account_ids, list) and not isinstance(account_ids, bool) and account_ids:
+            filter_dict["accountIds"] = account_ids
 
-            body = {"data": data, "filter": filt}
-            demisto.debug(f"Site id: {site_id}")
-            response = self._http_request(method="POST", url_suffix="restrictions", json_data=body, ok_codes=[200])
+        data = {
+            "value": value,
+            "source": source,
+            "osType": os_type,
+            "type": "black_hash",
+            "description": description,
+        }
+
+        body = {"data": data, "filter": filter_dict}
+        demisto.debug(f"Adding hash to blocklist with filter: {filter_dict}")
+
+        response = self._http_request(method="POST", url_suffix="restrictions", json_data=body, ok_codes=[200])
         return response.get("data") or {}
 
     def get_blocklist_request(
@@ -3050,28 +3074,44 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     if not sha1:
         raise DemistoException("You must specify a valid SHA1 hash")
 
+    site_ids = argToList(args.get("site_ids"))
+    group_ids = argToList(args.get("group_ids"))
+    account_ids = argToList(args.get("account_ids"))
+
     try:
-        if sites := client.block_site_ids:
-            demisto.debug(f"Adding sha1 {sha1} to sites {sites}")
+        # If any scope is provided, use the scoped request
+        if site_ids or group_ids or account_ids:
+            demisto.debug(
+                f"Adding sha1 {sha1} to blocklist with scopes: " f"sites={site_ids}, groups={group_ids}, accounts={account_ids}"
+            )
             result = client.add_hash_to_blocklists_request(
                 value=sha1,
                 description=args.get("description"),
                 os_type=args.get("os_type"),
-                site_ids=sites,
+                site_ids=site_ids,
+                group_ids=group_ids,
+                account_ids=account_ids,
                 source=args.get("source"),
             )
-            status = {"hash": sha1, "status": "Added to scoped blocklist"}
+            scope_list = []
+            if site_ids:
+                scope_list.append("site")
+            if group_ids:
+                scope_list.append("group")
+            if account_ids:
+                scope_list.append("account")
+            scope_str = ", ".join(scope_list) if scope_list else "unknown"
+            status = {"hash": sha1, "status": f"Added to {scope_str}-scoped blocklist"}
         else:
+            # Fallback to global blocklist
             result = client.add_hash_to_blocklist_request(
-                value=sha1, description=args.get("description"), os_type=args.get("os_type"), source=args.get("source")
+                value=sha1,
+                description=args.get("description"),
+                os_type=args.get("os_type"),
+                source=args.get("source"),
             )
             status = {"hash": sha1, "status": "Added to global blocklist"}
     except DemistoException as e:
-        # When adding a hash to the blocklist that is already on the blocklist,
-        # SentinelOne returns an error code, resuliting in the request raising an exception
-        #
-        # This section examines the error code returned. If the error is due to the hash
-        # already being on the list, it is ignored and the returned status is updated
         js = e.res.json()
         errors = js.get("errors")
         if (
@@ -3089,7 +3129,6 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         readable_output=f"{sha1}: {status['status']}.",
         outputs_prefix="SentinelOne.AddHashToBlocklist",
         outputs_key_field="Value",
-        # `status` instead of `result` because we modify status based on the error/exception comments above
         outputs=status,
         raw_response=result,
     )
@@ -4152,7 +4191,6 @@ def main():
         "commands_without_params": {
             "get-mapping-fields": get_mapping_fields_command,
         },
-
     }
 
     """ COMMANDS MANAGER / SWITCH PANEL """
