@@ -9,4 +9,3 @@ Unauthenticated attackers can upload arbitrary files (for example, JSP web shell
 *References*  
 - [Unit 42 threat brief](https://unit42.paloaltonetworks.com/threat-brief-sap-netweaver-cve-2025-31324/)  
 - [NIST NVD entry](https://nvd.nist.gov/vuln/detail/CVE-2025-31324)
-- 
