@@ -158,7 +158,7 @@ def parse_single_object(aha_object: dict, fields: List = DEFAULT_FIELDS) -> List
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'"""
 
-    message: str = ""
+    message: str = "test"
     try:
         result = client.get(AHA_TYPE.FEATURES, "", "", "2020-01-01", page="1", per_page="1")
         if result:
