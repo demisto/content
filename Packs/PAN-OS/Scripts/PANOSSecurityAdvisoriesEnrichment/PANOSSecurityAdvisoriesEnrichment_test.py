@@ -3,7 +3,7 @@ from unittest.mock import Mock
 from CommonServerPython import *
 
 # Import the module under test
-from PAN_OS_Security_Advisories_Enrichment import Client, enrich_cve
+from PANOSSecurityAdvisoriesEnrichment import Client, enrich_cve
 
 
 class TestEnrichCVE:

@@ -3,6 +3,7 @@ args:
   isArray: true
   name: cve_id
   required: true
+  description: The CVE ID to enrich as published to <https://security.paloaltonetworks.com>.
 comment: This script enriches CVEs published by Palo Alto Networks with detailed vulnerability information from the official Palo Alto Networks Security Advisories website https://security.paloaltonetworks.com.
 commonfields:
   id: PAN-OS_Security_Advisories_Enrichment
@@ -58,6 +59,7 @@ outputs:
   description: If input CVE is a PAN-SA advisory then list of related non-PANW CVEs.
   type: Unknown
 - contextPath: PAN-OS_Security_Advisories.Advisory.impact
+  description: Impact of the CVE
   type: String
 - contextPath: PAN-OS_Security_Advisories.Advisory.last_updated_date
   description: Date when it was last updated on the advisories page.
