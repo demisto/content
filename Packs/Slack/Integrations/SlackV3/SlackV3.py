@@ -95,7 +95,7 @@ EXTENSIVE_LOGGING: bool
 
 def get_war_room_url(url: str) -> str:
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
-    if is_xsiam():
+    if is_xsiam() or is_platform():
         incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
         incident_url = urlparse(url)
         war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
@@ -154,7 +154,7 @@ def test_module():
         )
 
     # validation for permitted_notifications since not all the options are supported by xsiam
-    if is_xsiam():
+    if is_xsiam() or is_platform():
         xsiam_permitted_notification_types = {
             "investigationClosed",
             "investigationDeleted",

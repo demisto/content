@@ -622,7 +622,7 @@ script:
       name: query_id
     - description: "Provide the policy type for retrying if the violations are not found in the initial attempt. The types of policies that can be retried are: \"Land Speed\", \"TIER2\", \"DIRECTIVE\", \"BEACONING\"."
       name: policy_type
-    - defaultValue: '50'
+    - defaultValue: '1000'
       description: Maximum number of violations to retrieve.
       name: max
     description: Gets a list activity data for an account name.
@@ -1767,7 +1767,7 @@ script:
       required: true
     description: Deletes the entries from the lookup table.
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.8.3720084
   isfetch: true
   runonce: false
   script: '-'

@@ -495,14 +495,14 @@ script:
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.3539024
   isfetch: true
-  script: ''
-  subtype: python3
-  type: python
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
+  script: ''
+  subtype: python3
+  type: python
 fromversion: 5.5.0
 tests:
 - No tests
