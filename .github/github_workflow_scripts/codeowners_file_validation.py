@@ -52,9 +52,9 @@ def main() -> int:
         if errors := validation_result.get("errors", []):
             print(f"CODEOWNERS file has {len(errors)} error(s):")
             for error in errors:
-                print(f"{error.get('line', 'N/A')}: {error.get('kind')}, {error.get('message')}\n")
+                print(f"Line {error.get('line', 'N/A')}: {error.get('kind')}: {error.get('source')}\n")
                 if suggestion := error.get("suggestion"):
-                    print(f"Fix line {error.get('line', 'N/A')} Suggestion: {suggestion}\n")
+                    print(f"Line {error.get('line', 'N/A')}: fix suggestion: {suggestion}\n")
             return 1
         else:
             print("CODEOWNERS file is valid! No errors found.")
