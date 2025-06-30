@@ -20,8 +20,9 @@ def main():
         "malwarefamily": "malwarefamily",
         "relationship_entity_b": "relationship_entity_b",
     }
+    auth_key = params.get("credentials", {}).get("password")
+    params["credentials"] = {"password": auth_key, "identifier": "_header:Auth-Key"}
 
-    # Call the main execution of the HTTP API module.
     feed_main("Feodo Tracker IP Blocklist Feed", params, "feodotracker-ipblocklist-")
 
 
