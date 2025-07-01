@@ -96,7 +96,7 @@ class Client(BaseClient):
             raise RuntimeError(f"{INTEGRATION_NAME} - Download link not found")
 
         demisto.debug(f"download link: {download_link}")
-
+        save_azure_download_link(download_link)
         return download_link
 
     def get_download_file_content_values(self, download_link: str) -> dict:
@@ -108,9 +108,17 @@ class Client(BaseClient):
         Returns:
             Dict. Content of values section in the Azure downloaded file.
         """
-        file_download_response = self._http_request(
-            method="GET", full_url=download_link, url_suffix="", stream=True, timeout=self._polling_timeout
-        )
+        try:
+            file_download_response = self._http_request(
+                method="GET", full_url=download_link, url_suffix="", stream=True, timeout=self._polling_timeout
+            )
+        except DemistoException as e:
+            if isinstance(e.res, requests.Response) and e.res.status_code == 404:
+                file_download_response = self._http_request(
+                    method="GET", full_url=self.get_azure_download_link(), url_suffix="", stream=True, timeout=self._polling_timeout
+                )
+            else:
+                raise
 
         return file_download_response.get("values")
 
@@ -214,7 +222,7 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         try:
-            download_link = self.get_azure_download_link()
+            download_link = load_azure_download_link() or self.get_azure_download_link()
             values_from_file = self.get_download_file_content_values(download_link)
             results = self.extract_indicators_from_values_dict(values_from_file)
 
@@ -231,6 +239,23 @@ class Client(BaseClient):
         except ValueError as err:
             demisto.debug(str(err))
             raise ValueError(f"Could not parse returned data to Json. \n\nError massage: {err}")
+
+
+def load_azure_download_link() -> Optional[str]:
+    """Loads the download link for the file from the server.
+
+    Returns:
+        str. The download link.
+    """
+    return demisto.getIntegrationContext().get('azure_download_link')
+
+
+def save_azure_download_link(link: str):
+    """Saves the download link for the file to the server.
+    """
+    demisto.setIntegrationContext(
+        demisto.getIntegrationContext() | {'azure_download_link': link}
+    )
 
 
 def test_module(client: Client) -> tuple[str, dict, dict]:
@@ -351,7 +376,7 @@ def main():
 
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
-    command = demisto.command()
+
     try:
         client = Client(regions_list, services_list, polling_timeout, insecure, proxy)
         if command == "test-module":
