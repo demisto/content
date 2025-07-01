@@ -30,6 +30,17 @@ If you want to set the language to en-US, use en-GB instead.
 * Rasterize Mode: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. WebDriver supports more options than Headless CLI. Such as support for the `offline` option in the `rasterize-emails` command. There are some urls that do not rasterize well with WebDriver and may succeed with Headless CLI. Thus, it is recommended to use the `WebDriver - Preferred` mode, which will use WebDriver as a start and fallback to Headless CLI if it fails.
 * Use system proxy settings: Select this checkbox to use the system's proxy settings. **Important**: this integration does not support proxies which require authentication.
 
+## Limitation
+
+The default timeout is 5 minutes (300 seconds). If the rasterize command processes a large number of URLs, or even a smaller number of URLs that take a long time to load, it can result in a timeout error. For example, 100 URLs each taking 5 seconds to open would total 500 seconds, exceeding the default timeout limit.
+
+In cases where you encounter timeout errors when processing many URLs, you can either:
+
+* Split the URLs into smaller batches to process.
+* Increase the timeout setting for the specific task in the playbook that runs the rasterize command.
+
+To increase the timeout for a playbook task, modify the task's configuration by accessing the task settings, clicking the **Advanced** section, and adjusting the **Execution timeout (seconds)** field to a higher value appropriate for the workload.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
