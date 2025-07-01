@@ -222,9 +222,9 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
     context_set_items = get_integration_context().get("set_items", {})
-    demisto.debug(f"CyberArkEPM: {context_set_items=} {set(set_names)=}")
+    demisto.debug(f"CyberArkEPM: {context_set_items=} set_names={set(set_names)}")
     if context_set_items.keys() != set(set_names):
-        demisto.debug(f"CyberArkEPM: context_set_items is empty")
+        demisto.debug("CyberArkEPM: context_set_items is empty")
         result = client.get_set_list()
         context_set_items = {
             set_item.get("Name"): set_item.get("Id") for set_item in result.get("Sets", []) if set_item.get("Name") in set_names
