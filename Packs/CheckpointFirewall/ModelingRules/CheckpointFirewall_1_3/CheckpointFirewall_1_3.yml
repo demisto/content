@@ -1,4 +1,4 @@
-fromversion: 6.0.0
+fromversion: 6.7.0
 id: checkpoint_firewall_collection
 name: CheckPoint Firewall Collection
 rules: ''

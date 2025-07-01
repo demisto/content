@@ -1,4 +1,4 @@
-fromversion: 8.1.0
+fromversion: 8.6.0
 id: qualys_ModelingRule
 name: Qualys Modeling Rule
 rules: ''
