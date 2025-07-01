@@ -1,7 +1,6 @@
 commonfields:
   id: BlockExternalIPWithCAPolicy
-  version: 61
-vcShouldKeepItemLegacyProdMachine: false
+  version: -1
 name: BlockExternalIPWithCAPolicy
 script: ''
 type: python
@@ -23,9 +22,10 @@ args:
   defaultValue: Cortex - Block Malicious IPs
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
