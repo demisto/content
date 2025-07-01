@@ -2213,7 +2213,8 @@ class JsonTransformer:
         if isinstance(json_input, list):
             if not json_input or (not isinstance(json_input[0], list) and not isinstance(json_input[0], dict)):
                 # if the items of the lists are primitive, put the values in one line
-                yield path, 'values', ', '.join(json_input)
+                yield path, 'values', ', '.join(str(x) for x in json_input)
+
             else:
                 for i, item in enumerate(json_input):
                     for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC
@@ -2549,7 +2550,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = r"\`*_{}[]()#+-!|"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!|~"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
@@ -8692,6 +8693,15 @@ def is_xsiam():
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "x2"
+
+
+def is_platform():
+    """Determines whether or not the platform is platform.
+
+    :return: True iff the platform is unified_platform.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "unified_platform"
 
 
 def is_using_engine():

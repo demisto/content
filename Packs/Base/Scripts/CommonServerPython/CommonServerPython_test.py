@@ -32,7 +32,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
-                                get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text
+                                get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -980,6 +980,20 @@ class TestTableToMarkdown:
                                      '| 3 | 2 | 1 |\n'
                                      '| 6 | 5 | 4 |\n')
             assert table == expected_table_sorted
+
+    @staticmethod
+    def test_list_integers():
+        """
+        Given:
+            - A dictionary with a list of integers .
+        When:
+            - Calling tableToMarkdown with is_auto_json_transform=True.
+        Then:
+            Validate that the script ran successfully.
+        """
+        data = {'key': 'value', 'listtest': [1, 2, 3, 4]} 
+        table = tableToMarkdown("tableToMarkdown test", data, sort_headers=False, is_auto_json_transform=True)
+        assert table
 
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
@@ -10080,3 +10094,14 @@ def test_find_and_remove_sensitive_text__not_found(mocker):
     find_and_remove_sensitive_text(input_text, r'(token:\s*)(\S+)')
 
     mock_remove_from_logs.assert_not_called()
+
+
+def test_stringEscapeMD():
+    """
+    Given: A string with the char ~, that should be escaped.
+    When: Using the function stringEscapeMD.
+    Then: The special char is escaped.
+    """
+    st = "somethig~issue~"
+    result = stringEscapeMD(st)
+    assert result == "somethig\~issue\~"
