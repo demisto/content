@@ -25,7 +25,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 1. [Get IP info: infoblox-get-ip](#infoblox-get-ip).
 2. [Searches IP related objects by a given IP: infoblox-search-related-objects-by-ip](#infoblox-search-related-objects-by-ip).
-3. [Lists all response policy rules that belong to the.g.,ven response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
+3. [Lists all response policy rules that belong to the given response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
 4. [List all response policy zones: infoblox-list-response-policy-zones](#infoblox-list-response-policy-zones).
 5. [Creates a response policy zone: infoblox-create-response-policy-zone](#infoblox-create-response-policy-zone).
 6. [Creates a response policy rule: infoblox-create-rpz-rule](#infoblox-create-rpz-rule).
@@ -174,7 +174,7 @@ Searches IP related objects by a given IP.
 
 * * *
 
-Lists all response policy rules that belong to the.g.,ven response policy zone.
+Lists all response policy rules that belong to the given response policy zone.
 
 ##### Base Command
 
