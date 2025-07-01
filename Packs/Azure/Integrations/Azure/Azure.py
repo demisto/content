@@ -1440,7 +1440,7 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
         try:
             resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
             scope_prefix = scope_prefix + f"/resourceGroups/{resource_group_name}"
-        except Exception as e:
+        except Exception:
             raise ValueError("Resource group name is required when scope level is 'resource group'.")
         
     policy_definition_id: str = args.get("policy_definition_id", "")
