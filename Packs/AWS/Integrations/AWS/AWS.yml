@@ -1,5 +1,5 @@
 category: Cloud Services
-description: The AWS Integration automates management and security configurations across core AWS services—including S3, EC2, EKS, RDS, IAM, and related resources.
+description: Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select AWS, then in Advanced Settings > Security Capabilities, enable "Automation".
 display: Amazon Web Services
 name: AWS
 
