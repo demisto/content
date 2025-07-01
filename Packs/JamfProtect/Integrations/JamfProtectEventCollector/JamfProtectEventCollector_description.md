@@ -25,3 +25,12 @@ Before you configure the integration, retrieve the API Client and Password from 
     - Read access Alert endpoints.    
     - Read access Audit Logs.
 For more information refer to Jamf Protect [Documentation](https://learn.jamf.com/en-US/bundle/jamf-protect-documentation/page/Jamf_Protect_API.html).
+
+# test
+<~XSIAM>XSIAM content. </~XSIAM>
+<~XSIAM_ONLY>XSIAM specific content. </~XSIAM_ONLY>
+More text.
+<~PLATFORM,XPANSE>PLATFORM and XPANSE only. </~PLATFORM,XPANSE>
+<~XSOAR,XSIAM>Content for XSOAR and XSIAM. </~XSOAR,XSIAM>
+<~XSOAR>XSOAR specific content. </~XSOAR>
+<~XSOAR_SAAS>XSOAR_SAAS specific content. </~XSOAR_SAAS>
