@@ -36,7 +36,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.8",
+            "X-Integration-Version": "1.1.9",
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
