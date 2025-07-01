@@ -45,6 +45,6 @@ You can configure the specific vendor and product for this instance.
    | `Log Format`  | Enter **Raw**.
    | `Compression` | Enter **uncompressed**.
 
-For additional information, see [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
+For additional information, see [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Generic-Logs-from-Amazon-S3).
 
 </~XSIAM>

@@ -55,7 +55,7 @@ For additional details, see [About Cloud NSS Feeds](https://help.zscaler.com/zia
 
 ### Configure a VM-Based NSS Feed on Zscaler ZIA Admin Portal
 
-To configure the Zscaler Internet Access (ZIA) to send logs via the NSS feed output, refer to steps 1-3 in the following [XDR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Zscaler-Internet-Access) which relates to both **Web logs** and **FW logs**.
+To configure the Zscaler Internet Access (ZIA) to send logs via the NSS feed output, refer to steps 1-3 in the following [XDR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Zscaler-Internet-Access) which relates to both **Web logs** and **FW logs**.
 
 #### More information on configuring NSS feed outputs
 
