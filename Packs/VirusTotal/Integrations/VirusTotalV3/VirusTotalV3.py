@@ -1303,8 +1303,8 @@ def build_quota_exceeded_domain_output(client: Client, domain: str) -> CommandRe
     return build_quota_exceeded_output(client, domain, "domain")
 
 
-def build_error_domain_output(client: Client, domain: str) -> CommandResults:
-    return build_error_output(client, domain, "domain")
+def build_error_domain_output(client: Client, domain: str, error_msg: str = None) -> CommandResults:
+    return build_error_output(client, domain, "domain", error_msg)
 
 
 def build_unknown_url_output(client: Client, url: str) -> CommandResults:
@@ -1315,8 +1315,8 @@ def build_quota_exceeded_url_output(client: Client, url: str) -> CommandResults:
     return build_quota_exceeded_output(client, url, "url")
 
 
-def build_error_url_output(client: Client, url: str) -> CommandResults:
-    return build_error_output(client, url, "url")
+def build_error_url_output(client: Client, url: str, error_msg: str = None) -> CommandResults:
+    return build_error_output(client, url, "url", error_msg)
 
 
 def build_unknown_ip_output(client: Client, ip: str) -> CommandResults:
@@ -1327,8 +1327,8 @@ def build_quota_exceeded_ip_output(client: Client, ip: str) -> CommandResults:
     return build_quota_exceeded_output(client, ip, "ip")
 
 
-def build_error_ip_output(client: Client, ip: str) -> CommandResults:
-    return build_error_output(client, ip, "ip")
+def build_error_ip_output(client: Client, ip: str, error_msg: str = None) -> CommandResults:
+    return build_error_output(client, ip, "ip", error_msg)
 
 
 def build_skipped_enrichment_ip_output(client: Client, ip: str) -> CommandResults:
