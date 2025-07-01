@@ -802,6 +802,7 @@ def test_get_power_query_results(mocker, requests_mock):
         demisto,
         "args",
         return_value={
+            "query_id": "pq123456789",
             "from_date": "2024-08-20T04:49:26.257525Z",
             "to_date": "2024-08-21T04:49:26.257525Z",
             "query": "event.time = * | columns eventTime = event.time, agentUuid = agent.uuid, siteId = site.id",
