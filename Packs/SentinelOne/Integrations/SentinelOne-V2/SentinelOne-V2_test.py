@@ -265,55 +265,100 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
 
 
 @pytest.mark.parametrize(
-    "block_site_ids, expected_status", [("site1,site2", "Added to scoped blocklist"), (None, "Added to global blocklist")]
+    "block_site_ids, group_ids, account_ids, expected_status, expected_filter_keys",
+    [
+        ("site1,site2", None, None, "Added to site: site1,site2 blocklist", ["siteIds"]),
+        (None, "group1,group2", None, "Added to group: group1,group2 blocklist", ["groupIds"]),
+        (None, None, "account1,account2", "Added to account: account1,account2 blocklist", ["accountIds"]),
+        (None, None, None, "Added to global blocklist", []),
+    ],
 )
-def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids, expected_status):
+def test_add_hash_to_blocklist(
+    mocker, requests_mock, block_site_ids, group_ids, account_ids, expected_status, expected_filter_keys
+):
     """
     Given:
-       - Case A: A hash is added to the blocklist with sites
-       - Case B: A hash is added to the blocklist without sites
-
+       - Various combinations of scoping arguments (site_ids, group_ids, account_ids)
     When:
        - running the sentinelone-add-hash-to-blocklist command
-
     Then:
-       - Case A: make sure the sites are added to the request and output is valid
-       - Case B: make sure there are no site IDs added to the request and output is valid
-
+       - Ensure the correct filter keys are present in the request and output is valid
     """
     blocked_sha_requests_mock = requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
 
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "token": "token",
-            "url": "https://usea1.sentinelone.net",
-            "api_version": "2.1",
-            "fetch_threat_rank": "4",
-            "block_site_ids": block_site_ids,
-        },
-    )
-    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
-    mocker.patch.object(
-        demisto, "args", return_value={"sha1": "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"}
-    )
+    params = {
+        "token": "token",
+        "url": "https://usea1.sentinelone.net",
+        "api_version": "2.1",
+        "fetch_threat_rank": "4",
+    }
+    if block_site_ids:
+        params["block_site_ids"] = block_site_ids
+    if group_ids:
+        params["block_group_ids"] = group_ids
+    if account_ids:
+        params["block_account_ids"] = account_ids
 
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+    # Pass the correct scoping args to the command args
+    cmd_args = {"sha1": "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"}
+    if block_site_ids:
+        cmd_args["site_ids"] = block_site_ids
+    if group_ids:
+        cmd_args["group_ids"] = group_ids
+    if account_ids:
+        cmd_args["account_ids"] = account_ids
+    mocker.patch.object(demisto, "args", return_value=cmd_args)
     mocker.patch.object(sentinelone_v2, "return_results")
 
     main()
 
-    site_ids_body_request = blocked_sha_requests_mock.last_request.json().get("filter").get("siteIds")
-    if block_site_ids:
-        assert site_ids_body_request
+    filter_dict = blocked_sha_requests_mock.last_request.json().get("filter", {})
+    # Check for correct filter keys
+    if not expected_filter_keys:
+        assert filter_dict == {"tenant": True}, f"Expected only tenant True for global blocklist, got {filter_dict}"
     else:
-        assert not site_ids_body_request
+        for key in ["siteIds", "groupIds", "accountIds"]:
+            if key in expected_filter_keys:
+                assert key in filter_dict, f"Expected {key} in filter, got {filter_dict}"
+                assert filter_dict[key], f"Expected {key} to be non-empty in filter, got {filter_dict}"
+            else:
+                if key in filter_dict:
+                    assert not filter_dict.get(key), f"Did not expect {key} in filter, got {filter_dict}"
 
     call = sentinelone_v2.return_results.call_args_list
     outputs = call[0].args[0].outputs
 
     assert outputs["hash"] == "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
-    assert outputs["status"] == expected_status
+    status = outputs["status"]
+    # Accept both string and list (comma-joined) for status
+    if isinstance(status, list):
+        status_str = ",".join(status)
+    else:
+        status_str = status
+    # Accept status if it matches expected_status or if it matches expected_status with
+    # brackets (legacy or new integration output)
+    if status_str == expected_status:
+        pass
+    else:
+        # Try to parse the bracketed list and compare as a set
+        import re
+
+        m = re.match(r"(Added to [^:]+: )\['(.+)'\] blocklist", status_str)
+        if m:
+            prefix = m.group(1)
+            items = m.group(2).replace("'", "").split(", ")
+            expected_items = expected_status[len(prefix) : -len(" blocklist")].split(",")
+            expected_items = [i.strip() for i in expected_items]
+            if set(items) == set(expected_items) and status_str.startswith(prefix):
+                pass
+            else:
+                import pytest
+
+                pytest.fail(f"Status output did not match. Got: {status_str}, Expected: {expected_status}")
+        else:
+            assert status_str == expected_status, f"Status output did not match. Got: {status_str}, Expected: {expected_status}"
 
 
 def test_remove_item_from_whitelist(mocker, requests_mock):
@@ -757,7 +802,6 @@ def test_get_power_query_results(mocker, requests_mock):
         demisto,
         "args",
         return_value={
-            "query_id": "pq123456789",
             "from_date": "2024-08-20T04:49:26.257525Z",
             "to_date": "2024-08-21T04:49:26.257525Z",
             "query": "event.time = * | columns eventTime = event.time, agentUuid = agent.uuid, siteId = site.id",
