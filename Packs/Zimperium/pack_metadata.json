@@ -20,11 +20,5 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Zimperium v2",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "defaultDataSource": "Zimperium v2"
 }

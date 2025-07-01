@@ -21,11 +21,5 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "FireEye HX Event Collector",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "defaultDataSource": "FireEye HX Event Collector"
 }

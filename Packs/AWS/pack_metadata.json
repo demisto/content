@@ -12,11 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "supportedModules": [
-        "C1",
-        "C3",
-        "X5"
-    ],
     "marketplaces": [
         "platform"
     ]
