@@ -1,0 +1,31 @@
+commonfields:
+  id: BlockExternalIPWithCAPolicy
+  version: 61
+vcShouldKeepItemLegacyProdMachine: false
+name: BlockExternalIPWithCAPolicy
+script: ''
+type: python
+tags:
+- Azure
+- Conditional Access
+- IP Blocking
+comment: Blocks an external IP via Azure Conditional Access using named IP location and policy JSON.
+enabled: true
+args:
+- name: ip
+  required: true
+  description: The external IP address to block (must be public).
+- name: named_location_name
+  description: The name of the Azure named IP location to use or create.
+  defaultValue: Cortex Blocked IPs
+- name: policy_name
+  description: Name of the Conditional Access policy to create.
+  defaultValue: Cortex - Block Malicious IPs
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.12.8.3296088
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
