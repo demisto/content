@@ -5,6 +5,7 @@ GreyMatter Digital Risk Protection minimize digital risk by identifying unwanted
 Working within ReliaQuest's GreyMatter Digital Risk Protection, the Managed Takedown service provides customers with end-to-end takedown management that quickly removes infringing content, domains, documents and mobile applications. 
 
 Contact your ReliaQuest GreyMatter DRP representative to obtain API credentials.
+
 ## Overview
 
 - Leader in Digital Risk Protection
