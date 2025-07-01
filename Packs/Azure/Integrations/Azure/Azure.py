@@ -99,7 +99,6 @@ REQUIRED_ROLE_PERMISSIONS = [
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
-DEFAULT_LIMIT = 50
 PREFIX_URL_AZURE = "https://management.azure.com/subscriptions/"
 PREFIX_URL_MS_GRAPH = "https://graph.microsoft.com/v1.0"
 POLICY_ASSIGNMENT_API_VERSION = "2024-05-01"
@@ -233,12 +232,37 @@ class AzureClient:
             raise DemistoException(f'Failed to access {resource_type} "{resource_name}": {str(e)}')
 
     def create_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str):
-        return self.http_request(
-            "PUT",
-            full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}\
-/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?",
-            json_data={"properties": properties},
-        )
+        """
+        Create a security rule in an Azure Network Security Group.
+        Args:
+            security_group: Name of the network security group
+            rule_name: Name of the security rule to retrieve
+            subscription_id: Azure subscription ID
+            resource_group_name: Resource group name
+            properties: Properties of the security rule
+
+        Returns:
+            The response from the Azure API after creating the security rule
+
+        Raises:
+            ValueError: If the rule is not found
+            DemistoException: If there are permission or other API errors
+        """
+        try:
+            return self.http_request(
+                "PUT",
+                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}\
+    /providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?",
+                json_data={"properties": properties},
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{security_group}/{rule_name}",
+                resource_type="Security Rule",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
     def get_rule(self, security_group: str, rule_name: str, subscription_id: str, resource_group_name: str):
         """
@@ -405,6 +429,18 @@ class AzureClient:
     def create_policy_assignment(
         self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope_prefix: str
     ):
+        """
+        Create a policy assignment in Azure.
+        Args:
+            name (str): Name of the policy assignment.
+            policy_definition_id (str):  ID of the policy definition to assign.
+            display_name (str): Display name for the policy assignment.
+            parameters (str): Parameters for the policy assignment.
+            description (str): Description of the policy assignment.
+            scope_prefix (str): Scope prefix for the policy assignment (e.g., subscription or resource group).
+        Returns:
+            dict: The full response from the Azure policy assignment creation API.
+        """
         full_url = f"{scope_prefix}/providers/Microsoft.Authorization/policyAssignments/{name}"
         params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
         data = {
@@ -416,6 +452,7 @@ class AzureClient:
             }
         }
         return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+    
 
     def set_postgres_config(
         self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str, source: str, value: str
@@ -423,19 +460,19 @@ class AzureClient:
         """
         Updates the configuration of a specific PostgreSQL server parameter.
         Args:
-        server_name (str): Name of the PostgreSQL server.
-        subscription_id (str): Azure subscription ID.
-        resource_group_name (str): Name of the resource group containing the server.
-        configuration_name (str): Name of the configuration parameter to update.
-        source (str): The source of the configuration value.
-        value (str): The new value to set for the configuration parameter.
+            server_name (str): Name of the PostgreSQL server.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group containing the server.
+            configuration_name (str): Name of the configuration parameter to update.
+            source (str): The source of the configuration value.
+            value (str): The new value to set for the configuration parameter.
 
         Returns:
-        dict: The response from the Azure REST API after applying the update.
+            dict: The response from the Azure REST API after applying the update.
 
         Raises:
-        ValueError: If required parameters are missing or PostgreSQL server not found
-        DemistoException: If there are permission or other API errors
+            ValueError: If required parameters are missing or PostgreSQL server not found
+            DemistoException: If there are permission or other API errors
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -548,7 +585,7 @@ class AzureClient:
             name (str): Name of the web app.
             subscription_id (str): Azure subscription ID.
             resource_group_name (str): Name of the resource group containing the web app.
-            enabled (str): Whether authentication is enabled.
+            current (dict): Current authentication settings dictionary to be updated.
 
         Returns:
             dict: The response from the Azure REST API after applying the update.
@@ -562,12 +599,6 @@ class AzureClient:
             f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
         )
         params = {"api-version": WEBAPP_API_VERSION}
-        # data = {
-        #     "properties":
-        #     {
-        #         "enabled": enabled
-        #     }
-        # }
         data = current
         demisto.debug(f"Updating WebApp auth of {name}.")
         try:
@@ -685,9 +716,9 @@ class AzureClient:
         subscription_id: str,
         resource_group_name: str,
         disk_name: str,
-        public_network_access: str,
-        network_access_policy: str,
-        data_access_auth_mode: str,
+        public_network_access: str | None,
+        network_access_policy: str | None,
+        data_access_auth_mode: str | None,
     ):
         """
         Updates a disk.
@@ -1074,7 +1105,8 @@ class AzureClient:
             )
 
     def remove_member_from_role(self, role_object_id: str, user_id: str):
-        """Removing a member from a specific role.
+        """Currently not supported in the integration - token scope issues.
+        Removing a member from a specific role.
 
         Args:
             role_object_id: A role to remove the user from.
@@ -1093,7 +1125,8 @@ class AzureClient:
         self.http_request("DELETE", full_url=full_url)
 
     def remove_member_from_group(self, group_id: str, user_id: str):
-        """Remove a single member to a group by sending a DELETE request.
+        """Currently not supported in the integration - token scope issues.
+        Remove a single member to a group by sending a DELETE request. 
         Args:
             group_id: the group id to add the member to.
             user_id: the user id to remove.
@@ -1476,7 +1509,7 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     enabled = args.get("enabled")
     current = client.get_webapp_auth(name, subscription_id, resource_group_name)
-    current["properties"]["enabled"] = enabled if enabled else current.get("properties", {}).get("enabled")
+    current["properties"]["enabled"] = enabled
     response = client.update_webapp_auth(name, subscription_id, resource_group_name, current)
     demisto.debug("Updated webapp auth settings.")
     outputs = [
@@ -1537,11 +1570,11 @@ def monitor_log_profile_update_command(client: AzureClient, params: dict, args: 
     location = args.get("location")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     retention_policy_days = arg_to_number(args.get("retention_policy_days"))
-    retention_policy_enabled = args.get("retention_policy_enabled", "")
+    retention_policy_enabled = args.get("retention_policy_enabled")
     current_log_profile = client.get_monitor_log_profile(subscription_id, log_profile_name)
     current_log_profile["properties"]["retentionPolicy"]["enabled"] = (
         retention_policy_enabled
-        if retention_policy_enabled
+        if retention_policy_enabled is not None
         else current_log_profile.get("properties", {}).get("retentionPolicy", {}).get("enabled")
     )
     current_log_profile["properties"]["retentionPolicy"]["days"] = (
@@ -1590,9 +1623,9 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     disk_name = args.get("disk_name", "")
-    public_network_access = args.get("public_network_access", "")
-    network_access_policy = args.get("network_access_policy", "")
-    data_access_auth_mode = args.get("data_access_auth_mode", "")
+    public_network_access = args.get("public_network_access")
+    network_access_policy = args.get("network_access_policy")
+    data_access_auth_mode = args.get("data_access_auth_mode")
     response = client.disk_update(
         subscription_id, resource_group_name, disk_name, public_network_access, network_access_policy, data_access_auth_mode
     )
@@ -1742,6 +1775,7 @@ def postgres_server_update_command(client: AzureClient, params: dict, args: dict
     server_name = args.get("server_name", "")
     ssl_enforcement = args.get("ssl_enforcement", "")
     client.postgres_server_update(subscription_id, resource_group_name, server_name, ssl_enforcement)
+    return CommandResults(readable_output=f"Updated postgreSQL server {server_name}.")
 
 
 def update_key_vault_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -1812,13 +1846,9 @@ def sql_db_threat_policy_update_command(client: AzureClient, params: dict[str, A
     current_db = client.sql_db_threat_policy_get(
         server_name=server_name, db_name=db_name, subscription_id=subscription_id, resource_group_name=resource_group_name
     )
-    if isinstance(current_db, str):  # if there is 404, an error message will return
-        return CommandResults(readable_output=current_db)
-
     current_db["properties"]["emailAccountAdmins"] = email_account_admins or current_db.get("properties", {}).get(
         "emailAccountAdmins"
     )
-
     response = client.sql_db_threat_policy_update(
         server_name=server_name,
         db_name=db_name,
@@ -1826,9 +1856,6 @@ def sql_db_threat_policy_update_command(client: AzureClient, params: dict[str, A
         current=current_db,
         resource_group_name=resource_group_name,
     )
-
-    if isinstance(response, str):  # if there is 404, an error message will return
-        return CommandResults(readable_output=response)
 
     outputs = [
         {
@@ -1913,7 +1940,8 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
 
 
 def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
-    """Remove a member from a group by group id and user id.
+    """Currently not supported in the integration
+    Remove a member from a group by group id and user id.
 
     Args:
         client: Client object with request
@@ -1929,7 +1957,8 @@ def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
 
 
 def remove_member_from_group_command(client: AzureClient, args: dict) -> CommandResults:
-    """Remove a member from a group by group id and user id.
+    """Currently not supported in the integration
+    Remove a member from a group by group id and user id.
 
     Args:
         client: Client object with request
@@ -1944,17 +1973,6 @@ def remove_member_from_group_command(client: AzureClient, args: dict) -> Command
 
     human_readable = f'User {user_id} was removed from the Group "{group_id}" successfully.'
     return CommandResults(readable_output=human_readable)
-
-
-def get_token(access_token: str) -> dict:
-    """
-    Decodes the provided access token and retrieves a list of API permissions associated with the token.
-
-    :param access_token: the access token to decode.
-    :return: A list of the token's API permission roles.
-    """
-    decoded_token = jwt.decode(access_token, options={"verify_signature": False})
-    return decoded_token
 
 
 def test_module(client) -> str:
@@ -2023,19 +2041,7 @@ def health_check(
         )
 
 
-def is_azure(command) -> bool:
-    """
-    Helper method to check if command requires Azure role assignments or Microsoft Graph permissions.
-
-    :param command: The command being executed
-    :return: Boolean indicating if the command requires special handling
-    """
-    msgraph_commands = ["azure-remove-member-from-role", "azure-remove-member-from-group"]
-    return command not in msgraph_commands
-
-
 def get_azure_client(params, args, command):
-    is_azure_command = is_azure(command)
     headers = {}
     token = ""
     if not params.get("credentials", {}).get("password"):
@@ -2055,7 +2061,7 @@ def get_azure_client(params, args, command):
         proxy=params.get("proxy", False),
         tenant_id=params.get("tenant_id"),
         enc_key=params.get("credentials", {}).get("password"),
-        scope=SCOPE_AZURE if is_azure_command else None,
+        scope=SCOPE_AZURE,
         headers=headers,
     )
     return client
@@ -2070,7 +2076,7 @@ def main():
     cloud_info = context.get("CloudIntegrationInfo", {})
     connector_id = cloud_info.get("connectorID")
     demisto.debug(f"{connector_id=}")
-    skip_proxy()
+    handle_proxy()
     try:
         commands_with_params_and_args = {
             "azure-nsg-security-rule-update": update_security_rule_command,
@@ -2091,11 +2097,6 @@ def main():
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
         }
-        commands_with_args = {
-            "azure-remove-member-from-role": remove_member_from_role,
-            "azure-remove-member-from-group": remove_member_from_group_command,
-        }
-
         if command != "test-module" or not connector_id:
             client = get_azure_client(params, args, command)
 
@@ -2106,8 +2107,6 @@ def main():
             return_results(test_module(client))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
-        elif command in commands_with_args:
-            return_results(commands_with_args[command](client=client, args=args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
