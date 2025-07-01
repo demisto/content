@@ -3079,23 +3079,21 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     site_ids = args.get("site_ids")
     group_ids = args.get("group_ids")
     account_ids = args.get("account_ids")
+    sites = client.block_site_ids
 
     try:
         # If any scope is provided, use the scoped request
-        if sites := client.block_site_ids:
-            demisto.debug(f"Adding sha1 {sha1} to sites {sites}")
-            result = client.add_hash_to_blocklists_request(
-                value=sha1,
-                description=args.get("description"),
-                os_type=args.get("os_type"),
-                site_ids=sites,
-                source=args.get("source"),
-            )
-            status = {"hash": sha1, "status": f"Added to site: {sites} blocklist"}
-        elif site_ids or group_ids or account_ids:
-            demisto.debug(
-                f"Adding sha1 {sha1} to blocklist with scopes: " f"sites={site_ids}, groups={group_ids}, accounts={account_ids}"
-            )
+        if site_ids or group_ids or account_ids:
+            scope_parts = []
+            if site_ids:
+                scope_parts.append(f"sites={site_ids}")
+            if group_ids:
+                scope_parts.append(f"groups={group_ids}")
+            if account_ids:
+                scope_parts.append(f"accounts={account_ids}")
+            scope_str = ", ".join(scope_parts)
+            demisto.debug(f"Adding sha1 {sha1} to blocklist with scopes: {scope_str}")
+
             result = client.add_hash_to_blocklists_request(
                 value=sha1,
                 description=args.get("description"),
@@ -3114,8 +3112,26 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
                 scope_items.append(f"account: {account_ids}")
             scope_str = ", ".join(scope_items) if scope_items else "unknown"
             status = {"hash": sha1, "status": f"Added to {scope_str} blocklist"}
+            if site_ids:
+                status["site_ids"] = site_ids
+            if group_ids:
+                status["group_ids"] = group_ids
+            if account_ids:
+                status["account_ids"] = account_ids
+
+        elif sites:
+            demisto.debug(f"Adding sha1 {sha1} to sites {sites}")
+            result = client.add_hash_to_blocklists_request(
+                value=sha1,
+                description=args.get("description"),
+                os_type=args.get("os_type"),
+                site_ids=sites,
+                source=args.get("source"),
+            )
+            status = {"hash": sha1, "status": f"Added to site: {sites} blocklist"}
+            status["site_ids"] = sites
+
         else:
-            # Fallback to global blocklist
             result = client.add_hash_to_blocklist_request(
                 value=sha1,
                 description=args.get("description"),

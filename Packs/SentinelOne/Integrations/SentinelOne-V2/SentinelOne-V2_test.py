@@ -265,100 +265,124 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
 
 
 @pytest.mark.parametrize(
-    "block_site_ids, group_ids, account_ids, expected_status, expected_filter_keys",
+    "param_block_site_ids, arg_site_ids, group_ids, account_ids, expected_status, expected_filter",
     [
-        ("site1,site2", None, None, "Added to site: site1,site2 blocklist", ["siteIds"]),
-        (None, "group1,group2", None, "Added to group: group1,group2 blocklist", ["groupIds"]),
-        (None, None, "account1,account2", "Added to account: account1,account2 blocklist", ["accountIds"]),
-        (None, None, None, "Added to global blocklist", []),
+        # args site_ids (params site_ids present, but args priority)
+        (["site1", "site2"], "siteX,siteY", None, None, "Added to site: siteX,siteY blocklist", {"siteIds": "siteX,siteY"}),
+        # arg single site_id (params site_ids present, but args priority)
+        (["site1"], "siteX", None, None, "Added to site: siteX blocklist", {"siteIds": "siteX"}),
+        # Only params site_ids (args none)
+        (["site1", "site2"], None, None, None, "Added to site: ['site1', 'site2'] blocklist", {"siteIds": ["site1", "site2"]}),
+        # Only One params site_id (args none)
+        (["site1"], None, None, None, "Added to site: ['site1'] blocklist", {"siteIds": ["site1"]}),
+        # args group_ids (params site_ids present, but args priority)
+        (
+            ["site1", "site2"],
+            None,
+            "group1,group2",
+            None,
+            "Added to group: group1,group2 blocklist",
+            {"groupIds": "group1,group2"},
+        ),
+        # args single group_id (params site_ids present, but args priority)
+        (["site1", "site2"], None, "group1", None, "Added to group: group1 blocklist", {"groupIds": "group1"}),
+        # args account_ids (params site_ids present, but args priority)
+        (
+            ["site1", "site2"],
+            None,
+            None,
+            "acc123,acc456",
+            "Added to account: acc123,acc456 blocklist",
+            {"accountIds": "acc123,acc456"},
+        ),
+        # args single account_id (params site_ids present, but args priority)
+        (["site1", "site2"], None, None, "acc123", "Added to account: acc123 blocklist", {"accountIds": "acc123"}),
+        # Neither args nor params, global fallback
+        (None, None, None, None, "Added to global blocklist", {"tenant": True}),
     ],
 )
 def test_add_hash_to_blocklist(
-    mocker, requests_mock, block_site_ids, group_ids, account_ids, expected_status, expected_filter_keys
+    mocker,
+    requests_mock,
+    param_block_site_ids,
+    arg_site_ids,
+    group_ids,
+    account_ids,
+    expected_status,
+    expected_filter,
 ):
     """
-    Given:
-       - Various combinations of scoping arguments (site_ids, group_ids, account_ids)
-    When:
-       - running the sentinelone-add-hash-to-blocklist command
-    Then:
-       - Ensure the correct filter keys are present in the request and output is valid
+    Test the sentinelone-add-hash-to-blocklist command with:
+    - site_ids from args overriding param block_site_ids
+    - group_ids and account_ids as args
+    - fallback to global if no scope given
     """
-    blocked_sha_requests_mock = requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
 
-    params = {
-        "token": "token",
-        "url": "https://usea1.sentinelone.net",
-        "api_version": "2.1",
-        "fetch_threat_rank": "4",
-    }
-    if block_site_ids:
-        params["block_site_ids"] = block_site_ids
-    if group_ids:
-        params["block_group_ids"] = group_ids
-    if account_ids:
-        params["block_account_ids"] = account_ids
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+    requests_mock.post(url, json={"data": []})
 
-    mocker.patch.object(demisto, "params", return_value=params)
+    # Patch demisto.params (block_site_ids only lives here)
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_threat_rank": "4",
+            "block_site_ids": param_block_site_ids,
+        },
+    )
+
     mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
-    # Pass the correct scoping args to the command args
-    cmd_args = {"sha1": "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"}
-    if block_site_ids:
-        cmd_args["site_ids"] = block_site_ids
-    if group_ids:
-        cmd_args["group_ids"] = group_ids
-    if account_ids:
-        cmd_args["account_ids"] = account_ids
-    mocker.patch.object(demisto, "args", return_value=cmd_args)
-    mocker.patch.object(sentinelone_v2, "return_results")
 
+    # Construct args
+    args = {"sha1": sha1, "os_type": "WINDOWS"}
+    if arg_site_ids:
+        args["site_ids"] = arg_site_ids
+    if group_ids:
+        args["group_ids"] = group_ids
+    if account_ids:
+        args["account_ids"] = account_ids
+
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    # Capture the command result
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    # Execute
     main()
 
-    filter_dict = blocked_sha_requests_mock.last_request.json().get("filter", {})
-    # Check for correct filter keys
-    if not expected_filter_keys:
-        assert filter_dict == {"tenant": True}, f"Expected only tenant True for global blocklist, got {filter_dict}"
-    else:
-        for key in ["siteIds", "groupIds", "accountIds"]:
-            if key in expected_filter_keys:
-                assert key in filter_dict, f"Expected {key} in filter, got {filter_dict}"
-                assert filter_dict[key], f"Expected {key} to be non-empty in filter, got {filter_dict}"
-            else:
-                if key in filter_dict:
-                    assert not filter_dict.get(key), f"Did not expect {key} in filter, got {filter_dict}"
+    # Validate request filter
+    request_body = requests_mock.last_request.json()
+    request_filter = request_body.get("filter")
 
-    call = sentinelone_v2.return_results.call_args_list
-    outputs = call[0].args[0].outputs
+    for key, expected_value in expected_filter.items():
+        actual_value = request_filter.get(key)
+        # Normalize both to comma-separated strings for comparison
+        if isinstance(actual_value, list):
+            actual_value = ",".join(actual_value)
+        if isinstance(expected_value, list):
+            expected_value = ",".join(expected_value)
+        assert actual_value == expected_value, f"Expected {key}={expected_value}, got {actual_value}"
 
-    assert outputs["hash"] == "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
-    status = outputs["status"]
-    # Accept both string and list (comma-joined) for status
-    if isinstance(status, list):
-        status_str = ",".join(status)
-    else:
-        status_str = status
-    # Accept status if it matches expected_status or if it matches expected_status with
-    # brackets (legacy or new integration output)
-    if status_str == expected_status:
-        pass
-    else:
-        # Try to parse the bracketed list and compare as a set
-        import re
+    # Validate outputs
+    call = mock_return_results.call_args_list
+    assert call, "return_results not called"
+    result = call[0].args[0]
+    outputs = result.outputs
 
-        m = re.match(r"(Added to [^:]+: )\['(.+)'\] blocklist", status_str)
-        if m:
-            prefix = m.group(1)
-            items = m.group(2).replace("'", "").split(", ")
-            expected_items = expected_status[len(prefix) : -len(" blocklist")].split(",")
-            expected_items = [i.strip() for i in expected_items]
-            if set(items) == set(expected_items) and status_str.startswith(prefix):
-                pass
-            else:
-                import pytest
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == expected_status
 
-                pytest.fail(f"Status output did not match. Got: {status_str}, Expected: {expected_status}")
-        else:
-            assert status_str == expected_status, f"Status output did not match. Got: {status_str}, Expected: {expected_status}"
+    # Validate optional returned fields
+    if "siteIds" in expected_filter:
+        assert outputs.get("site_ids") == expected_filter["siteIds"]
+    if "groupIds" in expected_filter:
+        assert outputs.get("group_ids") == expected_filter["groupIds"]
+    if "accountIds" in expected_filter:
+        assert outputs.get("account_ids") == expected_filter["accountIds"]
 
 
 def test_remove_item_from_whitelist(mocker, requests_mock):
