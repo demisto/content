@@ -1,33 +1,34 @@
 {
-    "name": "MicrosoftGraphTeams",
-    "description": "O365 Teams (Using Graph API) gives you authorized access to a user’s Teams enabling you to facilitate communication through teams as that user, or read conversations and/or messages of that user.",
-    "support": "community",
-    "currentVersion": "1.1.13",
-    "author": "Joachim Bockland",
-    "url": "",
-    "email": "",
-    "created": "2022-11-23T13:43:52Z",
-    "categories": [
-        "Messaging and Conferencing"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "githubUser": [
-        "invent0r"
-    ],
-    "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "MicrosoftGraphTeams",
+  "description": "O365 Teams (Using Graph API) gives you authorized access to a user\u2019s Teams enabling you to facilitate communication through teams as that user, or read conversations and/or messages of that user.",
+  "support": "community",
+  "currentVersion": "1.1.13",
+  "author": "Joachim Bockland",
+  "url": "",
+  "email": "",
+  "created": "2022-11-23T13:43:52Z",
+  "categories": [
+    "Messaging and Conferencing"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": [
+    "invent0r"
+  ],
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X0",
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,29 +1,30 @@
 {
-    "name": "Yara",
-    "description": "The pattern matching swiss knife for malware researchers.",
-    "support": "xsoar",
-    "currentVersion": "1.0.12",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-06-01T14:21:44Z",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "YARA"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Yara",
+  "description": "The pattern matching swiss knife for malware researchers.",
+  "support": "xsoar",
+  "currentVersion": "1.0.12",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-06-01T14:21:44Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "YARA"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

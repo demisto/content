@@ -10,7 +10,9 @@ args:
   name: app_id
 - description: The email of the user who will get permissions to create a meeting.
   name: identity
-comment: This script grants a user the permissions needed to create a Teams meeting. It connects to MS Teams, creating an application access policy to a chosen application and then grants a user permissions.
+comment: This script grants a user the permissions needed to create a Teams meeting.
+  It connects to MS Teams, creating an application access policy to a chosen application
+  and then grants a user permissions.
 commonfields:
   id: ConfigureAzureApplicationAccessPolicy
   version: -1
@@ -37,3 +39,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

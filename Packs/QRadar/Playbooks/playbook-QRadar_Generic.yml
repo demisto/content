@@ -3,7 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: QRadar Generic
-description: The QRadar Generic playbook is executed for the QRadar Generic incident type. It performs all the common parts of the investigation, including notifying the SOC, enriching data for indicators and users, calculating severity, assigning incidents, and notifying the SIEM admin about false positives.
+description: The QRadar Generic playbook is executed for the QRadar Generic incident
+  type. It performs all the common parts of the investigation, including notifying
+  the SOC, enriching data for indicators and users, calculating severity, assigning
+  incidents, and notifying the SIEM admin about false positives.
 starttaskid: "0"
 tasks:
   "0":
@@ -258,7 +261,8 @@ tasks:
       id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
       version: -1
       name: Extract indicators from incident
-      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
+      description: Extracts all indicators from the incident and enriches the indicators
+        by using the reputation command defined for each indicator type.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -681,7 +685,8 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
-      description: 'Provide data to adjust the rule in order to avoid similar false positives in the future.'
+      description: 'Provide data to adjust the rule in order to avoid similar false
+        positives in the future.'
     nexttasks:
       '#none#':
       - "18"
@@ -794,7 +799,9 @@ tasks:
       id: 8873fc30-eabd-4137-8f78-8ba80684a2a0
       version: -1
       name: Determine incident severity according to offense info
-      description: Sets the incident severity according to the FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs, which specify the relevant offense field and the scale for the severity translation.
+      description: Sets the incident severity according to the FieldToSetSeverityFrom
+        and ScaleToSetSeverityFrom playbook inputs, which specify the relevant offense
+        field and the scale for the severity translation.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1100,7 +1107,13 @@ tasks:
       id: bb27c52d-e30b-491a-80a8-c20fb7f914dd
       version: -1
       name: QRadar - Get Offense Logs
-      description: "Works for QRadar integrations versions 2 and 3, v1 is deprecated.\n\nNote: For QRadar v2 and v3 you can use the integration to fetch the events according to the limit defined in the instance settings. Using this playbook you can define you can define an additional search to query a larger number of logs.\n\nDefault playbook inputs use the QRadar incident fields such as idoffense, starttime. These fields can be replaced, but need to point to relevant offense ID and starttime fields. "
+      description: "Works for QRadar integrations versions 2 and 3, v1 is deprecated.\n
+        \nNote: For QRadar v2 and v3 you can use the integration to fetch the events
+        according to the limit defined in the instance settings. Using this playbook
+        you can define you can define an additional search to query a larger number
+        of logs.\n\nDefault playbook inputs use the QRadar incident fields such as
+        idoffense, starttime. These fields can be replaced, but need to point to relevant
+        offense ID and starttime fields. "
       playbookName: QRadar - Get Offense Logs
       type: playbook
       iscommand: false
@@ -1399,7 +1412,8 @@ tasks:
       id: 1d1b35bd-3d25-4ffa-839e-b2b4f647bd2c
       version: -1
       name: Select indicators to exclude
-      description: Provide data to adjust the rule in order to avoid similar false positives in the future.
+      description: Provide data to adjust the rule in order to avoid similar false
+        positives in the future.
       type: collection
       iscommand: false
       brand: ""
@@ -1499,7 +1513,8 @@ tasks:
       id: 19cfa6ac-e92f-4950-8a66-e38083737378
       version: -1
       name: Provide closing reason and tag indicators
-      description: Provide data to adjust the rule in order to avoid similar false positives in the future.
+      description: Provide data to adjust the rule in order to avoid similar false
+        positives in the future.
       type: collection
       iscommand: false
       brand: ""
@@ -1949,7 +1964,8 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Set to true to assign only the user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only the user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
   playbookInputQuery:
 - key: SocEmailAddress
   value: {}
@@ -1971,7 +1987,9 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Determines whether to use the Calculate Severity playbook to calculate the incident severity. If the playbook isn't used, the severity is determined by the QRadar magnitude value.
+  description: Determines whether to use the Calculate Severity playbook to calculate
+    the incident severity. If the playbook isn't used, the severity is determined
+    by the QRadar magnitude value.
   playbookInputQuery:
 - key: SiemAdminMailSubject
   value:
@@ -1983,7 +2001,10 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Determines whether to use the default mapping in the QRadar generic mapper to set the XSOAR incident severity, or set the severity using the FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. Any value other than false is considered as true and causes the playbook inputs to be used.
+  description: Determines whether to use the default mapping in the QRadar generic
+    mapper to set the XSOAR incident severity, or set the severity using the FieldToSetSeverityFrom
+    and ScaleToSetSeverityFrom playbook inputs. Any value other than false is considered
+    as true and causes the playbook inputs to be used.
   playbookInputQuery:
 - key: FieldToSetSeverityFrom
   value:
@@ -1998,19 +2019,29 @@ inputs:
   value:
     simple: 1,1,1,2,2,2,2,3,3,3
   required: false
-  description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident severity field value range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n3 - High\n4 - Critical\n\nThe scale translates the value of FieldToSetSeverityFrom to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3 \nThis means that values 1-3 of FieldToSetSeverityFrom are translated to low severity (positions 1-3 in the scale), values 4-7 are translated to medium severity (positions 4-7 in the scale) and values 8-10 are translated to high severity (positions 8-10 in the scale)."
+  description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident
+    severity field value range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n
+    3 - High\n4 - Critical\n\nThe scale translates the value of FieldToSetSeverityFrom
+    to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3 \n
+    This means that values 1-3 of FieldToSetSeverityFrom are translated to low severity
+    (positions 1-3 in the scale), values 4-7 are translated to medium severity (positions
+    4-7 in the scale) and values 8-10 are translated to high severity (positions 8-10
+    in the scale)."
   playbookInputQuery:
 - key: RunAdditionalSeach
   value:
     simple: "true"
   required: false
-  description: By default the incident fetches the events defined in the integration instance settings (default is 20 events). To fetch additional events, change this setting to true.
+  description: By default the incident fetches the events defined in the integration
+    instance settings (default is 20 events). To fetch additional events, change this
+    setting to true.
   playbookInputQuery:
 - key: MaxLogsCount
   value:
     simple: "50"
   required: false
-  description: 'Maximum number of log entires to query from QRadar. Used for the QRadar - Get Offense Logs subplaybook.'
+  description: 'Maximum number of log entires to query from QRadar. Used for the QRadar
+    - Get Offense Logs subplaybook.'
   playbookInputQuery:
 - key: GetOnlyCREEvents
   value:
@@ -2021,7 +2052,14 @@ inputs:
   playbookInputQuery:
 - key: Fields
   value:
-    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
+    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+      CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
+      destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
+      sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation,
+      destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude,
+      eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
+      postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort,
+      UTF8(payload), starttime, devicetime
   required: false
   description: |
     A comma-separated list of extra fields to get from each event. You can use different fields or rename the existing fields. Used for the QRadar - Get Offense Logs subplaybook.
@@ -2030,13 +2068,15 @@ inputs:
   value:
     simple: block
   required: false
-  description: The tag to provide for true positive indicators, for example to use the indicators in an EDL (External Dynamic List).
+  description: The tag to provide for true positive indicators, for example to use
+    the indicators in an EDL (External Dynamic List).
   playbookInputQuery:
 - key: ExcludeIndicatorsInXSOAR
   value:
     simple: "false"
   required: false
-  description: If this value is not false, add indicators to the XSOAR exclude list. The excluded indicators won't be created in XSOAR anymore.
+  description: If this value is not false, add indicators to the XSOAR exclude list.
+    The excluded indicators won't be created in XSOAR anymore.
   playbookInputQuery:
 outputs: []
 tests:
@@ -2047,3 +2087,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

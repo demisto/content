@@ -1,11 +1,11 @@
 id: Allow IP - Okta Zone
 version: -1
 name: Allow IP - Okta Zone
-description: "Sync a list of IP addresses to the Okta Network Zone with the given\
-  \ ID. \nExisting IPs in the Okta Zone which are not in the input list will be removed\
-  \ and the indicator will be untagged in Cortex XSOAR.\nIDs can be retrieved  using !okta-list-zones.\
-  \ This playbook supports CIDR notation only (1.1.1.1/32) and not range notation\
-  \ (1.1.1.1-1.1.1.1)"
+description: "Sync a list of IP addresses to the Okta Network Zone with the given
+  ID. \nExisting IPs in the Okta Zone which are not in the input list will be removed
+  and the indicator will be untagged in Cortex XSOAR.\nIDs can be retrieved  using
+  !okta-list-zones. This playbook supports CIDR notation only (1.1.1.1/32) and not
+  range notation (1.1.1.1-1.1.1.1)"
 starttaskid: "0"
 tasks:
   "0":
@@ -467,8 +467,7 @@ tasks:
       version: -1
       name: List Sync - Any IPs to be removed?
       description: Check whether any IPs are in the Okta Zone that are not included
-        in the current playbook input and need to be removed during the
-        list sync.
+        in the current playbook input and need to be removed during the list sync.
       type: condition
       iscommand: false
       brand: ""
@@ -717,7 +716,8 @@ inputs:
 - key: ZoneID
   value: {}
   required: true
-  description: ID of the Okta Zone to update. Use !okta-list-zones to obtain the available zones.
+  description: ID of the Okta Zone to update. Use !okta-list-zones to obtain the available
+    zones.
   playbookInputQuery:
 - key: IndicatorTagName
   value:
@@ -734,3 +734,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

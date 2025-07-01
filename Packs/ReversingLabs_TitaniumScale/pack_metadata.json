@@ -1,34 +1,35 @@
 {
-    "name": "ReversingLabs TitaniumScale",
-    "description": "Extract internal threat indicators with static malware analysis engine. Classify files and determine threat level.",
-    "support": "partner",
-    "currentVersion": "1.2.2",
-    "author": "ReversingLabs",
-    "url": "https://www.reversinglabs.com/products/malware-threat-hunting-and-investigations",
-    "email": "support@reversinglabs.com",
-    "devEmail": "integrations-team@reversinglabs.com",
-    "created": "2021-06-14T00:00:00Z",
-    "categories": [
-        "Forensics & Malware Analysis"
-    ],
-    "githubUser": [
-        "MislavReversingLabs"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "Static Analysis",
-        "File Analysis"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "ReversingLabs TitaniumScale",
+  "description": "Extract internal threat indicators with static malware analysis engine. Classify files and determine threat level.",
+  "support": "partner",
+  "currentVersion": "1.2.2",
+  "author": "ReversingLabs",
+  "url": "https://www.reversinglabs.com/products/malware-threat-hunting-and-investigations",
+  "email": "support@reversinglabs.com",
+  "devEmail": "integrations-team@reversinglabs.com",
+  "created": "2021-06-14T00:00:00Z",
+  "categories": [
+    "Forensics & Malware Analysis"
+  ],
+  "githubUser": [
+    "MislavReversingLabs"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "Static Analysis",
+    "File Analysis"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

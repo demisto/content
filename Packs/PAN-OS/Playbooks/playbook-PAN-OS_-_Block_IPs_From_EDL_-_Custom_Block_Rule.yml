@@ -3,7 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: PAN-OS - Block IPs From EDL - Custom Block Rule
-description: This playbook blocks IP addresses from External Dynamic List using Custom Block Rules in Palo Alto Networks Panorama or Firewall. The playbook receives EDL name as input, creates a custom "from" directional rule to block, and commits the configuration.
+description: This playbook blocks IP addresses from External Dynamic List using Custom
+  Block Rules in Palo Alto Networks Panorama or Firewall. The playbook receives EDL
+  name as input, creates a custom "from" directional rule to block, and commits the
+  configuration.
 starttaskid: "0"
 tasks:
   "0":
@@ -334,7 +337,11 @@ tasks:
       id: 0e68fb02-4cab-4666-836e-34501e1cfee2
       version: -1
       name: PAN-OS Commit Changes
-      description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      description: Commits a configuration to the Palo Alto firewall or Panorama,
+        validates if a commit was successful if using polling="true" otherwise does
+        not validate if the commit was successful. Committing to Panorama does not
+        push the configuration to the firewalls. To push the configuration, run the
+        panorama-push-to-device-group command.
       script: '|||pan-os-commit'
       type: regular
       iscommand: true
@@ -423,7 +430,11 @@ tasks:
       id: cbf06593-932d-44ec-854b-e2128255f3bb
       version: -1
       name: PAN-OS Commit Changes
-      description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      description: Commits a configuration to the Palo Alto firewall or Panorama,
+        validates if a commit was successful if using polling="true" otherwise does
+        not validate if the commit was successful. Committing to Panorama does not
+        push the configuration to the firewalls. To push the configuration, run the
+        panorama-push-to-device-group command.
       script: '|||pan-os-commit'
       type: regular
       iscommand: true
@@ -515,3 +526,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

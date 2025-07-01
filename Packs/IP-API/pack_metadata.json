@@ -1,32 +1,33 @@
 {
-    "name": "IP-API",
-    "description": "Integrate with the IP-API.com IP enrichment service.",
-    "support": "community",
-    "currentVersion": "1.0.6",
-    "author": "Michael Wareman",
-    "url": "",
-    "email": "",
-    "created": "2021-09-09T12:34:56Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Free Enricher"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "mwareman"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "IP-API",
+  "description": "Integrate with the IP-API.com IP enrichment service.",
+  "support": "community",
+  "currentVersion": "1.0.6",
+  "author": "Michael Wareman",
+  "url": "",
+  "email": "",
+  "created": "2021-09-09T12:34:56Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Free Enricher"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [
+    "mwareman"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

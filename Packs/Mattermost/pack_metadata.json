@@ -1,27 +1,28 @@
 {
-    "name": "Mattermost",
-    "description": "Send messages and notifications to your Mattermost Team.",
-    "support": "xsoar",
-    "currentVersion": "2.1.3",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-06-01T18:03:06Z",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Mattermost",
+  "description": "Send messages and notifications to your Mattermost Team.",
+  "support": "xsoar",
+  "currentVersion": "2.1.3",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-06-01T18:03:06Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

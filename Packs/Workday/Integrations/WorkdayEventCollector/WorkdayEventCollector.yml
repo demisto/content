@@ -11,21 +11,24 @@ configuration:
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
+  additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View
+    API Clients report in Workday application.'
   section: Connect
 - name: token_url
   display: Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT-NAME/token)
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.'
+  additionalinfo: 'Token endpoint of the Workday server. Can be obtained from View
+    API Clients report in Workday application.'
   section: Connect
 - name: credentials
   display: Client ID
   required: true
   defaultvalue:
   type: 9
-  additionalinfo: 'Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday.'
+  additionalinfo: 'Copy the Client ID and Secret from the Register API Client for
+    Integrations stage at Workday.'
   displaypassword: Client Secret
   section: Connect
   hiddenusername: false
@@ -57,7 +60,8 @@ configuration:
   type: 0
   section: Collect
   required: false
-- additionalinfo: The maximum number of audit logs to retrieve for each event type. Large amount of events can cause preformance issues.
+- additionalinfo: The maximum number of audit logs to retrieve for each event type.
+    Large amount of events can cause preformance issues.
   defaultvalue: '1000'
   display: Max events per fetch
   name: max_fetch
@@ -71,7 +75,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Use Workday Event Collector integration to get activity loggings from Workday.
+description: Use Workday Event Collector integration to get activity loggings from
+  Workday.
 display: Workday Event Collector
 name: Workday Event Collector
 script:
@@ -90,13 +95,16 @@ script:
       predefined:
       - ""
     - name: from_date
-      description: 'The date and time of the earliest log entry. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+      description: 'The date and time of the earliest log entry. The default timezone
+        is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example:
+        "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: true
       defaultValue: ""
       predefined:
       - ""
     - name: to_date
-      description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+      description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example:
+        "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: true
       defaultValue: ""
       predefined:
@@ -119,3 +127,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

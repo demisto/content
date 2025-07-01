@@ -1,33 +1,34 @@
 {
-    "name": "CVE Search (Deprecated)",
-    "description": "Deprecated. Use CIRCL instead.",
-    "support": "xsoar",
-    "currentVersion": "1.0.21",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-03-09T16:04:45Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Threat Intelligence Management",
-        "Getting Started"
-    ],
-    "useCases": [],
-    "keywords": [
-        "CVE"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "hidden": true,
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "CVE Search (Deprecated)",
+  "description": "Deprecated. Use CIRCL instead.",
+  "support": "xsoar",
+  "currentVersion": "1.0.21",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-09T16:04:45Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Threat Intelligence Management",
+    "Getting Started"
+  ],
+  "useCases": [],
+  "keywords": [
+    "CVE"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "hidden": true,
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

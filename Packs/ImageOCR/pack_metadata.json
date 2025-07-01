@@ -1,28 +1,29 @@
 {
-    "name": "Image OCR",
-    "description": "Extracts text from images.",
-    "support": "xsoar",
-    "currentVersion": "1.1.38",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {},
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Image OCR",
+  "description": "Extracts text from images.",
+  "support": "xsoar",
+  "currentVersion": "1.1.38",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "dependencies": {},
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

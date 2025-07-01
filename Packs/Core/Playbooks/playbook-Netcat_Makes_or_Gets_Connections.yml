@@ -1,7 +1,10 @@
 id: Netcat Makes or Gets Connections
 version: -1
 name: Netcat Makes or Gets Connections
-description: "This playbook is designed to handle the following alerts:\n \n- Netcat makes or gets connections\n\nThe playbook executes the following stages:\n\nAnalysis:\n\n- Investigate the IP and Domain  reputation\n- Search previous similar alerts\n\nRemediation:\n \n- Handles malicious alerts by terminating the causality process."
+description: "This playbook is designed to handle the following alerts:\n \n- Netcat
+  makes or gets connections\n\nThe playbook executes the following stages:\n\nAnalysis:\n
+  \n- Investigate the IP and Domain  reputation\n- Search previous similar alerts\n
+  \nRemediation:\n \n- Handles malicious alerts by terminating the causality process."
 tags:
 - T1090 - Proxy
 - TA0011 - Command and Control
@@ -562,7 +565,8 @@ tasks:
       - "23"
     scriptarguments:
       closeReason:
-        simple: Resolved - Handled by the playbook "Netcat makes or gets connections" as True Positive
+        simple: Resolved - Handled by the playbook "Netcat makes or gets connections"
+          as True Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -681,7 +685,9 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: '(mitreattcktechnique:*T1059* or mitreattcktechnique:*T1072* or mitreattcktactic:*TA0010* or mitreattcktactic:*TA0006*) and caseid:'
+                  simple: '(mitreattcktechnique:*T1059* or mitreattcktechnique:*T1072*
+                    or mitreattcktactic:*TA0010* or mitreattcktactic:*TA0006*) and
+                    caseid:'
               suffix: {}
     separatecontext: false
     continueonerrortype: ""
@@ -717,7 +723,8 @@ tasks:
       - "23"
     scriptarguments:
       closeReason:
-        simple: Resolved - Handled by the playbook "Netcat makes or gets connections" as False Positive
+        simple: Resolved - Handled by the playbook "Netcat makes or gets connections"
+          as False Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -742,7 +749,8 @@ tasks:
       id: d572bfa1-1284-41e3-88b9-c7ea4c5555e6
       version: -1
       name: Terminate Causality (CGO)
-      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available only for
+        XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -797,7 +805,8 @@ tasks:
       name:
         simple: ${alert.name}
       query:
-        simple: 'resolution_status: STATUS_060_RESOLVED_FALSE_POSITIVE and hostname: ${alert.hostname}'
+        simple: 'resolution_status: STATUS_060_RESOLVED_FALSE_POSITIVE and hostname:
+          ${alert.hostname}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1041,3 +1050,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -1,39 +1,40 @@
 {
-    "name": "CrowdSec",
-    "description": "Enrich the data you have on your threats with the most advanced real-world CTI.",
-    "support": "partner",
-    "currentVersion": "1.0.6",
-    "author": "CrowdSec",
-    "url": "https://www.crowdsec.net/contact-crowdsec",
-    "email": "support@crowdsec.net",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Threat Intelligence",
-        "Free Enricher"
-    ],
-    "useCases": [],
-    "keywords": [
-        "ip",
-        "enrichment",
-        "threat",
-        "intelligence",
-        "crowd"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "devEmail": [
-        "support@crowdsec.net"
-    ],
-    "githubUser": [],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "CrowdSec",
+  "description": "Enrich the data you have on your threats with the most advanced real-world CTI.",
+  "support": "partner",
+  "currentVersion": "1.0.6",
+  "author": "CrowdSec",
+  "url": "https://www.crowdsec.net/contact-crowdsec",
+  "email": "support@crowdsec.net",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Threat Intelligence",
+    "Free Enricher"
+  ],
+  "useCases": [],
+  "keywords": [
+    "ip",
+    "enrichment",
+    "threat",
+    "intelligence",
+    "crowd"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "devEmail": [
+    "support@crowdsec.net"
+  ],
+  "githubUser": [],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,32 +1,33 @@
 {
-    "name": "Enterprise DLP by Palo Alto Networks",
-    "description": "Palo Alto Networks Enterprise DLP Integration",
-    "created": "2020-11-04T18:13:35Z",
-    "support": "xsoar",
-    "author": "Palo Alto Networks Enterprise DLP",
-    "url": "https://www.paloaltonetworks.com/enterprise-data-loss-prevention",
-    "currentVersion": "2.0.18",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [
-        "Palo Alto Networks Products"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "itemPrefix": [
-        "PAN",
-        "DLP"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Enterprise DLP by Palo Alto Networks",
+  "description": "Palo Alto Networks Enterprise DLP Integration",
+  "created": "2020-11-04T18:13:35Z",
+  "support": "xsoar",
+  "author": "Palo Alto Networks Enterprise DLP",
+  "url": "https://www.paloaltonetworks.com/enterprise-data-loss-prevention",
+  "currentVersion": "2.0.18",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [
+    "Palo Alto Networks Products"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "itemPrefix": [
+    "PAN",
+    "DLP"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

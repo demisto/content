@@ -1,27 +1,28 @@
 {
-    "name": "CyberArk",
-    "description": "Provides a Safe Haven, where all your administrative passwords can be securely archived, transferred and shared by authorized users.",
-    "support": "partner",
-    "currentVersion": "1.0.18",
-    "author": "CyberArk",
-    "url": "https://www.cyberark.com/services-support/technical-support-contact/",
-    "email": "support@cyberark.com",
-    "created": "2020-06-03T21:49:36Z",
-    "categories": [
-        "Identity and Access Management"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "CyberArk",
+  "description": "Provides a Safe Haven, where all your administrative passwords can be securely archived, transferred and shared by authorized users.",
+  "support": "partner",
+  "currentVersion": "1.0.18",
+  "author": "CyberArk",
+  "url": "https://www.cyberark.com/services-support/technical-support-contact/",
+  "email": "support@cyberark.com",
+  "created": "2020-06-03T21:49:36Z",
+  "categories": [
+    "Identity and Access Management"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

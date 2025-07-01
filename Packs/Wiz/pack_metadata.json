@@ -1,39 +1,40 @@
 {
-    "name": "Wiz",
-    "description": "Integrate with Wiz for bidirectional Issue management, Detections investigation, and fetching of resource information. \n",
-    "support": "partner",
-    "currentVersion": "2.0.0",
-    "author": "Wiz Inc.",
-    "url": "https://wiz.io/",
-    "email": "support@wiz.io",
-    "created": "2021-12-15T7:49:32Z",
-    "categories": [
-        "Cloud Security"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {
-        "Base": {
-            "mandatory": true,
-            "name": "Base"
-        },
-        "GenericWebhook": {
-            "mandatory": true,
-            "name": "Generic Webhook"
-        }
+  "name": "Wiz",
+  "description": "Integrate with Wiz for bidirectional Issue management, Detections investigation, and fetching of resource information. \n",
+  "support": "partner",
+  "currentVersion": "2.0.0",
+  "author": "Wiz Inc.",
+  "url": "https://wiz.io/",
+  "email": "support@wiz.io",
+  "created": "2021-12-15T7:49:32Z",
+  "categories": [
+    "Cloud Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "dependencies": {
+    "Base": {
+      "mandatory": true,
+      "name": "Base"
     },
-    "githubUser": "ariel-wiz",
-    "defaultDataSource": "Wiz",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "GenericWebhook": {
+      "mandatory": true,
+      "name": "Generic Webhook"
+    }
+  },
+  "githubUser": "ariel-wiz",
+  "defaultDataSource": "Wiz",
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

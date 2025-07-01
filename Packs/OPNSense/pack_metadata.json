@@ -1,32 +1,33 @@
 {
-    "name": "OPNSense",
-    "description": "Manage OPNsense Firewall",
-    "support": "partner",
-    "currentVersion": "1.0.28",
-    "author": "SecInfra",
-    "url": "http://secinfra.fr",
-    "email": "support@secinfra.fr",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "devEmail": [
-        "support@secinfra.fr"
-    ],
-    "githubUser": [
-        "SecInfra"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "OPNSense",
+  "description": "Manage OPNsense Firewall",
+  "support": "partner",
+  "currentVersion": "1.0.28",
+  "author": "SecInfra",
+  "url": "http://secinfra.fr",
+  "email": "support@secinfra.fr",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "devEmail": [
+    "support@secinfra.fr"
+  ],
+  "githubUser": [
+    "SecInfra"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

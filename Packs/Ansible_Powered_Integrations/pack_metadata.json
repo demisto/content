@@ -1,28 +1,29 @@
 {
-    "name": "Ansible Powered Integrations (Deprecated)",
-    "description": "Deprecated. Use Ansible Microsoft Windows instead.",
-    "hidden": true,
-    "support": "community",
-    "currentVersion": "2.0.4",
-    "author": "Serge Bakharev",
-    "url": "https://github.com/SergeBakharev/Ansible-for-XSOAR",
-    "email": "serge.bakharev@gmail.com",
-    "created": "2020-09-29T20:28:33Z",
-    "categories": [
-        "IT Services"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Ansible Powered Integrations (Deprecated)",
+  "description": "Deprecated. Use Ansible Microsoft Windows instead.",
+  "hidden": true,
+  "support": "community",
+  "currentVersion": "2.0.4",
+  "author": "Serge Bakharev",
+  "url": "https://github.com/SergeBakharev/Ansible-for-XSOAR",
+  "email": "serge.bakharev@gmail.com",
+  "created": "2020-09-29T20:28:33Z",
+  "categories": [
+    "IT Services"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

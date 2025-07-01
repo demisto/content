@@ -1,33 +1,34 @@
 {
-    "name": "Cognni",
-    "description": "Autonomous detection and investigation of information security incidents and other potential threats.",
-    "support": "partner",
-    "currentVersion": "1.1.10",
-    "author": "Cognni",
-    "certification": "certified",
-    "url": "https://cognni.ai/contact-support",
-    "email": "",
-    "created": "2020-09-24T16:39:50Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "tal2",
-        "VeredRozen"
-    ],
-    "dependencies": {},
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Cognni",
+  "description": "Autonomous detection and investigation of information security incidents and other potential threats.",
+  "support": "partner",
+  "currentVersion": "1.1.10",
+  "author": "Cognni",
+  "certification": "certified",
+  "url": "https://cognni.ai/contact-support",
+  "email": "",
+  "created": "2020-09-24T16:39:50Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [
+    "tal2",
+    "VeredRozen"
+  ],
+  "dependencies": {},
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

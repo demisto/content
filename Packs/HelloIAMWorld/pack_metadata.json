@@ -1,29 +1,30 @@
 {
-    "name": "Hello World IAM",
-    "description": "An Identity and Access Management integration template.",
-    "support": "xsoar",
-    "currentVersion": "1.1.11",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-12-09T13:38:20Z",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [
-        "Getting Started"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Hello World IAM",
+  "description": "An Identity and Access Management integration template.",
+  "support": "xsoar",
+  "currentVersion": "1.1.11",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-12-09T13:38:20Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [
+    "Getting Started"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

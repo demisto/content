@@ -1,33 +1,34 @@
 {
-    "name": "ZeroFox",
-    "description": "Cloud-based SaaS to detect risks found on social media and digital channels.",
-    "support": "partner",
-    "currentVersion": "1.4.0",
-    "author": "ZeroFox",
-    "url": "https://www.zerofox.com/contact-us/",
-    "email": "integration-support@zerofox.com",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "defaultDataSource": "ZeroFox",
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "itemPrefix": [
-        "ZeroFox"
-    ],
-    "dependencies": {},
-    "displayedImages": [],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "ZeroFox",
+  "description": "Cloud-based SaaS to detect risks found on social media and digital channels.",
+  "support": "partner",
+  "currentVersion": "1.4.0",
+  "author": "ZeroFox",
+  "url": "https://www.zerofox.com/contact-us/",
+  "email": "integration-support@zerofox.com",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "defaultDataSource": "ZeroFox",
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "itemPrefix": [
+    "ZeroFox"
+  ],
+  "dependencies": {},
+  "displayedImages": [],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

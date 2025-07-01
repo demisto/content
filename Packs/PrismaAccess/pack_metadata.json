@@ -1,41 +1,42 @@
 {
-    "name": "Palo Alto Networks - Strata Cloud Manager",
-    "description": "Integrate with Palo Alto Networks Prisma SASE to query activity and take actions.",
-    "support": "xsoar",
-    "currentVersion": "2.1.17",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-16T22:51:04Z",
-    "categories": [
-        "Cloud Security"
-    ],
-    "tags": [
-        "Palo Alto Networks Products"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Access",
-        "Pan-os",
-        "PAN_OS",
-        "PAN-OS",
-        "pan-os",
-        "Panorama",
-        "Prisma",
-        "SASE"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Palo Alto Networks - Strata Cloud Manager",
+  "description": "Integrate with Palo Alto Networks Prisma SASE to query activity and take actions.",
+  "support": "xsoar",
+  "currentVersion": "2.1.17",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-16T22:51:04Z",
+  "categories": [
+    "Cloud Security"
+  ],
+  "tags": [
+    "Palo Alto Networks Products"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Access",
+    "Pan-os",
+    "PAN_OS",
+    "PAN-OS",
+    "pan-os",
+    "Panorama",
+    "Prisma",
+    "SASE"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X0",
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

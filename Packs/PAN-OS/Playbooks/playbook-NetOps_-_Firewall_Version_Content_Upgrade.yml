@@ -2,8 +2,8 @@ id: NetOps - Firewall Version and Content Upgrade
 version: -1
 fromversion: 5.0.0
 name: NetOps - Firewall Version and Content Upgrade
-description: Network operations playbook that updates the version and content of
-  the firewall. You must have Superuser permissions to update the PAN-OS version.
+description: Network operations playbook that updates the version and content of the
+  firewall. You must have Superuser permissions to update the PAN-OS version.
 starttaskid: "0"
 tasks:
   "0":
@@ -595,3 +595,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

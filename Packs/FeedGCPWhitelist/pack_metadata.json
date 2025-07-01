@@ -1,29 +1,30 @@
 {
-    "name": "Google IP Ranges Feed",
-    "description": "Use the Google IP Ranges Feed integration to get GCP and Google global IP ranges.",
-    "support": "xsoar",
-    "currentVersion": "2.0.45",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-23T16:35:16Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Allow List"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Google IP Ranges Feed",
+  "description": "Use the Google IP Ranges Feed integration to get GCP and Google global IP ranges.",
+  "support": "xsoar",
+  "currentVersion": "2.0.45",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-23T16:35:16Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Allow List"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

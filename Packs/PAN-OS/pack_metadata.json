@@ -1,52 +1,53 @@
 {
-    "name": "PAN-OS by Palo Alto Networks",
-    "description": "Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information see Panorama documentation.",
-    "support": "xsoar",
-    "currentVersion": "2.4.2",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [
-        "Palo Alto Networks Products"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Panorama",
-        "Firewall",
-        "vsys",
-        "SASE",
-        "Access",
-        "Sinkhole",
-        "Sinkholing",
-        "DNS Sinkhole"
-    ],
-    "dependencies": {
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        }
+  "name": "PAN-OS by Palo Alto Networks",
+  "description": "Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information see Panorama documentation.",
+  "support": "xsoar",
+  "currentVersion": "2.4.2",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [
+    "Palo Alto Networks Products"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Panorama",
+    "Firewall",
+    "vsys",
+    "SASE",
+    "Access",
+    "Sinkhole",
+    "Sinkholing",
+    "DNS Sinkhole"
+  ],
+  "dependencies": {
+    "CommonPlaybooks": {
+      "mandatory": true,
+      "display_name": "Common Playbooks"
     },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "xpanse",
-        "platform"
-    ],
-    "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
+    }
+  },
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "xpanse",
+    "platform"
+  ],
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X0",
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

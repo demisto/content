@@ -98,7 +98,8 @@ tasks:
       Timeout:
         simple: "10080"
       dt:
-        simple: EWS.ComplianceSearch(val.Status === "InProgress" || val.Status === "Running" || val.Status === "Starting").Name
+        simple: EWS.ComplianceSearch(val.Status === "InProgress" || val.Status ===
+          "Running" || val.Status === "Starting").Name
     separatecontext: true
     loop:
       iscommand: false
@@ -374,3 +375,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -1,47 +1,48 @@
 {
-    "name": "Microsoft Windows Event Logs",
-    "description": "The Windows event log is a detailed record of system, security and application notifications stored by the Windows operating system.",
-    "support": "xsoar",
-    "currentVersion": "1.1.18",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "IT Services",
-        "Network Security"
-    ],
-    "tags": [
-        "Security",
-        "Network",
-        "IT"
-    ],
-    "useCases": [],
-    "keywords": [
-        "microsoft",
-        "windows"
-    ],
-    "dependencies": {
-        "MicrosoftDNS": {
-            "mandatory": false,
-            "display_name": "Microsoft DNS"
-        },
-        "MicrosoftADFS": {
-            "mandatory": false,
-            "display_name": "Microsoft AD FS Collection"
-        },
-        "MicrosoftWindowsAMSI": {
-            "mandatory": false,
-            "display_name": "Microsoft Windows AMSI"
-        }
+  "name": "Microsoft Windows Event Logs",
+  "description": "The Windows event log is a detailed record of system, security and application notifications stored by the Windows operating system.",
+  "support": "xsoar",
+  "currentVersion": "1.1.18",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "IT Services",
+    "Network Security"
+  ],
+  "tags": [
+    "Security",
+    "Network",
+    "IT"
+  ],
+  "useCases": [],
+  "keywords": [
+    "microsoft",
+    "windows"
+  ],
+  "dependencies": {
+    "MicrosoftDNS": {
+      "mandatory": false,
+      "display_name": "Microsoft DNS"
     },
-    "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "MicrosoftADFS": {
+      "mandatory": false,
+      "display_name": "Microsoft AD FS Collection"
+    },
+    "MicrosoftWindowsAMSI": {
+      "mandatory": false,
+      "display_name": "Microsoft Windows AMSI"
+    }
+  },
+  "marketplaces": [
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

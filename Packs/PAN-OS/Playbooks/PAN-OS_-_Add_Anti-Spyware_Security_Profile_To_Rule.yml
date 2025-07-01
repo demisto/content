@@ -157,7 +157,8 @@ tasks:
       id: f6aeed27-6fdd-4f51-823c-f6023d67c200
       version: -1
       name: Is there a rule input?
-      description: Checks whether a rule to add the profile to was specified in the playbook inputs.
+      description: Checks whether a rule to add the profile to was specified in the
+        playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -308,7 +309,9 @@ tasks:
       id: 345b0c42-ac77-4ffc-8b5e-1db0146cbbc0
       version: -1
       name: Overwrite with / Add our profile to the security profile group
-      description: Please modify the security profile group, and add the Anti-Spyware security profile called ${inputs.SecurityProfileName}. If there's already an anti-spyware security profile configured there, please overwrite it.
+      description: Please modify the security profile group, and add the Anti-Spyware
+        security profile called ${inputs.SecurityProfileName}. If there's already
+        an anti-spyware security profile configured there, please overwrite it.
       type: regular
       iscommand: false
       brand: ""
@@ -339,7 +342,8 @@ tasks:
       id: 92d9b23c-c0a9-4db3-82e1-2e081a8fd02e
       version: -1
       name: Apply security profile to rule
-      description: Applies a security profile to specific rules or rules with a specific tag.
+      description: Applies a security profile to specific rules or rules with a specific
+        tag.
       script: '|||pan-os-apply-security-profile'
       type: regular
       iscommand: true
@@ -482,7 +486,8 @@ tasks:
       id: b7663e7d-ba72-409c-8cfb-6be52619e5f1
       version: -1
       name: Does the profile we are applying already exist?
-      description: Checks whether the profile we want to apply already exists or needs to be created.
+      description: Checks whether the profile we want to apply already exists or needs
+        to be created.
       type: condition
       iscommand: false
       brand: ""
@@ -669,7 +674,8 @@ tasks:
       id: 37bf8e38-7218-42cd-8ab3-36615c3aa051
       version: -1
       name: Does the profile we are applying already exist?
-      description: Checks whether the profile we want to apply already exists or needs to be created.
+      description: Checks whether the profile we want to apply already exists or needs
+        to be created.
       type: condition
       iscommand: false
       brand: ""
@@ -768,7 +774,9 @@ tasks:
       id: d5aa2d6b-bcb1-4a4f-8fce-98bd7dba3894
       version: -1
       name: Provide the name of the existing anti-spyware profile
-      description: Please review the the security profile group described below in your PAN-OS firewall instance which is configured in XSOAR, and answer the question.
+      description: Please review the the security profile group described below in
+        your PAN-OS firewall instance which is configured in XSOAR, and answer the
+        question.
       type: collection
       iscommand: false
       brand: ""
@@ -791,7 +799,8 @@ tasks:
       to:
       subject:
       body:
-        simple: Please provide the name of the existing anti-spyware profile for proper execution of the playbook.
+        simple: Please provide the name of the existing anti-spyware profile for proper
+          execution of the playbook.
       methods: []
       format: ""
       bcc:
@@ -807,7 +816,8 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: What is the name of the anti-spyware profile of the security group called ${Panorama.SecurityRule.SecurityProfileGroup}?
+          simple: What is the name of the anti-spyware profile of the security group
+            called ${Panorama.SecurityRule.SecurityProfileGroup}?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -835,7 +845,9 @@ tasks:
       id: a38481ee-42bc-49eb-8a90-2d79dbc86d87
       version: -1
       name: Check if the group has an anti-spyware profile
-      description: Please check the security profile group ${Panorama.SecurityRule.SecurityProfileGroup} in your PAN-OS firewall instance and see whether it has an anti-spyware security profile at the moment.
+      description: Please check the security profile group ${Panorama.SecurityRule.SecurityProfileGroup}
+        in your PAN-OS firewall instance and see whether it has an anti-spyware security
+        profile at the moment.
       type: condition
       iscommand: false
       brand: ""
@@ -1029,7 +1041,8 @@ inputs:
 - key: SecurityProfileName
   value: {}
   required: true
-  description: The name of the Security Profile that should be added to the rule. If it doesn't exit, one will be created with the name specified here.
+  description: The name of the Security Profile that should be added to the rule.
+    If it doesn't exit, one will be created with the name specified here.
   playbookInputQuery:
 - key: OverwriteProfileIfExists
   value:
@@ -1043,7 +1056,9 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: AntiSpywareProfileNameApplied
-  description: The name of the Anti-Spyware Security Profile that is applied to the rule. The value could be the name of the profile that was added, overwritten with, or left untouched - for the specified rule.
+  description: The name of the Anti-Spyware Security Profile that is applied to the
+    rule. The value could be the name of the profile that was added, overwritten with,
+    or left untouched - for the specified rule.
   type: unknown
 tests:
 - PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
@@ -1053,3 +1068,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

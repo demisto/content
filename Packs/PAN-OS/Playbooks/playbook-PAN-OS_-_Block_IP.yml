@@ -347,7 +347,13 @@ tasks:
       id: 3fd620d3-29ac-417d-8f72-5768c65da800
       version: -1
       name: PAN-OS DAG Configuration
-      description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed. \n"
+      description: "This playbook utilizes the Dynamic Address Group (DAG) capability
+        of PAN-OS.\nDAG enables analysts to create a rule one time, where the group
+        is the source/destination, and adds IP addresses dynamically without the need
+        to commit the configuration every time.\n\nThe playbook checks if the given
+        tag already exists. If the tag exists, then the IP address is added to the
+        tag.\n\nIf the tag does not exist, a new address group is created with the
+        given tag and a matching rule, and the configuration is committed. \n"
       playbookName: PAN-OS DAG Configuration
       type: playbook
       iscommand: false
@@ -522,3 +528,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

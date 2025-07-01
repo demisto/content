@@ -1,34 +1,35 @@
 {
-    "name": "FeodoTracker Feed",
-    "description": "Indicators feed from FeodoTracker",
-    "support": "xsoar",
-    "currentVersion": "1.1.37",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-03-09T16:04:45Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Threat Intelligence Management",
-        "Free Feed",
-        "Plug & Fetch"
-    ],
-    "useCases": [],
-    "keywords": [
-        "FeodoTracker",
-        "Feed"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "FeodoTracker Feed",
+  "description": "Indicators feed from FeodoTracker",
+  "support": "xsoar",
+  "currentVersion": "1.1.37",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-09T16:04:45Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Threat Intelligence Management",
+    "Free Feed",
+    "Plug & Fetch"
+  ],
+  "useCases": [],
+  "keywords": [
+    "FeodoTracker",
+    "Feed"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

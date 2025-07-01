@@ -1,33 +1,34 @@
 {
-    "name": "Ansible Azure",
-    "description": "Manage and control Azure services.",
-    "support": "xsoar",
-    "currentVersion": "1.0.16",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Cloud Service Provider",
-        "IT Services"
-    ],
-    "tags": [
-        "IT"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Asset Management",
-        "Infrastructure Configuration",
-        "system configuration"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Ansible Azure",
+  "description": "Manage and control Azure services.",
+  "support": "xsoar",
+  "currentVersion": "1.0.16",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "Cloud Service Provider",
+    "IT Services"
+  ],
+  "tags": [
+    "IT"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Asset Management",
+    "Infrastructure Configuration",
+    "system configuration"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

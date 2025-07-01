@@ -1,31 +1,32 @@
 {
-    "name": "CyberArk Identity",
-    "description": "This integration collects events from the Idaptive Next-Gen Access (INGA) using REST APIs.",
-    "support": "xsoar",
-    "currentVersion": "1.1.5",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Analytics & SIEM"
-    ],
-    "tags": [
-        "Security",
-        "IAM"
-    ],
-    "useCases": [],
-    "keywords": [
-        "cyberark",
-        "identity"
-    ],
-    "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "CyberArk Identity",
+  "description": "This integration collects events from the Idaptive Next-Gen Access (INGA) using REST APIs.",
+  "support": "xsoar",
+  "currentVersion": "1.1.5",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [
+    "Security",
+    "IAM"
+  ],
+  "useCases": [],
+  "keywords": [
+    "cyberark",
+    "identity"
+  ],
+  "marketplaces": [
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

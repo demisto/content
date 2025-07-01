@@ -296,7 +296,9 @@ tasks:
       id: 5b1dc470-d347-4a2c-8908-c1548188fec1
       version: -1
       name: Cloud IAM Enrichment - Generic
-      description: This playbook is responsible for collecting and enriching data on Identity Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
+      description: This playbook is responsible for collecting and enriching data
+        on Identity Access Management (IAM) in cloud environments (AWS, Azure, and
+        GCP).
       playbookName: Cloud IAM Enrichment - Generic
       type: playbook
       iscommand: false
@@ -417,7 +419,8 @@ tasks:
       id: 9b5c2fc2-c65b-488d-8229-f8b59bb2341a
       version: -1
       name: Found any malicious user activity?
-      description: Determine if the activity is malicious based on the investigation findings.
+      description: Determine if the activity is malicious based on the investigation
+        findings.
       type: condition
       iscommand: false
       brand: ""
@@ -501,7 +504,8 @@ tasks:
       id: c57402d1-54ac-4fcd-86b3-ea787ef0f134
       version: -1
       name: Analyst Decision
-      description: An analyst’s decision is required to determine whether it is a malicious or non-malicious activity.
+      description: An analyst’s decision is required to determine whether it is a
+        malicious or non-malicious activity.
       type: condition
       iscommand: false
       brand: ""
@@ -526,7 +530,8 @@ tasks:
       to:
       subject:
       body:
-        simple: An analyst's decision is required to determine whether it is a malicious or non-malicious activity.
+        simple: An analyst's decision is required to determine whether it is a malicious
+          or non-malicious activity.
       methods: []
       format: ""
       bcc:
@@ -740,7 +745,8 @@ tasks:
       id: 7cff1688-ef61-4eb4-8273-ac88be488567
       version: -1
       name: Okta - User Investigation
-      description: This playbook performs an investigation on a specific user, using queries and logs from Okta.
+      description: This playbook performs an investigation on a specific user, using
+        queries and logs from Okta.
       playbookName: Okta - User Investigation
       type: playbook
       iscommand: false
@@ -1033,7 +1039,13 @@ tasks:
       id: 030764ae-207c-4555-831e-a974d06764dd
       version: -1
       name: Containment Plan
-      description: "This playbook handles the main containment actions available with Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan - Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      description: "This playbook handles the main containment actions available with
+        Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan
+        - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan
+        - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan
+        - Clear user session (currently, the playbook supports only Okta)\n\nNote:
+        The playbook inputs enable manipulating the execution flow. Read the input
+        descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -1576,7 +1588,9 @@ inputs:
   value:
     simple: "10"
   required: false
-  description: This is the minimum threshold for MFA failed logins by the user in the last 1 day. Required to determine how many MFA failed logon events count as malicious events.
+  description: This is the minimum threshold for MFA failed logins by the user in
+    the last 1 day. Required to determine how many MFA failed logon events count as
+    malicious events.
   playbookInputQuery:
 - key: AutoRemediation
   value:
@@ -1630,7 +1644,8 @@ inputSections:
   - OktaSuspiciousEventsThreshold
   - AzureMfaFailedLogonThreshold
   name: Investigation
-  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+  description: Investigation settings and data, including any deep dive incident investigation
+    and verdict determination.
 - inputs:
   - AutoRemediation
   - AutoContainment
@@ -1638,7 +1653,8 @@ inputSections:
   - ClearUserSessions
   - IAMRemediationType
   name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
 outputSections:
 - outputs: []
   name: General (Outputs group)
@@ -1656,3 +1672,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

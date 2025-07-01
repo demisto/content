@@ -1,29 +1,30 @@
 {
-    "name": "TAXII Server",
-    "description": "This pack provides TAXII Services for system indicators (Outbound feed).",
-    "support": "xsoar",
-    "currentVersion": "2.1.8",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-03-10T08:37:18Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Threat Intelligence Management"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "TAXII Server",
+  "description": "This pack provides TAXII Services for system indicators (Outbound feed).",
+  "support": "xsoar",
+  "currentVersion": "2.1.8",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-10T08:37:18Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Threat Intelligence Management"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

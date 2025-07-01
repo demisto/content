@@ -1,30 +1,31 @@
 {
-    "name": "SpyCloud",
-    "description": "Integration for retrieving data from the SpyCloud ATO API",
-    "support": "community",
-    "currentVersion": "1.0.7",
-    "author": "Niels Heijmans",
-    "url": "",
-    "email": "",
-    "created": "2022-02-08T10:11:09Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "nheijmans"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "SpyCloud",
+  "description": "Integration for retrieving data from the SpyCloud ATO API",
+  "support": "community",
+  "currentVersion": "1.0.7",
+  "author": "Niels Heijmans",
+  "url": "",
+  "email": "",
+  "created": "2022-02-08T10:11:09Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [
+    "nheijmans"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

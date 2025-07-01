@@ -1,35 +1,36 @@
 {
-    "name": "Tessian",
-    "description": "Tessian's complete cloud email security platform defends customers against advanced phishing threats, and protects their sensitive data on email.",
-    "support": "partner",
-    "currentVersion": "1.0.6",
-    "author": "Tessian",
-    "url": "",
-    "email": "support@tessian.com",
-    "categories": [
-        "Analytics & SIEM"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "phishing",
-        "email",
-        "security",
-        "tessian"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "githubUser": [
-        "NicBunn-PlutoFlume",
-        "nicokuyum-PlutoFlume"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Tessian",
+  "description": "Tessian's complete cloud email security platform defends customers against advanced phishing threats, and protects their sensitive data on email.",
+  "support": "partner",
+  "currentVersion": "1.0.6",
+  "author": "Tessian",
+  "url": "",
+  "email": "support@tessian.com",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "phishing",
+    "email",
+    "security",
+    "tessian"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": [
+    "NicBunn-PlutoFlume",
+    "nicokuyum-PlutoFlume"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

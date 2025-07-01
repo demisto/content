@@ -1,7 +1,8 @@
 id: Prisma Access -  Logout User
 version: -1
 name: Prisma Access -  Logout User
-description: This playbook forces logout of a specific user and computer from Prisma Access.
+description: This playbook forces logout of a specific user and computer from Prisma
+  Access.
 starttaskid: '0'
 tasks:
   '0':
@@ -156,3 +157,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

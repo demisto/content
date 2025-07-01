@@ -1,23 +1,24 @@
 {
-    "defaultIncidentType": "ServiceNow Ticket",
-    "description": "Classifies ServiceNow tickets.",
-    "feed": false,
-    "id": "ServiceNow",
-    "keyTypeMap": {
-        "incident": "ServiceNow Ticket",
-        "sn_si_incident": "ServiceNow SIR Incident"
-    },
-    "name": "ServiceNow Classifier",
-    "transformer": {
-        "simple": "sys_class_name"
-    },
-    "type": "classification",
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "defaultIncidentType": "ServiceNow Ticket",
+  "description": "Classifies ServiceNow tickets.",
+  "feed": false,
+  "id": "ServiceNow",
+  "keyTypeMap": {
+    "incident": "ServiceNow Ticket",
+    "sn_si_incident": "ServiceNow SIR Incident"
+  },
+  "name": "ServiceNow Classifier",
+  "transformer": {
+    "simple": "sys_class_name"
+  },
+  "type": "classification",
+  "version": -1,
+  "fromVersion": "6.0.0",
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

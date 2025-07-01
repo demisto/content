@@ -1,27 +1,28 @@
 {
-    "name": "FortiGate",
-    "description": "Manage FortiGate Firewall",
-    "support": "xsoar",
-    "currentVersion": "2.0.11",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "FortiGate",
+  "description": "Manage FortiGate Firewall",
+  "support": "xsoar",
+  "currentVersion": "2.0.11",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

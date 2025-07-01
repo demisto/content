@@ -1,29 +1,30 @@
 {
-    "name": "IoT by Palo Alto Networks",
-    "description": "Palo Alto Networks IoT",
-    "support": "xsoar",
-    "currentVersion": "1.0.40",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-05-20T23:14:27Z",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [
-        "Palo Alto Networks Products"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "IoT by Palo Alto Networks",
+  "description": "Palo Alto Networks IoT",
+  "support": "xsoar",
+  "currentVersion": "1.0.40",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-05-20T23:14:27Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [
+    "Palo Alto Networks Products"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,28 +1,29 @@
 {
-    "name": "GitLab",
-    "description": "Pack for handling gitlab operations",
-    "support": "xsoar",
-    "currentVersion": "2.2.30",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Code Repositories",
-        "CI/CD"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "marketplacev2",
-        "xsoar",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "GitLab",
+  "description": "Pack for handling gitlab operations",
+  "support": "xsoar",
+  "currentVersion": "2.2.30",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Code Repositories",
+    "CI/CD"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "marketplacev2",
+    "xsoar",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,26 +1,27 @@
 {
-    "name": "Bitsight",
-    "description": "Bitsight Integration will allow you visibility into Bitsight findings for remediation in your security program.",
-    "support": "partner",
-    "currentVersion": "1.1.24",
-    "author": "Bitsight",
-    "url": "https://service.bitsighttech.com/",
-    "email": "support@bitsight.com",
-    "categories": [
-        "IT Services"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Bitsight",
+  "description": "Bitsight Integration will allow you visibility into Bitsight findings for remediation in your security program.",
+  "support": "partner",
+  "currentVersion": "1.1.24",
+  "author": "Bitsight",
+  "url": "https://service.bitsighttech.com/",
+  "email": "support@bitsight.com",
+  "categories": [
+    "IT Services"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

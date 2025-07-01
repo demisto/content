@@ -1,26 +1,27 @@
 {
-    "defaultIncidentType": "SailPoint IdentityIQ Alert",
-    "description": "",
-    "feed": false,
-    "id": "SailPoint IdentityIQ Alert Classifier",
-    "keyTypeMap": {
-        "PAN XSOAR": "SailPoint IdentityIQ Alert"
-    },
-    "name": "SailPoint IdentityIQ Alert Classifier",
-    "propagationLabels": [
-        "all"
-    ],
-    "transformer": {
-        "complex": null,
-        "simple": "type"
-    },
-    "type": "classification",
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "defaultIncidentType": "SailPoint IdentityIQ Alert",
+  "description": "",
+  "feed": false,
+  "id": "SailPoint IdentityIQ Alert Classifier",
+  "keyTypeMap": {
+    "PAN XSOAR": "SailPoint IdentityIQ Alert"
+  },
+  "name": "SailPoint IdentityIQ Alert Classifier",
+  "propagationLabels": [
+    "all"
+  ],
+  "transformer": {
+    "complex": null,
+    "simple": "type"
+  },
+  "type": "classification",
+  "version": -1,
+  "fromVersion": "6.0.0",
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

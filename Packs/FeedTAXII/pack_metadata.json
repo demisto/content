@@ -1,33 +1,34 @@
 {
-    "name": "TAXII Feed",
-    "description": "Ingest indicator feeds from TAXII 1 and TAXII 2 servers.",
-    "support": "xsoar",
-    "currentVersion": "1.2.35",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Generic Feed"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {},
-    "itemPrefix": [
-        "STIX"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "TAXII Feed",
+  "description": "Ingest indicator feeds from TAXII 1 and TAXII 2 servers.",
+  "support": "xsoar",
+  "currentVersion": "1.2.35",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Generic Feed"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "dependencies": {},
+  "itemPrefix": [
+    "STIX"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

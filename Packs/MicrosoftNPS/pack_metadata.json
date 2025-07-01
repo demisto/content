@@ -1,25 +1,26 @@
 {
-    "name": "Microsoft NPS",
-    "description": "Modeling Rules for the Microsoft NPS logs collector",
-    "support": "xsoar",
-    "currentVersion": "1.0.7",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Analytics & SIEM"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Microsoft NPS",
+  "description": "Modeling Rules for the Microsoft NPS logs collector",
+  "support": "xsoar",
+  "currentVersion": "1.0.7",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

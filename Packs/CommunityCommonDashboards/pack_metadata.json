@@ -1,30 +1,31 @@
 {
-    "name": "Community Common Dashboards",
-    "description": "A pack that contains community dashboards",
-    "support": "community",
-    "currentVersion": "2.1.1",
-    "author": "Randy Uhrlaub",
-    "url": "",
-    "email": "",
-    "created": "2023-11-02T16:10:44Z",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "githubUser": [
-        "rurhrlaub"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Community Common Dashboards",
+  "description": "A pack that contains community dashboards",
+  "support": "community",
+  "currentVersion": "2.1.1",
+  "author": "Randy Uhrlaub",
+  "url": "",
+  "email": "",
+  "created": "2023-11-02T16:10:44Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": [
+    "rurhrlaub"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

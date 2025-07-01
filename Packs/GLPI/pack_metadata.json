@@ -1,51 +1,52 @@
 {
-    "name": "GLPI",
-    "description": "GLPI open source ITSM solution",
-    "support": "partner",
-    "currentVersion": "1.0.26",
-    "author": "SecInfra",
-    "url": "http://secinfra.fr",
-    "email": "support@secinfra.fr",
-    "categories": [
-        "Case Management"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "devEmail": [
-        "support@secinfra.fr"
-    ],
-    "githubUser": [
-        "SecInfra"
-    ],
-    "dependencies": {
-        "CoreAlertFields": {
-            "mandatory": true,
-            "display_name": "Core Alert Fields"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        }
+  "name": "GLPI",
+  "description": "GLPI open source ITSM solution",
+  "support": "partner",
+  "currentVersion": "1.0.26",
+  "author": "SecInfra",
+  "url": "http://secinfra.fr",
+  "email": "support@secinfra.fr",
+  "categories": [
+    "Case Management"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "devEmail": [
+    "support@secinfra.fr"
+  ],
+  "githubUser": [
+    "SecInfra"
+  ],
+  "dependencies": {
+    "CoreAlertFields": {
+      "mandatory": true,
+      "display_name": "Core Alert Fields"
     },
-    "displayedImages": [
-        "CoreAlertFields",
-        "CommonTypes",
-        "CommonScripts"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "CommonTypes": {
+      "mandatory": true,
+      "display_name": "Common Types"
+    },
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
+    }
+  },
+  "displayedImages": [
+    "CoreAlertFields",
+    "CommonTypes",
+    "CommonScripts"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

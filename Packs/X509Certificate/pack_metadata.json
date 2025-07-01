@@ -1,41 +1,42 @@
 {
-    "name": "X509Certificate",
-    "description": "The X509 Certificate Content Packs provides additional capabilities for handling, parsing and validating X509 Certificates in Cortex XSOAR.",
-    "support": "xsoar",
-    "currentVersion": "1.0.41",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-12-01T10:38:35Z",
-    "hidden": false,
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [],
-    "useCases": [],
-    "dependencies": {
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        }
+  "name": "X509Certificate",
+  "description": "The X509 Certificate Content Packs provides additional capabilities for handling, parsing and validating X509 Certificates in Cortex XSOAR.",
+  "support": "xsoar",
+  "currentVersion": "1.0.41",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-12-01T10:38:35Z",
+  "hidden": false,
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [],
+  "useCases": [],
+  "dependencies": {
+    "CommonTypes": {
+      "mandatory": true,
+      "display_name": "Common Types"
     },
-    "keywords": [
-        "X509",
-        "Certificate"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
+    }
+  },
+  "keywords": [
+    "X509",
+    "Certificate"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

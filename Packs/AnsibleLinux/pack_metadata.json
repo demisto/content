@@ -1,36 +1,37 @@
 {
-    "name": "Ansible Linux",
-    "description": "Manage and control Linux hosts.",
-    "support": "xsoar",
-    "currentVersion": "1.0.16",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "IT Services"
-    ],
-    "tags": [
-        "IT"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Ubuntu",
-        "Debian",
-        "CentOS",
-        "Red Hat",
-        "FreeBSD",
-        "Asset Management",
-        "system configuration"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Ansible Linux",
+  "description": "Manage and control Linux hosts.",
+  "support": "xsoar",
+  "currentVersion": "1.0.16",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "IT Services"
+  ],
+  "tags": [
+    "IT"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Ubuntu",
+    "Debian",
+    "CentOS",
+    "Red Hat",
+    "FreeBSD",
+    "Asset Management",
+    "system configuration"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

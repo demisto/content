@@ -1,27 +1,28 @@
 {
-    "name": "Camlytics",
-    "description": "An integration with Camlytics surveillance analytics system",
-    "support": "community",
-    "currentVersion": "1.0.7",
-    "author": "Ayman Mahmoud",
-    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
-    "email": "",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "githubUser": [],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Camlytics",
+  "description": "An integration with Camlytics surveillance analytics system",
+  "support": "community",
+  "currentVersion": "1.0.7",
+  "author": "Ayman Mahmoud",
+  "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+  "email": "",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": [],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

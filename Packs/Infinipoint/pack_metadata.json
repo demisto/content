@@ -1,31 +1,32 @@
 {
-    "name": "Infinipoint",
-    "description": "Use the Infinipoint integration to retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time",
-    "support": "partner",
-    "currentVersion": "1.0.16",
-    "author": "Infinipoint - ET",
-    "url": "",
-    "email": "support@infinipoint.io",
-    "created": "2020-06-07T11:55:44Z",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "etInfp"
-    ],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Infinipoint",
+  "description": "Use the Infinipoint integration to retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time",
+  "support": "partner",
+  "currentVersion": "1.0.16",
+  "author": "Infinipoint - ET",
+  "url": "",
+  "email": "support@infinipoint.io",
+  "created": "2020-06-07T11:55:44Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [
+    "etInfp"
+  ],
+  "certification": "certified",
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

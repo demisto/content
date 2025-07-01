@@ -1,27 +1,28 @@
 {
-    "name": "AWS - Network Firewall",
-    "description": "Amazon Web Services Network Firewall",
-    "support": "xsoar",
-    "currentVersion": "1.0.11",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-11-17T08:37:18Z",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "AWS - Network Firewall",
+  "description": "Amazon Web Services Network Firewall",
+  "support": "xsoar",
+  "currentVersion": "1.0.11",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-11-17T08:37:18Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,31 +1,32 @@
 {
-    "name": "Humio",
-    "description": "Instantly search live log data at scale. Create dashboards to visualize and analyze complex systems in real time",
-    "support": "partner",
-    "currentVersion": "1.0.15",
-    "author": "Humio",
-    "url": "",
-    "email": "integrations@humio.com",
-    "categories": [
-        "Analytics & SIEM"
-    ],
-    "tags": [],
-    "created": "2020-04-30T15:56:44Z",
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "KGausel"
-    ],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Humio",
+  "description": "Instantly search live log data at scale. Create dashboards to visualize and analyze complex systems in real time",
+  "support": "partner",
+  "currentVersion": "1.0.15",
+  "author": "Humio",
+  "url": "",
+  "email": "integrations@humio.com",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [],
+  "created": "2020-04-30T15:56:44Z",
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [
+    "KGausel"
+  ],
+  "certification": "certified",
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

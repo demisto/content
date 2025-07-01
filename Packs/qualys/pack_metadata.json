@@ -1,32 +1,33 @@
 {
-    "name": "Qualys",
-    "description": "Qualys Vulnerability Management let's you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance",
-    "support": "xsoar",
-    "currentVersion": "3.3.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Vulnerability Management"
-    ],
-    "tags": [
-        "Security"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Asset Collection"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "xpanse",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Qualys",
+  "description": "Qualys Vulnerability Management let's you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance",
+  "support": "xsoar",
+  "currentVersion": "3.3.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Vulnerability Management"
+  ],
+  "tags": [
+    "Security"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Asset Collection"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "xpanse",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,30 +1,31 @@
 {
-    "name": "FileOrbis",
-    "description": "FileOrbis XSOAR integration.",
-    "support": "partner",
-    "currentVersion": "1.0.6",
-    "author": "FileOrbis",
-    "url": "https://www.fileorbis.com/",
-    "email": "info@fileorbis.com",
-    "categories": [
-        "IT Services"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "Offboarding",
-        "IT"
-    ],
-    "githubUser": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "FileOrbis",
+  "description": "FileOrbis XSOAR integration.",
+  "support": "partner",
+  "currentVersion": "1.0.6",
+  "author": "FileOrbis",
+  "url": "https://www.fileorbis.com/",
+  "email": "info@fileorbis.com",
+  "categories": [
+    "IT Services"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "Offboarding",
+    "IT"
+  ],
+  "githubUser": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,41 +1,42 @@
 {
-    "name": "Cohesity Helios",
-    "description": "This integration interacts with Cohesity Helios and performs actions based on alerts raised.",
-    "support": "partner",
-    "currentVersion": "1.1.3",
-    "author": "Cohesity Inc.",
-    "url": "https://www.cohesity.com",
-    "email": "support@cohesity.com",
-    "categories": [
-        "Vulnerability Management"
-    ],
-    "itemPrefix": [
-        "Cohesity Helios"
-    ],
-    "tags": [
-        "Alerts",
-        "Security"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Ransomware",
-        "backup and recovery",
-        "data protection",
-        "data management",
-        "data security",
-        "disaster recovery"
-    ],
-    "githubUser": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "defaultDataSource": "Cohesity Helios Event Collector",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Cohesity Helios",
+  "description": "This integration interacts with Cohesity Helios and performs actions based on alerts raised.",
+  "support": "partner",
+  "currentVersion": "1.1.3",
+  "author": "Cohesity Inc.",
+  "url": "https://www.cohesity.com",
+  "email": "support@cohesity.com",
+  "categories": [
+    "Vulnerability Management"
+  ],
+  "itemPrefix": [
+    "Cohesity Helios"
+  ],
+  "tags": [
+    "Alerts",
+    "Security"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Ransomware",
+    "backup and recovery",
+    "data protection",
+    "data management",
+    "data security",
+    "disaster recovery"
+  ],
+  "githubUser": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "defaultDataSource": "Cohesity Helios Event Collector",
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

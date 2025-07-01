@@ -1,32 +1,33 @@
 {
-    "name": "Filters And Transformers",
-    "description": "Frequently used filters and transformers pack.",
-    "support": "xsoar",
-    "currentVersion": "1.2.97",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [
-        "Core"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "xpanse",
-        "platform"
-    ],
-    "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Filters And Transformers",
+  "description": "Frequently used filters and transformers pack.",
+  "support": "xsoar",
+  "currentVersion": "1.2.97",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [
+    "Core"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "xpanse",
+    "platform"
+  ],
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X0",
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

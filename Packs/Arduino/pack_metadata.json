@@ -1,30 +1,31 @@
 {
-    "name": "Arduino",
-    "description": "Communicate with an Arduino over a network. Sample code for the Arduino is provided to get up and running. There are functions in the Arduino code to handle setting and getting pin values as well as arbitrary data.",
-    "support": "community",
-    "currentVersion": "1.0.14",
-    "author": "Adam Burt",
-    "url": "",
-    "email": "",
-    "created": "2021-01-15T14:23:13Z",
-    "categories": [
-        "IT Services"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "aburt-demisto"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Arduino",
+  "description": "Communicate with an Arduino over a network. Sample code for the Arduino is provided to get up and running. There are functions in the Arduino code to handle setting and getting pin values as well as arbitrary data.",
+  "support": "community",
+  "currentVersion": "1.0.14",
+  "author": "Adam Burt",
+  "url": "",
+  "email": "",
+  "created": "2021-01-15T14:23:13Z",
+  "categories": [
+    "IT Services"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [
+    "aburt-demisto"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

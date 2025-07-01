@@ -1,42 +1,43 @@
 {
-    "name": "Prisma Cloud Compute by Palo Alto Networks",
-    "description": "Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.",
-    "support": "xsoar",
-    "currentVersion": "1.7.20",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-03-10T08:37:18Z",
-    "categories": [
-        "Cloud Security"
-    ],
-    "tags": [
-        "Palo Alto Networks Products"
-    ],
-    "dependencies": {
-        "Jira": {
-            "mandatory": false,
-            "display_name": "Atlassian Jira"
-        },
-        "ServiceNow": {
-            "mandatory": false,
-            "display_name": "ServiceNow v2"
-        }
+  "name": "Prisma Cloud Compute by Palo Alto Networks",
+  "description": "Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.",
+  "support": "xsoar",
+  "currentVersion": "1.7.20",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-10T08:37:18Z",
+  "categories": [
+    "Cloud Security"
+  ],
+  "tags": [
+    "Palo Alto Networks Products"
+  ],
+  "dependencies": {
+    "Jira": {
+      "mandatory": false,
+      "display_name": "Atlassian Jira"
     },
-    "useCases": [],
-    "keywords": [],
-    "itemPrefix": [
-        "Prisma Cloud Compute"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "ServiceNow": {
+      "mandatory": false,
+      "display_name": "ServiceNow v2"
+    }
+  },
+  "useCases": [],
+  "keywords": [],
+  "itemPrefix": [
+    "Prisma Cloud Compute"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

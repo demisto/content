@@ -1,33 +1,34 @@
 {
-    "name": "SaaS Security by Palo Alto Networks",
-    "description": "SaaS Security connects directly to your sanctioned SaaS applications to provide data classification, sharing and permission visibility, and threat detection.",
-    "support": "xsoar",
-    "currentVersion": "2.0.43",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2021-09-01T21:14:15Z",
-    "categories": [
-        "Cloud Security"
-    ],
-    "tags": [
-        "Palo Alto Networks Products"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "itemPrefix": [
-        "Saas Security"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "defaultDataSource": "SaaS Security Event Collector",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "SaaS Security by Palo Alto Networks",
+  "description": "SaaS Security connects directly to your sanctioned SaaS applications to provide data classification, sharing and permission visibility, and threat detection.",
+  "support": "xsoar",
+  "currentVersion": "2.0.43",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2021-09-01T21:14:15Z",
+  "categories": [
+    "Cloud Security"
+  ],
+  "tags": [
+    "Palo Alto Networks Products"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "itemPrefix": [
+    "Saas Security"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "defaultDataSource": "SaaS Security Event Collector",
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

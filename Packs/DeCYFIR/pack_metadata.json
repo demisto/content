@@ -1,64 +1,65 @@
 {
-    "name": "DeCYFIR",
-    "description": "DeCYFIR API's provides External Threat Landscape Management insights",
-    "support": "partner",
-    "currentVersion": "1.0.16",
-    "author": "Cyfirma",
-    "url": "https://www.cyfirma.com/",
-    "email": "contact@cyfirma.com",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "Attack Surface",
-        "Digital Risk",
-        "DeCYFIR",
-        "Cyfirma",
-        "Indicators",
-        "Threat Intel",
-        "Threat Actors",
-        "Threat Intelligence"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "dependencies": {
-        "DefaultPlaybook": {
-            "mandatory": false,
-            "display_name": "Default"
-        },
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "CoreAlertFields": {
-            "mandatory": true,
-            "display_name": "Core Alert Fields"
-        }
+  "name": "DeCYFIR",
+  "description": "DeCYFIR API's provides External Threat Landscape Management insights",
+  "support": "partner",
+  "currentVersion": "1.0.16",
+  "author": "Cyfirma",
+  "url": "https://www.cyfirma.com/",
+  "email": "contact@cyfirma.com",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "Attack Surface",
+    "Digital Risk",
+    "DeCYFIR",
+    "Cyfirma",
+    "Indicators",
+    "Threat Intel",
+    "Threat Actors",
+    "Threat Intelligence"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "dependencies": {
+    "DefaultPlaybook": {
+      "mandatory": false,
+      "display_name": "Default"
     },
-    "displayedImages": [
-        "DefaultPlaybook",
-        "CommonPlaybooks",
-        "CommonScripts",
-        "CommonTypes",
-        "CoreAlertFields"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "CommonPlaybooks": {
+      "mandatory": true,
+      "display_name": "Common Playbooks"
+    },
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
+    },
+    "CommonTypes": {
+      "mandatory": true,
+      "display_name": "Common Types"
+    },
+    "CoreAlertFields": {
+      "mandatory": true,
+      "display_name": "Core Alert Fields"
+    }
+  },
+  "displayedImages": [
+    "DefaultPlaybook",
+    "CommonPlaybooks",
+    "CommonScripts",
+    "CommonTypes",
+    "CoreAlertFields"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

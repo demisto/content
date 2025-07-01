@@ -1,41 +1,42 @@
 {
-    "name": "Commvault Cloud",
-    "description": "Commvault Cloud provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.",
-    "support": "partner",
-    "currentVersion": "1.1.4",
-    "author": "Commvault Systems",
-    "url": "https://www.commvault.com/support",
-    "email": "support@commvault.com",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Threat Intelligence",
-        "Security"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Commvault",
-        "Metallic",
-        "SIEM Connector",
-        "Threat Intelligence",
-        "Ransomware"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "githubUser": [
-        "Cv-securityIQ"
-    ],
-    "itemPrefix": [
-        "Commvault"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Commvault Cloud",
+  "description": "Commvault Cloud provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.",
+  "support": "partner",
+  "currentVersion": "1.1.4",
+  "author": "Commvault Systems",
+  "url": "https://www.commvault.com/support",
+  "email": "support@commvault.com",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Threat Intelligence",
+    "Security"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Commvault",
+    "Metallic",
+    "SIEM Connector",
+    "Threat Intelligence",
+    "Ransomware"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": [
+    "Cv-securityIQ"
+  ],
+  "itemPrefix": [
+    "Commvault"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

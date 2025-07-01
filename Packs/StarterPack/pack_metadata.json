@@ -1,29 +1,30 @@
 {
-    "name": "Starter Pack",
-    "description": "Starter Pack for learning how to build new content in Cortex XSOAR",
-    "support": "community",
-    "currentVersion": "1.0.16",
-    "author": "Cortex XSOAR",
-    "url": "https://put_your_support_url_here",
-    "email": "put_your_support_email@here",
-    "created": "2020-06-11T11:54:50Z",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [
-        "Core"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Starter Pack",
+  "description": "Starter Pack for learning how to build new content in Cortex XSOAR",
+  "support": "community",
+  "currentVersion": "1.0.16",
+  "author": "Cortex XSOAR",
+  "url": "https://put_your_support_url_here",
+  "email": "put_your_support_email@here",
+  "created": "2020-06-11T11:54:50Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [
+    "Core"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -141,7 +141,8 @@ tasks:
       id: c7e98784-57a4-4135-8245-787d6bdcbabc
       version: -1
       name: Add sinkhole tag (exports to EDL)
-      description: Tags the malicious domains with a sinkhole tag to export them to an EDL using the Generic Export Indicators Service.
+      description: Tags the malicious domains with a sinkhole tag to export them to
+        an EDL using the Generic Export Indicators Service.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -204,7 +205,8 @@ tasks:
       id: 4a600ff4-a8c9-4641-8b1a-2bc7a7a2bb65
       version: -1
       name: Save domains with tags
-      description: Saves domains that have a "c2", "c&c" or "command and control" tag, in a separate context key.
+      description: Saves domains that have a "c2", "c&c" or "command and control"
+        tag, in a separate context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -445,7 +447,8 @@ tasks:
       id: 0916bfab-a760-49c1-80d0-60d083652675
       version: -1
       name: Enrich unknown domains?
-      description: Checks whether domains with a score of 0 (unknown) should be enriched, according to the playbook inputs.
+      description: Checks whether domains with a score of 0 (unknown) should be enriched,
+        according to the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -619,7 +622,8 @@ tasks:
       id: a4654cde-af5b-49ae-84e8-89392e42ea29
       version: -1
       name: Enrich suspicious domains?
-      description: Checks whether domains with a score of 2 (suspicious) should be enriched, according to the playbook inputs.
+      description: Checks whether domains with a score of 2 (suspicious) should be
+        enriched, according to the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -665,7 +669,8 @@ tasks:
       id: 74c8c67d-5934-496c-869b-dd9e6242c732
       version: -1
       name: Any domains to sinkhole?
-      description: Checks whether any domains should be sinkholed according to the tags and relationships.
+      description: Checks whether any domains should be sinkholed according to the
+        tags and relationships.
       type: condition
       iscommand: false
       brand: ""
@@ -751,7 +756,8 @@ tasks:
       id: c3d17149-69cf-4860-897b-420823294552
       version: -1
       name: Are there domains to check?
-      description: Checks whether there are new domains to check for whether they should be sinkholed.
+      description: Checks whether there are new domains to check for whether they
+        should be sinkholed.
       type: condition
       iscommand: false
       brand: ""
@@ -827,7 +833,8 @@ tasks:
       id: 89f224e9-5579-4c4b-8f1a-f1cbff179416
       version: -1
       name: Check for resolved IPs
-      description: Searches the relationships of the domains to check if any of them resolves to a malicious IP address.
+      description: Searches the relationships of the domains to check if any of them
+        resolves to a malicious IP address.
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -870,7 +877,8 @@ tasks:
       id: d6a02cf5-a9ed-40d5-837a-8f3bf0c52d96
       version: -1
       name: Any IPs found?
-      description: Checks whether any IP addresses that the domains resolve to were found.
+      description: Checks whether any IP addresses that the domains resolve to were
+        found.
       type: condition
       iscommand: false
       brand: ""
@@ -913,7 +921,8 @@ tasks:
       id: 236a5077-cf02-4331-8964-77c441c179fa
       version: -1
       name: Get IP scores
-      description: Gets the DBotScores of the IP addresses that the domains resolve to.
+      description: Gets the DBotScores of the IP addresses that the domains resolve
+        to.
       scriptName: GetIndicatorDBotScoreFromCache
       type: regular
       iscommand: false
@@ -1297,7 +1306,8 @@ tasks:
       id: b4d7e5ad-3c4c-49f1-80f8-db5550640f8e
       version: -1
       name: Save their corresponding domains in a new key
-      description: Saves the domains that have relationships to campaigns in a new key.
+      description: Saves the domains that have relationships to campaigns in a new
+        key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1401,7 +1411,8 @@ tasks:
       id: 666a7f2c-1788-4595-8b56-04f9da182103
       version: -1
       name: Save their corresponding domains in a new key
-      description: Saves the domains that have relationships to threat actors in a new key.
+      description: Saves the domains that have relationships to threat actors in a
+        new key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1478,7 +1489,8 @@ inputs:
 - key: ""
   value: {}
   required: false
-  description: All domain indicators. In the playbook, the domains will be filtered by those used for malicious communication, and tagged to be sinkholed.
+  description: All domain indicators. In the playbook, the domains will be filtered
+    by those used for malicious communication, and tagged to be sinkholed.
   playbookInputQuery:
     query: type:Domain
     queryEntity: indicators
@@ -1499,7 +1511,8 @@ inputs:
   value:
     simple: to_sinkhole
   required: true
-  description: The tag that should be applied to the domain so that it will be exported to the EDL using the Generic Export Indicators Service integration in Cortex XSOAR.
+  description: The tag that should be applied to the domain so that it will be exported
+    to the EDL using the Generic Export Indicators Service integration in Cortex XSOAR.
   playbookInputQuery:
 - key: EnrichUnknownDomains
   value:
@@ -1527,3 +1540,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

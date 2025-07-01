@@ -1,33 +1,34 @@
 {
-    "name": "Mandiant Advantage Threat Intelligence",
-    "description": "Integrate your Mandiant Advantage Threat Intelligence data with Cortex XSOAR",
-    "support": "partner",
-    "currentVersion": "1.1.7",
-    "author": "Mandiant",
-    "hidden": false,
-    "url": "https://www.mandiant.com/support",
-    "email": "mandiant-support@google.com",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Free Enricher"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "githubUser": [
-        "chrishultin",
-        "adamlevymandiant"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Mandiant Advantage Threat Intelligence",
+  "description": "Integrate your Mandiant Advantage Threat Intelligence data with Cortex XSOAR",
+  "support": "partner",
+  "currentVersion": "1.1.7",
+  "author": "Mandiant",
+  "hidden": false,
+  "url": "https://www.mandiant.com/support",
+  "email": "mandiant-support@google.com",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Free Enricher"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": [
+    "chrishultin",
+    "adamlevymandiant"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

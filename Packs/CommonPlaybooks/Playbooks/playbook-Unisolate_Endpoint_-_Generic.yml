@@ -1,6 +1,9 @@
 contentitemexportablefields:
   contentitemfields: {}
-description: "This playbook unisolates endpoints according to the endpoint ID or host name provided in the playbook.\nIt currently supports the following integrations:\n- Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n- Microsoft Defender For Endpoint."
+description: "This playbook unisolates endpoints according to the endpoint ID or host
+  name provided in the playbook.\nIt currently supports the following integrations:\n
+  - Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n
+  - Microsoft Defender For Endpoint."
 id: Unisolate Endpoint - Generic
 inputs:
 - description: The endpoint ID/device ID/sensor ID/agent ID that you want to unisolate.
@@ -94,7 +97,8 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: This playbook unisolates sensors according to the sensor ID that is provided in the playbook input.
+      description: This playbook unisolates sensors according to the sensor ID that
+        is provided in the playbook input.
       id: c878cab8-cdaa-407d-8b39-6cd26b7361b0
       iscommand: false
       name: Carbon Black Response - Unisolate Endpoint
@@ -141,7 +145,8 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: This playbook unisolates endpoints according to the endpoint ID that is provided in the playbook input.
+      description: This playbook unisolates endpoints according to the endpoint ID
+        that is provided in the playbook input.
       id: 712259a3-c95a-423f-8639-431fb8d514c7
       iscommand: false
       name: Cortex XDR - Unisolate Endpoint
@@ -200,7 +205,8 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: This playbook unisolates devices according to the device ID that is provided in the playbook input.
+      description: This playbook unisolates devices according to the device ID that
+        is provided in the playbook input.
       id: c62a1b36-38d0-4069-854c-8c5e6bdae135
       iscommand: false
       name: Crowdstrike Falcon - Unisolate Endpoint
@@ -236,7 +242,8 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: This playbook unisolates endpoints according to the hostname/endpoint ID that is provided by the playbook input.
+      description: This playbook unisolates endpoints according to the hostname/endpoint
+        ID that is provided by the playbook input.
       id: 80b6c790-1aef-4d56-8d48-8b0446ac6e31
       iscommand: false
       name: FireEye HX - Unisolate Endpoint
@@ -325,7 +332,8 @@ tasks:
       name: Microsoft Defender For Endpoint - Unisolate Endpoint
       type: playbook
       version: -1
-      description: 'This playbook accepts an endpoint ID, IP, or host name and unisolates it using the Microsoft Defender For Endpoint integration.'
+      description: 'This playbook accepts an endpoint ID, IP, or host name and unisolates
+        it using the Microsoft Defender For Endpoint integration.'
       playbookName: Microsoft Defender For Endpoint - Unisolate Endpoint
     taskid: 1ecf253b-6e06-4b5e-8a05-00161e93be16
     timertriggers: []
@@ -333,7 +341,9 @@ tasks:
     view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 195\n  }\n}"
     continueonerrortype: ""
 version: -1
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 385,\n      \"width\": 2530,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 385,\n      \"width\": 2530,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
 tests:
 - Isolate and unisolate endpoint - test
 fromversion: 5.5.0
@@ -342,3 +352,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

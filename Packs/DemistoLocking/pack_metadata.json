@@ -1,34 +1,35 @@
 {
-    "name": "Cortex Lock",
-    "description": "Locking mechanism that prevents concurrent execution of different tasks",
-    "support": "xsoar",
-    "currentVersion": "1.1.5",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "Demisto Lock",
-        "Core Lock"
-    ],
-    "dependencies": {},
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Cortex Lock",
+  "description": "Locking mechanism that prevents concurrent execution of different tasks",
+  "support": "xsoar",
+  "currentVersion": "1.1.5",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "Demisto Lock",
+    "Core Lock"
+  ],
+  "dependencies": {},
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X0",
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

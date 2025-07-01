@@ -1,29 +1,30 @@
 {
-    "name": "Intezer",
-    "description": "Malware detection and analysis based on code reuse",
-    "support": "partner",
-    "currentVersion": "1.6.19",
-    "author": "Intezer",
-    "url": "intezer.com",
-    "email": "support@intezer.com",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Forensics & Malware Analysis"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Intezer",
+  "description": "Malware detection and analysis based on code reuse",
+  "support": "partner",
+  "currentVersion": "1.6.19",
+  "author": "Intezer",
+  "url": "intezer.com",
+  "email": "support@intezer.com",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Forensics & Malware Analysis"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [],
+  "certification": "certified",
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

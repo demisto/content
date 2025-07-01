@@ -343,7 +343,8 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook
+    (in minutes)
 - key: ReportFileType
   value: {}
   required: false
@@ -447,3 +448,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

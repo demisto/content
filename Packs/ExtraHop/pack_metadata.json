@@ -1,61 +1,62 @@
 {
-    "name": "ExtraHop Reveal(x)",
-    "description": "Network detection and response. Complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.",
-    "support": "partner",
-    "currentVersion": "2.3.2",
-    "author": "ExtraHop",
-    "url": "https://customer.extrahop.com/s/",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "defaultDataSource": "ExtraHop v2",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [
-        "Security",
-        "Network"
-    ],
-    "useCases": [],
-    "keywords": [
-        "RevealX"
-    ],
-    "githubUser": [
-        "Dan-at-Extrahop"
-    ],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "dependencies": {
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "CoreAlertFields": {
-            "mandatory": true,
-            "display_name": "Core Alert Fields"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        }
+  "name": "ExtraHop Reveal(x)",
+  "description": "Network detection and response. Complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.",
+  "support": "partner",
+  "currentVersion": "2.3.2",
+  "author": "ExtraHop",
+  "url": "https://customer.extrahop.com/s/",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "defaultDataSource": "ExtraHop v2",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [
+    "Security",
+    "Network"
+  ],
+  "useCases": [],
+  "keywords": [
+    "RevealX"
+  ],
+  "githubUser": [
+    "Dan-at-Extrahop"
+  ],
+  "certification": "certified",
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "dependencies": {
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
     },
-    "displayedImages": [
-        "CommonScripts",
-        "CoreAlertFields",
-        "CommonTypes",
-        "CommonPlaybooks"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "CoreAlertFields": {
+      "mandatory": true,
+      "display_name": "Core Alert Fields"
+    },
+    "CommonTypes": {
+      "mandatory": true,
+      "display_name": "Common Types"
+    },
+    "CommonPlaybooks": {
+      "mandatory": true,
+      "display_name": "Common Playbooks"
+    }
+  },
+  "displayedImages": [
+    "CommonScripts",
+    "CoreAlertFields",
+    "CommonTypes",
+    "CommonPlaybooks"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -121,7 +121,8 @@ tasks:
       id: 42839e98-8b83-4aa6-8a34-2c1d6b02974b
       version: -1
       name: Is there instance information?
-      description: Determines if there is instance information obtained from Prisma Cloud.
+      description: Determines if there is instance information obtained from Prisma
+        Cloud.
       type: condition
       iscommand: false
       brand: ""
@@ -489,7 +490,8 @@ tasks:
       id: 98c133ff-04dd-4061-89ad-74274d88fb99
       version: -1
       name: Was enrichment performed?
-      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true
+        in the relevant flag variable.
       type: condition
       iscommand: false
       brand: ""
@@ -836,7 +838,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: event from cloud.audit_logs where operation in ( 'RunInstances') and json.rule = $.responseElements.instancesSet.items[0].instanceId contains '
+                  simple: event from cloud.audit_logs where operation in ( 'RunInstances')
+                    and json.rule = $.responseElements.instancesSet.items[0].instanceId
+                    contains '
               suffix:
                 value:
                   simple: ''''
@@ -850,7 +854,10 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      description: Search events inventory on the Prisma Cloud platform using RQL
+        language. Use this command for all queries that start with "event". When no
+        absolute time nor relative time arguments are provided, the default time range
+        is all times.
       id: df11dabe-f564-4489-8851-386518d6222a
       iscommand: true
       name: AWS Prisma Cloud Event Search
@@ -983,7 +990,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: event from cloud.audit_logs where cloud.type = 'gcp' AND operation IN ( 'beta.compute.instances.insert' ) and json.rule = $.resource.labels.instance_id contains '
+                  simple: event from cloud.audit_logs where cloud.type = 'gcp' AND
+                    operation IN ( 'beta.compute.instances.insert' ) and json.rule
+                    = $.resource.labels.instance_id contains '
               suffix:
                 value:
                   simple: ''''
@@ -997,7 +1006,10 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      description: Search events inventory on the Prisma Cloud platform using RQL
+        language. Use this command for all queries that start with "event". When no
+        absolute time nor relative time arguments are provided, the default time range
+        is all times.
       id: a9a9e693-d2e6-4420-8975-1897c3a7f323
       iscommand: true
       name: GCP Prisma Cloud Event Search
@@ -1047,7 +1059,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: event from cloud.audit_logs where cloud.type = 'azure' AND operation = 'Create or Update Virtual Machine (EndRequest)' and json.rule = $.resourceId contains '
+                  simple: event from cloud.audit_logs where cloud.type = 'azure' AND
+                    operation = 'Create or Update Virtual Machine (EndRequest)' and
+                    json.rule = $.resourceId contains '
               suffix:
                 value:
                   simple: ''''
@@ -1061,7 +1075,10 @@ tasks:
     skipunavailable: false
     task:
       brand: PrismaCloud v2
-      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      description: Search events inventory on the Prisma Cloud platform using RQL
+        language. Use this command for all queries that start with "event". When no
+        absolute time nor relative time arguments are provided, the default time range
+        is all times.
       id: 4d0cb4cb-ad3d-4dac-8a77-9b7c7c068c59
       iscommand: true
       name: Azure Prisma Cloud Event Search
@@ -1270,3 +1287,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

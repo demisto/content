@@ -1,27 +1,28 @@
 {
-    "name": "NGFW TS Agent Deployment",
-    "description": "Deploy Palo Alto Networks NGFW Terminal Service Agents to Windows Hosts",
-    "support": "community",
-    "currentVersion": "1.0.4",
-    "author": "Nicholas Ericksen",
-    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
-    "email": "",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "githubUser": [],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "NGFW TS Agent Deployment",
+  "description": "Deploy Palo Alto Networks NGFW Terminal Service Agents to Windows Hosts",
+  "support": "community",
+  "currentVersion": "1.0.4",
+  "author": "Nicholas Ericksen",
+  "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+  "email": "",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": [],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

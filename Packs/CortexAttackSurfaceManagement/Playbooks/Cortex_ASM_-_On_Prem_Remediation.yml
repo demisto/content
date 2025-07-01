@@ -48,7 +48,9 @@ tasks:
       id: 22c135e5-6fc0-4464-87da-f8c0ae25220b
       version: -1
       name: pan-os-list-rules
-      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined Security Rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -85,7 +87,8 @@ tasks:
       id: 6db7e419-5848-487b-8eba-03db46a125bc
       version: -1
       name: PAN-OS - Block Destination Service
-      description: 'This playbook blocks a destination IP and service (TCP or UDP port) by creating a rule for a specific device group on PAN-OS. '
+      description: 'This playbook blocks a destination IP and service (TCP or UDP
+        port) by creating a rule for a specific device group on PAN-OS. '
       playbookName: PAN-OS - Block Destination Service
       type: playbook
       iscommand: false
@@ -190,7 +193,8 @@ tasks:
       id: 58615c42-a7f4-4159-8412-b7095c9854c0
       version: -1
       name: Is DeviceGroup specified?
-      description: Checks if DeviceGroup input is specified because of different !pan-os-list-rule commands for standalone firewall vs Panorama.
+      description: Checks if DeviceGroup input is specified because of different !pan-os-list-rule
+        commands for standalone firewall vs Panorama.
       type: condition
       iscommand: false
       brand: ''
@@ -232,7 +236,9 @@ tasks:
       id: 54b86def-75f3-4fe8-8779-4fbec1d42728
       version: -1
       name: pan-os-list-rules (pre-rulebase)
-      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -274,7 +280,9 @@ tasks:
       id: a918e4e4-2ea8-4d70-883d-5265ce5be25d
       version: -1
       name: pan-os-list-rules (post-rulebase)
-      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -367,7 +375,8 @@ inputs:
 - key: RuleName
   value: {}
   required: true
-  description: Firewall rule name to look up in the company configuration setting for block rule.
+  description: Firewall rule name to look up in the company configuration setting
+    for block rule.
   playbookInputQuery:
 - key: RemoteIP
   value:
@@ -401,7 +410,9 @@ inputs:
 - key: SecondaryDeviceGroup
   value: {}
   required: false
-  description: If the rule, address and service are created in the "Shared" location, we need to know what device groups we can push to because it isn't possible to push to the "Shared" location.
+  description: If the rule, address and service are created in the "Shared" location,
+    we need to know what device groups we can push to because it isn't possible to
+    push to the "Shared" location.
   playbookInputQuery:
 outputs: []
 tests:
@@ -414,3 +425,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

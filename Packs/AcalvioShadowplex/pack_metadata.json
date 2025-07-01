@@ -1,36 +1,37 @@
 {
-    "name": "Acalvio ShadowPlex",
-    "description": "Acalvio ShadowPlex Autonomous Deception Solution",
-    "support": "partner",
-    "currentVersion": "1.0.16",
-    "author": "Acalvio Technologies",
-    "url": "https://www.acalvio.com",
-    "email": "support@acalvio.com",
-    "created": "2020-12-22T10:37:17Z",
-    "categories": [
-        "Deception & Breach Simulation"
-    ],
-    "tags": [
-        "Incident Handling",
-        "Security",
-        "Forensics",
-        "Breach Simulation"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Acalvio",
-        "ShadowPlex"
-    ],
-    "githubUser": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Acalvio ShadowPlex",
+  "description": "Acalvio ShadowPlex Autonomous Deception Solution",
+  "support": "partner",
+  "currentVersion": "1.0.16",
+  "author": "Acalvio Technologies",
+  "url": "https://www.acalvio.com",
+  "email": "support@acalvio.com",
+  "created": "2020-12-22T10:37:17Z",
+  "categories": [
+    "Deception & Breach Simulation"
+  ],
+  "tags": [
+    "Incident Handling",
+    "Security",
+    "Forensics",
+    "Breach Simulation"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Acalvio",
+    "ShadowPlex"
+  ],
+  "githubUser": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

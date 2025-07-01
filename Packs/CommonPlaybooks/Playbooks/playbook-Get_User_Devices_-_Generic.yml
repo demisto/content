@@ -273,7 +273,8 @@ outputs:
 - contextPath: GSuite.MobileDevices.MobileListObjects.resourceId
   description: The unique ID the API service uses to identify the mobile device.
 - contextPath: GSuite.MobileDevices.MobileListObjects.deviceId
-  description: The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier.
+  description: The serial number for a Google Sync mobile device. For Android and
+    iOS devices, this is a software-generated unique identifier.
 - contextPath: GSuite.MobileDevices.MobileListObjects.name
   description: A list of the owner's usernames.
 - contextPath: GSuite.MobileDevices.MobileListObjects.email
@@ -289,9 +290,11 @@ outputs:
 - contextPath: GSuite.MobileDevices.MobileListObjects.hardwareId
   description: The IMEI/MEID unique identifier for Android hardware.
 - contextPath: GSuite.MobileDevices.MobileListObjects.firstSync
-  description: The date and time the mobile device was initially synchronized with the policy settings in the Admin console.
+  description: The date and time the mobile device was initially synchronized with
+    the policy settings in the Admin console.
 - contextPath: GSuite.MobileDevices.MobileListObjects.lastSync
-  description: The date and time the mobile device was last synchronized with the policy settings in the Admin console.
+  description: The date and time the mobile device was last synchronized with the
+    policy settings in the Admin console.
 - contextPath: GSuite.MobileDevices.MobileListObjects.userAgent
   description: Information about the mobile device such as the operating system version.
 - contextPath: GSuite.MobileDevices.MobileListObjects.serialNumber
@@ -499,7 +502,8 @@ outputs:
 - contextPath: MicrosoftATP.UserMachine.Machines.ComputerDNSName
   description: The machine DNS name.
 - contextPath: MicrosoftATP.UserMachine.Machines.FirstSeen
-  description: The first date and time the machine was observed by Microsoft Defender ATP.
+  description: The first date and time the machine was observed by Microsoft Defender
+    ATP.
 - contextPath: MicrosoftATP.UserMachine.Machines.OSPlatform
   description: The operating system platform.
 - contextPath: MicrosoftATP.UserMachine.Machines.OSVersion
@@ -601,3 +605,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

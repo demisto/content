@@ -1,42 +1,43 @@
 {
-    "name": "BitcoinAbuse Feed (Deprecated)",
-    "description": "Deprecated. No available replacement.",
-    "serverMinVersion": "5.5.0",
-    "support": "xsoar",
-    "currentVersion": "1.0.44",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-12-09T14:12:12Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Threat Intelligence Management",
-        "Getting Started"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "displayedImages": [],
-    "dependencies": {
-        "Cryptocurrency": {
-            "mandatory": true,
-            "display_name": "Cryptocurrency"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        }
+  "name": "BitcoinAbuse Feed (Deprecated)",
+  "description": "Deprecated. No available replacement.",
+  "serverMinVersion": "5.5.0",
+  "support": "xsoar",
+  "currentVersion": "1.0.44",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-12-09T14:12:12Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Threat Intelligence Management",
+    "Getting Started"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "displayedImages": [],
+  "dependencies": {
+    "Cryptocurrency": {
+      "mandatory": true,
+      "display_name": "Cryptocurrency"
     },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "CommonTypes": {
+      "mandatory": true,
+      "display_name": "Common Types"
+    }
+  },
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

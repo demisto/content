@@ -1,35 +1,36 @@
 {
-    "name": "Cyble Events (Deprecated)",
-    "description": "Deprecated. Use Cyble Events V2 instead.",
-    "support": "partner",
-    "currentVersion": "1.0.17",
-    "author": "Cyble Infosec",
-    "hidden": true,
-    "url": "https://cyble.com/",
-    "email": "",
-    "created": "2022-03-22T17:37:18Z",
-    "certification": "",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {
-        "CommonScripts": {
-            "mandatory": false,
-            "display_name": "Common Scripts"
-        }
-    },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Cyble Events (Deprecated)",
+  "description": "Deprecated. Use Cyble Events V2 instead.",
+  "support": "partner",
+  "currentVersion": "1.0.17",
+  "author": "Cyble Infosec",
+  "hidden": true,
+  "url": "https://cyble.com/",
+  "email": "",
+  "created": "2022-03-22T17:37:18Z",
+  "certification": "",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "dependencies": {
+    "CommonScripts": {
+      "mandatory": false,
+      "display_name": "Common Scripts"
+    }
+  },
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

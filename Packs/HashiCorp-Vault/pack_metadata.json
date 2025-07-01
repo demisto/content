@@ -1,31 +1,32 @@
 {
-    "name": "HashiCorp Vault",
-    "description": "Manage Secrets and Protect Sensitive Data through HashiCorp Vault. Ingest and normalize Vault Audit logs.",
-    "support": "xsoar",
-    "currentVersion": "1.1.30",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Identity and Access Management"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "HashiCorp",
-        "Vault",
-        "HashiCorp Vault"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "HashiCorp Vault",
+  "description": "Manage Secrets and Protect Sensitive Data through HashiCorp Vault. Ingest and normalize Vault Audit logs.",
+  "support": "xsoar",
+  "currentVersion": "1.1.30",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Identity and Access Management"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "HashiCorp",
+    "Vault",
+    "HashiCorp Vault"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,45 +1,46 @@
 {
-    "name": "Whois",
-    "description": "This Content Pack helps you run Whois commands as playbook tasks or real-time actions within Cortex XSOAR to obtain valuable domain metadata.",
-    "support": "xsoar",
-    "currentVersion": "1.5.27",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-03-31T17:09:43Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Getting Started",
-        "Plug & Enrich",
-        "Free Enricher"
-    ],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {
-        "DomainTools_Iris": {
-            "mandatory": false,
-            "display_name": "DomainTools Iris"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "JsonWhoIs": {
-            "mandatory": false,
-            "display_name": "JsonWhoIs"
-        }
+  "name": "Whois",
+  "description": "This Content Pack helps you run Whois commands as playbook tasks or real-time actions within Cortex XSOAR to obtain valuable domain metadata.",
+  "support": "xsoar",
+  "currentVersion": "1.5.27",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-31T17:09:43Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Getting Started",
+    "Plug & Enrich",
+    "Free Enricher"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "dependencies": {
+    "DomainTools_Iris": {
+      "mandatory": false,
+      "display_name": "DomainTools Iris"
     },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
+    },
+    "JsonWhoIs": {
+      "mandatory": false,
+      "display_name": "JsonWhoIs"
+    }
+  },
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

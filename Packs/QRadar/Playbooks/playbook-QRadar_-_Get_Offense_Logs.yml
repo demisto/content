@@ -1,7 +1,13 @@
 id: QRadar - Get Offense Logs
 version: -1
 name: QRadar - Get Offense Logs
-description: "Works for QRadar integration version 3, v1 and v2 are deprecated.\n\nNote: You can use the integration to fetch the events with the offense however it will fetch the events according to the specified limit defined in the instance settings. By using this playbook you can define an additional search to query a larger number of logs.\n\nDefault playbook inputs use the QRadar incident fields such as idoffense, starttime. These fields can be replaced but need to point to relevant offense ID and starttime fields. "
+description: "Works for QRadar integration version 3, v1 and v2 are deprecated.\n\n
+  Note: You can use the integration to fetch the events with the offense however it
+  will fetch the events according to the specified limit defined in the instance settings.
+  By using this playbook you can define an additional search to query a larger number
+  of logs.\n\nDefault playbook inputs use the QRadar incident fields such as idoffense,
+  starttime. These fields can be replaced but need to point to relevant offense ID
+  and starttime fields. "
 starttaskid: "0"
 tasks:
   "0":
@@ -162,7 +168,8 @@ tasks:
       id: ff090f6c-de26-4237-8521-28c6bff4cd59
       version: -1
       name: Is QRadar v3 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -246,7 +253,8 @@ tasks:
       id: 40c58bab-c6d0-4861-8dcf-34be07bbf662
       version: -1
       name: Set source IP addresses
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -287,7 +295,8 @@ tasks:
       id: a950f9b4-7aad-497a-879f-fd6c30ae8a86
       version: -1
       name: Set destination IP addresses
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -328,7 +337,8 @@ tasks:
       id: cbd30f15-a825-41ea-873e-0384bbc32ee9
       version: -1
       name: Set usernames
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -369,7 +379,8 @@ tasks:
       id: 17c15e6d-4f67-433e-88e4-f57c3a1ef009
       version: -1
       name: Set high level category
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -410,7 +421,8 @@ tasks:
       id: d877e6c0-eaae-4d5b-805f-a1c3c49fbdc4
       version: -1
       name: Set low level category
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -482,7 +494,8 @@ tasks:
       id: 8f5b0991-8787-4f8d-8215-ef5a544b3787
       version: -1
       name: Set QID name
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -523,7 +536,8 @@ tasks:
       id: 949f936f-ecf8-41cb-8053-8495674e7cb3
       version: -1
       name: Set Start time
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -828,7 +842,14 @@ inputs:
   playbookInputQuery:
 - key: Fields
   value:
-    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
+    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+      CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
+      destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
+      sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation,
+      destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude,
+      eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
+      postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort,
+      UTF8(payload), starttime, devicetime
   required: false
   description: |-
     A comma-separated list of extra fields to get from each event.
@@ -876,3 +897,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

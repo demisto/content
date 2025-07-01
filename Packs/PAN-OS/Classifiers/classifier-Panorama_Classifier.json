@@ -1,32 +1,33 @@
 {
-    "defaultIncidentType": "Unclassified",
-    "description": "Classifies incoming PAN-OS Log incidents.",
-    "feed": false,
-    "id": "Panorama Classifier",
-    "keyTypeMap": {
-        "CORRELATION": "PAN-OS Correlation Log Incident",
-        "DATA": "PAN-OS Data Log Incident",
-        "DECRYPTION": "PAN-OS Decryption Log Incident",
-        "SYSTEM": "PAN-OS System Log Incident",
-        "THREAT": "PAN-OS Threat Log Incident",
-        "TRAFFIC": "PAN-OS Traffic Log Incident",
-        "URL": "PAN-OS URL Log Incident",
-        "WILDFIRE": "PAN-OS Wildfire Submissions Log Incident"
-    },
-    "name": "Panorama Classifier",
-    "propagationLabels": [
-        "all"
-    ],
-    "transformer": {
-        "simple": "type"
-    },
-    "type": "classification",
-    "version": -1,
-    "fromVersion": "6.5.0",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "defaultIncidentType": "Unclassified",
+  "description": "Classifies incoming PAN-OS Log incidents.",
+  "feed": false,
+  "id": "Panorama Classifier",
+  "keyTypeMap": {
+    "CORRELATION": "PAN-OS Correlation Log Incident",
+    "DATA": "PAN-OS Data Log Incident",
+    "DECRYPTION": "PAN-OS Decryption Log Incident",
+    "SYSTEM": "PAN-OS System Log Incident",
+    "THREAT": "PAN-OS Threat Log Incident",
+    "TRAFFIC": "PAN-OS Traffic Log Incident",
+    "URL": "PAN-OS URL Log Incident",
+    "WILDFIRE": "PAN-OS Wildfire Submissions Log Incident"
+  },
+  "name": "Panorama Classifier",
+  "propagationLabels": [
+    "all"
+  ],
+  "transformer": {
+    "simple": "type"
+  },
+  "type": "classification",
+  "version": -1,
+  "fromVersion": "6.5.0",
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,27 +1,28 @@
 {
-    "name": "TOPdesk",
-    "description": "TOPdesk Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform",
-    "support": "xsoar",
-    "currentVersion": "1.2.16",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2021-01-04T15:04:52Z",
-    "categories": [
-        "Case Management"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "TOPdesk",
+  "description": "TOPdesk Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform",
+  "support": "xsoar",
+  "currentVersion": "1.2.16",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2021-01-04T15:04:52Z",
+  "categories": [
+    "Case Management"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

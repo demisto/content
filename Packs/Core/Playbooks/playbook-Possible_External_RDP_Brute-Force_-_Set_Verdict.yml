@@ -3,7 +3,20 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Possible External RDP Brute-Force - Set Verdict
-description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
+description: "This playbook creating an array called \"Suspicious Elements\", which
+  is used to count potential security threats. The following elements can be added
+  to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\"\
+  \ - RDP Connection made from rare geo-location \n-  Related to campaign - IP address
+  is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators
+  related to the source IP and the related campaign returned results\n-  XDR Alert
+  search - XDR Alerts that related to the same username and endpoint, and to the MITRE
+  tactics that comes after \"Credential Access\", were found.\n- Risky User - one
+  or more risky users are involved in the incident, as identified by the Cortex Core
+  - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved
+  in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n
+  \nThe array will then be outputted and its size will be compared to a final threshold.
+  If the size is greater than or equal to the threshold, the investigation's final
+  verdict will be deemed a \"True Positive.\""
 starttaskid: "0"
 tasks:
   "0":
@@ -700,12 +713,14 @@ inputs:
 - key: HuntResults
   value: {}
   required: false
-  description: Determine whether hunting results exist. The input value should be true or false.
+  description: Determine whether hunting results exist. The input value should be
+    true or false.
   playbookInputQuery:
 - key: UnusualGeoLocation
   value: {}
   required: false
-  description: ' determine whether the RDP connection has made RDP Connection made from rare geo-location. the input value should be true or false.'
+  description: ' determine whether the RDP connection has made RDP Connection made
+    from rare geo-location. the input value should be true or false.'
   playbookInputQuery:
 - key: IpReputation
   value: {}
@@ -784,3 +799,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

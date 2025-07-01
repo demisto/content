@@ -1,6 +1,7 @@
 contentitemexportablefields:
   contentitemfields: {}
-description: This playbook is used to create instant messages toward service owners to notify them of their internet exposures.
+description: This playbook is used to create instant messages toward service owners
+  to notify them of their internet exposures.
 id: 'Cortex ASM - Instant Message'
 inputSections:
 - description: Generic group for inputs
@@ -10,12 +11,14 @@ inputSections:
   - RemediationGuidance
   name: General (Inputs group)
 inputs:
-- description: Body of the notification (email or ticket) sent to the potential service owner.
+- description: Body of the notification (email or ticket) sent to the potential service
+    owner.
   key: OwnerNotificationBody
   playbookInputQuery:
   required: true
   value: {}
-- description: Channel to send instant messages for notification purposes.  For Slack, this will be the channel ID.
+- description: Channel to send instant messages for notification purposes.  For Slack,
+    this will be the channel ID.
   key: InstantMessageChannel
   playbookInputQuery:
   required: true
@@ -341,3 +344,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

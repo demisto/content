@@ -1,30 +1,31 @@
 {
-    "name": "BitDam",
-    "description": "BitDam secure email gateway protects from advanced content-borne threats with the most accurate prevention of known and unknown threats, at their source.",
-    "support": "community",
-    "currentVersion": "1.0.17",
-    "author": "BitDam",
-    "url": "https://www.bitdam.com",
-    "email": "support@bitdam.com",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "IT Services"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "noamm91"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "BitDam",
+  "description": "BitDam secure email gateway protects from advanced content-borne threats with the most accurate prevention of known and unknown threats, at their source.",
+  "support": "community",
+  "currentVersion": "1.0.17",
+  "author": "BitDam",
+  "url": "https://www.bitdam.com",
+  "email": "support@bitdam.com",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "IT Services"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [
+    "noamm91"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

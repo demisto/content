@@ -1,7 +1,18 @@
 id: Remote PsExec with LOLBIN command execution alert
 version: -1
 name: Remote PsExec with LOLBIN command execution alert
-description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Check if the execution is blocked. If not will terminate the process (Manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and verdict for the executed command.\n- Perform further endpoint investigation using XDR.\n- Checks for any malicious verdict found to raise the severity of the alert.\n- Perform Automatic/Manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and can not be used as a standalone version."
+description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed
+  to address and respond to alerts indicating suspicious activities related to remote
+  PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe
+  playbook aims to efficiently:\n\n- Check if the execution is blocked. If not will
+  terminate the process (Manually by default).\n- Enrich any entities and indicators
+  from the alert and find any related campaigns.\n- Perform command analysis to provide
+  insights and verdict for the executed command.\n- Perform further endpoint investigation
+  using XDR.\n- Checks for any malicious verdict found to raise the severity of the
+  alert.\n- Perform Automatic/Manual remediation response by blocking any malicious
+  indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex
+  XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data
+  from the parent playbooks and can not be used as a standalone version."
 starttaskid: "0"
 tasks:
   "0":
@@ -169,7 +180,16 @@ tasks:
       id: f3f9974c-9fde-4505-86e3-9cdb784d53b2
       version: -1
       name: Command-Line Analysis
-      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
+      description: "This playbook takes a command line from the alert and performs
+        the following actions:\n- Checks for base64 string and decodes if exists\n
+        - Extracts and enriches indicators from the command line\n- Checks specific
+        arguments for malicious usage \n\nAt the end of the playbook, it sets a possible
+        verdict for the command line, based on the finding:\n1. Indicators found in
+        the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n
+        4. Usage of malicious tools\n5. Indication of network activity\n6. Indication
+        of suspicious LOLBIN execution\n\nNote: In case you are wishing to run this
+        playbook with a list of command lines, set this playbook to be running in
+        a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
       playbookName: Command-Line Analysis
       type: playbook
       iscommand: false
@@ -564,7 +584,9 @@ tasks:
       id: 19e960f5-0b99-40b7-82ae-6ff603dc2b03
       version: -1
       name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      description: "This playbook enables threat hunting for IOCs in your enterprise.
+        It currently supports the following integrations: \n- Splunk\n- Qradar\n-
+        Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -758,7 +780,9 @@ tasks:
       id: 4314c7ec-ffad-4498-82f4-cd9cc9c3c1c7
       version: -1
       name: Enrichment for Verdict
-      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
+      description: This playbook checks prior alert closing reasons and performs enrichment
+        and prevalence checks on different IOC types. It then  returns the information
+        needed to establish the alert's verdict.
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
@@ -768,7 +792,8 @@ tasks:
       - "23"
     scriptarguments:
       CloseReason:
-        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved -
+          Known Issue
       CommandLine:
         simple: ${alert.cgocmd}
       Domain:
@@ -794,7 +819,8 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
+        simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and
+          sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
       threshold:
         simple: "2"
     separatecontext: true
@@ -901,7 +927,11 @@ tasks:
       id: 8ece8239-b854-4e28-86d8-e832d08e09e3
       version: -1
       name: Get endpoint ID
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -996,7 +1026,8 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
+  description: Whether remediation will be run automatically or manually. If set to
+    "True" - remediation will be automatic.
   playbookInputQuery:
 - key: LOLBASFeedLimit
   value:
@@ -1024,3 +1055,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

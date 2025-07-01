@@ -43,7 +43,8 @@ tasks:
       id: e2604c0a-f845-4280-8496-0812e9374195
       version: -1
       name: Scan done
-      description: Sets ScanDone to True to be passed back to the parent playbook to notify that an SNMP check was attempted.
+      description: Sets ScanDone to True to be passed back to the parent playbook
+        to notify that an SNMP check was attempted.
       scriptName: Set
       type: regular
       iscommand: false
@@ -80,7 +81,8 @@ tasks:
       id: 7e5df086-8be1-471b-8ccf-297f2c912519
       version: -1
       name: What is the result of the scan?
-      description: Checks the results of the scan to determine the outcome to pass back to the parent playbook.
+      description: Checks the results of the scan to determine the outcome to pass
+        back to the parent playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -140,7 +142,9 @@ tasks:
       id: e254ebb5-2453-4619-804b-b68e21f55099
       version: -1
       name: Enabled scan result
-      description: Sets ScanResult to True when the result of SNMP check identifies if SNMP is enabled. This value is passed back to the parent playbook to provide the results of the SNMP check.
+      description: Sets ScanResult to True when the result of SNMP check identifies
+        if SNMP is enabled. This value is passed back to the parent playbook to provide
+        the results of the SNMP check.
       scriptName: Set
       type: regular
       iscommand: false
@@ -177,7 +181,9 @@ tasks:
       id: fc5a09db-6158-431d-806b-23a1a7147496
       version: -1
       name: Disabled scan result
-      description: Sets ScanResult to False when the result of SNMP check identifies if SNMP is disabled. This value is passed back to the parent playbook to provide the results of the SNMP check.
+      description: Sets ScanResult to False when the result of SNMP check identifies
+        if SNMP is disabled. This value is passed back to the parent playbook to provide
+        the results of the SNMP check.
       scriptName: Set
       type: regular
       iscommand: false
@@ -214,7 +220,8 @@ tasks:
       id: 17bb2da5-baed-43a6-8f88-251950e50cd1
       version: -1
       name: Undetermined scan result
-      description: Sets ScanResult to Undetermined when the result of SNMP check identifies that SNMP is not determined to be enabled or disabled.
+      description: Sets ScanResult to Undetermined when the result of SNMP check identifies
+        that SNMP is not determined to be enabled or disabled.
       scriptName: Set
       type: regular
       iscommand: false
@@ -341,3 +348,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

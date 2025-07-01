@@ -4,12 +4,15 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: comment tag
-  description: The comment tag. Use the comment entry tag (defined in your instance configuration) to mirror the comment to Jira.
+  description: The comment tag. Use the comment entry tag (defined in your instance
+    configuration) to mirror the comment to Jira.
   name: tags
   predefined:
   - comment tag
   isArray: true
-comment: Use this script to add a comment with a tag (the "Comment tag to Jira" defined in the instance configuration) as an entry in XSOAR, which will then be mirrored as a comment to a Jira issue. This script should be run within an incident.
+comment: Use this script to add a comment with a tag (the "Comment tag to Jira" defined
+  in the instance configuration) as an entry in XSOAR, which will then be mirrored
+  as a comment to a Jira issue. This script should be run within an incident.
 commonfields:
   id: JiraAddComment
   version: -1
@@ -30,3 +33,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

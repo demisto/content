@@ -1,31 +1,32 @@
 {
-    "name": "Coralogix",
-    "description": "Coralogix Integration can be used for searching incidents and other data from Coralogix as well as tagging interesting timestamps at Coralogix from Cortex XSOAR",
-    "support": "partner",
-    "currentVersion": "1.0.10",
-    "author": "Coralogix",
-    "url": "",
-    "email": "support@coralogix.com",
-    "categories": [
-        "Analytics & SIEM"
-    ],
-    "tags": [],
-    "created": "2020-08-31T15:49:21Z",
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "iyuvalk"
-    ],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Coralogix",
+  "description": "Coralogix Integration can be used for searching incidents and other data from Coralogix as well as tagging interesting timestamps at Coralogix from Cortex XSOAR",
+  "support": "partner",
+  "currentVersion": "1.0.10",
+  "author": "Coralogix",
+  "url": "",
+  "email": "support@coralogix.com",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [],
+  "created": "2020-08-31T15:49:21Z",
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [
+    "iyuvalk"
+  ],
+  "certification": "certified",
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,36 +1,37 @@
 {
-    "name": "CyCognito",
-    "description": "Fetches the issues associated with a particular asset from the CyCognito platform.",
-    "support": "partner",
-    "currentVersion": "1.0.32",
-    "author": "CyCognito",
-    "url": "",
-    "email": "support@cycognito.com",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Threat Intelligence Management"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Issue",
-        "Asset",
-        "Vulnerability",
-        "Attack Surface"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "githubUser": [
-        "crestdatasystems"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "CyCognito",
+  "description": "Fetches the issues associated with a particular asset from the CyCognito platform.",
+  "support": "partner",
+  "currentVersion": "1.0.32",
+  "author": "CyCognito",
+  "url": "",
+  "email": "support@cycognito.com",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Threat Intelligence Management"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Issue",
+    "Asset",
+    "Vulnerability",
+    "Attack Surface"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": [
+    "crestdatasystems"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

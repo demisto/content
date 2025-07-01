@@ -1,33 +1,34 @@
 {
-    "name": "FireEye Email Security (EX)",
-    "description": "FireEye Email Security series protects against breaches caused by advanced email attacks.",
-    "support": "xsoar",
-    "serverMinVersion": "6.0.0",
-    "currentVersion": "2.0.34",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Email"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {
-        "FireEyeCommonFields": {
-            "mandatory": true,
-            "display_name": "FireEye Common Fields"
-        }
-    },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "FireEye Email Security (EX)",
+  "description": "FireEye Email Security series protects against breaches caused by advanced email attacks.",
+  "support": "xsoar",
+  "serverMinVersion": "6.0.0",
+  "currentVersion": "2.0.34",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "Email"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "dependencies": {
+    "FireEyeCommonFields": {
+      "mandatory": true,
+      "display_name": "FireEye Common Fields"
+    }
+  },
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

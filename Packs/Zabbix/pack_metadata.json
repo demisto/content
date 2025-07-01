@@ -1,29 +1,30 @@
 {
-    "name": "Zabbix",
-    "description": "Allow integration with Zabbix api.",
-    "support": "developer",
-    "currentVersion": "1.0.36",
-    "author": "Henrique Caires",
-    "url": "https://support.zabbix.com/secure/Dashboard.jspa",
-    "email": "henrique@caires.net.br",
-    "created": "2020-04-22T09:00:00Z",
-    "categories": [
-        "IT Services"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "Zabbix"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Zabbix",
+  "description": "Allow integration with Zabbix api.",
+  "support": "developer",
+  "currentVersion": "1.0.36",
+  "author": "Henrique Caires",
+  "url": "https://support.zabbix.com/secure/Dashboard.jspa",
+  "email": "henrique@caires.net.br",
+  "created": "2020-04-22T09:00:00Z",
+  "categories": [
+    "IT Services"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "Zabbix"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

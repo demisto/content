@@ -1,30 +1,31 @@
 {
-    "name": "SEKOIAIntelligenceCenter",
-    "description": "Request SEKOIA.IO Intelligence Center from Cortex XSOAR",
-    "support": "partner",
-    "currentVersion": "1.2.36",
-    "author": "SEKOIA.IO",
-    "url": "https://www.sekoia.io/en/contact/",
-    "email": "contact@sekoia.io",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "devEmail": [
-        "team-integration@sekoia.io"
-    ],
-    "githubUser": [],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "SEKOIAIntelligenceCenter",
+  "description": "Request SEKOIA.IO Intelligence Center from Cortex XSOAR",
+  "support": "partner",
+  "currentVersion": "1.2.36",
+  "author": "SEKOIA.IO",
+  "url": "https://www.sekoia.io/en/contact/",
+  "email": "contact@sekoia.io",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "devEmail": [
+    "team-integration@sekoia.io"
+  ],
+  "githubUser": [],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

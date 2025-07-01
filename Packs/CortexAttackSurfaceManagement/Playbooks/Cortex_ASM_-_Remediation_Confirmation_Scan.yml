@@ -44,7 +44,8 @@ tasks:
       id: 0536c203-ca10-4b73-882b-44788ff0ed47
       version: -1
       name: Start Remediation Confirmation Scan
-      description: Starts a new Remediation Confirmation Scan or gets an existing scan ID.
+      description: Starts a new Remediation Confirmation Scan or gets an existing
+        scan ID.
       script: Cortex Attack Surface Management|||asm-start-remediation-confirmation-scan
       type: regular
       iscommand: true
@@ -496,7 +497,8 @@ tasks:
       id: b974de4f-f047-4b3b-87a5-4bd2b243ff96
       version: -1
       name: Is Cortex ASM enabled?
-      description: Determines if the "Cortex Attack Surface Management" integration instance is configured to pull Remediation Path Rules.
+      description: Determines if the "Cortex Attack Surface Management" integration
+        instance is configured to pull Remediation Path Rules.
       type: condition
       iscommand: false
       brand: ""
@@ -622,3 +624,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -3,7 +3,15 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Create Jira Issue
-description: "Create Jira issue allows you to open new issues.\nWhen creating the issue, you can decide to update based on on the issue's state, which will wait for the issue to resolve or close with StatePolling.\nAlternatively, you can select to mirror the Jira issue and incident fields.  To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none\n\nWhen creating Jira issues through XSOAR, using the mirroring function, make sure that you exclude those issues when fetching incidents. To exclude these issues, tag the relevant issues with a dedicated label and exclude that label from the JQL query (Labels!=)."
+description: "Create Jira issue allows you to open new issues.\nWhen creating the
+  issue, you can decide to update based on on the issue's state, which will wait for
+  the issue to resolve or close with StatePolling.\nAlternatively, you can select
+  to mirror the Jira issue and incident fields.  To apply either of these options,
+  set the SyncTicket value in the playbook inputs to one of the following options:
+  \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none\n\nWhen creating Jira issues
+  through XSOAR, using the mirroring function, make sure that you exclude those issues
+  when fetching incidents. To exclude these issues, tag the relevant issues with a
+  dedicated label and exclude that label from the JQL query (Labels!=)."
 starttaskid: "0"
 tasks:
   "0":
@@ -180,7 +188,8 @@ tasks:
       id: f2d4551f-8dd6-43d3-8850-57a1acf773e1
       version: -1
       name: Mirror Jira Ticket
-      description: Mirror Jira Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with Jira.
+      description: Mirror Jira Ticket is designed to serve as a sub-playbook, which
+        enables ticket mirroring with Jira.
       playbookName: Mirror Jira Ticket
       type: playbook
       iscommand: false
@@ -395,7 +404,8 @@ tasks:
       id: ca2e71b9-1850-4702-8421-4977e9cbc876
       version: -1
       name: Is Jira V2 integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -434,7 +444,8 @@ tasks:
       id: 7133c080-325b-4a45-85e2-e9fd1a6b38ca
       version: -1
       name: Is Jira V3 integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -507,7 +518,13 @@ inputs:
 - key: SyncTicket
   value: {}
   required: false
-  description: "Set the value of the desired sync method with Jira Issue. you can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for none \n\nGenericPolling polls for the state of the ticket and runs until the ticket state is either resolved or closed. \n\nMirror - You can use the Mirror option to perform a full sync with the Jira Ticket. The ticket data is synced automatically between Jira and Cortex xSOAR with the Jira mirror feature.\nIf this option is selected, FieldPolling is true by default. "
+  description: "Set the value of the desired sync method with Jira Issue. you can
+    choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for none \n
+    \nGenericPolling polls for the state of the ticket and runs until the ticket state
+    is either resolved or closed. \n\nMirror - You can use the Mirror option to perform
+    a full sync with the Jira Ticket. The ticket data is synced automatically between
+    Jira and Cortex xSOAR with the Jira mirror feature.\nIf this option is selected,
+    FieldPolling is true by default. "
   playbookInputQuery:
 - key: PollingInterval
   value: {}
@@ -526,7 +543,11 @@ inputs:
 - key: AdditionalPollingCommandName
   value: {}
   required: false
-  description: "In this use case, Additional polling commands are relevant when using StatePolling, and there is more than one Jira instance. It will specify the polling command to use a specific instance to run on. \nIf so, please add \"Using\" to the value. \nThe playbook will then take the instance name as the instance to use. "
+  description: "In this use case, Additional polling commands are relevant when using
+    StatePolling, and there is more than one Jira instance. It will specify the polling
+    command to use a specific instance to run on. \nIf so, please add \"Using\" to
+    the value. \nThe playbook will then take the instance name as the instance to
+    use. "
   playbookInputQuery:
 - key: InstanceName
   value: {}
@@ -538,13 +559,16 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3. Both"
+  description: "Set the mirror direction, should be one of the following: \n1. In\n
+    2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorTags
   value:
     simple: comment,attachment
   required: false
-  description: "Set tags for mirror comments and files to Jira.\nAs defined in the instance settings, by default it will be comment for comments mirroring and attachment for attachments mirroring. "
+  description: "Set tags for mirror comments and files to Jira.\nAs defined in the
+    instance settings, by default it will be comment for comments mirroring and attachment
+    for attachments mirroring. "
   playbookInputQuery:
 - key: FieldPolling
   value: {}
@@ -569,3 +593,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

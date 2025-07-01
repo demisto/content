@@ -1,27 +1,28 @@
 {
-    "name": "Akamai WAF SIEM",
-    "description": "Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.",
-    "support": "xsoar",
-    "currentVersion": "1.2.9",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Analytics & SIEM"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Akamai WAF SIEM",
+  "description": "Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.",
+  "support": "xsoar",
+  "currentVersion": "1.2.9",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

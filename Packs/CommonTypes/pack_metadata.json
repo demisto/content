@@ -1,66 +1,67 @@
 {
-    "name": "Common Types",
-    "description": "This Content Pack will get you up and running in no-time and provide you with the most commonly used incident & indicator fields and types.",
-    "support": "xsoar",
-    "currentVersion": "3.8.10",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-05-19T15:37:38Z",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {
-        "Compliance": {
-            "mandatory": false,
-            "display_name": "Compliance"
-        },
-        "SplunkPy": {
-            "mandatory": false,
-            "display_name": "Splunk"
-        },
-        "Phishing": {
-            "mandatory": false,
-            "display_name": "Phishing"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "Malware": {
-            "mandatory": false,
-            "display_name": "Malware"
-        },
-        "CVESearch": {
-            "mandatory": false,
-            "display_name": "CVE Search"
-        },
-        "CoreAlertFields": {
-            "mandatory": false,
-            "display_name": "Core Alert Fields"
-        }
+  "name": "Common Types",
+  "description": "This Content Pack will get you up and running in no-time and provide you with the most commonly used incident & indicator fields and types.",
+  "support": "xsoar",
+  "currentVersion": "3.8.10",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-05-19T15:37:38Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "dependencies": {
+    "Compliance": {
+      "mandatory": false,
+      "display_name": "Compliance"
     },
-    "displayedImages": [
-        "Compliance",
-        "SplunkPy",
-        "Phishing",
-        "CommonScripts",
-        "Malware",
-        "CVESearch"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "xpanse",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "SplunkPy": {
+      "mandatory": false,
+      "display_name": "Splunk"
+    },
+    "Phishing": {
+      "mandatory": false,
+      "display_name": "Phishing"
+    },
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
+    },
+    "Malware": {
+      "mandatory": false,
+      "display_name": "Malware"
+    },
+    "CVESearch": {
+      "mandatory": false,
+      "display_name": "CVE Search"
+    },
+    "CoreAlertFields": {
+      "mandatory": false,
+      "display_name": "Core Alert Fields"
+    }
+  },
+  "displayedImages": [
+    "Compliance",
+    "SplunkPy",
+    "Phishing",
+    "CommonScripts",
+    "Malware",
+    "CVESearch"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "xpanse",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

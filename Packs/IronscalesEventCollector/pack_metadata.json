@@ -1,27 +1,28 @@
 {
-    "name": "Ironscales Event Collector",
-    "description": "IRONSCALES is a self-learning email security platform, automatically responding to malicious emails.",
-    "support": "xsoar",
-    "currentVersion": "1.0.11",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2021-06-16T11:09:33Z",
-    "categories": [
-        "Email"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [],
-    "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Ironscales Event Collector",
+  "description": "IRONSCALES is a self-learning email security platform, automatically responding to malicious emails.",
+  "support": "xsoar",
+  "currentVersion": "1.0.11",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2021-06-16T11:09:33Z",
+  "categories": [
+    "Email"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [],
+  "marketplaces": [
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

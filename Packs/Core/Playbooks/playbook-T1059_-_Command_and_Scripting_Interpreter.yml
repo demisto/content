@@ -1,7 +1,31 @@
 id: T1059 - Command and Scripting Interpreter
 version: -1
 name: T1059 - Command and Scripting Interpreter
-description: "This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters to execute commands, scripts, or binaries.\nMost systems come with some kind of built-in command line interface and scripting capabilities. For example, macOS and Linux distributions include some form of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in initial access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. An attacker may also execute commands through interactive terminals/shells, as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n\nDue to the nature of this technique and the usage of built-in command line interfaces, the first step of the playbook is to analyze the command line. \nThe command line analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\n**Investigative Actions:**\nThe playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n\n**Response Actions**\n\nAfter analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes, containment and eradication.\n\nThis phase executes the following containment actions:\n\n* Automatically isolates the endpoint\n\nIt then continues with the following eradication actions:\n\n* process termination"
+description: "This playbook handles command and scripting interpreter alerts based
+  on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters
+  to execute commands, scripts, or binaries.\nMost systems come with some kind of
+  built-in command line interface and scripting capabilities. For example, macOS and
+  Linux distributions include some form of Unix Shell while Windows installations
+  include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\n
+  An attacker can abuse these technologies in various ways as a means of executing
+  arbitrary commands. Commands and scripts can be embedded in initial access payloads
+  delivered to victims as lure documents or as secondary payloads downloaded from
+  an existing C2. An attacker may also execute commands through interactive terminals/shells,
+  as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n
+  \nDue to the nature of this technique and the usage of built-in command line interfaces,
+  the first step of the playbook is to analyze the command line. \nThe command line
+  analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches
+  indicators from the command line\n- Checks specific arguments for malicious usage
+  \n\n**Investigative Actions:**\nThe playbook checks for additional activity using
+  the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n
+  \n**Response Actions**\n\nAfter analyzing the data, the playbook's first response
+  action is to contain the threat based on the initial data provided within the alert.
+  In this phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n
+  \nWhen the playbook proceeds, it checks for additional activity using the 'Endpoint
+  Investigation Plan' playbook. It then continues with the next stage, which includes,
+  containment and eradication.\n\nThis phase executes the following containment actions:\n
+  \n* Automatically isolates the endpoint\n\nIt then continues with the following
+  eradication actions:\n\n* process termination"
 starttaskid: "0"
 tasks:
   "0":
@@ -605,7 +629,13 @@ tasks:
       id: 2b789413-c965-4c6f-867f-bf3525a2d620
       version: -1
       name: Command-Line Analysis
-      description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity"
+      description: "This playbook takes the command line from the alert and performs
+        the following actions:\n- Checks for base64 string and decodes if exists\n
+        - Extracts and enriches indicators from the command line\n- Checks specific
+        arguments for malicious usage \n\nAt the end of the playbook, it sets a possible
+        verdict for the command line, based on the finding:\n1. Indicators found in
+        the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n
+        4. Usage of malicious tools\n5. Indication of network activity"
       playbookName: Command-Line Analysis
       type: playbook
       iscommand: false
@@ -1341,7 +1371,10 @@ tasks:
       id: 79072a9a-573a-4d19-868b-03a05447f7f9
       version: -1
       name: Ticket Management - Generic
-      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
+      description: "`Ticket Management - Generic` allows you to open new tickets or
+        update comments to the existing ticket in the following ticketing systems:\n
+        -ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow
+        - Ticket Management`\n-`Zendesk - Ticket Management`\n"
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
@@ -1539,7 +1572,8 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: "Whether to close the alert automatically or manually, after an analyst's review."
+  description: "Whether to close the alert automatically or manually, after an analyst's
+    review."
   playbookInputQuery:
 - key: AutoRestoreEndpoint
   value:
@@ -1550,7 +1584,8 @@ inputs:
 - key: AutoContainment
   value: {}
   required: false
-  description: "Whether to execute automatically or manually the containment plan tasks:\n* Block indicators\n* Quarantine file\n* Disable user "
+  description: "Whether to execute automatically or manually the containment plan
+    tasks:\n* Block indicators\n* Quarantine file\n* Disable user "
   playbookInputQuery:
 - key: FileRemediation
   value: {}
@@ -1582,12 +1617,14 @@ inputs:
 - key: serviceNowSeverity
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  description: The severity of the new ticket. Leave empty for ServiceNow default
+    severity.
   playbookInputQuery:
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
   playbookInputQuery:
 - key: serviceNowCategory
   value: {}
@@ -1602,7 +1639,8 @@ inputs:
 - key: ZendeskPriority
   value: {}
   required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  description: The urgency with which the ticket should be addressed. Allowed values
+    are "urgent", "high", "normal", or "low".
   playbookInputQuery:
 - key: ZendeskRequester
   value: {}
@@ -1612,7 +1650,8 @@ inputs:
 - key: ZendeskStatus
   value: {}
   required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  description: The state of the ticket. Allowed values are "new", "open", "pending",
+    "hold", "solved", or "closed".
   playbookInputQuery:
 - key: ZendeskSubject
   value:
@@ -1628,7 +1667,8 @@ inputs:
 - key: ZendeskType
   value: {}
   required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  description: The type of this ticket. Allowed values are "problem", "incident",
+    "question", or "task".
   playbookInputQuery:
 - key: ZendeskAssigne
   value: {}
@@ -1650,7 +1690,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  description: 'Whether to append a new comment to the ticket for each endpoint in
+    the incident. Possible values: True/False.'
   playbookInputQuery:
 - key: CommentToAdd
   value:
@@ -1662,13 +1703,15 @@ inputSections:
 - inputs:
   - ShouldCloseAutomatically
   name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
+  description: Alert management settings and data, including escalation processes,
+    and user engagements.
 - inputs:
   - AutoContainment
   - FileRemediation
   - AutoRestoreEndpoint
   name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
 - inputs:
   - ShouldOpenTicket
   - serviceNowShortDescription
@@ -1710,3 +1753,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

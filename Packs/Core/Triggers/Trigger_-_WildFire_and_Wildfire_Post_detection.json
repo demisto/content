@@ -8,18 +8,18 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "WildFire Malware"
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "WildFire Malware"
         }
       ]
     }
   },
   "supportedModules": [
-      "X1",
-      "X3",
-      "X5",
-      "ENT_PLUS"
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
   ]
 }
-

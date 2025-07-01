@@ -2170,7 +2170,14 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: :"${inputs.EntityID}" and (mitreattcktactic:"TA0043 - Reconnaissance" or mitreattcktactic:"TA0001 - Initial Access" or mitreattcktactic:"TA0002 - Execution" or mitreattcktactic:"TA0003 - Persistence" or mitreattcktactic:"TA0004 - Privilege Escalation" or mitreattcktactic:"TA0005 - Defense Evasion" or mitreattcktactic:"TA0006 - Credential Access" or mitreattcktactic:"TA0007 - Discovery" or mitreattcktactic:"TA0008 - Lateral Movement" or mitreattcktactic:"TA0009 - Collection" or mitreattcktactic:"TA0011 - Command and Control" or mitreattcktactic:"TA0040 - Impact")
+                  simple: :"${inputs.EntityID}" and (mitreattcktactic:"TA0043 - Reconnaissance"
+                    or mitreattcktactic:"TA0001 - Initial Access" or mitreattcktactic:"TA0002
+                    - Execution" or mitreattcktactic:"TA0003 - Persistence" or mitreattcktactic:"TA0004
+                    - Privilege Escalation" or mitreattcktactic:"TA0005 - Defense
+                    Evasion" or mitreattcktactic:"TA0006 - Credential Access" or mitreattcktactic:"TA0007
+                    - Discovery" or mitreattcktactic:"TA0008 - Lateral Movement" or
+                    mitreattcktactic:"TA0009 - Collection" or mitreattcktactic:"TA0011
+                    - Command and Control" or mitreattcktactic:"TA0040 - Impact")
               variable_markers: {}
     reputationcalc: 1
     separatecontext: false
@@ -2210,13 +2217,15 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
+  description: Set to True to hunt for identified alerts with MITRE Reconnaissance
+    techniques.
   playbookInputQuery:
 - key: HuntInitialAccessTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Initial Access techniques.
+  description: Set to True to hunt for identified alerts with MITRE Initial Access
+    techniques.
   playbookInputQuery:
 - key: HuntExecutionTechniques
   value:
@@ -2234,13 +2243,15 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
+  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation
+    techniques.
   playbookInputQuery:
 - key: HuntDefenseEvasionTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
+  description: Set to True to hunt for identified alerts with MITRE Defense Evasion
+    techniques.
   playbookInputQuery:
 - key: HuntDiscoveryTechniques
   value:
@@ -2252,19 +2263,22 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
+  description: Set to True to hunt for identified alerts with MITRE Lateral Movement
+    techniques.
   playbookInputQuery:
 - key: HuntCollectionTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Collection techniques .
+  description: Set to True to hunt for identified alerts with MITRE Collection techniques
+    .
   playbookInputQuery:
 - key: HuntCnCTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
+  description: Set to True to hunt for identified alerts with MITRE Command and Control
+    techniques.
   playbookInputQuery:
 - key: HuntImpactTechniques
   value:
@@ -2276,7 +2290,8 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Credential Access techniques.
+  description: Set to True to hunt for identified alerts with MITRE Credential Access
+    techniques.
   playbookInputQuery:
 - key: timeRange
   value:
@@ -2299,7 +2314,8 @@ inputs:
 - key: EntityType
   value: {}
   required: true
-  description: Entity type to search. Entity type can be username, hostname, or any other element that exists in the alert.
+  description: Entity type to search. Entity type can be username, hostname, or any
+    other element that exists in the alert.
   playbookInputQuery:
 - key: EntityID
   value: {}
@@ -2326,3 +2342,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

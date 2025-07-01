@@ -396,7 +396,8 @@ tasks:
       id: ea3e7ea6-ad7e-4b2d-83d9-e5c019523008
       version: -1
       name: Extract indicator from the ransomware note
-      description: Extract all indicators according to the server's indicator extraction configuration.
+      description: Extract all indicators according to the server's indicator extraction
+        configuration.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -453,3 +454,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

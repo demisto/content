@@ -846,43 +846,43 @@ inputs:
   value: {}
   required: false
   description: The name of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: case
   value: {}
   required: false
   description: The name of a Core eDiscovery case to associate with the new compliance
     search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: kql
   value: {}
   required: true
   description: Text search string or a query that is formatted using the Keyword Query
     Language (KQL).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: description
   value: {}
   required: false
   description: Description of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: allow_not_found_exchange_locations
   value:
     simple: "true"
   required: false
   description: Whether to include mailboxes other than regular user mailboxes in the
     compliance search. Default is "false".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: exchange_location
   value: {}
   required: false
   description: Comma-separated list of mailboxes/distribution groups to include, or
     use the value "All" to include all.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: exchange_location_exclusion
   value: {}
   required: false
   description: Comma-separated list of mailboxes/distribution groups to exclude when
     you use the value "All" for the exchange_location parameter.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: force
   value:
     simple: "false"
@@ -890,35 +890,35 @@ inputs:
   description: Whether to replace the existing search. If "true", the existing search
     will be removed and a new search will be created. If "false", the existing search
     will be used and any new search configurations will be ignored.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: preview
   value:
     simple: "true"
   required: true
   description: 'Whether to preview the results using the search action "Preview".
     Possible values are: "true" and "false" or leave empty to select manually.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: delete_type
   value: {}
   required: false
   description: Specify the delete type to perform on the search results. Possible
     values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
     Soft=Recoverable)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: search_action_polling_timeout
   value:
     simple: "45"
   required: false
   description: Amount of time to poll before declaring a timeout for the search action
     and resuming the playbook (in minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: search_action_polling_interval
   value:
     simple: "3"
   required: false
   description: The frequency that the polling command will run for the search action
     that was chosen.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - O365-SecurityAndCompliance-Test
@@ -928,3 +928,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

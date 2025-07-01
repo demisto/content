@@ -1,7 +1,8 @@
 id: Cortex ASM - Service Ownership
 version: -1
 name: Cortex ASM - Service Ownership
-description: Identifies and recommends the most likely owners of the service, additionally citing an explanation and ranking score for each.
+description: Identifies and recommends the most likely owners of the service, additionally
+  citing an explanation and ranking score for each.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +43,8 @@ tasks:
       id: fa87fb97-33f7-4e96-8c0a-2bcaa794b242
       version: -1
       name: Normalize and rank likely service owners
-      description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
+      description: Recommend most likely service owners from those surfaced by Cortex
+        ASM Enrichment.
       type: regular
       iscommand: false
       brand: ""
@@ -110,7 +112,8 @@ tasks:
       id: 3c890c55-0002-44ef-8205-1027ca45d05f
       version: -1
       name: Is asmserviceownerunrankedraw populated?
-      description: Determines if the asmserviceowner or asmserviceownerunrankedraw fields have been populated to continue.
+      description: Determines if the asmserviceowner or asmserviceownerunrankedraw
+        fields have been populated to continue.
       type: condition
       iscommand: false
       brand: ""
@@ -194,7 +197,8 @@ tasks:
       id: 06c23e12-3c68-49cc-81cb-37141b08c56d
       version: -1
       name: Look up project owners for service account
-      description: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
+      description: Parse a GCP service account email for the project name, then lookup
+        project owners and add them to a list of potential service owners for ranking.
       type: regular
       iscommand: false
       brand: ""
@@ -247,3 +251,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

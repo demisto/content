@@ -1,7 +1,19 @@
 id: Impossible Traveler Response
 version: -1
 name: Impossible Traveler Response
-description: "This playbook handles impossible traveler alerts.\n\nAn Impossible Traveler event occurs when multiple login attempts seen for a user from multiple remote countries in a short period of time, which shouldn't be possible. This may indicate the account is compromised.\n\n**Attacker's Goals:**\n\nGain user-account credentials.\n\n**Investigative Actions:**\n\nInvestigate the IP addresses and identities involved in the detected activity using:\n\n* Impossible Traveler - Enrichment playbook\n* CalculateGeoDistance automation\n\n**Response Actions**\n\nThe playbook's first response actions are based on the data available within the alert. In that phase, the playbook will execute:\n\n* Manual block indicators if the IP address found malicious\n* Manual disable user\n* Manual clear of the user’s sessions (Okta)\n\nWhen the playbook continues, after validating the activity with the user’s manager, another phase of response actions is being executed, which includes:\n\n* Auto block indicators \n\n\n**External Resources:**\n\n[Impossible traveler alert](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Impossible-traveler-SSO)"
+description: "This playbook handles impossible traveler alerts.\n\nAn Impossible Traveler
+  event occurs when multiple login attempts seen for a user from multiple remote countries
+  in a short period of time, which shouldn't be possible. This may indicate the account
+  is compromised.\n\n**Attacker's Goals:**\n\nGain user-account credentials.\n\n**Investigative
+  Actions:**\n\nInvestigate the IP addresses and identities involved in the detected
+  activity using:\n\n* Impossible Traveler - Enrichment playbook\n* CalculateGeoDistance
+  automation\n\n**Response Actions**\n\nThe playbook's first response actions are
+  based on the data available within the alert. In that phase, the playbook will execute:\n
+  \n* Manual block indicators if the IP address found malicious\n* Manual disable
+  user\n* Manual clear of the user’s sessions (Okta)\n\nWhen the playbook continues,
+  after validating the activity with the user’s manager, another phase of response
+  actions is being executed, which includes:\n\n* Auto block indicators \n\n\n**External
+  Resources:**\n\n[Impossible traveler alert](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Impossible-traveler-SSO)"
 starttaskid: "0"
 tasks:
   "0":
@@ -137,7 +149,8 @@ tasks:
       id: 9e9924bf-582c-4c05-880a-ce2faabc672f
       version: -1
       name: Did the user travel more than the allowed MPH?
-      description: Checks whether the user traveled faster than the allowed speed in MPH.
+      description: Checks whether the user traveled faster than the allowed speed
+        in MPH.
       type: condition
       iscommand: false
       brand: ""
@@ -184,7 +197,8 @@ tasks:
       id: 1afa0528-0863-40fb-864e-164aef0f660b
       version: -1
       name: Did the user login from IP addresses on allow list?
-      description: Checks whether both user login events originated from IP addresses on the allow list.
+      description: Checks whether both user login events originated from IP addresses
+        on the allow list.
       type: condition
       iscommand: false
       brand: ""
@@ -367,7 +381,8 @@ tasks:
       id: b13f2219-7b15-400e-8b7f-311c944f4b00
       version: -1
       name: Can the manager be contacted for travel approval?
-      description: Checks whether an email address was retrieved for the manger of the offending user.
+      description: Checks whether an email address was retrieved for the manger of
+        the offending user.
       type: condition
       iscommand: false
       brand: ""
@@ -897,7 +912,11 @@ tasks:
       id: e190537d-1b4b-4055-8eff-1f60d7651da1
       version: -1
       name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook handles all the containment actions available with
+        Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine
+        file\n* Block indicators\n* Clear user session (currently, the playbook supports
+        only Okta)\n\nNote: The playbook inputs enable manipulating the execution
+        flow; read the input descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -981,7 +1000,11 @@ tasks:
       id: bd5bd031-c623-4eba-82b0-b342ebdab5dd
       version: -1
       name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook handles all the containment actions available with
+        Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine
+        file\n* Block indicators\n* Clear user session (currently, the playbook supports
+        only Okta)\n\nNote: The playbook inputs enable manipulating the execution
+        flow; read the input descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -1188,9 +1211,9 @@ tasks:
       version: -1
       name: Ticket Management - Generic
       description: "`Ticket Management - Generic` allows you to open new tickets or
-        update comments to the existing ticket in the following ticketing systems:\n-ServiceNow
-        \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk
-        - Ticket Management`\n"
+        update comments to the existing ticket in the following ticketing systems:\n
+        -ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow
+        - Ticket Management`\n-`Zendesk - Ticket Management`\n"
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
@@ -1301,18 +1324,22 @@ inputs:
   value:
     simple: "400"
   required: false
-  description: The maximum miles per hour that is considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler.
+  description: The maximum miles per hour that is considered reasonable. If the geographical
+    distance and difference in time between logins is greater than this value, the
+    user will be considered an impossible traveler.
   playbookInputQuery:
 - key: WhitelistedIPs
   value: {}
   required: false
-  description: A comma separated list of IP addresses that are allowed to be used across long distances.
+  description: A comma separated list of IP addresses that are allowed to be used
+    across long distances.
   playbookInputQuery:
 - key: ContactUserManager
   value:
     simple: "True"
   required: false
-  description: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
+  description: Whether to ask the user manager for the legitimacy of the login events,
+    in case of an alleged impossible traveler.
   playbookInputQuery:
 - key: AutoContainment
   value:
@@ -1337,7 +1364,8 @@ inputs:
       root: lists
       accessor: CIDR - Allowlist
   required: false
-  description: A comma separated list of CIDR that are allowed to be used across long distances.
+  description: A comma separated list of CIDR that are allowed to be used across long
+    distances.
   playbookInputQuery:
 - key: username
   value:
@@ -1357,127 +1385,130 @@ inputs:
     simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowShortDescription
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: A short description of the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowImpact
   value: {}
   required: false
   description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowUrgency
   value: {}
   required: false
   description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowSeverity
   value: {}
   required: false
   description: The severity of the new ticket. Leave empty for ServiceNow default
     severity.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowTicketType
   value: {}
   required: false
   description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
     "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowCategory
   value: {}
   required: false
   description: The category of the ServiceNow ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowAssignmentGroup
   value: {}
   required: false
   description: The group to which to assign the new ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskPriority
   value: {}
   required: false
   description: The urgency with which the ticket should be addressed. Allowed values
     are "urgent", "high", "normal", or "low".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskRequester
   value: {}
   required: false
   description: The user who requested this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskStatus
   value: {}
   required: false
   description: The state of the ticket. Allowed values are "new", "open", "pending",
     "hold", "solved", or "closed".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskSubject
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: The value of the subject field for this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskTags
   value: {}
   required: false
   description: The array of tags applied to this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskType
   value: {}
   required: false
   description: The type of this ticket. Allowed values are "problem", "incident",
     "question", or "task".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskAssigne
   value: {}
   required: false
   description: The agent currently assigned to the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskCollaborators
   value: {}
   required: false
   description: The users currently CC'ed on the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: description
   value:
     simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
   required: false
   description: The ticket description.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: addCommentPerEndpoint
   value:
     simple: "True"
   required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. 
-    Possible values: True/False.'
-  playbookInputQuery: null
+  description: 'Whether to append a new comment to the ticket for each endpoint in
+    the incident. Possible values: True/False.'
+  playbookInputQuery:
 - key: CommentToAdd
   value:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - domain
   - username
   - ContactUserManager
   name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
+  description: Alert management settings and data, including escalation processes,
+    and user engagements.
 - inputs:
   - WhitelistedIPs
   - AllowlistCIDR
   - MaxMilesPerHourAllowed
   name: Investigation
-  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+  description: Investigation settings and data, including any deep dive alert investigation
+    and verdict determination.
 - inputs:
   - preInvestigationContainment
   - AutoContainment
   - AbuseIPDBThreshold
   name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
 - inputs:
   - ShouldOpenTicket
   - serviceNowShortDescription
@@ -1587,12 +1618,13 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
-marketplaces: 
-  - marketplacev2
-  - platform
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.6.0
 supportedModules:
 - X1
 - X3
 - X5
 - ENT_PLUS
+- agentix

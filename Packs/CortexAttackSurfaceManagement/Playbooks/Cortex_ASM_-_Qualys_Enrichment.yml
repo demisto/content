@@ -42,7 +42,8 @@ tasks:
       id: 43e1f342-cbfb-48a1-8ad9-5774b367d617
       version: -1
       name: Is Qualys enabled and input value defined?
-      description: Determines if the "Qualys" integration instance is enabled in order to find assets and asset tags.
+      description: Determines if the "Qualys" integration instance is enabled in order
+        to find assets and asset tags.
       type: condition
       iscommand: false
       brand: ""
@@ -305,7 +306,8 @@ tasks:
       id: a1170b57-070d-4b7f-8294-34525b9302c8
       version: -1
       name: Was a host found?
-      description: Check whether the last command returned Qualys asset information or not.
+      description: Check whether the last command returned Qualys asset information
+        or not.
       type: condition
       iscommand: false
       brand: ""
@@ -545,7 +547,8 @@ tasks:
       id: 92a44e95-df4a-4187-8d84-95d5de685f07
       version: -1
       name: Was a tag present?
-      description: Check whether the last command returned Qualys host with one or more tags.
+      description: Check whether the last command returned Qualys host with one or
+        more tags.
       type: condition
       iscommand: false
       brand: ""
@@ -754,3 +757,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

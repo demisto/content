@@ -1,32 +1,33 @@
 {
-    "name": "CyberArk PAM Self-Hosted",
-    "description": "This pack contains modeling & parsing rules for CyberArk PAM Self-Hosted Vault audit event logs. ",
-    "support": "xsoar",
-    "currentVersion": "1.0.4",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "IT Services"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "EPV",
-        "CyberArk",
-        "Enterprise Password Vault",
-        "Vault",
-        "PAM Self Hosted",
-        "PAM"
-    ],
-    "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "CyberArk PAM Self-Hosted",
+  "description": "This pack contains modeling & parsing rules for CyberArk PAM Self-Hosted Vault audit event logs. ",
+  "support": "xsoar",
+  "currentVersion": "1.0.4",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "IT Services"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "EPV",
+    "CyberArk",
+    "Enterprise Password Vault",
+    "Vault",
+    "PAM Self Hosted",
+    "PAM"
+  ],
+  "marketplaces": [
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

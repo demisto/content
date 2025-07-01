@@ -1,7 +1,10 @@
 id: Ticket Management - Generic
 version: -1
 name: Ticket Management - Generic
-description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`"
+description: "`Ticket Management - Generic` allows you to open new tickets or update
+  comments to the existing ticket in the following ticketing systems:\n-ServiceNow
+  \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n
+  -`Zendesk - Ticket Management`"
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +45,8 @@ tasks:
       id: f9e4560c-d621-4bf8-8849-f00beaa70d70
       version: -1
       name: ServiceNow - Ticket Management
-      description: '`ServiceNow - Ticket Management` allows you to open new tickets or update comments to the existing ticket using the playbook''s tasks. '
+      description: '`ServiceNow - Ticket Management` allows you to open new tickets
+        or update comments to the existing ticket using the playbook''s tasks. '
       playbookName: ServiceNow - Ticket Management
       type: playbook
       iscommand: false
@@ -117,7 +121,8 @@ tasks:
       id: bc8a5228-c2b8-46af-8e21-d7687a8edffe
       version: -1
       name: Zendesk - Ticket Management
-      description: '`Zendesk - Ticket Management` allows you to open new tickets or update comments to the existing ticket using the playbook''s tasks. '
+      description: '`Zendesk - Ticket Management` allows you to open new tickets or
+        update comments to the existing ticket using the playbook''s tasks. '
       playbookName: Zendesk - Ticket Management
       type: playbook
       iscommand: false
@@ -627,12 +632,14 @@ inputs:
 - key: serviceNowSeverity
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  description: The severity of the new ticket. Leave empty for ServiceNow default
+    severity.
   playbookInputQuery:
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
   playbookInputQuery:
 - key: serviceNowCategory
   value: {}
@@ -647,7 +654,8 @@ inputs:
 - key: ZendeskPriority
   value: {}
   required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  description: The urgency with which the ticket should be addressed. Allowed values
+    are "urgent", "high", "normal", or "low".
   playbookInputQuery:
 - key: ZendeskRequester
   value: {}
@@ -657,7 +665,8 @@ inputs:
 - key: ZendeskStatus
   value: {}
   required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  description: The state of the ticket. Allowed values are "new", "open", "pending",
+    "hold", "solved", or "closed".
   playbookInputQuery:
 - key: ZendeskSubject
   value: {}
@@ -672,7 +681,8 @@ inputs:
 - key: ZendeskType
   value: {}
   required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  description: The type of this ticket. Allowed values are "problem", "incident",
+    "question", or "task".
   playbookInputQuery:
 - key: ZendeskAssigne
   value: {}
@@ -693,7 +703,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  description: 'Whether to append a new comment to the ticket for each endpoint in
+    the incident. Possible values: True/False.'
   playbookInputQuery:
 - key: CommentToAdd
   value: {}
@@ -716,3 +727,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

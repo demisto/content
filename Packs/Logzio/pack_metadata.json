@@ -1,31 +1,32 @@
 {
-    "name": "Logz.io",
-    "description": "Logz.io Package to fetch alerts from logz.io and threat hunting",
-    "support": "partner",
-    "currentVersion": "1.1.21",
-    "author": "Logz.io",
-    "url": "",
-    "email": "support@logz.io",
-    "categories": [
-        "Analytics & SIEM"
-    ],
-    "tags": [],
-    "created": "2020-04-14T08:25:21Z",
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "yyyogev"
-    ],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "Logz.io",
+  "description": "Logz.io Package to fetch alerts from logz.io and threat hunting",
+  "support": "partner",
+  "currentVersion": "1.1.21",
+  "author": "Logz.io",
+  "url": "",
+  "email": "support@logz.io",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [],
+  "created": "2020-04-14T08:25:21Z",
+  "useCases": [],
+  "keywords": [],
+  "githubUser": [
+    "yyyogev"
+  ],
+  "certification": "certified",
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

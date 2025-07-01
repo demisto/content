@@ -9,22 +9,23 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Large Upload"
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Large Upload"
         },
         {
-            "SEARCH_FIELD": "alert_source",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "MAGNIFIER"
+          "SEARCH_FIELD": "alert_source",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "MAGNIFIER"
         }
       ]
     }
   },
   "supportedModules": [
-      "X1",
-      "X3",
-      "X5",
-      "ENT_PLUS"
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
   ]
 }

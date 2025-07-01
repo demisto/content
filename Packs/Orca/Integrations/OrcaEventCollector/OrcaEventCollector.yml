@@ -10,7 +10,8 @@ configuration:
   name: server_url
   required: true
   type: 0
-  additionalinfo: For more information about the different regions and ips in the link- https://docs.orcasecurity.io/docs/regions-and-ips
+  additionalinfo: For more information about the different regions and ips in the
+    link- https://docs.orcasecurity.io/docs/regions-and-ips
   section: Connect
 - displaypassword: API Token
   additionalinfo: The API Key to use for connection
@@ -49,7 +50,8 @@ script:
     - name: should_push_events
       auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise
+        the command will only display them.
       predefined:
       - 'True'
       - 'False'
@@ -71,3 +73,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

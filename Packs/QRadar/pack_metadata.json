@@ -1,60 +1,61 @@
 {
-    "name": "IBM QRadar",
-    "description": "Fetch offenses as incidents and search QRadar",
-    "support": "xsoar",
-    "currentVersion": "2.5.20",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Analytics & SIEM"
-    ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {
-        "Asset": {
-            "mandatory": false,
-            "display_name": "Asset"
-        },
-        "AccessInvestigation": {
-            "mandatory": false,
-            "display_name": "Access Investigation"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        }
+  "name": "IBM QRadar",
+  "description": "Fetch offenses as incidents and search QRadar",
+  "support": "xsoar",
+  "currentVersion": "2.5.20",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "dependencies": {
+    "Asset": {
+      "mandatory": false,
+      "display_name": "Asset"
     },
-    "displayedImages": [
-        "Asset",
-        "AccessInvestigation",
-        "CommonScripts",
-        "CommonPlaybooks",
-        "CommonTypes"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "defaultDataSource": "QRadar v3",
-    "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+    "AccessInvestigation": {
+      "mandatory": false,
+      "display_name": "Access Investigation"
+    },
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
+    },
+    "CommonPlaybooks": {
+      "mandatory": true,
+      "display_name": "Common Playbooks"
+    },
+    "CommonTypes": {
+      "mandatory": true,
+      "display_name": "Common Types"
+    }
+  },
+  "displayedImages": [
+    "Asset",
+    "AccessInvestigation",
+    "CommonScripts",
+    "CommonPlaybooks",
+    "CommonTypes"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "defaultDataSource": "QRadar v3",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X0",
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }

@@ -1,33 +1,34 @@
 {
-    "name": "LOLBAS Feed",
-    "description": "\"Living off the land binaries\" is a term used to describe malware or hacking techniques that take advantage of legitimate tools.",
-    "support": "xsoar",
-    "currentVersion": "1.0.23",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Threat Intelligence Management",
-        "Free Feed",
-        "Plug & Fetch"
-    ],
-    "useCases": [],
-    "keywords": [
-        "Feed",
-        "Plug & Fetch"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
-    ]
+  "name": "LOLBAS Feed",
+  "description": "\"Living off the land binaries\" is a term used to describe malware or hacking techniques that take advantage of legitimate tools.",
+  "support": "xsoar",
+  "currentVersion": "1.0.23",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Threat Intelligence Management",
+    "Free Feed",
+    "Plug & Fetch"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Feed",
+    "Plug & Fetch"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
 }
