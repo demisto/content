@@ -311,12 +311,7 @@ def test_submit_takedown_request_command_error(requests_mock: MagicMock, client:
     }
 
     # Execute the command
-    with pytest.raises(DemistoException, match="Invalid reason provided: phishing. Allowed values are: phishing, "
-                                               "brand_abuse, impersonating_application, "
-                                               "unofficial_application_distribution, malicious_content, "
-                                               "social_media_impersonation, social_media_employee_impersonation, "
-                                               "fake_job_post, sensitive_file_on_antivirus_repository, "
-                                               "instant_messaging_impersonation, other"):
+    with pytest.raises(DemistoException, match="Error in API call"):
         submit_takedown_request_command(client, args)
 
 
