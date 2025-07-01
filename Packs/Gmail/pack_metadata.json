@@ -1,33 +1,33 @@
 {
-  "name": "Gmail",
-  "description": "Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).",
-  "support": "xsoar",
-  "currentVersion": "1.3.32",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Email"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": [
-    "Google"
-  ],
-  "marketplaces": [
-    "xsoar",
-    "marketplacev2",
-    "platform"
-  ],
-  "supportedModules": [
-    "C1",
-    "C3",
-    "X0",
-    "X1",
-    "X3",
-    "X5",
-    "ENT_PLUS",
-    "agentix"
-  ]
+    "name": "Gmail",
+    "description": "Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).",
+    "support": "xsoar",
+    "currentVersion": "1.3.33",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Email"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Google"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix"
+    ]
 }

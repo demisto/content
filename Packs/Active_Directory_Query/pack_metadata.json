@@ -1,65 +1,65 @@
 {
-  "name": "Active Directory Query",
-  "description": "Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).",
-  "support": "xsoar",
-  "currentVersion": "1.6.52",
-  "author": "Cortex XSOAR",
-  "url": "",
-  "email": "",
-  "created": "2020-03-09T14:47:00Z",
-  "categories": [
-    "Identity and Access Management"
-  ],
-  "tags": [
-    "IAM"
-  ],
-  "useCases": [],
-  "keywords": [
-    "Active Directory"
-  ],
-  "dependencies": {
-    "Gmail": {
-      "mandatory": false,
-      "display_name": "Gmail"
+    "name": "Active Directory Query",
+    "description": "Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).",
+    "support": "xsoar",
+    "currentVersion": "1.6.53",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "created": "2020-03-09T14:47:00Z",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [
+        "IAM"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Active Directory"
+    ],
+    "dependencies": {
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        }
     },
-    "CommonScripts": {
-      "mandatory": true,
-      "display_name": "Common Scripts"
-    },
-    "MicrosoftGraphListener": {
-      "mandatory": false,
-      "display_name": "Microsoft Graph Mail Single User"
-    },
-    "GmailSingleUser": {
-      "mandatory": false,
-      "display_name": "Gmail Single User (Beta)"
-    },
-    "MailSenderNew": {
-      "mandatory": false,
-      "display_name": "Mail Sender (New)"
-    },
-    "MicrosoftGraphMail": {
-      "mandatory": false,
-      "display_name": "Microsoft Graph Mail"
-    }
-  },
-  "excludedDependencies": [
-    "CrisisManagement"
-  ],
-  "marketplaces": [
-    "xsoar",
-    "marketplacev2",
-    "xpanse",
-    "platform"
-  ],
-  "supportedModules": [
-    "C1",
-    "C3",
-    "X0",
-    "X1",
-    "X3",
-    "X5",
-    "ENT_PLUS",
-    "agentix"
-  ]
+    "excludedDependencies": [
+        "CrisisManagement"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix"
+    ]
 }
