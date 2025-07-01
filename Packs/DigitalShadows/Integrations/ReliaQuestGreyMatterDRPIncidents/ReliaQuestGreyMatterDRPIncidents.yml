@@ -46,7 +46,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-  section: Connect
+  section: Collect
 - additionalinfo: Remove all if you don't want to select  all risk types, and then select specifically
   defaultvalue: all
   display: Risk Types
@@ -138,7 +138,7 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  section: Connect
+  section: Collect
 display: ReliaQuest GreyMatter DRP Incidents
 name: ReliaQuest GreyMatter DRP Incidents
 script:
