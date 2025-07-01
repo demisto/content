@@ -343,9 +343,9 @@ class IAM:
         kwargs = {"PolicyDocument": policy_document, "PolicyName": policy_name, "RoleName": role_name}
 
         try:
-            response = client.put_user_policy(**kwargs)
+            response = client.put_role_policy(**kwargs)
             human_readable = f"Policy '{policy_name}' was successfully added to role '{role_name}'"
-            return CommandResults(raw_response=response, readable_output=human_readable)
+            return CommandResults(readable_output=human_readable)
         except Exception as e:
             raise DemistoException(f"Failed to add policy '{policy_name}' to role '{role_name}'. Error: {str(e)}")
 
