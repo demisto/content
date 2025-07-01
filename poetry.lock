@@ -710,7 +710,7 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.4"
+version = "1.38.5"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
@@ -4549,4 +4549,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "17d9f31efadbde4b55c2bd3094f90ee25b4e98186d7ce1677cf2ce5ee4aa6c7a"
+content-hash = "60c58b6ff9e3215a0639f8026526cafb3175a80ebda50306ae90a8d89eb0db40"
