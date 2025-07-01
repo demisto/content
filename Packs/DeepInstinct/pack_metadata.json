@@ -19,6 +19,7 @@
         "xsoar",
         "marketplacev2",
         "platform",
+        "agentix",
         "agentix"
     ],
     "defaultDataSource": "DeepInstinct v3",

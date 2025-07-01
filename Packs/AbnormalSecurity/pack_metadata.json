@@ -27,6 +27,7 @@
         "xsoar",
         "marketplacev2",
         "platform",
+        "agentix",
         "agentix"
     ],
     "defaultDataSource": "Abnormal Security Event Collector",

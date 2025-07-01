@@ -19,6 +19,7 @@
     ],
     "marketplaces": [
         "platform",
+        "agentix",
         "agentix"
     ]
 }

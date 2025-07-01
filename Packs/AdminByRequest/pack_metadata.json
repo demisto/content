@@ -19,6 +19,7 @@
     "marketplaces": [
         "platform",
         "marketplacev2",
+        "agentix",
         "agentix"
     ],
     "defaultDataSource": "AdminByRequest",

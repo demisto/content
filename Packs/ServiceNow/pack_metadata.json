@@ -26,6 +26,7 @@
         "marketplacev2",
         "xpanse",
         "platform",
+        "agentix",
         "agentix"
     ],
     "defaultDataSource": "ServiceNow v2",
