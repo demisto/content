@@ -40,7 +40,7 @@ class Client:
         return response.json()
 
 
-def parse_version(version: str) -> tuple[int, ...]:
+def parse_version(version: str) -> tuple[int, int, int, int]:
     parts = re.match(r"(\d+)\.(\d+)\.(\d+)(?:-h(\d+))?", version)
     if parts:
         return tuple(int(p) if p else 0 for p in parts.groups())
@@ -57,7 +57,7 @@ def sort_versions_and_changes(data: List[Dict]) -> List[Dict]:
     return data
 
 
-def create_product_platform_tables(sorted_data: List[Dict]) -> List[Dict]:
+def create_product_platform_tables(sorted_data: List[Dict]) -> Dict[str, List[str]]:
     result = []
 
     for item in sorted_data:
