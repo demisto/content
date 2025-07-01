@@ -34,9 +34,9 @@ Retrieve takedowns requests.
 
 | **Argument Name**       | **Description**                  | **Required** |
 |-------------------------|----------------------------------|--------------|
-| customer_id             | Customer ID.                     | Optional     |
-| reason                  | Reason for the takedown request. | Optional     |
-| url                     | URL for the takedown request.    | Optional     |
+| customer_id             | Customer ID.                     | True         |
+| reason                  | Reason for the takedown request. | True         |
+| url                     | URL for the takedown request.    | True         |
 | original_url            | Original URL.                    | Optional     |
 | customer                | Customer.                        | Optional     |
 | status                  | Status.                          | Optional     |
@@ -77,7 +77,7 @@ Retrieve takedowns requests.
 
 #### Command example
 
-```!cyberint-retrieve-takedowns customer_id=Cyberint```
+```!cyberint-retrieve-takedowns customer_id=Cyberint reason=phishing url=http://hacking.enterprises original_url=https://cyberint.com brand=Cyberint```
 
 #### Context Example
 
@@ -157,7 +157,7 @@ Submit takedown request.
 
 | **Argument Name** | **Description**                  | **Required** |
 |-------------------|----------------------------------|--------------|
-| customer          | Customer.                        | Required     |
+| customer          | Customer.                        | True         |
 | reason            | Reason for the takedown request. | Required     |
 | url               | URL for the takedown request.     | Required     |
 | brand             | Brand.                           | Optional     |
