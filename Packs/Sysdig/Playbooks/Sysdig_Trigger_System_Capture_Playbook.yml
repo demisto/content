@@ -2,7 +2,6 @@ id: Sysdig Trigger System Capture
 version: -1
 contentitemexportablefields:
   contentitemfields:
-    packID: Sysdig
     packName: Sysdig Response Actions
     itemVersion: 1.0.0
     fromServerVersion: 6.0.0
@@ -185,23 +184,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 8b29c779-7036-4f22-993e-9ba762f65ae8
-    type: regular
+    taskid: 4eceb9f5-3d25-4771-9c3e-fe18bd8705d6
+    type: title
     task:
-      id: 8b29c779-7036-4f22-993e-9ba762f65ae8
+      id: 4eceb9f5-3d25-4771-9c3e-fe18bd8705d6
       version: -1
       name: Done
-      description: |-
-        Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Here's how to use it:
-
-        !PrettyPrint value=${incident}
-      scriptName: PrettyPrint
-      type: regular
+      description: 'Playbook completed'
+      type: title
       iscommand: false
       brand: ""
-    scriptarguments:
-      value:
-        simple: Playbook is completed
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -352,7 +344,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -362,7 +353,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 930,
+        "height": 920,
         "width": 1090,
         "x": -490,
         "y": -350
@@ -381,4 +372,3 @@ outputSections:
 outputs: []
 sourceplaybookid: Sysdig Trigger System Capture
 dirtyInputs: true
-fromversion: 6.0.0
