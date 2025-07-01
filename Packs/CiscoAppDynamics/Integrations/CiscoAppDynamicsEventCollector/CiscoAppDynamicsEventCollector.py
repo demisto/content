@@ -24,6 +24,7 @@ class EventType:
         name: str,
         url_suffix: str,
         time_field: str,
+        max_fetch: int,
         source_log_type: str,
         api_limit: int = 0,
         default_params: dict = {},
@@ -32,15 +33,15 @@ class EventType:
         Args:
             name            (str): Human-friendly name of the event type.
             url_suffix      (str): URL suffix of the CybelAngel API endpoint (no leading slash).
-            max_fetch       (int): Maximum events to fetch to XSIAM each fetch.
             time_field      (str): Field name in the event used for timestamp mapping (`_time`).
+            max_fetch       (int): Default value for the maximum number of events to fetch.
             source_log_type (str): Value to assign to each event’s `source_log_type` field in XSIAM.
             api_limit       (int): Maximum events that the API can retrieve in one call.
             default_params (dict): Dict to contain default parameters for the API calls.
         """
         self.name = name
         self.url_suffix = url_suffix
-        self.max_fetch = 1
+        self.max_fetch = max_fetch
         self.time_field = time_field
         self.source_log_type = source_log_type
         self.api_limit = api_limit
@@ -53,6 +54,7 @@ AUDIT = EventType(
     name="Audit",
     url_suffix="/ControllerAuditHistory",
     time_field="timeStamp",
+    max_fetch=3000,
     source_log_type="Audit History",
 )
 
@@ -60,6 +62,7 @@ HEALTH_EVENT = EventType(
     name="Healthrule Violations Events",
     url_suffix="/rest/applications/application_id/problems/healthrule-violations",
     time_field="startTimeInMillis",
+    max_fetch=3000,
     source_log_type="Healthrule Violations Event",
     api_limit=600,
     default_params={
@@ -68,7 +71,7 @@ HEALTH_EVENT = EventType(
     },
 )
 
-EVENT_TYPE = {"Audit": AUDIT, "Healthrule Violations Events": HEALTH_EVENT}
+EVENT_TYPES = {"Audit": AUDIT, "Healthrule Violations Events": HEALTH_EVENT}
 
 
 class Client(BaseClient):
@@ -105,7 +108,9 @@ class Client(BaseClient):
 
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         params = {"grant_type": "client_credentials", "client_id": self.client_id, "client_secret": self.client_secret}
+
         response = self._http_request(method="POST", url_suffix="/api/oauth/access_token", params=params, headers=headers)
+
         access_token = response.get("access_token")
         expires_in = response.get("expires_in")
         demisto.debug(f"Access token expire in: {expires_in}")
@@ -115,11 +120,12 @@ class Client(BaseClient):
         set_integration_context({"access_token": access_token, "token_expiry": token_expiry.isoformat()})
         return access_token
 
-    def _get_valid_token(self) -> str:
+    def get_access_token(self) -> str:
         """
         Returns a valid access token, generating a new one if necessary.
         """
         integration_context = get_integration_context()
+
         access_token = integration_context.get("access_token", "")
         token_expiry = integration_context.get("token_expiry", "")
 
@@ -127,12 +133,14 @@ class Client(BaseClient):
             demisto.debug("Token doesn't exists")
             return self.create_access_token()
 
-        elif datetime.now(timezone.utc) >= datetime.fromisoformat(token_expiry):
+        if datetime.now(timezone.utc) >= datetime.fromisoformat(token_expiry):
             demisto.debug("Token Expired")
             return self.create_access_token()
+
+        demisto.debug(f"Using cached access token. Expires at {token_expiry}")
         return access_token
 
-    def _authorized_request(self, url_suffix: str, params: dict) -> list[dict]:
+    def authorized_request(self, url_suffix: str, params: dict) -> list[dict]:
         """
         Wrapper for _http_request() that validate the token then adds it to the headers.
         Adds output="JSON" to params to return JSON format.
@@ -142,7 +150,7 @@ class Client(BaseClient):
         Return:
             List[Dict]: JSON-decoded list of events.
         """
-        token = self._get_valid_token()
+        token = self.get_access_token()
         demisto.debug("Access token exists")
         headers = {"Authorization": f"Bearer {token}"}
         params["output"] = "JSON"
@@ -171,16 +179,15 @@ class Client(BaseClient):
             "startTime": start_time,
             "endTime": end_time,
         }
-        demisto.debug(f"Fetching audit logs from {params['startTime']} to {params['endTime']}")
+        demisto.debug(f"Fetching audit logs from {start_time} to {end_time}")
 
-        events = self._authorized_request(
+        events = self.authorized_request(
             url_suffix=AUDIT.url_suffix,
             params=params,
         )
         demisto.debug(f"Received {len(events)} audit logs from API.")
 
-        add_fields_to_events(events, AUDIT)
-        return events
+        return add_fields_to_events(events, AUDIT)
 
     def get_health_events(self, start_time: int, end_time: int) -> list[dict]:
         """
@@ -203,7 +210,7 @@ class Client(BaseClient):
                     "end-time": end_time,
                 }
             )
-            batch = self._authorized_request(url_suffix=HEALTH_EVENT.url_suffix, params=params)
+            batch = self.authorized_request(url_suffix=HEALTH_EVENT.url_suffix, params=params)
             demisto.debug(f"Fetched {len(batch)} events successfully.")
             if not batch:
                 demisto.debug("No events fetched from API")
@@ -245,7 +252,7 @@ def fetch_events(
 
     for event_type in events_type_to_fetch:
         demisto.debug(f"Fetching {event_type.name}")
-        last_time = last_run[event_type.name]  # in the right API format
+        last_time = last_run[event_type.name]  # in timestamp
         demisto.debug(f"Last run {last_time}")
         events = event_fetch_function[event_type.name](  # type: ignore
             start_time=timestamp_to_api_format(last_time, event_type),
@@ -323,15 +330,15 @@ def get_events(client: Client, args: dict[str, Any], params: dict[str, Any]) -> 
     end_time = parser.parse(args.get("end_date", "")) if args.get("end_date", "") else now
     start_time = parser.parse(args.get("start_date", "")) if args.get("start_date", "") else (now - timedelta(days=1))
     demisto.debug(f"Get events from {start_time} to {end_time}")
-    event_fetch_function = {  # type: ignore
+    event_fetch_function = {
         AUDIT.name: client.get_audit_logs,
         HEALTH_EVENT.name: client.get_health_events,
     }
 
     fetch_func = event_fetch_function[event_type_name]
     events = fetch_func(  # type: ignore
-        start_time=datetime_to_api_format(start_time, EVENT_TYPE[event_type_name]),
-        end_time=datetime_to_api_format(end_time, EVENT_TYPE[event_type_name]),
+        start_time=datetime_to_api_format(start_time, EVENT_TYPES[event_type_name]),
+        end_time=datetime_to_api_format(end_time, EVENT_TYPES[event_type_name]),
     )
 
     events = events[:limit]
@@ -367,7 +374,7 @@ def get_last_run(now: int, events_type_to_fetch: list[EventType]) -> dict[str, i
     Retrieve and initialize the “last run” timestamps for a set of event types.
     This function loads the existing last‐run state via `demisto.getLastRun()`.
     For any event type that is missing or newly requested, it sets:
-      - `EVENT_TYPE.name` to one minute before `now`.
+      - `EVENT_TYPES.name` to one minute before `now`.
     Args:
         now (datetime): Reference time for computing initial fetch timestamps.
         events_to_fetch (List[str]): Names of event types that should be tracked this run.
@@ -381,7 +388,7 @@ def get_last_run(now: int, events_type_to_fetch: list[EventType]) -> dict[str, i
     raw_last_run = demisto.getLastRun() or {}
     last_run = {}
 
-    for event_type in EVENT_TYPE.values():
+    for event_type in EVENT_TYPES.values():
         last_time_iso = raw_last_run.get(event_type.name)
         if last_time_iso and event_type in events_type_to_fetch:
             last_run[event_type.name] = last_time_iso
@@ -400,22 +407,20 @@ def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:
     Returns:
         list[EventType]: List of event type to fetch from the api call.
     """
-    event_types_to_fetch = argToList(params.get("events_type_to_fetch", [AUDIT.name, HEALTH_EVENT.name]))
-    event_types_to_fetch = [event_type.strip(" ") for event_type in event_types_to_fetch]
-    demisto.debug(f"List:{event_types_to_fetch}, list length:{len(event_types_to_fetch)}")
-    max_fetch_audit = arg_to_number(params.get("max_audit_fetch")) or AUDIT.max_fetch
-    max_fetch_health = arg_to_number(params.get("max_healthrule_fetch")) or HEALTH_EVENT.max_fetch
-
     application_id = params.get("application_id", "")
-
+    event_types_to_fetch = [et.strip() for et in argToList(params.get("events_type_to_fetch", [AUDIT.name, HEALTH_EVENT.name]))]
+    demisto.debug(f"List:{event_types_to_fetch}, list length:{len(event_types_to_fetch)}")
+    fetch_limits = {
+        AUDIT.name: arg_to_number(params.get("max_audit_fetch")) or AUDIT.max_fetch,
+        HEALTH_EVENT.name: arg_to_number(params.get("max_healthrule_fetch")) or HEALTH_EVENT.max_fetch,
+    }
     event_types = []
-    if AUDIT.name in event_types_to_fetch:
-        AUDIT.max_fetch = max_fetch_audit
-        event_types.append(AUDIT)
+    for event_type in EVENT_TYPES.values():
+        if event_type.name in event_types_to_fetch:
+            event_type.max_fetch = fetch_limits[event_type.name]
+            event_types.append(event_type)
 
     if HEALTH_EVENT.name in event_types_to_fetch:
-        HEALTH_EVENT.max_fetch = max_fetch_health
-        event_types.append(HEALTH_EVENT)
         HEALTH_EVENT.url_suffix = f"/rest/applications/{application_id}/problems/healthrule-violations"
 
     return event_types

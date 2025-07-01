@@ -14,7 +14,7 @@ from CiscoAppDynamicsEventCollector import (
     timestamp_to_api_format,
     AUDIT,
     HEALTH_EVENT,
-    EVENT_TYPE,
+    EVENT_TYPES,
     DATE_FORMAT,
     Client,
     VENDOR,
@@ -70,13 +70,13 @@ class DummyClient:
 def test_add_fields_to_events_basic(event_type_name):
     """
     Given:
-        - Event with epoch-ms timestamps his type.
+        - Event returned from API.
     When:
-        - Calling add_fields_to_events.
+        - Calling add_fields_to_events on the event.
     Then:
-        - Each event has a '_time' ISO string and 'SOURCE_LOG_TYPE'.
+        - The event has a '_time' ISO string and 'SOURCE_LOG_TYPE'.
     """
-    event_type = EVENT_TYPE[event_type_name]
+    event_type = EVENT_TYPES[event_type_name]
     events = [
         {event_type.time_field: 1620000000000},
     ]
@@ -287,7 +287,7 @@ class TestRealResponse:
         """
         from CiscoAppDynamicsEventCollector import timestamp_to_api_format
 
-        mocker.patch.object(client, "_authorized_request", return_value=self.raw_data_audit)
+        mocker.patch.object(client, "authorized_request", return_value=self.raw_data_audit)
 
         end = 1748170800000
         start = 1748170800000 - (60 * 10 * 1000)
@@ -325,13 +325,13 @@ class TestRealResponse:
     def test_get_health_events_no_events(self, client, mocker):
         """
         Given:
-            - _authorized_request returns empty list on first call.
+            - authorized_request returns empty list on first call.
         When:
             - Calling get_health_events.
         Then:
             - Returns empty list without looping infinitely.
         """
-        mocker.patch.object(client, "_authorized_request", return_value=[])
+        mocker.patch.object(client, "authorized_request", return_value=[])
         start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
         end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
         result = client.get_health_events(start, end)
@@ -340,7 +340,7 @@ class TestRealResponse:
     def test_get_health_events_single_batch_less_than_limit(self, client, mocker):
         """
         Given:
-            - _authorized_request returns a batch smaller than HEALTH_EVENT.api_limit.
+            - authorized_request returns a batch smaller than HEALTH_EVENT.api_limit.
         When:
             - Calling get_health_events.
         Then:
@@ -349,14 +349,16 @@ class TestRealResponse:
         # create small batch
         default_health_rule_api_limit = HEALTH_EVENT.api_limit
         batch = self.raw_data_health
-        HEALTH_EVENT.api_limit = len(batch) - 1
+        HEALTH_EVENT.api_limit = len(batch) + 1
         calls = []
 
         def fake_request(url_suffix, params, **kwargs):
             calls.append(params.copy())
-            return batch
+            if len(calls) == 1:
+                return batch
+            return []
 
-        mocker.patch.object(client, "_authorized_request", side_effect=fake_request)
+        mocker.patch.object(client, "authorized_request", side_effect=fake_request)
         start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
         end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
         result = client.get_health_events(start, end)
@@ -369,7 +371,7 @@ class TestRealResponse:
     def test_get_health_events_multiple_batches_and_respect_api_limit(self, client, mocker):
         """
         Given:
-            - First _authorized_request returns exactly HEALTH_EVENT.api_limit events, second returns smaller batch.
+            - First authorized_request returns exactly HEALTH_EVENT.api_limit events, second returns smaller batch.
         When:
             - Calling get_health_events.
         Then:
@@ -388,7 +390,7 @@ class TestRealResponse:
         def fake_request(url_suffix, params, **kwargs):
             return seq.pop(0)
 
-        mocker.patch.object(client, "_authorized_request", side_effect=fake_request)
+        mocker.patch.object(client, "authorized_request", side_effect=fake_request)
         start = datetime(2025, 5, 25, 10, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
         end = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
         result = client.get_health_events(start, end)
@@ -414,7 +416,7 @@ class TestRealResponse:
         default_max_fetch = HEALTH_EVENT.max_fetch
         HEALTH_EVENT.max_fetch = 5
         # create a large batch
-        mocker.patch.object(client, "_authorized_request", return_value=self.raw_data_health)
+        mocker.patch.object(client, "authorized_request", return_value=self.raw_data_health)
         start = datetime(2025, 5, 25, 9, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
         end = datetime(2025, 5, 25, 10, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
         result = client.get_health_events(start, end)
@@ -449,7 +451,7 @@ class TestRealResponse:
 
         mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: 1, HEALTH_EVENT.name: 1})
         mocker.patch("time.time", return_value=1748250000)
-        mocker.patch.object(client, "_authorized_request", side_effect=mock_authorized_request)
+        mocker.patch.object(client, "authorized_request", side_effect=mock_authorized_request)
 
         events, next_run = fetch_events(client, [AUDIT, HEALTH_EVENT])
         # Expect 3 audit + 3 health events
@@ -479,7 +481,7 @@ def test_fetch_events_no_types(mocker, client):
     """
     fixed_now = 1748250000
     mocker.patch("time.time", return_value=fixed_now)
-    mocker.patch.object(client, "_authorized_request", return_value=[])
+    mocker.patch.object(client, "authorized_request", return_value=[])
 
     events, next_run = fetch_events(client, [AUDIT, HEALTH_EVENT])
     assert events == []

@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: CiscoAppDynamics
+  id: Cisco AppDynamics
   version: -1
 configuration:
 - defaultvalue: When using controller API https://<controller address>/controller
@@ -44,7 +44,7 @@ configuration:
 - display: Event types to fetch (Multi-select list)
   defaultvalue: Audit, Healthrule Violations Events
   name: events_type_to_fetch
-  required: false
+  required: true
   type: 16
   section: Collect
   advanced: true
@@ -53,7 +53,7 @@ configuration:
   - Healthrule Violations Events
 - display: The maximum number of Audit History API per fetch
   name: max_audit_fetch
-  defaultvalue: '100'
+  defaultvalue: '3000'
   type: 0
   required: false
   advanced: true
@@ -66,8 +66,8 @@ configuration:
   advanced: true
   section: Collect
 description: AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs moment to moment. No other solution offers application modernization, cloud and hybrid monitoring, and application security with business context.
-display: CiscoAppDynamics
-name: CiscoAppDynamics
+display: Cisco AppDynamics
+name: Cisco AppDynamics
 script:
   commands:
   - name: cisco-appdynamics-get-events
