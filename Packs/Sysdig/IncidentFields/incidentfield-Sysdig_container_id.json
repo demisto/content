@@ -4,7 +4,7 @@
     "modified": "2025-02-26T15:27:26.26216777Z",
     "name": "Sysdig Container ID",
     "ownerOnly": false,
-    "description": "The container ID",
+    "description": "The Sysdig Container ID",
     "cliName": "sysdigcontainerid",
     "type": "shortText",
     "closeForm": false,

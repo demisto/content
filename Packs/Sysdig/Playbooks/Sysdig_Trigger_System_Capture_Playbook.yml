@@ -1,9 +1,16 @@
 id: Sysdig Trigger System Capture
 version: -1
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: Sysdig
+    packName: Sysdig Response Actions
+    itemVersion: 1.0.0
+    fromServerVersion: 6.0.0
+    isoverridable: false
+vcShouldKeepItemLegacyProdMachine: false
 name: Sysdig Trigger System Capture
-description: Example playbook on how to manage different response actions based on incident fields.
+description: Example playbook on how to manage different response actions based on
+  incident fields.
 tags:
 - Runtime
 - Sysdig
@@ -19,17 +26,16 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": -10,
+          "y": -350
         }
       }
     note: false
@@ -41,17 +47,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9895d9a7-87e2-48bc-980b-607e37255035
+    taskid: 358fe5fe-ccab-40e2-8001-7c6c05544a69
     type: condition
     task:
-      id: 9895d9a7-87e2-48bc-980b-607e37255035
+      id: 358fe5fe-ccab-40e2-8001-7c6c05544a69
       version: -1
-      name: Do we trigger a system capture?
-      description: Condition to trigger or not a system capture based on the Incident fields
+      name: Should we trigger a system capture?
+      description: |-
+        Condition to trigger or not a system capture based on the Incident fields.
+
+        Check if the following fields are part of the incident:
+        * Sysdig Agent ID
+        * Sysdig Container ID
+        * Sysdig Customer ID
+        * Host Name
+        * Machine ID
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "4"
       "yes":
       - "2"
     separatecontext: false
@@ -69,8 +85,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 718,
-          "y": -250
+          "x": -200,
+          "y": -60
         }
       }
     note: false
@@ -88,14 +104,15 @@ tasks:
       id: c801bdb3-ada0-4277-8558-51883aac8111
       version: -1
       name: Create system capture
-      description: Command to trigger a system capture, it will record all system calls at the host level.
+      description: Command to trigger a system capture, it will record all system
+        calls at the host level.
       script: SysdigResponseActions|||create-system-capture
       type: regular
       iscommand: true
       brand: SysdigResponseActions
     nexttasks:
       '#none#':
-      - "3"
+      - "7"
     scriptarguments:
       agent_id:
         simple: ${incident.sysdigagentid}
@@ -116,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 718,
-          "y": -250
+          "x": -320,
+          "y": 100
         }
       }
     note: false
@@ -140,6 +157,9 @@ tasks:
       type: regular
       iscommand: true
       brand: SysdigResponseActions
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       capture_id:
         simple: ${create_system_capture.Output.capture.id}
@@ -152,8 +172,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 718,
-          "y": -250
+          "x": -490,
+          "y": 360
         }
       }
     note: false
@@ -163,17 +183,189 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 8b29c779-7036-4f22-993e-9ba762f65ae8
+    type: regular
+    task:
+      id: 8b29c779-7036-4f22-993e-9ba762f65ae8
+      version: -1
+      name: Done
+      description: |-
+        Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Here's how to use it:
+
+        !PrettyPrint value=${incident}
+      scriptName: PrettyPrint
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Playbook is completed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 05365e6b-d46d-46f2-ab1f-00481dda4cd0
+    type: condition
+    task:
+      id: 05365e6b-d46d-46f2-ab1f-00481dda4cd0
+      version: -1
+      name: Check Sysdig fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sysdigagentid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sysdigcontainerid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sysdigcustomerid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sourcehostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.macaddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e0b9d9c3-484f-4641-8178-6a554d95305b
+    type: regular
+    task:
+      id: e0b9d9c3-484f-4641-8178-6a554d95305b
+      version: -1
+      name: Error Checking Incident Fields
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: |-
+          Required incident fields to trigger a system capture are not present. Current fields:
+          * Sysdig Agent ID: ${incident.sysdigagentid}
+          * Sysdig Container ID: ${incident.sysdigcontainerid}
+          * Sysdig Customer ID: ${incident.sysdigcustomerid}
+          * Event Source Hostname: ${incident.sourcehostname}
+          * Event MAC Address: ${incident.macaddress}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1ff599e5-37a2-4efe-9b76-98cd7ed956a5
+    type: condition
+    task:
+      id: 1ff599e5-37a2-4efe-9b76-98cd7ed956a5
+      version: -1
+      name: Save Capture?
+      description: Do you want to save the capture .scap file for later analysis?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "Yes":
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_yes": 0.44
+      "1_2_yes": 0.44,
+      "1_4_#default#": 0.37,
+      "7_4_#default#": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 360,
-        "width": 1049,
-        "x": 50,
-        "y": -250
+        "height": 930,
+        "width": 1090,
+        "x": -490,
+        "y": -350
       }
     }
   }
@@ -187,6 +379,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
+sourceplaybookid: Sysdig Trigger System Capture
+dirtyInputs: true
 fromversion: 6.0.0
-tests:
-- No tests (auto formatted)

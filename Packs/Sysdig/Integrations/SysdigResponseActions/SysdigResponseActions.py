@@ -291,8 +291,6 @@ def get_capture_file_command(client: Client, args: dict[str, Any]) -> CommandRes
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="get_capture_file.Output",
-        outputs=result,
-        raw_response=result,
     )
 
 
