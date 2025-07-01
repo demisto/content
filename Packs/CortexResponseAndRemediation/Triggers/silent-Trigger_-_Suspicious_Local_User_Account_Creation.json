@@ -1,6 +1,6 @@
 {
     "trigger_id": "5af223a81658f608237a4ce36fe75f32",
-    "playbook_id": "silent-Suspicious local user account creation",
+    "playbook_id": "silent-Suspicious Local User Account Creation",
     "suggestion_reason": "Recommended for Suspicious local user account creation alerts.",
     "description": "This trigger is responsible for handling alerts where a suspicious local user account is created.",
     "trigger_name": "silent-Suspicious local user account creation",
