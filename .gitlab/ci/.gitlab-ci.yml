@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: ys-ship-code-check-fixes
+  CURRENT_BRANCH_NAME: ys-test-ship-code-pipeline
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: ys-ship-code-check-fixes
+    ref: ys-test-ship-code-pipeline
     project: "${CI_PROJECT_NAMESPACE}/infra"
