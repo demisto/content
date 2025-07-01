@@ -9,12 +9,12 @@
             },
             {
                 "id": "assets_and_artifacts",
-                "name": "Key Assets \u0026 Artifacts",
+                "name": "Key Assets & Artifacts",
                 "type": "assets_and_artifacts"
             },
             {
                 "id": "alerts_and_insights",
-                "name": "Alerts \u0026 Insights",
+                "name": "Alerts & Insights",
                 "type": "alerts_and_insights"
             },
             {
@@ -42,7 +42,11 @@
     "fromVersion": "8.7.0",
     "marketplaces": [
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix",
+        "agentix",
+        "agentix"
     ],
     "supportedModules": [
         "X1",

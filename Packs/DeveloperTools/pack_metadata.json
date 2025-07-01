@@ -37,7 +37,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "displayedImages": [
         "DemistoRESTAPI",

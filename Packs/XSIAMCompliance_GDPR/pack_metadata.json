@@ -21,7 +21,8 @@
     ],
     "marketplaces": [
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "supportedModules": [
         "X1",

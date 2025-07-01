@@ -25,7 +25,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "itemPrefix": "RSA",
     "supportedModules": [

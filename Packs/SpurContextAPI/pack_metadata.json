@@ -17,7 +17,9 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "devEmail": [
         "engineering@spur.us"

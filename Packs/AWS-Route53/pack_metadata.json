@@ -17,7 +17,8 @@
         "xsoar",
         "marketplacev2",
         "xpanse",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "supportedModules": [
         "X1",

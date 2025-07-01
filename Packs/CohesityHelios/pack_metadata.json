@@ -29,7 +29,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "defaultDataSource": "Cohesity Helios Event Collector",
     "supportedModules": [

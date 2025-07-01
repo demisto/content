@@ -23,7 +23,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "dependencies": {
         "ContentInstallation": {

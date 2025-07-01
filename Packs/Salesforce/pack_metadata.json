@@ -20,7 +20,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "defaultDataSource": "Salesforce",
     "supportedModules": [

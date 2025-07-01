@@ -17,7 +17,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "defaultDataSource": "Orca Event Collector",
     "supportedModules": [

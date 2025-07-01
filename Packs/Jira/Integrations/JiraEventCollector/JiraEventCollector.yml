@@ -63,6 +63,7 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

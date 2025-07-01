@@ -1,6 +1,6 @@
 {
     "name": "QueryAI",
-    "description": "Query.AI is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms without data duplication.",
+    "description": "Query.AI\u00a0is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms without data duplication.",
     "support": "partner",
     "currentVersion": "1.0.14",
     "author": "Query.AI",
@@ -24,7 +24,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "supportedModules": [
         "X1",

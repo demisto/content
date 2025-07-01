@@ -79,7 +79,8 @@
     "marketplaces": [
         "xsoar",
         "xpanse",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "displayedImages": [
         "ServiceNow",

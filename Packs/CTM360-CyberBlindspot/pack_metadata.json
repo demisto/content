@@ -25,7 +25,9 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "devEmail": [
         "xsoar@ctm360.com"

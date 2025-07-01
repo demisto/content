@@ -16,7 +16,9 @@
     "marketplaces": [
         "xsoar_saas",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "githubUser": [
         "cheersmann"

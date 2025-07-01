@@ -19,7 +19,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "githubUser": [],
     "supportedModules": [

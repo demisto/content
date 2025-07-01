@@ -1,6 +1,6 @@
 {
     "name": "Forcepoint Security Management Center",
-    "description": "Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud—across large, geographically distributed enterprise environments.",
+    "description": "Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud\u2014across large, geographically distributed enterprise environments.",
     "support": "xsoar",
     "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
@@ -15,7 +15,9 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "supportedModules": [
         "X1",

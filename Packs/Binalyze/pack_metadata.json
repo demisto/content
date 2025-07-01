@@ -20,7 +20,9 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "devEmail": [
         "murat.alagoz@binalyze.com"

@@ -9,12 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": ["IT","Network"],
+    "tags": [
+        "IT",
+        "Network"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "supportedModules": [
         "X1",

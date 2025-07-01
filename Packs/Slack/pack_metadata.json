@@ -40,7 +40,8 @@
         "xsoar",
         "marketplacev2",
         "xpanse",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "defaultDataSource": "Slack Event Collector",
     "supportedModules": [

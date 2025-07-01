@@ -18,6 +18,7 @@
         "X5"
     ],
     "marketplaces": [
-        "platform"
+        "platform",
+        "agentix"
     ]
 }

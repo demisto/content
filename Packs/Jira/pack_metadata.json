@@ -20,7 +20,9 @@
         "xsoar",
         "marketplacev2",
         "xpanse",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "defaultDataSource": "Jira Event Collector",
     "supportedModules": [

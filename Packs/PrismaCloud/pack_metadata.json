@@ -83,7 +83,8 @@
         "xsoar",
         "marketplacev2",
         "xpanse",
-        "platform"
+        "platform",
+        "agentix"
     ],
     "hybrid": true,
     "supportedModules": [

@@ -30,7 +30,9 @@
     "marketplaces": [
         "marketplacev2",
         "xsoar",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "supportedModules": [
         "X1",

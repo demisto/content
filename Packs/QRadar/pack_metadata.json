@@ -45,7 +45,9 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "defaultDataSource": "QRadar v3",
     "supportedModules": [

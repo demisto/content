@@ -28,7 +28,9 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "defaultDataSource": "Darktrace Event Collector",
     "supportedModules": [

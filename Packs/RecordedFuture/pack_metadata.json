@@ -41,7 +41,9 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "defaultDataSource": "RecordedFutureEventCollector",
     "supportedModules": [

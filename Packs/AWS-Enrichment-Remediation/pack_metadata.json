@@ -16,7 +16,9 @@
         "xsoar",
         "marketplacev2",
         "xpanse",
-        "platform"
+        "platform",
+        "agentix",
+        "agentix"
     ],
     "dependencies": {
         "AWS-IAM": {
