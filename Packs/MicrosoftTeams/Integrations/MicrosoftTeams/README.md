@@ -1,74 +1,224 @@
-Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings.
+Use the Microsoft Teams integration to send messages, notifications, and create meetings.
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
-**Note:**
-
-- This integration is supported in Cortex XSOAR 8 and up and Cortex XSIAM without using an engine.
-- The integration has the ability to run built-in Cortex XSOAR commands, through a mirrored channel. Make sure to pass the command in the chat exactly as typed in the CORTEX XSOAR CLI. For example: `!DeleteContext all=yes`. Use the command `mirror-investigation` to mirror/create a mirrored channel.
-- For use cases where it is only needed to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
+This document includes the following sections to help you understand, set up, and use the integration effectively:
+1. Integration Architecture
+2. Setup and Configuration
+3. Important Information and Notes
+4. Download Demisto Bot
+5. Commands
 
 ## Integration Architecture
 
-Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (that you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
-
-The web server for the integration runs within a long-running Docker container. Cortex XSOAR maps the Docker port to which the server listens, to the host port (to which Teams posts messages). For more information, see [our documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) and [Docker documentation](https://docs.docker.com/config/containers/container-networking/).
+Data is exchanged between Microsoft Teams and Cortex XSOAR/XSIAM through a bot that you configure in Teams. A webhook (that you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. To mirror messages from Teams into Cortex XSOAR, the bot must be explicitly mentioned in the message using the '@' symbol.
+The web server for the integration runs within a long-running Docker container. Cortex XSOAR maps the Docker port to which the server listens, to the host port (to which Teams posts messages). For more information, see [long-running integrations documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) and [Docker documentation](https://docs.docker.com/config/containers/container-networking/).
 
 ### Protocol Diagram
 
 ![image](../../doc_files/MicrosoftTeamsProtocalDiagram.png)
 
-## Important Information
 
-- The messaging endpoint must be one of the following:
-  - the URL of the Cortex XSOAR server, including the configured port
-  - the Cortex XSOAR rerouting URL that you've defined for your Microsoft Teams instance (see the [Using Cortex XSOAR or Cortex XSIAM rerouting](#1-using-cortex-xsoar-or-cortex-xsiam-rerouting) section for more details)
-  - a proxy that redirects the messages received from Teams to the Cortex XSOAR or Cortex XSIAM server (see the [Using NGINX as reverse proxy](#2-using-nginx-as-reverse-proxy) section for more details)
-- Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accessible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
-In order to verify that the messaging endpoint is open as expected, you can surf to the messaging endpoint from a browser in an environment which is disconnected from the Cortex XSOAR environment.
-- It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
-- For additional security, we recommend placing the Teams integration web server behind a reverse proxy (such as NGINX).
-- By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
+## Setup
 
-    ```
-     -----BEGIN CERTIFICATE-----
-     ...
-     -----END CERTIFICATE-----
-    ```
+Note: The information in this video is for Cortex XSOAR 6 but mostly still applies to Cortex XSOAR 8. Refer to the [Prerequisites](#prerequisites) section for the latest instructions.
 
-    ```
-     -----BEGIN PRIVATE KEY-----
-     ...
-     -----END PRIVATE KEY-----
-    ```
+<video controls>
+    <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mov?raw=true
+</video>
 
-- You must not set a certificate and/or private key if you are using the Cortex XSOAR rerouting setup.
-- Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
- In order to verify which certificate is used, run the following (replace {MESSAGING-ENDPOINT} with the messaging endpoint):
+## Prerequisites
 
-    ```
-     curl {MESSAGING-ENDPOINT} -vI
-    ```
+1. [Create the Demisto Bot in Microsoft Teams](#create-the-demisto-bot-in-microsoft-teams)
+2. [Grant the Demisto Bot Permissions in Microsoft Graph](#grant-the-demisto-bot-permissions-in-microsoft-graph)
+3. [Configure Microsoft Teams on Cortex XSOAR or Cortex XSIAM](#configure-microsoft-teams-on-cortex-xsoar)
+4. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
-     Make sure the output does not contain the following:
+### 1. Create the Demisto Bot in Microsoft Teams
 
-    ```
-     curl: (60) SSL certificate problem: self signed certificate
-    ```
+Creating the Demisto Bot using Microsoft Azure Portal:
 
-- The following domains are used by this integration:
-  - microsoft.com
-  - botframework.com
-  - microsoftonline.com
-When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u), it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
+1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
+2. In the Bot Handle field, type **Demisto Bot**.
+3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
+4. For Type of App, select **Multi Tenant**.
+5. For Creation type, select **Create new Microsoft App ID** for Creation Type if you don't already have an app registration, otherwise, select **Use existing app registration**, and fill in you App ID.
+6. Click **Review + Create**, and wait for the validation to pass.
+7. Click **create** if the validation has passed, and wait for the deployment to finish.
+8. Under Next Steps, click **Go to resource**.
+9. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
+    - To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations, use the `microsoft-teams-create-messaging-endpoint`command.
+    **Note ⚠️:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#configure-microsoft-teams-on-cortex-xsoar) section.
+10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
+11. Click **New Client Secret**, fill in the **Description** and **Expires** fields as desired. Then click **Add**.
+12. Copy the client secret from the **value** field and store it for the next steps.
+13. Go back to the previous page, and navigate to **Channels** in the left bar.
+14. Click **Microsoft Teams** under **Available Channels**, click the checkbox, click **Agree**, then click **Apply**.
 
-## First time setup
+Note ⚠️: in step 5, if you choose **Use existing app registration**, make sure to delete the previous created bot with the same app id, remove it from the team it was added to as well.  
 
-Refer to the [Setup Video](#setup-video) and the [Prerequisites](#prerequisites) sections for detailed steps to configure the teams bot and instance for the first time.
+### 2. Grant the Demisto Bot Permissions in Microsoft Graph
 
-**Important notes:**
+In order to connect to Microsoft Teams use one of the following authentication methods:
 
-- The steps should be performed in order to ensure no communication between the services is lost.
-- Refer to the [Setup Examples](#setup-examples) for information regarding advanced setups.
+1. *Client Credentials Flow*
+2. *Authorization Code Flow* (Support [The chat commands](#chat-commands))
+
+Perform the following steps to add the needed permissions:
+1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
+2. Search for and click **Demisto Bot**.
+3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
+4. For each of the next permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.
+
+#### For Client Credentials Flow add the following:
+**Application Permissions**:
+- `User.Read.All`
+- `GroupMember.Read.All`
+- `Channel.ReadBasic.All`
+- `ChannelMember.ReadWrite.All`
+- `Channel.Create`
+- `Channel.Delete.All`
+- `OnlineMeetings.ReadWrite.All`
+- `Calls.Initiate.All`
+
+#### For Authorization Code Flow add the following:
+**Delegated Permissions**:
+- `User.Read.All`
+- `GroupMember.Read.All`
+- `Channel.ReadBasic.All`
+- `ChannelMember.ReadWrite.All`
+- `Channel.Create`
+- `Channel.Delete.All`
+- `ChannelMessage.Send`
+- `OnlineMeetings.ReadWrite.All`
+- `Chat.ReadWrite`
+- `AppCatalog.Read.All`
+- `TeamsAppInstallation.ReadWriteSelfForChat`
+
+Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires authenticating with `Client Credentials` due to a limitation in Microsoft's permissions system. (Calling this command will perform the authentication seemlessly)
+
+Alternatively, check each relevant command section below for the minimum permissions it requires.
+
+5. Verify that all permissions were added, and click **Grant admin consent**.
+6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
+
+7. Click **Expose an API** and add **Application ID URI**
+8. Click **Authentication** > **Platform configurations** > **Add a platform**. Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
+
+### 3. Configure Microsoft Teams on Cortex XSOAR/XSIAM
+There are 2 flows in order to configure the integration as was written before:
+1. Authorization Code flow
+2. Client Credentials flow
+
+In order to configure the integration follow the next steps:
+1. Search for Microsoft Teams integration after you have installed it from the marketplace.
+2. Click **Add instance** to create and configure a new integration instance by using one of the flows. Instructions below.
+
+    | **Parameter** | **Description**                                                                                                                                                    | **Required** |
+    | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+    | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint.         | True |
+    | Bot ID | Bot ID.                                                                                                                                                            | True |
+    | Bot Password | Bot Password.                                                                                                                                                      | True |
+    | Authentication Type | Can be Client Credentials or Authorization Code. Check the limitations for each flow.                                                                              | True |
+    | Application redirect URI | Used for Authorization Code flow only. Need to be configured in the Teams application in the Azure portal as well.                                                 | False |
+    | Authorization code | For Authorization Code flow. Received from the authorization step, after running generate-login-url command. See the Detailed instructions under the Help section. | False |
+    | Default team | The team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter.                                  | True |
+    | Notifications channel |                                                                                                                                                                    | True |
+    | Certificate (Required for HTTPS) |                                                                                                                                                                    | False |
+    | Private Key (Required for HTTPS) |                                                                                                                                                                    | False |
+    | Minimum incident severity to send notifications to Teams by |                                                                                                                                                                    | False |
+    | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel.                                                                                | False |
+    | Allow external users to create incidents via direct message |                                                                                                                                                                    | False |
+    | The header of an external form hyperlink. |                                                                                                                                                                    | False |
+    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and Cortex XSIAM.                                                                                                          | False |
+    | Use system proxy settings |                                                                                                                                                                    | False |
+    | Long running instance | Must be checked when using the Bot.                                                                                                                                | True |
+    | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | longRunningPort                                                                                                                                                    | False |
+    | Incident type | Incident type.                                                                                                                                                     | False |
+
+### Authentication Using the Client Credentials Flow
+Note ⚠️: The chat commands are only supported when using the `Authorization Code flow`!
+1. Choose the 'Client Credentials' option in the *Authentication Type* parameter.
+2. Enter your Client/Application ID in the *Bot ID* parameter.
+3. Enter your Client Secret in the *Bot Password* parameter.
+4. Set the *Default team* and the *Notifications channel* parameters.
+5. Set the *Long running instance* parameter to 'True'.
+6. Save the instance.
+7. Click **Test** to validate the URLs, token, and connection.
+8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
+9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team).
+
+### Authentication Using the Authorization Code Flow
+
+1. Choose the 'Authorization Code' option in the *Authentication Type* parameter.
+2. Enter your Client/Application ID in the *Bot ID* parameter.
+3. Enter your Client Secret in the *Bot Password* parameter.
+4. Enter your Application redirect URI in the *Application redirect URI* parameter.
+5. Set the *Default team* and the *Notifications channel* parameters.
+6. Set the *Long running instance* parameter to 'True'.
+7. Save the instance.
+8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
+9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
+10. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
+11. Save the instance.
+12. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
+
+If you encounter any issue or error — especially a message saying "Tenant ID is not found" — please refer to the [Troubleshooting](#Troubleshooting) section.
+
+### 4. Add the Demisto Bot to a Team
+
+- The following needs to be done after configuring the integration on Cortex XSOAR/Cortex XSIAM (the previous step).
+- According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
+
+1. Download the ZIP file located at the bottom of this article.
+2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
+3. Open the `manifest.json` file that was extracted from the ZIP file.
+4. Update the following values to use the *Bot ID* from step 5 of the [Create the Demisto Bot in Microsoft Teams](#creating-the-demisto-bot-using-microsoft-azure-portal) section:
+
+    - The `id` field.
+    - The `BotId` attribute in the `bots` list.
+    - The `id` attribute in the `webApplicationInfo` field.
+
+5. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
+6. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
+7. Click **Actions** and then **+ Upload new app**.
+8. In the pop-up window, click **Upload**.
+9. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
+10. Search for **Demisto Bot**.
+11. In the line where `Demisto Bot` shows under **Name**, click the checkbox on the left.
+12. Click **Add to team**.
+13. In the search box, type the name of the team to which you want to add the bot.
+14. Click **Add** for the wanted team and then click **Apply**.
+
+## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM
+
+### Using Cortex XSOAR or Cortex XSIAM rerouting
+
+When migrating from Cortex XSOAR 6 to Cortex XSOAR 8 or Cortex XSIAM, follow these steps to ensure your Microsoft Teams integration continues to work as expected:
+
+1. Update the messaging endpoint in the Azure bot configuration:
+For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
+For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the xdr in the URL to crtx.
+You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint automatically.
+
+2. Ensure the **long-running instance** parameter is enabled in the integration instance configuration.
+
+3. Set the port parameter under the Connect section of the integration instance.
+
+4. If you're reusing the same bot from your XSOAR 6 instance, remove the bot from the Microsoft Teams team and add it back:
+
+    1. In Microsoft Teams, go to your team.
+
+    2. Click the three dots next to the team name.
+
+    3. Go to Manage team > Apps.
+
+    4. Find your bot, click the three dots next to it.
+
+    5. Select Remove.
+
+    6. Add the bot to the team again.
 
 ## Setup Examples
 
@@ -80,13 +230,13 @@ The messaging endpoint needs to be:
 
 For Cortex XSOAR version 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://my.demisto.live/instance/execute/teams`.
 
-For Cortex XSOAR version 8 and Cortex XSIAM: `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
+For Cortex XSOAR version 8 and Cortex XSIAM: `https://ext-<CORTEX-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 
-The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step. Make sure to set the instance name in all lowercase letters and as one word.
+The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR/XSIAM](#configure-microsoft-teams-on-cortex-xsoar) step. Make sure to set the instance name in all lowercase letters and as one word.
 
-- Note: You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint, based on the server URL, the server version, and the instance configurations. For more information, see -[microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint).
+- Note ⚠️: You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint, based on the server URL, the server version, and the instance configurations. For more information, see -[microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint).
 
-The port to be configured in [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step should be any available port that is not used by another service.
+The port to be configured in [Configure Microsoft Teams on Cortex XSOAR/XSIAM](#configure-microsoft-teams-on-cortex-xsoar) step should be any available port that is not used by another service.
 
 In addition, make sure ***Instance execute external*** is enabled (for Cortex XSOAR 6.x).
 
@@ -137,240 +287,136 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
-## Setup Video
-
-The information in this video is for Cortex XSOAR 6 but mostly still applies to Cortex XSOAR 8. Refer to the [Prerequisites](#prerequisites) section for the latest instructions.
-
-<video controls>
-    <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
-            type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mov?raw=true
-</video>
-
-## Prerequisites
-
-Before you can create an instance of the Microsoft Teams integration in Cortex XSOAR/Cortex XSIAM, you need to complete the following procedures.
-
-1. [Create the Demisto Bot in Microsoft Teams](#create-the-demisto-bot-in-microsoft-teams)
-2. [Grant the Demisto Bot Permissions in Microsoft Graph](#grant-the-demisto-bot-permissions-in-microsoft-graph)
-3. [Configure Microsoft Teams on Cortex XSOAR or Cortex XSIAM](#configure-microsoft-teams-on-cortex-xsoar)
-4. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
-
-### Create the Demisto Bot in Microsoft Teams
-
-#### Creating the Demisto Bot using Microsoft Azure Portal
-
-1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
-2. In the Bot Handle field, type **Demisto Bot**.
-3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
-4. For Type of App, select **Multi Tenant**.
-5. For Creation type, select **Create new Microsoft App ID** for Creation Type if you don't already have an app registration, otherwise, select **Use existing app registration**, and fill in you App ID.
-6. Click **Review + Create**, and wait for the validation to pass.
-7. Click **create** if the validation has passed, and wait for the deployment to finish.
-8. Under Next Steps, click **Go to resource**.
-9. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
-
-    - To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations, use the `microsoft-teams-create-messaging-endpoint`command.
-    **Note:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#configure-microsoft-teams-on-cortex-xsoar) section.
-
-10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
-11. Click **New Client Secret**, fill in the **Description** and **Expires** fields as desired. Then click **Add**.
-12. Copy the client secret from the **value** field and store it for the next steps.
-13. Go back to the previous page, and navigate to **Channels** in the left bar.
-14. Click **Microsoft Teams** under **Available Channels**, click the checkbox, click **Agree**, then click **Apply**.
-
-Note: in step 5, if you choose **Use existing app registration**, make sure to delete the previous created bot with the same app id, remove it from the team it was added to as well.  
-
-### Grant the Demisto Bot Permissions in Microsoft Graph
-
-In order to connect to Microsoft Teams use one of the following authentication methods:
-
-1. *Client Credentials Flow*
-2. *Authorization Code Flow*
-
-#### Client Credentials Flow
-
-Note: [The chat commands](#chat-commands) are only supported when using the `Authorization Code flow`.
-
-Executing commands when using client credentials requires **Application Permissions**.
-Perform the following steps to add the needed permissions:
-
-1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
-2. Search for and click **Demisto Bot**.
-3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
-4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
-    **Application permissions required to use all credential flow supported commands:**
-
-    - `User.Read.All`
-    - `GroupMember.Read.All`
-    - `Channel.ReadBasic.All`
-    - `ChannelMember.ReadWrite.All`
-    - `Channel.Create`
-    - `Channel.Delete.All`
-    - `OnlineMeetings.ReadWrite.All`
-    - `Calls.Initiate.All`
-
-    Alternatively, check each relevant command section below for the minimum permissions it requires.
-
-5. Verify that all the needed permissions were added, and click **Grant admin consent**.
-6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
-
-#### Authorization Code Flow
-
-Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires authenticating with `Client Credentials` due to a limitation in Microsoft's permissions system. (Calling this command will perform the authentication seemlessly)
-
-Executing commands when using an authorization code requires **Delegated Permissions**.
-Perform the following steps to add the needed permissions:
-
-1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
-2. Search for and click **Demisto Bot**.
-3. Click **API permissions** > **Add a permission** > **Microsoft Graph** > **Delegated permissions**.
-4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
-    **Delegated permissions required to use all auth code flow supported commands:**
-
-    - `User.Read.All`
-    - `GroupMember.Read.All`
-    - `Channel.ReadBasic.All`
-    - `ChannelMember.ReadWrite.All`
-    - `Channel.Create`
-    - `Channel.Delete.All`
-    - `ChannelMessage.Send`
-    - `OnlineMeetings.ReadWrite.All`
-    - `Chat.ReadWrite`
-    - `AppCatalog.Read.All`
-    - `TeamsAppInstallation.ReadWriteSelfForChat`
-
-    **Application permissions:** (For `microsoft-teams-ring-user`)
-    - `User.Read.All`
-    - `Calls.Initiate.All`
-
-    Alternatively, check each relevant command section below for the minimum permissions it requires.
-
-5. Verify that all permissions were added, and click **Grant admin consent**.
-6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
-7. Click **Expose an API** and add **Application ID URI**
-8. Click **Authentication** > **Platform configurations** > **Add a platform**. Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
-
-### Configure Microsoft Teams on Cortex XSOAR
-
-For more detailed instructions, refer to the [Configuring the instance with the chosen authentication flow](#configuring-the-instance-with-the-chosen-authentication-flow) section.
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Teams.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
-    | Bot ID | Bot ID. | True |
-    | Bot Password | Bot Password. | True |
-    | Authentication Type |  | True |
-    | Application redirect URI (for Authorization Code mode) |  | False |
-    | Authorization code | For Authorization Code flow mode. Received from the authorization step. See the Detailed Instructions \(?\) section | False |
-    | Default team | The team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter. | True |
-    | Notifications channel |  | True |
-    | Certificate (Required for HTTPS) |  | False |
-    | Private Key (Required for HTTPS) |  | False |
-    | Minimum incident severity to send notifications to Teams by |  | False |
-    | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
-    | Allow external users to create incidents via direct message |  | False |
-    | The header of an external form hyperlink. |  | False |
-    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and Cortex XSIAM. | False |
-    | Use system proxy settings |  | False |
-    | Long running instance |  | True |
-    | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | longRunningPort | False |
-    | Incident type | Incident type. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
-5. Click the **Save & exit** button.
-
-#### Configuring the instance with the chosen authentication flow
-
-##### Authentication Using the Client Credentials Flow
-
-1. Choose the 'Client Credentials' option in the *Authentication Type* parameter.
-2. Enter your Client/Application ID in the *Bot ID* parameter.
-3. Enter your Client Secret in the *Bot Password* parameter.
-4. Set the *Default team* and the *Notifications channel* parameters.
-5. Set the *Long running instance* parameter to 'True'.
-6. Save the instance.
-7. Click **Test** to validate the URLs, token, and connection.
-8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
-9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team).
-
-##### Authentication Using the Authorization Code Flow
-
-1. Choose the 'Authorization Code' option in the *Authentication Type* parameter.
-2. Enter your Client/Application ID in the *Bot ID* parameter.
-3. Enter your Client Secret in the *Bot Password* parameter.
-4. Enter your Application redirect URI in the *Application redirect URI* parameter.
-5. Set the *Default team* and the *Notifications channel* parameters.
-6. Set the *Long running instance* parameter to 'True'.
-7. Save the instance.
-8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
-9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
-10. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
-11. Save the instance.
-12. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
-
-### Add the Demisto Bot to a Team
-
-**Notes:**
-
-- The following needs to be done after configuring the integration on Cortex XSOAR/Cortex XSIAM (the previous step).
-- According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
-
-1. Download the ZIP file located at the bottom of this article.
-2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
-3. Open the `manifest.json` file that was extracted from the ZIP file.
-4. Update the following values to use the *Bot ID* from step 5 of the [Create the Demisto Bot in Microsoft Teams](#creating-the-demisto-bot-using-microsoft-azure-portal) section:
-
-    - The `id` field.
-    - The `BotId` attribute in the `bots` list.
-    - The `id` attribute in the `webApplicationInfo` field.
-
-5. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
-6. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
-7. Click **Actions** and then **+ Upload new app**.
-8. In the pop-up window, click **Upload**.
-9. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
-10. Search for **Demisto Bot**.
-11. In the line where `Demisto Bot` shows under **Name**, click the checkbox on the left.
-12. Click **Add to team**.
-13. In the search box, type the name of the team to which you want to add the bot.
-14. Click **Add** for the wanted team and then click **Apply**.
-
-## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM
-
-### Using Cortex XSOAR or Cortex XSIAM rerouting
-
-1. For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
-2. For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the `xdr` in the URL to `crtx`.
-3. Check the **long running instance** parameter in the integration instance configuration.
-4. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
-5. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
-    1. Go to the Microsoft Teams app.
-    2. Go to your team, and click the three dots next to the name.
-    3. Go to **manage team** > **apps**.
-    4. Find your bot, and click the three dots in the same row.
-    5. Click **remove**.
-    6. Add the bot to the team.
 
 ## Known Limitations
 
 ---
 
 - In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to. It will trigger a communication and solve the issue.
-- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires using the `Client Credentials` authentication due to a limitation in Microsoft's permissions system.As such, when using `Authorization Code flow` and calling this command, the integration will internally authenticate using the `Client Credentials flow`.
-- In addition, the chat commands are only supported when using the `Authorization Code flow`.
+- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires using the `Client Credentials` authentication due to a limitation in Microsoft's permissions system. As such, when using `Authorization Code flow` and calling this command, the integration will internally authenticate using the `Client Credentials flow`.
+- The chat commands are only supported when using the `Authorization Code flow`.
 - Posting a message or adaptive card to a private/shared channel is currently not supported in the ***send-notification*** command. Thus, also the ***mirror_investigation*** command does not support private/shared channels. For more information, see [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
 - In case of multiple chats/users sharing the same name, the first one will be taken.
+- If a non-Cortex XSOAR/XSIAM user ran the `new incident` command in the chat with the bot, the owner of the created incident would be the logged in Cortex XSOAR/XSIAM user, not the external user who ran the command.
 - See Microsoft documentation for [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams).
-- If a non-Cortex XSOAR user ran the `new incident` command in the chat with the bot, the owner of the created incident would be the logged in Cortex XSOAR user, not the external user who ran the command.
+
+## Important Information
+
+- This integration is supported in Cortex XSOAR 8 and up and Cortex XSIAM without using an engine.
+- The integration has the ability to run built-in Cortex XSOAR commands, through a mirrored channel. Make sure to pass the command in the chat exactly as typed in the CORTEX XSOAR CLI. For example: `!DeleteContext all=yes`. Use the command `mirror-investigation` to mirror/create a mirrored channel.
+- For use cases where it is only needed to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
+- The messaging endpoint must be one of the following:
+  - The URL of the Cortex XSOAR/XSIAM server, including the configured port
+  - The Cortex XSOAR/XSIAM rerouting URL that you've defined for your Microsoft Teams instance (see the [Using Cortex XSOAR or Cortex XSIAM rerouting](#1-using-cortex-xsoar-or-cortex-xsiam-rerouting) section for more details)
+  - A proxy that redirects the messages received from Teams to the Cortex XSOAR/XSIAM server (see the [Using NGINX as reverse proxy](#2-using-nginx-as-reverse-proxy) section for more details)
+- Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accessible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
+In order to verify that the messaging endpoint is open as expected, you can surf to the messaging endpoint from a browser in an environment which is disconnected from the Cortex XSOAR environment.
+- It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
+- For additional security, we recommend placing the Teams integration web server behind a reverse proxy (such as NGINX).
+- By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
+
+    ```
+     -----BEGIN CERTIFICATE-----
+     ...
+     -----END CERTIFICATE-----
+    ```
+
+    ```
+     -----BEGIN PRIVATE KEY-----
+     ...
+     -----END PRIVATE KEY-----
+    ```
+
+- You must not set a certificate and/or private key if you are using the Cortex XSOAR rerouting setup.
+- Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
+ 
+In order to verify which certificate is used, run the following (replace {MESSAGING-ENDPOINT} with the messaging endpoint):
+
+     curl {MESSAGING-ENDPOINT} -vI
+
+Make sure the output does not contain the following:
+
+     curl: (60) SSL certificate problem: self signed certificate
+
+- The following domains are used by this integration:
+  - microsoft.com
+  - botframework.com
+  - microsoftonline.com
+When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u), it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
+
+    
+## Troubleshooting
+
+1. The integration works by spinning up a web server that listens to events and data posted to it from Microsoft Teams.
+
+    If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the web server, which should happen for the first time when the bot is added to the configured team.
+
+    This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
+
+    To troubleshoot:
+   1. Verify that the messaging endpoint is configured correctly according to the method you chose in the [Setup Examples](#setup-examples) step. If the configuration method you have chosen is rerouting, use the `microsoft-teams-create-messaging-endpoint`command ([microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint)) to get the correct messaging endpoint based on the server URL, the server version, and the instance configurations.
+   2. Verify the Docker container is up and running and publish the configured port to the outside world:
+
+       From the Cortex XSOAR/XSIAM engine machine run: `docker ps | grep teams`
+
+       You should see the following, assuming port 7000 is used:
+
+       `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
+
+       If the Docker container is up and running, try running cURL queries to verify the web server is up and running and listens on the configured URL:
+
+        - To the messaging endpoint from a separate box.
+        - From the Cortex XSOAR machine to localhost.
+          - Note ⚠️: The web server supports only POST method queries.
+
+   3. If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
+
+   4. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not for Cortex XSOAR/Cortex XSIAM Rerouting ).
+       1. Run `openssl s_client -connect <domain.com>:443` .
+       2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
+
+   5. Try inserting your configured message endpoint in a browser and click **Enter**. If `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message. (Not for Cortex XSOAR 8 OR Cortex XSIAM).
+
+   6. In some cases, a connection is not created between Teams and the messaging endpoint when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
+
+2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, it means the AAD application has insufficient permissions.
+To retrieves the API permissions associated with the used graph access token you can run the `microsoft-teams-token-permissions-list` command ([microsoft-teams-token-permissions-list documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-token-permissions-list)).
+Compare the permissions list obtained for the token with the permissions required for the command you wish to execute (can be found in the command documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)).
+If your authentication type is the `Authorization Code Flow`, after running the `microsoft-teams-auth-reset` command you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
+
+3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
+
+4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, you can clear the integration cache in the integration instance config:
+
+   <img height="75" src="../../doc_files/cache.png" />
+
+   First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
+   If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
+5. If the previous step did not work, remove the bot from the team, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), then add the bot to the team again.
+6. If you are receiving repeated `Connection reset by peer` errors, the requests might be getting blocked temporarily by Azure due to repeated permission errors. Ensure you are not missing any permissions that might cause constant failures and eventually leading to server timeouts.
+
+## Download Demisto Bot
+
+[Demisto Bot zip](https://github.com/demisto/content/raw/2d9804da7ff94bc1243fe083f280e44602bd1738/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
+
+## Running commands from Microsoft Teams
+
+You can run Cortex XSOAR/XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
+For Microsoft Teams integration commands to be sent to Cortex XSOAR/XSIAM, you need to have role/access to Cortex XSOAR/XSIAM and your Teams email needs to match the email/user in Cortex XSOAR/XSIAM. External users can create incidents if the flag is set in the integration, but the rest of the commands require a valid Cortex XSOAR/XSIAM user and role.
+
+### Direct messages commands
+
+You can chat with the bot in direct messages in order to retrieve data (list incidents and tasks) and run operations (create incident and mirror an investigation) related to Cortex XSOAR.
+
+You can send the message `help` in order to see the supported commands:
+
+![image](../../doc_files/dm.png)
+
+Note ⚠️: To enrich an incident created via the Demisto BOT (`new incident` command) with extra information received with the request, as in regular `fetch-incidents` process users may create custom mappers and map the desired values.  
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR/XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### send-notification
@@ -1359,72 +1405,3 @@ Updates a message.
 ##### Human Readable Output
 
 Message was sent successfully.
-
-## Running commands from Microsoft Teams
-
-You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
-For Microsoft Teams integration commands to be sent to Cortex XSIAM, you need to have role/access to Cortex XSIAM and your Teams email needs to match the email/user in Cortex XSIAM. External users can create incidents if the flag is set in the integration, but the rest of the commands require a valid Cortex XSIAM user and role.
-
-## Direct messages commands
-
-You can chat with the bot in direct messages in order to retrieve data (list incidents and tasks) and run operations (create incident and mirror an investigation) related to Cortex XSOAR.
-
-You can send the message `help` in order to see the supported commands:
-
-![image](../../doc_files/dm.png)
-
-Note: To enrich an incident created via the Demisto BOT (`new incident` command) with extra information received with the request, as in regular `fetch-incidents` process users may create custom mappers and map the desired values.  
-
-## Troubleshooting
-
-1. The integration works by spinning up a web server that listens to events and data posted to it from Microsoft Teams.
-
-    If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the web server, which should happen for the first time when the bot is added to the configured team.
-
-    This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
-
-    To troubleshoot:
-   1. Verify that the messaging endpoint is configured correctly according to the method you chose in the [Setup Examples](#setup-examples) step. If the configuration method you have chosen is rerouting, use the `microsoft-teams-create-messaging-endpoint`command ([microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint)) to get the correct messaging endpoint based on the server URL, the server version, and the instance configurations.
-   2. Verify the Docker container is up and running and publish the configured port to the outside world:
-
-       From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
-
-       You should see the following, assuming port 7000 is used:
-
-       `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
-
-       If the Docker container is up and running, try running cURL queries to verify the web server is up and running and listens on the configured URL:
-
-        - To the messaging endpoint from a separate box.
-        - From the Cortex XSOAR machine to localhost.
-          - Note: The web server supports only POST method queries.
-
-   3. If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
-
-   4. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not for Cortex XSOAR/Cortex XSIAM Rerouting ).
-       1. Run `openssl s_client -connect <domain.com>:443` .
-       2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
-
-   5. Try inserting your configured message endpoint in a browser and click **Enter**. If `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message. (Not for Cortex XSOAR 8 OR Cortex XSIAM).
-
-   6. In some cases, a connection is not created between Teams and the messaging endpoint when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
-
-2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, it means the AAD application has insufficient permissions.
-To retrieves the API permissions associated with the used graph access token you can run the `microsoft-teams-token-permissions-list` command ([microsoft-teams-token-permissions-list documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-token-permissions-list)).
-Compare the permissions list obtained for the token with the permissions required for the command you wish to execute (can be found in the command documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)).
-If your authentication type is the `Authorization Code Flow`, after running the `microsoft-teams-auth-reset` command you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
-
-3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
-
-4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, you can clear the integration cache in the integration instance config:
-
-   <img height="75" src="../../doc_files/cache.png" />
-
-   First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
-   If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
-5. If the previous step did not work, remove the bot from the team, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), then add the bot to the team again.
-6. If you are receiving repeated `Connection reset by peer` errors, the requests might be getting blocked temporarily by Azure due to repeated permission errors. Ensure you are not missing any permissions that might cause constant failures and eventually leading to server timeouts.
-
-## Download Demisto Bot
-
-[Demisto Bot zip](https://github.com/demisto/content/raw/2d9804da7ff94bc1243fe083f280e44602bd1738/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
