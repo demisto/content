@@ -34,6 +34,7 @@
         "xsoar",
         "marketplacev2",
         "platform",
+        "agentix",
         "agentix"
     ],
     "defaultDataSource": "Cofense Triage v3",

@@ -58,6 +58,7 @@
         "xsoar",
         "marketplacev2",
         "platform",
+        "agentix",
         "agentix"
     ],
     "supportedModules": [
