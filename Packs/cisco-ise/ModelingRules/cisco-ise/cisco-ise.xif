@@ -46,7 +46,7 @@ Key_Values
 
 alter 
     logType = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s(\w+)\s"),0)
-| filter logType in ("CISE_Passed_Authentications", "CISE_Failed_Attempts", "CISE_RADIUS_Diagnostics", "CISE_RADIUS_Accounting")
+| filter logType in ("CISE_Passed_Authentications", "CISE_Failed_Attempts", "CISE_RADIUS_Diagnostics", "CISE_RADIUS_Accounting", "CISE_TACACS_Accounting")
 | alter
         Acct_Input_Packets = arrayindex(regextract(_raw_log, "Acct-Input-Packets=([^\,\;]+)"),0),
         Acct_Output_Packets = arrayindex(regextract(_raw_log, "Acct-Output-Packets=([^\,\;]+)"),0),
