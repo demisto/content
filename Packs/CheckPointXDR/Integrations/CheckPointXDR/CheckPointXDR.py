@@ -3,6 +3,13 @@ from dateutil import parser
 from CommonServerPython import *
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+NUMBER_OF_INC_TO_FETCH = 2
+OUTGOING_MIRRORED_FIELDS_OBJ = {
+    "Status",
+    "Severity",
+}
+OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS_OBJ}
+SCRIPT_BRAND = "CheckPointXDR"
 
 
 class Client(BaseClient):
@@ -69,8 +76,10 @@ class Client(BaseClient):
         update_data = {}
 
         # Only include status in the update if it was provided
-        if status:
-            update_data["status"] = status
+        # if status:
+            # TODO: Add mapping of XSOAR status to XDR status
+        update_data["status"] = 'in progress'
+        
 
         # If no fields to update, log and return
         if not update_data:
@@ -102,7 +111,10 @@ class Client(BaseClient):
 
 def test_module(client: Client, last_run: dict[str, str], first_fetch: datetime):
     try:
-        fetch_incidents(client, last_run, first_fetch, 1)
+        fetch_incidents(client, {
+            "mirror_direction": MIRROR_DIRECTION.get("Out"),
+            "mirror_instance": demisto.integrationInstance()
+        }, last_run, first_fetch, 1)
         return 'ok'
     except DemistoException as e:
         return e.message
@@ -127,6 +139,30 @@ def map_severity(severity: str) -> int:
     return severity_mapping.get(severity.lower(), 1)
 
 
+# If using incoming mapper then this function is not needed - validate
+def get_instances_id():
+    """
+    Get the instance ID for the specified script brand.
+
+    :rtype: ``str``
+    :return: Instance ID of the integration with matching brand
+    """
+    integration_context = demisto.getIntegrationContext()
+    instances_id = integration_context.get("instances_id", "")
+
+    if not instances_id:
+        demisto.debug(f"No instances_id found for brand {SCRIPT_BRAND}, searching...")
+        integration_search_res = demisto.internalHttpRequest("POST", "/settings/integration/search", '{"size":1000}')
+        body = integration_search_res.get("body", "{}")
+        instances = json.loads(body).get("instances", [])
+        instances_id = next((instance['id'] for instance in instances if instance['brand'] == SCRIPT_BRAND), "")
+        integration_context["instances_id"] = instances_id
+        demisto.setIntegrationContext(integration_context)
+        demisto.debug(f"Found {SCRIPT_BRAND} instances_id: {instances_id}")
+
+    return instances_id
+
+
 def parse_incidents(xdr_incidents: list[dict[str, Any]], mirroring_fields: dict, startTS: int, max_fetch: int):
     incidents: list[dict[str, Any]] = []
     for incident in xdr_incidents.get("incidents", []):
@@ -146,12 +182,15 @@ def parse_incidents(xdr_incidents: list[dict[str, Any]], mirroring_fields: dict,
             for insight in insights
         ]
 
+        incident.update(mirroring_fields)
+
         # Constructing the XSOAR incident
         incidents.append({
-            'type': 'Check Point XDR Incident',
+            # 'type': 'Check Point XDR Incident',
             'dbotMirrorId': incident.get("id", "unknown_id"),
             "occurred": incident.get("created_at", ""),
             "updated": incident.get("updated_at", ""),
+            # try to remove all CustomFields and replace with mapper
             "CustomFields": {
                 "externalid": incident.get("id", ""),
                 "xdrdescription": incident.get("summary", ""),
@@ -170,17 +209,15 @@ def parse_incidents(xdr_incidents: list[dict[str, Any]], mirroring_fields: dict,
                 "sensors": incident.get("sensors", []),
                 "indicators": incident.get("indicators", []),
                 "mitretacticid": incident.get("mitre_tactics", []),
-                "mitretechniqueid": incident.get("mitre_techniques", []),
-                'dbotMirrorDirection': 'Out',
-                'dbotMirrorInstance': demisto.integrationInstance(),
-                'dbotMirrorTags': 'xdrTag',
+                "mitretechniqueid": incident.get("mitre_techniques", [])
             },
             "severity": map_severity(incident.get("severity", "medium")),
             "name": f"#{incident.get('display_id', '')} - {incident.get('summary', '')}",
             'details': incident.get("summary", ""),
+            'dbotMirrorDirection': 'Out',
+            'dbotMirrorInstance': get_instances_id(),
             'rawJSON': json.dumps(incident)
         })
-        incident.update(mirroring_fields)
     incidents = sorted(
         incidents,
         key=lambda x: parser.isoparse(x['updated']) if x.get('updated') else datetime.utcfromtimestamp(startTS / 1000)
@@ -257,19 +294,30 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     )
 
     # Check if we're closing the incident
-    if inc_status == IncidentStatus.DONE:
-        demisto.debug("XDR - Incident is being closed, updating remote system")
-        if argToBoolean(demisto.params().get("close_out", False)):
-            try:
-                # Update XDR incident to Resolved status
-                client.update_incident(status="Resolved", incident_id=remote_incident_id)
-                demisto.debug(f"XDR - Successfully closed incident {remote_incident_id} in XDR")
-            except Exception as e:
-                demisto.error(f"XDR - Failed to close incident {remote_incident_id} in XDR: {str(e)}")
-        else:
-            demisto.debug("XDR - close_out is not enabled, skipping closure in XDR")
+    # if inc_status == IncidentStatus.DONE:
+    demisto.debug("XDR - Incident is being updated, updating remote system")
+    if argToBoolean(demisto.params().get("close_out", True)):
+        try:
+            # Update XDR incident to Resolved status
+            client.update_incident(status="Resolved", incident_id=remote_incident_id)
+            demisto.debug(f"XDR - Successfully closed incident {remote_incident_id} in XDR")
+        except Exception as e:
+            demisto.error(f"XDR - Failed to close incident {remote_incident_id} in XDR: {str(e)}")
+    # else:
+    #     demisto.debug("XDR - close_out is not enabled, skipping closure in XDR")
 
     return remote_incident_id
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    incident_type_scheme = SchemeTypeMapping(type_name="Check Point XDR Incident")
+
+    for argument, description in OUTGOING_MIRRORED_FIELDS.items():
+        incident_type_scheme.add_field(name=argument, description=description)
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
 
 
 def main() -> None:  # pragma: no cover
@@ -292,8 +340,7 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
     mirroring_fields = {
         "mirror_direction": MIRROR_DIRECTION.get(params.get("mirror_direction", "None")),
-        "mirror_instance": demisto.integrationInstance(),
-        "mirror_tags": [params.get("tag", "xdrTag")],
+        "mirror_instance": get_instances_id(),
     }
 
     try:
@@ -308,10 +355,27 @@ def main() -> None:  # pragma: no cover
             demisto.incidents(incidents)
             demisto.debug(f"Set last run to {next_run.get('last_fetch')}")
             demisto.setLastRun(next_run)
+            # remove next 2 commands which used for mirror in
+        elif command == "get-modified-remote-data":
+            last_run_ids = demisto.getIntegrationContext().get("last_run_ids", [0])
+            demisto.info(f"{last_run_ids=}")
+            first_id = int(last_run_ids[0])
+            modified_list = range(first_id - NUMBER_OF_INC_TO_FETCH, first_id)
+            result = GetModifiedRemoteDataResponse(
+                [str(item) for item in modified_list]
+            )
+        elif command == "get-remote-data":
+            remote_args = GetRemoteDataArgs(args)
+            remote_incident_id = remote_args.remote_incident_id
+            demisto.info(
+                f"Fetching remote incident details for ID: {remote_incident_id}"
+            )
         elif command == "update-remote-system":
             demisto.debug('XDR - update-remote-system')
-            demisto.debug(f"XDR - Running update-remote-system command with args: {args}")
+            # demisto.debug(f"XDR - Running update-remote-system command with args: {args}")
             return_results(update_remote_system_command(client, args))
+        elif command == "get-mapping-fields":
+            return_results(get_mapping_fields_command())
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

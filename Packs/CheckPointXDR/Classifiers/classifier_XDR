@@ -1,12 +1,12 @@
 {
 	"brands": null,
 	"cacheVersn": 0,
-	"defaultIncidentType": "",
+	"defaultIncidentType": "Check Point XDR Incident",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "CheckPointXDR_Out_mapper",
+	"id": "e33ce6d8-0300-415d-89e4-b2748084d18e",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -14,21 +14,9 @@
 	"keyTypeMap": {},
 	"locked": false,
 	"logicalVersion": 0,
-	"mapping": {
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"severity": {
-					"simple": "severity"
-				},
-				"status": {
-					"simple": "status"
-				}
-			}
-		}
-	},
-	"name": "CheckPointXDR_Out_mapper",
-	"nameRaw": "CheckPointXDR_Out_mapper",
+	"mapping": null,
+	"name": "Checkpoint_classifier",
+	"nameRaw": "Checkpoint_classifier",
 	"packID": "",
 	"packName": "",
 	"propagationLabels": [
@@ -38,7 +26,7 @@
 	"system": false,
 	"toServerVersion": "",
 	"transformer": {},
-	"type": "mapping-outgoing",
+	"type": "classification",
 	"unclassifiedCases": null,
 	"version": -1
 }

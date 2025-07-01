@@ -88,13 +88,16 @@ display: 'Check Point XDR'
 name: CheckPointXDR
 script:
   isfetch: true
-  script: ''
+  script: '-'
   subtype: python3
   type: python
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   dockerimage: demisto/python3:3.11.10.113941
+defaultclassifier: Microsoft Sentinel - Classifier
+defaultmapperin: Microsoft Sentinel - Incoming Mapper
+defaultmapperout: Microsoft Sentinel - Outgoing Mapper
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
