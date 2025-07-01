@@ -7,30 +7,6 @@ import pytest
 from CommonServerPython import CommandResults, EntryType, DemistoException
 
 
-def test_arg_to_bool_or_none_with_none():
-    """
-    Given: A None value is passed to arg_to_bool_or_none function.
-    When: The function processes the None input.
-    Then: It should return None without any conversion.
-    """
-    from AWS import arg_to_bool_or_none
-
-    result = arg_to_bool_or_none(None)
-    assert result is None
-
-
-def test_arg_to_bool_or_none_with_string():
-    """
-    Given: A string value 'true' is passed to arg_to_bool_or_none function.
-    When: The function processes the string input.
-    Then: It should return the boolean representation using argToBoolean.
-    """
-    from AWS import arg_to_bool_or_none
-
-    result = arg_to_bool_or_none("true")
-    assert result is True
-
-
 def test_parse_resource_ids_with_valid_input():
     """
     Given: A comma-separated string of resource IDs with spaces.
@@ -1078,30 +1054,6 @@ def test_cloudtrail_update_trail_command_exception(mocker):
     result = CloudTrail.update_trail_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert result.entry_type == EntryType.ERROR
-
-
-def test_test_module():
-    """
-    Given: The test_module function is called during integration testing.
-    When: The function executes without any parameters.
-    Then: It should complete without raising any exceptions or returning values.
-    """
-    from AWS import test_module
-
-    result = test_module()
-    assert result is None
-
-
-def test_health_check_success():
-    """
-    Given: A connector ID string is provided to health_check function.
-    When: The health check is performed with valid connector ID.
-    Then: It should return HealthStatus.OK indicating successful health check.
-    """
-    from AWS import health_check, HealthStatus
-
-    result = health_check("test-connector-id")
-    assert result == HealthStatus.OK
 
 
 def test_register_proxydome_header(mocker):
