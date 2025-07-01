@@ -62,10 +62,7 @@ class Client(BaseClient):
         demisto.debug(f"XDR - Starting update_incident with status: {status}")
 
         if not incident_id:
-            curr_incident = demisto.incident()
-            incident_id = curr_incident.get('dbotMirrorId')
-            if not incident_id:
-                raise DemistoException("No incident ID provided and could not find dbotMirrorId in the current incident")
+            raise DemistoException("No incident ID provided and could not find dbotMirrorId in the current incident")
 
         demisto.debug(f"XDR - Updating incident with ID: {incident_id}")
 
@@ -233,6 +230,7 @@ def parse_incidents(xdr_incidents: list[dict[str, Any]], mirroring_fields: dict,
 
 
 def fetch_incidents(client: Client, mirroring_fields: dict, last_run: dict[str, str], first_fetch: datetime, max_fetch: int):
+    # Myabe send one second after and 
     last_fetch = last_run.get('last_fetch', first_fetch.isoformat())
     last_fetch_time = dateparser.parse(last_fetch)
     if not last_fetch_time:
