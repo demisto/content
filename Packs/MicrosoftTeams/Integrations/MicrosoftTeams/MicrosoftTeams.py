@@ -2355,15 +2355,20 @@ def send_message():
                 if entities:
                     conversation["body"]["mentions"] = entities
     else:  # Adaptive card
+        # This use case is relevant for TeamsAsk script when the entitlement is one of the keys under the adaptive_card
         entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
         if entitlement_match_ac:
             adaptive_card_processed = process_adaptive_card(adaptive_card)
             conversation = {"type": "message", "attachments": [adaptive_card_processed]}
+        else:
+            conversation = {
+                'type': 'message',
+                'attachments': [adaptive_card]
+            }
 
     service_url: str = integration_context.get("service_url", "")
     if not service_url:
         raise ValueError("Did not find service URL. Try messaging the bot on Microsoft Teams")
-
     res: dict = send_message_request(service_url, recipient, conversation, message_id, team_aad_id)
     results = CommandResults(
         outputs={"ID": res.get("id")},
