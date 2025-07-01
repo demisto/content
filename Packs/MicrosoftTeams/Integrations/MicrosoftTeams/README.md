@@ -32,7 +32,7 @@ Note: The information in this video is for Cortex XSOAR 6 but mostly still appli
 
 1. [Create the Demisto Bot in Microsoft Teams](#create-the-demisto-bot-in-microsoft-teams)
 2. [Grant the Demisto Bot Permissions in Microsoft Graph](#grant-the-demisto-bot-permissions-in-microsoft-graph)
-3. [Configure Microsoft Teams on Cortex XSOAR or Cortex XSIAM](#configure-microsoft-teams-on-cortex-xsoar)
+3. [Configure Microsoft Teams on Cortex XSOAR/XSIAM](#configure-microsoft-teams-on-cortex-xsoar/xsiam)
 4. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
 ### 1. Create the Demisto Bot in Microsoft Teams
@@ -107,8 +107,8 @@ Alternatively, check each relevant command section below for the minimum permiss
 8. Click **Authentication** > **Platform configurations** > **Add a platform**. Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
 
 ### 3. Configure Microsoft Teams on Cortex XSOAR/XSIAM
-There are 2 flows in order to configure the integration as was written before:
-1. Authorization Code flow
+There are two flows in order to configure the integration as was mentioned before:
+1. Authorization Code flow (Support [The chat commands](#chat-commands))
 2. Client Credentials flow
 
 In order to configure the integration follow the next steps:
@@ -120,7 +120,7 @@ In order to configure the integration follow the next steps:
     | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint.         | True |
     | Bot ID | Bot ID.                                                                                                                                                            | True |
     | Bot Password | Bot Password.                                                                                                                                                      | True |
-    | Authentication Type | Can be Client Credentials or Authorization Code. Check the limitations for each flow.                                                                              | True |
+    | Authentication Type | Can be Client Credentials or Authorization Code. Please check the limitations for each flow.                                                                       | True |
     | Application redirect URI | Used for Authorization Code flow only. Need to be configured in the Teams application in the Azure portal as well.                                                 | False |
     | Authorization code | For Authorization Code flow. Received from the authorization step, after running generate-login-url command. See the Detailed instructions under the Help section. | False |
     | Default team | The team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter.                                  | True |
