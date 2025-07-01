@@ -36,7 +36,8 @@ configuration:
   required: false
   hidden: true
 - display: The event types to include.
-  additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
+  additionalinfo: web - returns web (non-Git) events, git - returns Git events, all
+    - returns both web and Git events.
   name: include
   defaultvalue: all
   type: 15
@@ -66,7 +67,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise
+        the command will only display them.
       name: should_push_events
       predefined:
       - 'True'
@@ -85,6 +87,7 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
 fromversion: 6.8.0
 tests:
 - No tests

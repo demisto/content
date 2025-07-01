@@ -164,7 +164,8 @@ tasks:
       id: 9fa921fa-d196-40ba-8419-ed0c4f838ab8
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Checks if there is an active instance of the Carbon Black Enterprise Response integration enabled.
+      description: Checks if there is an active instance of the Carbon Black Enterprise
+        Response integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -271,7 +272,8 @@ tasks:
       id: 42f088e2-cb74-485a-8318-0dae68cde0f0
       version: -1
       name: Is CrowdStrike Falcon enabled?
-      description: Checks if there is an active instance of the CrowdStrike Falcon Host integration enabled.
+      description: Checks if there is an active instance of the CrowdStrike Falcon
+        Host integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -452,7 +454,8 @@ tasks:
       id: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there is an active instance of the Active Directory Query v2 integration enabled.
+      description: Checks if there is an active instance of the Active Directory Query
+        v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -656,7 +659,8 @@ tasks:
       id: 58c8b4be-657c-45f6-8eca-5a01da85f1f3
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
-      description: Checks if there is an active instance of the ExtraHop Reveal(x) integration enabled.
+      description: Checks if there is an active instance of the ExtraHop Reveal(x)
+        integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -755,7 +759,8 @@ tasks:
       id: bf7d9316-446b-452b-843a-3e5a13b8b741
       version: -1
       name: is Mcafee ePolicy Orchestrator v2 enabled
-      description: "Checks if there is an active Mcafee ePolicy Orchestrator v2 integration instance enabled."
+      description: "Checks if there is an active Mcafee ePolicy Orchestrator v2 integration
+        instance enabled."
       type: condition
       iscommand: false
       brand: ""
@@ -1023,7 +1028,8 @@ tasks:
       id: 284d5ea3-58c1-4a0f-87c4-5c395d75a65c
       version: -1
       name: Is Cortex XDR enabled?
-      description: Checks if there is an active instance of the Cortex XDR integration enabled.
+      description: Checks if there is an active instance of the Cortex XDR integration
+        enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1113,7 +1119,11 @@ tasks:
       id: c0e98160-b819-4b3e-82d7-0af4bdca7ea4
       version: -1
       name: Cortex XDR Search device
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -1161,7 +1171,9 @@ tasks:
       id: c62d0cd0-fee1-4a0d-83ab-8386fb5fc485
       version: -1
       name: Cortex XDR get endpoint risk score
-      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      description: Retrieve the risk score of a specific host or list of hosts with
+        the highest risk score in the environment along with the reason affecting
+        each score.
       script: '|||xdr-list-risky-hosts'
       type: regular
       iscommand: true
@@ -1199,7 +1211,8 @@ tasks:
       id: adb8d36c-cdb3-4676-8d4a-da7fbc43188c
       version: -1
       name: Is Cortex Core - IR integration enabled?
-      description: Checks if there is an active instance of the Cortex Core integration enabled.
+      description: Checks if there is an active instance of the Cortex Core integration
+        enabled.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1237,7 +1250,11 @@ tasks:
       id: d40cb403-a862-4705-88a0-a1cde3679f83
       version: -1
       name: Core IR Search device
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -1285,7 +1302,9 @@ tasks:
       id: 8c8575da-152b-4542-81e8-83e161c686f4
       version: -1
       name: Core IR get endpoint risk score
-      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      description: Retrieve the risk score of a specific host or list of hosts with
+        the highest risk score in the environment along with the reason affecting
+        each score.
       script: '|||core-list-risky-hosts'
       type: regular
       iscommand: true
@@ -1415,7 +1434,8 @@ outputs:
   description: The domain names of the endpoints that were enriched.
   type: string
 - contextPath: CylanceProtectDevice
-  description: The device information about the hostname that was enriched using Cylance Protect v2.
+  description: The device information about the hostname that was enriched using Cylance
+    Protect v2.
   type: string
 - contextPath: ExtraHop.Device.Macaddr
   description: The MAC Address of the device.
@@ -1424,7 +1444,8 @@ outputs:
   description: The class of the device.
   type: String
 - contextPath: ExtraHop.Device.UserModTime
-  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
   type: Number
 - contextPath: ExtraHop.Device.AutoRole
   description: The role automatically detected by the ExtraHop.
@@ -1451,7 +1472,8 @@ outputs:
   description: Whether the device is on the advanced analysis allow list.
   type: Boolean
 - contextPath: ExtraHop.Device.ModTime
-  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
   type: Number
 - contextPath: ExtraHop.Device.IsL3
   description: Indicates whether the device is a Layer 3 device.
@@ -1544,7 +1566,8 @@ outputs:
   description: Groups for which the computer is listed as a member.
   type: string
 - contextPath: ActiveDirectory.ComputersPageCookie
-  description: An opaque string received in a paged search, used for requesting subsequent entries.
+  description: An opaque string received in a paged search, used for requesting subsequent
+    entries.
   type: string
 - contextPath: ActiveDirectory.Computers.dn
   description: The computer distinguished name.
@@ -1562,7 +1585,8 @@ outputs:
   description: The information about the hostname that was enriched using Active Directory.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
-  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed. installed.
+  description: The size, in bytes, of the system volume of the endpoint on which the
+    sensor is installed. installed.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
   description: The path of the EMET telemetry associated with the sensor.
@@ -1592,7 +1616,8 @@ outputs:
   description: The size in bytes of physical memory.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.build_id
-  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
+  description: The sensor version installed on this endpoint. From the /api/builds/
+    endpoint.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uptime
   description: Endpoint uptime in seconds.
@@ -1647,7 +1672,8 @@ outputs:
   description: Machine SID of this host.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.next_checkin_time
-  description: Next expected communication from this computer in server-local time and zone.
+  description: Next expected communication from this computer in server-local time
+    and zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.node_id
   description: The node ID associated with the sensor.
@@ -1677,10 +1703,12 @@ outputs:
   description: A pipe-delimited list of IP,MAC pairs for each network interface.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_status
-  description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
+  description: Self-reported health score, from 0 to 100. Higher numbers indicate
+    a better health status.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.registration_time
-  description: Time this sensor was originally registered in server-local time and zone.
+  description: Time this sensor was originally registered in server-local time and
+    zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.restart_queued
   description: Whether a restart of the sensor is queued.
@@ -1710,7 +1738,8 @@ outputs:
   description: The sensor group ID this sensor is assigned to.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uninstall
-  description: When set, indicates that the sensor will be directed to uninstall on next check-in.
+  description: When set, indicates that the sensor will be directed to uninstall on
+    next check-in.
   type: string
 - contextPath: PaloAltoNetworksXDR.Endpoint
   description: The endpoint object of the endpoint that was enriched.
@@ -1991,3 +2020,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

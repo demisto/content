@@ -1,7 +1,8 @@
 id: Active Directory - Get User Manager Details
 version: -1
 name: Active Directory - Get User Manager Details
-description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
+description: Takes an email address or a username of a user account in Active Directory,
+  and returns the email address of the user's manager.
 starttaskid: '0'
 tasks:
   '0':
@@ -99,7 +100,9 @@ tasks:
       id: c1c98615-ba19-44ef-8aa0-1d50a1ee1c3c
       version: -1
       name: By which attribute should the user be searched?
-      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
       type: condition
       iscommand: false
       brand: Active Directory Query v2
@@ -154,7 +157,8 @@ tasks:
       id: bfd90416-ddb7-4f80-8978-8e80d7aa9b81
       version: -1
       name: Get user details by username
-      description: Retrieves detailed information about a user account based on their username.
+      description: Retrieves detailed information about a user account based on their
+        username.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -194,7 +198,8 @@ tasks:
       id: 2d3f43d5-f847-4b65-84e5-dd55655d3dc1
       version: -1
       name: Get user details by email
-      description: Retrieves detailed information about a user account based on their email address.
+      description: Retrieves detailed information about a user account based on their
+        email address.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -276,7 +281,8 @@ tasks:
       id: f57e9497-2b3a-4061-88ec-b34274271db3
       version: -1
       name: Get manager details by user email or username
-      description: Retrieves detailed information about the user's manager based on their email or username.
+      description: Retrieves detailed information about the user's manager based on
+        their email or username.
       tags:
       - active_directory_manager_details
       script: Active Directory Query v2|||ad-get-user
@@ -427,7 +433,8 @@ tasks:
       id: 97a9a61b-6835-4779-8b1e-f6601500d3a4
       version: -1
       name: Set manager display name to outputs
-      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set in context.
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -512,3 +519,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

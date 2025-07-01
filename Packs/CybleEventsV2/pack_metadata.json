@@ -20,7 +20,8 @@
     ],
     "supportedModules": [
         "X3",
-        "X5"
+        "X5",
+        "agentix"
     ],
     "githubUser": []
 }

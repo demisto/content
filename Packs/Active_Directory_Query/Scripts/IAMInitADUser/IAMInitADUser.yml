@@ -18,31 +18,40 @@ args:
 - description: The subject of the email sent to IT.
   name: email_subject
 - name: min_lcase
-  description: Minimum number of lower case characters to include in password. Used with the GeneratePassword script.
+  description: Minimum number of lower case characters to include in password. Used
+    with the GeneratePassword script.
   defaultValue: "0"
 - name: max_lcase
-  description: Maximum number of lower case characters to include in password. Used with the GeneratePassword script.
+  description: Maximum number of lower case characters to include in password. Used
+    with the GeneratePassword script.
   defaultValue: "10"
 - name: min_ucase
-  description: Minimum number of upper case characters to include in password. Used with the GeneratePassword script.
+  description: Minimum number of upper case characters to include in password. Used
+    with the GeneratePassword script.
   defaultValue: "0"
 - name: max_ucase
-  description: Maximum number of upper case characters to include in password. Used with the GeneratePassword script.
+  description: Maximum number of upper case characters to include in password. Used
+    with the GeneratePassword script.
   defaultValue: "10"
 - name: min_digits
-  description: Minimum number of digits to include in password. Used with the GeneratePassword script.
+  description: Minimum number of digits to include in password. Used with the GeneratePassword
+    script.
   defaultValue: "0"
 - name: max_digits
-  description: Maximum number of digits to include in password. Used with the GeneratePassword script.
+  description: Maximum number of digits to include in password. Used with the GeneratePassword
+    script.
   defaultValue: "10"
 - name: min_symbols
-  description: Minimum number of symbols to include in password. Used with the GeneratePassword script.
+  description: Minimum number of symbols to include in password. Used with the GeneratePassword
+    script.
   defaultValue: "0"
 - name: max_symbols
-  description: Maximum number of symbols to include in password. Used with the GeneratePassword script.
+  description: Maximum number of symbols to include in password. Used with the GeneratePassword
+    script.
   defaultValue: "10"
 - name: ZipProtectWithPassword
-  description: The password to protect the zip file that contains the generated password. if not provided, the generated password will be send in the body of the email.
+  description: The password to protect the zip file that contains the generated password.
+    if not provided, the generated password will be send in the body of the email.
   defaultValue: ""
 - name: email_body
   description: The body of the email that will be sent to the user.
@@ -61,10 +70,12 @@ enabled: true
 name: IAMInitADUser
 outputs:
 - contextPath: IAM.InitADUser.success
-  description: True if the Active Directory user was successfully activated, false otherwise.
+  description: True if the Active Directory user was successfully activated, false
+    otherwise.
   type: Boolean
 - contextPath: IAM.InitADUser.sentMail
-  description: True if the mail containing the information about the user activation and its auto-generated password was successfully sent to IT, false otherwise.
+  description: True if the mail containing the information about the user activation
+    and its auto-generated password was successfully sent to IT, false otherwise.
   type: Boolean
 - contextPath: IAM.InitADUser.errorDetails
   description: The error details, if exists.
@@ -95,3 +106,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

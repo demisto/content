@@ -1,7 +1,8 @@
 id: Cloud IAM Enrichment - Generic
 version: -1
 name: Cloud IAM Enrichment - Generic
-description: This playbook is responsible for collecting and enriching data on Identity Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
+description: This playbook is responsible for collecting and enriching data on Identity
+  Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
 starttaskid: "0"
 tasks:
   "0":
@@ -474,7 +475,8 @@ tasks:
       id: d9ef2f89-4ea7-4552-8afd-b4daf0d04743
       version: -1
       name: AWS IAM - Get user information
-      description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
+      description: Retrieves information about the specified IAM user, including the
+        user's creation date, path, unique ID, and ARN.
       script: AWS - IAM|||aws-iam-get-user
       type: regular
       iscommand: true
@@ -511,7 +513,8 @@ tasks:
       id: 219490f3-8185-4975-880b-0ea73d998606
       version: -1
       name: AWS IAM - List user access keys
-      description: Returns information about the access key IDs associated with the specified IAM user.
+      description: Returns information about the access key IDs associated with the
+        specified IAM user.
       script: AWS - IAM|||aws-iam-list-access-keys-for-user
       type: regular
       iscommand: true
@@ -585,7 +588,8 @@ tasks:
       id: b0d79051-aeee-4d78-8ea1-7ed02bbe01ab
       version: -1
       name: AWS IAM - List user attached policies
-      description: Lists all managed policies that are attached to the specified IAM user.
+      description: Lists all managed policies that are attached to the specified IAM
+        user.
       script: '|||aws-iam-list-attached-user-policies'
       type: regular
       iscommand: true
@@ -622,7 +626,8 @@ tasks:
       id: e558a2a4-a714-4a0b-8790-77ad50c1bf23
       version: -1
       name: AWS IAM - List user inline policies
-      description: Lists the names of the inline policies embedded in the specified IAM user.
+      description: Lists the names of the inline policies embedded in the specified
+        IAM user.
       script: '|||aws-iam-list-user-policies'
       type: regular
       iscommand: true
@@ -885,7 +890,9 @@ tasks:
       id: 7cf34b5f-d865-46ae-82bd-1d5e0e28c48e
       version: -1
       name: GCP IAM - Get service account information
-      description: 'Lists service accounts in a project, or retrieves a specific service account information. One of the arguments: ''service_account_name'' or ''project_name''  must be provided.'
+      description: 'Lists service accounts in a project, or retrieves a specific service
+        account information. One of the arguments: ''service_account_name'' or ''project_name''  must
+        be provided.'
       script: '|||gcp-iam-service-accounts-get'
       type: regular
       iscommand: true
@@ -961,7 +968,9 @@ tasks:
       id: b92b83a2-fcdf-41f4-81e2-a38139eadac7
       version: -1
       name: GCP IAM - List service account access keys
-      description: 'Lists service account keys, or retrieves a specific service account key information. One of the arguments: ''service_account_name'' or ''key_name''  must be provided.'
+      description: 'Lists service account keys, or retrieves a specific service account
+        key information. One of the arguments: ''service_account_name'' or ''key_name''  must
+        be provided.'
       script: '|||gcp-iam-service-account-keys-get'
       type: regular
       iscommand: true
@@ -1195,13 +1204,21 @@ outputs:
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.userDisplayName
   description: Risky user display name.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskDetail
-  description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+  description: Reason why the user is considered a risky user. The possible values
+    are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange,
+    userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe,
+    userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised,
+    hidden, adminConfirmedUserCompromised, and unknownFutureValue.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskstate
-  description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+  description: State of the user's risk. The possible values are none, confirmedSafe,
+    remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLevel
-  description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+  description: Risk level of the detected risky user. The possible values are low,
+    medium, high, hidden, none, and unknownFutureValue.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime
-  description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+  description: The date and time that the risky user was last updated. The DateTimeOffset
+    type represents date and time information using the ISO 8601 format and is always
+    in UTC time.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.isProcessing
   description: Indicates whether a user's risky state is being processed by the backend.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.isDeleted
@@ -1219,3 +1236,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

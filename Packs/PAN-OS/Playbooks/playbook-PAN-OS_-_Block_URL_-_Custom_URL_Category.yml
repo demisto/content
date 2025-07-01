@@ -200,7 +200,8 @@ tasks:
       id: a76fc659-c352-4025-88c6-1dff4bc36b6d
       version: -1
       name: PAN-OS - Block Malicious URL Category
-      description: Creates a custom block policy rule to block communication to URLs in this category.
+      description: Creates a custom block policy rule to block communication to URLs
+        in this category.
       script: '|||pan-os-custom-block-rule'
       type: regular
       iscommand: true
@@ -663,7 +664,8 @@ tasks:
       id: 42127c8f-922d-4c5c-8b7a-4e428e6b2f11
       version: -1
       name: PAN-OS - Block Malicious URL Category
-      description: Creates a custom block policy rule to block communication to URLs in this category.
+      description: Creates a custom block policy rule to block communication to URLs
+        in this category.
       script: '|||pan-os-custom-block-rule'
       type: regular
       iscommand: true
@@ -747,7 +749,9 @@ tasks:
       id: b20b0525-f692-4321-8b43-2e9f18de1073
       version: -1
       name: PAN-OS Commit Configuration
-      description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified as Panorama, will also push the Policies to the specified Device Group in the instance. "
+      description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified
+        as Panorama, will also push the Policies to the specified Device Group in
+        the instance. "
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -855,3 +859,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

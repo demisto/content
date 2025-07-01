@@ -76,7 +76,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: SELECT  DISTINCT host_id,endpoint_device_name FROM `firewall.globalprotect` where event_id.value = 'gateway-connected'  and endpoint_device_name='
+                  simple: SELECT  DISTINCT host_id,endpoint_device_name FROM `firewall.globalprotect`
+                    where event_id.value = 'gateway-connected'  and endpoint_device_name='
               suffix:
                 value:
                   simple: ''''
@@ -308,7 +309,8 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: The host couldn't be quarantined. It might have already been quarantined, or an error was encountered during the quarantine execution.
+        simple: The host couldn't be quarantined. It might have already been quarantined,
+          or an error was encountered during the quarantine execution.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -333,7 +335,8 @@ tasks:
       id: dc4da1ed-848a-4a18-84c4-971c8cb12133
       version: -1
       name: Is Cortex Data Lake Integration Enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -370,7 +373,8 @@ tasks:
       id: 70b3a700-03a9-4fb5-80ee-f60c4cd6904b
       version: -1
       name: Is Prisma SASE Enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -431,3 +435,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

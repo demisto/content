@@ -1,8 +1,8 @@
 id: SailPoint IdentityIQ Disable User Account Access
 version: -1
 name: SailPoint IdentityIQ Disable User Account Access
-description: "Checks if the risk score of an identity exceeds a set threshold of 500\
-  \ and disables the accounts."
+description: "Checks if the risk score of an identity exceeds a set threshold of 500
+  and disables the accounts."
 starttaskid: "0"
 tasks:
   "0":
@@ -637,3 +637,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -1,7 +1,9 @@
 id: Calculate Severity - Standard
 version: -1
 name: Calculate Severity - Standard
-description: Calculates and sets the incident severity based on the combination of the current incident severity, and the severity returned from the Calculate Severity By Highest DBotScore playbook.
+description: Calculates and sets the incident severity based on the combination of
+  the current incident severity, and the severity returned from the Calculate Severity
+  By Highest DBotScore playbook.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -216,7 +218,8 @@ tasks:
       id: 14b9554d-23ca-4e85-86f8-51f290b2a18d
       version: -1
       name: Set severity based on the highest severity
-      description: Determines and sets the incident severity based on the highest result of all severity calculations.
+      description: Determines and sets the incident severity based on the highest
+        result of all severity calculations.
       type: condition
       iscommand: false
       brand: ""
@@ -443,7 +446,8 @@ tasks:
       id: 0488f795-a0de-432a-848e-ccc213a40e15
       version: -1
       name: Calculate Severity By Highest DBotScore
-      description: Calculates the incident severity level according to the highest DBotScore.
+      description: Calculates the incident severity level according to the highest
+        DBotScore.
       playbookName: Calculate Severity By Highest DBotScore
       type: playbook
       iscommand: false
@@ -542,3 +546,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -52,7 +52,8 @@ tasks:
       id: 42177fdd-e676-4494-8430-473b77c4d326
       version: -1
       name: Add to XSIAM hash block list
-      description: Block lists requested files which have not already been block listed or added to allow list.
+      description: Block lists requested files which have not already been block listed
+        or added to allow list.
       script: '|||core-blocklist-files'
       type: regular
       iscommand: true
@@ -315,7 +316,8 @@ tasks:
       id: 56214186-2922-4165-820b-062ad475cf73
       version: -1
       name: Should block indicators automatically?
-      description: Whether to disable the account automatically based on the input values.
+      description: Whether to disable the account automatically based on the input
+        values.
       type: condition
       iscommand: false
       brand: ""
@@ -405,7 +407,8 @@ tasks:
       id: fca5352e-ba68-4776-8b35-903387490051
       version: -1
       name: Add to XSIAM hash block list
-      description: Block lists requested files which have not already been block listed or added to allow list.
+      description: Block lists requested files which have not already been block listed
+        or added to allow list.
       script: '|||core-blocklist-files'
       type: regular
       iscommand: true
@@ -821,7 +824,10 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: "Possible values: True/False.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  description: "Possible values: True/False.\nWhether to provide user verification
+    for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\n
+    True - The server will ask the user for blocking verification and will display
+    the blocking list."
   playbookInputQuery:
 - key: AutoBlockIndicators
   value:
@@ -883,3 +889,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

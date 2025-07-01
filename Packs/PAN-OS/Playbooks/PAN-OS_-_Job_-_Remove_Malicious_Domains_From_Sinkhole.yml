@@ -97,7 +97,9 @@ tasks:
       id: 7c1c7038-aaa1-4b07-8677-4921ab9077f5
       version: -1
       name: Get the oldest decay date
-      description: Gets the oldest date and time according to the decay period configured in the playbook input. Domains that have not been tagged since the decay time will be untagged.
+      description: Gets the oldest date and time according to the decay period configured
+        in the playbook input. Domains that have not been tagged since the decay time
+        will be untagged.
       scriptName: GetTime
       type: regular
       iscommand: false
@@ -137,7 +139,8 @@ tasks:
       id: 1f109241-f295-4231-8a78-ae89b78d98e1
       version: -1
       name: Remove tags from the decayed domains
-      description: Removes the sinkhole tag from the domains that reached the decay period according to the playbook input.
+      description: Removes the sinkhole tag from the domains that reached the decay
+        period according to the playbook input.
       script: Builtin|||removeIndicatorField
       type: regular
       iscommand: true
@@ -219,7 +222,9 @@ tasks:
       id: 70f7905f-7f25-44de-8f4c-d4adc31a80ff
       version: -1
       name: Save the name of the tagging event to search in history
-      description: Saves the name of the event that appears in the indicator timeline section, so that it can be used when filtering past tag events and deciding whether to remove the tag from the indicator.
+      description: Saves the name of the event that appears in the indicator timeline
+        section, so that it can be used when filtering past tag events and deciding
+        whether to remove the tag from the indicator.
       scriptName: Set
       type: regular
       iscommand: false
@@ -423,7 +428,9 @@ tasks:
       id: ed078f6d-529e-4243-8d35-a03182bdd5ad
       version: -1
       name: Any domains have NOT been tagged recently?
-      description: Checks whether any of the checked domains was not tagged within the decay period. If domains have been recently tagged (e.g., after the date derived from the decay period input), they will not be untagged.
+      description: Checks whether any of the checked domains was not tagged within
+        the decay period. If domains have been recently tagged (e.g., after the date
+        derived from the decay period input), they will not be untagged.
       type: condition
       iscommand: false
       brand: ""
@@ -511,3 +518,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

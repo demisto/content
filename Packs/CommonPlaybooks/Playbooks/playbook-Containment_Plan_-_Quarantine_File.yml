@@ -135,7 +135,8 @@ tasks:
       id: 30398ddb-5182-4c19-84f2-6f06e62eabca
       version: -1
       name: File quarantine
-      description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+      description: Quarantines a file on selected endpoints. You can select up to
+        1000 endpoints.
       script: '|||core-quarantine-files'
       type: regular
       iscommand: true
@@ -258,7 +259,8 @@ tasks:
       id: 1208d3af-a6d7-4126-86f2-1c84f8659895
       version: -1
       name: Should quarantine file?
-      description: Whether to quarantine the files based on the input values and the incident context.
+      description: Whether to quarantine the files based on the input values and the
+        incident context.
       type: condition
       iscommand: false
       brand: ""
@@ -418,7 +420,8 @@ tasks:
       id: fd83526a-3995-475b-8ea6-60233a3f1636
       version: -1
       name: Should isolate automatically?
-      description: Whether to isolate the device automatically based on the input values.
+      description: Whether to isolate the device automatically based on the input
+        values.
       type: condition
       iscommand: false
       brand: ""
@@ -566,7 +569,8 @@ tasks:
       id: a04c8ae8-b9a2-4a06-8d64-8463dd6582d9
       version: -1
       name: Should quarantine file?
-      description: Whether to quarantine the files based on the input values and the incident context.
+      description: Whether to quarantine the files based on the input values and the
+        incident context.
       type: condition
       iscommand: false
       brand: ""
@@ -633,7 +637,8 @@ tasks:
       id: 48f240fd-334d-4f88-8e66-726f9971ba3c
       version: -1
       name: File quarantine
-      description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+      description: Quarantines a file on selected endpoints. You can select up to
+        1000 endpoints.
       script: '|||core-quarantine-files'
       type: regular
       iscommand: true
@@ -899,7 +904,9 @@ inputs:
   value:
     simple: Quarantine
   required: false
-  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \nFor example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine."
+  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts.
+    \nFor example, choosing 'Quarantine' ignores the 'Delete file' task under the
+    eradication playbook and will execute only file quarantine."
   playbookInputQuery:
 - key: FilePath
   value: {}
@@ -936,3 +943,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

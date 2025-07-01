@@ -2,8 +2,8 @@ id: QRadarCorrelationLog
 version: -1
 name: QRadarCorrelationLog
 deprecated: true
-description: Deprecated. Use the "QRadar - Get Offense Logs"\
-  \ playbook instead. This playbook retrieves the correlation logs of multiple QIDs.
+description: Deprecated. Use the "QRadar - Get Offense Logs"\ \ playbook instead.
+  This playbook retrieves the correlation logs of multiple QIDs.
 starttaskid: '0'
 tasks:
   '0':
@@ -50,15 +50,15 @@ tasks:
       interval:
         simple: '1'
       query_expression:
-        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip\
-          \ as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport\
-          \ as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"\
-          StartTime\",\n\t\tdestinationport as \"DestinationPort\",\n\t\tmagnitude\
-          \ as \"Magnitude\",\n\t\tidentityip as \"IdentityIP\",\n\t\tCATEGORYNAME(category)\
-          \ as \"Category\",\n\t\tPROTOCOLNAME(protocolid) as \"ProtocolName\",\n\t\
-          \tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom events\
-          \ where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" IS NULL AND\
-          \ INOFFENSE(${inputs.OffenseID})\nLIMIT ${inputs.MaxLogsCount}\n START '${inputs.OffenseStartTime}'"
+        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip
+          as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport
+          as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"StartTime\"\
+          ,\n\t\tdestinationport as \"DestinationPort\",\n\t\tmagnitude as \"Magnitude\"\
+          ,\n\t\tidentityip as \"IdentityIP\",\n\t\tCATEGORYNAME(category) as \"Category\"\
+          ,\n\t\tPROTOCOLNAME(protocolid) as \"ProtocolName\",\n\t\tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n
+          \t\tfrom events where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\"\
+          \ IS NULL AND INOFFENSE(${inputs.OffenseID})\nLIMIT ${inputs.MaxLogsCount}\n
+          START '${inputs.OffenseStartTime}'"
       range: {}
       timeout:
         simple: '600'
@@ -181,16 +181,15 @@ tasks:
       interval:
         simple: '1'
       query_expression:
-        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip\
-          \ as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport\
-          \ as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"\
-          StartTime\",\n\t\tdestinationport as \"DestinationPort\",\n\t\tmagnitude\
-          \ as \"Magnitude\",\n\t\tidentityip as \"IdentityIP\",\n\t\tCATEGORYNAME(category)\
-          \ as \"Category\",\n\t\tPROTOCOLNAME(protocolid) as \"ProtocolName\",\n\t\
-          \tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom events\
-          \ where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" <> NULL AND\
-          \ INOFFENSE(${inputs.OffenseID}) \nLIMIT ${inputs.MaxLogsCount}\n START\
-          \ '${inputs.OffenseStartTime}'"
+        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip
+          as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport
+          as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"StartTime\"\
+          ,\n\t\tdestinationport as \"DestinationPort\",\n\t\tmagnitude as \"Magnitude\"\
+          ,\n\t\tidentityip as \"IdentityIP\",\n\t\tCATEGORYNAME(category) as \"Category\"\
+          ,\n\t\tPROTOCOLNAME(protocolid) as \"ProtocolName\",\n\t\tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n
+          \t\tfrom events where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\"\
+          \ <> NULL AND INOFFENSE(${inputs.OffenseID}) \nLIMIT ${inputs.MaxLogsCount}\n
+          START '${inputs.OffenseStartTime}'"
       range: {}
       timeout:
         simple: '600'
@@ -292,3 +291,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -3,7 +3,12 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Endpoint Investigation Plan
-description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the incident:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+description: "This playbook handles all the endpoint investigation actions by performing
+  the following tasks  on every alert associated with the incident:\n* Pre-defined
+  MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External
+  host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)\
+  \  \n\nNote: The playbook inputs enable manipulating the execution flow; read the
+  input descriptions for details."
 starttaskid: "0"
 tasks:
   "0":
@@ -680,7 +685,12 @@ tasks:
       - "4"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*1037* or mitreattcktechnique:*T1542* or mitreattcktechnique:*T1053* or mitreattcktechnique:*T1543.002* or mitreattcktechnique:*T1543.003* or mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1547.001* or mitreattcktechnique:*T1547.005* or mitreattcktechnique:*T1546.002* or mitreattcktechnique:*T1546.011* or mitreattcktechnique:*T1546.012* or mitreattcktechnique:*T1136* or mitreattcktechnique:*T1150*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*1037* or mitreattcktechnique:*T1542* or mitreattcktechnique:*T1053*
+          or mitreattcktechnique:*T1543.002* or mitreattcktechnique:*T1543.003* or
+          mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1547.001* or mitreattcktechnique:*T1547.005*
+          or mitreattcktechnique:*T1546.002* or mitreattcktechnique:*T1546.011* or
+          mitreattcktechnique:*T1546.012* or mitreattcktechnique:*T1136* or mitreattcktechnique:*T1150*)
+          and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1197,7 +1207,8 @@ tasks:
       - "6"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*T1078* or mitreattcktechnique:*T1078.002*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*T1078* or mitreattcktechnique:*T1078.002*) and
+          agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1238,7 +1249,9 @@ tasks:
       - "2"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*T1204* or mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1059.001* or mitreattcktechnique:*T1059.002* or mitreattcktechnique:*T1059.004* or mitreattcktechnique:*T1059.005*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*T1204* or mitreattcktechnique:*T1569.002* or
+          mitreattcktechnique:*T1059.001* or mitreattcktechnique:*T1059.002* or mitreattcktechnique:*T1059.004*
+          or mitreattcktechnique:*T1059.005*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1279,7 +1292,8 @@ tasks:
       - "5"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*T1055* or mitreattcktechnique:*T1546.001*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*T1055* or mitreattcktechnique:*T1546.001*) and
+          agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1320,7 +1334,10 @@ tasks:
       - "1"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*T1218.005* or mitreattcktechnique:*T1218.008* or mitreattcktechnique:*T1218.011* or mitreattcktechnique:*T1036* or mitreattcktechnique:*T1140* or mitreattcktechnique:*T1564.001* or mitreattcktechnique:*T1222* or mitreattcktechnique:*T1197*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*T1218.005* or mitreattcktechnique:*T1218.008*
+          or mitreattcktechnique:*T1218.011* or mitreattcktechnique:*T1036* or mitreattcktechnique:*T1140*
+          or mitreattcktechnique:*T1564.001* or mitreattcktechnique:*T1222* or mitreattcktechnique:*T1197*)
+          and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1361,7 +1378,9 @@ tasks:
       - "7"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*1087* or mitreattcktechnique:*1046* or mitreattcktechnique:*1018* or mitreattcktechnique:*1135* or mitreattcktechnique:*1016*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*1087* or mitreattcktechnique:*1046* or mitreattcktechnique:*1018*
+          or mitreattcktechnique:*1135* or mitreattcktechnique:*1016*) and agentid:${inputs.agentID}
+          and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1402,7 +1421,9 @@ tasks:
       - "8"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*1021.001* or mitreattcktechnique:*1021.002* or mitreattcktechnique:*1021.003* or mitreattcktechnique:*1021.006* or mitreattcktechnique:*1021* or mitreattcktechnique:*1550.002*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*1021.001* or mitreattcktechnique:*1021.002*
+          or mitreattcktechnique:*1021.003* or mitreattcktechnique:*1021.006* or mitreattcktechnique:*1021*
+          or mitreattcktechnique:*1550.002*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1443,7 +1464,8 @@ tasks:
       - "23"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*1213*  or mitreattcktechnique:*1074* or mitreattcktechnique:*1074.001*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*1213*  or mitreattcktechnique:*1074* or mitreattcktechnique:*1074.001*)
+          and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1484,7 +1506,8 @@ tasks:
       - "24"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*1132*  or mitreattcktechnique:*1102* or mitreattcktechnique:*1071*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*1132*  or mitreattcktechnique:*1102* or mitreattcktechnique:*1071*)
+          and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1525,7 +1548,9 @@ tasks:
       - "52"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*1561*  or mitreattcktechnique:*1485* or mitreattcktechnique:*1486* or mitreattcktechnique:*1490* or mitreattcktechnique:*1495*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*1561*  or mitreattcktechnique:*1485* or mitreattcktechnique:*1486*
+          or mitreattcktechnique:*1490* or mitreattcktechnique:*1495*) and agentid:${inputs.agentID}
+          and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1809,7 +1834,9 @@ tasks:
       - "13"
     scriptarguments:
       query:
-        simple: (initiatorsha256:${inputs.FileSHA256} or cgosha256:${inputs.FileSHA256} or filesha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256} or osparentsha256:${inputs.FileSHA256}) and caseid:${parentIncidentFields.incident_id}
+        simple: (initiatorsha256:${inputs.FileSHA256} or cgosha256:${inputs.FileSHA256}
+          or filesha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256}
+          or osparentsha256:${inputs.FileSHA256}) and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -2054,7 +2081,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
+  description: Set to True to hunt for identified alerts with MITRE Reconnaissance
+    techniques.
   playbookInputQuery:
 - key: HuntInitialAccessTechniques
   value:
@@ -2078,13 +2106,15 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
+  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation
+    techniques.
   playbookInputQuery:
 - key: HuntDefenseEvasionTechniques
   value:
     simple: "True"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
+  description: Set to True to hunt for identified alerts with MITRE Defense Evasion
+    techniques.
   playbookInputQuery:
 - key: HuntDiscoveryTechniques
   value:
@@ -2096,7 +2126,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
+  description: Set to True to hunt for identified alerts with MITRE Lateral Movement
+    techniques.
   playbookInputQuery:
 - key: HuntCollectionTechniques
   value:
@@ -2108,7 +2139,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
+  description: Set to True to hunt for identified alerts with MITRE Command and Control
+    techniques.
   playbookInputQuery:
 - key: HuntImpactTechniques
   value:
@@ -2129,7 +2161,8 @@ inputs:
 - key: HuntByHost
   value: {}
   required: false
-  description: Set to True to hunt by the endpoint ID. The agentID input must be provided as well.
+  description: Set to True to hunt by the endpoint ID. The agentID input must be provided
+    as well.
   playbookInputQuery:
 - key: HuntByFile
   value: {}
@@ -2147,17 +2180,20 @@ inputs:
 - key: attackerRemoteIP
   value: {}
   required: false
-  description: The IP address of the attacker. The 'HuntAttacker' inputs should also be set to True.
+  description: The IP address of the attacker. The 'HuntAttacker' inputs should also
+    be set to True.
   playbookInputQuery:
 - key: attackerExternalHost
   value: {}
   required: false
-  description: The external host used by the attacker. The 'HuntAttacker' inputs should also be set to True.
+  description: The external host used by the attacker. The 'HuntAttacker' inputs should
+    also be set to True.
   playbookInputQuery:
 - key: mitreTechniqueID
   value: {}
   required: false
-  description: A MITRE technique identifier. The 'HuntByTechnique' inputs should also be set to True.
+  description: A MITRE technique identifier. The 'HuntByTechnique' inputs should also
+    be set to True.
   playbookInputQuery:
 - key: FileSHA256
   value: {}
@@ -2177,3 +2213,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

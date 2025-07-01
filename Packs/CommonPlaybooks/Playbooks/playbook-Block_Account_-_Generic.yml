@@ -93,7 +93,8 @@ tasks:
       id: 2c5a17dd-e019-4e20-8f5b-4333678a26e0
       version: -1
       name: Is there a username to block?
-      description: Verify that the playbook input includes at least one username to block.
+      description: Verify that the playbook input includes at least one username to
+        block.
       type: condition
       iscommand: false
       brand: ""
@@ -311,7 +312,8 @@ tasks:
       id: 06dfb070-8751-4cbc-8dcd-b7ffd39ca2cc
       version: -1
       name: Is there a Tag name to register?
-      description: Verify that the playbook input includes at least one tag to apply to the user.
+      description: Verify that the playbook input includes at least one tag to apply
+        to the user.
       type: condition
       iscommand: false
       brand: ""
@@ -380,3 +382,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

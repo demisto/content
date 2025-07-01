@@ -23,13 +23,15 @@ configuration:
   display: ''
   required: false
 - defaultvalue: OauthKey
-  additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
+  additionalinfo: This field is ignored if other required fields are not provided
+    (for example both the access token and the private key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   type: 0
   required: false
 - display: Access Token
-  additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
+  additionalinfo: This token is used for both OAuth 1.0 and personal access token
+    authentication methods.
   name: accessToken
   type: 0
   required: false
@@ -42,7 +44,8 @@ configuration:
   name: query
   type: 0
   required: false
-- additionalinfo: This parameter is dismissed while "Use created field to fetch incidents" is checked.
+- additionalinfo: This parameter is dismissed while "Use created field to fetch incidents"
+    is checked.
   display: Issue index to start fetching incidents from
   name: idOffset
   type: 0
@@ -81,7 +84,8 @@ configuration:
   name: outgoing_mirror
   type: 8
   required: false
-- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in Jira.
+- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
+    in Jira.
   defaultvalue: attachment
   display: File entry tag
   hidden:
@@ -129,7 +133,10 @@ script:
       required: true
     - description: The index (integer) of the first issue to return (0-based).
       name: startAt
-    - description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
+    - description: The maximum number of users to fetch when searching for a matching
+        user (default is 50). The maximum allowed value is dictated by the Jira property
+        'jira.search.views.default.max'. If you specify a value greater than this
+        number, your search results are truncated.
       name: maxResults
     - description: Displays the headers in human readable format.
       name: headers
@@ -181,7 +188,8 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
-    - description: The user attribute value. Can be the username or email address. For OAuth 1.0, only the username works.
+    - description: The user attribute value. Can be the username or email address.
+        For OAuth 1.0, only the username works.
       name: attribute
       required: true
     - predefined:
@@ -192,7 +200,10 @@ script:
       name: is_jirav2api
       auto: PREDEFINED
     - defaultValue: '50'
-      description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
+      description: The maximum number of users to fetch when searching for a matching
+        user (default is 50). The maximum allowed value is dictated by the Jira property
+        'jira.search.views.default.max'. If you specify a value greater than this
+        number, your search results are truncated.
       name: max_results
     description: Gets the account ID for a given user attribute.
     name: jira-get-id-by-attribute
@@ -248,13 +259,15 @@ script:
       description: The file size (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: File.SHA256
-      description: The file SHA256 hash (Jira attachments are saved as files in Cortex XSOAR).
+      description: The file SHA256 hash (Jira attachments are saved as files in Cortex
+        XSOAR).
       type: Unknown
     - contextPath: File.Name
       description: The file name (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: File.SHA1
-      description: The file SHA1 hash (Jira attachments are saved as files in Cortex XSOAR).
+      description: The file SHA1 hash (Jira attachments are saved as files in Cortex
+        XSOAR).
       type: Unknown
     - contextPath: Ticket.Priority
       description: The ticket priority.
@@ -296,11 +309,14 @@ script:
       name: priority
     - description: 'The due date for the issue (in the format: 2018-03-11).'
       name: dueDate
-    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead.
+    - description: The name of the assignee. Relevant for Jira Server only. If you
+        are using Jira Cloud, provide the assignee_id argument instead.
       name: assignee
-    - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
+    - description: The account ID of the assignee. Use the jira-get-id-by-attribute
+        command to get the user's account ID.
       name: assignee_id
-    - description: The account ID of the reporter. Use the jira-get-id-by-attribute command to get the user's account ID.
+    - description: The account ID of the reporter. Use the jira-get-id-by-attribute
+        command to get the user's account ID.
       name: reporter_id
     - description: The name of the of the reporter.
       name: reporter
@@ -308,14 +324,16 @@ script:
       name: parentIssueKey
     - description: The parent issue ID (if you're creating a sub-task).
       name: parentIssueId
-    - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
+    - description: A text field for describing the environment in which the issue
+        occurred. For example environment="IE9 on Windows 7".
       name: environment
     - description: The security level of the issue. For example security="Anyone".
       name: security
     - description: The component names of the issue. For example components="component1,component2".
       isArray: true
       name: components
-    - description: A comma-separated list of account IDs for watching the issue. Use the jira-get-id-by-attribute command to get the user's account ID.
+    - description: A comma-separated list of account IDs for watching the issue. Use
+        the jira-get-id-by-attribute command to get the user's account ID.
       isArray: true
       name: watchers
     description: Creates a new issue in Jira.
@@ -333,7 +351,8 @@ script:
       required: true
     - description: The entry ID to upload.
       name: upload
-    - description: The attachment name to be displayed in Jira (overrides the original file name).
+    - description: The attachment name to be displayed in Jira (overrides the original
+        file name).
       name: attachmentName
     description: Uploads a file attachment to an issue.
     name: jira-issue-upload-file
@@ -350,7 +369,8 @@ script:
     description: Adds a new comment to an existing Jira issue.
     name: jira-issue-add-comment
   - arguments:
-    - description: If a globalId is provided and a remote issue link exists with that globalId, the remote issue link is updated.
+    - description: If a globalId is provided and a remote issue link exists with that
+        globalId, the remote issue link is updated.
       name: globalId
     - description: 'The object relationship to the issue, for example: causes.'
       name: relationship
@@ -365,9 +385,11 @@ script:
     - description: The issue ID.
       name: issueId
       required: true
-    - description: The application type of the linked remote application. For example "com.atlassian.confluence".
+    - description: The application type of the linked remote application. For example
+        "com.atlassian.confluence".
       name: applicationType
-    - description: The application name of the linked remote application. For example "My Confluence Instance".
+    - description: The application name of the linked remote application. For example
+        "My Confluence Instance".
       name: applicationName
     description: Creates (or updates) an issue link.
     name: jira-issue-add-link
@@ -375,7 +397,8 @@ script:
     - description: The ID of the issue to edit.
       name: issueId
       required: true
-    - description: 'The issue object (in JSON format). For example {"fields":{"customfield_10037": "field_value"}}.'
+    - description: 'The issue object (in JSON format). For example {"fields":{"customfield_10037":
+        "field_value"}}.'
       name: issueJson
     - description: The issue summary.
       name: summary
@@ -387,22 +410,26 @@ script:
       name: priority
     - description: The due date for the issue (in the format yyyy-mm-dd).
       name: dueDate
-    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead.
+    - description: The name of the assignee. Relevant for Jira Server only. If you
+        are using Jira Cloud, provide the assignee_id argument instead.
       name: assignee
-    - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
+    - description: The account ID of the assignee. Use the jira-get-id-by-attribute
+        command to get the user's account ID.
       name: assignee_id
     - description: The issue status.
       name: status
     - description: The issue transition.
       name: transition
-    - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
+    - description: A text field for describing the environment in which the issue
+        occurred. For example environment="IE9 on Windows 7".
       name: environment
     - description: The security level name of the issue. For example security="Anyone".
       name: security
     - description: The component names of the issue. For example components="component1,component2".
       isArray: true
       name: components
-    - description: Resolution to update in the issue, to be used when transitioning to a closed status.
+    - description: Resolution to update in the issue, to be used when transitioning
+        to a closed status.
       name: resolution
     description: Modifies an issue in Jira.
     name: jira-edit-issue
@@ -429,7 +456,8 @@ script:
     - description: The ID of the issue to edit.
       name: issueId
       required: true
-    - description: 'The field object (in JSON format). For example {"customfield_10037": "New value"}'
+    - description: 'The field object (in JSON format). For example {"customfield_10037":
+        "New value"}'
       name: field_json
       required: true
     description: |-
@@ -518,14 +546,17 @@ script:
       name: id
       required: true
     - defaultValue: '0'
-      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      description: The UTC timestamp in seconds of the last update. The incident is
+        only updated if it was modified after the last update time.
       name: lastUpdate
-    description: Gets remote data from a remote incident. This method is only used for debugging and does not update the current incident.
+    description: Gets remote data from a remote incident. This method is only used
+      for debugging and does not update the current incident.
     name: get-remote-data
   - description: Returns the fields to map. This method is only used for debugging.
     name: get-mapping-fields
     arguments: []
-  - description: Gets incident changes. This method is only used for debugging and does not update the current incident.
+  - description: Gets incident changes. This method is only used for debugging and
+      does not update the current incident.
     name: update-remote-system
     arguments: []
   - arguments:
@@ -541,7 +572,9 @@ script:
     - contextPath: Ticket.Transitions.transitions
       description: A list of all possible transitions.
       type: Unknown
-  - description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging.
+  - description: Available from Cortex XSOAR version 6.1.0. This command queries for
+      incidents that were modified since the last update. This method is only used
+      for debugging.
     name: get-modified-remote-data
     arguments: []
   - arguments: []
@@ -556,8 +589,9 @@ script:
       name: role_name
     description: Adds the user to a project.
     name: jira-add-user-to-project
-  - arguments: 
-    - description: An ID or key for a service project to list all organizations associated with.
+  - arguments:
+    - description: An ID or key for a service project to list all organizations associated
+        with.
       name: projectKey
       required: false
     - description: Start index for the returned objects. 0 by default.
@@ -568,7 +602,8 @@ script:
       name: limit
       required: false
       defaultValue: "50"
-    - description: Account ID of the user, which uniquely identifies the user across all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5.
+    - description: Account ID of the user, which uniquely identifies the user across
+        all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5.
       name: accountId
       required: false
     description: Lists all the organizations.
@@ -577,9 +612,11 @@ script:
     - description: The ID of the issue to edit.
       name: issueId
       required: true
-    - description: The name of the assignee. Relevant for Jira Server only, If you are using Jira Cloud, provide the assignee_id argument instead.
+    - description: The name of the assignee. Relevant for Jira Server only, If you
+        are using Jira Cloud, provide the assignee_id argument instead.
       name: assignee
-    - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
+    - description: The account ID of the assignee. Use the jira-get-id-by-attribute
+        command to get the user's account ID.
       name: assignee_id
     description: Edit the assignee of an existing issue.
     name: jira-issue-assign
@@ -616,4 +653,5 @@ defaultmapperin: classifier-mapper-incoming-JiraV2
 supportedModules:
 - X3
 - X5
+- agentix
 fromversion: 5.0.0

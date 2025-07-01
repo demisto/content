@@ -113,7 +113,8 @@ tasks:
       id: 8e468b02-e02c-4aeb-804c-0b73dfa0b1c8
       version: -1
       name: Search for messages by encoded MessageID
-      description: Gets the properties of returned emails. Typically shows partial results. Use the "page_size" and "pages_to_pull" arguments to get all results.
+      description: Gets the properties of returned emails. Typically shows partial
+        results. Use the "page_size" and "pages_to_pull" arguments to get all results.
       script: MicrosoftGraphMail|||msgraph-mail-list-emails
       type: regular
       iscommand: true
@@ -155,7 +156,8 @@ tasks:
       id: 2775b599-4846-4049-8c4e-1e2e660f27c5
       version: -1
       name: Was a matching email found?
-      description: Verifies that an email object with a message ID that matches the InReplyTo ID of the forwarded email was found.
+      description: Verifies that an email object with a message ID that matches the
+        InReplyTo ID of the forwarded email was found.
       type: condition
       iscommand: false
       brand: ""
@@ -219,7 +221,8 @@ tasks:
       id: e2653b70-6db7-4385-8281-0c31a7b5c91c
       version: -1
       name: Get original email
-      description: Retrieves an email message by message ID and uploads the content as an EML file.
+      description: Retrieves an email message by message ID and uploads the content
+        as an EML file.
       script: MicrosoftGraphMail|||msgraph-mail-get-email-as-eml
       type: regular
       iscommand: true
@@ -286,7 +289,8 @@ tasks:
       id: 43134294-3804-4b55-8591-9845b146370f
       version: -1
       name: Verify required inputs
-      description: Verifies that the required input values exist for retrieving the original email.
+      description: Verifies that the required input values exist for retrieving the
+        original email.
       type: condition
       iscommand: false
       brand: ""
@@ -336,7 +340,8 @@ tasks:
       id: 062e413e-5f77-48bf-8f26-fffdaf91b333
       version: -1
       name: Set EncodedMessageID
-      description: Since the MessageID may contain special characters, it should be URL encoded in order to use it in the next task.
+      description: Since the MessageID may contain special characters, it should be
+        URL encoded in order to use it in the next task.
       scriptName: Set
       type: regular
       iscommand: false
@@ -416,3 +421,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

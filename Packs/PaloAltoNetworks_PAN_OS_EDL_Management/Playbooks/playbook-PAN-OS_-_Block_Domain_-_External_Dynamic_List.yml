@@ -66,7 +66,8 @@ tasks:
       id: 1095a8a8-bb7c-4011-8d15-eaa165df3db1
       version: -1
       name: PAN OS - Update Domain EDL
-      description: Updates the instance context with the specified list name and list items, and overrides the path of the remote file with the internal list.
+      description: Updates the instance context with the specified list name and list
+        items, and overrides the path of the remote file with the internal list.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -211,7 +212,9 @@ tasks:
       id: fcd76346-8f56-4df1-82cd-9bb40e24abda
       version: -1
       name: PAN-OS EDL Setup v3
-      description: Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
+      description: Configures an external dynamic list in PAN-OS.\nIn the event that
+        the file exists on the web server, it will sync it to demisto. Then it will
+        create an EDL object and a matching rule.
       playbookName: PAN-OS EDL Setup v3
       type: playbook
       iscommand: false
@@ -450,7 +453,8 @@ inputs:
   value:
     simple: Demisto Remediation - Domain EDL
   required: false
-  description: Domain list from the instance context with which to override the remote file.
+  description: Domain list from the instance context with which to override the remote
+    file.
 - key: LogForwarding
   value: {}
   required: false
@@ -489,3 +493,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

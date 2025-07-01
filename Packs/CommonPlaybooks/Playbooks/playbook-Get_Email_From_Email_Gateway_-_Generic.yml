@@ -3,7 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Get Email From Email Gateway - Generic
-description: This playbook retrieves a specified EML/MSG file directly from the email security gateway product.
+description: This playbook retrieves a specified EML/MSG file directly from the email
+  security gateway product.
 starttaskid: "0"
 tasks:
   "0":
@@ -74,7 +75,8 @@ tasks:
       id: b32916b5-8000-4c43-80d6-fc491edfedd6
       version: -1
       name: Get Email From Email Gateway - FireEye
-      description: This playbook retrieves a specified EML/MSG file directly from FireEye Email Security or Central Management.
+      description: This playbook retrieves a specified EML/MSG file directly from
+        FireEye Email Security or Central Management.
       playbookName: Get Email From Email Gateway - FireEye
       type: playbook
       iscommand: false
@@ -114,7 +116,8 @@ tasks:
       id: 3415ba42-7642-4fd4-8b5c-85e1b3b7004c
       version: -1
       name: Get Email From Email Gateway - Mimecast
-      description: This playbook retrieves a specified EML/MSG file directly from Mimecast.
+      description: This playbook retrieves a specified EML/MSG file directly from
+        Mimecast.
       playbookName: Get Email From Email Gateway - Mimecast
       type: playbook
       iscommand: false
@@ -150,7 +153,8 @@ tasks:
       id: 8c2ce613-3539-48f2-84a9-fecf1d7c0ee3
       version: -1
       name: Get Email From Email Gateway - Proofpoint Protection Server
-      description: This playbook retrieves a specified EML/MSG file directly from the Proofpoint Protection Server.
+      description: This playbook retrieves a specified EML/MSG file directly from
+        the Proofpoint Protection Server.
       playbookName: Get Email From Email Gateway - Proofpoint Protection Server
       type: playbook
       iscommand: false
@@ -208,3 +212,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

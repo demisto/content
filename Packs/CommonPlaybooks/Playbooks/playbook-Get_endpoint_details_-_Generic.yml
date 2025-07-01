@@ -3,7 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Get endpoint details - Generic
-description: "Deprecated. Use the `Endpoint Enrichment - Generic v2.1` playbook instead.\nThis playbook uses the generic command !endpoint to retrieve details on a specific endpoint.\nThis command currently supports the following integrations:\n- Palo Alto Networks Cortex XDR - Investigation and Response.\n- CrowdStrike Falcon. "
+description: "Deprecated. Use the `Endpoint Enrichment - Generic v2.1` playbook instead.\n
+  This playbook uses the generic command !endpoint to retrieve details on a specific
+  endpoint.\nThis command currently supports the following integrations:\n- Palo Alto
+  Networks Cortex XDR - Investigation and Response.\n- CrowdStrike Falcon. "
 starttaskid: "0"
 tasks:
   "0":
@@ -676,3 +679,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

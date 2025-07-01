@@ -3,13 +3,13 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Create ServiceNow Ticket
-description: "Create ServiceNow Ticket allows you to open new tickets as a task from\
-  \ a parent playbook.\nWhen creating the ticket, you can decide to update based on\
-  \ on the ticket's state, which will wait for the ticket to resolve or close with\
-  \ StatePolling. \nAlternatively, you can select to mirror the ServiceNow ticket\
-  \ and incident fields. To apply either of these options, set the SyncTicket value\
-  \ in the playbook inputs to one of the following options: \n1. StatePolling\n2.\
-  \ Mirror\n3. Leave Blank to use none."
+description: "Create ServiceNow Ticket allows you to open new tickets as a task from
+  a parent playbook.\nWhen creating the ticket, you can decide to update based on
+  on the ticket's state, which will wait for the ticket to resolve or close with StatePolling.
+  \nAlternatively, you can select to mirror the ServiceNow ticket and incident fields.
+  To apply either of these options, set the SyncTicket value in the playbook inputs
+  to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to
+  use none."
 starttaskid: "0"
 tasks:
   "0":
@@ -316,7 +316,8 @@ tasks:
       id: 79b53716-fe00-4c51-842a-b767f499a498
       version: -1
       name: Is InstanceName empty?
-      description: Check if there is a playbook input named InstanceName to use it as a ServiceNow instance for the task.
+      description: Check if there is a playbook input named InstanceName to use it
+        as a ServiceNow instance for the task.
       type: condition
       iscommand: false
       brand: ""
@@ -358,7 +359,8 @@ tasks:
       id: 6d1433ef-9414-4cc5-8102-a26119a81bba
       version: -1
       name: Create ServiceNow ticket (without using InstanceName)
-      description: Creates a ServiceNow ticket without using InstanceName, directly to the default ServiceNow instance.
+      description: Creates a ServiceNow ticket without using InstanceName, directly
+        to the default ServiceNow instance.
       script: ServiceNow v2|||servicenow-create-ticket
       type: regular
       iscommand: true
@@ -471,13 +473,13 @@ inputs:
   value:
     simple: Mirror
   required: false
-  description: "The value of the desired sync method with ServiceNow Ticket. You can\
-    \ choose one of the following options:\n1. StatePolling\n2. Mirror \n3. Blank\
-    \ for none \n\nGenericPolling polls for the state of the ticket and runs until\
-    \ the ticket state is either resolved or closed. \n\nMirror - You can use the\
-    \ Mirror option to perform a full sync with the ServiceNow Ticket. The ticket\
-    \ data is synced automatically between ServiceNow and Cortex XSOAR with the ServiceNow\
-    \ mirror feature.\nIf this option is selected, FieldPolling is true by default."
+  description: "The value of the desired sync method with ServiceNow Ticket. You can
+    choose one of the following options:\n1. StatePolling\n2. Mirror \n3. Blank for
+    none \n\nGenericPolling polls for the state of the ticket and runs until the ticket
+    state is either resolved or closed. \n\nMirror - You can use the Mirror option
+    to perform a full sync with the ServiceNow Ticket. The ticket data is synced automatically
+    between ServiceNow and Cortex XSOAR with the ServiceNow mirror feature.\nIf this
+    option is selected, FieldPolling is true by default."
   playbookInputQuery:
 - key: PollingInterval
   value: {}
@@ -494,13 +496,13 @@ inputs:
 - key: AdditionalPollingCommandName
   value: {}
   required: false
-  description: "In this use case, additional polling commands are relevant when using\
-    \ StatePolling, and there is more than one ServiceNow instance. It will specify\
-    \ the polling command to use a specific instance to run on. \nIf so, add \"Using\"\
-    \ to the value. \nThe playbook will then take the instance name as the instance\
-    \ to use.\"  the polling command to use a specific instance to run on. \nIf so,\
-    \ please add \"using\" to the value. \nThe playbook will then take the instance\
-    \ name as the instance to use."
+  description: "In this use case, additional polling commands are relevant when using
+    StatePolling, and there is more than one ServiceNow instance. It will specify
+    the polling command to use a specific instance to run on. \nIf so, add \"Using\"\
+    \ to the value. \nThe playbook will then take the instance name as the instance
+    to use.\"  the polling command to use a specific instance to run on. \nIf so,
+    please add \"using\" to the value. \nThe playbook will then take the instance
+    name as the instance to use."
   playbookInputQuery:
 - key: InstanceName
   value:
@@ -513,7 +515,7 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "The mirror direction. It should be one of the following: \n1. In\n\
+  description: "The mirror direction. It should be one of the following: \n1. In\n
     2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorCommentTags
@@ -585,3 +587,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

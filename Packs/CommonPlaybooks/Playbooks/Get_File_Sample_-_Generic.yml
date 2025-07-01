@@ -144,7 +144,8 @@ tasks:
       id: 0de5f36a-ceca-4ef5-8fc5-8f3268aed0fe
       version: -1
       name: Unzip File
-      description: This playbook checks whether a file has an extension that supports unzipping, and unzips the file.
+      description: This playbook checks whether a file has an extension that supports
+        unzipping, and unzips the file.
       playbookName: Unzip File
       type: playbook
       iscommand: false
@@ -191,7 +192,8 @@ tasks:
       id: 0ef94b0c-f547-471f-8af9-2e75834b30ba
       version: -1
       name: Should files be unzipped?
-      description: Checks whether retrieved files should be unzipped according to the playbook inputs.
+      description: Checks whether retrieved files should be unzipped according to
+        the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -315,7 +317,8 @@ inputs:
 - key: NewFilename
   value: {}
   required: false
-  description: Optional - a new name for the retrieved file. If left empty, the filename will not change.
+  description: Optional - a new name for the retrieved file. If left empty, the filename
+    will not change.
   playbookInputQuery:
 - key: UnzipFile
   value: {}
@@ -381,3 +384,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

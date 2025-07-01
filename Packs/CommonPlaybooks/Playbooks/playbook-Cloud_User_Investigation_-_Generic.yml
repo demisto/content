@@ -498,31 +498,38 @@ inputs:
   value:
     simple: ago(1d)
   required: false
-  description: 'The Search Time for the Azure Log Analytics search query. Default value: ago(1d)'
+  description: 'The Search Time for the Azure Log Analytics search query. Default
+    value: ago(1d)'
   playbookInputQuery:
 - key: failedLogonThreshold
   value:
     simple: "20"
   required: false
-  description: The threshold number of failed logons by the user. Required to determine how many failed logon events count as suspicious events.
+  description: The threshold number of failed logons by the user. Required to determine
+    how many failed logon events count as suspicious events.
   playbookInputQuery:
 - key: MfaAttemptThreshold
   value:
     simple: "10"
   required: false
-  description: The threshold number of MFA failed logon by the user. Required to determine how many MFA failed logon events count as suspicious events.
+  description: The threshold number of MFA failed logon by the user. Required to determine
+    how many MFA failed logon events count as suspicious events.
   playbookInputQuery:
 - key: AwsTimeSearchFrom
   value:
     simple: "1"
   required: false
-  description: "The Search Time for the `GetTime` task used by the Aws Cloud Trail search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
+  description: "The Search Time for the `GetTime` task used by the Aws Cloud Trail
+    search query. \nThis value represents the number of days to include in the search.\n
+    Default value: 1.  (1 Day)"
   playbookInputQuery:
 - key: GcpTimeSearchFrom
   value:
     simple: "1"
   required: false
-  description: "The Search Time for the `GetTime` task used by the GCP Logging search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
+  description: "The Search Time for the `GetTime` task used by the GCP Logging search
+    query. \nThis value represents the number of days to include in the search.\n
+    Default value: 1.  (1 Day)"
   playbookInputQuery:
 - key: GcpProjectName
   value: {}
@@ -534,22 +541,26 @@ inputSections:
   - Username
   - cloudProvider
   name: Incident Management
-  description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods.
+  description: Incident management settings and data, including escalation processes,
+    user engagements, and ticketing methods.
 - inputs:
   - AzureSearchTime
   - failedLogonThreshold
   - MfaAttemptThreshold
   name: Azure Investigation
-  description: Azure Investigation settings and data, including any deep dive incident investigation and verdict determination.
+  description: Azure Investigation settings and data, including any deep dive incident
+    investigation and verdict determination.
 - inputs:
   - AwsTimeSearchFrom
   name: AWS Investigation
-  description: AWS Investigation settings and data, including any deep dive incident investigation and verdict determination.
+  description: AWS Investigation settings and data, including any deep dive incident
+    investigation and verdict determination.
 - inputs:
   - GcpTimeSearchFrom
   - GcpProjectName
   name: GCP Investigation
-  description: GCP Investigation settings and data, including any deep dive incident investigation and verdict determination.
+  description: GCP Investigation settings and data, including any deep dive incident
+    investigation and verdict determination.
 outputSections:
 - outputs:
   - AwsMFAConfigCount
@@ -598,19 +609,24 @@ outputs:
   description: The number of user roles that were changed by the user in the AWS environment.
   type: number
 - contextPath: AwsSuspiciousActivitiesCount
-  description: The number of suspicious activities performed by the user in the AWS environment.
+  description: The number of suspicious activities performed by the user in the AWS
+    environment.
   type: number
 - contextPath: AwsScriptBasedUserAgentCount
-  description: The number of script-based user agent usages by the user in the AWS environment.
+  description: The number of script-based user agent usages by the user in the AWS
+    environment.
   type: number
 - contextPath: AwsAccessKeyActivitiesCount
-  description: The number of access key activities performed by the user in the AWS environment.
+  description: The number of access key activities performed by the user in the AWS
+    environment.
   type: number
 - contextPath: AwsSecurityChangesCount
-  description: The number of security rules that were changed by the user in the AWS environment.
+  description: The number of security rules that were changed by the user in the AWS
+    environment.
   type: number
 - contextPath: AwsAdminActivitiesCount
-  description: The number of administrative activities performed by the user in the AWS environment.
+  description: The number of administrative activities performed by the user in the
+    AWS environment.
   type: number
 - contextPath: AwsApiAccessDeniedCount
   description: The number of API accesses denied by the user in the AWS environment.
@@ -635,13 +651,16 @@ outputs:
   description: The number of failed logins by the user in the G Suite environment.
   type: number
 - contextPath: GsuiteUnusualLoginAllowedCount
-  description: The number of unusual logins performed by the user and allowed in the G Suite environment.
+  description: The number of unusual logins performed by the user and allowed in the
+    G Suite environment.
   type: number
 - contextPath: GsuiteUnusualLoginBlockedCount
-  description: The number of unusual logins performed by the user and blocked in the G Suite environment.
+  description: The number of unusual logins performed by the user and blocked in the
+    G Suite environment.
   type: number
 - contextPath: GsuiteSuspiciousLoginCount
-  description: The number of suspicious logins performed by the user in the G Suite environment.
+  description: The number of suspicious logins performed by the user in the G Suite
+    environment.
   type: number
 - contextPath: GsuiteUserPasswordLeaked
   description: |-
@@ -658,7 +677,8 @@ outputs:
   description: Security rules that were changed by the user in the Azure environment.
   type: string
 - contextPath: AzureUnsuccessSecurityRulesChangeEvents
-  description: Unsuccessful attempts to change security rules by the user in the Azure environment.
+  description: Unsuccessful attempts to change security rules by the user in the Azure
+    environment.
   type: string
 - contextPath: AzureFailLoginCount
   description: The number of failed logins by the user in the Azure environment.
@@ -670,7 +690,8 @@ outputs:
   description: Anomaly events on the user in the Azure environment.
   type: string
 - contextPath: AzureRiskyUserCount
-  description: The number of events where the user was defined as a risky user in the Azure environment.
+  description: The number of events where the user was defined as a risky user in
+    the Azure environment.
   type: number
 - contextPath: AzureUncommonCountryLogonEvents
   description: Uncommon country logon events by the user in the Azure environment.
@@ -682,22 +703,27 @@ outputs:
   description: Uncommon activity events by the user in the Azure environment.
   type: string
 - contextPath: CountAzureEvents.AzureScriptBasedUserAgentCount
-  description: The number of script-based user agent usages by the user in the Azure environment.
+  description: The number of script-based user agent usages by the user in the Azure
+    environment.
   type: number
 - contextPath: CountAzureEvents.AzureAdminActivitiesCount
-  description: The number of administrative activities performed by the user in the Azure environment.
+  description: The number of administrative activities performed by the user in the
+    Azure environment.
   type: number
 - contextPath: CountAzureEvents.AzureSecurityRulesChangeCount
-  description: The number of security rules that were changed by the user in the Azure environment.
+  description: The number of security rules that were changed by the user in the Azure
+    environment.
   type: number
 - contextPath: CountAzureEvents.AzureUnsuccessSecurityRulesChangeCount
-  description: The number of unsuccessful attempts to change security rules by the user in the Azure environment.
+  description: The number of unsuccessful attempts to change security rules by the
+    user in the Azure environment.
   type: number
 - contextPath: CountAzureEvents.AzureAnomaliesCount
   description: The number of anomaly events on the user in the Azure environment.
   type: number
 - contextPath: CountAzureEvents.AzureUncommonCountryLogonCount
-  description: The number of uncommon country logon events by the user in the Azure environment.
+  description: The number of uncommon country logon events by the user in the Azure
+    environment.
   type: number
 - contextPath: CountAzureEvents.AzureUncommonVolumeCount
   description: The number of uncommon volume events by the user in the Azure environment.
@@ -713,3 +739,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -142,7 +142,9 @@ tasks:
       id: 6112c304-54e5-4954-85d2-44b1e4e9ab75
       version: -1
       name: Cloud IAM Enrichment - Generic
-      description: This playbook is responsible for collecting and enriching data on Identity Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
+      description: This playbook is responsible for collecting and enriching data
+        on Identity Access Management (IAM) in cloud environments (AWS, Azure, and
+        GCP).
       playbookName: Cloud IAM Enrichment - Generic
       type: playbook
       iscommand: false
@@ -257,11 +259,15 @@ outputs:
   description: The instances.
   type: unknown
 - contextPath: GoogleCloudCompute.Instances.networkInterfaces
-  description: An array of network configurations for this instance. These specify how interfaces are configured to interact with other network services, such as connecting to the internet. Multiple interfaces are supported per instance.
+  description: An array of network configurations for this instance. These specify
+    how interfaces are configured to interact with other network services, such as
+    connecting to the internet. Multiple interfaces are supported per instance.
 - contextPath: GoogleCloudCompute.Instances.disks
-  description: Array of disks associated with this instance. Persistent disks must be created before you can assign them.
+  description: Array of disks associated with this instance. Persistent disks must
+    be created before you can assign them.
 - contextPath: GoogleCloudCompute.Instances.metadata
-  description: The metadata key/value pairs assigned to this instance. This includes custom metadata and predefined keys.
+  description: The metadata key/value pairs assigned to this instance. This includes
+    custom metadata and predefined keys.
 - contextPath: GoogleCloudCompute.Instances.scheduling
   description: Sets the scheduling options for this instance.
 - contextPath: Azure.Compute
@@ -327,3 +333,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -283,7 +283,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: URL of the webpage or file url to detonate. The URL is taken from the context.
+  description: URL of the webpage or file url to detonate. The URL is taken from the
+    context.
   playbookInputQuery:
 - key: Interval
   value:
@@ -295,7 +296,8 @@ inputs:
   value:
     simple: "600"
   required: false
-  description: The duration after which to stop polling and to resume the playbook (in seconds).
+  description: The duration after which to stop polling and to resume the playbook
+    (in seconds).
   playbookInputQuery:
 - key: ReportFileType
   value: {}
@@ -334,7 +336,8 @@ outputs:
   description: Filename.
   type: string
 - contextPath: File.Malicious.Description
-  description: For malicious files, the reason the vendor determined that the file is malicious.
+  description: For malicious files, the reason the vendor determined that the file
+    is malicious.
   type: string
 - contextPath: DBotScore.Indicator
   description: The indicator we tested.
@@ -431,3 +434,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

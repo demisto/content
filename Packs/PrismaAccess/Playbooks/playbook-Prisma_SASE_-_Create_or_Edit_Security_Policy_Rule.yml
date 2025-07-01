@@ -3,7 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Prisma SASE - Create or Edit Security Policy Rule
-description: "This playbook handles the creation or editing of the Security Policy Rule for Prisma SASE integration. \n"
+description: "This playbook handles the creation or editing of the Security Policy
+  Rule for Prisma SASE integration. \n"
 starttaskid: "0"
 tasks:
   "0":
@@ -623,7 +624,8 @@ inputs:
 - key: TSGID
   value: {}
   required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
   playbookInputQuery:
 - key: Folder
   value:
@@ -772,3 +774,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

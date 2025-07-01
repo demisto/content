@@ -119,7 +119,10 @@ tasks:
       id: 97b85f3e-e339-490d-8f4c-7a188cfc0f25
       version: -1
       name: Block File - Generic v2
-      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+      description: "This playbook is used to block files from running on endpoints.
+        \nThis playbook supports the following integrations:\n- Palo Alto Networks
+        Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise
+        Response\n- Cylance Protect v2\n"
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
@@ -194,7 +197,18 @@ tasks:
       id: 53c7faa6-ec4b-46c0-8322-71972e65dad0
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations
+        that are enabled. The direction of the traffic that will be blocked is determined
+        by the XSOAR user (and set by default to outgoing)\nNote the following:\n\
+        -  some of those integrations require specific parameters to run, which are
+        based on the playbook inputs. Also, certain integrations use FW rules or appended
+        network objects.\n- Note that the appended network objects should be specified
+        in blocking rules inside the system later on. \n\n\nSupported integrations
+        for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n
+        * Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n
+        * Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n
+        * Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n
+        * Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -1322,7 +1336,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: 'An array of malicious IPs to block. Enter a comma-separated list of IPs (i.e.: 1.1.1.1,2.2.2.2).'
+  description: 'An array of malicious IPs to block. Enter a comma-separated list of
+    IPs (i.e.: 1.1.1.1,2.2.2.2).'
   playbookInputQuery:
 - key: URL
   value:
@@ -1551,24 +1566,32 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: "Should the given indicators be automatically blocked, or should the user be prompted to select whether to block them?\n\nPossible values: True/False. \nDefault value: True.\n\nIf set to True - No prompt will appear. All of the provided indicators will be blocked automatically.\n\nIf set to False - The user will be prompted to select which indicators to block."
+  description: "Should the given indicators be automatically blocked, or should the
+    user be prompted to select whether to block them?\n\nPossible values: True/False.
+    \nDefault value: True.\n\nIf set to True - No prompt will appear. All of the provided
+    indicators will be blocked automatically.\n\nIf set to False - The user will be
+    prompted to select which indicators to block."
   playbookInputQuery:
 - key: CustomBlockRule
   value:
     simple: "True"
   required: false
-  description: "This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.\nSpecify \"True\" to create new Custom Block Rules (2 FW rules inside the PAN-OS device). \nFor \"False\" - no rules will be created."
+  description: "This input determines whether Palo Alto Networks Panorama or Firewall
+    Custom Block Rules are used.\nSpecify \"True\" to create new Custom Block Rules
+    (2 FW rules inside the PAN-OS device). \nFor \"False\" - no rules will be created."
   playbookInputQuery:
 - key: LogForwarding
   value: {}
   required: false
-  description: Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
+  description: Panorama log forwarding object name. Indicate what type of Log Forwarding
+    setting will be specified in the PAN-OS custom rules.
   playbookInputQuery:
 - key: AutoCommit
   value:
     simple: "No"
   required: false
-  description: "This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. \nYes - Commit automatically.\nNo - Commit manually."
+  description: "This input determines whether to commit the configuration automatically
+    on PAN-OS devices and other FWs. \nYes - Commit automatically.\nNo - Commit manually."
   playbookInputQuery:
 - key: StaticAddressGroup
   value: {}
@@ -1609,7 +1632,9 @@ inputs:
   value:
     simple: Blocked Indicator In Systems
   required: false
-  description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
+  description: Insert a tag name with which indicators will get tagged. This tag can
+    be used later in the External Dynamic Lists integration by using the tag for filtering
+    IPs in the indicator query.
   playbookInputQuery:
 - key: DAG
   value: {}
@@ -1622,7 +1647,10 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: "Possible values: True/False.  Default: True.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  description: "Possible values: True/False.  Default: True.\nWhether to provide user
+    verification for blocking those IPs. \n\nFalse - No prompt will be displayed to
+    the user.\nTrue - The server will ask the user for blocking verification and will
+    display the blocking list."
   playbookInputQuery:
 - key: InternalRange
   value:
@@ -1646,22 +1674,28 @@ inputs:
             value:
               simple: ','
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
+  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated
+    list should be provided in CIDR notation. For example, a list of ranges would
+    be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 - key: SiteName
   value: {}
   required: false
-  description: Signal Sciences WAF - Enter the site name for the integration to be applied. The site name can be found in your instance console.
+  description: Signal Sciences WAF - Enter the site name for the integration to be
+    applied. The site name can be found in your instance console.
   playbookInputQuery:
 - key: AkamaiNetworkListID
   value: {}
   required: false
-  description: Akamai's WAF network list ID, which is mandatory to be mentioned for the integration. The chosen IPs will be added to this ID.
+  description: Akamai's WAF network list ID, which is mandatory to be mentioned for
+    the integration. The chosen IPs will be added to this ID.
   playbookInputQuery:
 - key: CiscoFWSource
   value: {}
   required: false
-  description: Cisco ASA (firewall) value for the rule's source object in the created blocking rule. Can be the value of an IPv4, an address block, or the name of a network object.
+  description: Cisco ASA (firewall) value for the rule's source object in the created
+    blocking rule. Can be the value of an IPv4, an address block, or the name of a
+    network object.
   playbookInputQuery:
 - key: InputEnrichment
   value:
@@ -1770,3 +1804,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

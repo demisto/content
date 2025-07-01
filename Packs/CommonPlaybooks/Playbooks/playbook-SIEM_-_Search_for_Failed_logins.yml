@@ -110,7 +110,8 @@ tasks:
       id: a5b9a9a6-679c-4513-89a8-3d9b2e4c735c
       version: -1
       name: Is SIEM enabled and the user name is defined?
-      description: Returns 'yes' if integration brand is available and the user name is defined. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available and the user name
+        is defined. Otherwise returns 'no'
       type: condition
       iscommand: false
       brand: ""
@@ -253,7 +254,10 @@ tasks:
         complex:
           root: inputs.SplunkLatestTime
       query:
-        simple: index=${inputs.SplunkIndex} user=${inputs.Username} (sourcetype="WinEventLog" source="WinEventLog:Security" (EventCode=4771 OR (EventCode=4624 (Logon_Type=2 OR Logon_Type=7 OR Logon_Type=10)))) OR (sourcetype=syslog  (( _raw="*Failed password*" OR _raw="*FAILED LOGIN*" OR _raw="*Invalid user*" )))
+        simple: index=${inputs.SplunkIndex} user=${inputs.Username} (sourcetype="WinEventLog"
+          source="WinEventLog:Security" (EventCode=4771 OR (EventCode=4624 (Logon_Type=2
+          OR Logon_Type=7 OR Logon_Type=10)))) OR (sourcetype=syslog  (( _raw="*Failed
+          password*" OR _raw="*FAILED LOGIN*" OR _raw="*Invalid user*" )))
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -691,7 +695,10 @@ tasks:
       interval_in_seconds:
         simple: "1"
       query_expression:
-        simple: select * from events WHERE LogSourceTypeName(deviceType) = 'Microsoft Windows Security Event Log' and username='${inputs.Username}' and "EventID"='4771'  or "EventID"='4625' and "Logon Type"='2' OR "Logon Type"='7' OR "Logon Type"='10' ${inputs.QRadarSearchTime}
+        simple: select * from events WHERE LogSourceTypeName(deviceType) = 'Microsoft
+          Windows Security Event Log' and username='${inputs.Username}' and "EventID"='4771'  or
+          "EventID"='4625' and "Logon Type"='2' OR "Logon Type"='7' OR "Logon Type"='10'
+          ${inputs.QRadarSearchTime}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -750,13 +757,15 @@ inputs:
   value:
     simple: Last 1 days
   required: false
-  description: 'The Search Time for the QRadar search query. for example:  Last 1 days'
+  description: 'The Search Time for the QRadar search query. for example:  Last 1
+    days'
   playbookInputQuery:
 - key: AzureSearchTime
   value:
     simple: ago(1d)
   required: false
-  description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
+  description: 'The Search Time for the Azure Log Analytics search query. for example:
+    ago(1d)'
   playbookInputQuery:
 - key: Username
   value: {}
@@ -770,7 +779,8 @@ outputs:
 - contextPath: QRadar.SearchEvents
   description: The result of the QRadar search.
 - contextPath: Splunk.Result
-  description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
+  description: The results of the Splunk search. The results are a JSON array, in
+    which each item is a Splunk event.
 - contextPath: AzureFailedLogonLogs
   description: The result of the Azure Log Analytics search.
   type: unknown
@@ -785,3 +795,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

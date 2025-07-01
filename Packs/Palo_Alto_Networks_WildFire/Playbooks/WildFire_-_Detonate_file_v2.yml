@@ -301,7 +301,8 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: APK,JAR,DOC,DOCX,XLS,XLSX,PPT,PPTX,OOXML,PE32,PE,PDF,DMG,PKG,RAR,7Z,ELF,DLL,MSI,RTF,LNK
+                  simple: 
+                    APK,JAR,DOC,DOCX,XLS,XLSX,PPT,PPTX,OOXML,PE32,PE,PDF,DMG,PKG,RAR,7Z,ELF,DLL,MSI,RTF,LNK
               ignorecase: true
           - - operator: notContainsString
               left:
@@ -337,7 +338,8 @@ tasks:
       id: f92ac323-d156-4809-8d15-0ce03970ec12
       version: -1
       name: Are there any supported files to detonate?
-      description: Check if there are any supported files to upload to wildfire for detonation.
+      description: Check if there are any supported files to upload to wildfire for
+        detonation.
       type: condition
       iscommand: false
       brand: ""
@@ -452,7 +454,8 @@ inputs:
   value:
     simple: "480"
   required: false
-  description: The duration after which to stop polling and to resume the playbook. (in seconds)
+  description: The duration after which to stop polling and to resume the playbook.
+    (in seconds)
   playbookInputQuery:
 - key: ReportFileType
   value: {}
@@ -553,3 +556,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

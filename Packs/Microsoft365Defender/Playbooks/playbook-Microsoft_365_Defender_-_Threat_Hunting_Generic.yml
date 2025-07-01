@@ -218,7 +218,8 @@ inputs:
 - key: URLDomain
   value: {}
   required: false
-  description: Domain or URL to search within emails. Can be a single domain or URL, or an array of domains or URLs to search.
+  description: Domain or URL to search within emails. Can be a single domain or URL,
+    or an array of domains or URLs to search.
   playbookInputQuery:
 - key: SHA256
   value: {}
@@ -228,7 +229,8 @@ inputs:
 - key: IPAddress
   value: {}
   required: false
-  description: The source or destination IP address to search. Can be a single address or an array of IP addresses.
+  description: The source or destination IP address to search. Can be a single address
+    or an array of IP addresses.
   playbookInputQuery:
 - key: MessageID
   value: {}
@@ -256,31 +258,38 @@ inputs:
   value:
     simple: "50"
   required: false
-  description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the default.
+  description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the
+    default.
   playbookInputQuery:
 - key: ListenerMailbox
   value: {}
   required: false
-  description: The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored.
+  description: The mailbox of the listening integration. In case it is provided, the
+    emails found in it will be ignored.
   playbookInputQuery:
 outputs:
 - contextPath: Microsoft365Defender.RetrievedEmails
   description: Email objects containing relevant fields related to URL clicks events.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.InternetMessageId
-  description: Public-facing identifier for the email that is set by the sending email system. This will be the value of the "Message-ID" header.
+  description: Public-facing identifier for the email that is set by the sending email
+    system. This will be the value of the "Message-ID" header.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.SenderFromDomain
-  description: Sender domain in the FROM header, which is visible to email recipients on their email clients.
+  description: Sender domain in the FROM header, which is visible to email recipients
+    on their email clients.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.EmailDirection
-  description: 'Direction of the email relative to your network: Inbound, Outbound, Intra-org.'
+  description: 'Direction of the email relative to your network: Inbound, Outbound,
+    Intra-org.'
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.DeliveryLocation
-  description: 'Location where the email was delivered: Inbox/Folder, On-premises/External, Junk, Quarantine, Failed, Dropped, Deleted items.'
+  description: 'Location where the email was delivered: Inbox/Folder, On-premises/External,
+    Junk, Quarantine, Failed, Dropped, Deleted items.'
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.AuthenticationDetails
-  description: List of pass or fail verdicts by email authentication protocols like DMARC, DKIM, SPF or a combination of multiple authentication types (CompAuth).
+  description: List of pass or fail verdicts by email authentication protocols like
+    DMARC, DKIM, SPF or a combination of multiple authentication types (CompAuth).
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.DeliveryAction
   description: 'Delivery action of the email: Delivered, Junked, Blocked, or Replaced.'
@@ -295,16 +304,20 @@ outputs:
   description: Detection name for malware or other threats found.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.RecipientEmailAddress
-  description: Email address of the recipient, or email address of the recipient after distribution list expansion.
+  description: Email address of the recipient, or email address of the recipient after
+    distribution list expansion.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.EmailAction
-  description: 'Final action taken on the email based on filter verdict, policies, and user actions: Move message to junk mail folder, Add X-header, Modify subject, Redirect message, Delete message, Send to quarantine, No action taken, Bcc message.'
+  description: 'Final action taken on the email based on filter verdict, policies,
+    and user actions: Move message to junk mail folder, Add X-header, Modify subject,
+    Redirect message, Delete message, Send to quarantine, No action taken, Bcc message.'
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.EmailLanguage
   description: Email language.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.SenderFromAddress
-  description: Sender email address in the FROM header, which is visible to email recipients on their email clients.
+  description: Sender email address in the FROM header, which is visible to email
+    recipients on their email clients.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.Timestamp
   description: Date and time when the record was generated.
@@ -316,10 +329,15 @@ outputs:
   description: IPv4 address of the last detected mail server that relayed the message.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.ConfidenceLevel
-  description: List of confidence levels of any spam or phishing verdicts. For spam, this column shows the spam confidence level (SCL), indicating if the email was skipped (-1), found to be not spam (0,1), found to be spam with moderate confidence (5,6), or found to be spam with high confidence (9). For phishing, this column displays whether the confidence level is "High" or "Low".
+  description: List of confidence levels of any spam or phishing verdicts. For spam,
+    this column shows the spam confidence level (SCL), indicating if the email was
+    skipped (-1), found to be not spam (0,1), found to be spam with moderate confidence
+    (5,6), or found to be spam with high confidence (9). For phishing, this column
+    displays whether the confidence level is "High" or "Low".
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
-  description: Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats.
+  description: Verdict from the email filtering stack on whether the email contains
+    malware, phishing, or other threats.
   type: unknown
 - contextPath: Microsoft365Defender.RetrievedEmails.SHA256
   description: SHA256 of the attachments (if exists in the email).
@@ -337,16 +355,20 @@ outputs:
   description: User principal name (UPN) of the account.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.IsClickedThrough
-  description: Indicates whether the user was able to click through to the original URL or not.
+  description: Indicates whether the user was able to click through to the original
+    URL or not.
   type: number
 - contextPath: Microsoft365Defender.RetrievedEmails.BulkComplaintLevel
-  description: Threshold assigned to email from bulk mailers. A high bulk complain level (BCL) means the email is more likely to generate complaints, and thus more likely to be spam.
+  description: Threshold assigned to email from bulk mailers. A high bulk complain
+    level (BCL) means the email is more likely to generate complaints, and thus more
+    likely to be spam.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.IPAddress
   description: IP address assigned to the device during communication.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.DetectionMethods
-  description: Methods used to detect whether the URL contains or leads to malware, phishing, or other threats.
+  description: Methods used to detect whether the URL contains or leads to malware,
+    phishing, or other threats.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.ActionType
   description: Type of activity that triggered the event.
@@ -358,13 +380,16 @@ outputs:
   description: Unique identifier for the email, generated by Office 365.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.DisplayName
-  description: Name of the sender displayed in the address book, typically a combination of a given or first name, a middle initial, and a last name or surname.
+  description: Name of the sender displayed in the address book, typically a combination
+    of a given or first name, a middle initial, and a last name or surname.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.SenderMailFromDomain
-  description: Sender domain in the MAIL FROM header, also known as the envelope sender or the Return-Path address.
+  description: Sender domain in the MAIL FROM header, also known as the envelope sender
+    or the Return-Path address.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.SenderMailFromAddress
-  description: Sender email address in the MAIL FROM header, also known as the envelope sender or the Return-Path address.
+  description: Sender email address in the MAIL FROM header, also known as the envelope
+    sender or the Return-Path address.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.ClickTimestamp
   description: Date and time when the record was generated (URL click).
@@ -377,3 +402,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -3,7 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: QRadar Indicator Hunting V2
-description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
+description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
+  IP addresses, domains, or urls. '
 starttaskid: "0"
 tasks:
   "0":
@@ -1331,7 +1332,8 @@ tasks:
       id: 777b2d48-c9f0-433d-8de3-7b015ba4c472
       version: -1
       name: Set detected IP addresses as external
-      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set it context.
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1424,7 +1426,8 @@ tasks:
       id: 1b6be11a-d587-4ef8-8784-8541d2761d85
       version: -1
       name: Determine whether the IP address is internal or external
-      description: Returns yes if the IP is in one of the ranges provided, returns no otherwise.
+      description: Returns yes if the IP is in one of the ranges provided, returns
+        no otherwise.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -1461,7 +1464,8 @@ tasks:
       id: 61ca426a-bbab-45f5-8594-a0cadbd399b7
       version: -1
       name: Set detected IP addresses as internal
-      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set it context.
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2965,7 +2969,8 @@ inputs:
 - key: QradarMD5Field
   value: {}
   required: false
-  description: MD5 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+  description: MD5 field to search in QRadar. If none are specified, the search will
+    use a payload contains filter.
   playbookInputQuery:
 - key: SHA1
   value: {}
@@ -2975,7 +2980,8 @@ inputs:
 - key: QradarSHA1Field
   value: {}
   required: false
-  description: SHA1 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+  description: SHA1 field to search in QRadar. If none are specified, the search will
+    use a payload contains filter.
   playbookInputQuery:
 - key: SHA256
   value: {}
@@ -2985,7 +2991,8 @@ inputs:
 - key: QradarSHA256Field
   value: {}
   required: false
-  description: SHA256 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+  description: SHA256 field to search in QRadar. If none are specified, the search
+    will use a payload contains filter.
   playbookInputQuery:
 - key: IPAddress
   value: {}
@@ -2997,7 +3004,8 @@ inputs:
   value:
     simple: sourceip,destinationip
   required: false
-  description: IP field to search in QRadar. If none are specified, the search will use sourceip or destinationip (combined).
+  description: IP field to search in QRadar. If none are specified, the search will
+    use sourceip or destinationip (combined).
   playbookInputQuery:
 - key: URLDomain
   value: {}
@@ -3008,7 +3016,8 @@ inputs:
 - key: QradarURLDomainField
   value: {}
   required: false
-  description: 'URL/Domain field to search in QRadar. If none are specified, the search will use a payload contains filter. '
+  description: 'URL/Domain field to search in QRadar. If none are specified, the search
+    will use a payload contains filter. '
   playbookInputQuery:
 - key: TimeFrame
   value:
@@ -3043,19 +3052,23 @@ inputs:
             value:
               simple: ','
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
+  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated
+    list should be provided in CIDR notation. For example, a list of ranges would
+    be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 - key: InvestigationIPFields
   value:
     simple: sourceip,destinationip
   required: true
-  description: The values of these QRadar fields will be used for the playbook IP addresses outputs.
+  description: The values of these QRadar fields will be used for the playbook IP
+    addresses outputs.
   playbookInputQuery:
 - key: InvestigationUserFields
   value:
     simple: username
   required: true
-  description: The values of these QRadar fields will be used for the playbook user name outputs.
+  description: The values of these QRadar fields will be used for the playbook user
+    name outputs.
   playbookInputQuery:
 outputs:
 - contextPath: QRadar.DetectedUsers
@@ -3068,10 +3081,12 @@ outputs:
   description: External IP addresses detected based on fields and inputs in your search.
   type: string
 - contextPath: QRadar.DetectedInternalHosts
-  description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.
+  description: Internal host names detected based on hosts in your assets table. Note
+    that the data accuracy depends on how the Asset mapping is configured in QRadar.
   type: string
 - contextPath: QRadar.DetectedExternalHosts
-  description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.
+  description: External host names detected based on hosts in your assets table. Note
+    that the data accuracy depends on how the Asset mapping is configured in QRadar.
   type: string
 tests:
 - test_Qradar_v2
@@ -3083,3 +3098,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -126,7 +126,8 @@ tasks:
       id: 426d5e5a-76ec-4310-8157-e3ce1795f88f
       version: -1
       name: 'Is Rasterize integration enabled? '
-      description: Checks if there is an active instance of the Rasterize integration enabled.
+      description: Checks if there is an active instance of the Rasterize integration
+        enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -224,7 +225,8 @@ tasks:
       id: 71af55e1-a11a-42f9-84f6-ce3ce93e17ce
       version: -1
       name: Capture screenshots of the URL?
-      description: Checks if the playbook's Rasterize input is set to "True", which determines whether screenshots of the URLs are created.
+      description: Checks if the playbook's Rasterize input is set to "True", which
+        determines whether screenshots of the URLs are created.
       type: condition
       iscommand: false
       brand: ""
@@ -371,7 +373,8 @@ tasks:
       id: 0a60d379-a6c4-449e-87e2-4939b8d0ad13
       version: -1
       name: Verify URLs?
-      description: Checks if the playbook's VerifyURL input is set to "True", to determine whether to perform SSL verification on the URLs.
+      description: Checks if the playbook's VerifyURL input is set to "True", to determine
+        whether to perform SSL verification on the URLs.
       type: condition
       iscommand: false
       brand: ""
@@ -678,3 +681,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

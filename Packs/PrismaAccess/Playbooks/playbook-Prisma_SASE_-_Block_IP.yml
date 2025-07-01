@@ -619,7 +619,8 @@ inputs:
 - key: TSGID
   value: {}
   required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
   playbookInputQuery:
 - key: IP
   value: {}
@@ -733,3 +734,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

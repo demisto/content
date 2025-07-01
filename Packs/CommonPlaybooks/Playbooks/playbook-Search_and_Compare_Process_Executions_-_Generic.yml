@@ -258,18 +258,24 @@ inputs:
   value:
     simple: 7 days
   required: false
-  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks
+    ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The
+    default is the last 24 hours.'
   playbookInputQuery:
 - key: StringSimilarityThreshold
   value:
     simple: "0.5"
   required: false
-  description: StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.
+  description: StringSimilarity automation threshold. A number between 0 and 1, where
+    1 represents the most similar results of string comparisons. The automation will
+    output only the results with a similarity score equal to or greater than the specified
+    threshold.
   playbookInputQuery:
 - key: SearchXDRAlerts
   value: {}
   required: false
-  description: Set to "True" if you want to hunt for processes that are part of XDR alerts
+  description: Set to "True" if you want to hunt for processes that are part of XDR
+    alerts
   playbookInputQuery:
 outputs:
 - contextPath: StringSimilarity
@@ -286,3 +292,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -32,7 +32,8 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: This is the SailPoint IdentityNow event collector integration for Cortex XSIAM.
+description: This is the SailPoint IdentityNow event collector integration for Cortex
+  XSIAM.
 display: SailPoint IdentityNow Event Collector
 name: SailPointIdentityNowEventCollector
 supportlevelheader: xsoar
@@ -41,7 +42,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them.
+      description: If true, the command will create events, otherwise it will only
+        display them.
       name: should_push_events
       predefined:
       - 'true'
@@ -58,7 +60,9 @@ script:
       description: Date from which to get events.
       name: from_date
     deprecated: false
-    description: Gets events from SailPoint IdentityNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding API request limitations.
+    description: Gets events from SailPoint IdentityNow. This command is used for
+      developing/debugging and is to be used with caution, as it can create events,
+      leading to event duplication and exceeding API request limitations.
 
     name: identitynow-get-events
   dockerimage: demisto/python3:3.11.10.115186
@@ -75,6 +79,7 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)

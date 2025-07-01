@@ -2,7 +2,8 @@ id: calculate_severity_-_3rd-party_integrations
 version: -1
 name: Calculate Severity - 3rd-party integrations
 fromversion: 5.0.0
-description: Calculates the incident severity level according to the methodology of a 3rd-party integration.
+description: Calculates the incident severity level according to the methodology of
+  a 3rd-party integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -480,3 +481,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

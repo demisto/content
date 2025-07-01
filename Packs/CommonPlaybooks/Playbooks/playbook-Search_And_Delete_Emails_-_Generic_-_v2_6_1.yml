@@ -3,7 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Search And Delete Emails - Generic v2
-description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense.'
+description: 'This playbook searches and deletes emails with similar attributes of
+  a malicious email using one of the following integrations: * EWS * Office 365 *
+  Gmail * Agari Phishing Defense.'
 starttaskid: "0"
 tasks:
   "0":
@@ -44,7 +46,8 @@ tasks:
       id: 0a7ca589-107b-48e4-8705-2becca697165
       version: -1
       name: Search And Delete Emails - EWS
-      description: This playbook searches EWS to identify and delete emails with similar attributes of a malicious email.
+      description: This playbook searches EWS to identify and delete emails with similar
+        attributes of a malicious email.
       playbookName: Search And Delete Emails - EWS
       type: playbook
       iscommand: false
@@ -192,7 +195,8 @@ tasks:
       id: 421d875d-ff1a-4808-8451-228e23cd6605
       version: -1
       name: In what integration should emails be searched and deleted?
-      description: Checks which integration and playbook should run the search and delete action, by checking the SearchAndDeleteIntegration playbook input.
+      description: Checks which integration and playbook should run the search and
+        delete action, by checking the SearchAndDeleteIntegration playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -595,7 +599,8 @@ tasks:
       id: 7db64c69-57c5-4457-8779-2363bcdd4714
       version: -1
       name: From where should emails be searched and deleted?
-      description: Checks whether a target to search and delete emails from was specified. Determined by the O365ExchangeLocation playbook input.
+      description: Checks whether a target to search and delete emails from was specified.
+        Determined by the O365ExchangeLocation playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -658,7 +663,8 @@ tasks:
       id: 25801150-ef91-4ccc-8275-5ca5225fc857
       version: -1
       name: Manually decide where to search & delete the email
-      description: Allows the analyst to decide where to search for and delete the email - from the recipient's mailbox, or from all available mailboxes?
+      description: Allows the analyst to decide where to search for and delete the
+        email - from the recipient's mailbox, or from all available mailboxes?
       type: condition
       iscommand: false
       brand: ""
@@ -1160,7 +1166,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether to modify KQL to search this week (the last 7 days) only. Only modify the KQL if the SearchThisWeek input is set to true AND the provided KQL query is not already time-bounded (it does not already contain LastModifiedTime).
+      description: Check whether to modify KQL to search this week (the last 7 days)
+        only. Only modify the KQL if the SearchThisWeek input is set to true AND the
+        provided KQL query is not already time-bounded (it does not already contain
+        LastModifiedTime).
       id: 027d5ff5-7e8e-41c0-8184-b33789251d51
       iscommand: false
       name: Search this week only and query not already time-bounded?
@@ -1340,7 +1349,8 @@ inputs:
 - key: SearchAndDeleteIntegration
   value: {}
   required: true
-  description: The integration in which to run the search and delete action. Can be O365, Gmail, EWS, or Agari Phishing Defense.
+  description: The integration in which to run the search and delete action. Can be
+    O365, Gmail, EWS, or Agari Phishing Defense.
   playbookInputQuery:
 - key: O365ExchangeLocation
   value:
@@ -1348,28 +1358,39 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: Used only in O365. A comma-separated list of mailboxes/distribution groups to include, or use the value "All" to include all.
+  description: Used only in O365. A comma-separated list of mailboxes/distribution
+    groups to include, or use the value "All" to include all.
   playbookInputQuery:
 - key: O365KQL
   value: {}
   required: false
-  description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL). Note that if you are using the LastModifiedTime filter in your KQL query, the SearchThisWeek input will not be taken into consideration.
+  description: Used only in O365. Text search string or a query that is formatted
+    using the Keyword Query Language (KQL). Note that if you are using the LastModifiedTime
+    filter in your KQL query, the SearchThisWeek input will not be taken into consideration.
   playbookInputQuery:
 - key: O365AllowNotFoundExchangeLocations
   value:
     simple: "False"
   required: false
-  description: Used only in O365. Whether to include mailboxes other than regular user mailboxes in the compliance search.
+  description: Used only in O365. Whether to include mailboxes other than regular
+    user mailboxes in the compliance search.
   playbookInputQuery:
 - key: O365DeleteType
   value: {}
   required: false
-  description: Used only in O365. The delete type to perform on the search results. Possible values are Hard or Soft, or leave empty to select manually (Hard = Unrecoverable, Soft=Recoverable).
+  description: Used only in O365. The delete type to perform on the search results.
+    Possible values are Hard or Soft, or leave empty to select manually (Hard = Unrecoverable,
+    Soft=Recoverable).
   playbookInputQuery:
 - key: O365ExchangeLocationExclusion
   value: {}
   required: false
-  description: 'Used only when searching and deleting emails in O365. The exchange location. Determines where to search and delete emails searched using O365 playbooks. Use the value ''All'' to search all mailboxes, use ''SingleMailbox'' to search and delete the email only from the recipient''s inbox, or use ''Manual'' to decide manually for every incident. Note: Searching all mailboxes may take a significant amount of time.'
+  description: 'Used only when searching and deleting emails in O365. The exchange
+    location. Determines where to search and delete emails searched using O365 playbooks.
+    Use the value ''All'' to search all mailboxes, use ''SingleMailbox'' to search
+    and delete the email only from the recipient''s inbox, or use ''Manual'' to decide
+    manually for every incident. Note: Searching all mailboxes may take a significant
+    amount of time.'
   playbookInputQuery:
 - key: SearchThisWeek
   value:
@@ -1404,3 +1425,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -1,7 +1,9 @@
 id: Eradication Plan - Delete File
 version: -1
 name: Eradication Plan - Delete File
-description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook executes actions of file deletion, which is a crucial step in the eradication process."
+description: "This playbook is one of the sub-playbooks in the eradication plan. \n
+  This playbook executes actions of file deletion, which is a crucial step in the
+  eradication process."
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +44,8 @@ tasks:
       id: 7c4ec73d-fff2-45de-8387-699ac5c64a2d
       version: -1
       name: Auto file deletion
-      description: Initiates a new endpoint script execution to delete the specified file.
+      description: Initiates a new endpoint script execution to delete the specified
+        file.
       script: '|||core-run-script-delete-file'
       type: regular
       iscommand: true
@@ -215,7 +218,9 @@ inputs:
   value:
     simple: Delete
   required: false
-  description: "Choose 'Quarantine' or 'Delete' to avoid file remediation conflicts. \nFor example, choosing 'Delete' ignores the 'Quarantine file' task under the containment playbook and executes only file deletion."
+  description: "Choose 'Quarantine' or 'Delete' to avoid file remediation conflicts.
+    \nFor example, choosing 'Delete' ignores the 'Quarantine file' task under the
+    containment playbook and executes only file deletion."
   playbookInputQuery:
 - key: EndpointID
   value:
@@ -243,3 +248,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

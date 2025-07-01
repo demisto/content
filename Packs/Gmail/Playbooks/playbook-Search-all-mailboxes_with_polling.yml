@@ -1,7 +1,8 @@
 id: Search all mailboxes - Gmail with polling
 version: -1
 name: Search all mailboxes - Gmail with polling
-description: This playbook searches Gmail records for all Google users, designed for large companies with over 2500 Google users.
+description: This playbook searches Gmail records for all Google users, designed for
+  large companies with over 2500 Google users.
 starttaskid: "0"
 tasks:
   "0":
@@ -114,7 +115,8 @@ tasks:
       id: b377f60a-0aa1-41aa-8692-8a019a6dd430
       version: -1
       name: Search in mailboxes Gmail (Loop) with polling
-      description: This playbook should only run as a sub-playbook for the Search-all-mailboxes - Gmail playbook, it should not run alone.
+      description: This playbook should only run as a sub-playbook for the Search-all-mailboxes
+        - Gmail playbook, it should not run alone.
       playbookName: Search in mailboxes Gmail (Loop) with polling
       type: playbook
       iscommand: false
@@ -224,12 +226,14 @@ inputs:
 - key: fields
   value: {}
   required: false
-  description: Enables partial responses to be retrieved in a comma-separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
+  description: Enables partial responses to be retrieved in a comma-separated list.
+    For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
   playbookInputQuery:
 - key: filename
   value: {}
   required: false
-  description: Attachments with a certain name or file type. For example, "pdf" or "report.pdf"
+  description: Attachments with a certain name or file type. For example, "pdf" or
+    "report.pdf"
   playbookInputQuery:
 - key: from
   value: {}
@@ -259,7 +263,8 @@ inputs:
 - key: labels-ids
   value: {}
   required: false
-  description: Returns messages with labels that match all of the specified label IDs in a comma-separated list.
+  description: Returns messages with labels that match all of the specified label
+    IDs in a comma-separated list.
   playbookInputQuery:
 - key: subject
   value: {}
@@ -269,7 +274,9 @@ inputs:
 - key: query
   value: {}
   required: false
-  description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
+  description: 'Returns messages matching the specified query. Supports the same query
+    format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid:
+    is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
   playbookInputQuery:
 outputs:
 - contextPath: Gmail.Mailboxes
@@ -306,3 +313,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

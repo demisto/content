@@ -3,7 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Prisma SASE - Create or Edit EDL object
-description: This playbook helps to create an EDL object within the Prisma SASE Objects section.
+description: This playbook helps to create an EDL object within the Prisma SASE Objects
+  section.
 starttaskid: "0"
 tasks:
   "0":
@@ -521,7 +522,8 @@ tasks:
         tooltip: ""
         readonly: false
       title: Choose your EDL type
-      description: Your EDL type is missing and we want to ensure that your EDL object will be created successfully.
+      description: Your EDL type is missing and we want to ensure that your EDL object
+        will be created successfully.
       sender: ""
       expired: false
       totalanswers: 0
@@ -562,7 +564,8 @@ inputs:
 - key: TSGID
   value: {}
   required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
   playbookInputQuery:
 - key: IPListName
   value: {}
@@ -596,7 +599,8 @@ inputs:
 - key: FrequencyTime
   value: {}
   required: false
-  description: The frequency hour. If the frequency argument is daily, weekly or monthly, a value must be provided. Possible values are 00-23.
+  description: The frequency hour. If the frequency argument is daily, weekly or monthly,
+    a value must be provided. Possible values are 00-23.
   playbookInputQuery:
 - key: EDLObjectType
   value: {}
@@ -657,3 +661,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
