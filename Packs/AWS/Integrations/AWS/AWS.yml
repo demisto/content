@@ -1469,9 +1469,11 @@ script:
       - 'add'
       - 'remove'
     - name: user_ids
+      isArray: true
       description: 'The AWS account IDs to add to or remove from the list of users that have launch permissions for the AMI.'
       required: false
     - name: user_groups
+      isArray: true
       description: 'The user groups to add to or remove from the list of user groups that have launch permissions for the AMI.'
       required: false
     - name: description
