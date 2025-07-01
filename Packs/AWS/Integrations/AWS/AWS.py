@@ -584,7 +584,7 @@ class EC2:
         # Parse user IDs from comma-separated string
         user_ids_list = None
         if user_ids := args.get("user_ids"):
-            user_ids_list = [uid.strip() for uid in user_ids.split(",") if uid.strip()]
+            user_ids_list = argToList(user_ids)
 
         # Parse group parameter
         group_names_list = None

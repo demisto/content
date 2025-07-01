@@ -1350,8 +1350,7 @@ script:
       description: 'The snapshot attribute to modify.'
       required: true
       auto: PREDEFINED
-      predefined:
-      - 'createVolumePermission'
+      defaultValue: 'createVolumePermission'
     - name: operation_type
       description: 'The operation to perform.'
       required: true
@@ -1423,7 +1422,7 @@ script:
       - 'true'
       - 'false'
     - name: groups
-      description:  CSV list. Replaces the security groups of the instance with the specified security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC.
+      description:  "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
     - name: attribute
       description: 'The name of the attribute to modify. Possible values: sourceDestCheck, groupSet, ebsOptimized, sriovNetSupport, enaSupport, enclaveOptions, disableApiStop'
       predefined:
