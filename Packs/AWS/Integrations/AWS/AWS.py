@@ -151,9 +151,7 @@ class S3:
         Returns:
             CommandResults: Results of the command execution
         """
-        bucket = args.get("bucket")
-        if not bucket:
-            return CommandResults(readable_output="Error: 'bucket' parameter is required")
+        bucket = args["bucket"]
 
         try:
             if target_bucket := args.get("target_bucket"):
