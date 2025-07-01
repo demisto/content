@@ -915,17 +915,20 @@ inputs:
 - key: Tags class
   value: {}
   required: false
-  description: Values can be Actor, Campaign, Exploit, Malicious Behavior, Malware Family
+  description: Values can be Actor, Campaign, Exploit, Malicious Behavior, Malware
+    Family
   playbookInputQuery:
 - key: Tags private
   value: {}
   required: false
-  description: Values can be True, False. If true the search will only focus on private (non public) objects. Default is false
+  description: Values can be True, False. If true the search will only focus on private
+    (non public) objects. Default is false
   playbookInputQuery:
 - key: Tags public
   value: {}
   required: false
-  description: Values can be True, False. If true the search will only focus on public (non private) objects. Default is false.
+  description: Values can be True, False. If true the search will only focus on public
+    (non private) objects. Default is false.
   playbookInputQuery:
 - key: Commodity
   value: {}
@@ -935,7 +938,8 @@ inputs:
 - key: Unit 42
   value: {}
   required: false
-  description: Values can be True, False. Default is false objects that have been analyzed by Palo Alto's Unit 42 global threat intelligence team.
+  description: Values can be True, False. Default is false objects that have been
+    analyzed by Palo Alto's Unit 42 global threat intelligence team.
   playbookInputQuery:
 outputs:
 - contextPath: AutoFocus.SessionsResults
@@ -956,3 +960,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

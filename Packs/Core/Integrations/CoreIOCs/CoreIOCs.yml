@@ -41,7 +41,9 @@ configuration:
   name: query
   required: true
   type: 0
-description: The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
+description: The Cortex Core - IOCs integration uses the Cortex API for detection
+  and response, by natively integrating network, endpoint, and cloud data to stop
+  sophisticated attacks.
 display: Indicators detection
 name: Cortex Core - IOC
 script:
@@ -60,7 +62,8 @@ script:
     description: Sync your IOC with Cortex and delete the previous version.
     name: core-iocs-sync
   - arguments:
-    - description: IOCs to push. leave empty to push all recently modified IOCs.the indicators.
+    - description: IOCs to push. leave empty to push all recently modified IOCs.the
+        indicators.
       isArray: true
       name: indicator
     description: Push modified IOCs to Cortex.
@@ -69,9 +72,11 @@ script:
     - description: The time of the file creation (use UTC time zone).
       name: time
       required: true
-    description: Set sync time manually (Do not use this command unless you unredstandard the consequences).
+    description: Set sync time manually (Do not use this command unless you unredstandard
+      the consequences).
     name: core-iocs-set-sync-time
-  - description: Creates the sync file for the manual process. Run this command when instructed by the Cortex support team.
+  - description: Creates the sync file for the manual process. Run this command when
+      instructed by the Cortex support team.
     name: core-iocs-create-sync-file
   - arguments:
     - description: The indicator to enable.
@@ -103,3 +108,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

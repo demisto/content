@@ -637,7 +637,10 @@ tasks:
       id: 9c16cf70-885d-4b45-8333-5722e50f131a
       version: -1
       name: Ticket Management - Generic
-      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
+      description: "`Ticket Management - Generic` allows you to open new tickets or
+        update comments to the existing ticket in the following ticketing systems:\n
+        -ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow
+        - Ticket Management`\n-`Zendesk - Ticket Management`\n"
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
@@ -803,7 +806,8 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Whether to close the alert automatically or manually, after an analyst's review.
+  description: Whether to close the alert automatically or manually, after an analyst's
+    review.
   playbookInputQuery:
 - key: AutoContainment
   value: {}
@@ -844,12 +848,14 @@ inputs:
 - key: serviceNowSeverity
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  description: The severity of the new ticket. Leave empty for ServiceNow default
+    severity.
   playbookInputQuery:
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
   playbookInputQuery:
 - key: serviceNowCategory
   value: {}
@@ -864,7 +870,8 @@ inputs:
 - key: ZendeskPriority
   value: {}
   required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  description: The urgency with which the ticket should be addressed. Allowed values
+    are "urgent", "high", "normal", or "low".
   playbookInputQuery:
 - key: ZendeskRequester
   value: {}
@@ -874,7 +881,8 @@ inputs:
 - key: ZendeskStatus
   value: {}
   required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  description: The state of the ticket. Allowed values are "new", "open", "pending",
+    "hold", "solved", or "closed".
   playbookInputQuery:
 - key: ZendeskSubject
   value:
@@ -890,7 +898,8 @@ inputs:
 - key: ZendeskType
   value: {}
   required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  description: The type of this ticket. Allowed values are "problem", "incident",
+    "question", or "task".
   playbookInputQuery:
 - key: ZendeskAssigne
   value: {}
@@ -912,7 +921,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  description: 'Whether to append a new comment to the ticket for each endpoint in
+    the incident. Possible values: True/False.'
   playbookInputQuery:
 - key: CommentToAdd
   value:
@@ -924,16 +934,19 @@ inputSections:
 - inputs:
   - AutoCloseAlert
   name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
+  description: Alert management settings and data, including escalation processes,
+    and user engagements.
 - inputs:
   - scannerIP
   name: Investigation
-  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+  description: Investigation settings and data, including any deep dive alert investigation
+    and verdict determination.
 - inputs:
   - AutoContainment
   - HostAutoContainment
   name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
 - inputs:
   - ShouldOpenTicket
   - serviceNowShortDescription
@@ -973,3 +986,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

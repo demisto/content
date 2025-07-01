@@ -3,16 +3,16 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: AWS IAM User Access Investigation - Remediation
-description: "Deprecated. Use `Cloud IAM User Access Investigation` instead. Respond to Cortex XDR Cloud alerts where an AWS IAM user`s access key\
-  \ is used suspiciously to access the cloud environment. \nThe following alerts are\
-  \ supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration\
-  \ testing tool activity\n- Suspicious API call from a Tor exit node\n This is a\
-  \ beta playbook, which lets you implement and test pre-release software. Although\
-  \ AWS is supported, we are working towards multi-cloud support. As the playbook\
-  \ is beta, it might contain bugs. Updates to the playbook during the beta phase\
-  \ might include non-backward compatible features. We encourage your feedback on\
-  \ the quality and usability of the content to help us identify and fix issues,\
-  \ so we can continually improve the content.\n"
+description: "Deprecated. Use `Cloud IAM User Access Investigation` instead. Respond
+  to Cortex XDR Cloud alerts where an AWS IAM user`s access key is used suspiciously
+  to access the cloud environment. \nThe following alerts are supported for AWS environments.\n
+  - Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious
+  API call from a Tor exit node\n This is a beta playbook, which lets you implement
+  and test pre-release software. Although AWS is supported, we are working towards
+  multi-cloud support. As the playbook is beta, it might contain bugs. Updates to
+  the playbook during the beta phase might include non-backward compatible features.
+  We encourage your feedback on the quality and usability of the content to help us
+  identify and fix issues, so we can continually improve the content.\n"
 deprecated: true
 starttaskid: "0"
 tasks:
@@ -220,10 +220,10 @@ tasks:
       id: 5a2c2e61-0d88-498f-8dad-13e34ec2fdf9
       version: -1
       name: Check for AWS user login profile
-      description: "Check the user AWS login profile configuration.\nIf a login profile\
-        \ is configured, it needs to be deleted. \n\nThe user login profile configuration\
-        \ can be found under https://console.aws.amazon.com/iam/home#/users/[username]\
-        \ under the security credentials tab."
+      description: "Check the user AWS login profile configuration.\nIf a login profile
+        is configured, it needs to be deleted. \n\nThe user login profile configuration
+        can be found under https://console.aws.amazon.com/iam/home#/users/[username]
+        under the security credentials tab."
       type: condition
       iscommand: false
       brand: ""
@@ -661,7 +661,8 @@ inputs:
 - key: AutoDeleteProfile
   value: {}
   required: false
-  description: Whether to automatically delete the user login profile, if it exists (True/False).
+  description: Whether to automatically delete the user login profile, if it exists
+    (True/False).
   playbookInputQuery:
 - key: IP
   value: {}
@@ -702,3 +703,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

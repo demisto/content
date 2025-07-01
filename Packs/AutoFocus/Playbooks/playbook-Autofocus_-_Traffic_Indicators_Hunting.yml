@@ -3,10 +3,14 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Autofocus - Traffic Indicators Hunting
-description: "The playbook queries the PANW Autofocus session and samples log data for traffic indicators such as URLs, IP addresses, and domains.
-\n\nA simple search mode queries Autofocus based on the traffic indicators specified in the playbook inputs. Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
-\nWe recommended using the Autofocus UI to create an advanced query, exporting it, and pasting it into the relevant playbook inputs.
-\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+description: "The playbook queries the PANW Autofocus session and samples log data
+  for traffic indicators such as URLs, IP addresses, and domains. \n\nA simple search
+  mode queries Autofocus based on the traffic indicators specified in the playbook
+  inputs. Advanced search mode queries can also be used with multiple query parameters,
+  but require all field names, parameters, and operators (JSON format) to be specified.
+  \nWe recommended using the Autofocus UI to create an advanced query, exporting it,
+  and pasting it into the relevant playbook inputs. \n\nNote that multiple search
+  values should be separated by commas only (without spaces or any special characters)."
 starttaskid: "0"
 tasks:
   "0":
@@ -1655,16 +1659,20 @@ inputs:
   value:
     simple: session,sample
   required: true
-  description: "Which Autofocus search types should be executed. \n\nPossible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. 
-  \n\nSample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis.
-  \n\nSession-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission.
-  \n\nTag-based search identifies the most popular tags."
+  description: "Which Autofocus search types should be executed. \n\nPossible values
+    are session, sample, tag, or all. Session and sample are the recommended search
+    types for this playbook. \n\nSample-based search detects threat indicators or
+    identifiers within samples sent to WildFire for analysis. \n\nSession-based search
+    detects threat indicators or identifiers within various context details and session
+    data provided by samples during sample submission. \n\nTag-based search identifies
+    the most popular tags."
   playbookInputQuery:
 - key: Scope
   value:
     simple: global
   required: true
-  description: Search scope for sample and session. Possible values are industry, organization, or global.
+  description: Search scope for sample and session. Possible values are industry,
+    organization, or global.
   playbookInputQuery:
 - key: SampleQuery
   value: {}
@@ -1717,7 +1725,10 @@ inputs:
 - key: Wildfire Verdict
   value: {}
   required: false
-  description: "Filter results by WildFire classification assigned to samples based on properties, behaviors, and activities observed for files or email links during static and dynamic analysis.\n\nPossible values are malware, benign, phishing, and greyware. "
+  description: "Filter results by WildFire classification assigned to samples based
+    on properties, behaviors, and activities observed for files or email links during
+    static and dynamic analysis.\n\nPossible values are malware, benign, phishing,
+    and greyware. "
   playbookInputQuery:
 outputs:
 - contextPath: Autofocus.Samples.HuntingResults
@@ -1836,3 +1847,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

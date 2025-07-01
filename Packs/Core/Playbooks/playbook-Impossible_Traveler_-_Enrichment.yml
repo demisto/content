@@ -46,7 +46,8 @@ tasks:
       id: 26e7340f-7890-4435-8c78-04ad7fcbafca
       version: -1
       name: Is there account to be enriched?
-      description: Checks whether there is a username for the offending user in context, and whether Active Directory v2 is enabled.
+      description: Checks whether there is a username for the offending user in context,
+        and whether Active Directory v2 is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -154,7 +155,8 @@ tasks:
       id: eb064458-d034-4248-89a9-3fac30ef7520
       version: -1
       name: Parse HTTP response JSON
-      description: 'Parse a given JSON string "value" to a representative object. For example: ''{"a": "value"}'' => {"a": "value"}.'
+      description: 'Parse a given JSON string "value" to a representative object.
+        For example: ''{"a": "value"}'' => {"a": "value"}.'
       scriptName: ParseJSON
       type: regular
       iscommand: false
@@ -824,3 +826,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

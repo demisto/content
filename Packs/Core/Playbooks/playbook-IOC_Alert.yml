@@ -1,7 +1,19 @@
 id: IOC Alert
 version: -1
 name: IOC Alert
-description: "IOCs provide the ability to alert on known malicious objects on endpoints across the organization. \n\n**Analysis Actions:**\nThe playbook will use several enrichment sources to determine the IOC verdict. Additionally, will use the Analytics module to run a prevalence check for the IOC.\n\n**Response Actions:**\nThe playbook's first response action is a containment plan that is based on the playbook input. In that phase, the playbook will execute endpoint isolation\n\n**Investigative Actions:**\nWhen the playbook executes, it checks for additional abnormal activity using the Endpoint Investigation Plan playbook that can indicate the endpoint might be compromised.\n\n**Remediation Actions:**\nIn case results are found within the investigation phase, the playbook will execute remediation actions that include containment and eradication.\n\nThis phase will execute the following containment actions:\n\n* File quarantine\n* Endpoint isolation\n\nAnd the following eradication actions:\n\n* Manual process termination\n* Manual file deletion"
+description: "IOCs provide the ability to alert on known malicious objects on endpoints
+  across the organization. \n\n**Analysis Actions:**\nThe playbook will use several
+  enrichment sources to determine the IOC verdict. Additionally, will use the Analytics
+  module to run a prevalence check for the IOC.\n\n**Response Actions:**\nThe playbook's
+  first response action is a containment plan that is based on the playbook input.
+  In that phase, the playbook will execute endpoint isolation\n\n**Investigative Actions:**\n
+  When the playbook executes, it checks for additional abnormal activity using the
+  Endpoint Investigation Plan playbook that can indicate the endpoint might be compromised.\n
+  \n**Remediation Actions:**\nIn case results are found within the investigation phase,
+  the playbook will execute remediation actions that include containment and eradication.\n
+  \nThis phase will execute the following containment actions:\n\n* File quarantine\n
+  * Endpoint isolation\n\nAnd the following eradication actions:\n\n* Manual process
+  termination\n* Manual file deletion"
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +54,8 @@ tasks:
       id: e0f81dd8-c1b5-4641-80c2-d06d57e246e9
       version: -1
       name: Found suspicious IOC?
-      description: Checks if any suspicious IOCs were found to continue with the alert investigation.
+      description: Checks if any suspicious IOCs were found to continue with the alert
+        investigation.
       type: condition
       iscommand: false
       brand: ""
@@ -341,7 +354,9 @@ tasks:
       id: d28beff8-6a1a-47ab-8fe9-f894e9a17cfc
       version: -1
       name: Enrichment for Verdict
-      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
+      description: This playbook checks prior alert closing reasons and performs enrichment
+        and prevalence checks on different IOC types. It then returns the information
+        needed to establish the alert's verdict.
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
@@ -351,7 +366,8 @@ tasks:
       - "10"
     scriptarguments:
       CloseReason:
-        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved -
+          Known Issue
       Domain:
         complex:
           root: ExtractedIndicators
@@ -401,7 +417,11 @@ tasks:
       id: 42c60c2c-36bc-43db-8a99-2120db91b67c
       version: -1
       name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      description: "This playbook handles all the containment actions available with
+        Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine
+        file\n* Block indicators\n* Clear user session (currently, the playbook supports
+        only Okta)\n\nNote: The playbook inputs enable manipulating the execution
+        flow. Read the input descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -467,7 +487,12 @@ tasks:
       id: 323c4f4e-36a1-4cc9-8c31-d54582ed410e
       version: -1
       name: Endpoint Investigation Plan
-      description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      description: "This playbook handles all the endpoint investigation actions available
+        with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE Tactics\n
+        * Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n
+        * MITRE techniques\n* File hash (currently, the playbook supports only SHA256)\
+        \  \n\nNote: The playbook inputs enable manipulating the execution flow. Read
+        the input descriptions for details."
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
@@ -892,7 +917,11 @@ tasks:
       id: 9ea917dd-abb0-425f-81b1-0496a82a1d86
       version: -1
       name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      description: "This playbook handles all the containment actions available with
+        Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine
+        file\n* Block indicators\n* Clear user session (currently, the playbook supports
+        only Okta)\n\nNote: The playbook inputs enable manipulating the execution
+        flow. Read the input descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -984,7 +1013,11 @@ tasks:
       id: 527b0732-8b4e-45eb-8c22-a61057190ef3
       version: -1
       name: Eradication Plan
-      description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:\n* Reset user password\n* Delete file\n* Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      description: "This playbook handles all the eradication actions available with
+        Cortex XSIAM, including the following tasks:\n* Reset user password\n* Delete
+        file\n* Kill process (currently, the playbook supports terminating a process
+        by name)  \n\nNote: The playbook inputs enable manipulating the execution
+        flow. Read the input descriptions for details."
       playbookName: Eradication Plan
       type: playbook
       iscommand: false
@@ -1154,7 +1187,10 @@ tasks:
       id: f77aa4eb-f400-4a50-829f-4ce59cad479f
       version: -1
       name: Ticket Management - Generic
-      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
+      description: "`Ticket Management - Generic` allows you to open new tickets or
+        update comments to the existing ticket in the following ticketing systems:\n
+        -ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow
+        - Ticket Management`\n-`Zendesk - Ticket Management`\n"
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
@@ -1263,19 +1299,22 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Whether to block suspicious/malicious indicators automatically. Specify True/False.
+  description: Whether to block suspicious/malicious indicators automatically. Specify
+    True/False.
   playbookInputQuery:
 - key: ShouldCloseAutomatically
   value:
     simple: "True"
   required: false
-  description: Whether to close the alert automatically if it's established verdict is False Positive. Specify True/False.
+  description: Whether to close the alert automatically if it's established verdict
+    is False Positive. Specify True/False.
   playbookInputQuery:
 - key: PreHostContainment
   value:
     simple: "False"
   required: false
-  description: Whether to isolate the host before the investigation phase in case an IOC was found to be suspicious. Specify True/False.
+  description: Whether to isolate the host before the investigation phase in case
+    an IOC was found to be suspicious. Specify True/False.
   playbookInputQuery:
 - key: ShouldHandleFPautomatically
   value: {}
@@ -1321,114 +1360,115 @@ inputs:
     simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowShortDescription
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: A short description of the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowImpact
   value: {}
   required: false
   description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowUrgency
   value: {}
   required: false
   description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowSeverity
   value: {}
   required: false
   description: The severity of the new ticket. Leave empty for ServiceNow default
     severity.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowTicketType
   value: {}
   required: false
   description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
     "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowCategory
   value: {}
   required: false
   description: The category of the ServiceNow ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowAssignmentGroup
   value: {}
   required: false
   description: The group to which to assign the new ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskPriority
   value: {}
   required: false
   description: The urgency with which the ticket should be addressed. Allowed values
     are "urgent", "high", "normal", or "low".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskRequester
   value: {}
   required: false
   description: The user who requested this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskStatus
   value: {}
   required: false
   description: The state of the ticket. Allowed values are "new", "open", "pending",
     "hold", "solved", or "closed".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskSubject
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: The value of the subject field for this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskTags
   value: {}
   required: false
   description: The array of tags applied to this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskType
   value: {}
   required: false
   description: The type of this ticket. Allowed values are "problem", "incident",
     "question", or "task".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskAssigne
   value: {}
   required: false
   description: The agent currently assigned to the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskCollaborators
   value: {}
   required: false
   description: The users currently CC'ed on the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: description
   value:
     simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
   required: false
   description: The ticket description.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: addCommentPerEndpoint
   value:
     simple: "True"
   required: false
-  description: 'Whether to append a new comment to the  ticket for each endpoint in the incident.
-    Possible values: True/False.'
-  playbookInputQuery: null
+  description: 'Whether to append a new comment to the  ticket for each endpoint in
+    the incident. Possible values: True/False.'
+  playbookInputQuery:
 - key: CommentToAdd
   value:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - ShouldCloseAutomatically
   - ShouldHandleFPautomatically
   name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
+  description: Alert management settings and data, including escalation processes,
+    and user engagements.
 - inputs:
   - PreHostContainment
   - AutoEradication
@@ -1437,7 +1477,8 @@ inputSections:
   - FileRemediation
   - AutoRestoreEndpoint
   name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
 - inputs:
   - ShouldOpenTicket
   - serviceNowShortDescription
@@ -1467,7 +1508,7 @@ outputSections:
 outputs: []
 tests:
 - Test Playbook - IOC Alert
-marketplaces: 
+marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.6.0
@@ -1476,3 +1517,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

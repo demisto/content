@@ -1,7 +1,16 @@
 id: Large Upload Alert
 version: -1
 name: Large Upload Alert
-description: "The playbook investigates Cortex XDR alerts involving large upload alerts. \nThe playbook consists of the following procedures:\n- Searches for similar previous alerts that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
+description: "The playbook investigates Cortex XDR alerts involving large upload alerts.
+  \nThe playbook consists of the following procedures:\n- Searches for similar previous
+  alerts that were closed as false positives.\n- Enrichment and investigation of the
+  initiator and destination hostname and IP address.\n- Enrichment and investigation
+  of the initiator user, process, file, or command if it exists.\n- Detection of related
+  indicators and analysis of the relationship between the detected indicators.\n-
+  Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious
+  indicators.\n- Endpoint isolation.\nThis playbook supports the following Cortex
+  XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload
+  (FTP)\n- Large Upload (HTTPS)"
 starttaskid: "0"
 tasks:
   "0":
@@ -73,7 +82,8 @@ tasks:
       id: 72d68f27-3f59-4b81-8e76-0672b557a892
       version: -1
       name: Find Similar Alerts
-      description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
+      description: Find past similar incidents based on incident fields' similarity.
+        Includes an option to also display indicators similarity.
       scriptName: DBotFindSimilarIncidents
       type: regular
       iscommand: false
@@ -91,11 +101,14 @@ tasks:
       minimunIncidentSimilarity:
         simple: "0.8"
       query:
-        simple: status:closed -closeReason:New -closeReason:Under Investigation -closeReason:Resolved - True Positive
+        simple: status:closed -closeReason:New -closeReason:Under Investigation -closeReason:Resolved
+          - True Positive
       similarCategoricalField:
-        simple: alert.appid,alert.remoteport,alert.initiatorsha256,alert.cgosha256,alert.osparentsha256
+        simple: 
+          alert.appid,alert.remoteport,alert.initiatorsha256,alert.cgosha256,alert.osparentsha256
       similarTextField:
-        simple: alert.initiatedby,alert.remoteport,alert.initiatorcmd,alert.osparentcmd,alert.remoteip,alert.remotehost,alert.cgocmd,alert.cgosha256,alert.osparentsha256,alert.username,alert.initiatorsha256,alert.cgoname,alert.osparentname
+        simple: 
+          alert.initiatedby,alert.remoteport,alert.initiatorcmd,alert.osparentcmd,alert.remoteip,alert.remotehost,alert.cgocmd,alert.cgosha256,alert.osparentsha256,alert.username,alert.initiatorsha256,alert.cgoname,alert.osparentname
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -120,7 +133,8 @@ tasks:
       id: c5a5bd0f-7d6e-4e90-8a9c-ee8cc950dcd8
       version: -1
       name: Found Results?
-      description: Determine if previous false positive alerts have been detected with similar characteristics.
+      description: Determine if previous false positive alerts have been detected
+        with similar characteristics.
       type: condition
       iscommand: false
       brand: ""
@@ -165,7 +179,8 @@ tasks:
       id: 1ec586df-20a7-443a-8739-b444dcd6c8da
       version: -1
       name: Investigation Should be Continued?
-      description: Determines whether an alert requires further investigation if similar previous false positive alerts were found.
+      description: Determines whether an alert requires further investigation if similar
+        previous false positive alerts were found.
       type: condition
       iscommand: false
       brand: ""
@@ -305,7 +320,8 @@ tasks:
       id: e865ea1c-7558-4b04-8c30-778d7107c2f0
       version: -1
       name: Check Uploaded Data Volume
-      description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
+      description: Determines if the amount of data uploaded to an external host exceeds
+        the defined threshold amount.
       type: condition
       iscommand: false
       brand: ""
@@ -1183,7 +1199,8 @@ tasks:
       id: fd553753-a938-48a1-85e5-229e4fead72e
       version: -1
       name: Early containment enabled?
-      description: Checks whether early containment is enabled for this playbook before executing containment.
+      description: Checks whether early containment is enabled for this playbook before
+        executing containment.
       type: condition
       iscommand: false
       brand: ""
@@ -1621,7 +1638,12 @@ tasks:
       id: ed863d05-e3ef-409f-89d9-70fac8f65414
       version: -1
       name: Endpoint Investigation Plan
-      description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook handles all the endpoint investigation actions by
+        performing the following tasks  on every alert associated with the alert:\n
+        * Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker
+        IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook
+        supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the
+        execution flow; read the input descriptions for details."
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
@@ -1761,7 +1783,16 @@ tasks:
       id: c9c91b29-bca6-4a8e-8019-6293aa15fe02
       version: -1
       name: Command-Line Analysis
-      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
+      description: "This playbook takes a command line from the alert and performs
+        the following actions:\n- Checks for base64 string and decodes if exists\n
+        - Extracts and enriches indicators from the command line\n- Checks specific
+        arguments for malicious usage \n\nAt the end of the playbook, it sets a possible
+        verdict for the command line, based on the finding:\n1. Indicators found in
+        the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n
+        4. Usage of malicious tools\n5. Indication of network activity\n6. Indication
+        of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of
+        command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'\
+        \  and check \"For Each Input\"."
       playbookName: Command-Line Analysis
       type: playbook
       iscommand: false
@@ -2866,7 +2897,25 @@ tasks:
       id: 54b0d9f0-f693-45b4-87ba-11ff89012f78
       version: -1
       name: Manual Investigation
-      description: "Upon review, the playbook did not identify any obvious malicious indicators associated with the alert. However, there are some noteworthy observations that require manual investigation. \n\n**Review the following alert details and determine whether remediation is necessary:**\n1. Verify if previous false positive alerts with similar characteristics have been detected.\n2. Review the additional alerts within the alert, if any exist.\n3. Examine the additional alerts retrieved by the sub-playbooks associated with the initiator account, similar command line, or initiator host.\n4. Check the FW application ID to ensure it is a known and authorized application within the organization (if the activity and application are valid, add the ID to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n5. Check the initiator process to ensure it is a known and authorized process within the organization (if the activity and process are valid, add the process name to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n6. Analyze the command line analysis results and any additional alerts with similar initiator command lines retrieved from the 'Cortex XDR - Search and Compare Process Executions - XDR Alerts' sub-playbook.\n7. Determine whether the user is aware of the upload activity and what caused the massive upload that triggered the alert.\n8. Verify whether the uploaded files contain sensitive information."
+      description: "Upon review, the playbook did not identify any obvious malicious
+        indicators associated with the alert. However, there are some noteworthy observations
+        that require manual investigation. \n\n**Review the following alert details
+        and determine whether remediation is necessary:**\n1. Verify if previous false
+        positive alerts with similar characteristics have been detected.\n2. Review
+        the additional alerts within the alert, if any exist.\n3. Examine the additional
+        alerts retrieved by the sub-playbooks associated with the initiator account,
+        similar command line, or initiator host.\n4. Check the FW application ID to
+        ensure it is a known and authorized application within the organization (if
+        the activity and application are valid, add the ID to the 'FWApps_Processes_Whitlist'
+        playbook input to avoid false positives).\n5. Check the initiator process
+        to ensure it is a known and authorized process within the organization (if
+        the activity and process are valid, add the process name to the 'FWApps_Processes_Whitlist'
+        playbook input to avoid false positives).\n6. Analyze the command line analysis
+        results and any additional alerts with similar initiator command lines retrieved
+        from the 'Cortex XDR - Search and Compare Process Executions - XDR Alerts'
+        sub-playbook.\n7. Determine whether the user is aware of the upload activity
+        and what caused the massive upload that triggered the alert.\n8. Verify whether
+        the uploaded files contain sensitive information."
       type: condition
       iscommand: false
       brand: ""
@@ -3052,7 +3101,9 @@ tasks:
       id: 279b4c05-7734-46aa-807a-7fab9fa62905
       version: -1
       name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex Data Lake \n- Autofocus\n- Microsoft 365 Defender"
+      description: "This playbook enables threat hunting for IOCs in your enterprise.
+        It currently supports the following integrations: \n- Splunk\n- Qradar\n-
+        Pan-os \n- Cortex Data Lake \n- Autofocus\n- Microsoft 365 Defender"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -3901,7 +3952,11 @@ inputs:
   value:
     simple: ${lists.PrivateIPs}
   required: false
-  description: 'A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  description: 'A list of IP ranges to check the IP against. The list should be provided
+    in CIDR notation, separated by commas. An example of a list of ranges would be:
+    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
+    will use default list provided in the IsIPInRanges script (the known IPv4 private
+    address ranges).'
   playbookInputQuery:
 - key: FurtherInvestigation
   value:
@@ -3956,9 +4011,11 @@ inputs:
   playbookInputQuery:
 - key: FWApps_Processes_Whitlist
   value:
-    simple: ip,tcp,udp,ssl,syslog,quic,Chrome.exe,Firefox.exe,Opera.exe,Safari.exe,iexplore.exe,msedge.exe,brave.exe
+    simple: 
+      ip,tcp,udp,ssl,syslog,quic,Chrome.exe,Firefox.exe,Opera.exe,Safari.exe,iexplore.exe,msedge.exe,brave.exe
   required: false
-  description: A list of known and authorized FW application IDs and processes used in the organization.
+  description: A list of known and authorized FW application IDs and processes used
+    in the organization.
   playbookInputQuery:
 - key: Alert_ID
   value:
@@ -3980,3 +4037,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
