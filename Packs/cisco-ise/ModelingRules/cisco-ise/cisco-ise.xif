@@ -157,6 +157,7 @@ Key_Values
 alter 
     logType = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s(\w+)\s"),0)
 | filter logType = "CISE_Alarm"
+| alter
     Admin = arrayindex(regextract(_raw_log, "Admin=([^\,\;]+)"),0),
     Calling_Station_Id_ipv4 = arrayindex(regextract(_raw_log, "Calling Station Id=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
     Calling_Station_Id_ipv6 = arrayindex(regextract(_raw_log, "Calling Station Id=((?:(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4}|(?:[A-Fa-f0-9]{1,4}:){1,7}:|(?:[A-Fa-f0-9]{1,4}:){1,6}:[A-Fa-f0-9]{1,4}|(?:[A-Fa-f0-9]{1,4}:){1,5}(?::[A-Fa-f0-9]{1,4}){1,2}|(?:[A-Fa-f0-9]{1,4}:){1,4}(?::[A-Fa-f0-9]{1,4}){1,3}|(?:[A-Fa-f0-9]{1,4}:){1,3}(?::[A-Fa-f0-9]{1,4}){1,4}|(?:[A-Fa-f0-9]{1,4}:){1,2}(?::[A-Fa-f0-9]{1,4}){1,5}|[A-Fa-f0-9]{1,4}:(?:(?::[A-Fa-f0-9]{1,4}){1,6})|:(?::[A-Fa-f0-9]{1,4}){1,7}|::))"),0),
@@ -164,8 +165,8 @@ alter
     Cause = arrayindex(regextract(_raw_log, "Cause=([^\=]+)"),0),
     Description = rtrim(arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\w+:\s([^:]+)"),0)),
     Endpoint_ipv4 = arrayindex(regextract(_raw_log, "Endpoint=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
-    Endpoint_ipv6 = arrayindex(regextract(_raw_log, "Endpoint=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"),0)
-    File_name = arrayindex(regextract(_raw_log, "back up file name: \'([^\']+)\'"),0)
+    Endpoint_ipv6 = arrayindex(regextract(_raw_log, "Endpoint=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"),0),
+    File_name = arrayindex(regextract(_raw_log, "back up file name: \'([^\']+)\'"),0),
     Hostname_From = arrayindex(regextract(_raw_log, "From\s+(\S+)\s+To\s+\S+\;"),0),
     Hostname_To = arrayindex(regextract(_raw_log, "From\s+\S+\s+To\s+(\S+)\;"),0),
     logSeverity = lowercase(arrayindex(regextract(_raw_log, "\s+(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)[\s:]+"),0)),
@@ -192,7 +193,7 @@ alter
     xdm.intermediate.ipv6 = if(Calling_Station_Id_ipv6 != null or Endpoint_ipv6 != null, coalesce(NAS_IP_Address_ipv6, NAD_IP_Address_ipv6, Network_device_IP_ipv6), null),
     xdm.intermediate.host.device_id = if(Calling_Station_Id_ipv4 != null or Endpoint_ipv4 != null, NAS_Identifier, null)
     xdm.source.ipv4 = coalesce(Calling_Station_Id_ipv4, Endpoint_ipv4, NAS_IP_Address_ipv4, NAD_IP_Address_ipv4, Network_device_IP_ipv4),
-    xdm.source.ipv6 = coalesce(Endpoint_ipv6, Calling_Station_Id_ipv6, NAS_IP_Address_ipv6, NAD_IP_Address_ipv6, Network_device_IP_ipv6),
+    xdm.source.ipv6 = coalesce(Calling_Station_Id_ipv6, Endpoint_ipv6, NAS_IP_Address_ipv6, NAD_IP_Address_ipv6, Network_device_IP_ipv6),
     xdm.source.user.username = Admin,
     xdm.source.host.mac_addresses = arraycreate(Calling_Station_Id_mac),
     xdm.source.host.hostname = coalesce(Network_Device_Name, Hostname_From),
