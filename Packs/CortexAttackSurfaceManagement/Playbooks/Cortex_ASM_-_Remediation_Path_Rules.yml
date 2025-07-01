@@ -1,7 +1,8 @@
 id: Cortex ASM - Remediation Path Rules
 version: -1
 name: Cortex ASM - Remediation Path Rules
-description: This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task.
+description: This playbook returns "RemediationAction" options based on the return
+  from the Remediation Path Rules API, or defaults to data collection task.
 starttaskid: "0"
 tasks:
   "0":
@@ -131,7 +132,12 @@ tasks:
       id: c4f9c21c-5836-414a-822c-51497dc91b01
       version: -1
       name: Evaluate remediation path rules
-      description: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this takes each remediation path rule and looks at the rule criteria too see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
+      description: For a given alert and remediation path rules that are defined for
+        that alert's attack surface rule, this takes each remediation path rule and
+        looks at the rule criteria too see if the rule matches for the given alert.
+        If multiple rules match, it will return the most recently created rule. This
+        assumes that the rules passed in are filtered to correlate with the alert's
+        attack surface rule.
       type: regular
       iscommand: false
       brand: ""
@@ -550,7 +556,8 @@ tasks:
       id: 1d34e7f1-89dd-4e52-8e68-aeefba08d1ab
       version: -1
       name: Is Cortex ASM enabled?
-      description: Determines if the "Cortex Attack Surface Management" integration instance is configured to pull Remediation Path Rules.
+      description: Determines if the "Cortex Attack Surface Management" integration
+        instance is configured to pull Remediation Path Rules.
       type: condition
       iscommand: false
       brand: ""
@@ -611,7 +618,8 @@ tasks:
       id: 69e5192d-ad2f-4a44-8aac-0a45ad590fbe
       version: -1
       name: Is ServiceNow v2 enabled?
-      description: Determines if the "ServiceNow v2" integration instance is enabled in order to send ServiceNow tickets as notifications.
+      description: Determines if the "ServiceNow v2" integration instance is enabled
+        in order to send ServiceNow tickets as notifications.
       type: condition
       iscommand: false
       brand: ""
@@ -820,7 +828,8 @@ tasks:
       id: f74a74e6-61b3-4843-8e2b-3713727c3345
       version: -1
       name: Was there a match?
-      description: Determines if a matching remediation path rule was found based on population of the "ASM - Remediation Path Rule" field.
+      description: Determines if a matching remediation path rule was found based
+        on population of the "ASM - Remediation Path Rule" field.
       type: condition
       iscommand: false
       brand: ""
@@ -865,7 +874,8 @@ tasks:
       id: cbc75f55-18a5-4da5-8367-76d54c82dc35
       version: -1
       name: What is the action of the matched rule?
-      description: Determines what is returned to the parent playbook based on contents of "ASM - Remediation Path Rule" field and other requirements.
+      description: Determines what is returned to the parent playbook based on contents
+        of "ASM - Remediation Path Rule" field and other requirements.
       type: condition
       iscommand: false
       brand: ""
@@ -1605,7 +1615,9 @@ tasks:
       id: 79eb4fd7-1804-40e1-8a4e-a22b40296203
       version: -1
       name: Select remediation action (dynamic)
-      description: Determines the next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is set up and/or the alert meets the requirement for automated remediation.
+      description: Determines the next action (remediation or ticket) based on user
+        input. Options are based on if ServiceNowV2 integration is set up and/or the
+        alert meets the requirement for automated remediation.
       type: collection
       iscommand: false
       brand: ""
@@ -1629,7 +1641,11 @@ tasks:
       subject:
         simple: Select Remediation Action
       body:
-        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev.
+        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation
+          process via integrations in other security and IT tools and control surfaces.
+          The options presented in this prompt may vary depending on the integrations
+          that your organization has configured and the type of alert. You can learn
+          more about why you're seeing these options and what they mean at https://pan.dev.
       methods: []
       format: html
       bcc:
@@ -1659,7 +1675,11 @@ tasks:
         tooltip: A selection is necessary in order for the playbook to progress further.
         readonly: false
       title: Select a remediation option
-      description: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev.
+      description: Cortex Xpanse has the ability to fully remediate or augment your
+        remediation process via integrations in other security and IT tools and control
+        surfaces. The options presented in this prompt may vary depending on the integrations
+        that your organization has configured and the type of alert. You can learn
+        more about why you're seeing these options and what they mean at https://pan.dev.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -1810,7 +1830,8 @@ tasks:
       id: 12d27d63-68ff-48ed-8042-9b7df6031760
       version: -1
       name: Is Atlassian Jira v2 or v3 enabled?
-      description: Determines if the "Atlassian Jira v2" or "Atlassian Jira v3" integration instance is enabled in order to send Jira tickets as notifications.
+      description: Determines if the "Atlassian Jira v2" or "Atlassian Jira v3" integration
+        instance is enabled in order to send Jira tickets as notifications.
       type: condition
       iscommand: false
       brand: ""
@@ -1891,7 +1912,8 @@ tasks:
       key:
         simple: remediationattacksurfacerules
       value:
-        simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer,SSHTerrapinAttack,TftpServer,InsecureSFTPGo,InsecureBitviseSSHServer,Libssh,RpcBindServer,SmbServer,KubernetesControlPlaneComponent,NfsRpcBindServer,NetBiosNameServer,LDAPServer
+        simple: 
+          RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer,SSHTerrapinAttack,TftpServer,InsecureSFTPGo,InsecureBitviseSSHServer,Libssh,RpcBindServer,SmbServer,KubernetesControlPlaneComponent,NfsRpcBindServer,NetBiosNameServer,LDAPServer
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2105,7 +2127,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if the Slack integration (v3) instance is enabled in order to send Slack messages as notifications.
+      description: Determines if the Slack integration (v3) instance is enabled in
+        order to send Slack messages as notifications.
       id: 84e72fc4-8d45-44b2-8c3d-ce4ec92ad200
       iscommand: false
       name: Is Slack enabled?
@@ -2246,3 +2269,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -1,4 +1,5 @@
-description: Playbook to enriches Service ownership info in Azure and On-Prem Active Directory.
+description: Playbook to enriches Service ownership info in Azure and On-Prem Active
+  Directory.
 id: Cortex ASM - Active Directory Enrichment
 inputs:
 - description: The service owner to enrich in Azure directory.
@@ -89,7 +90,9 @@ tasks:
     skipunavailable: false
     task:
       brand: Microsoft Graph User
-      description: "Retrieves the properties and relationships for Global Admins. \n\nFor more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0. \nPermissions: - User.Read (Delegated) - User.Read.All (Application)"
+      description: "Retrieves the properties and relationships for Global Admins.
+        \n\nFor more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0.
+        \nPermissions: - User.Read (Delegated) - User.Read.All (Application)"
       id: 70e25786-8973-4ba9-81f2-cb67bebc3272
       iscommand: true
       name: Lookup user details in Active Directory.
@@ -156,7 +159,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if the Microsoft Graph User integration instance is configured.
+      description: Determines if the Microsoft Graph User integration instance is
+        configured.
       id: b21e2b1d-6220-47d6-81a2-fdb941916747
       iscommand: false
       name: Is Microsoft Graph User enabled and Input defined?
@@ -249,7 +253,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
+      description: Sets the potential Azure service owner to the grid field for the
+        ASM service owner object.
       id: 72c00c51-3c06-4b17-8bff-6f06b0b51cc0
       iscommand: false
       name: Set service owner grid field
@@ -447,7 +452,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if there’s an active instance of the Active Directory Query v2 integration enabled.
+      description: Checks if there’s an active instance of the Active Directory Query
+        v2 integration enabled.
       id: 86b4e28f-4f6c-43f4-89d3-e06aa9da1f79
       iscommand: false
       name: Is Active Directory Query v2 enabled and Input defined?
@@ -485,7 +491,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Queries Active Directory and returns information for the specified Email.
+      description: Queries Active Directory and returns information for the specified
+        Email.
       id: 41b6b0cd-3018-4ae0-871e-90ea9a4675aa
       iscommand: true
       name: Get account info from Active Directory
@@ -584,7 +591,9 @@ tasks:
     skipunavailable: false
     task:
       brand: Active Directory Query v2
-      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
       id: 56097741-3c3f-4aff-82e8-e2dbe755cf92
       iscommand: true
       name: Get User Manager Details
@@ -770,7 +779,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
+      description: Sets the potential Azure service owner to the grid field for the
+        ASM service owner object.
       id: 5d50a384-5aa2-41ac-8fa1-65f479066d75
       iscommand: false
       name: Set service owner grid field (User)
@@ -831,7 +841,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
+      description: Sets the potential Azure service owner to the grid field for the
+        ASM service owner object.
       id: 2d385835-421f-472f-8906-a51e82adef5e
       iscommand: false
       name: Set service owner grid field (Manager)
@@ -920,7 +931,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true
+        in the relevant flag variable.
       id: 38e4dec2-7526-4e27-8e9f-20aa87e69665
       iscommand: false
       name: Was enrichment performed?
@@ -1043,3 +1055,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

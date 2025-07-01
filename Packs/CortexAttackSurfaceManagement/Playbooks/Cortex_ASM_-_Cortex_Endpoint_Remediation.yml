@@ -1,7 +1,8 @@
 id: Cortex ASM - Cortex Endpoint Remediation
 version: -1
 name: Cortex ASM - Cortex Endpoint Remediation
-description: This playbook is used to isolate a single Cortex Endpoint (XSIAM/XDR) for remediation purposes.
+description: This playbook is used to isolate a single Cortex Endpoint (XSIAM/XDR)
+  for remediation purposes.
 starttaskid: '0'
 tasks:
   '0':
@@ -528,3 +529,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -3,7 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex ASM - Email Notification
-description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
+description: This playbook is used to send email notifications to service owners to
+  notify them of their internet exposures.
 starttaskid: "0"
 tasks:
   "0":
@@ -72,7 +73,8 @@ tasks:
       id: 974858cf-71c1-4bbe-8154-e9fa94c427ed
       version: -1
       name: Select owners to notify
-      description: Determines who to send notification emails to based on analyst input.
+      description: Determines who to send notification emails to based on analyst
+        input.
       type: collection
       iscommand: false
       brand: ""
@@ -253,12 +255,14 @@ inputs:
 - key: OwnerNotificationSubject
   value: {}
   required: true
-  description: Subject of the notification (email or ticket) sent to the potential service owner.
+  description: Subject of the notification (email or ticket) sent to the potential
+    service owner.
   playbookInputQuery:
 - key: OwnerNotificationBody
   value: {}
   required: true
-  description: Body of the notification (email or ticket) sent to the potential service owner.
+  description: Body of the notification (email or ticket) sent to the potential service
+    owner.
   playbookInputQuery:
 - key: RemediationGuidance
   value: {}
@@ -274,3 +278,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -1,7 +1,10 @@
 id: Cortex ASM - ServiceNow ITSM Enrichment
 version: -1
 name: Cortex ASM - ServiceNow ITSM Enrichment
-description: Given search terms, this playbook will query ServiceNow ticket descriptions and short descriptions over the last 30 days and set users that were found in the assigned_to field in those ServiceNow tickets. Note, the max amount of tickets returned from querying is 100.
+description: Given search terms, this playbook will query ServiceNow ticket descriptions
+  and short descriptions over the last 30 days and set users that were found in the
+  assigned_to field in those ServiceNow tickets. Note, the max amount of tickets returned
+  from querying is 100.
 starttaskid: "0"
 tasks:
   "0":
@@ -169,7 +172,8 @@ tasks:
       id: 6c9f47a4-1b76-411b-87ed-00dfe305a7f1
       version: -1
       name: Look up ServiceNow user ID
-      description: Retrieves ServiceNow user ID using provided ServiceNow user system IDs.
+      description: Retrieves ServiceNow user ID using provided ServiceNow user system
+        IDs.
       script: ServiceNow v2|||servicenow-get-record
       type: regular
       iscommand: true
@@ -238,7 +242,8 @@ tasks:
       id: d3007e79-c33c-4f6f-83f3-e7ee98dfb3b2
       version: -1
       name: Build ServiceNow query - description
-      description: Set the beginning of a key used for querying ServiceNow using ServiceNow descriptions and a timestamp.
+      description: Set the beginning of a key used for querying ServiceNow using ServiceNow
+        descriptions and a timestamp.
       scriptName: Set
       type: regular
       iscommand: false
@@ -299,7 +304,8 @@ tasks:
       id: 962733bf-859d-4823-8d39-478d4fb092e8
       version: -1
       name: Build ServiceNow query - short description
-      description: Set the remaining query value with ServiceNow short descriptions for querying ServiceNow.
+      description: Set the remaining query value with ServiceNow short descriptions
+        for querying ServiceNow.
       scriptName: Set
       type: regular
       iscommand: false
@@ -407,7 +413,8 @@ tasks:
       id: c9c5b720-7cd3-406e-8a2e-3af77876dc8b
       version: -1
       name: Were any assignees found?
-      description: Check if any assignees were found in the assigned_to property of retrieved ServiceNow tickets.
+      description: Check if any assignees were found in the assigned_to property of
+        retrieved ServiceNow tickets.
       type: condition
       iscommand: false
       brand: ""
@@ -452,7 +459,8 @@ tasks:
       id: e3f0859f-92d7-4c0f-83c3-5376a0530871
       version: -1
       name: Is ServiceNow v2 enabled?
-      description: Determines if the "ServiceNow v2" integration instance is enabled in order to find email accounts for ServiceNow usernames.
+      description: Determines if the "ServiceNow v2" integration instance is enabled
+        in order to find email accounts for ServiceNow usernames.
       type: condition
       iscommand: false
       brand: ""
@@ -537,3 +545,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -60,7 +60,11 @@ tasks:
     skipunavailable: true
     task:
       brand: ""
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using the AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoints from the start
+        of the result set (start by counting from 0).
       id: fa22e7e1-68bc-4759-8ac4-b1a432d13b3f
       iscommand: true
       name: Core IR Search device
@@ -158,7 +162,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if there is an active instance of the Core - IR integration enabled and input values are defined to pull enrichment data.
+      description: Checks if there is an active instance of the Core - IR integration
+        enabled and input values are defined to pull enrichment data.
       id: 17e91dd6-4328-46db-85de-8fd0b7e50f84
       iscommand: false
       name: Is Core IR enabled and input value defined?
@@ -203,7 +208,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether the last command returned endpoint information or not.
+      description: Check whether the last command returned endpoint information or
+        not.
       id: 1616c292-8f7d-4c62-892f-352b62c56290
       iscommand: false
       name: Was there a response?
@@ -245,7 +251,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       id: ba68749e-b4c5-4603-82f6-a18d67da78a1
       iscommand: false
       name: Set system IDs grid field (type)
@@ -404,7 +411,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true
+        in the relevant flag variable.
       id: a086cad1-cfe6-4dff-84f8-724c46336b3c
       iscommand: false
       name: Was enrichment performed?
@@ -493,7 +501,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       id: feeb2ba4-4e38-4f9d-8df5-da5547fd9a25
       iscommand: false
       name: Set system IDs grid field (endpoint ID)
@@ -890,7 +899,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether the last command returned endpoint information with private IPs.
+      description: Check whether the last command returned endpoint information with
+        private IPs.
       id: 9378b3c7-59dd-406c-87ee-17a23bb4924e
       iscommand: false
       name: Are there private IPs?
@@ -940,7 +950,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether the last command returned endpoint information with tags.
+      description: Check whether the last command returned endpoint information with
+        tags.
       id: 4d05328c-ffd4-4b38-8305-70f3dd3cfe1a
       iscommand: false
       name: Are there tags?
@@ -985,7 +996,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether the last command returned endpoint information with tags.
+      description: Check whether the last command returned endpoint information with
+        tags.
       id: 31416513-da7a-47b6-8742-9aaebc89377f
       iscommand: false
       name: Are there endpoint tags?
@@ -1074,7 +1086,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       id: 4ae4d755-7bc7-414e-8288-0bad8cf55311
       iscommand: false
       name: Set system IDs grid field (endpoint name)
@@ -1118,7 +1131,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether the last command returned endpoint information with tags.
+      description: Check whether the last command returned endpoint information with
+        tags.
       id: 7fdb265a-353f-40b8-89ba-dbfb29fac684
       iscommand: false
       name: Are there server tags?
@@ -1279,7 +1293,11 @@ tasks:
     skipunavailable: true
     task:
       brand: ""
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using the AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoints from the start
+        of the result set (start by counting from 0).
       id: 4d75150d-52dc-4fb0-85e4-3bde0caf5830
       iscommand: true
       name: Cortex XDR Search device
@@ -1348,7 +1366,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if there is an active instance of the Cortex XDR integration enabled and input values are defined to pull enrichment data.
+      description: Checks if there is an active instance of the Cortex XDR integration
+        enabled and input values are defined to pull enrichment data.
       id: 1d11fce0-171c-4e32-8a80-98e125d2e2cb
       iscommand: false
       name: Is Cortex XDR enabled and input value defined?
@@ -1428,9 +1447,11 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
-description: 'This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) systems for enrichment purposes.'
+description: 'This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR)
+  systems for enrichment purposes.'
 supportedModules:
 - X1
 - X3
 - X5
 - ENT_PLUS
+- agentix

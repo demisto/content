@@ -126,7 +126,8 @@ tasks:
       id: 5b2e18a9-e97f-4118-8bf8-66fffd6983ea
       version: -1
       name: Is there VM and IAM information?
-      description: Determines if there is EC2 information to set the private IP, cloud, and tags fields.
+      description: Determines if there is EC2 information to set the private IP, cloud,
+        and tags fields.
       type: condition
       iscommand: false
       brand: ""
@@ -173,7 +174,8 @@ tasks:
       id: 14eb1bb7-8317-41bd-8c6b-4d0f3f650e3a
       version: -1
       name: Is there IAM information?
-      description: Determines if there is IAM information to set in the service owner field.
+      description: Determines if there is IAM information to set in the service owner
+        field.
       type: condition
       iscommand: false
       brand: ""
@@ -227,7 +229,8 @@ tasks:
       id: a0e844cb-694d-4582-8e31-0eaa804d1644
       version: -1
       name: Is there VM and firewall information?
-      description: Determines if there is EC2 and security group information to set in the system IDs field.
+      description: Determines if there is EC2 and security group information to set
+        in the system IDs field.
       type: condition
       iscommand: false
       brand: ""
@@ -1042,7 +1045,8 @@ tasks:
       id: 19477a1f-2d00-41aa-859a-d39358141f0f
       version: -1
       name: Is service account field set?
-      description: Determines if a service account associated with the Cloud Compute Instance was discovered and set on the alert.
+      description: Determines if a service account associated with the Cloud Compute
+        Instance was discovered and set on the alert.
       type: condition
       iscommand: false
       brand: ""
@@ -1140,7 +1144,8 @@ tasks:
       id: c6687057-c22e-4f73-8f80-8f6e642413d7
       version: -1
       name: Is there GCP project hierarchy information?
-      description: Determines if there is GCP hierarchy information to set in the system IDs field.
+      description: Determines if there is GCP hierarchy information to set in the
+        system IDs field.
       type: condition
       iscommand: false
       brand: ""
@@ -1256,7 +1261,8 @@ tasks:
       id: 936fd977-c6e1-451f-88b5-710fccd7c9ca
       version: -1
       name: Is there GCP folder hierarchy information?
-      description: Determines if there is GCP folder hierarchy information to set in the system IDs field.
+      description: Determines if there is GCP folder hierarchy information to set
+        in the system IDs field.
       type: condition
       iscommand: false
       brand: ""
@@ -1460,7 +1466,8 @@ tasks:
       id: 6006ad53-3848-424f-88cd-0099d5d9c0e8
       version: -1
       name: Are there any folders?
-      description: Determines if there is GCP folder information to set in the cloud field.
+      description: Determines if there is GCP folder information to set in the cloud
+        field.
       type: condition
       iscommand: false
       brand: ""
@@ -2047,7 +2054,8 @@ tasks:
       id: 3a2dbe45-2862-4aa4-8b4b-44a1ed6ac1b2
       version: -1
       name: Was enrichment performed?
-      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true
+        in the relevant flag variable.
       type: condition
       iscommand: false
       brand: ""
@@ -2137,7 +2145,8 @@ tasks:
       id: 11662ef5-6612-43ca-84d2-3a9f86bb9eee
       version: -1
       name: Set system IDs grid field (type)
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       type: regular
       iscommand: false
       brand: Builtin
@@ -2180,7 +2189,8 @@ tasks:
       id: 9abad720-b44e-4dac-897a-8a3a52a82612
       version: -1
       name: Is there GCP subnet information?
-      description: Determines if there is GCP subnet information to set in the system IDs field.
+      description: Determines if there is GCP subnet information to set in the system
+        IDs field.
       type: condition
       iscommand: false
       brand: ""
@@ -2293,7 +2303,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if there are GCP potential offending firewall rule(s) found.
+      description: Determines if there are GCP potential offending firewall rule(s)
+        found.
       id: fb420c9a-7183-4b06-8393-1415ad5a83a1
       iscommand: false
       name: Were GCP offending firewall rule(s) found?
@@ -2543,7 +2554,8 @@ tasks:
       id: 7b04a11e-74ef-453c-860f-e5e6bc1e2b9c
       version: -1
       name: Is there tagbinding information?
-      description: Determines if there is GCP-IAM tagbindings information to populate tags field.
+      description: Determines if there is GCP-IAM tagbindings information to populate
+        tags field.
       type: condition
       iscommand: false
       brand: ""
@@ -2736,3 +2748,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -80,7 +80,8 @@ tasks:
       id: 9ec49b1d-f3ef-4338-80d5-53f8c0388991
       version: -1
       name: pan-os-security-policy-match
-      description: Checks whether a session matches a specified security policy. This command is only available on firewall instances.
+      description: Checks whether a session matches a specified security policy. This
+        command is only available on firewall instances.
       script: Panorama|||pan-os-security-policy-match
       type: regular
       iscommand: true
@@ -271,7 +272,9 @@ tasks:
       id: e9f87bca-b353-4aa1-8f33-09145bf2cd38
       version: -1
       name: pan-os-list-rules
-      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined Security Rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -317,7 +320,8 @@ tasks:
       id: 8869db45-0714-43e9-8dd2-3c4600729a7b
       version: -1
       name: Set system IDs grid field (type)
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -409,7 +413,8 @@ tasks:
       id: 55cb16b5-dffa-42bd-8d90-4d1b03d97d56
       version: -1
       name: Set system IDs grid field (firewall rule name)
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -538,7 +543,8 @@ tasks:
       id: 7a3e239b-28b0-40cc-8a6c-c47d9cbe9380
       version: -1
       name: Was enrichment performed?
-      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true
+        in the relevant flag variable.
       type: condition
       iscommand: false
       brand: ""
@@ -839,7 +845,8 @@ tasks:
       id: 293893d7-56d7-43dc-872f-4681c30f9dc6
       version: -1
       name: Set system IDs grid field (device group)
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -986,7 +993,8 @@ tasks:
       id: 0490d2ba-549b-4968-89e4-95a28ade32f5
       version: -1
       name: Set system IDs grid field (device group)
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -1029,7 +1037,8 @@ tasks:
       id: 048f7537-fa3b-4c13-88d7-ddca9a825ab3
       version: -1
       name: pan-os-platform-get-device-groups
-      description: Gets the operational information of the device groups in the topology. (Only device groups with associated devices will be listed by this command).
+      description: Gets the operational information of the device groups in the topology.
+        (Only device groups with associated devices will be listed by this command).
       script: Panorama|||pan-os-platform-get-device-groups
       type: regular
       iscommand: true
@@ -1111,7 +1120,9 @@ tasks:
       id: 068e20a0-f298-40b4-8416-8948c9d7235f
       version: -1
       name: pan-os-list-rules (device-groups pre-rulebase)
-      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -1165,7 +1176,8 @@ tasks:
       id: deb936be-a71d-4539-8d88-ef3d4fb1c065
       version: -1
       name: Set system IDs grid field (secondary device group)
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -1209,7 +1221,9 @@ tasks:
       id: b0ecff52-f5b6-45da-8281-d3defc49d5d5
       version: -1
       name: 'pan-os-list-rules (device-groups post-rulebase) '
-      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -1263,7 +1277,9 @@ tasks:
       id: 4a269433-06d1-48c9-843f-db146da7e06c
       version: -1
       name: pan-os-list-rules (shared pre-rulebase)
-      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -1316,7 +1332,9 @@ tasks:
       id: 7b99a59a-e4e5-4bb1-8c5a-f93b6efe60d9
       version: -1
       name: pan-os-list-rules (shared post-rulebase)
-      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -1413,3 +1431,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
