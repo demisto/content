@@ -474,16 +474,15 @@ class AzureClient:
     ):
         full_url = f"{scope_prefix}/providers/Microsoft.Authorization/policyAssignments/{name}"
         params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
-
         data = {
             "properties": {
-                "policyDefinitionId": policy_definition_id,
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/" + policy_definition_id,
                 "displayName": display_name,
                 "parameters": parameters,
                 "description": description,
             }
         }
-        return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
 
     def set_postgres_config(
         self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str, source: str, value: str
@@ -1435,13 +1434,13 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
     """
     name = args.get("name", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     scope_level = args.get("scope_level")
     scope_prefix = f"{PREFIX_URL_AZURE}{subscription_id}"
     if scope_level == "resource group":
-        if resource_group_name:
+        try:
+            resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
             scope_prefix = scope_prefix + f"/resourceGroups/{resource_group_name}"
-        else:
+        except Exception as e:
             raise ValueError("Resource group name is required when scope level is 'resource group'.")
         
     policy_definition_id: str = args.get("policy_definition_id", "")
