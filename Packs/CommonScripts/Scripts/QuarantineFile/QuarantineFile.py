@@ -14,6 +14,9 @@ BRAND_MDE = "Microsoft Defender for Endpoint"
 HASH_SHA1 = "sha1"
 HASH_SHA256 = "sha256"
 
+CORE_COMMAND_PREFIX = "core"
+XDR_COMMAND_PREFIX = "xdr"
+
 SUPPORTED_HASH = [HASH_SHA1, HASH_SHA256]
 INTEGRATION_FOR_SHA1 = [BRAND_MDE]
 INTEGRATION_FOR_SHA256 = [BRAND_CORE_IR, BRAND_XDR_IR]
@@ -191,19 +194,58 @@ def Microsoft_atp_stop_and_quarantine_file():
 
 
 """ HELPER FUNCTIONS """
+def get_connected_endpoints(command_prefix: str, args: dict, readable_context: list[dict], context: list[dict],
+                               verbose_command_results: list[CommandResults]) -> list[str]:
+    # extract invalid or offline endpoints from endpoint_ids and add an error for them
+    endpoint_ids: list = argToList(args.get("endpoint_ids"))
+    file_hash: str = args.get("file_hash", "")
+    file_path: str = args.get("file_path", "")
+    
+    endpoints_details = Command(
+        name=f"{command_prefix}-get-endpoints",
+        args={
+            "endpoint_id_list": endpoint_ids,
+        },
+        brand=BRAND_CORE_IR,
+    ).execute()
+    verbose_command_results.append(endpoints_details)
+    pack_prefix = "Core" if command_prefix == CORE_COMMAND_PREFIX else "PaloAltoNetworksXDR"
+    e_details = endpoints_details[0][0].get(f"{pack_prefix}.Endpoint(val.endpoint_id == obj.endpoint_id)")
+    connected_endpoints = []
+    for e_detail in e_details:
+        if e_detail.get("endpoint_status") == "CONNECTED":
+            connected_endpoints.append(e_detail.get("endpoint_id"))
+    
+    unrteachable_endpoints = [e_id for e_id in endpoint_ids if e_id not in connected_endpoints]
+    for e_id in unrteachable_endpoints:
+        message = "Failed to quarantine file. The endpoint is offline or unreachacle"
+        readable_context.append({"endpoint_id": e_id, "message": message})
+        context.append(
+            {
+                "file_hash": file_hash,
+                "file_path": file_path,
+                "endpoint_id": e_id,
+                "status": False,
+                "result": "Failed",
+                "message": message,
+                "brand": BRAND_CORE_IR,
+            }
+        )
+    return connected_endpoints
 
-def quarantine_file(pack: str, args: dict, readable_context: list[dict], context: list[dict]) -> None:
+def quarantine_file(command_prefix: str, args: dict, readable_context: list[dict], context: list[dict],
+                    verbose_command_results: list[CommandResults]) -> None:
     endpoint_ids: list = argToList(args.get("endpoint_ids"))
     file_hash: str = args.get("file_hash", "")
     file_path: str = args.get("file_path", "")
     timeout: int = arg_to_number(args.get("timeout")) or 300
-    
+    endpoint_ids = get_connected_endpoints(command_prefix, args , readable_context, context, verbose_command_results)
     status_commands = {}
     [
         status_commands.update(
             {
                 endpoint_id: Command(
-                    name=f"{pack}-get-quarantine-status",
+                    name=f"{command_prefix}-get-quarantine-status",
                     args={
                         "endpoint_id": endpoint_id,
                         "file_hash": file_hash,
@@ -215,16 +257,16 @@ def quarantine_file(pack: str, args: dict, readable_context: list[dict], context
         )
         for endpoint_id in endpoint_ids
     ]
-    
     for e_id, command in status_commands.items():
         response = command.execute()
+        verbose_command_results.append(response)
         for val in response[0][0].values():
             quarantine_status = val.get("status")
         if quarantine_status:
             message = "already quarantined"
         else:
             quarantine_command = Command(
-                name=f"{pack}-quarantine-files",
+                name=f"core-quarantine-files" if command_prefix==CORE_COMMAND_PREFIX else "xdr-file-quarantine",
                 args={
                     "endpoint_id_list": endpoint_ids,
                     "file_hash": file_hash,
@@ -234,14 +276,13 @@ def quarantine_file(pack: str, args: dict, readable_context: list[dict], context
                 brand=BRAND_CORE_IR,
             )
             quarantine_results = quarantine_command.execute_polling()
+            verbose_command_results.append(quarantine_results)
             outputs = quarantine_results.outputs or []
-            if not outputs:
-                message = "Failed to quarantine file. The endpoint agent is offline, or the device is unreachable"
-                
             for res in outputs:
                 status = res.get("status")
                 if status == "COMPLETED_SUCCESSFULLY":
                     response = command.execute()
+                    verbose_command_results.append(response)
                     for val in response[0][0].values():
                         quarantine_status = val.get("status")
                         if quarantine_status:
@@ -316,6 +357,7 @@ def quarantine_file_script(args: Dict[str, Any]) -> list[CommandResults]:
             if BRAND_CORE_IR in enabled_brands:
                 quarantine_brands = [BRAND_CORE_IR]
             elif BRAND_XDR_IR in enabled_brands:
+                #TODO: check why not work
                 quarantine_brands = [BRAND_XDR_IR]
             else:
                 demisto.error(
@@ -324,15 +366,15 @@ def quarantine_file_script(args: Dict[str, Any]) -> list[CommandResults]:
                 )
                 # return error
         if BRAND_CORE_IR in quarantine_brands and BRAND_CORE_IR in enabled_brands:
-            quarantine_file('core', args, readable_context, context)
+            quarantine_file(CORE_COMMAND_PREFIX, args, readable_context, context, verbose_command_results)
         elif BRAND_XDR_IR in quarantine_brands and BRAND_XDR_IR in enabled_brands:
-            quarantine_file('xdr', args, readable_context, context)
+            quarantine_file(XDR_COMMAND_PREFIX, args, readable_context, context, verbose_command_results)
         else:
             demisto.error(f"Hash_type {HASH_SHA256} supported only by {INTEGRATION_FOR_SHA256} integration.")
 
     summary_command_results = CommandResults(
         outputs_prefix="QuarantineFile",
-        outputs_key_field=["endpoint_id", "file_hash"],
+        outputs_key_field=["endpoint_id", "file_path"],
         readable_output=tableToMarkdown(
             name=f"File Quarantine result for file {file_path}", headers=["endpoint_id", "message"], t=readable_context
         ),
