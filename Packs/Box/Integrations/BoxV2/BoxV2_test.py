@@ -894,19 +894,21 @@ def test_fetch_incidents(requests_mock, mocker):
 
 
 @pytest.mark.parametrize(
-    argnames="last_run_time",
-    argvalues=["2012-12-12T10:50:43-08:00", "2012-12-12T18:50:43+0000"],
+    argnames="last_run_time, next_stream_position",
+    argvalues=[("2012-12-12T10:50:43-08:00", ""), ("2012-12-12T18:50:43+0000", "1152922976252290700")],
 )
-def test_fetch_incidents_event_type(mocker, last_run_time):
+def test_fetch_incidents_event_type(mocker, last_run_time, next_stream_position):
     """
     Tests the fetch-incidents function and command.
     This unit test checks 2 scenarios:
-    1. A scenario in which a local time was saved to the last run
-    2. A scenario in which the utc time was saved to the last run.
+    1. A scenario in which a local time was saved to the last run, and no streaming position was given.
+    2. A scenario in which the utc time was saved to the last run, and a next_stream_position was given.
 
     Given: A valid last run object and time in the past.
     When: Executing the fetch-incidents command.
-    Then: The correct arguments are sent in the request, and that the expected last_run object is returned.
+    Then: The correct arguments are being sent in the request, and that the expected last_run object is returned.
+        1. no stream_position is used in the params to the api call.
+        2. a stream_position is used in the params to the api call.
     """
     from BoxV2 import fetch_incidents
 
@@ -914,7 +916,7 @@ def test_fetch_incidents_event_type(mocker, last_run_time):
 
     as_user = "sample_current_user"
     max_results = 10
-    last_run = {"time": last_run_time, "next_stream_position": ""}
+    last_run = {"time": last_run_time, "next_stream_position": next_stream_position}
     event_type = ["FILE_MARKED_MALICIOUS", "FILE_MARKED_MALICIOUS2"]
     first_fetch_time = 1607935741
     expected_event_type = "FILE_MARKED_MALICIOUS,FILE_MARKED_MALICIOUS2"
@@ -924,6 +926,8 @@ def test_fetch_incidents_event_type(mocker, last_run_time):
         "event_type": expected_event_type,
         "stream_type": "admin_logs",
     }
+    if next_stream_position:
+        expected_params["stream_position"] = next_stream_position
 
     mock_response = util_load_json("test_data/events2.json")
     http_request = mocker.patch.object(client, "_http_request", return_value=mock_response)
