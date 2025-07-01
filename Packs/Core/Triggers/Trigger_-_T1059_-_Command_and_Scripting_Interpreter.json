@@ -1,7 +1,7 @@
 {
     "trigger_id": "546b06f5f92ffe83caf0e884a36df98d",
     "playbook_id": "T1059 - Command and Scripting Interpreter",
-    "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique \u201cCommand and Scripting Interpreter\u201d",
+  "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique “Command and Scripting Interpreter”",
     "description": "This trigger is responsible for handling T1059 - Command and Scripting Interpreter alerts",
     "trigger_name": "T1059 - Command and Scripting Interpreter",
     "alerts_filter": {
@@ -64,7 +64,7 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS",
-        "agentix"
+      "ENT_PLUS"
     ]
 }
+
