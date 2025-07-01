@@ -879,23 +879,23 @@ def screenshot_image(
     if tab_event_handler.is_mailto:
         # Determine the appropriate URL to display in the error message
         display_url = tab_event_handler.document_url if tab_event_handler.document_url != tab_event_handler.path else path
-        
+
         # Create a more descriptive error message
         if tab_event_handler.document_url != tab_event_handler.path:
             # Handle redirect case where original URL redirects to mailto
             error_msg = (
                 f'URLs that start with "mailto:" cannot be rasterized.\n'
-                f'Original URL: {path}\n'
-                f'Redirected to: {tab_event_handler.document_url}'
+                f"Original URL: {path}\n"
+                f"Redirected to: {tab_event_handler.document_url}"
             )
-            demisto.info(f'Mailto redirect detected - {error_msg}, tab_id={tab.id}')
+            demisto.info(f"Mailto redirect detected - {error_msg}, tab_id={tab.id}")
         else:
             # Handle direct mailto URL case
             error_msg = f'URLs that start with "mailto:" cannot be rasterized.\nURL: {display_url}'
-            demisto.info(f'Direct mailto URL detected - {error_msg}, tab_id={tab.id}')
-        
+            demisto.info(f"Direct mailto URL detected - {error_msg}, tab_id={tab.id}")
+
         return None, error_msg
-    
+
     if tab_event_handler.is_private_network_url:
         demisto.info(
             'URLs that belong to the "This" Network (0.0.0.0/8), or'
