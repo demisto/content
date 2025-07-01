@@ -129,7 +129,7 @@ def get_current_utc_time():
     return datetime.now(timezone.utc)
 
 
-def get_events(client: Client, report_id: str, start_date: str, skip: int, top: int) -> dict[str, Any]:
+def get_events(client: Client, report_id: str, start_date: str, skip: int, top: int) -> Optional[List[Dict[str, Any]]]:
     """
     Get a list of events from the SAP Cloud for Customer API.
 
@@ -159,7 +159,7 @@ def get_events(client: Client, report_id: str, start_date: str, skip: int, top: 
     return res.get("d", {}).get("results", [])
 
 
-def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[str, list[Any]]:
+def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, list[Any]]:
     """
     Fetches events from SAP Cloud API.
     Args:
@@ -168,16 +168,20 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[str, lis
         last_run (dict): The last run object from Demisto.
 
     Returns:
-        tuple: A tuple containing (next_run_timestamp_str, all_fetched_events_list).
+        tuple[dict, list]: A tuple containing the next run dictionary and a list of all fetched events.
+            - The first element is a dictionary representing the next run, typically containing a 'last_fetch' timestamp.
+            - The second element is a list of dictionaries, where each dictionary represents a fetched event.
     """
     max_events_per_fetch = arg_to_number(params.get("max_fetch")) or 10000
     report_id = params.get("report_id")
+    if not isinstance(report_id, str):
+        raise DemistoException("Report ID must be provided in the integration parameters and must be a string.")
     all_events: list[dict[str, Any]] = []
     skip_count = INIT_SKIP
     top_count = DEFAULT_TOP
     now = get_current_utc_time()
 
-    demisto.debug(f"{last_run=}")
+    demisto.debug(f"the last run is {last_run=}")
 
     # Get last_fetch time from last_run or set to FIRST_FETCH (e.g., "one minute ago")
     start_date_str = last_run.get("last_fetch")
@@ -190,13 +194,13 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[str, lis
         else:
             # Fallback if parsing fails for some reason
             demisto.info(f"Could not parse last_fetch: {start_date_str}. Falling back to {FIRST_FETCH}.")
-            start_date_for_filter = dateparser.parse(FIRST_FETCH).strftime(STRFTIME_FORMAT)
+            start_date_for_filter = dateparser.parse(FIRST_FETCH).strftime(STRFTIME_FORMAT)  # type: ignore[union-attr]
     else:
         # For the very first fetch or if last_run is empty
         start_date_for_filter = dateparser.parse(
             FIRST_FETCH,
             settings={"TIMEZONE": "Asia/Jerusalem", "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "Asia/Jerusalem"},
-        ).strftime(STRFTIME_FORMAT)
+        ).strftime(STRFTIME_FORMAT)  # type: ignore[union-attr]
 
     demisto.debug(f"Getting events from: {start_date_for_filter}")
 
@@ -213,7 +217,8 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[str, lis
 
     demisto.debug(f"Fetched {len(all_events)} events.")
     # next_run will be the current time when the fetch started, in ISO format for Demisto's last_run
-    next_run = now.strftime(ISO_8601_FORMAT)
+    next_run = {"last_fetch": now.strftime(ISO_8601_FORMAT)}
+
     return next_run, all_events
 
 

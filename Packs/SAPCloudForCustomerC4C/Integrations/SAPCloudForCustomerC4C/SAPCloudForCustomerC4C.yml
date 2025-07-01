@@ -26,27 +26,23 @@ configuration:
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- display: Maximum number of audit events per fetch
+  section: Connect
+- section: Collect
+  display: Maximum number of audit events per fetch
   name: max_fetch
   type: 0
-  section: Collect
   required: false
-  defaultValue: '10000'
-- section: Collect
-  display: Fetch Events
-  name: isFetchEvents
-  type: 8
-  required: false
+  defaultvalue: '10000'
 description: 'The SAP Cloud for Customer solution helps you manage day-to-day sales and service interactions efficiently by sending and receiving signals between front- and back-office solutions and providing a single view of the customer.'
 display: SAP Cloud For Customer C4C
 name: SAPCloudForCustomerC4C
 script:
   commands: []
-  isFetch: true
   runonce: false
   script: '-'
   type: python
