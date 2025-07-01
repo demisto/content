@@ -285,7 +285,7 @@ def get_events_command(client: Client, args: dict, log_type: str, last_run: dict
     Returns:
         Sign on logs from Workday.
     """
-    types_to_titles = {AUDIT: "Audit", SYSLOG_TRANSACTIONS: "Syslog Transactions"}
+    types_to_titles = {AUDIT: "Audit", SYSLOG_TRANSACTIONS: "Syslog Transactions", CASE: "Case"}
     all_events = []
     if arg_from := args.get("from_date"):
         from_date = arg_from
@@ -437,9 +437,22 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(module_of_testing(client, log_types))
 
-        elif command == "service-now-get-audit-logs" or command == "service-now-get-syslog-transactions":
-            log_type = AUDIT if command == "service-now-get-audit-logs" else SYSLOG_TRANSACTIONS
-            audit_logs, results = get_events_command(client=client, args=args, log_type=log_type, last_run=last_run)
+        elif command == "service-now-get-audit-logs":
+            audit_logs, results = get_events_command(client=client, args=args, log_type=AUDIT, last_run=last_run)
+            return_results(results)
+
+            if argToBoolean(args.get("should_push_events", True)):
+                send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+
+        elif command == "service-now-get-syslog-transactions":
+            audit_logs, results = get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS, last_run=last_run)
+            return_results(results)
+
+            if argToBoolean(args.get("should_push_events", True)):
+                send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+
+        elif command == "service-now-get-case-logs":
+            audit_logs, results = get_events_command(client=client, args=args, log_type=CASE, last_run=last_run)
             return_results(results)
 
             if argToBoolean(args.get("should_push_events", True)):
