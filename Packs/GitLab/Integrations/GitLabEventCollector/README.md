@@ -4,7 +4,6 @@ An event collector for Gitlab audit events using Gitlab's API.
 
 ## Configure Gitlab Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -16,7 +15,6 @@ An event collector for Gitlab audit events using Gitlab's API.
 | The maximum number of events per fetch for each event type | Each fetch will bring the \`limit\` number of events for each type \(audits, groups and projects\) and each group/project ID. For example, if \`limit\` is set to 500 and groups/projects IDs are given as well, then the fetch will bring 500 audit events and 500 group/project events for each group/project ID. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 

@@ -114,3 +114,4 @@ Example: If the request included in the `Authorization` header the value `Bearer
 - Allowed Characters: Headers should only use ASCII characters. Non-ASCII characters must be encoded.
 - Header Names and Values: Certain characters are restricted in header names and values. Typically, names cannot include characters such as : or newlines, and values are restricted from including newlines to protect against header injection attacks.
 - Case Sensitivity: Header keys are case-insensitive as per HTTP standards, but it is good practice to keep a consistent casing convention for ease of maintenance and readability.
+

@@ -3,8 +3,6 @@ This integration was integrated and tested with version 1.1.10 of CheckPointHEC
 
 ## Configure Check Point Harmony Email and Collaboration (HEC) in Cortex
 
-
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Smart API URL or Check Point Infinity API URL | The URL of the Smart API or Check Point Infinity API. | True |
@@ -306,6 +304,7 @@ Send notification about user exposition for the specific entity to the list of e
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CheckPointHEC.Notification.ok | Boolean | Result of the operation. |
+
 ### checkpointhec-get-events
 
 ***
@@ -347,6 +346,7 @@ Retrieve security events.
 | CheckPointHEC.Event.actions | unknown | Performed actions related to the security event. |
 | CheckPointHEC.Event.senderAddress | String | Sender of email related to the security event. |
 | CheckPointHEC.Event.entityLink | String | Email link. |
+
 ### checkpointhec-get-ctp-list
 
 ***
