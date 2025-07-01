@@ -710,7 +710,7 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.5"
+version = "1.38.4"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
@@ -790,8 +790,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "cda0fd1ed8dfe39aca2c0a1805de2d6af6536ede"
-resolved_reference = "cda0fd1ed8dfe39aca2c0a1805de2d6af6536ede"
+reference = "422d965d01af7eb7ad5d5e4bb87440bd21acc8e2"
+resolved_reference = "422d965d01af7eb7ad5d5e4bb87440bd21acc8e2"
 
 [[package]]
 name = "deprecated"
@@ -4549,4 +4549,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "17d9f31efadbde4b55c2bd3094f90ee25b4e98186d7ce1677cf2ce5ee4aa6c7a"
+content-hash = "fe73eb604c76e64b74baf193731fe6262a259947821e88d81b04424b1d866bde"
