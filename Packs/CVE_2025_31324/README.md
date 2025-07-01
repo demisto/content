@@ -5,7 +5,7 @@ This pack is part of the [Rapid Breach Response](https://xsoar.pan.dev/marketpla
 Unauthenticated attackers can upload arbitrary files (for example, JSP web shells) and gain code-execution with the privileges of the SAP application-server process.
 
 *References*  
-- [Unit 42 threat brief](https://unit42.paloaltonetworks.com/threat-brief-sap-netweaver-cve-2025-31324/)  
-- [NIST NVD entry](https://nvd.nist.gov/vuln/detail/CVE-2025-31324)
+[Unit 42 threat brief](https://unit42.paloaltonetworks.com/threat-brief-sap-netweaver-cve-2025-31324/)  
+[NIST NVD entry](https://nvd.nist.gov/vuln/detail/CVE-2025-31324)
 
 ![Cortex XDR - CVE-2025-31324 - SAP NetWeaver Visual Composer](doc_files/Cortex_XDR_-_CVE-2025-31324_-_SAP_NetWeaver_Visual_Composer.png)
