@@ -103,6 +103,18 @@ script:
     - name: reason
       type: String
       description: Reason for the takedown request.
+      predefined:
+        - phishing
+        - brand_abuse
+        - impersonating_application
+        - unofficial_application_distribution
+        - malicious_content
+        - social_media_impersonation
+        - social_media_employee_impersonation
+        - fake_job_post
+        - sensitive_file_on_antivirus_repository
+        - instant_messaging_impersonation
+        - other
     - name: requested_by
       type: String
       description: Requested by.
