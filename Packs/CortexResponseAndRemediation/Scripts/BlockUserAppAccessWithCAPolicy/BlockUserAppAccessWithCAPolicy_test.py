@@ -69,15 +69,14 @@ def test_get_error_parsing_json_error():
     Given:
         - Command result with embedded API error JSON string
     When:
-        - Calling _parse_demisto_error_message (formerly get_error)
+        - Calling get_error
     Then:
         - Should parse and extract a formatted error code and message
     """
-    # Changed import to the new function name
-    from BlockUserAppAccessWithCAPolicy import _parse_demisto_error_message
+    from BlockUserAppAccessWithCAPolicy import get_error
 
     res = {"Contents": 'Error in API call [403] - { "error": { "code": "Forbidden", "message": "Not allowed" } }'}
-    assert _parse_demisto_error_message(res) == "Forbidden: Not allowed"
+    assert get_error(res) == "Forbidden: Not allowed"
 
 
 def test_get_error_unparsed_string():
@@ -85,15 +84,14 @@ def test_get_error_unparsed_string():
     Given:
         - Command result with a string error message not containing JSON
     When:
-        - Calling _parse_demisto_error_message (formerly get_error)
+        - Calling get_error
     Then:
         - Should return the raw string as-is
     """
-    # Changed import to the new function name
-    from BlockUserAppAccessWithCAPolicy import _parse_demisto_error_message
+    from BlockUserAppAccessWithCAPolicy import get_error
 
     res = {"Contents": "Some simple error occurred"}
-    assert _parse_demisto_error_message(res) == "Some simple error occurred"
+    assert get_error(res) == "Some simple error occurred"
 
 
 def test_execute_command_and_handle_error_success(mocker):
@@ -127,8 +125,7 @@ def test_execute_command_and_handle_error_failure(mocker):
 
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.executeCommand", return_value=[{"Contents": "Error"}])
     mocker.patch("BlockUserAppAccessWithCAPolicy.is_error", return_value=True)
-    # Mock the new error parsing function
-    mocker.patch("BlockUserAppAccessWithCAPolicy._parse_demisto_error_message", return_value="bad error")
+    mocker.patch("BlockUserAppAccessWithCAPolicy.get_error", return_value="bad error")
 
     with pytest.raises(DemistoException, match="Error Prefix: bad error"):
         _execute_command_and_handle_error("command", {}, "Error Prefix")

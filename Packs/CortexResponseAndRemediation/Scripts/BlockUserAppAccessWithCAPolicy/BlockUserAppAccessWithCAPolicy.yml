@@ -1,7 +1,8 @@
 commonfields:
-  id: BlockUserAppAccessWithCAPolicy
-  version: -1
-name: BlockUserAppAccessWithCAPolicy
+  id: 62d7a1a0-b1eb-44de-88af-871a37ed24a7
+  version: 23
+vcShouldKeepItemLegacyProdMachine: false
+name: BlockUserAppAccessWithCAPolicy_copy
 script: ''
 type: python
 tags:
@@ -21,10 +22,9 @@ args:
   description: The name of the app to block access to.
 scripttarget: 0
 subtype: python3
+pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 engineinfo: {}
-fromversion: 6.10.0
-tests:
-- No tests (auto formatted)
+mainengineinfo: {}
