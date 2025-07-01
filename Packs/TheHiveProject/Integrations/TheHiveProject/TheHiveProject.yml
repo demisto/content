@@ -58,6 +58,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  defaultvalue: Disabled
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
