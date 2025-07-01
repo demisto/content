@@ -187,7 +187,7 @@ def main():
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
-            f'Failed to execute NetOps-GetDeviceDiskSpace. Error: {str(ex)}\nTraceback: {fix_traceback_line_numbers(traceback.format_exc())}')
+            f'Failed to execute PAN-OS-GetDeviceDiskSpace. Error: {str(ex)}\nTraceback: {fix_traceback_line_numbers(traceback.format_exc())}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

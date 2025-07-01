@@ -12,7 +12,7 @@ args:
   - K
 comment: This script fetches disk space info from the target device and returns all information or a subset as specified in command arguments.
 commonfields:
-  id: 'NetOps-GetDeviceDiskSpace'
+  id: 'PAN-OS-GetDeviceDiskSpace'
   version: -1
 dependson:
   must:
@@ -20,7 +20,7 @@ dependson:
 dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 engineinfo: {}
-name: NetOps-GetDeviceDiskSpace
+name: PAN-OS-GetDeviceDiskSpace
 outputs:
 - contextPath: PANOS.DiskSpace.hostid
   description: Serial number of the device.

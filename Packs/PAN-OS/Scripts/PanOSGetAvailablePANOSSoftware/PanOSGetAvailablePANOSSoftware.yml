@@ -15,7 +15,7 @@ args:
   - "no"
 comment: This script is a wrapper for the 'pano-os-platform-get-available-software' command, adding options to return only images newer than is currently installed to minimize amount of context data generated.
 commonfields:
-  id: NetOps-GetAvailablePANOSSoftware
+  id: PAN-OS-GetAvailablePANOSSoftware
   version: -1
 dependson:
   must:
@@ -23,7 +23,7 @@ dependson:
 dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 engineinfo: {}
-name: NetOps-GetAvailablePANOSSoftware
+name: PAN-OS-GetAvailablePANOSSoftware
 outputs:
 - contextPath: PANOS.SoftwareVersions.Summary.hostid
   description: The host ID.

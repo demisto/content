@@ -6,7 +6,9 @@ This playbook uses the PAN-OS integration to check NGFW device conditions that c
 5. Whether the latest App/Threat dynamic update is installed
 6. For devices in HA groups, check that devices in the group have:
     1. App/Threat, AntiVirus, and GlobalProtect Client are at the same level and compatible for HA failover
-    2. Running configuration synchronized among peers.
+    2. Running configuration synchronized among peers
+
+Playbook output includes a register of the checks performed, a brief description, and their result.
 
 ## Dependencies
 
@@ -24,8 +26,8 @@ This playbook does not use any sub-playbooks.
 
 * GetInstances
 * JsonToTable
-* NetOps-GetAvailablePANOSSoftware
-* NetOps-GetDeviceDiskSpace
+* PAN-OS-GetAvailablePANOSSoftware
+* PAN-OS-GetDeviceDiskSpace
 * PrintErrorEntry
 * Set
 
@@ -41,8 +43,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| targetDevice | Serial Number of the firewall to upgrade |  | Required |
-| panosIntegrationInstance | Name of the Palo Alto Networks PAN-OS Integration Instance to execute commands \[Optional unless multiple instances are configured\] |  | Optional |
+| targetDevice | Serial Number of the firewall to check upgrade readiness for. |  | Required |
+| panosIntegrationInstance | Name of the Palo Alto Networks PAN-OS Integration Instance to execute commands \[Optional unless multiple instances are configured\]. |  | Optional |
 | targetVersion | The target PAN-OS version to check upgrade readiness for. |  | Required |
 
 ## Playbook Outputs
