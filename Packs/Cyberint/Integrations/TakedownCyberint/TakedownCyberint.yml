@@ -49,18 +49,21 @@ script:
       type: String
       description: Customer ID.
       required: true
-    - name: actions
-      type: Object
-      description: Actions taken.
+    - name: action
+      type: String
+      description: Action taken.
     - name: alert_id
       type: Number
       description: Alert ID.
     - name: alert_ref_id
       type: String
       description: Alert reference ID.
-    - name: blocklist_requests
-      type: Object
-      description: Blocklist request data, including blocked and sent dates.
+    - name: blocked_date
+      type: String
+      description: Blocklist request blocked date.
+    - name: sent_date
+      type: String
+      description: Blocklist request sent date.
     - name: brand
       type: String
       description: Brand.
@@ -97,9 +100,9 @@ script:
     - name: last_submit_date
       type: String
       description: Last submit date.
-    - name: metadata
-      type: Object
-      description: Metadata object.
+    - name: metadata_date
+      type: String
+      description: Metadata date.
     - name: reason
       type: String
       description: Reason for the takedown request.

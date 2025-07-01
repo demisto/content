@@ -1,10 +1,14 @@
 from typing import Any
-import http
 import urllib3
 from CommonServerPython import *
 
 urllib3.disable_warnings()
 
+allowed_reason_values_str = (
+    "phishing, brand_abuse, impersonating_application, unofficial_application_distribution, "
+    "malicious_content, social_media_impersonation, social_media_employee_impersonation, "
+    "fake_job_post, sensitive_file_on_antivirus_repository, instant_messaging_impersonation, other"
+)
 
 class Client(BaseClient):
     """
@@ -182,8 +186,9 @@ def submit_takedown_request_command(
     # Validate reason value
     reason = args.get("reason")
     if reason and reason not in allowed_reasons:
-        demisto.error("Invalid reason provided. Allowed values are: phishing, brand_abuse, impersonating_application, unofficial_application_distribution, malicious_content, social_media_impersonation, social_media_employee_impersonation, fake_job_post, sensitive_file_on_antivirus_repository, instant_messaging_impersonation, other")
-        return_error(f"Invalid reason provided: {reason}. Allowed values are: phishing, brand_abuse, impersonating_application, unofficial_application_distribution, malicious_content, social_media_impersonation, social_media_employee_impersonation, fake_job_post, sensitive_file_on_antivirus_repository, instant_messaging_impersonation, other")
+        errormsg = f"Invalid reason provided: {reason}. Allowed values are: {allowed_reason_values_str}"
+        demisto.error(errormsg)
+        return_error(errormsg)
 
     response = client.submit_takedown_request(
         customer=args.get("customer"),
@@ -287,8 +292,9 @@ def retrieve_takedown_requests_command(
     # Validate reason value
     reason = args.get("reason")
     if reason and reason not in allowed_reasons:
-        demisto.error("Invalid reason provided. Allowed values are: phishing, brand_abuse, impersonating_application, unofficial_application_distribution, malicious_content, social_media_impersonation, social_media_employee_impersonation, fake_job_post, sensitive_file_on_antivirus_repository, instant_messaging_impersonation, other")
-        return_error(f"Invalid reason provided: {reason}. Allowed values are: phishing, brand_abuse, impersonating_application, unofficial_application_distribution, malicious_content, social_media_impersonation, social_media_employee_impersonation, fake_job_post, sensitive_file_on_antivirus_repository, instant_messaging_impersonation, other")
+        errormsg = f"Invalid reason provided: {reason}. Allowed values are: {allowed_reason_values_str}"
+        demisto.error(errormsg)
+        return_error(errormsg)
 
     response = client.retrieve_takedown_requests(**args)
     data = response.get("data", {})
