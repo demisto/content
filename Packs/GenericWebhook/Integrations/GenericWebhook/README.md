@@ -106,7 +106,7 @@ The payload can then be mapped. For more information see:
 
 ## Authorization headers
 
-We recommend using header authentication to validate the requests sent from your third-party service, to prevent the unauthorized creation of incidents/alerts/issues. When using authorization headers, set the username field in the integration to _header:<HEADER-NAME> and provide the header value in the password field.
+We recommend using header authentication to validate the requests sent from your third-party service, to prevent the unauthorized creation of incidents/alerts/issues. When using authorization headers, set the username field in the integration to _header:&lt;HEADER-NAME&gt; and provide the header value in the password field.
 Example: If the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
 
 ### Troubleshooting authorization headers
