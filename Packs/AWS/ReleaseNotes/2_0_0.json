@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "- **Command Renamed**: The command `aws-s3-public-access-block-update` has been renamed to `aws-s3-public-access-block-put`. Please update any playbooks, scripts, or automations that reference the old command name.\n- **New Required Argument**: The command `aws-iam-account-password-policy-get` now requires a new mandatory argument `region`. Please update any existing usage of this command to include the region parameter.\n- **Output Context Changes**: Some commands may have modified output context paths. Please review and update any automations that depend on specific output formats from the renamed commands."
+}

@@ -2,15 +2,9 @@ category: Cloud Services
 description: Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select AWS, then in Advanced Settings > Security Capabilities, enable "Automation".
 display: Amazon Web Services
 name: AWS
-
 commonfields:
   id: AWS
   version: -1
-
-sectionOrder:
-- Connect
-- Collect
-
 configuration:
 - display: Main Role
   name: role_name
@@ -53,25 +47,25 @@ configuration:
   required: false
 - display: Default AWS region.
   name: region
-  section: Connect
   type: 0
+  section: Connect
   additionalinfo: "The AWS region to use for API requests when a region is not explicitly specified in a command. This serves as the default region for operations across all AWS service-specific commands."
 - display: Timeout
   name: timeout
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
-  type: 0
-  section: Connect
-  advanced: true
-  required: false
 - display: Retries
-  name: retries
-  defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  name: retries
   type: 0
   section: Connect
   advanced: true
   required: false
+  defaultvalue: 5
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
@@ -85,15 +79,15 @@ configuration:
   advanced: true
   required: false
 - display: AWS STS Regional Endpoints
-  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
   name: sts_regional_endpoint
-  options:
-  - legacy
-  - regional
   type: 15
   section: Connect
   advanced: true
   required: false
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  options:
+  - legacy
+  - regional
 - display: Role name for cross-organization account access
   name: access_role_name
   type: 0
@@ -185,12 +179,11 @@ script:
       predefined:
       - 'true'
       - 'false'
-  
   - name: aws-s3-bucket-acl-put
     description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security.
     arguments:
-    - name: account_id
-      description: The AWS account ID.
+    - description: The AWS account ID.
+      name: account_id
       required: true
     - name: region
       description: The AWS region.
@@ -229,7 +222,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
+
     - name: acl
       description: 'The canned ACL to apply to the bucket.'
       required: true
@@ -286,17 +279,15 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
-    - name: bucket
-      description: 'The name of the bucket for which to set the logging parameters.'
+    - description: 'The name of the bucket for which to set the logging parameters.'
+      name: bucket
       required: true
-    - name: target_bucket
-      description: 'The name of the bucket where server access logs should be delivered. If this is NOT provided, logging will be disabled.'
+    - description: 'The name of the bucket where server access logs should be delivered. If this is NOT provided, logging will be disabled.'
+      name: target_bucket
       required: false
-    - name: target_prefix
-      description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
+    - description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
+      name: target_prefix
       required: false
-
   - name: aws-s3-bucket-versioning-put
     description: Sets the versioning state of an existing bucket.
     arguments:
@@ -353,7 +344,6 @@ script:
       - 'Enabled'
       - 'Suspended'
       required: true
-
   - name: aws-s3-bucket-policy-put
     description: Applies an Amazon S3 bucket policy to an Outposts bucket.
     arguments:
@@ -448,7 +438,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
+
     outputs:
     - contextPath: AWS.IAM.PasswordPolicy.MinimumPasswordLength
       description: Minimum length to require for IAM user passwords.
@@ -574,12 +564,12 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
+
     - name: role_name
-      description: 'The name of the role to associate the policy with. This parameter allows (through its regex pattern ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-'
+      description: 'The name of the role to associate the policy with. This parameter allows (through its regex pattern ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-.'
       required: true
     - name: policy_name
-      description: 'The name of the policy document. This parameter allows (through its regex pattern ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-'
+      description: 'The name of the policy document. This parameter allows (through its regex pattern ) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-.'
       required: true
     - name: policy_document
       description: 'The policy document in JSON format. Must be a valid IAM policy document that defines the permissions for the role.'
@@ -904,7 +894,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-  
   - name: aws-rds-db-cluster-snapshot-attribute-modify
     description: Modifies the attributes associated with a DB cluster snapshot.
     arguments:
@@ -1003,7 +992,7 @@ script:
       - mx-central-1
       - me-south-1
       - me-central-1
-      - sa-east-1  
+      - sa-east-1
     - name: db_instance_identifier
       description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
       required: true
@@ -1059,7 +1048,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-  
   - name: aws-rds-db-snapshot-attribute-modify
     description: Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.
     arguments:
@@ -1162,7 +1150,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
+
     - name: group_id
       description: 'The ID of the security group.'
       required: true
@@ -1222,7 +1210,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
+
     - name: group_id
       description: 'The ID of the security group.'
       required: true
@@ -1282,7 +1270,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
+
     - name: group_id
       description: 'The ID of the security group.'
       required: true
@@ -1342,7 +1330,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
+
     - name: snapshot_id
       description: 'The ID of the snapshot.'
       required: true
@@ -1412,7 +1400,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
+
     - name: instance_id
       description: 'The ID of the instance.'
       required: true
@@ -1422,9 +1410,9 @@ script:
       - 'true'
       - 'false'
     - name: groups
-      description:  "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
+      description: "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
     - name: attribute
-      description: 'The name of the attribute to modify. Possible values: sourceDestCheck, groupSet, ebsOptimized, sriovNetSupport, enaSupport, enclaveOptions, disableApiStop'
+      description: 'The name of the attribute to modify. Possible values: sourceDestCheck, groupSet, ebsOptimized, sriovNetSupport, enaSupport, enclaveOptions, disableApiStop.'
       predefined:
       - 'instanceType'
       - 'kernel'
@@ -1444,7 +1432,7 @@ script:
       - 'disableApiStop'
     - name: value
       description: A new value for the attribute. Use only with the kernel, ramdisk, userData, disableApiTermination, or instanceInitiatedShutdownBehavior attribute.
-    
+
   - name: aws-ec2-image-attribute-modify
     description: 'Modifies the specified attribute of the specified AMI.'
     arguments:
@@ -1488,7 +1476,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    
+
     - name: image_id
       description: 'The ID of the AMI.'
       required: true
@@ -1757,7 +1745,7 @@ script:
       - me-central-1
       - sa-east-1
     - name: name
-      description: 'Specifies the name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail'
+      description: 'Specifies the name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
       required: true
 
   isfetch: false
@@ -1767,6 +1755,9 @@ script:
   subtype: python3
   dockerimage: demisto/boto3py3:1.0.0.3575453
 fromversion: 5.5.0
-isCloudProviderIntegration: true
 tests:
 - No test - No playbook part of this release.
+sectionOrder:
+- Connect
+- Collect
+isCloudProviderIntegration: true
