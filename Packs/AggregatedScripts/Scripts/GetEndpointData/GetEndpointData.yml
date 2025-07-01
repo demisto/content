@@ -150,7 +150,7 @@ outputs:
   description: The endpoint's isolation status.
   type: String
 - contextPath: Endpoint.IsIsolated.source
-  description: The vendor from which the isolateation of this endpoint was retrieved.
+  description: The vendor from which the isolation of this endpoint was retrieved.
   type: String
 - contextPath: Endpoint.Status.value
   description: The endpoint's status.
@@ -169,6 +169,6 @@ timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
-fromversion: 5.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
