@@ -1231,3 +1231,27 @@ vmray-get-license-usage-reports
 | ReportRemaining | 90 |
 | ReportUsage | 10.0 |
 | PeriodEndDate |  2024-02-03 14:12 (UTC+1) |
+
+### vmray-get-pdf-report
+
+***
+Retrieves the PDF report for a specific sample.
+
+#### Base Command
+
+`vmray-get-pdf-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sample_id | ID of the sample from which to retrieve the PDF report. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | Filename. | 
+| InfoFile.EntryID | string | The EntryID of the PDF report. | 
+| InfoFile.Size | number | The file size of the PDF report. | 
+| InfoFile.Info | string | MIME type of the PDF report. | 

@@ -1540,6 +1540,34 @@ def vmray_get_license_usage_reports_command():  # pragma: no cover
     return_results(results)
 
 
+def get_pdf_report(sample_id):
+    """
+
+    Args:
+        sample_id (str):
+
+    Returns:
+        str: response
+    """
+    suffix = f"sample/{sample_id}/report"
+    response = http_request("GET", suffix, get_raw=True)
+    return response
+
+
+def vmray_get_pdf_report_command():  # pragma: no cover
+    """
+
+    Returns:
+        dict: response
+    """
+    sample_id = demisto.args().get("sample_id")
+    check_id(sample_id)
+
+    pdf_report = get_pdf_report(sample_id)
+    file_entry = fileResult(filename=f"{sample_id}_report.pdf", data=pdf_report, file_type=EntryType.ENTRY_INFO_FILE)
+    return_results(file_entry)
+
+
 def main():  # pragma: no cover
     try:
         command = demisto.command()
@@ -1580,6 +1608,8 @@ def main():  # pragma: no cover
             vmray_get_license_usage_verdicts_command()
         elif command == "vmray-get-license-usage-reports":
             vmray_get_license_usage_reports_command()
+        elif command == "vmray-get-pdf-report":
+            vmray_get_pdf_report_command()
     except Exception as exc:
         return_error(f"Failed to execute `{demisto.command()}` command. Error: {exc!s}")
 
