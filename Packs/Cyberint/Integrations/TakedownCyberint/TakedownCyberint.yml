@@ -177,7 +177,7 @@ script:
       defaultvalue: None
       required: true
       description: Reason for takedown request
-      options:
+      predefined:
         - phishing
         - brand_abuse
         - impersonating_application
