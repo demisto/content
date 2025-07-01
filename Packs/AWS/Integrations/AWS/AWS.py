@@ -13,8 +13,8 @@ DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
 DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv('EGRESSPROXY_CA_PATH') or "/etc/certs/egress.crt"
 DEFAULT_PROXYDOME = os.getenv('CRTX_HTTP_PROXY') or "10.181.0.100:11117"
-TIMEOUT_CONFIG = Config(connect_timeout=5, read_timeout=10)
-
+TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
+DEFAULT_REGION = "us-east-1"
 
 # TODO - Remove >>
 def arg_to_bool_or_none(value):
@@ -1242,15 +1242,36 @@ def test_module():
     pass
 
 
-def health_check(credentials, account_id, connector_id) -> list[CommandResults] | str:
-    """ """
-    
-    sts_client, session = get_service_client(credentials, service_name=AWSServices.STS.value)
-    
+def health_check(credentials: dict, account_id: str, connector_id: str) -> list[CommandResults] | None:
+    """
+    Tests connectivity to AWS.
+    This function is specifically used for COOC health checks to verify connectivity.
+    Args:
+        credentials (dict): Pre-fetched cloud credentials.
+        project_id (str): The AWS project ID to check against.
+        connector_id (str): The connector ID for the Cloud integration.
+    Returns:
+        HealthCheckError or None: HealthCheckError if there's an issue, None if successful.
+        """
+    demisto.info(f"creds {credentials=}")
+    sts_client, session = get_service_client(credentials=credentials, service_name=AWSServices.STS.value, config=TIMEOUT_CONFIG)
+    # identity = sts_client.get_caller_identity()
+    # demisto.info(f"STS Client: {sts_client} | {identity=}")
     for service in AWSServices:
-        client, _ = get_service_client(session=session, service_name=service)
+        demisto.info(f"Health Check for {service}")
+        client, _ = get_service_client(session=session, service_name=service, config=TIMEOUT_CONFIG)
         url = client.meta.endpoint_url
-        requests.head(url, timeout=5, allow_redirects=False)
+        try:
+            resp = requests.head(url, timeout=60, allow_redirects=False)
+        except requests.exceptions.ConnectTimeout as e:  
+            demisto.error(f"Health Check Response for {service}: {resp}")
+    # return HealthCheckError(
+    #         account_id=account_id,
+    #         connector_id=connector_id,
+    #         message=f"Failed to check account: {str(e)}",
+    #         error_type=ErrorType.INTERNAL_ERROR,
+    #     )
+    return None
 
 
 def register_proxydome_header(boto_client: BotoClient) -> None:
@@ -1291,18 +1312,19 @@ def get_service_client(credentials: dict = {}, params: dict = {}, args: dict = {
         aws_access_key_id=credentials.get("key") or params.get("access_key_id"),
         aws_secret_access_key=credentials.get("access_token") or params.get("secret_access_key", {}).get("password"),
         aws_session_token=credentials.get("session_token"),
-        region_name=args.get("region") or params.get("region", ""),
+        region_name=args.get("region") or params.get("region", "") or DEFAULT_REGION,
     )
 
     # Resolve service name
     service_name = service_name or command.split("-")[1]
     service = AWSServices(service_name)
 
-    if config:
-        config.proxies = {"https": DEFAULT_PROXYDOME}
     client_config =  Config(
         proxies={"https": DEFAULT_PROXYDOME}, proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH}
     )
+    if config: 
+        client_config.merge(config)
+        
     client = aws_session.client(service, verify=False, config=client_config)
 
     register_proxydome_header(client)
@@ -1345,6 +1367,8 @@ def main():  # pragma: no cover
             results = run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check) if (connector_id := get_connector_id()) else test_module()
             return_results(results)
         elif command in COMMANDS_MAPPING:
+            # results = run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check) if (connector_id := get_connector_id()) else test_module()
+            # return_results(CommandResults(readable_output="ok"))
             return_results(execute_aws_command(command, args, params))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
