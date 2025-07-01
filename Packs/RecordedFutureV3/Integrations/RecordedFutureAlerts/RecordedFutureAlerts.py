@@ -16,7 +16,7 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 
 import concurrent.futures
 import platform
-from typing import Any
+from typing import Any, Union, Optional
 
 import urllib3
 import demistomock as demisto
@@ -46,7 +46,7 @@ TIMEOUT_120 = 120
 class Client(BaseClient):
     """Client class to interact with the service API"""
 
-    def _call(self, **kwargs: Any) -> dict | list[CommandResults]:
+    def _call(self, **kwargs: Any) -> Union[dict, list[CommandResults]]:
         try:
             response: dict = self._http_request(**kwargs)
             if not isinstance(response, dict):
@@ -89,10 +89,10 @@ class Client(BaseClient):
         self,
         url_suffix: str,
         *,
-        params: dict | None = None,
+        params: Optional[dict] = None,
         timeout: int = 90,
         retries: int = 3,
-    ) -> dict | list[CommandResults]:
+    ) -> Union[dict, list[CommandResults]]:
         return self._call(
             method="GET",
             url_suffix=url_suffix,
@@ -108,7 +108,7 @@ class Client(BaseClient):
         json_data: dict,
         timeout: int = 90,
         retries: int = 3,
-    ) -> dict | list[CommandResults]:
+    ) -> Union[dict, list[CommandResults]]:
         return self._call(
             method="POST",
             url_suffix=url_suffix,
@@ -124,7 +124,7 @@ class Client(BaseClient):
             timeout=60,
         )
 
-    def alert_update(self) -> dict | list[CommandResults]:
+    def alert_update(self) -> Union[dict, list[CommandResults]]:
         """Update alert"""
         return self._post(
             url_suffix="/v3/alert/update",
@@ -132,11 +132,11 @@ class Client(BaseClient):
             timeout=90,
         )
 
-    def alert_search(self) -> dict | list[CommandResults]:
+    def alert_search(self) -> Union[dict, list[CommandResults]]:
         """Search alerts"""
         return self._get(url_suffix="/v3/alert/search", params=demisto.args())
 
-    def alert_rule_search(self) -> dict | list[CommandResults]:
+    def alert_rule_search(self) -> Union[dict, list[CommandResults]]:
         """Search alert rules."""
         return self._get(url_suffix="/v3/alert/rules", params=demisto.args())
 
@@ -152,7 +152,7 @@ class Client(BaseClient):
         alert_type: str,
         alert_id: str,
         image_id: str,
-        alert_subtype: str | None,
+        alert_subtype: Optional[str],
     ) -> bytes:
         """
         Get an image from the v3 alert image endpoint.
@@ -266,15 +266,15 @@ class Actions:
         demisto.setLastRun(next_query)
         return None
 
-    def alert_search_command(self) -> dict | list[CommandResults]:
+    def alert_search_command(self) -> Union[dict, list[CommandResults]]:
         return self.client.alert_search()
 
     def alert_rule_search_command(
         self,
-    ) -> dict | list[CommandResults]:
+    ) -> Union[dict, list[CommandResults]]:
         return self.client.alert_rule_search()
 
-    def alert_update_command(self) -> dict | list[CommandResults]:
+    def alert_update_command(self) -> Union[dict, list[CommandResults]]:
         return self.client.alert_update()
 
     @staticmethod
@@ -286,8 +286,8 @@ class Actions:
         alert_type: str,
         alert_id: str,
         image_id: str,
-        alert_subtype: str | None,
-    ) -> dict | None:
+        alert_subtype: Optional[str],
+    ) -> Optional[dict]:
         try:
             return_results(f"Trying to fetch {image_id=} ({alert_type=} {alert_subtype=} {alert_id=})")
             image_content = self.client.get_alert_image(
