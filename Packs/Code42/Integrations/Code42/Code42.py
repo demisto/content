@@ -180,11 +180,13 @@ class Code42Client(BaseClient):
     @property
     def incydr_sdk(self):
         if self._incydr_sdk is None:
-            self._incydr_sdk = incydr.Client(
-                url=f"https://{self._api_url}", api_client_id=self._auth[0], api_client_secret=self._auth[1]
-            )
             version = get_pack_version()
-            self._incydr_sdk.settings.user_agent_prefix = f"Code42 - Cortex XSOAR/{version} (Code42; code42.com)"
+            self._incydr_sdk = incydr.Client(
+                url=f"https://{self._api_url}",
+                api_client_id=self._auth[0],
+                api_client_secret=self._auth[1],
+                user_agent_prefix=f"Code42 - Cortex XSOAR/{version} (Code42; code42.com)",
+            )
         return self._incydr_sdk
 
     # Alert methods
