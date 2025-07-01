@@ -6,8 +6,7 @@ commonfields:
   id: Azure
   version: -1
 configuration:
-- defaultvalue: d4736600-e3d5-4c97-8e65-57abd2b979fe
-  display: Application ID
+- display: Application ID
   name: app_id
   type: 0
   section: Connect
@@ -449,19 +448,12 @@ script:
     - name: name
       required: true
       description: Name of the policy assignment.
-    - name: resource_group_name
-      type: string
-      description: The resource group name.
     - name: subscription_id
-      type: string
+      required: true
       description: Subscription ID.
-    - name: scope_level
+    - name: scope
       type: string
-      description: The scope level of the assignment.
-      auto: PREDEFINED
-      predefined:
-      - 'resource group'
-      - 'subscription'
+      description: The scope of the policy assignment.
     - name: policy_definition_id
       required: false
       type: string
@@ -585,10 +577,10 @@ script:
       required: false
       description: Configures the minimum version of TLS required for SSL requests.
       predefined:
-      - 1.0	
-      - 1.1	
-      - 1.2	
-      - 1.3
+      - '1.0'	
+      - '1.1'	
+      - '1.2'	
+      - '1.3'
     name: azure-webapp-config-set
     description: Updates the configuration settings of an existing Azure Web App.
     outputs:
@@ -799,28 +791,6 @@ script:
     - contextPath: Azure.WebAppAuth.properties.authFilePath
       description: The path to the authentication configuration file.
       type: String
-  - arguments:
-    - name: resource_id
-      type: string
-      required: true
-      description: Full Azure resource ID to update.
-    - auto: PREDEFINED
-      name: allow_blob_public_access
-      type: bool
-      description: Whether to allow public access to blob containers.
-      predefined:
-      - 'true'
-      - 'false'
-    - name: location
-      required: true
-      type: string
-      description: Resource location.
-    - name: account_type
-      type: string
-      description: Account type of the resource.
-    name: azure-resource-update
-    description: Updates a resource by ID.
-    outputs: []
   - arguments:
     - name: resource_group_name
       type: string
@@ -1757,7 +1727,8 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/crypto:1.0.0.3174650
-IsCloudProviderIntegration: true
 fromversion: 6.1.0
+isCloudProviderIntegration: true
 tests:
 - No tests (auto formatted)
+marketplaces: []

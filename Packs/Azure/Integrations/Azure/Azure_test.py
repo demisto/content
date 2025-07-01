@@ -2,10 +2,10 @@ import json
 
 import demistomock as demisto
 import pytest
-import jwt
 import Azure
 from Azure import (
     AzureClient,
+    format_rule,
     update_security_rule_command,
     storage_account_update_command,
     storage_blob_service_properties_set_command,
@@ -22,10 +22,8 @@ from Azure import (
     sql_db_threat_policy_update_command,
     sql_db_tde_set_command,
     cosmosdb_update_command,
-    get_token,
     remove_member_from_group_command,
     get_azure_client,
-    is_azure,
     remove_member_from_role,
     CommandResults,
     DemistoException,
@@ -599,17 +597,23 @@ def test_sql_db_threat_policy_update_command_not_found(mocker, client, mock_para
     Then: The function should handle the error case properly.
     """
 
-    # Mock a 404 error case where the database is not found
-    not_found_message = "Database 'test-db' not found"
-    mocker.patch.object(client, "sql_db_threat_policy_get", return_value=not_found_message)
+    # Mock a realistic 404 error response
+    def mock_get_threat_policy(*args, **kwargs):
+        # Simulate what the actual Azure API would return
+        raise DemistoException("Resource not found - Database 'test-db' does not exist on server 'test-server'")
+    
+    mocker.patch.object(client, "sql_db_threat_policy_get", side_effect=mock_get_threat_policy)
 
     # Call the function
     args = {"server_name": "test-server", "db_name": "test-db", "email_account_admins_enabled": "true"}
 
-    result = sql_db_threat_policy_update_command(client, mock_params, args)
+    # Test that the function handles the exception appropriately
+    with pytest.raises(DemistoException) as excinfo:
+        sql_db_threat_policy_update_command(client, mock_params, args)
 
-    # Verify that it returns the error message
-    assert result.readable_output == not_found_message
+    # Verify the error message contains expected information
+    assert "test-db" in str(excinfo.value)
+    assert "test-server" in str(excinfo.value)
 
 
 def test_sql_db_tde_set_command(mocker, client, mock_params):
@@ -787,21 +791,6 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     )
 
 
-def test_is_azure():
-    """
-    Given: A command name.
-    When: The is_azure function is called.
-    Then: The function should return whether the command requires Azure role assignments.
-    """
-    # Azure commands
-    assert is_azure("azure-nsg-security-rule-update") is True
-    assert is_azure("azure-storage-account-update") is True
-    assert is_azure("azure-key-vault-update") is True
-
-    # Microsoft Graph commands
-    assert is_azure("azure-remove-member-from-role") is False
-    assert is_azure("azure-remove-member-from-group") is False
-
 
 def test_remove_member_from_role(mocker, client):
     """
@@ -845,35 +834,6 @@ def test_remove_member_from_group_command(mocker, client):
     client.remove_member_from_group.assert_called_once_with(args["group_id"], args["user_id"])
 
 
-def test_get_token(mocker):
-    """
-    Given: An access token.
-    When: The get_token function is called.
-    Then: The function should decode the token and return the decoded payload.
-    """
-    # Sample access token (header.payload.signature)
-    mock_token = "123455"
-
-    # Expected decoded token
-    expected_decoded = {
-        "sub": "1234567890",
-        "name": "John Doe",
-        "iat": 1516239022,
-        "oid": "mock_object_id",
-        "roles": ["Role1", "Role2"],
-    }
-
-    # Mock jwt.decode
-    mocker.patch("jwt.decode", return_value=expected_decoded)
-
-    # Call the function
-    result = get_token(mock_token)
-
-    # Verify results
-    assert result == expected_decoded
-    jwt.decode.assert_called_once_with(mock_token, options={"verify_signature": False})
-
-
 def test_get_azure_client_no_token(mocker, mock_params):
     """
     Given: Parameters without credentials and no token from cloud credentials.
@@ -893,7 +853,7 @@ def test_get_azure_client_no_token(mocker, mock_params):
 
     # Verify exception is raised
     with pytest.raises(DemistoException) as excinfo:
-        get_azure_client(params, args, command)
+        get_azure_client(params, args)
 
     assert "Failed to retrieve AZURE access token" in str(excinfo.value)
 
@@ -909,7 +869,6 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     command = "azure-storage-account-update"
     mock_client = mocker.Mock()
 
-    mocker.patch("Azure.is_azure", return_value=True)
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test with credentials (stored credentials path)
@@ -917,7 +876,7 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     params["credentials"] = {"password": "test_password"}
 
     # Call the function
-    result = get_azure_client(params, args, command)
+    result = get_azure_client(params, args)
 
     # Verify results
     assert result == mock_client
@@ -948,7 +907,6 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     mock_client = mocker.Mock()
     mock_token = "mock_access_token"
 
-    mocker.patch("Azure.is_azure", return_value=True)
     mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={"access_token": mock_token})
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -958,7 +916,7 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     params["credentials"] = {}  # No stored credentials
 
     # Call the function
-    result = get_azure_client(params, args, command)
+    result = get_azure_client(params, args)
 
     # Verify results
     assert result == mock_client
@@ -981,48 +939,6 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     )
 
 
-def test_get_azure_client_with_cloud_credentials_non_azure_command(mocker, mock_params):
-    """
-    Given: Parameters without stored credentials, arguments, and a non-Azure command.
-    When: The get_azure_client function is called.
-    Then: The function should retrieve cloud credentials and return a client without Azure scope.
-    """
-    # Setup mocks
-    args = {"subscription_id": "arg_subscription_id"}
-    command = "azure-remove-member-from-group"  # Non-Azure command
-    mock_client = mocker.Mock()
-    mock_token = "mock_access_token"
-
-    mocker.patch("Azure.is_azure", return_value=False)
-    mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
-    mocker.patch("Azure.get_cloud_credentials", return_value={"access_token": mock_token})
-    mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
-
-    # Test without stored credentials (cloud credentials path)
-    params = mock_params.copy()
-    params["credentials"] = {}  # No stored credentials
-
-    # Call the function
-    result = get_azure_client(params, args, command)
-
-    # Verify results
-    assert result == mock_client
-
-    # Verify AzureClient was instantiated without Azure scope for non-Azure commands
-    expected_headers = {"Authorization": f"Bearer {mock_token}", "Content-Type": "application/json", "Accept": "application/json"}
-    mock_azure_client_constructor.assert_called_once_with(
-        app_id=params["app_id"],
-        subscription_id=params["subscription_id"],
-        resource_group_name=params["resource_group_name"],
-        verify=not params["insecure"],
-        proxy=params["proxy"],
-        tenant_id=params["tenant_id"],
-        enc_key=None,
-        scope=None,  # No scope for non-Azure commands
-        headers=expected_headers,
-    )
-
-
 def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
     """
     Given: Parameters without stored credentials and cloud credentials that return no token.
@@ -1031,9 +947,7 @@ def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "azure-storage-account-update"
 
-    mocker.patch("Azure.is_azure", return_value=True)
     mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No access_token
 
@@ -1043,7 +957,7 @@ def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
 
     # Verify exception is raised
     with pytest.raises(DemistoException) as excinfo:
-        get_azure_client(params, args, command)
+        get_azure_client(params, args)
 
     assert "Failed to retrieve AZURE access token - token is missing from credentials" in str(excinfo.value)
 
@@ -1059,7 +973,6 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
     command = "azure-storage-account-update"
     mock_client = mocker.Mock()
 
-    mocker.patch("Azure.is_azure", return_value=True)
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test with insecure and proxy settings
@@ -1069,7 +982,7 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
     params["credentials"] = {"password": "test_password"}
 
     # Call the function
-    result = get_azure_client(params, args, command)
+    result = get_azure_client(params, args)
 
     # Verify results
     assert result == mock_client
@@ -1091,14 +1004,13 @@ def test_get_azure_client_missing_optional_params(mocker):
     command = "azure-storage-account-update"
     mock_client = mocker.Mock()
 
-    mocker.patch("Azure.is_azure", return_value=True)
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test with minimal parameters
     params = {"credentials": {"password": "test_password"}}
 
     # Call the function
-    result = get_azure_client(params, args, command)
+    result = get_azure_client(params, args)
 
     # Verify results
     assert result == mock_client
@@ -1111,3 +1023,261 @@ def test_get_azure_client_missing_optional_params(mocker):
     assert call_args[1]["verify"] is True  # Default for insecure=False
     assert call_args[1]["proxy"] is False  # Default
     assert call_args[1]["tenant_id"] is None
+    
+    
+def test_format_rule_dict_input(mocker):
+    """
+    Given: A rule JSON as dictionary and security rule name.
+    When: The format_rule function is called.
+    Then: The function should format the rule properly and return CommandResults.
+    """
+    # Prepare test data
+    rule_json = {
+        "name": "test-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule",
+        "properties": {
+            "protocol": "Tcp",
+            "sourcePortRange": "*",
+            "destinationPortRange": "443",
+            "access": "Allow",
+            "priority": 100,
+            "direction": "Inbound"
+        }
+    }
+    security_rule_name = "test-rule"
+
+    # Mock tableToMarkdown
+    mock_table = mocker.patch("Azure.tableToMarkdown", return_value="Mock Table")
+
+    # Call the function
+    result = format_rule(rule_json, security_rule_name)
+
+    # Verify results
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "test-rule"
+    assert result.outputs["protocol"] == "Tcp"
+    assert result.outputs["access"] == "Allow"
+    assert "properties" not in result.outputs  # Properties should be flattened
+
+    # Verify tableToMarkdown was called
+    mock_table.assert_called_once()
+
+
+def test_format_rule_list_input(mocker):
+    """
+    Given: A rule JSON as list and security rule name.
+    When: The format_rule function is called.
+    Then: The function should format all rules properly and return CommandResults.
+    """
+    # Prepare test data
+    rule_json = [
+        {
+            "name": "rule1",
+            "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/rule1",
+            "properties": {"protocol": "Tcp", "access": "Allow"}
+        },
+        {
+            "name": "rule2",
+            "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/rule2",
+            "properties": {"protocol": "Udp", "access": "Deny"}
+        }
+    ]
+    security_rule_name = "test-rules"
+
+    # Mock tableToMarkdown
+    mock_table = mocker.patch("Azure.tableToMarkdown", return_value="Mock Table")
+
+    # Call the function
+    result = format_rule(rule_json, security_rule_name)
+
+    # Verify results
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["name"] == "rule1"
+    assert result.outputs[0]["protocol"] == "Tcp"
+    assert result.outputs[1]["name"] == "rule2"
+    assert result.outputs[1]["protocol"] == "Udp"
+
+    # Verify properties were flattened for all rules
+    for rule in result.outputs:
+        assert "properties" not in rule
+
+
+def test_azure_client_handle_azure_error_404(mocker, client):
+    """
+    Given: An Azure client and a 404 error.
+    When: The handle_azure_error method is called.
+    Then: The function should raise a ValueError with appropriate message.
+    """
+    # Prepare test data
+    error = Exception("404 - Not Found")
+    resource_name = "test-resource"
+    resource_type = "Storage Account"
+    subscription_id = "test-subscription"
+    resource_group_name = "test-rg"
+
+    # Verify ValueError is raised for 404 errors
+    with pytest.raises(ValueError) as excinfo:
+        client.handle_azure_error(error, resource_name, resource_type, subscription_id, resource_group_name)
+
+    assert 'Storage Account "test-resource"' in str(excinfo.value)
+    assert 'subscription ID "test-subscription"' in str(excinfo.value)
+    assert 'resource group "test-rg"' in str(excinfo.value)
+    assert "was not found" in str(excinfo.value)
+
+
+def test_azure_client_handle_azure_error_403(mocker, client):
+    """
+    Given: An Azure client and a 403 error.
+    When: The handle_azure_error method is called.
+    Then: The function should raise a DemistoException with permission error message.
+    """
+    # Prepare test data
+    error = Exception("403 - Forbidden")
+    resource_name = "test-resource"
+    resource_type = "Key Vault"
+
+    # Verify DemistoException is raised for 403 errors
+    with pytest.raises(DemistoException) as excinfo:
+        client.handle_azure_error(error, resource_name, resource_type)
+
+    assert 'Insufficient permissions to access Key Vault "test-resource"' in str(excinfo.value)
+
+
+def test_azure_client_handle_azure_error_401(mocker, client):
+    """
+    Given: An Azure client and a 401 error.
+    When: The handle_azure_error method is called.
+    Then: The function should raise a DemistoException with authentication error message.
+    """
+    # Prepare test data
+    error = Exception("401 - Unauthorized")
+    resource_name = "test-resource"
+    resource_type = "Web App"
+
+    # Verify DemistoException is raised for 401 errors
+    with pytest.raises(DemistoException) as excinfo:
+        client.handle_azure_error(error, resource_name, resource_type)
+
+    assert 'Authentication failed when accessing Web App "test-resource"' in str(excinfo.value)
+
+
+def test_azure_client_handle_azure_error_400(mocker, client):
+    """
+    Given: An Azure client and a 400 error.
+    When: The handle_azure_error method is called.
+    Then: The function should raise a DemistoException with bad request error message.
+    """
+    # Prepare test data
+    error = Exception("400 - Bad Request")
+    resource_name = "test-resource"
+    resource_type = "Disk"
+
+    # Verify DemistoException is raised for 400 errors
+    with pytest.raises(DemistoException) as excinfo:
+        client.handle_azure_error(error, resource_name, resource_type)
+
+    assert 'Invalid request for Disk "test-resource"' in str(excinfo.value)
+
+
+def test_azure_client_handle_azure_error_generic(mocker, client):
+    """
+    Given: An Azure client and a generic error.
+    When: The handle_azure_error method is called.
+    Then: The function should raise a DemistoException with the original error.
+    """
+    # Prepare test data
+    error = Exception("Some other error")
+    resource_name = "test-resource"
+    resource_type = "Virtual Machine"
+
+    # Verify DemistoException is raised for generic errors
+    with pytest.raises(DemistoException) as excinfo:
+        client.handle_azure_error(error, resource_name, resource_type)
+
+    assert 'Failed to access Virtual Machine "test-resource"' in str(excinfo.value)
+    assert "Some other error" in str(excinfo.value)
+
+
+def test_azure_client_http_request_with_headers(mocker, mock_params):
+    """
+    Given: An Azure client with headers and request parameters.
+    When: The http_request method is called.
+    Then: The function should make the request with proper headers and proxy settings.
+    """
+    # Setup mocks
+    headers = {"Authorization": "Bearer token", "Content-Type": "application/json"}
+    mock_base_client = mocker.Mock()
+    mock_get_proxydome_token = mocker.patch("Azure.get_proxydome_token", return_value="proxy_token")
+    mocker.patch("Azure.BaseClient", return_value=mock_base_client)
+
+    # Create client with headers
+    client = AzureClient(headers=headers)
+
+    # Call the function
+    client.http_request(method="GET", url_suffix="/test", params={"param1": "value1"})
+
+    # Verify BaseClient was used and proxydome token was added
+    expected_headers = headers.copy()
+    expected_headers["x-caller-id"] = "proxy_token"
+    
+    mock_base_client._http_request.assert_called_once()
+    call_args = mock_base_client._http_request.call_args
+    assert call_args[1]["headers"] == expected_headers
+    assert "proxies" in call_args[1]
+
+
+def test_azure_client_http_request_without_headers(mocker, mock_params):
+    """
+    Given: An Azure client without headers.
+    When: The http_request method is called.
+    Then: The function should use MicrosoftClient for the request.
+    """
+    # Setup mocks
+    mock_ms_client = mocker.Mock()
+    mocker.patch("Azure.MicrosoftClient", return_value=mock_ms_client)
+
+    # Create client without headers
+    client = AzureClient()
+
+    # Call the function
+    client.http_request(method="GET", url_suffix="/test")
+
+    # Verify MicrosoftClient was used
+    mock_ms_client.http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/test",
+        full_url=None,
+        json_data=None,
+        params={"api-version": "2022-09-01"},
+        resp_type="json"
+    )
+
+
+def test_azure_client_http_request_api_version_override(mocker, mock_params):
+    """
+    Given: An Azure client and request parameters with custom api-version.
+    When: The http_request method is called.
+    Then: The function should use the provided api-version instead of default.
+    """
+    # Setup mocks
+    mock_ms_client = mocker.Mock()
+    mocker.patch("Azure.MicrosoftClient", return_value=mock_ms_client)
+
+    # Create client
+    client = AzureClient()
+
+    # Call the function with custom api-version
+    custom_params = {"api-version": "2023-01-01", "other-param": "value"}
+    client.http_request(method="GET", url_suffix="/test", params=custom_params)
+
+    # Verify custom api-version was preserved
+    mock_ms_client.http_request.assert_called_once()
+    call_args = mock_ms_client.http_request.call_args
+    assert call_args[1]["params"]["api-version"] == "2023-01-01"
+    assert call_args[1]["params"]["other-param"] == "value"
+

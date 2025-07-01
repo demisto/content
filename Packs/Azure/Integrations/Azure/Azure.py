@@ -1,6 +1,5 @@
 import demistomock as demisto
 import urllib3
-import jwt
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
@@ -1504,7 +1503,7 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    name = args.get("name")
+    name = args.get("name", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     enabled = args.get("enabled")
@@ -1975,7 +1974,7 @@ def remove_member_from_group_command(client: AzureClient, args: dict) -> Command
     return CommandResults(readable_output=human_readable)
 
 
-def test_module(client) -> str:
+def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -2041,7 +2040,7 @@ def health_check(
         )
 
 
-def get_azure_client(params, args, command):
+def get_azure_client(params: dict, args: dict):
     headers = {}
     token = ""
     if not params.get("credentials", {}).get("password"):
@@ -2098,7 +2097,7 @@ def main():
             "azure-cosmos-db-update": cosmosdb_update_command,
         }
         if command != "test-module" or not connector_id:
-            client = get_azure_client(params, args, command)
+            client = get_azure_client(params, args)
 
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
