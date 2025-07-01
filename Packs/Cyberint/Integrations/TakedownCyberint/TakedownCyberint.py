@@ -184,15 +184,15 @@ def submit_takedown_request_command(
     ]
 
     # Validate reason value
-    reason = args.get("reason")
+    reason = args.get("reason").lower()
     if reason and reason not in allowed_reasons:
         errormsg = f"Invalid reason provided: {reason}. Allowed values are: {allowed_reason_values_str}"
         demisto.error(errormsg)
-        return_error(errormsg)
+        raise DemistoException(errormsg)
 
     response = client.submit_takedown_request(
         customer=args.get("customer"),
-        reason=args.get("reason"),
+        reason=reason,
         url=args.get("url"),
         brand=args.get("brand"),
         original_url=args.get("original_url"),
@@ -290,11 +290,11 @@ def retrieve_takedown_requests_command(
     ]
 
     # Validate reason value
-    reason = args.get("reason")
+    reason = args.get("reason").lower()
     if reason and reason not in allowed_reasons:
         errormsg = f"Invalid reason provided: {reason}. Allowed values are: {allowed_reason_values_str}"
         demisto.error(errormsg)
-        return_error(errormsg)
+        raise DemistoException(errormsg)
 
     response = client.retrieve_takedown_requests(**args)
     data = response.get("data", {})
@@ -302,7 +302,7 @@ def retrieve_takedown_requests_command(
 
     formatted_requests = [
         {
-            "reason": req.get("reason"),
+            "reason": reason,
             "url": req.get("url"),
             "original_url": req.get("original_url"),
             "customer": req.get("customer"),
