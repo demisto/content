@@ -35,6 +35,7 @@ class MockPychromeEventHandler:
     is_mailto = False
     is_private_network_url = False
     document_url = ""
+    path = ""
 
 
 class MockTab:
