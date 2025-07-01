@@ -184,8 +184,9 @@ def submit_takedown_request_command(
     ]
 
     # Validate reason value
-    reason = args.get("reason").lower()
+    reason = args.get("reason")
     if reason and reason not in allowed_reasons:
+        reason = reason.lower()
         errormsg = f"Invalid reason provided: {reason}. Allowed values are: {allowed_reason_values_str}"
         demisto.error(errormsg)
         raise DemistoException(errormsg)
@@ -290,8 +291,9 @@ def retrieve_takedown_requests_command(
     ]
 
     # Validate reason value
-    reason = args.get("reason").lower()
+    reason = args.get("reason")
     if reason and reason not in allowed_reasons:
+        reason = reason.lower()
         errormsg = f"Invalid reason provided: {reason}. Allowed values are: {allowed_reason_values_str}"
         demisto.error(errormsg)
         raise DemistoException(errormsg)
