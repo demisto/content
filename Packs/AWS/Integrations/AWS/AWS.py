@@ -6,7 +6,7 @@ from datetime import date
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
-
+from botocore.exceptions import ClientError
 from boto3 import Session
 
 DEFAULT_MAX_RETRIES: int = 5
@@ -16,23 +16,6 @@ DEFAULT_PROXYDOME = os.getenv('CRTX_HTTP_PROXY') or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
 
-# TODO - Remove >>
-def arg_to_bool_or_none(value):
-    """
-    Converts a value to a boolean or None.
-
-    Args:
-        value: The value to convert to boolean or None.
-
-    Returns:
-        bool or None: Returns None if the input is None, otherwise returns the boolean representation of the value
-        using the argToBoolean function.
-    """
-    if value is None:
-        return None
-    else:
-        return argToBoolean(value)
-# <<
 
 def parse_resource_ids(resource_id: str | None) -> list[str]:
     if resource_id is None:
@@ -343,7 +326,7 @@ class IAM:
         kwargs = {"PolicyDocument": policy_document, "PolicyName": policy_name, "RoleName": role_name}
 
         try:
-            response = client.put_role_policy(**kwargs)
+            client.put_role_policy(**kwargs)
             human_readable = f"Policy '{policy_name}' was successfully added to role '{role_name}'"
             return CommandResults(readable_output=human_readable)
         except Exception as e:
@@ -805,7 +788,7 @@ class EC2:
                 if unknown:
                     raise DemistoException("Specified egress rule not found.")
                 raise DemistoException(f"Unexpected response: {resp}")
-        except botocore.exceptions.ClientError as e:
+        except ClientError as e:
             code = e.response["Error"]["Code"]
             if code in ("InvalidGroup.NotFound", "InvalidGroupId.NotFound"):
                 raise DemistoException(f"Security group {group_id} not found.")

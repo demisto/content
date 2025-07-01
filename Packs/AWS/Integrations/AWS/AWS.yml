@@ -1767,6 +1767,6 @@ script:
   subtype: python3
   dockerimage: demisto/boto3py3:1.0.0.3575453
 fromversion: 5.5.0
-IsCloudProviderIntegration: true
+isCloudProviderIntegration: true
 tests:
 - No test - No playbook part of this release.
