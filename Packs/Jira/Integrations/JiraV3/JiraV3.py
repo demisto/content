@@ -4549,6 +4549,7 @@ def update_remote_system_command(
                 demisto.debug(f"Transitioning issue since status has changed: {issue_fields}")
                 apply_issue_transition(client=client, issue_id_or_key=remote_id, transition_name=delta['status'],
                                        issue_fields=issue_fields)
+                client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
                 demisto.debug("Transitioned the issue successfully")
 
         else:
