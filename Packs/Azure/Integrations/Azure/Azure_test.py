@@ -24,17 +24,13 @@ from Azure import (
     cosmosdb_update_command,
     get_token,
     remove_member_from_group_command,
-    health_check,
     get_azure_client,
     is_azure,
     remove_member_from_role,
-    REQUIRED_ROLE_PERMISSIONS,
     CommandResults,
-    HealthCheckError,
-    ErrorType,
     DemistoException,
     CloudTypes,
-    SCOPE_BY_CONNECTION
+    SCOPE_BY_CONNECTION,
 )
 
 
@@ -877,6 +873,7 @@ def test_get_token(mocker):
     assert result == expected_decoded
     jwt.decode.assert_called_once_with(mock_token, options={"verify_signature": False})
 
+
 def test_get_azure_client_no_token(mocker, mock_params):
     """
     Given: Parameters without credentials and no token from cloud credentials.
@@ -899,6 +896,7 @@ def test_get_azure_client_no_token(mocker, mock_params):
         get_azure_client(params, args, command)
 
     assert "Failed to retrieve AZURE access token" in str(excinfo.value)
+
 
 def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     """
@@ -923,7 +921,7 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
 
     # Verify results
     assert result == mock_client
-    
+
     # Verify AzureClient was instantiated with correct parameters
     mock_azure_client_constructor.assert_called_once_with(
         app_id=params["app_id"],
@@ -934,7 +932,7 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
         tenant_id=params["tenant_id"],
         enc_key="test_password",
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
-        headers={}
+        headers={},
     )
 
 
@@ -964,20 +962,12 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
 
     # Verify results
     assert result == mock_client
-    
+
     # Verify cloud credentials were retrieved with correct parameters
-    Azure.get_cloud_credentials.assert_called_once_with(
-        CloudTypes.AZURE.value,
-        "test_subscription_id",
-        ["DEFAULT", "GRAPH"]
-    )
-    
+    Azure.get_cloud_credentials.assert_called_once_with(CloudTypes.AZURE.value, "test_subscription_id", ["DEFAULT", "GRAPH"])
+
     # Verify AzureClient was instantiated with correct parameters including headers
-    expected_headers = {
-        "Authorization": f"Bearer {mock_token}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
+    expected_headers = {"Authorization": f"Bearer {mock_token}", "Content-Type": "application/json", "Accept": "application/json"}
     mock_azure_client_constructor.assert_called_once_with(
         app_id=params["app_id"],
         subscription_id=params["subscription_id"],
@@ -987,7 +977,7 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
         tenant_id=params["tenant_id"],
         enc_key=None,
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
-        headers=expected_headers
+        headers=expected_headers,
     )
 
 
@@ -1017,13 +1007,9 @@ def test_get_azure_client_with_cloud_credentials_non_azure_command(mocker, mock_
 
     # Verify results
     assert result == mock_client
-    
+
     # Verify AzureClient was instantiated without Azure scope for non-Azure commands
-    expected_headers = {
-        "Authorization": f"Bearer {mock_token}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
+    expected_headers = {"Authorization": f"Bearer {mock_token}", "Content-Type": "application/json", "Accept": "application/json"}
     mock_azure_client_constructor.assert_called_once_with(
         app_id=params["app_id"],
         subscription_id=params["subscription_id"],
@@ -1033,7 +1019,7 @@ def test_get_azure_client_with_cloud_credentials_non_azure_command(mocker, mock_
         tenant_id=params["tenant_id"],
         enc_key=None,
         scope=None,  # No scope for non-Azure commands
-        headers=expected_headers
+        headers=expected_headers,
     )
 
 
@@ -1087,7 +1073,7 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
 
     # Verify results
     assert result == mock_client
-    
+
     # Verify correct verify and proxy parameters
     call_args = mock_azure_client_constructor.call_args
     assert call_args[1]["verify"] is False  # insecure=True means verify=False
@@ -1109,16 +1095,14 @@ def test_get_azure_client_missing_optional_params(mocker):
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test with minimal parameters
-    params = {
-        "credentials": {"password": "test_password"}
-    }
+    params = {"credentials": {"password": "test_password"}}
 
     # Call the function
     result = get_azure_client(params, args, command)
 
     # Verify results
     assert result == mock_client
-    
+
     # Verify default values were used
     call_args = mock_azure_client_constructor.call_args
     assert call_args[1]["app_id"] == ""
