@@ -1,0 +1,36 @@
+commonfields:
+  id: CiscoAMP
+  version: -1
+name: Test
+tags:
+  - Test
+category: Test
+description: Test
+args:
+  - name: test
+    description: The test
+    required: true
+    type: string
+    underlyingargname: test
+  - name: test
+    description: The test
+    required: true
+    type: string
+    underlyingargname: test
+outputs:
+  - underlyingoutputcontextpath: Test.Test
+    description: The test
+    type: string
+    name: Test.Test
+underlyingcontentitem:
+  id: Test
+  name: Test
+  type: command
+  version: -1
+  command: 'test-test'
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+- agentix
+- C1
