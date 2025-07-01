@@ -1322,7 +1322,8 @@ script:
       - 'add'
       - 'remove'
     - name: user_ids
-      description: 'CSV list of  AWS accounts IDs to add to or remove from the list of users that have permission to create EBS volumes from the snapshot.'
+      isArray: true
+      description: 'A comma-separated list of AWS user account IDs to add to or remove from the list of users permitted to create EBS volumes from the snapshot.'
       required: false
     - name: group
       description: 'The groups to add to or remove from the list of entities that have permission to create volumes from the snapshot.'
