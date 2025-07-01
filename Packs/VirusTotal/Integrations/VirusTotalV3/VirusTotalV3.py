@@ -1970,7 +1970,7 @@ def ip_command(
             # If anything happens, just keep going
             demisto.debug(f'Could not process IP: "{ip}"\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_ip_output(client, ip))
+            results.append(build_error_ip_output(client, ip, str(exc)))
             continue
         execution_metrics.success += 1
         results.append(
@@ -2076,7 +2076,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             # If anything happens, just keep going
             demisto.debug(f'Could not process URL: "{url}".\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_url_output(client, url))
+            results.append(build_error_url_output(client, url, str(exc)))
             continue
         execution_metrics.success += 1
         results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
@@ -2109,7 +2109,7 @@ def private_url_command(client: Client, args: dict) -> List[CommandResults]:
             # If anything happens, just keep going
             demisto.debug(f'Could not process private URL: "{url}".\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_url_output(client, url))
+            results.append(build_error_url_output(client, url, str(exc)))
             continue
         execution_metrics.success += 1
         results.append(build_private_url_output(url, raw_response))
@@ -2142,7 +2142,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             # If anything happens, just keep going
             demisto.debug(f'Could not process domain: "{domain}"\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_domain_output(client, domain))
+            results.append(build_error_domain_output(client, domain, str(exc)))
             continue
         execution_metrics.success += 1
         result = build_domain_output(
