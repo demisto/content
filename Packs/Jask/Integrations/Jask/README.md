@@ -191,96 +191,96 @@
             "SignalListMetadata": {
                 "Patterns": {
                     "Count": 4
-                }, 
+                },
                 "ThreatIntel": {
                     "Count": 0
-                }, 
+                },
                 "Anomalies": {
                     "Count": 0
                 }
-            }, 
-            "WorkflowStatus": "new", 
-            "Description": "Exfiltration, C2 Risk Score: 14", 
-            "IpAddress": "104.236.54.196", 
-            "Severity": 2, 
-            "RelatedEntityList": [], 
-            "LastUpdated": "2018-07-13T05:17:55.620330", 
+            },
+            "WorkflowStatus": "new",
+            "Description": "Exfiltration, C2 Risk Score: 14",
+            "IpAddress": "104.236.54.196",
+            "Severity": 2,
+            "RelatedEntityList": [],
+            "LastUpdated": "2018-07-13T05:17:55.620330",
             "EntityDetails": {
-                "EntityType": "ip", 
-                "Name": "^^^104.236.54.196^^^", 
-                "RiskScore": 9, 
-                "Hostname": "Unknown", 
-                "Source": "discovery", 
-                "LastSeen": "Sun, 05 Aug 2018 10:00:56 GMT", 
-                "PrimaryEntityType": null, 
-                "IpAddress": "^^^104.236.54.196^^^", 
-                "Id": "7ead8dc9-d541-3484-9320-ea593729e7cc", 
+                "EntityType": "ip",
+                "Name": "^^^104.236.54.196^^^",
+                "RiskScore": 9,
+                "Hostname": "Unknown",
+                "Source": "discovery",
+                "LastSeen": "Sun, 05 Aug 2018 10:00:56 GMT",
+                "PrimaryEntityType": null,
+                "IpAddress": "^^^104.236.54.196^^^",
+                "Id": "7ead8dc9-d541-3484-9320-ea593729e7cc",
                 "FirstSeen": "Wed, 14 Feb 2018 19:54:31 GMT"
-            }, 
-            "InsightTime": "2018-07-11T18:59:12", 
-            "Id": "7ead8dc9-d541-3484-9320-ea593729e7cc", 
+            },
+            "InsightTime": "2018-07-11T18:59:12",
+            "Id": "7ead8dc9-d541-3484-9320-ea593729e7cc",
             "SignalList": [
                 {
-                    "Category": "Exfiltration", 
-                    "Name": "Hexadecimal in DNS Query Domain", 
-                    "Timestamp": "2018-07-11T19:06:14", 
+                    "Category": "Exfiltration",
+                    "Name": "Hexadecimal in DNS Query Domain",
+                    "Timestamp": "2018-07-11T19:06:14",
                     "ThreatIndicators": [
                         {
-                            "Value": "analytics-9dd8570e3fd957ce828c34761a8e98b8.xyz", 
+                            "Value": "analytics-9dd8570e3fd957ce828c34761a8e98b8.xyz",
                             "IndicatorType": "hostname"
                         }
-                    ], 
-                    "Score": "2", 
-                    "Description": "Encoding in hexadecimal is a way that attackers can bypass network security devices that are inspecting traffic.  While hexadecimal often appears in subdomains, it much less frequent in domains.", 
-                    "Id": "b7f76616-f27b-5c18-b503-2d3dbab1bb96", 
+                    ],
+                    "Score": "2",
+                    "Description": "Encoding in hexadecimal is a way that attackers can bypass network security devices that are inspecting traffic.  While hexadecimal often appears in subdomains, it much less frequent in domains.",
+                    "Id": "b7f76616-f27b-5c18-b503-2d3dbab1bb96",
                     "SourceType": "rule"
-                }, 
+                },
                 {
-                    "Category": "C2", 
-                    "Name": "TeslaCrypt Ransomware Domain", 
-                    "Timestamp": "2018-07-11T19:51:16", 
+                    "Category": "C2",
+                    "Name": "TeslaCrypt Ransomware Domain",
+                    "Timestamp": "2018-07-11T19:51:16",
                     "ThreatIndicators": [
                         {
-                            "Value": "o4dm3.leaama.at", 
+                            "Value": "o4dm3.leaama.at",
                             "IndicatorType": "hostname"
                         }
-                    ], 
-                    "Score": "6", 
-                    "Description": "TeslaCrypt is a ransomware that encrypts documents, databases, code, bitcoin wallets and more. This rule looks for DNS queries that include domains known to be associated with TeslaCrypt.", 
-                    "Id": "67b2ba91-9c32-5ffb-9587-873ef68f7899", 
+                    ],
+                    "Score": "6",
+                    "Description": "TeslaCrypt is a ransomware that encrypts documents, databases, code, bitcoin wallets and more. This rule looks for DNS queries that include domains known to be associated with TeslaCrypt.",
+                    "Id": "67b2ba91-9c32-5ffb-9587-873ef68f7899",
                     "SourceType": "rule"
-                }, 
+                },
                 {
-                    "Category": "C2", 
-                    "Name": "TeslaCrypt Ransomware Domain", 
-                    "Timestamp": "2018-07-11T19:51:17", 
+                    "Category": "C2",
+                    "Name": "TeslaCrypt Ransomware Domain",
+                    "Timestamp": "2018-07-11T19:51:17",
                     "ThreatIndicators": [
                         {
-                            "Value": "kbv5s.kylepasse.at", 
+                            "Value": "kbv5s.kylepasse.at",
                             "IndicatorType": "hostname"
                         }
-                    ], 
-                    "Score": "6", 
-                    "Description": "TeslaCrypt is a ransomware that encrypts documents, databases, code, bitcoin wallets and more. This rule looks for DNS queries that include domains known to be associated with TeslaCrypt.", 
-                    "Id": "26fc053b-ad5f-5f39-8e48-12feb39b77d2", 
+                    ],
+                    "Score": "6",
+                    "Description": "TeslaCrypt is a ransomware that encrypts documents, databases, code, bitcoin wallets and more. This rule looks for DNS queries that include domains known to be associated with TeslaCrypt.",
+                    "Id": "26fc053b-ad5f-5f39-8e48-12feb39b77d2",
                     "SourceType": "rule"
-                }, 
+                },
                 {
-                    "Category": "C2", 
-                    "Name": "TorrentLocker Ransomware Domain", 
-                    "Timestamp": "2018-07-11T19:51:19", 
+                    "Category": "C2",
+                    "Name": "TorrentLocker Ransomware Domain",
+                    "Timestamp": "2018-07-11T19:51:19",
                     "ThreatIndicators": [
                         {
-                            "Value": "mz7oyb3v32vshcvk.tormidle.at", 
+                            "Value": "mz7oyb3v32vshcvk.tormidle.at",
                             "IndicatorType": "hostname"
                         }
-                    ], 
-                    "Score": "6", 
-                    "Description": "TorrentLocker is a ransomware that encrypts documents, databases, code, bitcoin wallets and more. This rule looks for DNS queries that include domains known to be associated with TorrentLocker.", 
-                    "Id": "7ed97e33-73fd-599c-9c55-6c89aa0e7bf3", 
+                    ],
+                    "Score": "6",
+                    "Description": "TorrentLocker is a ransomware that encrypts documents, databases, code, bitcoin wallets and more. This rule looks for DNS queries that include domains known to be associated with TorrentLocker.",
+                    "Id": "7ed97e33-73fd-599c-9c55-6c89aa0e7bf3",
                     "SourceType": "rule"
                 }
-            ], 
+            ],
             "Name": "Possible Malware - Ransomware (TeslaCrypt) and Data Exfiltration"
         }
     }
@@ -444,30 +444,30 @@
 <pre>{
     "Jask": {
         "Signal": {
-            "Category": "Exfiltration", 
-            "SourceType": "rule", 
-            "Name": "Hexadecimal in DNS Query Domain", 
-            "Timestamp": "2018-07-11T19:06:14", 
+            "Category": "Exfiltration",
+            "SourceType": "rule",
+            "Name": "Hexadecimal in DNS Query Domain",
+            "Timestamp": "2018-07-11T19:06:14",
             "ThreatIndicators": [
                 {
-                    "Value": "analytics-9dd8570e3fd957ce828c34761a8e98b8.xyz", 
+                    "Value": "analytics-9dd8570e3fd957ce828c34761a8e98b8.xyz",
                     "IndicatorType": "hostname"
                 }
-            ], 
-            "Score": "2", 
-            "Description": "Encoding in hexadecimal is a way that attackers can bypass network security devices that are inspecting traffic.  While hexadecimal often appears in subdomains, it much less frequent in domains.", 
-            "Id": "b7f76616-f27b-5c18-b503-2d3dbab1bb96", 
+            ],
+            "Score": "2",
+            "Description": "Encoding in hexadecimal is a way that attackers can bypass network security devices that are inspecting traffic.  While hexadecimal often appears in subdomains, it much less frequent in domains.",
+            "Id": "b7f76616-f27b-5c18-b503-2d3dbab1bb96",
             "Metadata": [
                 {
-                    "RecordType": "flow", 
+                    "RecordType": "flow",
                     "RecordCount": 0
-                }, 
+                },
                 {
-                    "RecordType": "notice", 
+                    "RecordType": "notice",
                     "RecordCount": 0
-                }, 
+                },
                 {
-                    "RecordType": "http", 
+                    "RecordType": "http",
                     "RecordCount": 0
                 }
             ]
@@ -565,15 +565,15 @@
 <pre>{
     "Jask": {
         "Entity": {
-            "Name": "craig.campbell", 
-            "EntityType": "username", 
-            "PrimaryEntityType": "hostname", 
-            "Source": "ad", 
-            "LastSeen": "Sun, 05 Aug 2018 10:30:18 GMT", 
+            "Name": "craig.campbell",
+            "EntityType": "username",
+            "PrimaryEntityType": "hostname",
+            "Source": "ad",
+            "LastSeen": "Sun, 05 Aug 2018 10:30:18 GMT",
             "Groups": [
                 "CN=Remote Desktop Users,CN=Builtin,DC=corp,DC=skaj,DC=ai"
-            ], 
-            "Id": "d07ef37f-06c1-58c3-a7a0-c1cd0fa4cd8e", 
+            ],
+            "Id": "d07ef37f-06c1-58c3-a7a0-c1cd0fa4cd8e",
             "FirstSeen": "Thu, 01 Mar 2018 16:52:50 GMT"
         }
     }
@@ -690,33 +690,33 @@
     "Jask": {
         "RelatedEntityList": [
             {
-                "Username": "craig.campbell", 
-                "Name": "craig.campbell", 
-                "LastName": "Campbell", 
-                "EntityType": "username", 
-                "Id": "d07ef37f-06c1-58c3-a7a0-c1cd0fa4cd8e", 
-                "CreatedTimestamp": "2018-01-23T05:01:38", 
-                "Source": "ad", 
-                "LastSeen": "2018-08-05T10:30:18", 
+                "Username": "craig.campbell",
+                "Name": "craig.campbell",
+                "LastName": "Campbell",
+                "EntityType": "username",
+                "Id": "d07ef37f-06c1-58c3-a7a0-c1cd0fa4cd8e",
+                "CreatedTimestamp": "2018-01-23T05:01:38",
+                "Source": "ad",
+                "LastSeen": "2018-08-05T10:30:18",
                 "Groups": [
                     "CN=Remote Desktop Users,CN=Builtin,DC=corp,DC=skaj,DC=ai"
-                ], 
-                "Active": true, 
-                "GivenName": "Craig", 
-                "Email": "example.gmail.com", 
+                ],
+                "Active": true,
+                "GivenName": "Craig",
+                "Email": "example.gmail.com",
                 "FirstSeen": "2018-03-01T16:52:50"
-            }, 
+            },
             {
-                "EntityType": "hostname", 
-                "Name": "sea-dt5820-357.corp.skaj.ai", 
-                "Hostname": "sea-dt5820-357.corp.skaj.ai", 
-                "Source": "ad", 
-                "LastSeen": "2018-08-05T10:30:38", 
+                "EntityType": "hostname",
+                "Name": "sea-dt5820-357.corp.skaj.ai",
+                "Hostname": "sea-dt5820-357.corp.skaj.ai",
+                "Source": "ad",
+                "LastSeen": "2018-08-05T10:30:38",
                 "Groups": [
-                    "CN=Pre-Windows 2000 Compatible Access,CN=Builtin,DC=corp,DC=skaj,DC=ai", 
+                    "CN=Pre-Windows 2000 Compatible Access,CN=Builtin,DC=corp,DC=skaj,DC=ai",
                     "CN=Cert Publishers,CN=Users,DC=corp,DC=skaj,DC=ai"
-                ], 
-                "Id": "7d63f14f-81c0-5442-9de1-6061404bcbd7", 
+                ],
+                "Id": "7d63f14f-81c0-5442-9de1-6061404bcbd7",
                 "FirstSeen": "2018-02-15T16:04:35"
             }
         ]
@@ -782,27 +782,27 @@
         "WhiteListed": {
             "EntityList": [
                 {
-                    "UserName": "demisto", 
-                    "Timestamp": "2018-05-31T21:20:45.302635", 
-                    "Name": "wittes-imac-pro.local", 
-                    "Id": "e0a7172f-aa5d-4ba9-ae66-b49d99d9b4e7", 
+                    "UserName": "demisto",
+                    "Timestamp": "2018-05-31T21:20:45.302635",
+                    "Name": "wittes-imac-pro.local",
+                    "Id": "e0a7172f-aa5d-4ba9-ae66-b49d99d9b4e7",
                     "ModelId": "e0a7172f-aa5d-4ba9-ae66-b49d99d9b4e7"
-                }, 
+                },
                 {
-                    "UserName": "demisto", 
-                    "Timestamp": "2018-05-31T21:12:54.003527", 
-                    "Name": "172.18.20.20", 
-                    "Id": "d5d04bc6-c00a-4a9a-a8f5-6f6231f55d80", 
+                    "UserName": "demisto",
+                    "Timestamp": "2018-05-31T21:12:54.003527",
+                    "Name": "172.18.20.20",
+                    "Id": "d5d04bc6-c00a-4a9a-a8f5-6f6231f55d80",
                     "ModelId": "d5d04bc6-c00a-4a9a-a8f5-6f6231f55d80"
-                }, 
+                },
                 {
-                    "UserName": "demisto", 
-                    "Timestamp": "2018-05-31T21:20:37.218586", 
-                    "Name": "192.168.2.195", 
-                    "Id": "306360bb-57d2-4a8d-a882-a7b3f2b92429", 
+                    "UserName": "demisto",
+                    "Timestamp": "2018-05-31T21:20:37.218586",
+                    "Name": "192.168.2.195",
+                    "Id": "306360bb-57d2-4a8d-a882-a7b3f2b92429",
                     "ModelId": "306360bb-57d2-4a8d-a882-a7b3f2b92429"
                 }
-            ], 
+            ],
             "Metadata": {
                 "TotalCount": 3
             }
@@ -937,25 +937,25 @@
     "Jask": {
         "Insight": [
             {
-                "WorkflowStatus": "new", 
-                "Description": "Multiple signals related to lateral movement with other anomalies and threats.", 
-                "InsightTime": "2018-08-04T11:06:14", 
-                "LastUpdated": "2018-08-04T11:06:15.373616", 
-                "AssignedTo": "unassigned", 
-                "Severity": 1, 
-                "IpAddress": "172.18.20.20", 
-                "Id": "a01f689c-f7da-4838-bf5c-2046f1736aff", 
+                "WorkflowStatus": "new",
+                "Description": "Multiple signals related to lateral movement with other anomalies and threats.",
+                "InsightTime": "2018-08-04T11:06:14",
+                "LastUpdated": "2018-08-04T11:06:15.373616",
+                "AssignedTo": "unassigned",
+                "Severity": 1,
+                "IpAddress": "172.18.20.20",
+                "Id": "a01f689c-f7da-4838-bf5c-2046f1736aff",
                 "Name": "Insider Threat - Lateral Movement with Increased Traffic"
-            }, 
+            },
             {
-                "WorkflowStatus": "new", 
-                "Description": "Multiple signals related to user, network and other threats.", 
-                "InsightTime": "2018-08-04T11:05:12", 
-                "LastUpdated": "2018-08-04T11:05:13.654486", 
-                "AssignedTo": "unassigned", 
-                "Severity": 1, 
-                "IpAddress": "^^^172.18.20.20^^^", 
-                "Id": "88cd2086-126f-4e95-a6c5-dde91f86afb6", 
+                "WorkflowStatus": "new",
+                "Description": "Multiple signals related to user, network and other threats.",
+                "InsightTime": "2018-08-04T11:05:12",
+                "LastUpdated": "2018-08-04T11:05:13.654486",
+                "AssignedTo": "unassigned",
+                "Severity": 1,
+                "IpAddress": "^^^172.18.20.20^^^",
+                "Id": "88cd2086-126f-4e95-a6c5-dde91f86afb6",
                 "Name": "User Anomalies with Beaconing Behavior"
             }
         ]
@@ -1028,48 +1028,48 @@
     "Jask": {
         "Signal": [
             {
-                "Category": "C2", 
-                "Name": "TeslaCrypt Ransomware Domain", 
-                "Timestamp": "2018-08-04T11:59:26.447586", 
+                "Category": "C2",
+                "Name": "TeslaCrypt Ransomware Domain",
+                "Timestamp": "2018-08-04T11:59:26.447586",
                 "ThreatIndicators": [
                     {
-                        "Value": "lovemydress.pl", 
+                        "Value": "lovemydress.pl",
                         "IndicatorType": "hostname"
                     }
-                ], 
-                "Score": "6", 
-                "Description": "TeslaCrypt is a ransomware that encrypts documents, databases, code, bitcoin wallets and more. This rule looks for DNS queries that include domains known to be associated with TeslaCrypt.", 
-                "Id": "79d796dc-97e6-11e8-bdd7-02346534339c", 
+                ],
+                "Score": "6",
+                "Description": "TeslaCrypt is a ransomware that encrypts documents, databases, code, bitcoin wallets and more. This rule looks for DNS queries that include domains known to be associated with TeslaCrypt.",
+                "Id": "79d796dc-97e6-11e8-bdd7-02346534339c",
                 "SourceType": "rule"
-            }, 
+            },
             {
-                "Category": "Attack Stage", 
-                "Name": "SSH Password Brute Force", 
-                "Timestamp": "2018-08-04T10:36:35.256445", 
+                "Category": "Attack Stage",
+                "Name": "SSH Password Brute Force",
+                "Timestamp": "2018-08-04T10:36:35.256445",
                 "ThreatIndicators": [
                     {
-                        "Value": "104.236.48.178", 
+                        "Value": "104.236.48.178",
                         "IndicatorType": "ip"
                     }
-                ], 
-                "Score": "2", 
-                "Description": "SSH Password brute force attack detected", 
-                "Id": "79d790a6-97e6-11e8-bdc7-02346534339c", 
+                ],
+                "Score": "2",
+                "Description": "SSH Password brute force attack detected",
+                "Id": "79d790a6-97e6-11e8-bdc7-02346534339c",
                 "SourceType": "rule"
-            }, 
+            },
             {
-                "Category": "Attack Stage", 
-                "Name": "SSH Password Brute Force", 
-                "Timestamp": "2018-08-04T11:24:49.534168", 
+                "Category": "Attack Stage",
+                "Name": "SSH Password Brute Force",
+                "Timestamp": "2018-08-04T11:24:49.534168",
                 "ThreatIndicators": [
                     {
-                        "Value": "^^^104.236.48.178^^^", 
+                        "Value": "^^^104.236.48.178^^^",
                         "IndicatorType": "ip"
                     }
-                ], 
-                "Score": "2", 
-                "Description": "SSH Password brute force attack detected", 
-                "Id": "79d78eb2-97e6-11e8-bdc2-02346534339c", 
+                ],
+                "Score": "2",
+                "Description": "SSH Password brute force attack detected",
+                "Id": "79d78eb2-97e6-11e8-bdc2-02346534339c",
                 "SourceType": "rule"
             }
         ]
@@ -1195,30 +1195,30 @@
     "Jask": {
         "Entity": [
             {
-                "EntityType": "ip", 
-                "Name": "112.175.209.72", 
-                "Hostname": "Unknown", 
-                "Source": "discovery", 
-                "PrimaryEntityType": null, 
-                "IpAddress": "^^^112.175.209.72^^^", 
+                "EntityType": "ip",
+                "Name": "112.175.209.72",
+                "Hostname": "Unknown",
+                "Source": "discovery",
+                "PrimaryEntityType": null,
+                "IpAddress": "^^^112.175.209.72^^^",
                 "Id": "68fe56f0-4cbc-4664-9227-868069607636"
-            }, 
+            },
             {
-                "EntityType": "ip", 
-                "Name": "186.185.91.72", 
-                "Hostname": "Unknown", 
-                "Source": "discovery", 
-                "PrimaryEntityType": null, 
-                "IpAddress": "^^^186.185.91.72^^^", 
+                "EntityType": "ip",
+                "Name": "186.185.91.72",
+                "Hostname": "Unknown",
+                "Source": "discovery",
+                "PrimaryEntityType": null,
+                "IpAddress": "^^^186.185.91.72^^^",
                 "Id": "ada67af4-a7c1-45f4-9740-69b095ffdac6"
-            }, 
+            },
             {
-                "EntityType": "ip", 
-                "Name": "105.102.75.16", 
-                "Hostname": "Unknown", 
-                "Source": "discovery", 
-                "PrimaryEntityType": null, 
-                "IpAddress": "^^^105.102.75.16^^^", 
+                "EntityType": "ip",
+                "Name": "105.102.75.16",
+                "Hostname": "Unknown",
+                "Source": "discovery",
+                "PrimaryEntityType": null,
+                "IpAddress": "^^^105.102.75.16^^^",
                 "Id": "b3e40046-0450-48a4-8752-6a20aec89143"
             }
         ]
