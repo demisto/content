@@ -2311,8 +2311,6 @@ def poll_offense_events_with_retry(
     """
     for retry in range(max_retries):
         print_debug_msg(f"Polling for events for offense {offense_id}. Retry number {retry+1}/{max_retries}")
-        if retry == 0:
-            time.sleep(FETCH_INITIAL_SLEEP)
         events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
         if status == QueryStatus.SUCCESS.value:
             return events, ""
@@ -2356,6 +2354,7 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
         if search_id == QueryStatus.ERROR.value:
             failure_message = "Search for events was failed."
         else:
+            time.sleep(FETCH_INITIAL_SLEEP)
             events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
         events_fetched = get_num_events(events)
         offense["events_fetched"] = events_fetched
