@@ -683,8 +683,7 @@ def test_invalid_file_command(mocker):
 
     assert results[0].execution_metrics is None
     assert results[0].readable_output == (
-        f'File "{sha256}" could not be processed. '
-        f'Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
     )
     assert results[0].indicator.dbot_score.score == 0
 
@@ -717,8 +716,7 @@ def test_invalid_private_file_command(mocker):
 
     assert results[0].execution_metrics is None
     assert results[0].readable_output == (
-        f'File "{sha256}" could not be processed. '
-        f'Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
     )
     assert results[0].indicator.dbot_score.score == 0
 
