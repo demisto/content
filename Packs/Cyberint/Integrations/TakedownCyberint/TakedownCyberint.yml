@@ -48,6 +48,7 @@ script:
     - name: customer_id
       type: String
       description: Customer ID.
+      required: true
     - name: actions
       type: Object
       description: Actions taken.
