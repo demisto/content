@@ -210,7 +210,7 @@ def get_connected_endpoints(command_prefix: str, args: dict, readable_context: l
     ).execute()
     verbose_command_results.append(endpoints_details)
     pack_prefix = "Core" if command_prefix == CORE_COMMAND_PREFIX else "PaloAltoNetworksXDR"
-    e_details = endpoints_details[0][0].get(f"{pack_prefix}.Endpoint(val.endpoint_id == obj.endpoint_id)")
+    e_details = endpoints_details[0][0].get(f"{pack_prefix}.Endpoint(val.endpoint_id == obj.endpoint_id)") or []
     connected_endpoints = []
     for e_detail in e_details:
         if e_detail.get("endpoint_status") == "CONNECTED":
@@ -266,7 +266,7 @@ def quarantine_file(command_prefix: str, args: dict, readable_context: list[dict
             message = "already quarantined"
         else:
             quarantine_command = Command(
-                name=f"core-quarantine-files" if command_prefix==CORE_COMMAND_PREFIX else "xdr-file-quarantine",
+                name="core-quarantine-files" if command_prefix==CORE_COMMAND_PREFIX else "xdr-file-quarantine",
                 args={
                     "endpoint_id_list": endpoint_ids,
                     "file_hash": file_hash,
@@ -357,7 +357,6 @@ def quarantine_file_script(args: Dict[str, Any]) -> list[CommandResults]:
             if BRAND_CORE_IR in enabled_brands:
                 quarantine_brands = [BRAND_CORE_IR]
             elif BRAND_XDR_IR in enabled_brands:
-                #TODO: check why not work
                 quarantine_brands = [BRAND_XDR_IR]
             else:
                 demisto.error(
