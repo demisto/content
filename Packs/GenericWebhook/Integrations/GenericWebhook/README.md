@@ -55,7 +55,7 @@ For example, ext-xsoar.mycompany.com.
 
 | **Product** | **URL** | **Example** |
 | --- | --- | --- |
-| Cortex XSOAR 8 Cloud and On-prem | `<ext-<CORTEX-TENANT-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`  | `https://ext-mytenant.crtx.us.paloaltonetworks.com/xsoar/instance/execute/my_instance_01`  | |
+| Cortex XSOAR 8 Cloud and On-prem | `<ext-<CORTEX-TENANT-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`  | `https://ext-mytenant.crtx.us.paloaltonetworks.com/xsoar/instance/execute/my_instance_01`  |
 | Cortex XSIAM  | `<ext-<CORTEX-TENANT-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>` | `https://ext-mytenant.crtx.us.paloaltonetworks.com/xsoar/instance/execute/my_instance_01` |
 | Cortex XSOAR 6.x | `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>` |  `https://my.xsoar.live/instance/execute/webhook`   |
 
