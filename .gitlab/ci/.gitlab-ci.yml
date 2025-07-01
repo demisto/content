@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "test-retrieve-ctc"
+  CURRENT_BRANCH_NAME: "testing-content-test-conf-packs"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "test-retrieve-ctc"
+    ref: "testing-content-test-conf-packs"
     project: "${CI_PROJECT_NAMESPACE}/infra"
