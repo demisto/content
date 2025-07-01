@@ -33,6 +33,7 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
 marketplaces:
 - marketplacev2
 - xpanse
