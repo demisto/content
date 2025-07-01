@@ -1744,7 +1744,7 @@ There is no context output for this command.
 ### cisco-esa-url-list-delete
 
 ***
-Delete one or more URL lists. You can't delete lists that in use.
+Delete one or more URL lists. You cannot delete lists that are in use.
 
 #### Base Command
 
@@ -1784,7 +1784,7 @@ Create a new URL list.
 | mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| url_list_name | URL List name to create. | Required |
+| url_list_name | The URL List name to create. | Required |
 | urls | A comma-separated list of URLs to add to the list. For example, malicious.com,phishing.com. | Required |
 
 #### Context Output
@@ -1834,7 +1834,7 @@ List all PVO quarantine rules or retrieve a specific rule by ID. PVO rules deter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The type of the rule to return. Default is pvo. | Optional |
+| type | The rule type to return. Default is pvo. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all the results by overriding the default limit. Default is false. | Optional |
 | rule_id | The rule ID to retrieve. | Optional |
@@ -1897,7 +1897,7 @@ Retrieve user-defined sender/recipient entries from an incoming mail policy.
 | mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| policy_name | The name of the policy to retrieve user entries. There is no helper command to get the policy name, you should provide it by yourself. | Required |
+| policy_name | The name of the policy to retrieve user entries. No helper command exists to retrieve policy names; you must provide this manually. | Required |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all the results by overriding the default limit. Default is false. | Optional |
 
@@ -1926,7 +1926,7 @@ Retrieve all URL lists or a specific list by name. URL lists define allowed or b
 | mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| url_list_name | The name of the url list to retrieve. | Optional |
+| url_list_name | The name of the URL list to retrieve. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all the results by overriding the default limit. Default is false. | Optional |
 
@@ -1937,7 +1937,7 @@ Retrieve all URL lists or a specific list by name. URL lists define allowed or b
 | CiscoESA.URLList.used_by | String | The policy names that using the list. |
 | CiscoESA.URLList.urls_count | Number | The number of urls in the list. |
 | CiscoESA.URLList.name | String | The name of the list. |
-| CiscoESA.URLList.urls | String | The URL's in the list. |
+| CiscoESA.URLList.urls | String | The URLs in the list. |
 
 #### Command example
 ```!cisco-esa-url-list limit=1```
@@ -1982,7 +1982,7 @@ Retrieve historical remediation actions taken on messages, such as message delet
 | message_ids | Comma-separated list of message IDs. Use `cisco-esa-message-search` to get message IDs. | Required |
 | serial_number | The unique serial number assigned to an email message. Use `cisco-esa-message-search` to get the message serial numer. | Required |
 | start_date | Start date for the messages. Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. Default is 1 month. | Optional |
-| end_date | End date for the messages. Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. Default is now. | Optional |
+| end_date | The end date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.. Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. Default is now. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all the results by overriding the default limit. Default is false. | Optional |
 
@@ -2000,7 +2000,7 @@ Retrieve historical remediation actions taken on messages, such as message delet
 | CiscoESA.MessageRemediation.message_details.mid | String | The message ID of the remediated email. |
 | CiscoESA.MessageRemediation.message_details.from_email | String | Sender email address of the remediated message. |
 | CiscoESA.MessageRemediation.message_details.recipient_email | String | Recipient email address of the remediated message. |
-| CiscoESA.MessageRemediation.message_details.mor_status | String | The status of the remediation operation \(e.g., Success, Failed\). |
+| CiscoESA.MessageRemediation.message_details.mor_status | String | The status of the remediation operation (for example, Success, Failed). |
 | CiscoESA.MessageRemediation.message_details.msg_read | String | Indicates whether the message was read \(0 = unread, 1 = read, or N/A\). |
 
 #### Command example
@@ -2053,7 +2053,7 @@ Retrieve historical remediation actions taken on messages, such as message delet
 ### cisco-esa-url-list-update
 
 ***
-Update URLs in an existing URL list. This command overrides all the url entires in the list.
+Update URLs in an existing URL list. This command overrides all the URL entries in the list.
 
 #### Base Command
 
@@ -2066,7 +2066,7 @@ Update URLs in an existing URL list. This command overrides all the url entires 
 | mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| url_list_name | URL List name to edit. | Required |
+| url_list_name | The URL List name to edit. | Required |
 | urls | A comma-separated list of URLs to add to the list. | Optional |
 
 #### Context Output
@@ -2094,7 +2094,7 @@ Retrieve all file hash lists or the contents of a specific list. File hash lists
 | mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| file_hash_list_name | File Hash List name to retrive. | Optional |
+| file_hash_list_name | The file hash list name to retrieve. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all the results by overriding the default limit. Default is false. | Optional |
 
@@ -2102,11 +2102,11 @@ Retrieve all file hash lists or the contents of a specific list. File hash lists
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoESA.FileHashList.filehashes | String | The hashes in the File Hash List |
-| CiscoESA.FileHashList.description | String | The description of the File Hash List |
-| CiscoESA.FileHashList.list_type | String | The type of the File Hash List |
-| CiscoESA.FileHashList.name | String | The name of the File Hash List |
-| CiscoESA.FileHashList.filehashes_count | String | The number of hashs in the list. |
+| CiscoESA.FileHashList.filehashes | String | The hashes in the file hash List |
+| CiscoESA.FileHashList.description | String | The description of the file hash List |
+| CiscoESA.FileHashList.list_type | String | The file hash list type. |
+| CiscoESA.FileHashList.name | String | The file hash list name. |
+| CiscoESA.FileHashList.filehashes_count | String | The number of hashes in the list. |
 
 #### Command example
 ```!cisco-esa-file-hash-list limit=1```
@@ -2154,11 +2154,11 @@ Add sender and recipient entries to an incoming mail policy.
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
 | policy_name | The name of the policy to add sender and recipient entry. | Required |
-| sender_domain_entries | Comma-separated sender domain entries (e.g., user@example.com, @example.com) used to match messages from these senders. Required only if `sender_non_domain_entries` is not provided. Cannot be used together with `sender_non_domain_entries`. | Optional |
+| sender_domain_entries | Comma-separated sender domain entries (for example, user@example.com, @example.com) used to match messages from these senders. Required only if `sender_non_domain_entries` is not provided. Cannot be used together with `sender_non_domain_entries`. | Optional |
 | sender_non_domain_entries | Comma-separated sender domain entries to exclude. Used to match messages not from these senders. Required only if `sender_domain_entries` is not provided. Cannot be used together with `sender_domain_entries`. | Optional |
 | receiver_operation | Specifies how to combine receiver matching conditions. Use `and` if `receiver_not_domain_entries` is provided. Use `or` if using ANY as a domain. Possible values are: and, or. | Required |
-| receiver_domain_entries | Comma-separated receiver domain entries (e.g., user@example.com, @example.com) used to match messages sent to these recipients. | Required |
-| receiver_not_domain_entries | Comma-separated receiver domain entries to exclude. Used to match messages not sent to these recipients. Only allowed when `receiver_operation` is set to and. | Optional |
+| receiver_domain_entries | Comma-separated recipient domain entries (for example, user@example.com, @example.com) used to match messages sent to these recipients. | Required |
+| receiver_not_domain_entries | Comma-separated recipient domain entries to exclude. Used to match messages not sent to these recipients. Only allowed when receiver_operation is set to and. | Optional |
 
 #### Context Output
 
@@ -2166,7 +2166,7 @@ There is no context output for this command.
 ### cisco-esa-file-hash-update
 
 ***
-Update hash entries in an existing file hash list. This command overrides all the hash entires in the list.
+Updates the provided file hash list. This command overrides all existing hash entries in the list.
 
 #### Base Command
 
@@ -2179,8 +2179,8 @@ Update hash entries in an existing file hash list. This command overrides all th
 | mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| file_hash_list_name | The name of the File Hash List to update. . | Required |
-| filehashes | A comma-separated string of file hash values to be added to the specified File Hash List. Each hash must be in a valid format (e.g., SHA256). | Required |
+| file_hash_list_name | The name of the file hash list to update. . | Required |
+| filehashes | A comma-separated string of file hash values to be added to the specified fle hash list. Each hash must have a valid format (for example, SHA256). | Required |
 
 #### Context Output
 
@@ -2204,7 +2204,7 @@ Delete messages associated with a specific PVO quarantine rule. This command del
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_ids | A comma-separated list of rule ids to release message from. | Required |
+| rule_ids | A comma-separated list of rule IDs to release message from. | Required |
 | quarantine_type | The quarantine rule type. Default is pvo. | Optional |
 
 #### Context Output
@@ -2232,7 +2232,7 @@ Create a new file hash list with specified hash entries.
 | mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| file_hash_list_name | File Hash List name to create. | Required |
+| file_hash_list_name | The file hash list name to create. | Required |
 | filehashes | A comma-separated list of hashes to add to the list. | Required |
 | description | Short description for the hash list. | Required |
 | list_type | The type of the hashes in the list. Possible values are: md5, sha256, any. Default is any. | Required |
@@ -2257,11 +2257,11 @@ Update sender and recipient entries in an existing incoming mail policy. This co
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
 | policy_name | The name of the policy to edit all the sender and recipient entries. | Required |
-| sender_domain_entries | Comma-separated sender domain entries (e.g., user@example.com, @example.com) used to match messages from these senders. Required only if `sender_non_domain_entries` is not provided. Cannot be used together with `sender_non_domain_entries`. | Optional |
+| sender_domain_entries | Comma-separated sender domain entries (for example, user@example.com, @example.com) used to match messages from these senders. Required only if `sender_non_domain_entries` is not provided. Cannot be used together with `sender_non_domain_entries`. | Optional |
 | sender_non_domain_entries | Comma-separated sender domain entries to exclude. Used to match messages not from these senders. Required only if `sender_domain_entries` is not provided. Cannot be used together with `sender_domain_entries`. | Optional |
 | receiver_operation | Specifies how to combine receiver matching conditions. Use `and` if `receiver_not_domain_entries` is provided. Use `or` if using ANY as a domain. Possible values are: and, or. | Required |
-| receiver_domain_entries | Comma-separated receiver domain entries (e.g., user@example.com, @example.com) used to match messages sent to these recipients. | Required |
-| receiver_not_domain_entries | Comma-separated receiver domain entries to exclude. Used to match messages not sent to these recipients. Only allowed when `receiver_operation` is set to and. | Optional |
+| receiver_domain_entries | Comma-separated recipient domain entries (for example, user@example.com, @example.com) used to match messages sent to these recipients. | Required |
+| receiver_not_domain_entries | Comma-separated recipient domain entries to exclude. Used to match messages not sent to these recipients. Only allowed when receiver_operation is set to and. | Optional |
 
 #### Context Output
 
@@ -2283,7 +2283,7 @@ Retrieve metadata about the SMTP connection and transmission behavior of specifi
 | message_ids | Comma-separated list of message IDs. Use `cisco-esa-message-search` to get message IDs. | Required |
 | serial_number | The unique serial number assigned to an email message. Use `cisco-esa-message-search` to get the message serial numer. | Required |
 | start_date | Start date for the messages. Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. Default is 1 month. | Optional |
-| end_date | End date for the messages. Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. Default is now. | Optional |
+| end_date | The end date for the messages. Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. Default is now. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all the results by overriding the default limit. Default is false. | Optional |
 
@@ -2291,7 +2291,7 @@ Retrieve metadata about the SMTP connection and transmission behavior of specifi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoESA.MessageConnection.sender_group | String | The sender group assigned to the connection \(e.g., RELAYLIST\). |
+| CiscoESA.MessageConnection.sender_group | String | The sender group assigned to the connection (for example, RELAYLIST). |
 | CiscoESA.MessageConnection.Message.timestamp | String | Timestamp of the connection summary event. |
 | CiscoESA.MessageConnection.Message.description | String | Description of the connection summary event. |
 | CiscoESA.MessageConnection.Message.last_event | Boolean | Indicates whether this is the final summary event. |
