@@ -21,7 +21,7 @@ This integration enforces GCP security best practices by:
 |---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | gcp-compute-firewall-patch                  | compute.firewalls.update, compute.firewalls.get, compute.firewalls.list, compute.networks.updatePolicy, compute.networks.list |
 | gcp-compute-subnet-update                   | compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list   |
-| gcp-compute-instance-metadata-add           | compute.instances.setMetadata, compute.instances.get, compute.instances.list                                                  |
+| gcp-compute-instance-metadata-add           | compute.instances.setMetadata, compute.instances.get, compute.instances.list, iam.serviceAccounts.actAs                       |
 | gcp-compute-instance-service-account-set    | compute.instances.setServiceAccount, compute.instances.get                                                                    |
 | gcp-compute-instance-service-account-remove | compute.instances.setServiceAccount, compute.instances.get                                                                    |
 | gcp-compute-instance-start                  | compute.instances.start                                                                                                       |

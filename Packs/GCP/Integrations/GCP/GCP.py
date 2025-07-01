@@ -146,7 +146,7 @@ COMMAND_REQUIREMENTS = {
     ),
     "gcp-compute-instance-metadata-add": (
         GCPServices.COMPUTE,
-        ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list"],
+        ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list", "iam.serviceAccounts.actAs"],
     ),
     "gcp-compute-instance-service-account-set": (
         GCPServices.COMPUTE,
