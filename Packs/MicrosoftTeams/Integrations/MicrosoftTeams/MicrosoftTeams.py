@@ -2362,7 +2362,6 @@ def send_message():
         entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
         if entitlement_match_ac:
             adaptive_card_processed = process_adaptive_card(adaptive_card)
-            demisto.debug(f"The following Adaptive Card will be used:\n{json.dumps(adaptive_card_processed)}")
             conversation = {"type": "message", "attachments": [adaptive_card_processed]}
         else:
             conversation = {"type": "message", "attachments": [adaptive_card]}
