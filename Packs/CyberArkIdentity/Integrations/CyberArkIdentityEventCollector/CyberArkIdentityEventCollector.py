@@ -205,7 +205,7 @@ def main(command: str, demisto_params: dict):
 
     try:
         if command == "test-module":
-            demisto.debug(f"Starting test-module execution. {demisto_params=}")
+            demisto.debug(f"Starting test-module execution")
             get_events.run()
             demisto.results("ok")
 
