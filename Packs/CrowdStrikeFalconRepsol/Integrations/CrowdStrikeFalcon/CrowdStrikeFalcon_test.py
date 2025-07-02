@@ -4114,7 +4114,6 @@ def test_find_incident_type():
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
     assert find_incident_type(input_data.remote_detection_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
     assert find_incident_type(input_data.remote_ngsiem_detection_id) == IncidentType.NGSIEM
-    assert find_incident_type(input_data.remote_third_party_detection_id) == IncidentType.THIRD_PARTY
     assert find_incident_type("") is None
 
 
@@ -7768,8 +7767,7 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
     if command == "fetch-incidents":
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOM, data={"IOM ID:": 7})
         set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOA, data={"IOA ID:": 8})
-        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.THIRD_PARTY_DETECTIONS, data={"THIRD PARTY ID:": 9})
-        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_DETECTIONS, data={"NGSIEM ID:": 10})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_DETECTIONS, data={"NGSIEM ID:": 9})
 
     # Create a copy to avoid reference issues
     last_run_identifiers_copy = list(last_run_identifiers)

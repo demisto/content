@@ -387,7 +387,6 @@ Search for details of specific detections, either using a filter query, or by pr
 
 `!cs-falcon-search-detection filter="product:'ngsiem'"`
 
-`!cs-falcon-search-detection filter="product:'thirdparty'"`
 
 `!cs-falcon-search-detection ids=ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347,ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902`
 

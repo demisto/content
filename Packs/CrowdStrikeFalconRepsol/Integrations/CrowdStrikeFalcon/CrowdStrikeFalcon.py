@@ -30,7 +30,6 @@ MOBILE_DETECTION = "MOBILE detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 OFP_DETECTION = "OFP detection"
 NGSIEM_DETECTION = "ngsiem_detection"
-THIRD_PARTY_DETECTION = "thirdparty_detection"
 
 # Fetch type names as they appear in the .yml instance configurations
 DETECTION_FETCH_TYPES = ["Detections", "Endpoint Detection"]
@@ -42,7 +41,6 @@ OFP_DETECTION_TYPE = "OFP Detection"
 IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
-THIRD_PARTY_DETECTION_FETCH_TYPE = "Third Party Detection"
 
 ENDPOINT_DETECTION = "detection"
 
@@ -50,9 +48,8 @@ SUPPORTED_DETECTIONS_TYPES = [
     IDP_DETECTION_FETCH_TYPE,
     ON_DEMAND_SCANS_DETECTION_TYPE,
     OFP_DETECTION_TYPE,
-    NGSIEM_DETECTION_FETCH_TYPE,
-    THIRD_PARTY_DETECTION_FETCH_TYPE,
-]
+    NGSIEM_DETECTION_FETCH_TYPE
+    ]
 
 PARAMS = demisto.params()
 PROXY = PARAMS.get("proxy", False)
@@ -381,7 +378,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
     "monthly": 30,
 }
 
-TOTAL_FETCH_TYPE_XSOAR = 10  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSOAR = 9  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
 TOTAL_FETCH_TYPE_XSIAM = 6  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
 
 
@@ -405,8 +402,7 @@ class LastRunIndex(IntEnum):
     # Fetch types only for fetch-incidents
     IOM = 6
     IOA = 7
-    THIRD_PARTY_DETECTIONS = 8
-    NGSIEM_DETECTIONS = 9
+    NGSIEM_DETECTIONS = 8
 
 
 class IncidentType(Enum):
@@ -418,7 +414,6 @@ class IncidentType(Enum):
     ON_DEMAND = "ods"
     OFP = "ofp"
     NGSIEM = ":ngsiem:"
-    THIRD_PARTY = ":thirdparty:"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
@@ -2511,7 +2506,6 @@ def get_remote_data_command(args: dict[str, Any]):
             IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
             IncidentType.ON_DEMAND,
             IncidentType.NGSIEM,
-            IncidentType.THIRD_PARTY,
         ):
             mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
@@ -2552,8 +2546,6 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.ON_DEMAND
     if IncidentType.NGSIEM.value in remote_incident_id:
         return IncidentType.NGSIEM
-    if IncidentType.THIRD_PARTY.value in remote_incident_id:
-        return IncidentType.THIRD_PARTY
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
 
@@ -2605,7 +2597,6 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     - OFP (Other File Protection)
     - ODS (On-Demand Scans)
     - NGSIEM (Next-Generation Security Information and Event Management)
-    - THIRD PARTY Detection
 
     :type remote_incident_id: ``str``
     :param remote_incident_id: The incident id to return its information.
@@ -2646,10 +2637,7 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
         updated_object = {"incident_type": NGSIEM_DETECTION}
         detection_type = "ngsiem"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if "thirdparty" in mirrored_data["product"]:
-        updated_object = {"incident_type": THIRD_PARTY_DETECTION}
-        detection_type = "thirdparty"
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+
     set_updated_object(updated_object, mirrored_data, mirroring_fields)
     demisto.debug(f"in get_remote_detection_data_for_multiple_types {mirrored_data=} { mirroring_fields=} {updated_object=}")
     return mirrored_data, updated_object, detection_type
@@ -2781,10 +2769,6 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ngsiem'"
         ).get("resources", [])
-    if THIRD_PARTY_DETECTION_FETCH_TYPE in fetch_types:
-        raw_ids += get_detections_ids(
-            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'thirdparty'"
-        ).get("resources", [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
@@ -2825,7 +2809,6 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
             elif incident_type in (
                 IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
                 IncidentType.NGSIEM,
-                IncidentType.THIRD_PARTY,
             ):
                 result = update_remote_for_multiple_detection_types(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
@@ -2873,17 +2856,17 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
 
 def update_remote_for_multiple_detection_types(delta, inc_status: IncidentStatus, detection_id: str) -> str:
     """
-    Sends the request to update the relevant IDP/Mobile/NGSIEM/Third Party detection entity.
+    Sends the request to update the relevant IDP/Mobile/NGSIEM/detection entity.
 
     :type delta: ``dict``
     :param delta: The modified fields.
     :type inc_status: ``IncidentStatus``
-    :param inc_status: The IDP/Mobile/NGSIEM/Third Party detection status.
+    :param inc_status: The IDP/Mobile/NGSIEM detection status.
     :type detection_id: ``str``
-    :param detection_id: The IDP/Mobile/NGSIEM/Third Party detection ID to update.
+    :param detection_id: The IDP/Mobile/NGSIEM detection ID to update.
     """
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
-        demisto.debug(f"Closing IDP/Mobile/NGSIEM/Third Party detection with remote ID {detection_id} in remote system.")
+        demisto.debug(f"Closing IDP/Mobile/NGSIEM detection with remote ID {detection_id} in remote system.")
         return str(update_request_for_multiple_detection_types([detection_id], "closed"))
 
     # status field in CS Falcon is mapped to State field in XSOAR
@@ -3355,7 +3338,6 @@ def fetch_items(command="fetch-incidents"):
     # last_run objects - fetch types only for fetch-incidents
     iom_last_run: dict[str, Any] = {}
     ioa_last_run: dict[str, Any] = {}
-    third_party_detection_last_run: dict[str, Any] = {}
     ngsiem_detection_last_run: dict[str, Any] = {}
 
     if is_fetch_events:
@@ -3368,7 +3350,6 @@ def fetch_items(command="fetch-incidents"):
         # last_run object - Only for fetch_incident
         iom_last_run = get_last_run_per_type(last_run, LastRunIndex.IOM)
         ioa_last_run = get_last_run_per_type(last_run, LastRunIndex.IOA)
-        third_party_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.THIRD_PARTY_DETECTIONS)
         ngsiem_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_DETECTIONS)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Selected fetch types: {fetch_incidents_or_detections}")
@@ -3499,25 +3480,6 @@ def fetch_items(command="fetch-incidents"):
         )
         items.extend(fetched_ngsiem_detections)
 
-    if not is_fetch_events and THIRD_PARTY_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
-        demisto.debug("CrowdStrikeFalconMsg: Start fetch THIRD PARTY Detection")
-        demisto.debug(f"CrowdStrikeFalconMsg: Current THIRD PARTY Detection last_run object: {third_party_detection_last_run}")
-
-        if LEGACY_VERSION:
-            raise DemistoException(f"{THIRD_PARTY_DETECTION_FETCH_TYPE} is not supported in legacy version.")
-
-        fetched_third_party_detections, third_party_detection_last_run = fetch_detections_by_product_type(
-            third_party_detection_last_run,
-            look_back=look_back,
-            fetch_query=params.get("third_party_detection_fetch_query", ""),
-            detections_type=THIRD_PARTY_DETECTION,
-            product_type="thirdparty",
-            detection_name_prefix=THIRD_PARTY_DETECTION_FETCH_TYPE,
-            start_time_key="created_timestamp",
-            is_fetch_events=is_fetch_events,
-        )
-        items.extend(fetched_third_party_detections)
-
     # Assign each sub last_run info per type at its proper index
     set_last_run_per_type(last_run, index=LastRunIndex.DETECTIONS, data=detections_last_run, is_fetch_events=is_fetch_events)
     set_last_run_per_type(last_run, index=LastRunIndex.INCIDENTS, data=incidents_last_run, is_fetch_events=is_fetch_events)
@@ -3537,12 +3499,6 @@ def fetch_items(command="fetch-incidents"):
     if not is_fetch_events:
         set_last_run_per_type(last_run, index=LastRunIndex.IOM, data=iom_last_run, is_fetch_events=is_fetch_events)
         set_last_run_per_type(last_run, index=LastRunIndex.IOA, data=ioa_last_run, is_fetch_events=is_fetch_events)
-        set_last_run_per_type(
-            last_run,
-            index=LastRunIndex.THIRD_PARTY_DETECTIONS,
-            data=third_party_detection_last_run,
-            is_fetch_events=is_fetch_events,
-        )
         set_last_run_per_type(
             last_run, index=LastRunIndex.NGSIEM_DETECTIONS, data=ngsiem_detection_last_run, is_fetch_events=is_fetch_events
         )
@@ -3618,7 +3574,7 @@ def fetch_detections_by_product_type(
         detections = (
             truncate_long_time_str(detections, "occurred")
             if product_type
-            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
+            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM}
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(

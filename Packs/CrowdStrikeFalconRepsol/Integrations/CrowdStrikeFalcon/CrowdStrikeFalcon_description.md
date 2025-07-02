@@ -45,6 +45,5 @@ Optional types are:
   - On-Demand Scans Detection
   - OFP Detection
   - NGSIEM Detection
-  - Third Party Detection
   Records from the detection endpoint of the *CrowdStrike Falcon* UI could be of types: Endpoint Detection and OFP Detection.
 </~XSOAR>

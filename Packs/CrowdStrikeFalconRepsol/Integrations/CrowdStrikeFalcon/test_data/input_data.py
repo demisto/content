@@ -345,9 +345,6 @@ remote_detection_id_new_version = "1234"
 remote_ngsiem_detection_id = (
     "b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:ngsiem:b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:98998998998998998998998998998933"
 )
-remote_third_party_detection_id = (
-    "cb28a1bf5xxxxxxxxx698253914:thirdparty:cb28a1bf5axxxxxxxxxx698253914:5efcd0feb3xxxxxxxxxxab190ab39a"
-)
 
 # remote_id, close_incident, incident_status, detection_status, mirrored_object, entries
 get_remote_incident = (
