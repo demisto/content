@@ -341,16 +341,25 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
 ## Troubleshooting
 
 1. The integration works by spinning up a web server that listens to events and data posted to it from Microsoft Teams.
-
-    If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the web server, which should happen for the first time when the bot is added to the configured team.
+    If you see the error message **`Tenant ID is missing, please make sure that the messaging endpoint is configured correctly, and the bot is added to a team.`**, then it means that the tenant ID was never posted to the web server, which should happen for the first time when the bot is added to the configured team.
 
     This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
 
     To troubleshoot:
-   1. Verify that the messaging endpoint is configured correctly according to the method you chose in the [Setup Examples](#setup-examples) step. If the configuration method you have chosen is rerouting, use the `microsoft-teams-create-messaging-endpoint`command ([microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint)) to get the correct messaging endpoint based on the server URL, the server version, and the instance configurations.
-   2. Verify the Docker container is up and running and publish the configured port to the outside world:
+   1. **Verify that the messaging endpoint is configured correctly** according to the method you chose in the [Setup Examples](#setup-examples) step. If the configuration method you have chosen is rerouting, use the `microsoft-teams-create-messaging-endpoint`command ([microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint)) to get the correct messaging endpoint based on the server URL, the server version, and the instance configurations.
+   2. In some cases, a connection is not created between Teams and the messaging endpoint when adding a bot to the team. You can work around this problem by **adding any member to the team the bot was added to** (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
+   3. If the previous step did not work, **remove the bot from the team**, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), **then add the bot to the team again**.
+   4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, you can clear the integration cache in the integration instance config:
 
-       From the Cortex XSOAR/XSIAM engine machine run: `docker ps | grep teams`
+        <img height="75" src="../../doc_files/cache.png" />
+
+       First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
+       If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
+   5. Verify the Docker container is up and running and publish the configured port to the outside world:
+
+       From the Cortex XSOAR/XSIAM engine machine run:
+   
+       `docker ps | grep teams`
 
        You should see the following, assuming port 7000 is used:
 
@@ -362,31 +371,21 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
         - From the Cortex XSOAR machine to localhost.
           - Note ⚠️: The web server supports only POST method queries.
 
-   3. If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
+   6. If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
 
-   4. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not for Cortex XSOAR/Cortex XSIAM Rerouting ).
+   7. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not for Cortex XSOAR/Cortex XSIAM Rerouting ).
        1. Run `openssl s_client -connect <domain.com>:443` .
        2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
 
-   5. Try inserting your configured message endpoint in a browser and click **Enter**. If `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message. (Not for Cortex XSOAR 8 OR Cortex XSIAM).
+   8. Try inserting your configured message endpoint in a browser and click **Enter**. If `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message. (Not for Cortex XSOAR 8 OR Cortex XSIAM).
 
-   6. In some cases, a connection is not created between Teams and the messaging endpoint when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, it means the AAD application has insufficient permissions.
 To retrieves the API permissions associated with the used graph access token you can run the `microsoft-teams-token-permissions-list` command ([microsoft-teams-token-permissions-list documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-token-permissions-list)).
 Compare the permissions list obtained for the token with the permissions required for the command you wish to execute (can be found in the command documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - [microsoft-teams-auth-reset documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset)).
 If your authentication type is the `Authorization Code Flow`, after running the `microsoft-teams-auth-reset` command you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
-
 3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
-
-4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, you can clear the integration cache in the integration instance config:
-
-   <img height="75" src="../../doc_files/cache.png" />
-
-   First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
-   If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
-5. If the previous step did not work, remove the bot from the team, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), then add the bot to the team again.
-6. If you are receiving repeated `Connection reset by peer` errors, the requests might be getting blocked temporarily by Azure due to repeated permission errors. Ensure you are not missing any permissions that might cause constant failures and eventually leading to server timeouts.
+4. If you are receiving repeated `Connection reset by peer` errors, the requests might be getting blocked temporarily by Azure due to repeated permission errors. Ensure you are not missing any permissions that might cause constant failures and eventually leading to server timeouts.
 
 ## Download Demisto Bot
 
