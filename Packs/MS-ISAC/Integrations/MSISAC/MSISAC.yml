@@ -218,97 +218,72 @@ script:
       name: alert_id
     description: Retrieve alert data by its ID.
     outputs:
-    - contextPath: MSISAC.Event.EventID
-      description: The event ID for this specific retrieval.
+    - contextPath: MSISAC.Alert.alertId
+      description: The id for this alert.
       type: string
-    - contextPath: MSISAC.Event.Stream
-      description: A list of data streams that were pulled from this MS-ISAC event. These lists of dictionaries contain more detailed information.
-      type: unknown
-    - contextPath: MSISAC.Event.Stream.flow_id
-      description: The ID for this specific data flow.
+    - contextPath: MSISAC.Alert.affectedIp
+      description: The internal IP that is associated with the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.alertedAt
+      description: The timestamp when the alert happened.
+      type: string
+    - contextPath: MSISAC.Alert.applicationProtocol
+      description: The protocol associated with the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.category
+      description: The category of the alert
+      type: string
+    - contextPath: MSISAC.Alert.createdAt
+      description: The timestamp when the alert was created.
+      type: string
+    - contextPath: MSISAC.Alert.destinationIp
+      description: The destination IP of the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.destinationPort
+      description: The destination port number of the traffic.
       type: number
-    - contextPath: MSISAC.Event.Stream.start
-      description: The start data for this stream.
-      type: date
-    - contextPath: MSISAC.Event.Stream.src_ip
-      description: The source IP of the event.
+    - contextPath: MSISAC.Alert.encodedPayload
+      description: 
       type: string
-    - contextPath: MSISAC.Event.Stream.vlan
-      description: A list of all the VLANs configured for this interface.
-    - contextPath: MSISAC.Event.Stream.pkts_toserver
-      description: The number of packets sent.
+    - contextPath: MSISAC.Alert.httpHostname
+      description: 
+      type: string
+    - contextPath: MSISAC.Alert.httpMethod
+      description: 
+      type: string
+    - contextPath: MSISAC.Alert.httpStatus
+      description: 
       type: number
-    - contextPath: MSISAC.Event.Stream.dest_ip
-      description: The destination IP for this flow.
+    - contextPath: MSISAC.Alert.httpUrl
+      description: 
       type: string
-    - contextPath: MSISAC.Event.Stream.length
-      description: The length of this flow.
+    - contextPath: MSISAC.Alert.logicalSensor
+      description: The name for the sensor that triggered the event.
+      type: string
+    - contextPath: MSISAC.Alert.mitreTactic
+      description: 
+      type: string
+    - contextPath: MSISAC.Alert.mitreTechnique
+      description: 
+      type: string
+    - contextPath: MSISAC.Alert.signatureDirection
+      description: The direction of the traffic flow.
+      type: string
+    - contextPath: MSISAC.Alert.signatureId
+      description: 
       type: number
-    - contextPath: MSISAC.Event.Stream.streamdataascii
-      description: A string representation of the flow data that is granularly displayed.
+    - contextPath: MSISAC.Alert.signatureName
+      description: 
       type: string
-    - contextPath: MSISAC.Event.Stream.host
-      description: The Albert sensor that detected the traffic.
+    - contextPath: MSISAC.Alert.sourceIp
+      description: The source IP of the traffic.
       type: string
-    - contextPath: MSISAC.Event.Stream.proto
-      description: TCP or UDP communication.
-      type: string
-    - contextPath: MSISAC.Event.Stream.app_proto
-      description: The application protocol that was used in this communication.
-      type: string
-    - contextPath: MSISAC.Event.Stream.logical_sensor_id
-      description: The ID for the sensor that detected the traffic.
-      type: string
-    - contextPath: MSISAC.Event.Stream.streamdatalen
-      description: The total data sent in the request.
-      type: string
-    - contextPath: MSISAC.Event.Stream.pkts_toclient
-      description: The total amount of packets sent.
+    - contextPath: MSISAC.Alert.sourcePort
+      description: The source port number of the traffic.
       type: number
-    - contextPath: MSISAC.Event.Stream.flow_id
-      description: The specific ID for this flow.
-      type: number
-    - contextPath: MSISAC.Event.Stream.in_iface
-      description: The physical interface that this traffic traversed.
+    - contextPath: MSISAC.Alert.transportProtocol
+      description: 
       type: string
-    - contextPath: MSISAC.Event.Stream.time
-      description: The time that this traffic occured in a more human readable format than 'start'.
-      type: date
-    - contextPath: MSISAC.Event.Stream.url
-      description: The URL that was attempted with this traffic.
-      type: string
-    - contextPath: MSISAC.Event.Stream.bytes_toserver
-      description: The size of the data sent to the server.
-      type: number
-    - contextPath: MSISAC.Event.Stream.status
-      description: The status code for this data stream.
-      type: number
-    - contextPath: MSISAC.Event.Stream.hostname
-      description: The hostname (not URL) of the attempted traffic.
-      type: string
-    - contextPath: MSISAC.Event.Stream.tx_id
-      description: The transaction ID for the MSISAC stream.
-      type: number
-    - contextPath: MSISAC.Event.Stream.http_content_type
-      description: The content encoding used for the response traffic.
-      type: string
-    - contextPath: MSISAC.Event.Stream.http_method
-      description: The method used to send the traffic (GET, POST, etc).
-      type: string
-    - contextPath: MSISAC.Event.Stream.protocol
-      description: What web protocol was used (HTTP/1.1 etc).
-      type: string
-    - contextPath: MSISAC.Event.Stream.bytes_toclient
-      description: The size of the data sent to the client.
-      type: number
-    - contextPath: MSISAC.Event.Stream.src_port
-      description: The source port for the traffic.
-      type: number
-    - contextPath: MSISAC.Event.Stream.dest_port
-      description: The destination port for the traffic.
-      type: string
-    - contextPath: MSISAC.Event.Stream.event_type
-      description: The type of event submitted from MS-ISAC.
   - name: msisac-retrieve-cases
     arguments:
     - name: timestamp
@@ -318,9 +293,6 @@ script:
     outputs:
     - contextPath: MSISAC.RetrievedCases.caseId
       description: ID for the retrieved MS-ISAC case.
-      type: string
-    - contextPath: MSISAC.RetrievedCases.
-      description: 
       type: string
     - contextPath: MSISAC.RetrievedCases.affectedIp
       description: The internal IP that is associated with the traffic.

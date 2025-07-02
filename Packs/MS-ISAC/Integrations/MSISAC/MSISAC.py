@@ -323,34 +323,22 @@ def get_event_alert(client: Client, args: Dict[str, Any]):
     :rtype: ``CommandResults``
     """
 
-    event_id = args.get("event_id", None)
-    if not event_id:
-        raise ValueError("event_id not specified")
+    alert_id = args.get("alert_id", None)
 
-    # event is our raw-response
-    event = client.get_event(event_id=event_id)
-    output = {"EventID": event_id, "Stream": None}
+    if not alert_id:
+        raise ValueError("alert_id not specified")
 
-    # If there is no event ID found the API returns a 404 error
-    # Have 404 as on 'ok' response in the base class, and use this JSON path to provide output
-    if "error" in event and event["error"]["message"] == "Event does not exist":
-        # If there are ever more errors to parse we can expand this conditional
-        return CommandResults(
-            readable_output=f"There was no MS-ISAC event retrieved with Event ID {event_id}.\n",
-            raw_response=event,
-            outputs_prefix="MSISAC.Event",
-            outputs_key_field="event_id",
-            outputs=output,
-        )
-
-    output["Stream"] = format_stream_data(event)
+    # alert is our raw response
+    # Returns 500 internal error if no event is found
+    # Returns 500 internal error if improper input is given
+    alert = client.get_alert(alert_id=alert_id)
 
     return CommandResults(
-        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", output["Stream"]),
-        raw_response=event,
-        outputs_prefix="MSISAC.Event",
-        outputs_key_field="event_id",
-        outputs=output,
+        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {alert_id}", alert),
+        raw_response=alert,
+        outputs_prefix="MSISAC.Alert",
+        outputs_key_field="alertId",
+        outputs=alert,
     )
 
 
