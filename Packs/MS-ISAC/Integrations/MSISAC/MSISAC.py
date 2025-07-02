@@ -306,7 +306,7 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_event_alert(client: Client, args: Dict[str, Any]):
+def get_alert_command(client: Client, args: Dict[str, Any]):
     """msisac-get-event command: Returns an MS-ISAC event with detailed stream information
 
     :type client: ``Client``
@@ -473,7 +473,7 @@ def main():
             return_results(result)
 
         elif command == "msisac-get-alert":
-            result = get_event_alert(client, args)
+            result = get_alert_command(client, args)
             return_results(result)
 
         elif command == "msisac-retrieve-cases":
