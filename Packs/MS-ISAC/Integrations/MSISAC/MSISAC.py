@@ -367,9 +367,10 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
     fetch_time: datetime
 
     if not last_run.get("lastRun"):
-        fetch_time = first_fetch
+        fetch_time = first_fetch.astimezone(timezone.utc)
     else:
-        fetch_time = datetime.strptime(last_run.get("lastRun", ""), XSOAR_INCIDENT_DATE_FORMAT)
+        last_run_time = datetime.strptime(last_run.get("lastRun", ""), XSOAR_INCIDENT_DATE_FORMAT)
+        fetch_time = last_run_time.astimezone(timezone.utc)
 
     retrieve_cases_data: list = client.retrieve_cases(timestamp=fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT))
 
@@ -383,14 +384,14 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
 
         # Make sure case was created after last fetch and was not previously fetched.
         if case_created_time > fetch_time and case_id != latest_fetched_case:
-            case["Alert Data"] = []
+            case["alertData"] = []
             affected_ip = case.get("affectedIp")
 
             for alert_id in case.get("alertIds", []):
                 # Populating alert data for each ingested case.
                 get_alert_data = client.get_alert(alert_id=alert_id)
 
-                case["Alert Data"].append(get_alert_data)
+                case["alertData"].append(get_alert_data)
 
             cases_to_fetch.append(
                 {
