@@ -163,43 +163,44 @@ def test_get_command_error_details_malformed_api_call_json(mocker):
     mocker_debug.assert_called_once()
 
 
-# --- _execute_demisto_command tests ---
+# --- _execute_command tests (Renamed from _execute_demisto_command) ---
 
 
-def test_execute_demisto_command_success(mocker):
+def test_execute_command_success(mocker): # Renamed test function
     """
-    Given: A successful Demisto command execution.
-    When: Calling _execute_demisto_command.
+    Given: A successful command execution.
+    When: Calling _execute_command.
     Then: Should return the 'Contents' of the result.
     """
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "executeCommand", return_value=[{"Contents": {"data": "test"}}])
     mocker.patch("AddIPToOktaBlockedZone.isError", return_value=False)
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
 
-    result = AddIPToOktaBlockedZone._execute_demisto_command("test-command", {}, "Prefix")
+    # Call the renamed function
+    result = AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix")
     assert result == {"data": "test"}
     AddIPToOktaBlockedZone.demisto.executeCommand.assert_called_once_with("test-command", {})
 
 
-def test_execute_demisto_command_empty_response(mocker):
+def test_execute_command_empty_response(mocker): # Renamed test function
     """
-    Given: Demisto command returns an empty list or None.
-    When: Calling _execute_demisto_command.
+    Given: Command returns an empty list or None.
+    When: Calling _execute_command.
     Then: Should raise DemistoException.
     """
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "executeCommand", return_value=[])
     with pytest.raises(DemistoException, match="Prefix: Empty or invalid command result for test-command."):
-        AddIPToOktaBlockedZone._execute_demisto_command("test-command", {}, "Prefix")
+        AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix") # Call the renamed function
 
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "executeCommand", return_value=None)
     with pytest.raises(DemistoException, match="Prefix: Empty or invalid command result for test-command."):
-        AddIPToOktaBlockedZone._execute_demisto_command("test-command", {}, "Prefix")
+        AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix") # Call the renamed function
 
 
-def test_execute_demisto_command_error(mocker):
+def test_execute_command_error(mocker): # Renamed test function
     """
-    Given: Demisto command returns an error result.
-    When: Calling _execute_demisto_command.
+    Given: Command returns an error result.
+    When: Calling _execute_command.
     Then: Should raise DemistoException with parsed error details.
     """
     mocker.patch.object(
@@ -211,7 +212,7 @@ def test_execute_demisto_command_error(mocker):
     mocker.patch("AddIPToOktaBlockedZone._get_command_error_details", return_value="Simulated error")
 
     with pytest.raises(DemistoException, match="Prefix: Simulated error"):
-        AddIPToOktaBlockedZone._execute_demisto_command("test-command", {}, "Prefix")
+        AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix") # Call the renamed function
 
 
 # --- get_blocked_ip_zone_info tests ---
@@ -237,7 +238,8 @@ def test_get_blocked_ip_zone_info_found(mocker):
             },
         ]
     }
-    mocker.patch("AddIPToOktaBlockedZone._execute_demisto_command", return_value=mock_zones_response)
+    # Mock the renamed _execute_command function
+    mocker.patch("AddIPToOktaBlockedZone._execute_command", return_value=mock_zones_response)
 
     result = AddIPToOktaBlockedZone.get_blocked_ip_zone_info()
     assert result == {"zone_id": "blocked_id", "zone_gateways": ["1.1.1.0/24", "2.2.2.1-2.2.2.5"]}
@@ -250,7 +252,8 @@ def test_get_blocked_ip_zone_info_not_found(mocker):
     Then: Should raise DemistoException.
     """
     mock_zones_response = {"result": [{"name": "OtherZone", "id": "id1", "gateways": []}]}
-    mocker.patch("AddIPToOktaBlockedZone._execute_demisto_command", return_value=mock_zones_response)
+    # Mock the renamed _execute_command function
+    mocker.patch("AddIPToOktaBlockedZone._execute_command", return_value=mock_zones_response)
 
     with pytest.raises(DemistoException, match="BlockedIpZone not found in Okta zones."):
         AddIPToOktaBlockedZone.get_blocked_ip_zone_info()
@@ -262,7 +265,8 @@ def test_get_blocked_ip_zone_info_unexpected_format(mocker):
     When: Calling get_blocked_ip_zone_info.
     Then: Should raise DemistoException.
     """
-    mocker.patch("AddIPToOktaBlockedZone._execute_demisto_command", return_value="unexpected string")
+    # Mock the renamed _execute_command function
+    mocker.patch("AddIPToOktaBlockedZone._execute_command", return_value="unexpected string")
 
     with pytest.raises(DemistoException, match="Unexpected format in okta-list-zones response."):
         AddIPToOktaBlockedZone.get_blocked_ip_zone_info()
@@ -277,7 +281,8 @@ def test_update_blocked_ip_zone_ip_not_in_range(mocker):
     When: Calling update_blocked_ip_zone.
     Then: Should update the zone and return success.
     """
-    mock_execute = mocker.patch("AddIPToOktaBlockedZone._execute_demisto_command")
+    # Mock the renamed _execute_command function
+    mock_execute = mocker.patch("AddIPToOktaBlockedZone._execute_command")
     mock_return_results = mocker.patch("AddIPToOktaBlockedZone.return_results")
     # Mock ip_in_range to return False for all checks in this specific test
     mocker.patch("AddIPToOktaBlockedZone.ip_in_range", return_value=False)
@@ -311,7 +316,8 @@ def test_update_blocked_ip_zone_ip_already_in_range(mocker):
     When: Calling update_blocked_ip_zone.
     Then: Should return results early without updating the zone.
     """
-    mock_execute = mocker.patch("AddIPToOktaBlockedZone._execute_demisto_command")
+    # Mock the renamed _execute_command function
+    mock_execute = mocker.patch("AddIPToOktaBlockedZone._execute_command")
     mock_return_results = mocker.patch("AddIPToOktaBlockedZone.return_results")
     # Simulate ip_in_range returning True for one of the checks
     mocker.patch("AddIPToOktaBlockedZone.ip_in_range", side_effect=[False, True])
@@ -360,7 +366,7 @@ def test_main_missing_ip_arg(mocker):
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={})
     mock_return_error = mocker.patch("AddIPToOktaBlockedZone.return_error")
     # Mock subsequent functions to ensure they are not called
-    mocker.patch("AddIPToOktaBlockedZone.ipaddress.ip_address")  # Mock ipaddress.ip_address as the first check now
+    mocker.patch("AddIPToOktaBlockedZone.ipaddress.ip_address")
     mocker.patch("AddIPToOktaBlockedZone.is_private_ip")
     mocker.patch("AddIPToOktaBlockedZone.get_blocked_ip_zone_info")
     mocker.patch("AddIPToOktaBlockedZone.update_blocked_ip_zone")
@@ -369,7 +375,7 @@ def test_main_missing_ip_arg(mocker):
     mock_return_error.assert_called_once_with("Missing required argument: ip")
     AddIPToOktaBlockedZone.is_private_ip.assert_not_called()
     AddIPToOktaBlockedZone.get_blocked_ip_zone_info.assert_not_called()
-    AddIPToOktaBlockedZone.ipaddress.ip_address.assert_not_called()  # Ensure this too
+    AddIPToOktaBlockedZone.ipaddress.ip_address.assert_not_called()
 
 
 def test_main_private_ip_arg(mocker):
@@ -379,24 +385,18 @@ def test_main_private_ip_arg(mocker):
     Then: Should call return_error and exit.
     """
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={"ip": "192.168.1.100"})
-    # IMPORTANT: Mock ipaddress.ip_address to return a specific IPv4Address object
-    # Mock its 'version' attribute to ensure it passes the IPv4 check
     mock_ipv4_address = mocker.MagicMock(spec=ipaddress.IPv4Address)
     mock_ipv4_address.version = 4
     mocker.patch("AddIPToOktaBlockedZone.ipaddress.ip_address", return_value=mock_ipv4_address)
 
-    # Now, mock is_private_ip (which uses ipaddress.ip_address internally) to return True
     mocker.patch("AddIPToOktaBlockedZone.is_private_ip", return_value=True)
 
     mock_return_error = mocker.patch("AddIPToOktaBlockedZone.return_error")
-    # Mock subsequent functions
     mocker.patch("AddIPToOktaBlockedZone.get_blocked_ip_zone_info")
     mocker.patch("AddIPToOktaBlockedZone.update_blocked_ip_zone")
 
     AddIPToOktaBlockedZone.main()
-    # Verify ipaddress.ip_address was called once for the version check
     AddIPToOktaBlockedZone.ipaddress.ip_address.assert_called_once_with("192.168.1.100")
-    # Verify is_private_ip was called once for the private check
     AddIPToOktaBlockedZone.is_private_ip.assert_called_once_with("192.168.1.100")
     mock_return_error.assert_called_once_with("The IP 192.168.1.100 is private/internal and should not be added.")
     AddIPToOktaBlockedZone.get_blocked_ip_zone_info.assert_not_called()
@@ -417,15 +417,9 @@ def test_main_ip_validation_failures(mocker, ip_arg, expected_error_msg):
     """
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={"ip": ip_arg})
     mock_return_error = mocker.patch("AddIPToOktaBlockedZone.return_error")
-    # Mock subsequent functions to ensure they are not called if validation fails
     mocker.patch("AddIPToOktaBlockedZone.is_private_ip")
     mocker.patch("AddIPToOktaBlockedZone.get_blocked_ip_zone_info")
     mocker.patch("AddIPToOktaBlockedZone.update_blocked_ip_zone")
-
-    # If ip_arg is "invalid-ip", ipaddress.ip_address will raise ValueError.
-    # If ip_arg is "2001:db8::1", ipaddress.ip_address will return IPv6Address.
-    # No need to mock ipaddress.ip_address for these specific cases as we want its real behavior
-    # to trigger the intended validation path.
 
     AddIPToOktaBlockedZone.main()
     mock_return_error.assert_called_once_with(expected_error_msg)
@@ -440,7 +434,6 @@ def test_main_get_blocked_ip_zone_info_failure(mocker):
     Then: Should call return_error.
     """
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={"ip": "9.9.9.9"})
-    # Ensure IP validation passes for this test
     mock_ipv4_address = mocker.MagicMock(spec=ipaddress.IPv4Address)
     mock_ipv4_address.version = 4
     mocker.patch("AddIPToOktaBlockedZone.ipaddress.ip_address", return_value=mock_ipv4_address)
@@ -460,7 +453,6 @@ def test_main_update_blocked_ip_zone_failure(mocker):
     Then: Should call return_error.
     """
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={"ip": "9.9.9.9"})
-    # Ensure IP validation passes for this test
     mock_ipv4_address = mocker.MagicMock(spec=ipaddress.IPv4Address)
     mock_ipv4_address.version = 4
     mocker.patch("AddIPToOktaBlockedZone.ipaddress.ip_address", return_value=mock_ipv4_address)

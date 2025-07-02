@@ -1,7 +1,15 @@
 import ipaddress
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from typing import Any
+from CommonServerPython import * # noqa: F401
+from typing import Any, List, Union, Dict, Optional, cast # Import 'cast' for mypy
+
+# --- Constants ---
+# Assuming GLOBAL_ADMIN_ROLE_ID, DEFAULT_NAMED_LOCATION_NAME, DEFAULT_POLICY_NAME
+# are specific to the previous script, but kept them as they were in the provided snippet.
+# If this script doesn't use them, they can be removed or adjusted as needed.
+
+
+# --- Helper Functions ---
 
 
 def is_private_ip(ip: str) -> bool:
@@ -91,14 +99,16 @@ def ip_in_range(ip: str, ip_range: str) -> bool:
 
 def _get_command_error_details(res: dict[str, Any]) -> str:
     """
-    Extracts a readable error message from a Demisto command result.
-    This function handles specific formatting of errors returned by certain commands.
+    Extracts a readable error message from a command result.
+
+    This function handles specific formatting of errors returned by certain commands,
+    attempting to parse JSON-structured error information if present.
 
     Args:
-        res (dict[str, Any]): The raw result object from a Demisto command.
+        res (dict[str, Any]): The raw result object from a command, typically res[0] from executeCommand.
 
     Returns:
-        str: A human-readable error message.
+        str: A human-readable string containing the error code and message, or the raw error string.
     """
     raw_contents = res.get("Contents")
     try:
@@ -127,27 +137,31 @@ def _get_command_error_details(res: dict[str, Any]) -> str:
         return f"Error extracting error message: {str(ex)}"
 
 
-def _execute_demisto_command(command: str, args: dict[str, Any], error_message_prefix: str) -> Any:
+def _execute_command(command: str, args: dict[str, Any], error_message_prefix: str) -> Any:
     """
-    Executes a Demisto command and handles potential errors.
+    Executes a command and handles potential errors.
+
+    This function abstracts the common pattern of executing a command and
+    checking its result for errors, providing a consistent error handling mechanism.
 
     Args:
-        command (str): The name of the Demisto command to execute.
-        args (Dict[str, Any]): A dictionary of arguments for the command.
-        error_message_prefix (str): A prefix for the error message if the command fails.
+        command (str): The name of the command to execute (e.g., 'okta-list-zones').
+        args (dict[str, Any]): A dictionary of arguments to pass to the command.
+        error_message_prefix (str): A string prefix to prepend to any exceptions,
+                                    indicating the context of the error.
 
     Returns:
-        Any: The contents of the command result if successful.
+        Any: The parsed 'Contents' from the command's successful result.
 
     Raises:
-        DemistoException: If the command execution fails or returns an invalid structure.
+        DemistoException: If the command execution fails, returns an empty/invalid response structure,
+                          or indicates an error via `isError()`.
     """
     res = demisto.executeCommand(command, args)
     if not res or not isinstance(res, list) or not res[0]:
         raise DemistoException(f"{error_message_prefix}: Empty or invalid command result for {command}.")
 
     if isError(res[0]):
-        # FIX: Corrected typo from _get_command_error_error_details to _get_command_error_details
         error_details = _get_command_error_details(res[0])
         raise DemistoException(f"{error_message_prefix}: {error_details}")
 
@@ -159,14 +173,18 @@ def get_blocked_ip_zone_info() -> dict[str, Any]:
     """
     Retrieves the 'BlockedIpZone' information from Okta zones.
 
+    This function calls the 'okta-list-zones' command to fetch all Okta zones
+    and then specifically looks for the zone named "BlockedIpZone". It extracts
+    its ID and the list of associated gateways.
+
     Returns:
-        Dict[str, Any]: A dictionary containing 'zone_id' and 'zone_gateways' if found.
+        dict[str, Any]: A dictionary containing 'zone_id' and 'zone_gateways' (list of strings) if the zone is found.
 
     Raises:
-        DemistoException: If listing Okta zones fails or 'BlockedIpZone' is not found,
-                          or if the response format is unexpected.
+        DemistoException: If listing Okta zones fails, if the "BlockedIpZone" is not found,
+                          or if the response format from Okta is unexpected.
     """
-    res_zones = _execute_demisto_command("okta-list-zones", {}, "Failed to list Okta zones")
+    res_zones = _execute_command("okta-list-zones", {}, "Failed to list Okta zones")
 
     zones: list[dict[str, Any]] = []
     if isinstance(res_zones, dict):
@@ -198,13 +216,19 @@ def update_blocked_ip_zone(zone_id: str, zone_gateways: list[str], ip_to_add: st
     """
     Appends a new IP CIDR to the 'BlockedIpZone' in Okta.
 
+    This function checks if the IP is already covered by an existing gateway in the zone.
+    If not, it adds the new IP as a /32 CIDR to the list of gateways and updates the Okta zone.
+
     Args:
-        zone_id (str): The ID of the 'BlockedIpZone'.
-        zone_gateways (List[str]): The list of existing gateway IPs in the zone.
-        ip_to_add (str): The IP address to add (will be converted to /32 CIDR).
+        zone_id (str): The ID of the 'BlockedIpZone' to update.
+        zone_gateways (list[str]): The current list of gateway IP ranges/CIDRs associated with the zone.
+        ip_to_add (str): The IP address string to add (e.g., "1.2.3.4"); it will be converted to a /32 CIDR.
+
+    Returns:
+        None: A message indicating whether the IP was added or already exists will be returned via `return_results`.
 
     Raises:
-        DemistoException: If updating the Okta zone fails.
+        DemistoException: If the update operation to Okta fails.
     """
     ip_cidr = f"{ip_to_add}/32"
 
@@ -217,20 +241,25 @@ def update_blocked_ip_zone(zone_id: str, zone_gateways: list[str], ip_to_add: st
     update_args = {
         "zoneID": zone_id,
         "gateways": ",".join(zone_gateways),
-        "gatewayIPs": ip_cidr,
+        "gatewayIPs": ip_cidr,  # Used by some Okta update methods to specify the new IP to append
         "type": "IP",
         "name": "BlockedIpZone",
         "status": "ACTIVE",
         "updateType": "APPEND",
     }
 
-    _execute_demisto_command("okta-update-zone", update_args, "Failed to update BlockedIpZone")
+    _execute_command("okta-update-zone", update_args, "Failed to update BlockedIpZone")
     return_results(f"IP {ip_to_add} added to BlockedIpZone.")
 
 
 def main():
     """
     Main function for blocking an IP address in Okta by adding it to a 'BlockedIpZone'.
+
+    This is the primary entry point of the script. It retrieves the IP address from arguments,
+    performs initial validation (e.g., checks for missing, private, or non-IPv4 IPs),
+    fetches the Okta 'BlockedIpZone' information, and then updates the zone to include the IP.
+    All exceptions are caught and reported via `return_error`.
     """
     try:
         ip = demisto.args().get("ip")
