@@ -2037,6 +2037,8 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
             message=f"Failed to connect to Azure: {str(e)}",
             error_type=ErrorType.CONNECTIVITY_ERROR,
         )
+    
+    return None
 
 
 def get_azure_client(params: dict, args: dict):
