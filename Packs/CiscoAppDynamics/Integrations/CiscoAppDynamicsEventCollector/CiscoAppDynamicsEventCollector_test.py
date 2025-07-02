@@ -63,8 +63,8 @@ class DummyClient:
 @pytest.mark.parametrize(
     "event_type_name",
     [
-        ("Audit"),
-        ("Healthrule Violations Events"),
+        (AUDIT.name),
+        (HEALTH_EVENT.name),
     ],
 )
 def test_add_fields_to_events_basic(event_type_name):

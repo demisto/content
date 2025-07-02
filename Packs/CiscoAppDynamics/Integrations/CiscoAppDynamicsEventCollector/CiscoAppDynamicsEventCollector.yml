@@ -42,7 +42,7 @@ configuration:
   type: 8
   section: Collect
 - display: Event types to fetch (Multi-select list)
-  defaultvalue: Audit, Healthrule Violations Events
+  defaultvalue: Audit, Health Rule Violations Events
   name: events_type_to_fetch
   required: true
   type: 16
@@ -65,7 +65,7 @@ configuration:
   required: false
   advanced: true
   section: Collect
-description: AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs moment to moment. No other solution offers application modernization, cloud and hybrid monitoring, and application security with business context.
+description: AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs moment to moment.
 display: Cisco AppDynamics
 name: Cisco AppDynamics
 script:
@@ -90,7 +90,7 @@ script:
       name: events_type_to_fetch
       predefined:
         - 'Audit'
-        - 'Healthrule Violations Events'
+        - 'Health Rule Violations Events'
       defaultValue: 'Audit'
       required: false
     - description: 'The starting date from which events should be fetched. The date should be in the format "%Y-%m-%dT%H:%M:%S.%fZ". Example: 2025-01-01T11:27:08.000Z.'

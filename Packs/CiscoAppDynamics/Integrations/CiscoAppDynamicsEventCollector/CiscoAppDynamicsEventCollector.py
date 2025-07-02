@@ -59,11 +59,11 @@ AUDIT = EventType(
 )
 
 HEALTH_EVENT = EventType(
-    name="Healthrule Violations Events",
+    name="Health Rule Violations",
     url_suffix="/rest/applications/application_id/problems/healthrule-violations",
     time_field="startTimeInMillis",
     max_fetch=3000,
-    source_log_type="Healthrule Violations Event",
+    source_log_type="Health Rule Violations",
     api_limit=600,
     default_params={
         "time-range-type": "BETWEEN_TIMES",
@@ -71,7 +71,7 @@ HEALTH_EVENT = EventType(
     },
 )
 
-EVENT_TYPES = {"Audit": AUDIT, "Healthrule Violations Events": HEALTH_EVENT}
+EVENT_TYPES = {"Audit": AUDIT, "Health Rule Violations": HEALTH_EVENT}
 
 
 class Client(BaseClient):
@@ -288,7 +288,7 @@ def add_fields_to_events(events: list[dict], event_type: EventType) -> list[dict
     return events
 
 
-def test_module_command(client: Client):  # pragma: no cover
+def test_module_command(client: Client, params: dict):  # pragma: no cover
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -301,7 +301,7 @@ def test_module_command(client: Client):  # pragma: no cover
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    fetch_events(client, set_event_type_fetch_limit(demisto.params()))
+    fetch_events(client, set_event_type_fetch_limit(params))
     return "ok"
 
 
@@ -454,7 +454,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
-            return_results(test_module_command(client))
+            return_results(test_module_command(client, params))
 
         elif command == "fetch-events":
             events, next_run = fetch_events(
