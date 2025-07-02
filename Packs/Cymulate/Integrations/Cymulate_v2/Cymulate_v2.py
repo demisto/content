@@ -1579,7 +1579,7 @@ def main() -> None:
     """main function, parses params and runs command functions"""
     params = demisto.params()
 
-    api_key = params.get("api_key") or (params.get("credentials") or {}).get("password")
+    api_key = (params.get("credentials") or {}).get("password") or params.get("api_key")
     if not api_key:
         raise Exception("API Token must be provided.")
     base_url = params.get("base_url")
