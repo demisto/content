@@ -14,27 +14,25 @@ description: |-
 
   Analysis:
 
-  - Analyze command-line for suspicious patterns
-  - Evaluate risk score of PowerShell commands
-  - Check for indicators of compromise (IOCs)
-    - If suspicious/malicious patterns detected:
-      - Execute Remediation
+  1. Analyze command-line for suspicious patterns.
+  2. Evaluate PowerShell command risk scores.
+  3. Check for indicators of compromise (IOCs).
+    - If suspicious or malicious patterns are detected, execute remediation.
 
   Investigation:
 
-  - Check process reputation
-  - Analyze process causality chain
-  - Check for related alerts
-  - Search for suspicious execution patterns
-    - If evidence of malicious activity found:
-      - Execute Remediation
+  1. Check the process reputation.
+  2. Analyze the process causality chain.
+  3. Check for related alerts.
+  4. Search for suspicious execution patterns.
+    - If there is evidence of malicious activity, execute remediation.
 
   Containment:
 
-  - Terminate causality process tree
-  - Block malicious indicators
-  - Add malicious files to blocklist
-  - Close alert as True Positive.
+  1. Terminate the causality process tree.
+  2. Block malicious indicators.
+  3. Add malicious files to the blocklist.
+  4. Close the alert as a true positive.
 tags:
 - T1059 - Command and Scripting Interpreter
 - TA0002 - Execution
@@ -185,7 +183,7 @@ tasks:
       id: 12eb0eb8-fb5d-4c90-82ac-5d65610dc9ba
       version: -1
       name: Check Commandline Risk Score
-      description: Evaluate risk score from CommandLineAnalysis to determine if further investigation or remediation is needed
+      description: Evaluate the risk score from CommandLineAnalysis to determine if further investigation or remediation is needed.
       type: condition
       iscommand: false
       brand: ""
@@ -261,7 +259,7 @@ tasks:
       id: ba8dc3c7-904a-420a-8d24-4bdd1e259958
       version: -1
       name: Check Extracted IOC's Reputation
-      description: Validate reputation of extracted command line indicators for potential threat analysis
+      description: Validate the reputation of extracted command-line indicators for potential threat analysis.
       type: condition
       iscommand: false
       brand: ""
@@ -456,7 +454,7 @@ tasks:
       - "15"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved. Confirmed as a True Positive by the playbook "Suspicious Powershell Command Execution"
+        simple: The alert has been resolved. It was confirmed as a true positive by the Suspicious Powershell Command Execution playbook.
       closeReason:
         simple: Resolved - True Positive
     separatecontext: false
@@ -697,7 +695,7 @@ tasks:
       id: aa0ac47c-eeca-4a75-8b01-b1dac80823b7
       version: -1
       name: Check Suspicious Causality Chain
-      description: Check for suspicious causality chain related to this alert to enrich context and verdict decision.
+      description: Check for a suspicious causality chain related to this alert to enrich context and the verdict decision.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1097,7 +1095,7 @@ tasks:
       id: 4c15e179-0b52-4cfa-852e-52487cfc2670
       version: -1
       name: Check CGO Signer not Microsoft
-      description: Verify if the CGO signer is not Microsoft Corporation before checking reputation
+      description: Verify the CGO signer is not Microsoft Corporation before checking reputation.
       type: condition
       iscommand: false
       brand: ""
@@ -1141,7 +1139,7 @@ tasks:
     task:
       id: 9d204ed9-7ae8-42c8-8eb1-5bad1c25569a
       version: -1
-      name: Block Malicious File  Indicators
+      name: Block Malicious File Indicators
       description: Block lists requested files which have not already been block listed or added to allow lists.
       script: Cortex Core - IR|||core-blocklist-files
       type: regular
@@ -1152,7 +1150,7 @@ tasks:
       - "13"
     scriptarguments:
       comment:
-        simple: Malicious files blocked by playbook "Suspicious Powershell Command Execution"
+        simple: Malicious files were blocked by the Suspicious Powershell Command Execution playbook.
       hash_list:
         complex:
           root: DBotScore.Score
@@ -1193,7 +1191,7 @@ tasks:
       id: e5b30597-e721-428f-8efb-85a3f499f321
       version: -1
       name: Close Alert - No malicious activity was found
-      description: Close the current alert as a False Positive.
+      description: Close the current alert as a false positive.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1419,7 +1417,7 @@ tasks:
       id: 0b150398-971b-490a-8f97-e7959c0977ef
       version: -1
       name: Check Malicious Indicators to Block not empty
-      description: Verify if there are malicious indicators that need to be blocked
+      description: Verify there are malicious indicators that need to be blocked.
       type: condition
       iscommand: false
       brand: ""
