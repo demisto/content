@@ -56,7 +56,8 @@ tasks:
       - "4"
     scriptarguments:
       blocks_url:
-        simple: https://app.slack.com/block-kit-builder/TABQMPKP0#%7B%22blocks%22:%5B%7B%22type%22:%22header%22,%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22This%20is%20a%20test%20of%20the%20SlackBlockBuilder%20Automation%22,%22emoji%22:true%7D%7D,%7B%22type%22:%22input%22,%22element%22:%7B%22type%22:%22checkboxes%22,%22options%22:%5B%7B%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22*Option%201*%22,%22emoji%22:true%7D,%22value%22:%22value-0%22%7D,%7B%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22*Option%202*%22,%22emoji%22:true%7D,%22value%22:%22value-1%22%7D,%7B%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22*Option%203*%22,%22emoji%22:true%7D,%22value%22:%22value-2%22%7D%5D,%22action_id%22:%22checkboxes-action%22%7D,%22label%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Please%20Select%20Some%20Option%22,%22emoji%22:true%7D%7D,%7B%22type%22:%22section%22,%22text%22:%7B%22type%22:%22mrkdwn%22,%22text%22:%22Also%20Pick%20a%20Time%22%7D,%22accessory%22:%7B%22type%22:%22timepicker%22,%22initial_time%22:%2213:37%22,%22placeholder%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Select%20time%22,%22emoji%22:true%7D,%22action_id%22:%22timepicker-action%22%7D%7D%5D%7D
+        simple: 
+          https://app.slack.com/block-kit-builder/TABQMPKP0#%7B%22blocks%22:%5B%7B%22type%22:%22header%22,%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22This%20is%20a%20test%20of%20the%20SlackBlockBuilder%20Automation%22,%22emoji%22:true%7D%7D,%7B%22type%22:%22input%22,%22element%22:%7B%22type%22:%22checkboxes%22,%22options%22:%5B%7B%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22*Option%201*%22,%22emoji%22:true%7D,%22value%22:%22value-0%22%7D,%7B%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22*Option%202*%22,%22emoji%22:true%7D,%22value%22:%22value-1%22%7D,%7B%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22*Option%203*%22,%22emoji%22:true%7D,%22value%22:%22value-2%22%7D%5D,%22action_id%22:%22checkboxes-action%22%7D,%22label%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Please%20Select%20Some%20Option%22,%22emoji%22:true%7D%7D,%7B%22type%22:%22section%22,%22text%22:%7B%22type%22:%22mrkdwn%22,%22text%22:%22Also%20Pick%20a%20Time%22%7D,%22accessory%22:%7B%22type%22:%22timepicker%22,%22initial_time%22:%2213:37%22,%22placeholder%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Select%20time%22,%22emoji%22:true%7D,%22action_id%22:%22timepicker-action%22%7D%7D%5D%7D
       channel:
         simple: general
       reply:
@@ -122,7 +123,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: "This task will parse the JSON from the response and update the context."
+      description: "This task will parse the JSON from the response and update the
+        context."
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -162,3 +164,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

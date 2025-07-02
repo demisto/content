@@ -513,7 +513,9 @@ inputs:
             value:
               simple: ','
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
+  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated
+    list should be provided in CIDR notation. For example, a list of ranges would
+    be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 - key: MD5
   value:
@@ -599,12 +601,15 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. You can set this to either True or False.
+  description: Determines whether the IP Enrichment - Generic playbook should convert
+    IP addresses to hostnames using a DNS query. You can set this to either True or
+    False.
   playbookInputQuery:
 - key: InternalDomains
   value: {}
   required: false
-  description: A CSV list of internal domains. The list will be used to determine whether an email address is internal or external.
+  description: A CSV list of internal domains. The list will be used to determine
+    whether an email address is internal or external.
   playbookInputQuery:
 - key: UseReputationCommand
   value:
@@ -699,7 +704,8 @@ outputs:
   description: The email account NetworkType (Internal/External).
   type: string
 - contextPath: Account.Email.Distance
-  description: 'The object that contains the distance between the email domain and the compared domain. '
+  description: 'The object that contains the distance between the email domain and
+    the compared domain. '
   type: string
 - contextPath: Account.Email.Distance.Domain
   description: The compared domain.
@@ -723,7 +729,8 @@ outputs:
   description: Groups the user is a member of.
   type: string
 - contextPath: CylanceProtectDevice
-  description: The device information about the hostname that was enriched using Cylance Protect v2.
+  description: The device information about the hostname that was enriched using Cylance
+    Protect v2.
   type: string
 - contextPath: File.VirusTotal.Scans
   description: The scan object.
@@ -768,7 +775,8 @@ outputs:
   description: Account in PingID.
   type: string
 - contextPath: IAM.Vendor.active
-  description: When true, indicates that the employee's status is active in the 3rd-party integration.
+  description: When true, indicates that the employee's status is active in the 3rd-party
+    integration.
   type: string
 - contextPath: IAM.Vendor.brand
   description: Name of the integration.
@@ -825,7 +833,8 @@ outputs:
   description: Array of role objects that the identity has.
   type: string
 - contextPath: IdentityIQ.Identity.capabilities
-  description: Array of string representations of the IdentityIQ capabilities assigned to this identity.
+  description: Array of string representations of the IdentityIQ capabilities assigned
+    to this identity.
   type: string
 - contextPath: IdentityIQ.Identity.name
   description: Account name.
@@ -924,10 +933,12 @@ outputs:
   description: Whether the login script is run. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.ACCOUNTDISABLE
-  description: Whether the user account is disabled. Works for *Windows Server 2012 R2*.
+  description: Whether the user account is disabled. Works for *Windows Server 2012
+    R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.HOMEDIR_REQUIRED
-  description: Whether the home folder is required. Works for *Windows Server 2012 R2*.
+  description: Whether the home folder is required. Works for *Windows Server 2012
+    R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.LOCKOUT
   description: Whether the user is locked out. Works for *Windows Server 2012 R2*.
@@ -936,22 +947,29 @@ outputs:
   description: Whether the password is required. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWD_CANT_CHANGE
-  description: Whether the user can change the password. Works for *Windows Server 2012 R2*.
+  description: Whether the user can change the password. Works for *Windows Server
+    2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.ENCRYPTED_TEXT_PWD_ALLOWED
-  description: Whether the user can send an encrypted password. Works for *Windows Server 2012 R2*.
+  description: Whether the user can send an encrypted password. Works for *Windows
+    Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.TEMP_DUPLICATE_ACCOUNT
-  description: Whether this is an account for users whose primary account is in another domain. Works for *Windows Server 2012 R2*.
+  description: Whether this is an account for users whose primary account is in another
+    domain. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.NORMAL_ACCOUNT
-  description: Whether this is a default account type that represents a typical user. Works for *Windows Server 2012 R2*.
+  description: Whether this is a default account type that represents a typical user.
+    Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.INTERDOMAIN_TRUST_ACCOUNT
-  description: Whether the account is permitted to trust a system domain that trusts other domains. Works for *Windows Server 2012 R2*.
+  description: Whether the account is permitted to trust a system domain that trusts
+    other domains. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.WORKSTATION_TRUST_ACCOUNT
-  description: Whether this is a computer account for a computer running Microsoft Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft Windows 2000 Professional, or Windows 2000 Server and is a member of this domain.
+  description: Whether this is a computer account for a computer running Microsoft
+    Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft Windows
+    2000 Professional, or Windows 2000 Server and is a member of this domain.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.PARTIAL_SECRETS_ACCOUNT
   description: Whether the account is a read-only domain controller (RODC).
@@ -960,16 +978,20 @@ outputs:
   description: Whether the account is enabled for delegation.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_REQ_PREAUTH
-  description: Whether this account require Kerberos pre-authentication for logging on.
+  description: Whether this account require Kerberos pre-authentication for logging
+    on.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.USE_DES_KEY_ONLY
-  description: Whether to restrict this principal to use only Data Encryption Standard (DES) encryption types for keys.
+  description: Whether to restrict this principal to use only Data Encryption Standard
+    (DES) encryption types for keys.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.NOT_DELEGATED
-  description: Whether the security context of the user isn't delegated to a service even if the service account is set as trusted for Kerberos delegation.
+  description: Whether the security context of the user isn't delegated to a service
+    even if the service account is set as trusted for Kerberos delegation.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.TRUSTED_FOR_DELEGATION
-  description: Whether the service account (the user or computer account) under which a service runs is trusted for Kerberos delegation.
+  description: Whether the service account (the user or computer account) under which
+    a service runs is trusted for Kerberos delegation.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.SMARTCARD_REQUIRED
   description: Whether to force the user to log in by using a smart card.
@@ -978,7 +1000,8 @@ outputs:
   description: Whether this is an MNS login account.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.SERVER_TRUST_ACCOUNT
-  description: Whether this is a computer account for a domain controller that is a member of this domain. Works for *Windows Server 2012 R2*.
+  description: Whether this is a computer account for a domain controller that is
+    a member of this domain. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_EXPIRE_PASSWORD
   description: Whether to never expire the password on the account.
@@ -1149,7 +1172,8 @@ outputs:
   description: The path to the user.
   type: string
 - contextPath: AWS.IAM.Users.PasswordLastUsed
-  description: The date and time,  when the user's password was last used to sign in to an AWS website.
+  description: The date and time,  when the user's password was last used to sign
+    in to an AWS website.
   type: string
 - contextPath: Account.Email.Address
   description: User’s mail address.
@@ -1215,7 +1239,8 @@ outputs:
   description: The class of the device.
   type: String
 - contextPath: ExtraHop.Device.UserModTime
-  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
   type: Number
 - contextPath: ExtraHop.Device.AutoRole
   description: The role automatically detected by the ExtraHop.
@@ -1242,7 +1267,8 @@ outputs:
   description: Whether the device is on the advanced analysis allow list.
   type: Boolean
 - contextPath: ExtraHop.Device.ModTime
-  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
   type: Number
 - contextPath: ExtraHop.Device.IsL3
   description: Indicates whether the device is a Layer 3 device.
@@ -1290,7 +1316,8 @@ outputs:
   description: The endpoint that was enriched.
   type: string
 - contextPath: ActiveDirectory.ComputersPageCookie
-  description: An opaque string received in a paged search, used for requesting subsequent entries.
+  description: An opaque string received in a paged search, used for requesting subsequent
+    entries.
   type: string
 - contextPath: ActiveDirectory.Computers
   description: The information about the hostname that was enriched using Active Directory.
@@ -1308,7 +1335,8 @@ outputs:
   description: The information about  the endpoint.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
-  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed. installed.
+  description: The size, in bytes, of the system volume of the endpoint on which the
+    sensor is installed. installed.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
   description: The path of the EMET telemetry associated with the sensor.
@@ -1338,7 +1366,8 @@ outputs:
   description: The size in bytes of physical memory.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.build_id
-  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
+  description: The sensor version installed on this endpoint. From the /api/builds/
+    endpoint.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uptime
   description: Endpoint uptime in seconds.
@@ -1393,7 +1422,8 @@ outputs:
   description: Machine SID of this host.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.next_checkin_time
-  description: Next expected communication from this computer in server-local time and zone.
+  description: Next expected communication from this computer in server-local time
+    and zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.node_id
   description: The node ID associated with the sensor.
@@ -1423,10 +1453,12 @@ outputs:
   description: A pipe-delimited list of IP,MAC pairs for each network interface.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_status
-  description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
+  description: Self-reported health score, from 0 to 100. Higher numbers indicate
+    a better health status.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.registration_time
-  description: Time this sensor was originally registered in server-local time and zone.
+  description: Time this sensor was originally registered in server-local time and
+    zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.restart_queued
   description: Whether a restart of the sensor is queued.
@@ -1456,7 +1488,8 @@ outputs:
   description: The sensor group ID this sensor is assigned to.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uninstall
-  description: When set, indicates that the sensor will be directed to uninstall on next check-in.
+  description: When set, indicates that the sensor will be directed to uninstall on
+    next check-in.
   type: string
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
   description: The endpoint ID.
@@ -1640,3 +1673,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

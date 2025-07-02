@@ -177,7 +177,9 @@ tasks:
       id: ae5e40bb-17cb-4470-84bc-4801e67b1cae
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". "
+      description: "Checks if the IP address is in the internal IP address ranges.\n
+        If internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets
+        the \"InRange\" attribute to \"no\". "
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -356,7 +358,8 @@ tasks:
       id: 0df4420b-8119-4731-8cb3-4745fd044913
       version: -1
       name: Is VirusTotal Private API enabled?
-      description: Checks if there is an active instance of the VirusTotal Private API integration enabled.
+      description: Checks if there is an active instance of the VirusTotal Private
+        API integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -805,7 +808,9 @@ inputs:
             value:
               simple: ','
   required: false
-  description: 'A comma-separated list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
+  description: 'A comma-separated list of IP address ranges (in CIDR notation). Use
+    this list to check if an IP address is found within a set of IP address ranges.
+    For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 - key: ResolveIP
   value:
@@ -909,13 +914,16 @@ outputs:
   description: For malicious IPs, the reason that the vendor made the decision.
   type: string
 - contextPath: IP.VirusTotal.DownloadedHashes
-  description: Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address.
+  description: Latest files that are detected by at least one antivirus solution and
+    were downloaded by VirusTotal from the IP address.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
-  description: Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided.
+  description: Latest files that are not detected by any antivirus solution and were
+    downloaded by VirusTotal from the IP address provided.
   type: string
 - contextPath: IP.VirusTotal.DetectedURLs
-  description: Latest URLs hosted in this IP address detected by at least one URL scanner.
+  description: Latest URLs hosted in this IP address detected by at least one URL
+    scanner.
   type: string
 - contextPath: IP.VirusTotal.CommunicatingHashes
   description: Latest detected files that communicate with this IP address.
@@ -945,3 +953,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

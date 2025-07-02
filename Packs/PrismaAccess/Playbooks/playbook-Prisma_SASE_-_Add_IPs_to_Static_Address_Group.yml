@@ -332,7 +332,9 @@ tasks:
       id: da1f402d-606d-4448-8805-0ee35ad05444
       version: -1
       name: Prisma SASE - Create Address Object
-      description: This playbook creates new address objects in the Prisma SASE Object section. Those objects can be used later on in other objects such as Security Rules.
+      description: This playbook creates new address objects in the Prisma SASE Object
+        section. Those objects can be used later on in other objects such as Security
+        Rules.
       playbookName: Prisma SASE - Create Address Object
       type: playbook
       iscommand: false
@@ -513,7 +515,8 @@ inputs:
 - key: TSGID
   value: {}
   required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
   playbookInputQuery:
 - key: AutoCommit
   value: {}
@@ -592,3 +595,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

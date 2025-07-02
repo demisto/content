@@ -1,7 +1,11 @@
 id: Eradication Plan - Terminate Process
 version: -1
 name: Eradication Plan - Terminate Process
-description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook handles the termination of the processes as a crucial step in the eradication action.\nThe playbook executes actions of process termination, which is a crucial step in the eradication process.\nThe process termination can be performed based on either the process ID or the process name."
+description: "This playbook is one of the sub-playbooks in the eradication plan. \n
+  This playbook handles the termination of the processes as a crucial step in the
+  eradication action.\nThe playbook executes actions of process termination, which
+  is a crucial step in the eradication process.\nThe process termination can be performed
+  based on either the process ID or the process name."
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +46,8 @@ tasks:
       id: 387a0de2-f9a3-412a-8531-299ba47ac010
       version: -1
       name: Should terminate the process?
-      description: Whether to terminate the process automatically, manually, or not at all.
+      description: Whether to terminate the process automatically, manually, or not
+        at all.
       type: condition
       iscommand: false
       brand: ""
@@ -827,7 +832,9 @@ inputs:
   value:
     simple: Name
   required: false
-  description: "Choose 'PID' to terminate the process by PID or 'Name' to terminate the process by process name. \nNote: If neither option is selected, the process will not be terminated."
+  description: "Choose 'PID' to terminate the process by PID or 'Name' to terminate
+    the process by process name. \nNote: If neither option is selected, the process
+    will not be terminated."
   playbookInputQuery:
 - key: EndpointID
   value: {}
@@ -859,3 +866,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

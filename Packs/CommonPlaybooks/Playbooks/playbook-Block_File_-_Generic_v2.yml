@@ -3,7 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block File - Generic v2
-description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n- Crowdstrike Falcon\n- Microsoft Defender for Endpoint."
+description: "This playbook is used to block files from running on endpoints. \nThis
+  playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo
+  Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance
+  Protect v2\n- Crowdstrike Falcon\n- Microsoft Defender for Endpoint."
 starttaskid: "0"
 tasks:
   "0":
@@ -138,7 +141,8 @@ tasks:
       id: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
       version: -1
       name: Block File - Cybereason
-      description: This playbook accepts an MD5 hash and blocks the file using the Cybereason integration.
+      description: This playbook accepts an MD5 hash and blocks the file using the
+        Cybereason integration.
       playbookName: Block File - Cybereason
       type: playbook
       iscommand: false
@@ -196,7 +200,8 @@ tasks:
       id: a887370c-f94a-42f9-866f-2d80b7707f41
       version: -1
       name: Block File - Cylance Protect v2
-      description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine list using the Cylance Protect v2 integration.
+      description: This playbook accepts a SHA256 hash and adds the hash to the Global
+        Quarantine list using the Cylance Protect v2 integration.
       playbookName: Block File - Cylance Protect v2
       type: playbook
       iscommand: false
@@ -378,7 +383,8 @@ tasks:
       id: cfefcb2a-3dcf-44a5-8aed-ef231d7fe00b
       version: -1
       name: Cortex XDR - Block File
-      description: Use this playbook to add files to Cortex XDR block list with a given file SHA256 playbook input.
+      description: Use this playbook to add files to Cortex XDR block list with a
+        given file SHA256 playbook input.
       playbookName: Cortex XDR - Block File
       type: playbook
       iscommand: false
@@ -498,7 +504,9 @@ tasks:
       id: 07c049da-5bbf-4804-8b51-3b58463ce5be
       version: -1
       name: CrowdStrike Falcon - Block File
-      description: "This playbook receives an MD5 or a SHA256 hash and adds it to the block list in CrowdStrike Falcon. \nThe playbook uses the integration \"CrowdStrike Falcon\"."
+      description: "This playbook receives an MD5 or a SHA256 hash and adds it to
+        the block list in CrowdStrike Falcon. \nThe playbook uses the integration
+        \"CrowdStrike Falcon\"."
       playbookName: CrowdStrike Falcon - Block File
       type: playbook
       iscommand: false
@@ -555,7 +563,9 @@ tasks:
       id: 56668cf3-d5c5-424d-85ff-43b568a0d538
       version: -1
       name: MDE - Block File
-      description: "This playbook receives an MD5 or a SHA256 hash and adds it to the block list in Microsoft Defender for Endpoint. \nThe playbook uses the integration \"Microsoft Defender for Endpoint\"."
+      description: "This playbook receives an MD5 or a SHA256 hash and adds it to
+        the block list in Microsoft Defender for Endpoint. \nThe playbook uses the
+        integration \"Microsoft Defender for Endpoint\"."
       playbookName: MDE - Block File
       type: playbook
       iscommand: false
@@ -639,7 +649,8 @@ inputs:
 - key: Hash
   value: {}
   required: false
-  description: In this input you can insert either MD5 or SHA256 that you wish to block.
+  description: In this input you can insert either MD5 or SHA256 that you wish to
+    block.
   playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
@@ -656,3 +667,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

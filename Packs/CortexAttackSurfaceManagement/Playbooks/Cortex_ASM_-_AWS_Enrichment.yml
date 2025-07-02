@@ -1,7 +1,8 @@
 id: Cortex ASM - AWS Enrichment
 version: -1
 name: Cortex ASM - AWS Enrichment
-description: Given the IP address this playbook enriches AWS information relevant to ASM alerts.
+description: Given the IP address this playbook enriches AWS information relevant
+  to ASM alerts.
 starttaskid: "0"
 tasks:
   "0":
@@ -122,7 +123,8 @@ tasks:
       id: 14d35979-d26d-4475-811b-ca37e4fea28c
       version: -1
       name: Is there EC2 information?
-      description: Determines if there is EC2 information to set the private IP, cloud, and tags fields.
+      description: Determines if there is EC2 information to set the private IP, cloud,
+        and tags fields.
       type: condition
       iscommand: false
       brand: ""
@@ -228,7 +230,8 @@ tasks:
       id: a0c545b4-7ca6-4d1e-8ec4-9e7d5f906410
       version: -1
       name: Is there EC2 and security group information?
-      description: Determines if there is EC2 and security group information to set in the system IDs field.
+      description: Determines if there is EC2 and security group information to set
+        in the system IDs field.
       type: condition
       iscommand: false
       brand: ""
@@ -793,7 +796,8 @@ tasks:
       id: 8b5f68d9-28ff-4f5e-8330-93fd0c76919d
       version: -1
       name: AWS - Unclaimed S3 Bucket Validation
-      description: The playbook sends a HTTP get response to the hostname and validates if there is missing bucket information.
+      description: The playbook sends a HTTP get response to the hostname and validates
+        if there is missing bucket information.
       type: playbook
       iscommand: false
       brand: ""
@@ -1366,7 +1370,8 @@ tasks:
       id: 94b9ccf0-0c2c-422c-80f0-ac07e330085d
       version: -1
       name: Was enrichment performed?
-      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true
+        in the relevant flag variable.
       type: condition
       iscommand: false
       brand: ""
@@ -1596,7 +1601,8 @@ tasks:
       id: aefccfa5-4c36-4a60-8aec-0df67d820a0c
       version: -1
       name: Set system IDs grid field (type)
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       type: regular
       iscommand: false
       brand: Builtin
@@ -1808,7 +1814,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if there is AWS organization information to set in the cloud field.
+      description: Determines if there is AWS organization information to set in the
+        cloud field.
       id: d47da135-9824-4f1a-8f35-9f955ae78114
       iscommand: false
       name: Is there an organization id?
@@ -1905,7 +1912,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if there is SSM information to set in the system IDs field.
+      description: Determines if there is SSM information to set in the system IDs
+        field.
       id: 31a242a0-5a16-433c-8034-e9712abe8f9a
       iscommand: false
       name: Is there AWS SSM information?
@@ -1947,7 +1955,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system
+        IDs object.
       id: 627c9db8-e0bf-4d1e-87c2-de7a9b566d8a
       iscommand: false
       name: Set system IDs grid field (type)
@@ -2347,7 +2356,8 @@ inputs:
   required: true
   description: Attack Surface Management Rule ID.
   playbookInputQuery:
-- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
+- description: If assuming roles for AWS, this is the name of the role to assume (should
+    be the same for all organizations).
   key: AWSAssumeRoleName
   playbookInputQuery:
   required: false
@@ -2361,3 +2371,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

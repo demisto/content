@@ -3,12 +3,14 @@ description: This playbook polls a context key to check if a specific value exis
 name: Context Polling - Generic
 id: Context Polling - Generic
 inputs:
-- description: 'The context key to poll for a value. Can contain ''.'', for example: "ContextKey1.ContextKey2.ContextKey3"'
+- description: 'The context key to poll for a value. Can contain ''.'', for example:
+    "ContextKey1.ContextKey2.ContextKey3"'
   key: key
   playbookInputQuery:
   required: true
   value: {}
-- description: 'The regex to check the field for. By default the regex contains .+, which matches anything other than None.'
+- description: 'The regex to check the field for. By default the regex contains .+,
+    which matches anything other than None.'
   key: value
   playbookInputQuery:
   required: true
@@ -163,3 +165,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

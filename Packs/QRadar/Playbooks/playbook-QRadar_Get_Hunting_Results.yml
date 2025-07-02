@@ -1,6 +1,12 @@
 id: QRadar Get Hunting Results
 version: -1
-description: This playbook is used to sort the QRadar search results to display the IP addresses, assets, and usernames that the search provided. In addition, the results allow you to differentiate between internal and external IP addresses as well as query the QRadar assets API in order to get the assets details from the IP addresses. You can provide the QRadar fields names and the organizations' IP ranges in order to properly sort the data. The end result of the playbook will be the internal and external IP addresses detected as well as the assets and users.
+description: This playbook is used to sort the QRadar search results to display the
+  IP addresses, assets, and usernames that the search provided. In addition, the results
+  allow you to differentiate between internal and external IP addresses as well as
+  query the QRadar assets API in order to get the assets details from the IP addresses.
+  You can provide the QRadar fields names and the organizations' IP ranges in order
+  to properly sort the data. The end result of the playbook will be the internal and
+  external IP addresses detected as well as the assets and users.
 name: QRadar Get Hunting Results
 starttaskid: '0'
 tasks:
@@ -71,7 +77,8 @@ tasks:
       id: fb0311c0-88d0-4afa-8d2e-6f54f646df1b
       version: -1
       name: Set detected IP addresses as external
-      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set in context.
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -162,7 +169,8 @@ tasks:
       id: 7ddc4c58-95a6-41ef-8369-01bf13913b89
       version: -1
       name: Determine whether the IP address is internal or external
-      description: Returns yes if the IP address is in one of the ranges provided. Returns no otherwise.
+      description: Returns yes if the IP address is in one of the ranges provided.
+        Returns no otherwise.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -198,7 +206,8 @@ tasks:
       id: 0b0f085f-c64c-42f5-89c8-019ba8c8878c
       version: -1
       name: Set detected IP addresses as internal
-      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set in context.
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -757,19 +766,23 @@ inputs:
             value:
               simple: ','
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
+  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated
+    list should be provided in CIDR notation. For example, a list of ranges would
+    be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 - key: InvestigationIPFields
   value:
     simple: sourceip,destinationip
   required: false
-  description: The values of these QRadar fields will be used for the playbook IP addresses outputs.
+  description: The values of these QRadar fields will be used for the playbook IP
+    addresses outputs.
   playbookInputQuery:
 - key: InvestigationUserFields
   value:
     simple: username
   required: false
-  description: The values of these QRadar fields will be used for the playbook user name outputs.
+  description: The values of these QRadar fields will be used for the playbook user
+    name outputs.
   playbookInputQuery:
 - key: SearchResults
   value: {}
@@ -787,10 +800,12 @@ outputs:
   description: External IP addresses detected based on fields and inputs in your search.
   type: string
 - contextPath: QRadar.DetectedInternalHosts
-  description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+  description: Internal host names detected based on hosts in your assets table. Note
+    that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 - contextPath: QRadar.DetectedExternalHosts
-  description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+  description: External host names detected based on hosts in your assets table. Note
+    that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 tests:
 - no test
@@ -800,3 +815,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

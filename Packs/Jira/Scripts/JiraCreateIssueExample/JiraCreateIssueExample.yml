@@ -42,7 +42,8 @@ args:
 - name: parentIssueId
   description: Parent issue ID if you create a sub-task.
 - name: customFields
-  description: Comma-separated custom field keys and values to include in the created incident, e.g. `customfield_10101=foo,customfield_10102=bar`.
+  description: Comma-separated custom field keys and values to include in the created
+    incident, e.g. `customfield_10101=foo,customfield_10102=bar`.
   isArray: true
 outputs:
 - contextPath: Ticket.Id
@@ -62,3 +63,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

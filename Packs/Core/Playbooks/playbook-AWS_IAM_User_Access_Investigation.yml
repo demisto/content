@@ -3,7 +3,16 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: AWS IAM User Access Investigation
-description: "Deprecated. Use `Cloud IAM User Access Investigation` instead. Investigate and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n This is a beta playbook, which lets you implement and test pre-release software. Although AWS is supported, we are working towards multi-cloud support. As the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We encourage feedback on the quality and usability of the content to help us identify and fix issues, so we can continually improve the content.\n"
+description: "Deprecated. Use `Cloud IAM User Access Investigation` instead. Investigate
+  and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously
+  to access the cloud environment. \nThe following alerts are supported for AWS environments.\n
+  - Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious
+  API call from a Tor exit node\n This is a beta playbook, which lets you implement
+  and test pre-release software. Although AWS is supported, we are working towards
+  multi-cloud support. As the playbook is beta, it might contain bugs. Updates to
+  the playbook during the beta phase might include non-backward compatible features.
+  We encourage feedback on the quality and usability of the content to help us identify
+  and fix issues, so we can continually improve the content.\n"
 deprecated: true
 starttaskid: "0"
 tasks:
@@ -101,7 +110,8 @@ tasks:
       id: f452a1bf-3fc3-40db-8d4a-1666372f6a82
       version: -1
       name: Manual decision making - true/false-positive alert
-      description: Based on the collected data investigation and the verdict established by the "Enrichment for Verdict" playbook, is this a true positive event?
+      description: Based on the collected data investigation and the verdict established
+        by the "Enrichment for Verdict" playbook, is this a true positive event?
       type: condition
       iscommand: false
       brand: ""
@@ -223,7 +233,16 @@ tasks:
       id: 65900bdd-a39d-4848-8edc-4a3026a5360c
       version: -1
       name: AWS IAM User Access Investigation - Remediation
-      description: "Investigate and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n This is a beta playbook, which lets you implement and test pre-release software. Although AWS is supported, we are working towards multi-cloud support. As the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We encourage feedback on the quality and usability of the content to help us identify and fix issues, sp we can continually improve content.\n"
+      description: "Investigate and respond to Cortex XSIAM alerts where an AWS IAM
+        user`s access key is used suspiciously to access the cloud environment. \n
+        The following alerts are supported for AWS environments.\n- Penetration testing
+        tool attempt\n- Penetration testing tool activity\n- Suspicious API call from
+        a Tor exit node\n This is a beta playbook, which lets you implement and test
+        pre-release software. Although AWS is supported, we are working towards multi-cloud
+        support. As the playbook is beta, it might contain bugs. Updates to the playbook
+        during the beta phase might include non-backward compatible features. We encourage
+        feedback on the quality and usability of the content to help us identify and
+        fix issues, sp we can continually improve content.\n"
       playbookName: AWS IAM User Access Investigation - Remediation
       type: playbook
       iscommand: false
@@ -351,13 +370,16 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert''s verdict.'
+      description: 'This playbook checks prior alert closing reasons and performs
+        enrichment and prevalence checks on different IOC types. It then returns the
+        information needed to establish the alert''s verdict.'
     nexttasks:
       '#none#':
       - "50"
     scriptarguments:
       CloseReason:
-        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved -
+          Known Issue
       Domain:
         complex:
           root: alert
@@ -383,7 +405,8 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (hostip:${alert.hostip}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+        simple: (hostip:${alert.hostip}) and alertsource:${alert.sourceBrand} and
+          alertname:${alert.name}
       threshold:
         simple: "5"
     separatecontext: true
@@ -598,7 +621,8 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Whether to automatically delete the user login profile if it exists (True/False).
+  description: Whether to automatically delete the user login profile if it exists
+    (True/False).
   playbookInputQuery:
 - key: AutoBlockIP
   value:
@@ -635,3 +659,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

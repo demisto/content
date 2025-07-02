@@ -9,31 +9,32 @@ inputs:
   value: {}
   required: true
   description: The name of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: delete_type
   value:
     simple: Soft
   required: true
   description: 'Purge type. Possible values are: "Soft" and "Hard". Default is "Soft".'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: polling_timeout
   value:
     simple: "45"
   required: false
   description: Search action polling timeout.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: polling_interval
   value:
     simple: "3"
   required: false
   description: Search action polling interval.
-  playbookInputQuery: null
+  playbookInputQuery:
 name: O365 - Security And Compliance - Search Action - Delete
 outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
   description: Security and compliance search action type. Either "Purge" or "Preview".
   type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
+- contextPath: 
+    O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
   description: Whether to include mailboxes other than regular user mailboxes in the
     compliance search.
   type: Boolean
@@ -99,7 +100,8 @@ outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation
   description: Security and compliance search action public folder locations to include.
   type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
+- contextPath: 
+    O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
   description: Security and compliance search action public folder locations to exclude.
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results
@@ -120,7 +122,8 @@ outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocation
   description: Security and compliance search action SharePoint locations to include.
   type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
+- contextPath: 
+    O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
   description: Security and compliance search action SharePoint locations to exclude.
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
@@ -489,3 +492,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -332,14 +332,14 @@ inputs:
 - key: MessageID
   value: {}
   required: false
-  description: The original email message ID to retrieve. Holds the value
-    of the "Message-ID" header of the original email and not Gmail's internal ID of
-    the message.
+  description: The original email message ID to retrieve. Holds the value of the "Message-ID"
+    header of the original email and not Gmail's internal ID of the message.
   playbookInputQuery:
 - key: UserID
   value: {}
   required: false
-  description: The email address of the authenticated user to fetch the original email for. For gmail, the authenticated user.
+  description: The email address of the authenticated user to fetch the original email
+    for. For gmail, the authenticated user.
   playbookInputQuery:
 outputs:
 - contextPath: Email
@@ -380,3 +380,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

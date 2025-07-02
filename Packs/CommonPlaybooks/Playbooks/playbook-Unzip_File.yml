@@ -1,7 +1,8 @@
 id: Unzip File
 version: -1
 name: Unzip File
-description: This playbook checks whether a file has an extension that supports unzipping, and unzips the file.
+description: This playbook checks whether a file has an extension that supports unzipping,
+  and unzips the file.
 starttaskid: "0"
 tasks:
   "0":
@@ -73,7 +74,8 @@ tasks:
       id: c5f41b44-aa87-40bb-81d7-16d14591a0b3
       version: -1
       name: Is there a zipped file?
-      description: 'Checks whether there is a zipped file in the incident. The following extensions are checked: 7z, gzip, tar, zip.'
+      description: 'Checks whether there is a zipped file in the incident. The following
+        extensions are checked: 7z, gzip, tar, zip.'
       type: condition
       iscommand: false
       brand: ""
@@ -168,7 +170,8 @@ tasks:
       id: a0822541-24c7-4c65-86f3-6afc288bbb2e
       version: -1
       name: Unzip file
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped
+        files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -379,7 +382,8 @@ inputs:
 - key: Password
   value: {}
   required: false
-  description: The password used to protect the zipped file. Required for unzipping password-protected files.
+  description: The password used to protect the zipped file. Required for unzipping
+    password-protected files.
   playbookInputQuery:
 - key: ZipTool
   value:
@@ -402,3 +406,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

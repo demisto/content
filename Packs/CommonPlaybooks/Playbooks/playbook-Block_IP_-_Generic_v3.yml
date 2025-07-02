@@ -1,7 +1,17 @@
 id: Block IP - Generic v3
 version: -1
 name: Block IP - Generic v3
-description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall."
+description: "This playbook blocks malicious IP addresses using all integrations that
+  are enabled. The direction of the traffic that will be blocked is determined by
+  the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of
+  those integrations require specific parameters to run, which are based on the playbook
+  inputs. Also, certain integrations use FW rules or appended network objects.\n-
+  Note that the appended network objects should be specified in blocking rules inside
+  the system later on. \n\n\nSupported integrations for this playbook [Network security
+  products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks
+  PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n
+  * Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n
+  * Signal Sciences WAF\n* Sophos Firewall."
 starttaskid: "0"
 tasks:
   "0":
@@ -115,7 +125,8 @@ tasks:
       id: 3bfa1467-a97a-40e5-8795-aa2f8cd34a56
       version: -1
       name: Is Check Point Firewall enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -205,7 +216,8 @@ tasks:
       id: 6d71d465-7c2e-43d8-8367-04945ca4c3c3
       version: -1
       name: Is Zscaler enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -489,7 +501,13 @@ tasks:
       id: 0e68ca31-6c08-4918-8ed2-6da4bd98c940
       version: -1
       name: PAN-OS DAG Configuration
-      description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed. \n"
+      description: "This playbook utilizes the Dynamic Address Group (DAG) capability
+        of PAN-OS.\nDAG enables analysts to create a rule one time, where the group
+        is the source/destination, and adds IP addresses dynamically without the need
+        to commit the configuration every time.\n\nThe playbook checks if the given
+        tag already exists. If the tag exists, then the IP address is added to the
+        tag.\n\nIf the tag does not exist, a new address group is created with the
+        given tag and a matching rule, and the configuration is committed. \n"
       type: playbook
       iscommand: false
       brand: ""
@@ -598,7 +616,8 @@ tasks:
       id: b141c107-3022-489f-8635-6907ad4240ee
       version: -1
       name: Use Static Address Group?
-      description: Verify if there is a static address group name set as a playbook input.
+      description: Verify if there is a static address group name set as a playbook
+        input.
       type: condition
       iscommand: false
       brand: ""
@@ -682,7 +701,8 @@ tasks:
       id: f9198f7e-933d-4c93-82c5-d516fdd9ef0c
       version: -1
       name: Use Dynamic Address Group?
-      description: Verify if there is a dynamic address group name set as a playbook input.
+      description: Verify if there is a dynamic address group name set as a playbook
+        input.
       type: condition
       iscommand: false
       brand: ""
@@ -755,7 +775,8 @@ tasks:
       id: 380e319e-a726-4445-84c7-b8c667f073d0
       version: -1
       name: Is FortiGate enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -989,7 +1010,8 @@ tasks:
       id: df579a8d-7184-4b88-8beb-352e000cd072
       version: -1
       name: Is F5 Silverline enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1054,7 +1076,8 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: (\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}
+                        simple: 
+                          (\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1130,7 +1153,8 @@ tasks:
       id: 31af9dac-9fc4-477e-87b4-19fe4da82447
       version: -1
       name: Append Context List with IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1220,7 +1244,8 @@ tasks:
       id: d3e2ec0f-17f8-4905-8a2e-cffb29513a53
       version: -1
       name: Is User Verification required?
-      description: Check if user verification is needed. Otherwise, proceed without asking questions.
+      description: Check if user verification is needed. Otherwise, proceed without
+        asking questions.
       type: condition
       iscommand: false
       brand: ""
@@ -1451,7 +1476,8 @@ tasks:
       id: 41d0d39e-008f-438e-82c2-b5af7781eabf
       version: -1
       name: Are there any Suspicious IPs?
-      description: Check if any suspicious IPs were found during the IP enrichment process.
+      description: Check if any suspicious IPs were found during the IP enrichment
+        process.
       type: condition
       iscommand: false
       brand: ""
@@ -1477,7 +1503,8 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: (\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}
+                        simple: 
+                          (\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}
                 - - operator: inList
                     left:
                       value:
@@ -1515,7 +1542,8 @@ tasks:
       id: 24d37c7e-dfc9-4075-8caf-fac89448f74f
       version: -1
       name: Append Context List with IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1549,7 +1577,8 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: (\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}
+                  simple: 
+                    (\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}
           - - operator: inList
               left:
                 value:
@@ -1708,7 +1737,8 @@ tasks:
       id: c8b3752a-ee90-47fb-888f-f8e9dbc3f15f
       version: -1
       name: Is Cisco ASA enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1847,7 +1877,8 @@ tasks:
       id: 8f019569-55db-4d45-8642-52e45dba3c2d
       version: -1
       name: Is Cisco Secure Cloud Analytics enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1956,7 +1987,8 @@ tasks:
       id: ff341c4e-cd9b-4516-8d8a-b6f2f97b30c4
       version: -1
       name: Is Cisco Firepower enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2057,7 +2089,8 @@ tasks:
       id: fdd8bddf-f40f-4e35-8bb4-ef79df9f4d8a
       version: -1
       name: Is Akamai WAF enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2172,7 +2205,8 @@ tasks:
       id: cffe6cff-03f5-43cc-89e9-c6b083ae4b53
       version: -1
       name: Is ThreatX enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2288,7 +2322,8 @@ tasks:
       id: e18ed541-babe-4ecf-85f9-d021aa99a0a9
       version: -1
       name: Is Signal Sciences WAF  enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2405,7 +2440,8 @@ tasks:
       id: 5a301c99-a5dc-4e0d-8741-01434711d074
       version: -1
       name: ARIA Packet Intelligence - Blacklist IPs
-      description: Adds a rule that blocks packets destined for a specific IP address or range of IP addresses.
+      description: Adds a rule that blocks packets destined for a specific IP address
+        or range of IP addresses.
       script: '|||aria-block-dest-subnet'
       type: regular
       iscommand: true
@@ -2450,7 +2486,8 @@ tasks:
       id: 5ad1fa64-7966-44dd-8fb2-656e205dc05d
       version: -1
       name: Is Sophos Firewall enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2489,7 +2526,8 @@ tasks:
       id: fab5e2cc-1d68-4bd7-867b-032814323d1a
       version: -1
       name: Is ARIA Packet Intelligence enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2559,7 +2597,8 @@ tasks:
       id: 6cf23df7-5f64-445d-845d-3883866f7d46
       version: -1
       name: Check if there are internal IP addresses
-      description: Returns 'yes' if the IP is in one of the ranges provided. Otherwise returns 'no'
+      description: Returns 'yes' if the IP is in one of the ranges provided. Otherwise
+        returns 'no'
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -2653,7 +2692,8 @@ tasks:
       id: 83e1b556-8a3a-4ff5-8742-1287ff9f8240
       version: -1
       name: Re-set the block list [Inputs]
-      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2692,7 +2732,8 @@ tasks:
       id: 3b230eb6-3a09-41ec-82db-81daa78dee97
       version: -1
       name: Cisco FirePower- Append network group object
-      description: This playbook will append a network group object with new elements (IPs or network objects).
+      description: This playbook will append a network group object with new elements
+        (IPs or network objects).
       playbookName: Cisco FirePower- Append network group object
       type: playbook
       iscommand: false
@@ -2742,7 +2783,8 @@ tasks:
       id: e8095de9-3bd5-4f8c-8ccb-02d76b87d1a1
       version: -1
       name: Re-set the block list [Inputs]
-      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2783,7 +2825,8 @@ tasks:
       id: 397b5fa6-e8b1-43a0-89d1-b6f63514e8d1
       version: -1
       name: Re-set the block list [Malicious]
-      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2824,7 +2867,8 @@ tasks:
       id: c0352087-e558-45f5-8400-6fec3e641441
       version: -1
       name: Re-set the block list [Suspicious]
-      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3164,7 +3208,8 @@ tasks:
       id: 68b6a610-d4dc-4293-8bf6-015902b9e3dc
       version: -1
       name: Should Inputs be enriched?
-      description: Check if the user requests an IPs enrichment for determining if those are malicious or suspicious.
+      description: Check if the user requests an IPs enrichment for determining if
+        those are malicious or suspicious.
       type: condition
       iscommand: false
       brand: ""
@@ -3208,7 +3253,8 @@ tasks:
       id: b28e5315-84f0-4d42-8595-8d01a5214345
       version: -1
       name: Append Internal IPs to a possible block list
-      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3271,7 +3317,8 @@ tasks:
       id: d8d772aa-064f-4701-8c08-710f49819fb7
       version: -1
       name: Re-set the block list [Internal Address]
-      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3541,7 +3588,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       id: 4d7717be-2f2d-4962-8b96-18edd3a0977c
       iscommand: false
       name: Is Prisma SASE enabled?
@@ -3603,24 +3651,29 @@ inputs:
 - key: IP
   value: {}
   required: false
-  description: 'An array of malicious IPs to block. Enter a comma-separated list of IPs (i.e.: 1.1.1.1,2.2.2.2).'
+  description: 'An array of malicious IPs to block. Enter a comma-separated list of
+    IPs (i.e.: 1.1.1.1,2.2.2.2).'
   playbookInputQuery:
 - key: CustomBlockRule
   value:
     simple: "True"
   required: false
-  description: "This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.\nSpecify \"True\" to create new Custom Block Rules (2 FW rules inside the PAN-OS device). \nFor \"False\" - no rules will be created."
+  description: "This input determines whether Palo Alto Networks Panorama or Firewall
+    Custom Block Rules are used.\nSpecify \"True\" to create new Custom Block Rules
+    (2 FW rules inside the PAN-OS device). \nFor \"False\" - no rules will be created."
   playbookInputQuery:
 - key: LogForwarding
   value: {}
   required: false
-  description: Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
+  description: Panorama log forwarding object name. Indicate what type of Log Forwarding
+    setting will be specified in the PAN-OS custom rules.
   playbookInputQuery:
 - key: AutoCommit
   value:
     simple: "No"
   required: false
-  description: "This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. \nYes - Commit automatically.\nNo - Commit manually."
+  description: "This input determines whether to commit the configuration automatically
+    on PAN-OS devices and other FWs. \nYes - Commit automatically.\nNo - Commit manually."
   playbookInputQuery:
 - key: StaticAddressGroup
   value: {}
@@ -3632,7 +3685,9 @@ inputs:
 - key: Tag
   value: {}
   required: false
-  description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
+  description: Insert a tag name with which indicators will get tagged. This tag can
+    be used later in the External Dynamic Lists integration by using the tag for filtering
+    IPs in the indicator query.
   playbookInputQuery:
 - key: DAG
   value: {}
@@ -3645,7 +3700,10 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: "Possible values: True/False.  Default: True.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  description: "Possible values: True/False.  Default: True.\nWhether to provide user
+    verification for blocking those IPs. \n\nFalse - No prompt will be displayed to
+    the user.\nTrue - The server will ask the user for blocking verification and will
+    display the blocking list."
   playbookInputQuery:
 - key: InternalRange
   value:
@@ -3669,17 +3727,21 @@ inputs:
             value:
               simple: ','
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
+  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated
+    list should be provided in CIDR notation. For example, a list of ranges would
+    be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 - key: SiteName
   value: {}
   required: false
-  description: Signal Sciences WAF - Enter the site name for the integration to be applied. The site name can be found in your instance console.
+  description: Signal Sciences WAF - Enter the site name for the integration to be
+    applied. The site name can be found in your instance console.
   playbookInputQuery:
 - key: AkamaiNetworkListID
   value: {}
   required: false
-  description: Akamai's WAF network list ID, which is mandatory to be mentioned for the integration. The chosen IPs will be added to this ID.
+  description: Akamai's WAF network list ID, which is mandatory to be mentioned for
+    the integration. The chosen IPs will be added to this ID.
   playbookInputQuery:
 - key: InputEnrichment
   value:
@@ -3786,3 +3848,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

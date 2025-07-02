@@ -204,7 +204,8 @@ tasks:
       id: a76fc659-c352-4025-88c6-1dff4bc36b6d
       version: -1
       name: PAN-OS - Block Malicious URL Category
-      description: Creates a custom block policy rule to block communication to URLs in this category.
+      description: Creates a custom block policy rule to block communication to URLs
+        in this category.
       script: '|||pan-os-custom-block-rule'
       type: regular
       iscommand: true
@@ -615,7 +616,8 @@ tasks:
       id: 42127c8f-922d-4c5c-8b7a-4e428e6b2f11
       version: -1
       name: PAN-OS - Block Malicious URL Category
-      description: Creates a custom block policy rule to block communication to URLs in this category.
+      description: Creates a custom block policy rule to block communication to URLs
+        in this category.
       script: '|||pan-os-custom-block-rule'
       type: regular
       iscommand: true
@@ -875,3 +877,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -12666,6 +12666,92 @@ def find_and_remove_sensitive_text(text, pattern):
     return
 
 
+def execute_polling_command(
+    command_name,
+    args,
+    using_brand=None,
+    polling_interval_arg_name="interval_in_seconds",
+    default_polling_interval=30,
+    polling_timeout_arg_name="timeout_in_seconds",
+    default_polling_timeout=600,
+):
+    r"""
+    Continuously executes a specified command until the command indicates polling is done or a
+    timeout is reached.
+    :param command_name: The name of the initial Demisto command to execute.
+    :type command_name: ``str``
+    :param args: A dictionary of arguments to pass to the command.
+    :type args: ``dict``
+    :param using_brand: The optional ID of the integration to use.
+    :type using_brand: ``str``
+    :param polling_interval_arg_name: The name of the argument in 'args' that specifies the polling interval in seconds.
+    :type polling_interval_arg_name: ``str``
+    :param default_polling_interval: The default polling interval in seconds if not specified in 'args'.
+    :type default_polling_interval: ``int``
+    :param polling_timeout_arg_name: The name of the argument in 'args' that specifies the polling timeout in seconds.
+    :type polling_timeout_arg_name: ``str``
+    :param default_polling_timeout: The default polling timeout in seconds if not specified in 'args'.
+    :type default_polling_timeout: ``int``
+    :return: A list of CommandResults objects containing the human-readable output and context outputs from each
+             successful command execution. If an error occurs, a single CommandResults object with an error entry type is returned.
+    :rtype: ``list[CommandResults]`` or ``CommandResults``
+    :raises DemistoException: If no command result entry is received, or if the polling times out.
+    """
+    polling_interval = arg_to_number(args.get(polling_interval_arg_name)) or default_polling_interval
+    polling_timeout =  arg_to_number(args.get(polling_timeout_arg_name)) or default_polling_timeout
+
+    if using_brand:
+        args["using-brand"] = using_brand
+
+    command_results = []
+    times_ran = 0
+    start_time = time.time()
+
+    demisto.debug("Executing command: {command_name} with polling interval: {polling_interval} and timeout: {polling_timeout}.".format(
+        command_name=command_name, polling_interval=polling_interval, polling_timeout=polling_timeout))
+
+    while time.time() - start_time < polling_timeout:
+        execution_results = demisto.executeCommand(command_name, args)
+        times_ran += 1
+        demisto.debug("Executed {times_ran} command {command_name} with args: {args}. Got results: {execution_results}.".format(
+            command_name=command_name, args=args, times_ran=times_ran, execution_results=execution_results))
+
+        if not execution_results:
+            raise DemistoException("Got no command result entry for command: {command_name} with args: {args}.".format(
+                command_name=command_name, args=args))
+
+        execution_result = execution_results[0]
+        if is_error(execution_result):
+            error_message = get_error(execution_result)
+            demisto.debug("Failed to run command: {command_name} with args: {args}. Error: {error_message}.".format(
+                command_name=command_name, args=args, error_message=error_message))
+            return CommandResults(readable_output=error_message, entry_type=EntryType.ERROR)
+
+        context_output = execution_result.get("EntryContext")
+        human_readable = execution_result.get("HumanReadable", "")
+        if context_output or human_readable:
+            demisto.debug("Appending command results with context: {context_output} and human-readable: {human_readable}.".format(
+                context_output=context_output, human_readable=human_readable))
+            command_results.append(CommandResults(readable_output=human_readable, outputs=context_output))
+
+        metadata = execution_result.get("Metadata", {})
+        demisto.debug("Command: {command_name} has entry metadata: {metadata}.".format(command_name=command_name, metadata=metadata))
+        if not metadata.get("polling"):
+            demisto.debug("Finished running command: {command_name} with args: {args}. Returning results to war room.".format(
+                command_name=command_name, args=args))
+            return command_results
+
+        command_name = metadata.get("pollingCommand", command_name)
+        args = metadata.get("pollingArgs", {})
+        if using_brand:
+            args["using-brand"] = using_brand
+
+        demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(polling_interval=polling_interval))
+        time.sleep(polling_interval)  # pylint: disable=E9003
+
+    raise DemistoException("Timed out waiting for command: {command_name}.".format(command_name=command_name))
+
+
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################

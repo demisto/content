@@ -1,7 +1,10 @@
 id: Search And Block Software - Generic
 version: -1
 name: Search And Block Software - Generic
-description: "This playbook will search a file or process activity of a software by a given image file name. The analyst can then choose the files to block.\nThe following integrations are supported:\n\n- Cortex XDR XQL Engine \n- Microsoft Defender For Endpoint"
+description: "This playbook will search a file or process activity of a software by
+  a given image file name. The analyst can then choose the files to block.\nThe following
+  integrations are supported:\n\n- Cortex XDR XQL Engine \n- Microsoft Defender For
+  Endpoint"
 starttaskid: "0"
 tasks:
   "0":
@@ -137,7 +140,8 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: name.exe
-        tooltip: the software file name. NOTICE - name case is insensitive and it searches every file that contains the given image name
+        tooltip: the software file name. NOTICE - name case is insensitive and it
+          searches every file that contains the given image name
         readonly: false
       - id: "1"
         label: ""
@@ -151,7 +155,9 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: 7 days
-        tooltip: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+        tooltip: 'Time in relative date or range format (for example: "1 day", "3
+          weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56
+          +02:00"). The default is the last 24 hours.'
         readonly: false
       title: Please provide a software name to block and a timeframe
       description: ""
@@ -202,7 +208,9 @@ tasks:
       id: 51fcc25e-607e-43af-899b-d4e19570ddd0
       version: -1
       name: Cortex XDR - Search And Block Software - XQL Engine
-      description: This playbook will search a file or process activity of a software by a given image file name using Cortex XDR XQL Engine. The analyst can then choose the files to block.
+      description: This playbook will search a file or process activity of a software
+        by a given image file name using Cortex XDR XQL Engine. The analyst can then
+        choose the files to block.
       playbookName: Cortex XDR - Search And Block Software - XQL Engine
       type: playbook
       iscommand: false
@@ -347,7 +355,9 @@ tasks:
       id: 6c6d4e63-db04-452b-8862-29e7093753f5
       version: -1
       name: MDE - Search And Block Software
-      description: This playbook will search a file or process activity of a software by a given image file name using Microsoft Defender For Endpoint. The analyst can then choose the files to block.
+      description: This playbook will search a file or process activity of a software
+        by a given image file name using Microsoft Defender For Endpoint. The analyst
+        can then choose the files to block.
       playbookName: MDE - Search And Block Software
       type: playbook
       iscommand: false
@@ -525,12 +535,15 @@ inputs:
 - key: TimeFrame
   value: {}
   required: false
-  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks
+    ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The
+    default is the last 24 hours.'
   playbookInputQuery:
 - key: Indicator Expiration
   value: {}
   required: false
-  description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
+  description: 'DateTime string indicating when the indicator expires. Format: (<number>
+    <time unit>, e.g., 12 hours, 7 days).'
   playbookInputQuery:
 outputs: []
 tests:
@@ -541,3 +554,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

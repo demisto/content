@@ -179,7 +179,8 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: Hostname of the machine on which the file is located for PS remote it can also be an IP address.
+  description: Hostname of the machine on which the file is located for PS remote
+    it can also be an IP address.
   playbookInputQuery:
 - key: Path
   value: {}
@@ -236,3 +237,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

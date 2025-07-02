@@ -100,7 +100,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if there’s an active instance of the CSCDomainManager integration enabled and input is defined.
+      description: Checks if there’s an active instance of the CSCDomainManager integration
+        enabled and input is defined.
       id: d9197b1e-217d-4dca-88e2-e4ba3a9b1a9c
       iscommand: false
       name: Is CSC Domain Manager enabled and Input defined?
@@ -799,3 +800,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

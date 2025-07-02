@@ -1,7 +1,8 @@
 id: ServiceNow - Ticket Management
 version: -1
 name: ServiceNow - Ticket Management
-description: '`ServiceNow - Ticket Management` allows you to open a new ticket or comment on an existing ticket.'
+description: '`ServiceNow - Ticket Management` allows you to open a new ticket or
+  comment on an existing ticket.'
 starttaskid: "0"
 tasks:
   "0":
@@ -166,7 +167,8 @@ tasks:
       id: c45fcc66-2992-470f-8810-2ac6f6fa4640
       version: -1
       name: Whether to open a ticket for this incident?
-      description: Checks whether to open a new ticket or add a comment to an existing ticket.
+      description: Checks whether to open a new ticket or add a comment to an existing
+        ticket.
       type: condition
       iscommand: false
       brand: ""
@@ -395,7 +397,8 @@ tasks:
       id: d3c1b2c3-5732-457b-8c1e-fe3c8d43c328
       version: -1
       name: Whether to append a new comment to the ticket for each alert?
-      description: Checks if a new comment should be appended to the ticket for each alert.
+      description: Checks if a new comment should be appended to the ticket for each
+        alert.
       type: condition
       iscommand: false
       brand: ""
@@ -594,7 +597,8 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: The impact for the new ticket. Leave empty for ServiceNow default impact.
+        tooltip: The impact for the new ticket. Leave empty for ServiceNow default
+          impact.
         readonly: false
       - id: "3"
         label: ""
@@ -608,7 +612,8 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+        tooltip: The urgency of the new ticket. Leave empty for ServiceNow default
+          urgency.
         readonly: false
       - id: "4"
         label: ""
@@ -622,7 +627,8 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: The severity of the new ticket. Leave empty for ServiceNow default severity.
+        tooltip: The severity of the new ticket. Leave empty for ServiceNow default
+          severity.
         readonly: false
       - id: "5"
         label: ""
@@ -636,7 +642,8 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+        tooltip: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+          "sc_request", "sc_task", or "sc_req_item". Default is "incident".
         readonly: false
       - id: "6"
         label: ""
@@ -804,7 +811,8 @@ inputs:
 - key: 'serviceNowSeverity '
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  description: The severity of the new ticket. Leave empty for ServiceNow default
+    severity.
   playbookInputQuery:
 - key: CommentToAdd
   value: {}
@@ -814,13 +822,15 @@ inputs:
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
   playbookInputQuery:
 - key: addCommentPerEndpoint
   value:
     simple: "True"
   required: false
-  description: 'Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  description: 'Whether to add a new comment to the ticket for each endpoint in the
+    incident. Possible values: True/False.'
   playbookInputQuery:
 - key: serviceNowShortDescription
   value: {}
@@ -830,7 +840,8 @@ inputs:
 - key: Action
   value: {}
   required: false
-  description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
+  description: 'Whether to open a new ticket or to add a new comment. Possible values:
+    NewTicket/AddComment.'
   playbookInputQuery:
 - key: serviceNowAssignmentGroup
   value: {}
@@ -852,3 +863,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

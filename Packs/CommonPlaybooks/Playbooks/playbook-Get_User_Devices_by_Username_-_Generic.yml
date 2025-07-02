@@ -223,7 +223,8 @@ tasks:
       id: 7f8b6c8c-f41b-4dcb-8b8b-7aca28f4a929
       version: -1
       name: GSuiteAdmin enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -324,7 +325,8 @@ tasks:
       id: 43cebc52-17a9-417a-8b2f-9b4f9aba01b9
       version: -1
       name: Jamf Pro - Get computer details
-      description: Matches computers by specific characteristics and returns general data on each of the computers.
+      description: Matches computers by specific characteristics and returns general
+        data on each of the computers.
       script: jamf v2|||jamf-get-computer-by-match
       type: regular
       iscommand: true
@@ -360,7 +362,8 @@ tasks:
       id: e7ef5ffc-3774-47a7-8703-65b270b9c86d
       version: -1
       name: jamf v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -400,7 +403,8 @@ tasks:
       id: 7810b5de-6dcc-4003-8d47-66daf1804f68
       version: -1
       name: Jamf Pro - Get mobile device details
-      description: Matches mobile devices by specific characteristics and returns general data on each one of the mobile devices.
+      description: Matches mobile devices by specific characteristics and returns
+        general data on each one of the mobile devices.
       script: '|||jamf-get-mobile-device-by-match'
       type: regular
       iscommand: true
@@ -527,7 +531,8 @@ tasks:
       id: 31e75795-67a1-413d-8c95-e82a2d24c709
       version: -1
       name: Cortex XDR IR enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -566,7 +571,11 @@ tasks:
       id: 65bab14c-a758-4bfc-83a4-6147f0a3cf3a
       version: -1
       name: Cortex XDR - Get device details
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: Cortex XDR - IR|||xdr-get-endpoints
       type: regular
       iscommand: true
@@ -664,7 +673,8 @@ tasks:
       id: 03a8ebf7-df74-4c8e-8230-cfc2c463d7d6
       version: -1
       name: Microsoft Defender Advanced Threat Protection enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -801,7 +811,8 @@ tasks:
       id: 279c5cef-b588-4af1-8454-a121c3615b6f
       version: -1
       name: ServiceNow v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1254,7 +1265,8 @@ tasks:
       id: d292e8d7-86db-428f-8513-e5035a1a6947
       version: -1
       name: Active Directory Query v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1293,7 +1305,9 @@ tasks:
       id: 5970a949-ae5e-44dc-8057-f44414377bb1
       version: -1
       name: AD - Get user details
-      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -1502,7 +1516,8 @@ tasks:
       id: 4088218f-acad-42fa-82e0-e05649ecac4a
       version: -1
       name: Get computer information
-      description: 'Returns the "general" subset of a specific computer, e.g.: name, MAC address, IP, serial number, UDID, etc.'
+      description: 'Returns the "general" subset of a specific computer, e.g.: name,
+        MAC address, IP, serial number, UDID, etc.'
       script: '|||jamf-get-computer-by-id'
       type: regular
       iscommand: true
@@ -1539,7 +1554,8 @@ tasks:
       id: b380fc9d-1597-4148-88d0-ba38680246cc
       version: -1
       name: Get mobile device information
-      description: 'Returns the "general" subset of a specific mobile device, e.g.: name, MAC address, IP, serial number, UDID. etc.'
+      description: 'Returns the "general" subset of a specific mobile device, e.g.:
+        name, MAC address, IP, serial number, UDID. etc.'
       script: '|||jamf-get-mobile-device-by-id'
       type: regular
       iscommand: true
@@ -1595,7 +1611,9 @@ tasks:
       key:
         simple: JamfComputers
       value:
-        simple: '${JAMF.Computer={Name: val[''name''], SerialNumber: val[''serial_number''], ID: val[''id''], Model: val[''platform''], MACAddress: val[''mac_address''], OS: '''', Integration: ''jamf v2''}}'
+        simple: '${JAMF.Computer={Name: val[''name''], SerialNumber: val[''serial_number''],
+          ID: val[''id''], Model: val[''platform''], MACAddress: val[''mac_address''],
+          OS: '''', Integration: ''jamf v2''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1639,7 +1657,9 @@ tasks:
       key:
         simple: JamfMobileDevices
       value:
-        simple: '${JAMF.MobileDevice={Name: val[''name''], SerialNumber: val[''serial_number''], ID: val[''id''], Model: val[''model''], MACAddress: val[''wifi_mac_address''], OS: '''', Integration: ''jamf v2''}}'
+        simple: '${JAMF.MobileDevice={Name: val[''name''], SerialNumber: val[''serial_number''],
+          ID: val[''id''], Model: val[''model''], MACAddress: val[''wifi_mac_address''],
+          OS: '''', Integration: ''jamf v2''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1780,7 +1800,9 @@ tasks:
       key:
         simple: SnowComputers
       value:
-        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID: val[''ID''], Model: '''', MACAddress: '''', OS: val[''OperatingSystem''], Integration: ''ServiceNow v2''}}'
+        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID:
+          val[''ID''], Model: '''', MACAddress: '''', OS: val[''OperatingSystem''],
+          Integration: ''ServiceNow v2''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1867,7 +1889,9 @@ tasks:
       key:
         simple: GoogleDevices
       value:
-        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber: val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], MACAddress: val[''wifiMacAddress''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
+        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber:
+          val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], MACAddress:
+          val[''wifiMacAddress''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2043,7 +2067,10 @@ tasks:
       key:
         simple: MSDefenderDevices
       value:
-        simple: '${MicrosoftATP.UserMachine.Machines={Name: val[''ComputerDNSName''], SerialNumber: '''', ID: val[''AADDeviceID''], Model: '''', MACAddress: '''', OS: val[''OSPlatform''], Integration: ''Microsoft Defender Advanced Threat Protection''}}'
+        simple: '${MicrosoftATP.UserMachine.Machines={Name: val[''ComputerDNSName''],
+          SerialNumber: '''', ID: val[''AADDeviceID''], Model: '''', MACAddress: '''',
+          OS: val[''OSPlatform''], Integration: ''Microsoft Defender Advanced Threat
+          Protection''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2130,7 +2157,10 @@ tasks:
       key:
         simple: XDREndpoints
       value:
-        simple: '${PaloAltoNetworksXDR.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: val[''mac_address''], OS: val[''os_type''], Integration: ''Cortex XDR - IR''}}'
+        simple: '${PaloAltoNetworksXDR.Endpoint={Name: val[''endpoint_name''], SerialNumber:
+          '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress:
+          val[''mac_address''], OS: val[''os_type''], Integration: ''Cortex XDR -
+          IR''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2155,7 +2185,8 @@ tasks:
       id: 0eea89b2-b09a-4dae-8356-31b186e1613a
       version: -1
       name: Cortex Core IR enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2225,7 +2256,11 @@ tasks:
       id: f9afe925-5210-4714-805f-e076e97c9973
       version: -1
       name: Cortex Core - Get device details
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -2321,7 +2356,9 @@ tasks:
       key:
         simple: XDREndpoints
       value:
-        simple: '${Core.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: val[''mac_address''], OS: val[''os_type''], Integration: ''Cortex Core - IR''}}'
+        simple: '${Core.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''',
+          ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: val[''mac_address''],
+          OS: val[''os_type''], Integration: ''Cortex Core - IR''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2410,7 +2447,8 @@ outputs:
 - contextPath: GSuite.MobileDevices.MobileListObjects.resourceId
   description: The unique ID the API service uses to identify the mobile device.
 - contextPath: GSuite.MobileDevices.MobileListObjects.deviceId
-  description: The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier.
+  description: The serial number for a Google Sync mobile device. For Android and
+    iOS devices, this is a software-generated unique identifier.
 - contextPath: GSuite.MobileDevices.MobileListObjects.name
   description: A list of the owner's usernames.
 - contextPath: GSuite.MobileDevices.MobileListObjects.email
@@ -2426,9 +2464,11 @@ outputs:
 - contextPath: GSuite.MobileDevices.MobileListObjects.hardwareId
   description: The IMEI/MEID unique identifier for Android hardware.
 - contextPath: GSuite.MobileDevices.MobileListObjects.firstSync
-  description: The date and time the mobile device was initially synchronized with the policy settings in the Admin console.
+  description: The date and time the mobile device was initially synchronized with
+    the policy settings in the Admin console.
 - contextPath: GSuite.MobileDevices.MobileListObjects.lastSync
-  description: The date and time the mobile device was last synchronized with the policy settings in the Admin console.
+  description: The date and time the mobile device was last synchronized with the
+    policy settings in the Admin console.
 - contextPath: GSuite.MobileDevices.MobileListObjects.userAgent
   description: Information about the mobile device such as the operating system version.
 - contextPath: GSuite.MobileDevices.MobileListObjects.serialNumber
@@ -2633,9 +2673,11 @@ outputs:
 - contextPath: MicrosoftATP.UserMachine.Machines.ComputerDNSName
   description: The machine DNS name.
 - contextPath: MicrosoftATP.UserMachine.Machines.FirstSeen
-  description: The first date and time the machine was observed by Microsoft Defender ATP.
+  description: The first date and time the machine was observed by Microsoft Defender
+    ATP.
 - contextPath: MicrosoftATP.UserMachine.Machines.LastSeen
-  description: The last date and time the machine was observed by Microsoft Defender ATP.
+  description: The last date and time the machine was observed by Microsoft Defender
+    ATP.
 - contextPath: MicrosoftATP.UserMachine.Machines.OSPlatform
   description: The operating system platform.
 - contextPath: MicrosoftATP.UserMachine.Machines.OSVersion
@@ -2724,3 +2766,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

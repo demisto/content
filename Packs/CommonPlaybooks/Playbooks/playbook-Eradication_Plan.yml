@@ -3,7 +3,11 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Eradication Plan
-description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n* Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+description: "This playbook handles all the eradication actions available with Cortex
+  XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n
+  * Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently,
+  the playbook supports terminating a process by name)  \n\nNote: The playbook inputs
+  enable manipulating the execution flow. Read the input descriptions for details."
 starttaskid: "0"
 tasks:
   "0":
@@ -113,7 +117,8 @@ tasks:
             - operator: uniq
         fieldassociated: ""
         placeholder: ""
-        tooltip: Please consider carefully whether the file will be needed for further investigation before deleting it.
+        tooltip: Please consider carefully whether the file will be needed for further
+          investigation before deleting it.
         readonly: false
       - id: "2"
         label: ""
@@ -138,7 +143,8 @@ tasks:
                   iscontext: true
         fieldassociated: ""
         placeholder: ""
-        tooltip: Please consider carefully whether the process termination could impact system processes with a similar name.
+        tooltip: Please consider carefully whether the process termination could impact
+          system processes with a similar name.
         readonly: false
       title: Which Eradication actions would you like to perform?
       description: Select which eradication actions to perform.
@@ -236,7 +242,9 @@ tasks:
       id: 4c625140-7998-49e8-82c5-aeee98dfc0ca
       version: -1
       name: Eradication Plan - Delete File
-      description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook handles the deletion of files as a crucial step in the eradication action."
+      description: "This playbook is one of the sub-playbooks in the eradication plan.
+        \nThis playbook handles the deletion of files as a crucial step in the eradication
+        action."
       playbookName: Eradication Plan - Delete File
       type: playbook
       iscommand: false
@@ -311,7 +319,9 @@ tasks:
       id: 4064fb9d-3562-4426-8567-806aac320392
       version: -1
       name: Eradication Plan - Reset Password
-      description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook handles the resetting of users' passwords as a crucial step in the containment action."
+      description: "This playbook is one of the sub-playbooks in the eradication plan.
+        \nThis playbook handles the resetting of users' passwords as a crucial step
+        in the containment action."
       playbookName: Eradication Plan - Reset Password
       type: playbook
       iscommand: false
@@ -383,7 +393,9 @@ tasks:
       id: f6891014-dec9-4d8f-8bcf-9394440fff4c
       version: -1
       name: Eradication Plan - Terminate Process
-      description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook handles the termination of the processes as a crucial step in the eradication action."
+      description: "This playbook is one of the sub-playbooks in the eradication plan.
+        \nThis playbook handles the termination of the processes as a crucial step
+        in the eradication action."
       playbookName: Eradication Plan - Terminate Process
       type: playbook
       iscommand: false
@@ -755,7 +767,8 @@ inputs:
       root: foundIncidents.CustomFields
       accessor: initiatorpath
   required: false
-  description: The file path for the file deletion and for the process termination task.
+  description: The file path for the file deletion and for the process termination
+    task.
   playbookInputQuery:
 - key: Username
   value:
@@ -769,7 +782,9 @@ inputs:
   value:
     simple: Delete
   required: false
-  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \nFor example, choosing 'Delete' ignores the 'Quarantine file' task under the containment playbook and executes only file deletion."
+  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts.
+    \nFor example, choosing 'Delete' ignores the 'Quarantine file' task under the
+    containment playbook and executes only file deletion."
   playbookInputQuery:
 - key: UserRemediation
   value:
@@ -781,7 +796,10 @@ inputs:
   value:
     simple: Name
   required: false
-  description: "Choose 'PID' to terminate the process using the Process ID, or 'Name' to terminate the process using its name.\nPlease note that providing the file path is mandatory for the process termination. \nIf 'PID' is chosen, the input `ProcessID` should not be empty; otherwise, the termination will not proceed."
+  description: "Choose 'PID' to terminate the process using the Process ID, or 'Name'
+    to terminate the process using its name.\nPlease note that providing the file
+    path is mandatory for the process termination. \nIf 'PID' is chosen, the input
+    `ProcessID` should not be empty; otherwise, the termination will not proceed."
   playbookInputQuery:
 - key: ProcessID
   value: {}
@@ -803,3 +821,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

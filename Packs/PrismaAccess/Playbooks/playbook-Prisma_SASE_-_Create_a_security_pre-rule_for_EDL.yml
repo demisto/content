@@ -3,7 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Prisma SASE - Create a security pre-rule for EDL
-description: This playbook helps to create a security rule to block indicators from an EDL. This playbook should run only once to setup the EDL object and its rule.
+description: This playbook helps to create a security rule to block indicators from
+  an EDL. This playbook should run only once to setup the EDL object and its rule.
 starttaskid: "0"
 tasks:
   "0":
@@ -168,7 +169,8 @@ tasks:
       id: 869ba2b6-659c-4c6b-8236-9d288efaf33f
       version: -1
       name: Check if the source URL was provided and check if a EDL object was specified.
-      description: Check if the source URL was provided and check if a EDL object was specified.
+      description: Check if the source URL was provided and check if a EDL object
+        was specified.
       type: condition
       iscommand: false
       brand: ""
@@ -379,7 +381,8 @@ tasks:
       id: 63ef938f-658c-4730-8518-5139aee82af9
       version: -1
       name: Prisma SASE - Create or Edit Security Policy Rule
-      description: "This playbook handles the creation or editing of the Security Policy Rule for Prisma SASE integration. \n"
+      description: "This playbook handles the creation or editing of the Security
+        Policy Rule for Prisma SASE integration. \n"
       playbookName: Prisma SASE - Create or Edit Security Policy Rule
       type: playbook
       iscommand: false
@@ -505,7 +508,8 @@ inputs:
 - key: TSGID
   value: {}
   required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
   playbookInputQuery:
 - key: Folder
   value:
@@ -518,7 +522,8 @@ inputs:
 - key: URL
   value: {}
   required: false
-  description: The source URL for the External Dynamic List. If the chosen type is ip/url/domain, this value must be provided.
+  description: The source URL for the External Dynamic List. If the chosen type is
+    ip/url/domain, this value must be provided.
   playbookInputQuery:
 - key: EDLObjectName
   value: {}
@@ -553,7 +558,7 @@ inputs:
   description: |-
     The predefined IP list. If the type is predefined_ip, a value must be provided.
     Possible values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: URLListName
   value: {}
   required: false
@@ -639,3 +644,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

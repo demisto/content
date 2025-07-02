@@ -3,7 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Detonate and Analyze File - Generic
-description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon Intelligence Sandbox, JoeSecurity, and Wildfire. '
+description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes.
+  Currently supported sandboxes are Falcon Intelligence Sandbox, JoeSecurity, and
+  Wildfire. '
 starttaskid: "0"
 tasks:
   "0":
@@ -44,7 +46,8 @@ tasks:
       id: 1efe544b-f18b-467c-8a8c-de784c146ef9
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
-      description: This playbook uploads, detonates, and analyzes files for the CrowdStrike Falcon Intelligence Sandbox.
+      description: This playbook uploads, detonates, and analyzes files for the CrowdStrike
+        Falcon Intelligence Sandbox.
       playbookName: CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
       type: playbook
       iscommand: false
@@ -65,7 +68,8 @@ tasks:
                   simple: Windows,Linux,Android
               mapped_values:
                 value:
-                  simple: '160: Windows 10,300: Linux Ubuntu 16.04,300: Linux Ubuntu 16.04'
+                  simple: '160: Windows 10,300: Linux Ubuntu 16.04,300: Linux Ubuntu
+                    16.04'
       File:
         complex:
           root: inputs.File
@@ -172,7 +176,8 @@ tasks:
       id: 1e2efc1c-d878-46c7-835f-ea5c802dd878
       version: -1
       name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
-      description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration is available.
+      description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration
+        is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -401,7 +406,8 @@ tasks:
       id: e0390fd8-4e73-42bc-8fdb-8480bf9af4d9
       version: -1
       name: Is JoeSecurity sandbox enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -440,7 +446,9 @@ tasks:
       id: 723d2bf6-e92a-4ac9-851c-c1227ce3b386
       version: -1
       name: Get a full report from Joe Sandbox - JSON
-      description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
+      description: Download a resource belonging to a report. This can be the full
+        report, dropped binaries, etc. See integration README for the full supported
+        report types.
       script: '|||joe-download-report'
       type: regular
       iscommand: true
@@ -531,7 +539,9 @@ tasks:
       id: 0176d511-3e34-44ea-8f79-518314ddca71
       version: -1
       name: Get a full report from Joe Sandbox - PDF
-      description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
+      description: Download a resource belonging to a report. This can be the full
+        report, dropped binaries, etc. See integration README for the full supported
+        report types.
       script: '|||joe-download-report'
       type: regular
       iscommand: true
@@ -773,7 +783,12 @@ tasks:
       id: 9bdf9a41-2a91-4582-8640-d40a3401e20d
       version: -1
       name: Detonate File - JoeSecurity V2
-      description: The Detonate File using Joe Sandbox Process is designed to streamline and enhance the security assessment of files. This automated system accepts a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology, and returns comprehensive results as attachments to the user. The process is designed to be swift, efficient, and secure, providing users with valuable insights into potential threats and vulnerabilities within their files.
+      description: The Detonate File using Joe Sandbox Process is designed to streamline
+        and enhance the security assessment of files. This automated system accepts
+        a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology,
+        and returns comprehensive results as attachments to the user. The process
+        is designed to be swift, efficient, and secure, providing users with valuable
+        insights into potential threats and vulnerabilities within their files.
       playbookName: Detonate File - JoeSecurity V2
       type: playbook
       iscommand: false
@@ -1007,3 +1022,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

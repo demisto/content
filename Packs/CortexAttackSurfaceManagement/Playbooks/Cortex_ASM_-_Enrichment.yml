@@ -42,7 +42,8 @@ tasks:
       id: 3d707735-d478-4cdf-85c1-d47bd66ccaa9
       version: -1
       name: Is there an IP address?
-      description: Determines if the IP address has been supplied to proceed with cloud enrichment.
+      description: Determines if the IP address has been supplied to proceed with
+        cloud enrichment.
       type: condition
       iscommand: false
       brand: ""
@@ -69,7 +70,8 @@ tasks:
                     period_matches_newline: {}
                     regex:
                       value:
-                        simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+                        simple: 
+                          \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
                     unpack_matches: {}
             iscontext: true
           right:
@@ -128,7 +130,8 @@ tasks:
       id: 6e2ad069-172e-49a7-8c53-fecb4192aa0c
       version: -1
       name: What provider is this service?
-      description: Determines which cloud provider the service is in order to direct to the correct enrichment.
+      description: Determines which cloud provider the service is in order to direct
+        to the correct enrichment.
       type: condition
       iscommand: false
       brand: ""
@@ -169,7 +172,8 @@ tasks:
                     period_matches_newline: {}
                     regex:
                       value:
-                        simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+                        simple: 
+                          \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
                     unpack_matches: {}
             iscontext: true
     - label: GCP
@@ -196,7 +200,8 @@ tasks:
                     period_matches_newline: {}
                     regex:
                       value:
-                        simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+                        simple: 
+                          \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
                     unpack_matches: {}
             iscontext: true
     - label: Azure
@@ -223,7 +228,8 @@ tasks:
                     period_matches_newline: {}
                     regex:
                       value:
-                        simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+                        simple: 
+                          \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
                     unpack_matches: {}
             iscontext: true
     - label: On Prem
@@ -250,7 +256,8 @@ tasks:
                     period_matches_newline: {}
                     regex:
                       value:
-                        simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+                        simple: 
+                          \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
                     unpack_matches: {}
             iscontext: true
     continueonerrortype: ""
@@ -276,7 +283,8 @@ tasks:
       id: a4bbd4e9-c556-4f78-8d71-2be2422c2869
       version: -1
       name: Is Cortex ASM enabled and is there a service?
-      description: Determines if the "Cortex Attack Surface Management" integration instance is configured and that there is a service to continue with enrichment.
+      description: Determines if the "Cortex Attack Surface Management" integration
+        instance is configured and that there is a service to continue with enrichment.
       type: condition
       iscommand: false
       brand: ""
@@ -475,7 +483,8 @@ tasks:
       id: 6b599107-d04c-48d3-8937-69cade7f45b5
       version: -1
       name: Cortex ASM - Tenable.io Enrichment
-      description: Given the IP address this playbook enriches Tenable.io information relevant to ASM alerts.
+      description: Given the IP address this playbook enriches Tenable.io information
+        relevant to ASM alerts.
       type: playbook
       iscommand: false
       brand: ""
@@ -559,7 +568,14 @@ tasks:
       id: 24a405bd-19b7-4939-8e38-73051778151d
       version: -1
       name: Infer whether service is used for development (vs. production)
-      description: Identify whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
+      description: Identify whether the service is a "development" server. Development
+        servers have no external users and run no production workflows. These servers
+        might be named "dev", but they might also be named "qa", "pre-production",
+        "user acceptance testing", or use other non-production terms. This automation
+        uses both public data visible to anyone (`active_classifications` as derived
+        by Xpanse ASM) as well as checking internal data for AI-learned indicators
+        of development systems (`asm_tags` as derived from integrations with non-public
+        systems).
       type: regular
       iscommand: false
       brand: ""
@@ -616,7 +632,8 @@ tasks:
       id: 198fca9b-3208-4963-8ccd-6292201daaec
       version: -1
       name: Cortex ASM - Azure Enrichment
-      description: Given the IP address, this playbook enriches Azure information relevant to ASM alerts.
+      description: Given the IP address, this playbook enriches Azure information
+        relevant to ASM alerts.
       type: playbook
       iscommand: false
       brand: ""
@@ -688,7 +705,8 @@ tasks:
       id: e379b4e3-09e6-4a51-84c0-fb173b7e7077
       version: -1
       name: Cortex ASM - Splunk Enrichment
-      description: 'Given the IP address this playbook enriches information from Splunk results relevant to ASM alerts. '
+      description: 'Given the IP address this playbook enriches information from Splunk
+        results relevant to ASM alerts. '
       type: playbook
       iscommand: false
       brand: ""
@@ -731,7 +749,8 @@ tasks:
       id: 8b76a3da-db92-4afb-8a73-3627346201e3
       version: -1
       name: Cortex ASM - Rapid7 Enrichment
-      description: Given the IP address this playbook enriches Rapid7 InsightVM (Nexpose) information relevant to ASM alerts.
+      description: Given the IP address this playbook enriches Rapid7 InsightVM (Nexpose)
+        information relevant to ASM alerts.
       type: playbook
       iscommand: false
       brand: ""
@@ -836,7 +855,8 @@ tasks:
       id: 98c5076b-2bdd-4917-8a00-33e583715c6d
       version: -1
       name: Cortex ASM - Qualys Enrichment
-      description: Given the IP address this playbook enriches information from Qualys assets.
+      description: Given the IP address this playbook enriches information from Qualys
+        assets.
       type: playbook
       iscommand: false
       brand: ""
@@ -879,7 +899,8 @@ tasks:
       id: 688122d2-9884-41c8-8e4b-73b5851621ca
       version: -1
       name: Cortex ASM - GCP Enrichment
-      description: Given the IP address this playbook enriches GCP information relevant to ASM alerts.
+      description: Given the IP address this playbook enriches GCP information relevant
+        to ASM alerts.
       type: playbook
       iscommand: false
       brand: ""
@@ -943,7 +964,8 @@ tasks:
       id: 40144735-a171-4df7-8e5a-8802b7e0f1c6
       version: -1
       name: Cortex ASM - Prisma Cloud Enrichment
-      description: Given the IP address this playbook enriches information from Prisma Cloud.
+      description: Given the IP address this playbook enriches information from Prisma
+        Cloud.
       type: playbook
       iscommand: false
       brand: ""
@@ -1175,7 +1197,8 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: 'Given the IP address this playbook enriches AWS information relevant to ASM alerts.'
+      description: 'Given the IP address this playbook enriches AWS information relevant
+        to ASM alerts.'
       playbookId: Cortex ASM - AWS Enrichment
     nexttasks:
       '#none#':
@@ -1256,7 +1279,8 @@ tasks:
       id: aa194035-bab0-4202-88b7-25304dacf7da
       version: -1
       name: Was there a result?
-      description: Determines if there was a result from the previous command to continue cloud enrichment.
+      description: Determines if there was a result from the previous command to continue
+        cloud enrichment.
       type: condition
       iscommand: false
       brand: ""
@@ -1516,7 +1540,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) systems for enrichment purposes.
+      description: This playbook is used to pull information from Cortex Endpoint
+        (XSIAM/XDR) systems for enrichment purposes.
       id: 2ae48aaf-19f1-4832-8697-a6f15278bc3d
       iscommand: false
       name: Cortex ASM - Cortex Endpoint Enrichment
@@ -1587,7 +1612,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Playbook to enriches Service ownership info in Azure and On-Prem Active Directory.
+      description: Playbook to enriches Service ownership info in Azure and On-Prem
+        Active Directory.
       id: d9a365c1-29a1-4e9f-8208-a789ac8ee7f5
       iscommand: false
       name: Cortex ASM - Active Directory Enrichment
@@ -1791,7 +1817,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if there was a result from the previous command to continue cloud enrichment.
+      description: Determines if there was a result from the previous command to continue
+        cloud enrichment.
       id: 1deb3e25-1a07-4a49-8d9a-196785020079
       iscommand: false
       name: Are provider and protocol fields populated?
@@ -1835,7 +1862,8 @@ inputs:
   required: false
   description: IP address of service
   playbookInputQuery:
-- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
+- description: If assuming roles for AWS, this is the name of the role to assume (should
+    be the same for all organizations).
   key: AWSAssumeRoleName
   playbookInputQuery:
   required: false
@@ -1852,3 +1880,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

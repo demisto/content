@@ -250,7 +250,8 @@ tasks:
       log-type:
         simple: threat
       query:
-        simple: (user.src eq ${SplitUsername}) or (user.dst eq ${SplitUsername}) and (time_generated in last-24-hrs)
+        simple: (user.src eq ${SplitUsername}) or (user.dst eq ${SplitUsername}) and
+          (time_generated in last-24-hrs)
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -684,7 +685,8 @@ tasks:
       id: 34e3a202-b333-4c2b-8e13-bb9d98121c96
       version: -1
       name: Is Cortex XDR integration enabled and user name is defined?
-      description: Checks if Cortex XDR integration is enabled and the user name is defined.
+      description: Checks if Cortex XDR integration is enabled and the user name is
+        defined.
       type: condition
       iscommand: false
       brand: ""
@@ -892,7 +894,8 @@ tasks:
       id: 04488cb1-1067-4a7a-8d91-5013b22d86aa
       version: -1
       name: Okta - User Investigation
-      description: This playbook performs an investigation on a specific user, using queries and logs from Okta.
+      description: This playbook performs an investigation on a specific user, using
+        queries and logs from Okta.
       playbookName: Okta - User Investigation
       type: playbook
       iscommand: false
@@ -1158,7 +1161,8 @@ tasks:
       id: 3a2b054d-f7b4-4576-8d76-2bc32cf07f96
       version: -1
       name: Is Cortex Core integration enabled and user name is defined?
-      description: Checks if Cortex XDR integration is enabled and the user name is defined.
+      description: Checks if Cortex XDR integration is enabled and the user name is
+        defined.
       type: condition
       iscommand: false
       brand: ""
@@ -1451,7 +1455,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether to search for failed logon logs from Siem? Can be False or True.
+  description: Whether to search for failed logon logs from Siem? Can be False or
+    True.
   playbookInputQuery:
 - key: ThreatLogSearch
   value:
@@ -1481,13 +1486,15 @@ inputs:
   value:
     simple: Last 1 days
   required: false
-  description: 'The Search Time for the QRadar search query. for example:  Last 1 days'
+  description: 'The Search Time for the QRadar search query. for example:  Last 1
+    days'
   playbookInputQuery:
 - key: AzureSearchTime
   value:
     simple: ago(1d)
   required: false
-  description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
+  description: 'The Search Time for the Azure Log Analytics search query. for example:
+    ago(1d)'
   playbookInputQuery:
 - key: ASN
   value: {}
@@ -1506,7 +1513,8 @@ outputs:
 - contextPath: ArraySize
   description: Number of XDR alert for the user.
 - contextPath: PermanentCountry
-  description: True if the user work from a permanent country from Okta. False if else.
+  description: True if the user work from a permanent country from Okta. False if
+    else.
   type: unknown
 - contextPath: UserDevices
   description: Devices used by the user from Okta.
@@ -1535,7 +1543,8 @@ outputs:
 - contextPath: QRadar.Search.Result
   description: 'The result of the QRadar search.'
 - contextPath: Splunk.Result
-  description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
+  description: The results of the Splunk search. The results are a JSON array, in
+    which each item is a Splunk event.
 - contextPath: NumOfFailedLogon
   description: Number of failed login.
   type: unknown
@@ -1553,3 +1562,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

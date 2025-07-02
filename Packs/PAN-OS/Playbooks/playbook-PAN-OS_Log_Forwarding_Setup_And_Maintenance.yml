@@ -97,7 +97,8 @@ tasks:
       id: 5b2f24d9-17a1-4c77-815a-d790c0e48565
       version: -1
       name: 'Add log forwarding profile to all rules '
-      description: Edit the rule and add a log forwarding profile. This overrides existing profiles.
+      description: Edit the rule and add a log forwarding profile. This overrides
+        existing profiles.
       script: '|||pan-os-edit-rule'
       type: regular
       iscommand: true
@@ -135,7 +136,8 @@ tasks:
       id: 382555b7-9ed7-483b-8545-d81f4ecb7e2e
       version: -1
       name: Is auto-commit defined?
-      description: Check whether the values provided in arguments are equal. If either of the arguments is missing, the value "no" is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments is missing, the value "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -171,7 +173,8 @@ tasks:
       id: 1c1fc4c9-32a2-4caa-8030-b9d6732f4eeb
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This is available if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This is available
+        if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -224,7 +227,8 @@ tasks:
       id: bfb7bb7b-a03d-4295-8160-8932a31ae6ac
       version: -1
       name: 'Should we override existing log forwarding profile?'
-      description: Check if we should override existing profiles, or only update rules with no profile defined.
+      description: Check if we should override existing profiles, or only update rules
+        with no profile defined.
       type: condition
       iscommand: false
       brand: ""
@@ -263,7 +267,8 @@ tasks:
       id: cd2c1788-157f-439f-8995-9f86101940bf
       version: -1
       name: Add log forwarding profile to rules that don't have it
-      description: Edit the rule and add a log forwarding profile. Update only rules that don't have a profile already defined.
+      description: Edit the rule and add a log forwarding profile. Update only rules
+        that don't have a profile already defined.
       script: '|||pan-os-edit-rule'
       type: regular
       iscommand: true
@@ -397,7 +402,8 @@ inputs:
   value:
     simple: log_forwarding_101
   required: true
-  description: The name of the log-forwarding object that will be attached to all of the rules.
+  description: The name of the log-forwarding object that will be attached to all
+    of the rules.
 - key: auto_commit
   value:
     simple: "yes"
@@ -425,3 +431,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

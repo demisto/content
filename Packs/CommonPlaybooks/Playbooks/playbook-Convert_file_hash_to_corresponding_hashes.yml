@@ -200,7 +200,8 @@ tasks:
       id: 65ff1c51-6bc1-4171-8bde-eb6ecb862f4e
       version: -1
       name: Get hashes by SHA1
-      description: Uses the SHA1 hash as a reference to check for other corresponding hashes of the same file.
+      description: Uses the SHA1 hash as a reference to check for other corresponding
+        hashes of the same file.
       script: '|||file'
       type: regular
       iscommand: true
@@ -237,7 +238,8 @@ tasks:
       id: 9e3c8b51-dbc6-464a-8af7-f5d43b663bd4
       version: -1
       name: Get hashes by MD5
-      description: Uses the MD5 hash as a reference to check for other corresponding hashes of the same file.
+      description: Uses the MD5 hash as a reference to check for other corresponding
+        hashes of the same file.
       script: '|||file'
       type: regular
       iscommand: true
@@ -275,7 +277,8 @@ tasks:
       id: 29ef7703-de75-4ff3-844c-a852e333bdbe
       version: -1
       name: Get Hashes by SHA256
-      description: Uses the SHA256 hash as a reference to check for other corresponding hashes of the same file.
+      description: Uses the SHA256 hash as a reference to check for other corresponding
+        hashes of the same file.
       script: '|||file'
       type: regular
       iscommand: true
@@ -851,3 +854,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

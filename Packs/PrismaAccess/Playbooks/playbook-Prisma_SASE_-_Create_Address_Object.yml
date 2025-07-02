@@ -3,7 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Prisma SASE - Create Address Object
-description: This playbook creates new address objects in the Prisma SASE Object section. Those objects can be used later on in other objects such as Security Rules.
+description: This playbook creates new address objects in the Prisma SASE Object section.
+  Those objects can be used later on in other objects such as Security Rules.
 starttaskid: "0"
 tasks:
   "0":
@@ -441,7 +442,8 @@ inputs:
 - key: TSGID
   value: {}
   required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
   playbookInputQuery:
 - key: Folder
   value:
@@ -473,7 +475,8 @@ inputs:
   value:
     simple: "50"
   required: false
-  description: "Default: 50 \nThis input controls the limit size for the get IP objects command.\nThis will help to avoid object duplicates in the systems.\n"
+  description: "Default: 50 \nThis input controls the limit size for the get IP objects
+    command.\nThis will help to avoid object duplicates in the systems.\n"
   playbookInputQuery:
 outputs:
 - contextPath: PrismaSase
@@ -501,3 +504,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

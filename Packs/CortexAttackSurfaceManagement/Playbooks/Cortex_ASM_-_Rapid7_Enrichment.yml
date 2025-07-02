@@ -1,7 +1,8 @@
 id: Cortex ASM - Rapid7 Enrichment
 version: -1
 name: Cortex ASM - Rapid7 Enrichment
-description: Given the IP address this playbook enriches Rapid7 InsightVM (Nexpose) information relevant to ASM alerts.
+description: Given the IP address this playbook enriches Rapid7 InsightVM (Nexpose)
+  information relevant to ASM alerts.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +43,9 @@ tasks:
       id: 966415f1-9310-4bd3-880e-c390f129dced
       version: -1
       name: Rapid7 - Nexpose - Enrichment
-      description: Given an IP address, this playbook searches Rapid7 Nexpose assets for an asset with the associated IP address to retrieve asset information and proceeds to return all associated tags with it.
+      description: Given an IP address, this playbook searches Rapid7 Nexpose assets
+        for an asset with the associated IP address to retrieve asset information
+        and proceeds to return all associated tags with it.
       playbookName: Rapid7 - Nexpose - Enrichment
       type: playbook
       iscommand: false
@@ -355,7 +358,8 @@ tasks:
       id: dcf271b7-2cab-47a4-847f-bc8b29e74d04
       version: -1
       name: Is Rapid7 Nexpose enabled?
-      description: Determines if the "Rapid7 Nexpose" integration instance is enabled in order to find assets and asset tags.
+      description: Determines if the "Rapid7 Nexpose" integration instance is enabled
+        in order to find assets and asset tags.
       type: condition
       iscommand: false
       brand: ""
@@ -1132,7 +1136,8 @@ tasks:
       id: 97673ffc-e9af-47df-8a21-d993d9051031
       version: -1
       name: Was enrichment performed?
-      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true
+        in the relevant flag variable.
       type: condition
       iscommand: false
       brand: ""
@@ -1257,3 +1262,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

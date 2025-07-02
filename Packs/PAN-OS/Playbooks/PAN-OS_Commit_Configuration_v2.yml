@@ -3,7 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: PAN-OS Commit Configuration v2
-description: Commit the PAN-OS Panorama or Firewall configuration. If specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
+description: Commit the PAN-OS Panorama or Firewall configuration. If specified as
+  Panorama, it also pushes the Policies to the specified Device Group in the instance.
 starttaskid: "0"
 tasks:
   "0":
@@ -44,7 +45,8 @@ tasks:
       id: 9c71e52d-9168-48c7-85bf-c1ed81ed2c16
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
-      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS enabled.
+      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS
+        enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -173,7 +175,8 @@ tasks:
       id: cbf70090-8353-41e4-8efb-3290bfd04bcb
       version: -1
       name: Push rules to the Panorama device group
-      description: Push rules from Palo Alto Panorama to the Palo Alto configured device group.
+      description: Push rules from Palo Alto Panorama to the Palo Alto configured
+        device group.
       script: '|||pan-os-push-to-device-group'
       type: regular
       iscommand: true
@@ -644,3 +647,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

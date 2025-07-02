@@ -1,7 +1,8 @@
 id: Okta - User Investigation
 version: -1
 name: Okta - User Investigation
-description: This playbook performs an investigation on a specific user, using queries and logs from Okta.
+description: This playbook performs an investigation on a specific user, using queries
+  and logs from Okta.
 starttaskid: "0"
 tasks:
   "0":
@@ -317,7 +318,9 @@ tasks:
       extend-context:
         simple: OktaSuspiciousActivities=
       filter:
-        simple: actor.alternateId eq "${inputs.UserEmail}" and (eventType eq "user.mfa.attempt_bypass" or eventType eq "user.account.reset_password" and outcome.result eq "FAILURE" and outcome.reason eq "User answered recovery question invalid")
+        simple: actor.alternateId eq "${inputs.UserEmail}" and (eventType eq "user.mfa.attempt_bypass"
+          or eventType eq "user.account.reset_password" and outcome.result eq "FAILURE"
+          and outcome.reason eq "User answered recovery question invalid")
       ignore-outputs:
         simple: "true"
       retry-count:
@@ -457,7 +460,10 @@ tasks:
       extend-context:
         simple: OktaUserAgentLogs=
       filter:
-        simple: actor.alternateId eq "${inputs.UserEmail}" and (client.userAgent.rawUserAgent co "python" or client.userAgent.rawUserAgent co "curl"  or client.userAgent.rawUserAgent co "axios" or client.userAgent.rawUserAgent co "httpie" or client.userAgent.rawUserAgent co "wget")
+        simple: actor.alternateId eq "${inputs.UserEmail}" and (client.userAgent.rawUserAgent
+          co "python" or client.userAgent.rawUserAgent co "curl"  or client.userAgent.rawUserAgent
+          co "axios" or client.userAgent.rawUserAgent co "httpie" or client.userAgent.rawUserAgent
+          co "wget")
       ignore-outputs:
         simple: "true"
       limit:
@@ -879,7 +885,9 @@ tasks:
       extend-context:
         simple: LogonLogs=
       filter:
-        simple: actor.alternateId eq "${inputs.UserEmail}" and (eventType eq "user.authentication.sso" and outcome.result eq "SUCCESS" or eventType eq "user.authentication.auth" and outcome.result eq "SUCCESS")
+        simple: actor.alternateId eq "${inputs.UserEmail}" and (eventType eq "user.authentication.sso"
+          and outcome.result eq "SUCCESS" or eventType eq "user.authentication.auth"
+          and outcome.result eq "SUCCESS")
       ignore-outputs:
         simple: "true"
       retry-count:
@@ -1144,7 +1152,9 @@ tasks:
       extend-context:
         simple: OktaFailedLogonLogs=
       filter:
-        simple: actor.alternateId eq "${inputs.UserEmail}" and (eventType eq "user.authentication.sso" and outcome.result eq "FAILURE" or eventType eq "user.authentication.auth" and outcome.result eq "FAILURE")
+        simple: actor.alternateId eq "${inputs.UserEmail}" and (eventType eq "user.authentication.sso"
+          and outcome.result eq "FAILURE" or eventType eq "user.authentication.auth"
+          and outcome.result eq "FAILURE")
       ignore-outputs:
         simple: "true"
       retry-count:
@@ -1469,7 +1479,9 @@ tasks:
       extend-context:
         simple: ASNfailedlogs=
       filter:
-        simple: securityContext.asNumber eq "${inputs.ASN}" and (eventType eq "user.authentication.sso" and outcome.result eq "FAILURE" or eventType eq "user.authentication.auth" and outcome.result eq "FAILURE")
+        simple: securityContext.asNumber eq "${inputs.ASN}" and (eventType eq "user.authentication.sso"
+          and outcome.result eq "FAILURE" or eventType eq "user.authentication.auth"
+          and outcome.result eq "FAILURE")
       ignore-outputs:
         simple: "true"
       retry-count:
@@ -1754,3 +1766,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

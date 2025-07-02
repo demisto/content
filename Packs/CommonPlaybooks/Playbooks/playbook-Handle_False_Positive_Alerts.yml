@@ -535,7 +535,8 @@ tasks:
       id: dd742739-f827-441e-8270-761550d10287
       version: -1
       name: Add file hash to allowed list
-      description: Adds requested files to allow list if they are not already on block list or allow list.
+      description: Adds requested files to allow list if they are not already on block
+        list or allow list.
       script: '|||core-allowlist-files'
       type: regular
       iscommand: true
@@ -784,7 +785,8 @@ tasks:
       id: 9fb1c47e-05b9-4e27-8981-fe3e98064f7d
       version: -1
       name: Whether to disable indicator IOC rule automatically?
-      description: "A condition to check whether to disable IOC automatically in Cortex Server."
+      description: "A condition to check whether to disable IOC automatically in Cortex
+        Server."
       type: condition
       iscommand: false
       brand: ""
@@ -926,3 +928,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

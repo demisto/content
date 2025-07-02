@@ -72,7 +72,9 @@ tasks:
       id: 454902e5-e762-4600-8be5-c5e40078caaa
       version: -1
       name: Update security profile to sinkhole traffic to the domains
-      description: Updates the anti-spyware profile that is applied to the rule/s to sinkhole traffic to domains from the DNS signature source specified in the DNSSignatureSource playbook input.
+      description: Updates the anti-spyware profile that is applied to the rule/s
+        to sinkhole traffic to domains from the DNS signature source specified in
+        the DNSSignatureSource playbook input.
       script: '|||pan-os-apply-dns-signature-policy'
       type: regular
       iscommand: true
@@ -115,7 +117,11 @@ tasks:
       id: eda4c8ea-03a8-4c4f-858b-9b970e80588f
       version: -1
       name: Commit changes
-      description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      description: Commits a configuration to the Palo Alto firewall or Panorama,
+        validates if a commit was successful if using polling="true" otherwise does
+        not validate if the commit was successful. Committing to Panorama does not
+        push the configuration to the firewalls. To push the configuration, run the
+        panorama-push-to-device-group command.
       script: '|||pan-os-commit'
       type: regular
       iscommand: true
@@ -156,7 +162,8 @@ tasks:
       id: 7144b4a8-b36c-44f8-86d2-e2928ce14916
       version: -1
       name: Match rule to traffic from primary internal DNS to public DNS
-      description: Tries to find a rule that allows DNS traffic from the primary internal DNS server to the public DNS server.
+      description: Tries to find a rule that allows DNS traffic from the primary internal
+        DNS server to the public DNS server.
       script: '|||pan-os-security-policy-match'
       type: regular
       iscommand: true
@@ -385,7 +392,10 @@ tasks:
       id: 64cc7b9e-62df-4dea-8159-6e172896cdaf
       version: -1
       name: Search for existing rule denying traffic to sinkhole
-      description: Searches for rules that apply to traffic to the sinkhole address. Although it's recommended to deny traffic to the sinkhole address, because packets are dropped anyway, the search also looks for allow rules too. This is done because the goal is to log traffic to it, so the action is irrelevant.
+      description: Searches for rules that apply to traffic to the sinkhole address.
+        Although it's recommended to deny traffic to the sinkhole address, because
+        packets are dropped anyway, the search also looks for allow rules too. This
+        is done because the goal is to log traffic to it, so the action is irrelevant.
       script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
@@ -489,7 +499,8 @@ tasks:
       id: 47fb9736-cc26-4baa-8647-9bba4fbcdccd
       version: -1
       name: Is there a secondary DNS server?
-      description: Checks if there's another DNS internal server configured in the playbook inputs.
+      description: Checks if there's another DNS internal server configured in the
+        playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -533,7 +544,8 @@ tasks:
       id: 04315d1e-bcfd-4cc8-837f-12390aa8f6ac
       version: -1
       name: Match rule to traffic from secondary internal DNS to public DNS
-      description: Tries to find a rule that allows DNS traffic from the primary internal DNS server to the public DNS server.
+      description: Tries to find a rule that allows DNS traffic from the primary internal
+        DNS server to the public DNS server.
       script: '|||pan-os-security-policy-match'
       type: regular
       iscommand: true
@@ -576,7 +588,10 @@ tasks:
       id: 1618c361-3718-444e-81ba-bc2f3457a9f0
       version: -1
       name: How many rules allow DNS from our internal servers?
-      description: If there are a primary and a secondary internal DNS servers, then there may be 2 separate rules that permit or block their traffic to the internet. If there are 2 rules - then the profiles of both of them will be edited and applied as needed.
+      description: If there are a primary and a secondary internal DNS servers, then
+        there may be 2 separate rules that permit or block their traffic to the internet.
+        If there are 2 rules - then the profiles of both of them will be edited and
+        applied as needed.
       type: condition
       iscommand: false
       brand: ""
@@ -916,7 +931,10 @@ tasks:
       id: 7dd5ba54-3323-4f7f-8fe0-a5058da934de
       version: -1
       name: Save rules allowing DNS in a new key
-      description: Saves the names of the security rules that allow DNS traffic outside, which were found by a session-match previously, in a new context key. This is task is done to normalize the data as we need to refer to that rule later on in the playbook.
+      description: Saves the names of the security rules that allow DNS traffic outside,
+        which were found by a session-match previously, in a new context key. This
+        is task is done to normalize the data as we need to refer to that rule later
+        on in the playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1019,7 +1037,9 @@ tasks:
       id: 74695c6e-5035-4e72-8412-fee6fda7c1f6
       version: -1
       name: Is the creation approved?
-      description: Gets approval to create a new rule that allows DNS traffic from the internal DNS server/s to the public DNS server being used. The user should know which public DNS they're using and they should provide it.
+      description: Gets approval to create a new rule that allows DNS traffic from
+        the internal DNS server/s to the public DNS server being used. The user should
+        know which public DNS they're using and they should provide it.
       type: condition
       iscommand: false
       brand: ""
@@ -1122,7 +1142,9 @@ tasks:
       id: 1bd5eda5-0cfc-47d4-862a-88fb64a8c99f
       version: -1
       name: Save new rule allowing DNS in a new key
-      description: Saves the name of the new security rule that has just been created to allow DNS traffic outside in a new context key. This is task is done to normalize the data as we need to refer to that rule later on in the playbook.
+      description: Saves the name of the new security rule that has just been created
+        to allow DNS traffic outside in a new context key. This is task is done to
+        normalize the data as we need to refer to that rule later on in the playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1221,7 +1243,8 @@ tasks:
       id: 5882ab7e-2537-4d7a-8a9d-ee972b9680e0
       version: -1
       name: Did you create the rule?
-      description: Asks the user whether they created the rule to allow DNS traffic or not.
+      description: Asks the user whether they created the rule to allow DNS traffic
+        or not.
       type: condition
       iscommand: false
       brand: ""
@@ -1254,7 +1277,8 @@ tasks:
       id: 821ddf4e-cfa2-40ac-82bb-1af3aae1587b
       version: -1
       name: Is PAN-OS enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1325,7 +1349,8 @@ tasks:
       id: c390ba73-0bd7-4eb9-823f-247f7631d497
       version: -1
       name: Is there an address object for the sinkhole address?
-      description: Checks whether there is an existing address object with the FQDN of sinkhole.paloaltonetworks.com.
+      description: Checks whether there is an existing address object with the FQDN
+        of sinkhole.paloaltonetworks.com.
       type: condition
       iscommand: false
       brand: ""
@@ -1428,7 +1453,9 @@ tasks:
       id: 7c148a00-fcbf-45d0-898f-120d003816e7
       version: -1
       name: Create a new address object for the sinkhole address
-      description: Creates an address object for the sinkhole FQDN. This is needed because the sinkhole IP rotates, and in order to create a rule that denies traffic to it, an address object is needed.
+      description: Creates an address object for the sinkhole FQDN. This is needed
+        because the sinkhole IP rotates, and in order to create a rule that denies
+        traffic to it, an address object is needed.
       script: '|||pan-os-create-address'
       type: regular
       iscommand: true
@@ -1438,7 +1465,8 @@ tasks:
       - "80"
     scriptarguments:
       description:
-        simple: The address that resolves to the current Palo Alto Networks Sinkhole IP, which constantly rotates.
+        simple: The address that resolves to the current Palo Alto Networks Sinkhole
+          IP, which constantly rotates.
       fqdn:
         simple: sinkhole.paloaltonetworks.com
       name:
@@ -1467,7 +1495,9 @@ tasks:
       id: 72cb80e2-f783-41ee-8843-571a2a08e917
       version: -1
       name: Is there a tag indicating that sinkhole is configured?
-      description: Checks whether there is a tag called "Sinkhole_Configured" in at least one rule that allows traffic from the internal DNS server to the public one.
+      description: Checks whether there is a tag called "Sinkhole_Configured" in at
+        least one rule that allows traffic from the internal DNS server to the public
+        one.
       type: condition
       iscommand: false
       brand: ""
@@ -1542,7 +1572,9 @@ tasks:
       id: 53cbc73d-45f4-4031-8705-bba6f212d03b
       version: -1
       name: Get the tags of the existing rules
-      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined Security Rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
       script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
@@ -1809,7 +1841,11 @@ tasks:
       id: c6b49830-d9dc-417b-8b05-81aa052d7aaf
       version: -1
       name: Commit the new tag
-      description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      description: Commits a configuration to the Palo Alto firewall or Panorama,
+        validates if a commit was successful if using polling="true" otherwise does
+        not validate if the commit was successful. Committing to Panorama does not
+        push the configuration to the firewalls. To push the configuration, run the
+        panorama-push-to-device-group command.
       script: '|||pan-os-commit'
       type: regular
       iscommand: true
@@ -1890,12 +1926,20 @@ inputs:
 - key: PrimaryInternalDNSServerIP
   value: {}
   required: true
-  description: The IP of the primary internal DNS server. Used to find a policy that matches the malicious DNS queries that go out from the internal DNS server to the firewall. The idea is to find a policy that allows DNS traffic in order to sinkhole that traffic when used for resolving malicious domains found in our signature source.
+  description: The IP of the primary internal DNS server. Used to find a policy that
+    matches the malicious DNS queries that go out from the internal DNS server to
+    the firewall. The idea is to find a policy that allows DNS traffic in order to
+    sinkhole that traffic when used for resolving malicious domains found in our signature
+    source.
   playbookInputQuery:
 - key: SecondaryInternalDNSServerIP
   value: {}
   required: false
-  description: Optional - the IP of the secondary internal DNS server. Used to find a policy that matches the malicious DNS queries that go out from the internal DNS server to the firewall. The idea is to find a policy that allows DNS traffic in order to sinkhole that traffic when used for resolving malicious domains found in our signature source.
+  description: Optional - the IP of the secondary internal DNS server. Used to find
+    a policy that matches the malicious DNS queries that go out from the internal
+    DNS server to the firewall. The idea is to find a policy that allows DNS traffic
+    in order to sinkhole that traffic when used for resolving malicious domains found
+    in our signature source.
   playbookInputQuery:
 - key: PublicDNSServerIP
   value:
@@ -1964,3 +2008,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

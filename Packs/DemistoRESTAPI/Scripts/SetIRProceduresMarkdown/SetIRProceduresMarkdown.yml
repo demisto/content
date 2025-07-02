@@ -1,4 +1,5 @@
-comment: Creates markdown tables based on information from the GetTasksWithSection command.
+comment: Creates markdown tables based on information from the GetTasksWithSection
+  command.
 commonfields:
   id: SetIRProceduresMarkdown
   version: -1
@@ -19,3 +20,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

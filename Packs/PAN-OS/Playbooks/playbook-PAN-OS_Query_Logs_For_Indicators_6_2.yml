@@ -731,17 +731,17 @@ inputs:
   value: {}
   required: false
   description: 'URL, for example: "safebrowsing.googleapis.com".'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: filedigest
   value: {}
   required: false
   description: File hash (for WildFire logs only).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ip
   value: {}
   required: false
   description: Source or destination address
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Panorama.Monitor
   description: Monitor logs object.
@@ -899,3 +899,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

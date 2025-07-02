@@ -244,7 +244,8 @@ inputs:
 - key: Timeout
   value: {}
   required: true
-  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
   playbookInputQuery:
 - key: InstanceName
   value: {}
@@ -270,3 +271,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

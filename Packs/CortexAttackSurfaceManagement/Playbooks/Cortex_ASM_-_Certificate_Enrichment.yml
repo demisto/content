@@ -100,7 +100,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if there’s an active instance of the Venafi TLS Protect integration enabled.
+      description: Checks if there’s an active instance of the Venafi TLS Protect
+        integration enabled.
       id: de7247d4-2023-4a4b-8094-57e373d36ffd
       iscommand: false
       name: Is Venafi TLS Protect enabled and Input defined?
@@ -134,7 +135,9 @@ tasks:
     skipunavailable: false
     task:
       brand: VenafiTLSProtect
-      description: 'Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. For additional field information, see: https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm'
+      description: 'Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z
+        format. For additional field information, see: https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm
+        and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm'
       id: c8fc2b77-e986-4817-8daa-8386909b3e4b
       iscommand: true
       name: Get Certificate ID from Venafi
@@ -197,7 +200,8 @@ tasks:
     skipunavailable: false
     task:
       brand: VenafiTLSProtect
-      description: Uses a certificate GUID to extract more details from the certificate store.
+      description: Uses a certificate GUID to extract more details from the certificate
+        store.
       id: d5cc8b99-47db-4db3-8c2e-f9098ced9989
       iscommand: true
       name: Extract additional details from the venafi certificate store.
@@ -785,3 +789,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -18,7 +18,8 @@ configuration:
   required: true
   type: 9
 - defaultvalue: 3 days
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months).
+    default is 3 days.
   name: first_fetch
   required: true
   type: 0
@@ -46,7 +47,8 @@ script:
     - description: The maximum number of incidents per fetch. Default is 1000.
       isArray: true
       name: max_fetch
-    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). Default is 3 days.
+    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day,
+        3 months). Default is 3 days.
       isArray: true
       name: first_fetch
   runonce: false
@@ -63,6 +65,7 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

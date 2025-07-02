@@ -297,7 +297,12 @@ tasks:
       id: 1b28b735-33ac-4ddd-8649-6f05613db05d
       version: -1
       name: Detonate File - FireEye AX
-      description: Detonate one or more files using the FireEye AX integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - PE32, EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM, JPG, JPEG, GIF, PNG, XLSX
+      description: Detonate one or more files using the FireEye AX integration. This
+        playbook returns relevant reports to the War Room and file reputations to
+        the context data. The detonation supports the following file types - PE32,
+        EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP,
+        XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT,
+        HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM, JPG, JPEG, GIF, PNG, XLSX
       playbookName: Detonate File - FireEye AX
       type: playbook
       iscommand: false
@@ -389,7 +394,16 @@ tasks:
       id: fd1dbf17-5b12-4369-86c7-8082f714df31
       version: -1
       name: Detonate File - Group-IB TDS Polygon
-      description: 'Detonate file using Group-IB TDS Polygon integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types: 7z, ace, ar, arj, bat, bz2, cab, chm, cmd, com, cpgz, cpl, csv, dat, doc, docm, docx, dot, dotm, dotx, eml, exe, gz, gzip, hta, htm, html, iqy, iso, jar, js, jse, lnk, lz, lzma, lzo,  lzh, mcl, mht, msg, msi, msp, odp, ods, odt, ots, ott, pdf, pif, potm, potx, pps, ppsm, ppsx, ppt, pptm, pptx, ps1, pub, py, pyc, r*, rar, reg, rtf, scr, settingcontent-ms, stc, svg, sxc, sxw, tar, taz,  .tb2, .tbz, .tbz2, tgz, tlz, txz, tzo, txt, url, uue, vbe, vbs, wsf, xar, xls, xlsb, xlsm, xlsx, xml, xz, z*, zip.'
+      description: 'Detonate file using Group-IB TDS Polygon integration. This playbook
+        returns relevant reports to the War Room and file reputations to the context
+        data. The detonation supports the following file types: 7z, ace, ar, arj,
+        bat, bz2, cab, chm, cmd, com, cpgz, cpl, csv, dat, doc, docm, docx, dot, dotm,
+        dotx, eml, exe, gz, gzip, hta, htm, html, iqy, iso, jar, js, jse, lnk, lz,
+        lzma, lzo,  lzh, mcl, mht, msg, msi, msp, odp, ods, odt, ots, ott, pdf, pif,
+        potm, potx, pps, ppsm, ppsx, ppt, pptm, pptx, ps1, pub, py, pyc, r*, rar,
+        reg, rtf, scr, settingcontent-ms, stc, svg, sxc, sxw, tar, taz,  .tb2, .tbz,
+        .tbz2, tgz, tlz, txz, tzo, txt, url, uue, vbe, vbs, wsf, xar, xls, xlsb, xlsm,
+        xlsx, xml, xz, z*, zip.'
       playbookName: Detonate File - Group-IB TDS Polygon
       type: playbook
       iscommand: false
@@ -429,7 +443,8 @@ tasks:
       id: c28803a1-9938-4fa0-8994-4f1d01f7e800
       version: -1
       name: Detonate File - SecneurX Analysis
-      description: Detonates a file using the SecneurX Analysis Integration. Returns relevant reports to the War Room and file reputations to the context data.
+      description: Detonates a file using the SecneurX Analysis Integration. Returns
+        relevant reports to the War Room and file reputations to the context data.
       playbookName: Detonate File - SecneurX Analysis
       type: playbook
       iscommand: false
@@ -461,7 +476,12 @@ tasks:
       id: f19de2c0-c4f0-4e34-8922-c319d40a1781
       version: -1
       name: Detonate File - JoeSecurity V2
-      description: The Detonate File using Joe Sandbox Process is designed to streamline and enhance the security assessment of files. This automated system accepts a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology, and returns comprehensive results as attachments to the user. The process is designed to be swift, efficient, and secure, providing users with valuable insights into potential threats and vulnerabilities within their files.
+      description: The Detonate File using Joe Sandbox Process is designed to streamline
+        and enhance the security assessment of files. This automated system accepts
+        a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology,
+        and returns comprehensive results as attachments to the user. The process
+        is designed to be swift, efficient, and secure, providing users with valuable
+        insights into potential threats and vulnerabilities within their files.
       playbookName: Detonate File - JoeSecurity V2
       type: playbook
       iscommand: false
@@ -549,7 +569,8 @@ tasks:
       id: 4643aaf7-5f3b-4851-8773-b74b87e18603
       version: -1
       name: Detonate File - MetaDefender Sandbox
-      description: Detonates a file using the MetaDefender Sandbox Integration. Returns relevant reports to the War Room and file reputations to the context data.
+      description: Detonates a file using the MetaDefender Sandbox Integration. Returns
+        relevant reports to the War Room and file reputations to the context data.
       script: metadefender-sandbox-scan-file
       type: regular
       iscommand: true
@@ -633,7 +654,12 @@ tasks:
       id: 3136d7d0-e7cc-49e2-8a83-8ff39ee4c834
       version: -1
       name: Detonate File - ThreatGrid v2
-      description: Detonate one or more files using the ThreatGrid integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM.
+      description: Detonate one or more files using the ThreatGrid integration. This
+        playbook returns relevant reports to the War Room and file reputations to
+        the context data. The detonation supports the following file types - EXE,
+        DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ,
+        GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX,
+        BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM.
       playbookName: Detonate File - ThreatGrid v2
       type: playbook
       iscommand: false
@@ -1239,7 +1265,8 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Sample.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
+    Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Sample.Type
   description: The file type.
@@ -1275,7 +1302,8 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Submission.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
+    Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Submission.SSDeep
   description: The SSDeep hash of the sample in submission.
@@ -1503,7 +1531,8 @@ outputs:
   description: ist of network connections done by the analysis subject.
   type: string
 - contextPath: Lastline.Submission.DownloadedFiles
-  description: List of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
+  description: List of files that were downloaded using the Microsoft Windows file-download
+    API functions. Each element is a tuple of file-origin URL and a File element.
   type: string
 - contextPath: Lastline.Submission.UUID
   description: Task UUID of submitted sample.
@@ -1632,7 +1661,8 @@ outputs:
   description: The information about Domain indicators.
   type: string
 - contextPath: Polygon.Analysis.RegistryKey
-  description: The information about registry keys which were modified during the analysis.
+  description: The information about registry keys which were modified during the
+    analysis.
   type: string
 - contextPath: Polygon.Analysis.Process
   description: The information about processes started during the analysis.
@@ -1753,3 +1783,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

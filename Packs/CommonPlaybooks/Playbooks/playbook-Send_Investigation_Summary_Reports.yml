@@ -1,7 +1,8 @@
 id: Send Investigation Summary Reports
 version: -1
 name: Send Investigation Summary Reports
-description: 'This playbook iterates over closed incidents, generates a summary report for each closed incident, and emails the reports to specified users. '
+description: 'This playbook iterates over closed incidents, generates a summary report
+  for each closed incident, and emails the reports to specified users. '
 starttaskid: "0"
 fromversion: "5.0.0"
 marketplaces:
@@ -101,7 +102,8 @@ tasks:
       - "5"
     scriptarguments:
       ids:
-        simple: ${foundIncidents(!val.labels || val.labels.filter(function(v) { return  v.type == 'ReportSent'}).length == 0).id}
+        simple: ${foundIncidents(!val.labels || val.labels.filter(function(v) { return  v.type
+          == 'ReportSent'}).length == 0).id}
       name:
         simple: ${inputs.ReportName}
       type:
@@ -322,7 +324,9 @@ tasks:
       id: 58e69d68-ff03-4356-8b8f-d61f60346c81
       version: -1
       name: Are there relevant closed incidents?
-      description: Checks if there are any incidents without the ReportSent label. Note that the same DT of this task is used in the "Generate Summary Report" task.
+      description: Checks if there are any incidents without the ReportSent label.
+        Note that the same DT of this task is used in the "Generate Summary Report"
+        task.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -334,7 +338,8 @@ tasks:
       - "4"
     scriptarguments:
       value:
-        simple: ${foundIncidents(!val.labels || val.labels.filter(function(v) { return  v.type == 'ReportSent'}).length == 0).id}
+        simple: ${foundIncidents(!val.labels || val.labels.filter(function(v) { return  v.type
+          == 'ReportSent'}).length == 0).id}
     separatecontext: false
     view: |-
       {
@@ -378,7 +383,8 @@ inputs:
   value:
     simple: -category:job status:closed closed:>="1 hour ago"
   required: false
-  description: Query used to search for incidents. Default query will search for all incidents closed within the last hour.
+  description: Query used to search for incidents. Default query will search for all
+    incidents closed within the last hour.
 outputs: []
 tests:
 - Send Investigation Summary Reports - Test
@@ -387,3 +393,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

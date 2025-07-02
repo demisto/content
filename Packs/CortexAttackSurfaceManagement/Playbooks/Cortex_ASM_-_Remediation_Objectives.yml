@@ -1,7 +1,8 @@
 id: Cortex ASM - Remediation Objectives
 version: -1
 name: Cortex ASM - Remediation Objectives
-description: Playbook that populates the remediation objectives field that is used to display the remediation actions to the end user.
+description: Playbook that populates the remediation objectives field that is used
+  to display the remediation actions to the end user.
 starttaskid: "0"
 tasks:
   "0":
@@ -60,7 +61,11 @@ tasks:
       val1:
         simple: Automated remediation by blocking open ports
       val2:
-        simple: 'In this case, automated remediation will replace the security group that is allowing the risky service to be exposed to the public internet with a new security group: the new security group be created with the name of the old security group with ''_xpanse_ar_XXX'' appended to it and XXX signifies a random three digit number so there are no naming conflicts.'
+        simple: 'In this case, automated remediation will replace the security group
+          that is allowing the risky service to be exposed to the public internet
+          with a new security group: the new security group be created with the name
+          of the old security group with ''_xpanse_ar_XXX'' appended to it and XXX
+          signifies a random three digit number so there are no naming conflicts.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -138,7 +143,9 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'In this case, automated remediation will add new Azure Network Security Groups (NSG) rules to NSG attached to a NIC: rule remediation-block-port-'
+                  simple: 'In this case, automated remediation will add new Azure
+                    Network Security Groups (NSG) rules to NSG attached to a NIC:
+                    rule remediation-block-port-'
               suffix:
                 value:
                   simple: ' will block all internet traffic to this service and remediation-allow-port-'
@@ -154,7 +161,8 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' will ensure that internal communication to this asset can continue.'
+                  simple: ' will ensure that internal communication to this asset
+                    can continue.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -204,7 +212,9 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'In this case, automated remediation will create an empty S3 bucket with no external access that matches the organization’s undefined DNS CNAME record: the DNS name '
+                  simple: 'In this case, automated remediation will create an empty
+                    S3 bucket with no external access that matches the organization’s
+                    undefined DNS CNAME record: the DNS name '
               suffix:
                 value:
                   simple: ' was queried and the Bucket name '
@@ -280,7 +290,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: ' will ensure that internal communication to this asset can continue.  After these rules are created, '
+                  simple: ' will ensure that internal communication to this asset
+                    can continue.  After these rules are created, '
               suffix:
                 value:
                   simple: ' will have a new network tag named remediation-tag-'
@@ -314,7 +325,8 @@ tasks:
                   simple: ' will block all internet traffic to this service and remediation-allow-'
               suffix:
                 value:
-                  simple: ' which will apply these new firewall rules and restrict public internet access.'
+                  simple: ' which will apply these new firewall rules and restrict
+                    public internet access.'
           - operator: concat
             args:
               prefix:
@@ -339,7 +351,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'In this case, automated remediation will create two new firewall rules: rule remediation-block-'
+                  simple: 'In this case, automated remediation will create two new
+                    firewall rules: rule remediation-block-'
               suffix: {}
     separatecontext: false
     continueonerrortype: ""
@@ -365,7 +378,8 @@ tasks:
       id: 82286133-aca4-4269-828b-c25707d897ed
       version: -1
       name: What provider is this service?
-      description: Determines which cloud provider the service is in order to direct to the correct enrichment.
+      description: Determines which cloud provider the service is in order to direct
+        to the correct enrichment.
       type: condition
       iscommand: false
       brand: ""
@@ -696,10 +710,12 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'In this case, automated remediation will create a new firewall rule on the top of the ruleset called "xpanse-ar-rule - '
+                  simple: 'In this case, automated remediation will create a new firewall
+                    rule on the top of the ruleset called "xpanse-ar-rule - '
               suffix:
                 value:
-                  simple: '".  This rule will block internet traffic to the IP address of '
+                  simple: '".  This rule will block internet traffic to the IP address
+                    of '
           - operator: concat
             args:
               prefix: {}
@@ -884,3 +900,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

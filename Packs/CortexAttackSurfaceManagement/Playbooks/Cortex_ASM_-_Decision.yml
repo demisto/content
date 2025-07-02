@@ -47,7 +47,9 @@ tasks:
       id: a6491b8e-4047-4d8d-86f0-766269ffc3bc
       version: -1
       name: Which option to return?
-      description: Checks playbook inputs to determine if "Automated Remediation Requirements" (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements) were met and if ServiceNowV2 integration is set up.
+      description: Checks playbook inputs to determine if "Automated Remediation Requirements"
+        (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements)
+        were met and if ServiceNowV2 integration is set up.
       type: condition
       iscommand: false
       brand: ""
@@ -334,7 +336,8 @@ inputs:
 - key: AutoRemediationRequirements
   value: {}
   required: true
-  description: Meets automated remediation requirements (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements).
+  description: Meets automated remediation requirements 
+    (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements).
   playbookInputQuery:
 outputs:
 - contextPath: RemediationAction
@@ -349,3 +352,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

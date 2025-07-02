@@ -3,7 +3,13 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: PAN-OS DAG Configuration
-description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed. \n"
+description: "This playbook utilizes the Dynamic Address Group (DAG) capability of
+  PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the
+  source/destination, and adds IP addresses dynamically without the need to commit
+  the configuration every time.\n\nThe playbook checks if the given tag already exists.
+  If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not
+  exist, a new address group is created with the given tag and a matching rule, and
+  the configuration is committed. \n"
 starttaskid: "0"
 tasks:
   "0":
@@ -288,7 +294,8 @@ tasks:
       id: ec9cdad5-afdf-46c8-8255-c3e6091753b5
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This will be operational if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This will be
+        operational if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -319,7 +326,8 @@ tasks:
       id: 9c646c84-8ba3-4f49-8028-17e466d6f10e
       version: -1
       name: Is auto-commit defined?
-      description: Checks if the values provided in arguments are equal. If either of the arguments are missing, "no" is returned.
+      description: Checks if the values provided in arguments are equal. If either
+        of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -485,7 +493,8 @@ inputs:
 - key: rule_name
   value: {}
   required: false
-  description: The name of the rule to update, or the name of the rule that will be created.
+  description: The name of the rule to update, or the name of the rule that will be
+    created.
   playbookInputQuery:
 - key: auto_commit
   value: {}
@@ -512,7 +521,8 @@ inputs:
 - key: relative-rule-name
   value: {}
   required: false
-  description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
+  description: If the rule-position that is chosen is before or after, specify the
+    rule name to which it is related.
   playbookInputQuery:
 - key: inbound-or-outbound-rule
   value: {}
@@ -531,7 +541,8 @@ inputs:
 - key: pre-post-rulebase
   value: {}
   required: true
-  description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+  description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
+    according to the rule structure. Exists only in panorama!
   playbookInputQuery:
 - key: device-group
   value: {}
@@ -547,3 +558,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

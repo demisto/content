@@ -508,7 +508,8 @@ tasks:
       id: da7121fa-715d-4010-81ac-e519b88b58e3
       version: -1
       name: "Is CheckPoint Integration \nAavailable?"
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -586,7 +587,11 @@ tasks:
       id: 0dd55a58-9d45-449e-8b9f-3c1630188951
       version: -1
       name: Sophos Firewall - Block URL
-      description: "This playbook adds the URL to the Default Block URL Policy. (The target\npolicy can be changed as requested).\nPre-Requisite: \n1) Create a web policy rule that refers to the URL group you specified on the inputs of the playbook.\n2) Create a new firewall rule and assign the web policy to the one created in the previous step."
+      description: "This playbook adds the URL to the Default Block URL Policy. (The
+        target\npolicy can be changed as requested).\nPre-Requisite: \n1) Create a
+        web policy rule that refers to the URL group you specified on the inputs of
+        the playbook.\n2) Create a new firewall rule and assign the web policy to
+        the one created in the previous step."
       playbookName: Sophos Firewall - Block URL
       type: playbook
       iscommand: false
@@ -685,7 +690,8 @@ tasks:
       id: c08fd24c-0333-4f69-8700-69b92c530882
       version: -1
       name: Is Sophos Integration Enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -822,7 +828,8 @@ tasks:
       subject:
         simple: 'User Verification - Block URLs (Inc #${incident.id})'
       body:
-        simple: Dear XSOAR user, Please approve those URLs that you would like to block in your internal systems
+        simple: Dear XSOAR user, Please approve those URLs that you would like to
+          block in your internal systems
       methods:
       - email
       format: ""
@@ -871,7 +878,8 @@ tasks:
       id: 6a38d62a-b597-4165-87e8-7b5b92953ca5
       version: -1
       name: Append the URLs' blocking list
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -941,7 +949,8 @@ tasks:
       id: 08e14d34-e96d-422a-8640-f5ef9a6eaa7a
       version: -1
       name: Is Forcepoint Integration Enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -980,7 +989,10 @@ tasks:
       id: d3a1e7fd-3deb-4910-8567-c5bcb6363576
       version: -1
       name: Forcepoint - Add URL's to a specific category
-      description: "Append a specific category in Forcepoint with the Blocked URLs. \nYou can choose to add those to a default category (For more info - refer to https://www.forcepoint.com/product/feature/master-database-url-categories)\nor specify a custom/user-defined category."
+      description: "Append a specific category in Forcepoint with the Blocked URLs.
+        \nYou can choose to add those to a default category (For more info - refer
+        to https://www.forcepoint.com/product/feature/master-database-url-categories)\n
+        or specify a custom/user-defined category."
       script: Forcepoint|||fp-add-address-to-category
       type: regular
       iscommand: true
@@ -1061,7 +1073,8 @@ tasks:
       id: 76856aa5-7ff2-415b-8f6f-e4bd1e6798a9
       version: -1
       name: Set Input URLs as Blocklist.
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1130,7 +1143,8 @@ tasks:
       id: 35fcf7d9-19c6-48fe-831d-0b78cbf96323
       version: -1
       name: Is Netcraft Integration Enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1253,7 +1267,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       id: e5de9af1-33df-4064-82d9-b5b87f472d7f
       iscommand: false
       name: Is Prisma SASE Enabled?
@@ -1405,7 +1420,9 @@ inputs:
 - key: Tag
   value: {}
   required: false
-  description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
+  description: Insert a tag name with which indicators will get tagged. This tag can
+    be used later in the External Dynamic Lists integration by using the tag for filtering
+    IPs in the indicator query.
   playbookInputQuery:
 - key: Folder
   value:
@@ -1426,3 +1443,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

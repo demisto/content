@@ -1,7 +1,8 @@
 id: Cortex ASM - Splunk Enrichment
 version: -1
 name: Cortex ASM - Splunk Enrichment
-description: 'Given the IP address this playbook enriches information from Splunk results relevant to ASM alerts. '
+description: 'Given the IP address this playbook enriches information from Splunk
+  results relevant to ASM alerts. '
 starttaskid: "0"
 tasks:
   "0":
@@ -202,7 +203,8 @@ tasks:
                       iscontext: true
                     list:
                       value:
-                        simple: user,email,user_name,user_id,src_user,src_user_name,owner_email,owner,owner_id,username,AD_username
+                        simple: 
+                          user,email,user_name,user_id,src_user,src_user_name,owner_email,owner,owner_id,username,AD_username
             iscontext: true
           right:
             value: {}
@@ -277,7 +279,15 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' AND (user=* OR email=* OR  user_name=* OR  user_id=* OR src_user=* OR src_user_name=* OR owner_email=* OR owner=* OR owner_id=* OR username=* OR AD_username=*) AND (user!="unknown" OR email!="unknown" OR  user_name!="unknown" OR  user_id!="unknown" OR src_user!="unknown" OR src_user_name!="unknown" OR owner_email!="unknown" OR owner!="unknown" OR owner_id!="unknown" OR username!="unknown" OR AD_username!="unknown") AND (user!="null" OR email!="null" OR  user_name!="null" OR  user_id!="null" OR src_user!="null" OR src_user_name!="null" OR owner_email!="null" OR owner!="null" OR owner_id!="null" OR username!="null" OR AD_username!="null")'
+                  simple: ' AND (user=* OR email=* OR  user_name=* OR  user_id=* OR
+                    src_user=* OR src_user_name=* OR owner_email=* OR owner=* OR owner_id=*
+                    OR username=* OR AD_username=*) AND (user!="unknown" OR email!="unknown"
+                    OR  user_name!="unknown" OR  user_id!="unknown" OR src_user!="unknown"
+                    OR src_user_name!="unknown" OR owner_email!="unknown" OR owner!="unknown"
+                    OR owner_id!="unknown" OR username!="unknown" OR AD_username!="unknown")
+                    AND (user!="null" OR email!="null" OR  user_name!="null" OR  user_id!="null"
+                    OR src_user!="null" OR src_user_name!="null" OR owner_email!="null"
+                    OR owner!="null" OR owner_id!="null" OR username!="null" OR AD_username!="null")'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -330,7 +340,8 @@ tasks:
                 iscontext: true
               list:
                 value:
-                  simple: user,email,user_name,user_id,src_user,src_user_name,owner_email,owner,owner_id,username,AD_username
+                  simple: 
+                    user,email,user_name,user_id,src_user,src_user_name,owner_email,owner,owner_id,username,AD_username
           - operator: uniq
       val2:
         simple: n/a
@@ -515,3 +526,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

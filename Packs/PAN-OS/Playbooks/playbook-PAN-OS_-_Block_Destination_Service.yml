@@ -1,7 +1,8 @@
 id: PAN-OS - Block Destination Service
 version: -1
 name: PAN-OS - Block Destination Service
-description: 'This playbook blocks a destination IP and service (TCP or UDP port) by creating a rule for a specific device group on PAN-OS. '
+description: 'This playbook blocks a destination IP and service (TCP or UDP port)
+  by creating a rule for a specific device group on PAN-OS. '
 starttaskid: "0"
 tasks:
   "0":
@@ -245,7 +246,9 @@ tasks:
       id: 41890197-ea43-4d94-8746-6221d39b4d83
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or firewall configuration.\nIf specified as Panorama, it also pushes the policies to the specified device group in the instance.
+      description: Commit the PAN-OS Panorama or firewall configuration.\nIf specified
+        as Panorama, it also pushes the policies to the specified device group in
+        the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -453,7 +456,8 @@ tasks:
       id: 97a5a32c-62ae-4957-8954-c7a072e4c7b1
       version: -1
       name: Find Panorama Service
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -793,7 +797,8 @@ tasks:
       id: 359d953c-0d9a-485d-806b-af1ef1959c47
       version: -1
       name: Find Panorama Address
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -938,7 +943,8 @@ tasks:
       id: 93958d7c-611a-412f-8e50-52f0e98b3db7
       version: -1
       name: Is device-group "shared"?
-      description: Checks if the device group is "shared", because in that case we need to push to the actual device-groups that reference firewalls.
+      description: Checks if the device group is "shared", because in that case we
+        need to push to the actual device-groups that reference firewalls.
       type: condition
       iscommand: false
       brand: ""
@@ -984,7 +990,9 @@ tasks:
       id: 19d7b705-1fdb-481a-8bf4-affaff21c091
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the policies to the specified device group in the instance.
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
+        as Panorama, it also pushes the policies to the specified device group in
+        the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -1094,7 +1102,8 @@ inputs:
   value:
     simple: top
   required: false
-  description: 'Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument. (Default is: ''top'')'
+  description: 'Where to move the rule. If you specify "before" or "after", you need
+    to supply the "dst" argument. (Default is: ''top'')'
   playbookInputQuery:
 - key: SourceZone
   value: {}
@@ -1109,7 +1118,9 @@ inputs:
 - key: SecondaryDeviceGroup
   value: {}
   required: false
-  description: If the rule, address and service are created in the "Shared" location, we need to know what device-groups we can push to because it isn't possible to push to the "Shared" location.
+  description: If the rule, address and service are created in the "Shared" location,
+    we need to know what device-groups we can push to because it isn't possible to
+    push to the "Shared" location.
   playbookInputQuery:
 outputs: []
 tests:
@@ -1122,3 +1133,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

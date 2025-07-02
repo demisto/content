@@ -2,7 +2,8 @@ id: detonate_url_-_generic
 version: -1
 deprecated: true
 name: Detonate URL - Generic
-description: Deprecated. Use Detonate URL - Generic v1.5 playbook instead. Detonate URL through active integrations that support URL detonation.
+description: Deprecated. Use Detonate URL - Generic v1.5 playbook instead. Detonate
+  URL through active integrations that support URL detonation.
 starttaskid: "0"
 tasks:
   "0":
@@ -88,7 +89,9 @@ tasks:
       id: 754e447b-20d7-4ab6-8713-97409910d090
       version: -1
       name: Detonate URL - ThreatGrid
-      description: Detonates one or more URLs using the Threat Grid integration. This playbook returns relevant reports to the War Room and URL reputations to the context data.
+      description: Detonates one or more URLs using the Threat Grid integration. This
+        playbook returns relevant reports to the War Room and URL reputations to the
+        context data.
       playbookName: Detonate URL - ThreatGrid
       type: playbook
       iscommand: false
@@ -130,7 +133,8 @@ tasks:
       id: 237ce1af-7984-4df7-8eea-e6577bf59c4a
       version: -1
       name: Detonate URL - McAfee ATD
-      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox integration.
+      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
+        integration.
       playbookName: Detonate URL - McAfee ATD
       type: playbook
       iscommand: false
@@ -712,7 +716,8 @@ tasks:
       id: ca1a3f90-8330-4eac-885c-eec86c8b8885
       version: -1
       name: Detonate URL - SecneurX Analysis
-      description: Detonates a file using the SecneurX Analysis Integration. Returns relevant reports to the War Room and file reputations to the context data.
+      description: Detonates a file using the SecneurX Analysis Integration. Returns
+        relevant reports to the War Room and file reputations to the context data.
       playbookName: Detonate URL - SecneurX Analysis
       type: playbook
       iscommand: false
@@ -766,7 +771,8 @@ tasks:
       version: -1
       name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
       playbookName: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
-      description: 'Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration.'
+      description: 'Detonate one or more files using the CrowdStrike Falcon Intelligence
+        Sandbox integration.'
       type: playbook
       iscommand: false
       brand: ""
@@ -854,7 +860,8 @@ tasks:
       id: 2fee63e9-6482-4101-8272-d42cf3a950aa
       version: -1
       name: Detonate URL - MetaDefender Sandbox
-      description: Detonates a URL using the MetaDefender Sandbox Integration. Returns relevant reports to the War Room and URL reputations to the context data.
+      description: Detonates a URL using the MetaDefender Sandbox Integration. Returns
+        relevant reports to the War Room and URL reputations to the context data.
       script: metadefender-sandbox-scan-url
       type: regular
       iscommand: true
@@ -978,7 +985,8 @@ outputs:
   description: The SHA256 hash of the Joe Analysis-related sample.
   type: string
 - contextPath: Joe.Analysis.SampleName
-  description: The Joe Analysis-related sample data name. Can be a file name or a URL.
+  description: The Joe Analysis-related sample data name. Can be a file name or a
+    URL.
   type: string
 - contextPath: InfoFile.Name
   description: The file name.
@@ -1166,7 +1174,8 @@ outputs:
   description: The ANY.RUN MIME of the file submitted for analysis.
   type: String
 - contextPath: ANYRUN.Task.Verdict
-  description: The ANY.RUN verdict for the maliciousness of the submitted file or URL.
+  description: The ANY.RUN verdict for the maliciousness of the submitted file or
+    URL.
   type: String
 - contextPath: ANYRUN.Task.Process.FileName
   description: The ANY.RUN process file name.
@@ -1295,3 +1304,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -138,7 +138,8 @@ tasks:
       id: 9b07e7c9-ff70-410d-881c-02389fbf4c1e
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there’s an active instance of the Active Directory Query v2 integration enabled.
+      description: Checks if there’s an active instance of the Active Directory Query
+        v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -197,7 +198,8 @@ tasks:
       id: ae51230d-7996-44fd-821c-44f995a48545
       version: -1
       name: Get account info from Active Directory
-      description: Queries Active Directory and returns information for the specified username.
+      description: Queries Active Directory and returns information for the specified
+        username.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -329,7 +331,8 @@ tasks:
       id: 93b0d852-2215-4504-8179-64a62951fbcc
       version: -1
       name: Is SailPoint IdentityIQ Integration Enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -368,7 +371,8 @@ tasks:
       id: 82adaccd-d799-44ae-85ec-ee4ca516aab6
       version: -1
       name: Is PingOne Integration Enabled
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -407,7 +411,8 @@ tasks:
       id: 296fe8d2-4c2e-496b-86d2-8b9d2ca169ac
       version: -1
       name: Get account info from IdentityIQ
-      description: Search identities by search/filter parameters (ID, email, risk & active) using IdentityIQ SCIM APIs.
+      description: Search identities by search/filter parameters (ID, email, risk
+        & active) using IdentityIQ SCIM APIs.
       script: '|||identityiq-search-identities'
       type: regular
       iscommand: true
@@ -445,7 +450,8 @@ tasks:
       id: 4e0dd7fd-7f65-42b4-8f6b-c0eeb9dbd070
       version: -1
       name: Get account info from PingOne
-      description: Returns a PingOne user. One of the following has to be given - username or userId.
+      description: Returns a PingOne user. One of the following has to be given -
+        username or userId.
       script: '|||pingone-get-user'
       type: regular
       iscommand: true
@@ -514,7 +520,8 @@ tasks:
       id: e0b7f17c-70f7-4330-8f06-c3729e226adb
       version: -1
       name: Is OKTA v2 integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -553,7 +560,8 @@ tasks:
       id: 81e880c5-cf32-42f0-8871-2077a475a674
       version: -1
       name: Get account info from OKTA v2
-      description: Fetches information for a single user. You must enter one or more parameters for the command to run.
+      description: Fetches information for a single user. You must enter one or more
+        parameters for the command to run.
       script: '|||okta-get-user'
       type: regular
       iscommand: true
@@ -622,7 +630,8 @@ tasks:
       id: 0f630de1-9988-461a-883a-6113d3dd6d2a
       version: -1
       name: Is AWS integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -661,7 +670,8 @@ tasks:
       id: 8f66273e-887a-4da9-86aa-d793012b15d1
       version: -1
       name: Get account info from AWS
-      description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
+      description: Retrieves information about the specified IAM user, including the
+        user's creation date, path, unique ID, and ARN.
       script: '|||aws-iam-get-user'
       type: regular
       iscommand: true
@@ -761,7 +771,8 @@ tasks:
       id: 21d70bb7-8b40-4f49-80ca-b78cb05b24aa
       version: -1
       name: Is SailPoint IdentityNow integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -881,7 +892,8 @@ tasks:
       id: 82a4d18b-fcb9-416a-87e9-0c1b07255560
       version: -1
       name: Active Directory - Get User Manager Details
-      description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
+      description: Takes an email address or a username of a user account in Active
+        Directory, and returns the email address of the user's manager.
       playbookName: Active Directory - Get User Manager Details
       type: playbook
       iscommand: false
@@ -964,7 +976,8 @@ tasks:
       id: be533930-e327-4945-8fb7-c47ada329a2f
       version: -1
       name: Is Azure Active Directory Users integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1366,7 +1379,8 @@ tasks:
       id: ed860996-40a3-4e32-8c7d-e4a961c6b7d5
       version: -1
       name: Is Cortex XDR - IR integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1405,7 +1419,9 @@ tasks:
       id: b2c55827-8a8d-4e30-8662-383fbfdb55d0
       version: -1
       name: Get account risk score
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      description: Retrieve the risk score of a specific user or list of users with
+        the highest risk score in the environment along with the reason affecting
+        each score.
       script: '|||xdr-list-risky-users'
       type: regular
       iscommand: true
@@ -1686,7 +1702,8 @@ outputs:
   description: The manager of the user.
   type: string
 - contextPath: IAM.Vendor.active
-  description: When true, indicates that the employee's status is active in the 3rd-party integration.
+  description: When true, indicates that the employee's status is active in the 3rd-party
+    integration.
   type: string
 - contextPath: IAM.Vendor.brand
   description: Name of the integration.
@@ -1740,7 +1757,8 @@ outputs:
   description: Array of role objects that the identity has.
   type: string
 - contextPath: IdentityIQ.Identity.capabilities
-  description: Array of string representations of the IdentityIQ capabilities assigned to this identity.
+  description: Array of string representations of the IdentityIQ capabilities assigned
+    to this identity.
   type: string
 - contextPath: IdentityIQ.Identity.name
   description: Account name.
@@ -1830,10 +1848,12 @@ outputs:
   description: Whether the login script is run. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.ACCOUNTDISABLE
-  description: Whether the user account is disabled. Works for *Windows Server 2012 R2*.
+  description: Whether the user account is disabled. Works for *Windows Server 2012
+    R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.HOMEDIR_REQUIRED
-  description: Whether the home folder is required. Works for *Windows Server 2012 R2*.
+  description: Whether the home folder is required. Works for *Windows Server 2012
+    R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.LOCKOUT
   description: Whether the user is locked out. Works for *Windows Server 2012 R2*.
@@ -1842,22 +1862,29 @@ outputs:
   description: Whether the password is required. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWD_CANT_CHANGE
-  description: Whether the user can change the password. Works for *Windows Server 2012 R2*.
+  description: Whether the user can change the password. Works for *Windows Server
+    2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.ENCRYPTED_TEXT_PWD_ALLOWED
-  description: Whether the user can send an encrypted password. Works for *Windows Server 2012 R2*.
+  description: Whether the user can send an encrypted password. Works for *Windows
+    Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.TEMP_DUPLICATE_ACCOUNT
-  description: Whether this is an account for users whose primary account is in another domain. Works for *Windows Server 2012 R2*.
+  description: Whether this is an account for users whose primary account is in another
+    domain. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.NORMAL_ACCOUNT
-  description: Whether this is a default account type that represents a typical user. Works for *Windows Server 2012 R2*.
+  description: Whether this is a default account type that represents a typical user.
+    Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.INTERDOMAIN_TRUST_ACCOUNT
-  description: Whether the account is permitted to trust a system domain that trusts other domains. Works for *Windows Server 2012 R2*.
+  description: Whether the account is permitted to trust a system domain that trusts
+    other domains. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.WORKSTATION_TRUST_ACCOUNT
-  description: Whether this is a computer account for a computer running Microsoft Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft Windows 2000 Professional, or Windows 2000 Server and is a member of this domain.
+  description: Whether this is a computer account for a computer running Microsoft
+    Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft Windows
+    2000 Professional, or Windows 2000 Server and is a member of this domain.
   type: string
 - contextPath: Account.Manager
   description: The user manager.
@@ -1875,16 +1902,20 @@ outputs:
   description: Whether the account is enabled for delegation.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_REQ_PREAUTH
-  description: Whether this account require Kerberos pre-authentication for logging on.
+  description: Whether this account require Kerberos pre-authentication for logging
+    on.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.USE_DES_KEY_ONLY
-  description: Whether to restrict this principal to use only Data Encryption Standard (DES) encryption types for keys.
+  description: Whether to restrict this principal to use only Data Encryption Standard
+    (DES) encryption types for keys.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.NOT_DELEGATED
-  description: Whether the security context of the user isn't delegated to a service even if the service account is set as trusted for Kerberos delegation.
+  description: Whether the security context of the user isn't delegated to a service
+    even if the service account is set as trusted for Kerberos delegation.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.TRUSTED_FOR_DELEGATION
-  description: Whether the service account (the user or computer account) under which a service runs is trusted for Kerberos delegation.
+  description: Whether the service account (the user or computer account) under which
+    a service runs is trusted for Kerberos delegation.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.SMARTCARD_REQUIRED
   description: Whether to force the user to log in by using a smart card.
@@ -1893,7 +1924,8 @@ outputs:
   description: Whether this is an MNS login account.
   type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.SERVER_TRUST_ACCOUNT
-  description: Whether this is a computer account for a domain controller that is a member of this domain. Works for *Windows Server 2012 R2*.
+  description: Whether this is a computer account for a domain controller that is
+    a member of this domain. Works for *Windows Server 2012 R2*.
   type: string
 - contextPath: IAM.Vendor
   description: The returning results vendor.
@@ -2055,7 +2087,8 @@ outputs:
   description: The path to the user.
   type: string
 - contextPath: AWS.IAM.Users.PasswordLastUsed
-  description: The date and time,  when the user's password was last used to sign in to an AWS website.
+  description: The date and time,  when the user's password was last used to sign
+    in to an AWS website.
   type: string
 - contextPath: MSGraphUser.MobilePhone
   description: User's mobile phone number.
@@ -2102,3 +2135,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

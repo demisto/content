@@ -31,7 +31,8 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Removes the prefix from the subject of reply and forward messages (e.g., FW:).
+  description: Removes the prefix from the subject of reply and forward messages (e.g.,
+    FW:).
   defaultValue: "true"
 - name: escapeColons
   auto: PREDEFINED
@@ -54,3 +55,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

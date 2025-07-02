@@ -18,7 +18,8 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: This integration allows you to manage and interact with Microsoft security and compliance content search.
+description: This integration allows you to manage and interact with Microsoft security
+  and compliance content search.
 display: O365 - Security And Compliance - Content Search (Deprecated)
 deprecated: true
 name: SecurityAndCompliance
@@ -35,52 +36,67 @@ script:
         The name of the compliance search.
         If not specified, will have the prefix "XSOAR-" followed by the GUID e.g., XSOAR-d6228fd0-756b-4e4b-8721-76776df91526.
       name: search_name
-    - description: The name of a Core eDiscovery case to associate with the new compliance search.
+    - description: The name of a Core eDiscovery case to associate with the new compliance
+        search.
       name: case
-    - description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
+    - description: Text search string or a query that is formatted using the Keyword
+        Query Language (KQL).
       name: kql
     - description: Description of the compliance search.
       name: description
-    - description: Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false".
+    - description: Whether to include mailboxes other than regular user mailboxes
+        in the compliance search. Default is "false".
       name: allow_not_found_exchange_locations
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-    - description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all.
+    - description: Comma-separated list of mailboxes/distribution groups to include,
+        or you can use the value "All" to include all.
       isArray: true
       name: exchange_location
       defaultValue: 'All'
-    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
+    - description: Comma-separated list of mailboxes/distribution groups to exclude
+        when you use the value "All" for the exchange_location parameter.
       isArray: true
       name: exchange_location_exclusion
-    - description: Comma-separated list of public folders to include, or you can use the value "All" to include all.
+    - description: Comma-separated list of public folders to include, or you can use
+        the value "All" to include all.
       isArray: true
       name: public_folder_location
-    - description: Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites.
+    - description: Comma-separated list of SharePoint online sites to include. You
+        can identify the sites by their URL value, or you can use the value "All"
+        to include all sites.
       isArray: true
       name: share_point_location
-    - description: Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value.
+    - description: Comma-separated list of SharePoint online sites to exclude when
+        you use the value "All" for the share_point_location argument. You can identify
+        the sites by their URL value.
       isArray: true
       name: share_point_location_exclusion
     description: Create compliance search in the Security & Compliance Center.
     name: o365-sc-new-search
     outputs:
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
-      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes
+        in the compliance search.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AzureBatchFrameworkEnabled
       description: Whether the Azure Batch Framework is enabled for job processing.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseId
-      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      description: Identity of a Core eDiscovery case which is associated with the
+        compliance search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseName
-      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      description: Name of a Core eDiscovery case which is associated with the compliance
+        search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ContentMatchQuery
-      description: Compliance text search string or a query that is formatted using the Keyword Query Language (KQL).
+      description: Compliance text search string or a query that is formatted using
+        the Keyword Query Language (KQL).
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedBy
       description: Security and compliance search creator.
@@ -161,47 +177,66 @@ script:
     - description: The name of the compliance search.
       name: search_name
       required: true
-    - description: Modify the text search string or a query that is formatted using the Keyword Query Language (KQL).
+    - description: Modify the text search string or a query that is formatted using
+        the Keyword Query Language (KQL).
       name: kql
     - description: Modify the description for the compliance search.
       name: description
-    - description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+    - description: Whether to include mailboxes other than regular user mailboxes
+        in the compliance search.
       name: allow_not_found_exchange_locations
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Comma-separated list of added mailboxes/distribution groups to include, or you can use the value "All" to include all mailboxes.
+    - description: Comma-separated list of added mailboxes/distribution groups to
+        include, or you can use the value "All" to include all mailboxes.
       isArray: true
       name: add_exchange_location
-    - description: Comma-separated list of added mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location (used in create new compliance search) or the add_exchange_location argument.
+    - description: Comma-separated list of added mailboxes/distribution groups to
+        exclude when you use the value "All" for the exchange_location (used in create
+        new compliance search) or the add_exchange_location argument.
       isArray: true
       name: add_exchange_location_exclusion
-    - description: Comma-separated list of added public folders to include, or you can use the value "All" to include all.
+    - description: Comma-separated list of added public folders to include, or you
+        can use the value "All" to include all.
       isArray: true
       name: add_public_folder_location
-    - description: Comma-separated list of added SharePoint online sites to include. You identify the sites by their URL value, or you can use the value "All" to include all sites.
+    - description: Comma-separated list of added SharePoint online sites to include.
+        You identify the sites by their URL value, or you can use the value "All"
+        to include all sites.
       isArray: true
       name: add_share_point_location
-    - description: Comma-separated list of added SharePoint online sites to exclude when you use the value "All" for the exchange_location (used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value.
+    - description: Comma-separated list of added SharePoint online sites to exclude
+        when you use the value "All" for the exchange_location (used in create new
+        compliance search) argument or the share_point_location argument. You can
+        identify the sites by their URL value.
       isArray: true
       name: add_share_point_location_exclusion
-    - description: Comma-separated list of removed mailboxes/distribution group to include.
+    - description: Comma-separated list of removed mailboxes/distribution group to
+        include.
       isArray: true
       name: remove_exchange_location
-    - description: Comma-separated list of removed mailboxes/distribution group to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) or the add_exchange_location argument.
+    - description: Comma-separated list of removed mailboxes/distribution group to
+        exclude when you use the value "All" for the exchange_location (Used in create
+        new compliance search) or the add_exchange_location argument.
       isArray: true
       name: remove_exchange_location_exclusion
     - description: Comma-separated list of removed public folders to include.
       isArray: true
       name: remove_public_folder_location
-    - description: Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value.
+    - description: Comma-separated list of removed SharePoint online sites to include.
+        You can identify the sites by their URL value.
       isArray: true
       name: remove_share_point_location
-    - description: Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value.
+    - description: Comma-separated list of removed SharePoint online sites to exclude
+        when you use the value "All" for the exchange_location (Used in create new
+        compliance search) argument or the share_point_location argument. You can
+        identify the sites by their URL value.
       isArray: true
       name: remove_share_point_location_exclusion
-    description: Modifies non-running compliance searches in the Security & Compliance Center.
+    description: Modifies non-running compliance searches in the Security & Compliance
+      Center.
     name: o365-sc-set-search
   - arguments:
     - description: The name of the compliance search.
@@ -212,20 +247,25 @@ script:
   - description: List compliance searches in the Security & Compliance Center.
     name: o365-sc-list-search
     outputs:
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
-      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes
+        in the compliance search.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AzureBatchFrameworkEnabled
       description: Whether the Azure Batch Framework is enabled for job processing.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseId
-      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      description: Identity of a Core eDiscovery case which is associated with the
+        compliance search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseName
-      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      description: Name of a Core eDiscovery case which is associated with the compliance
+        search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ContentMatchQuery
-      description: Compliance text search string or a query that is formatted using the Keyword Query Language (KQL).
+      description: Compliance text search string or a query that is formatted using
+        the Keyword Query Language (KQL).
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedBy
       description: Security and compliance search creator.
@@ -306,10 +346,12 @@ script:
     - description: The name of the compliance search.
       name: search_name
       required: true
-    - description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
+    - description: The maximum number of results to return. If you want to return
+        all requests that match the query, use "-1" for the value of this argument.
       name: limit
       defaultValue: 100
-    - description: Whether to include mailboxes which have no results in results entry context.
+    - description: Whether to include mailboxes which have no results in results entry
+        context.
       name: all_results
       auto: PREDEFINED
       defaultValue: 'false'
@@ -333,20 +375,25 @@ script:
     description: Gets compliance search by name from the Security & Compliance Center.
     name: o365-sc-get-search
     outputs:
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
-      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes
+        in the compliance search.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AzureBatchFrameworkEnabled
       description: Whether the Azure Batch Framework is enabled for job processing.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseId
-      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      description: Identity of a Core eDiscovery case which is associated with the
+        compliance search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseName
-      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      description: Name of a Core eDiscovery case which is associated with the compliance
+        search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ContentMatchQuery
-      description: Compliance text search string or a query that is formatted using the Keyword Query Language (KQL).
+      description: Compliance text search string or a query that is formatted using
+        the Keyword Query Language (KQL).
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedBy
       description: Security and compliance search creator.
@@ -430,13 +477,15 @@ script:
       description: The number of security and compliance search results in location.
       type: Number
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.Size
-      description: The byte size of the security and compliance search results in location.
+      description: The byte size of the security and compliance search results in
+        location.
       type: Number
   - arguments:
     - description: The name of the compliance search.
       name: search_name
       required: true
-    description: Starts stopped, completed, or not started compliance search in the Security & Compliance Center.
+    description: Starts stopped, completed, or not started compliance search in the
+      Security & Compliance Center.
     name: o365-sc-start-search
   - arguments:
     - description: The name of the compliance search.
@@ -448,37 +497,45 @@ script:
     - description: The name of the compliance search.
       name: search_name
       required: true
-    - description: 'Search action to perform. Possible values are: "Preview" and "Purge". Default is "Preview".'
+    - description: 'Search action to perform. Possible values are: "Preview" and "Purge".
+        Default is "Preview".'
       name: action
       auto: PREDEFINED
       defaultValue: "Preview"
       predefined:
       - "Preview"
       - "Purge"
-    - description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete".'
+    - description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete".
+        Default is "SoftDelete".'
       name: purge_type
       auto: PREDEFINED
       defaultValue: "SoftDelete"
       predefined:
       - SoftDelete
       - HardDelete
-    description: After you create a content search using the o365-sc-new-search command and run it using the o365-sc-start-search command, you assign a search action to the search using the o365-sc-new-search-action command.
+    description: After you create a content search using the o365-sc-new-search command
+      and run it using the o365-sc-start-search command, you assign a search action
+      to the search using the o365-sc-new-search-action command.
     name: o365-sc-new-search-action
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
       description: Security and compliance search action type. Either "Purge" or "Preview".
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
-      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes
+        in the compliance search.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
       description: Whether the Azure Batch Framework is enabled for job processing.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
-      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      description: Identity of a Core eDiscovery case which is associated with the
+        compliance search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
-      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      description: Name of a Core eDiscovery case which is associated with the compliance
+        search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
       description: Security and compliance search action creator.
@@ -529,10 +586,13 @@ script:
       description: Security and compliance search action name.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation
-      description: Security and compliance search action public folder locations to include.
+      description: Security and compliance search action public folder locations to
+        include.
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
-      description: Security and compliance search action public folder locations to exclude.
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
+      description: Security and compliance search action public folder locations to
+        exclude.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Retry
       description: Whether to retry if the search action failed.
@@ -549,11 +609,13 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocation
       description: Security and compliance search action SharePoint locations to include.
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
       description: Security and compliance search action SharePoint locations to exclude.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
-      description: Security and compliance search action status. Either "Started" or "Completed".
+      description: Security and compliance search action status. Either "Started"
+        or "Completed".
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
@@ -562,7 +624,8 @@ script:
     - description: The name of the compliance search action.
       name: search_action_name
       required: true
-    description: Removes a compliance search action by searching for the action name in the Security & Compliance Center.
+    description: Removes a compliance search action by searching for the action name
+      in the Security & Compliance Center.
     name: o365-sc-remove-search-action
   - description: Lists compliance search actions from the Security & Compliance Center.
     name: o365-sc-list-search-action
@@ -570,17 +633,21 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
       description: Security and compliance search action type. Either "Purge or "Preview".
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
-      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes
+        in the compliance search.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
       description: Whether the Azure Batch Framework is enabled for job processing.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
-      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      description: Identity of a Core eDiscovery case which is associated with the
+        compliance search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
-      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      description: Name of a Core eDiscovery case which is associated with the compliance
+        search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
       description: Security and compliance search action creator.
@@ -631,10 +698,13 @@ script:
       description: Security and compliance search action name.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation
-      description: Security and compliance search action public folder locations to include.
+      description: Security and compliance search action public folder locations to
+        include.
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
-      description: Security and compliance search action public folder locations to exclude.
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
+      description: Security and compliance search action public folder locations to
+        exclude.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Retry
       description: Whether to retry if the search action failed.
@@ -651,7 +721,8 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocation
       description: Security and compliance search action SharePoint locations to include.
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
       description: Security and compliance search action SharePoint locations to exclude.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
@@ -664,7 +735,8 @@ script:
     - description: The name of the compliance search action.
       name: search_action_name
       required: true
-    - description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
+    - description: The maximum number of results to return. If you want to return
+        all requests that match the query, use "-1" for the value of this argument.
       name: limit
       defaultValue: 100
     - description: Whether to export search results as json file to war-room.
@@ -687,17 +759,21 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
       description: Security and compliance search action type. Either "Purge" or "Preview".
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
-      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes
+        in the compliance search.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
       description: Whether the Azure Batch Framework is enabled for job processing.
       type: Boolean
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
-      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      description: Identity of a Core eDiscovery case which is associated with the
+        compliance search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
-      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      description: Name of a Core eDiscovery case which is associated with the compliance
+        search.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
       description: Security and compliance search action creator.
@@ -748,10 +824,13 @@ script:
       description: Security and compliance search action name.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation
-      description: Security and compliance search action public folder locations to include.
+      description: Security and compliance search action public folder locations to
+        include.
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
-      description: Security and compliance search action public folder locations to exclude.
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
+      description: Security and compliance search action public folder locations to
+        exclude.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Location
       description: Security and compliance search action result location.
@@ -798,11 +877,13 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocation
       description: Security and compliance search action SharePoint locations to include.
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
+    - contextPath: 
+        O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
       description: Security and compliance search action SharePoint locations to exclude.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
-      description: Security and compliance search action status. Either "Started" or "Completed".
+      description: Security and compliance search action status. Either "Started"
+        or "Completed".
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
@@ -819,3 +900,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

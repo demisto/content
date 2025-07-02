@@ -9,13 +9,18 @@ args:
   predefined:
   - comment
   - work_notes
-- description: Specify the sys_id of the ticket. If not specified, it will use the ticket ID from the incident. servicenowticketid must be in context data for this to work.
+- description: Specify the sys_id of the ticket. If not specified, it will use the
+    ticket ID from the incident. servicenowticketid must be in context data for this
+    to work.
   name: ticket_id
-- description: Specify a table name. If nothing is mentioned, it will use the ticket type from instance configuration.
+- description: Specify a table name. If nothing is mentioned, it will use the ticket
+    type from instance configuration.
   name: table_name
-- description: Specify the instance to be used. If not specified, it will run using all available instances.
+- description: Specify the instance to be used. If not specified, it will run using
+    all available instances.
   name: instance_name
-comment: Use this script to add a comment or work note to a ServiceNow ticket. To be run within the incident.
+comment: Use this script to add a comment or work note to a ServiceNow ticket. To
+  be run within the incident.
 commonfields:
   id: ServiceNowAddComment
   version: -1
@@ -44,3 +49,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -369,72 +369,93 @@ inputs:
 - key: BaseValuesToSearch
   value: {}
   required: false
-  description: The values of the first field to search. This can be a single value or a comma-separated list of values. For example, admin1,admin2
+  description: The values of the first field to search. This can be a single value
+    or a comma-separated list of values. For example, admin1,admin2
   playbookInputQuery:
 - key: BaseFieldsToSearch
   value: {}
   required: false
-  description: The field names of the first field to search. This can be a single value or a comma-separated list of values. For example, username,user
+  description: The field names of the first field to search. This can be a single
+    value or a comma-separated list of values. For example, username,user
   playbookInputQuery:
 - key: BaseFieldState
   value:
     simple: include
   required: false
-  description: The state of the first field to search, meaning whether the values in the field be included or excluded. Valid options are include or exclude.
+  description: The state of the first field to search, meaning whether the values
+    in the field be included or excluded. Valid options are include or exclude.
   playbookInputQuery:
 - key: BaseFieldMatch
   value:
     simple: exact
   required: false
-  description: Whether the values of the first field should be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the BaseFieldsToSearch as well.
+  description: Whether the values of the first field should be an exact match or a
+    partial match. Valid options are exact or partial. When choosing exact, the AQL
+    query will use the = operator. When choosing partial, the AQL query will ILIKE
+    and add '%%' to the values. Notice that if you choose exact you will have to specify
+    the BaseFieldsToSearch as well.
   playbookInputQuery:
 - key: FirstAdditionalValues
   value: {}
   required: false
-  description: The values of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
+  description: The values of the second field to search. This can be a single value
+    or a comma-separated list of values. For example admin1,admin2
   playbookInputQuery:
 - key: FirstAdditionalFields
   value: {}
   required: false
-  description: The field names of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
+  description: The field names of the second field to search. This can be a single
+    value or a comma-separated list of values. For example admin1,admin2
   playbookInputQuery:
 - key: FirstAdditionalFieldState
   value:
     simple: include
   required: false
-  description: The state of the second field to search, meaning whether the values in the field should be included or excluded. Valid options are include or exclude. Notice that if you choose exact you will have to specify the FirstAdditionalFields as well.
+  description: The state of the second field to search, meaning whether the values
+    in the field should be included or excluded. Valid options are include or exclude.
+    Notice that if you choose exact you will have to specify the FirstAdditionalFields
+    as well.
   playbookInputQuery:
 - key: FirstAdditionalFieldMatch
   value:
     simple: exact
   required: false
-  description: Whether the values of the second field should be an exact match or a partial match. Valid options are exact or partial.
+  description: Whether the values of the second field should be an exact match or
+    a partial match. Valid options are exact or partial.
   playbookInputQuery:
 - key: SecondAdditionalValues
   value: {}
   required: false
-  description: The values of the third field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
+  description: The values of the third field to search. This can be a single value
+    or a comma-separated list of values. For example admin1,admin2
   playbookInputQuery:
 - key: SecondAdditionalFields
   value: {}
   required: false
-  description: The field names of the third field to search. This can be a single value or a comma-separated list of values. For example username,user
+  description: The field names of the third field to search. This can be a single
+    value or a comma-separated list of values. For example username,user
   playbookInputQuery:
 - key: SecondAdditionalFieldState
   value:
     simple: include
   required: false
-  description: The state of the third field to search, meaning should the values in the field be included or excluded. Valid options are include or exclude.
+  description: The state of the third field to search, meaning should the values in
+    the field be included or excluded. Valid options are include or exclude.
   playbookInputQuery:
 - key: SecondAdditionalFieldMatch
   value:
     simple: exact
   required: false
-  description: Should the values of the third field be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the SecondAdditionalFields as well.
+  description: Should the values of the third field be an exact match or a partial
+    match. Valid options are exact or partial. When choosing exact, the AQL query
+    will use the = operator. When choosing partial, the AQL query will ILIKE and add
+    '%%' to the values. Notice that if you choose exact you will have to specify the
+    SecondAdditionalFields as well.
   playbookInputQuery:
 - key: SelectFields
   value:
-    simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
+    simple: DATEFORMAT(devicetime,'dd-MM-yyyy 
+      hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
   required: false
   description: |-
     The list of fields to select within the AQL query.
@@ -456,7 +477,8 @@ inputs:
   value:
     simple: 'false'
   required: false
-  description: The QRadar Get Hunting Results playbook outputs the detected hosts, users, and IP addresses detected in the QRadar search results.
+  description: The QRadar Get Hunting Results playbook outputs the detected hosts,
+    users, and IP addresses detected in the QRadar search results.
   playbookInputQuery:
 outputs:
 - contextPath: QRadar.SearchEvents
@@ -472,10 +494,12 @@ outputs:
   description: External IP addresses detected based on fields and inputs in your search.
   type: string
 - contextPath: QRadar.DetectedInternalHosts
-  description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+  description: Internal host names detected based on hosts in your assets table. Note
+    that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 - contextPath: QRadar.DetectedExternalHosts
-  description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+  description: External host names detected based on hosts in your assets table. Note
+    that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 tests:
 - no test
@@ -487,3 +511,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

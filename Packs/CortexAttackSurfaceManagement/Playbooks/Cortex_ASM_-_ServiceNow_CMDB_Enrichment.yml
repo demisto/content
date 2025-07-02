@@ -1,7 +1,8 @@
 id: Cortex ASM - ServiceNow CMDB Enrichment
 version: -1
 name: Cortex ASM - ServiceNow CMDB Enrichment
-description: Given the IP address this playbook enriches ServiceNow CMDB information relevant to ASM alerts.
+description: Given the IP address this playbook enriches ServiceNow CMDB information
+  relevant to ASM alerts.
 starttaskid: "0"
 tasks:
   "0":
@@ -74,7 +75,8 @@ tasks:
       id: c2640c9a-3d6e-489e-81f7-f9c316c84b8e
       version: -1
       name: Is ServiceNow v2 enabled?
-      description: Determines if the "ServiceNow v2" integration instance is enabled in order to find email accounts for ServiceNow usernames.
+      description: Determines if the "ServiceNow v2" integration instance is enabled
+        in order to find email accounts for ServiceNow usernames.
       type: condition
       iscommand: false
       brand: ""
@@ -135,7 +137,8 @@ tasks:
       id: 97afd59f-3b38-4d70-8a45-40ebe12230f2
       version: -1
       name: Pull ServiceNow user information
-      description: Pull information on the user that was "assigned_to" for a CMDB object.
+      description: Pull information on the user that was "assigned_to" for a CMDB
+        object.
       script: ServiceNow v2|||servicenow-query-users
       type: regular
       iscommand: true
@@ -526,7 +529,8 @@ tasks:
       id: 1df765c8-1a4d-41d1-8124-809175430b42
       version: -1
       name: Is there ServiceNow assigned_to information?
-      description: Determines if there is ServiceNow assigned_to information to set in the service owner field.
+      description: Determines if there is ServiceNow assigned_to information to set
+        in the service owner field.
       type: condition
       iscommand: false
       brand: ""
@@ -571,7 +575,8 @@ tasks:
       id: e8822762-03c6-4e7c-86da-9b3db0c4a0b6
       version: -1
       name: Is there ServiceNow record and records information?
-      description: Determines if there is ServiceNow record and records information to set in the system ID field.
+      description: Determines if there is ServiceNow record and records information
+        to set in the system ID field.
       type: condition
       iscommand: false
       brand: ""
@@ -666,7 +671,8 @@ tasks:
       id: a5ff1282-3e03-4983-802d-8e0082572779
       version: -1
       name: Is there ServiceNow company information?
-      description: Determines if there is ServiceNow company information to set in the systemID field.
+      description: Determines if there is ServiceNow company information to set in
+        the systemID field.
       type: condition
       iscommand: false
       brand: ""
@@ -933,7 +939,8 @@ tasks:
       version: -1
       name: Was enrichment performed?
       type: condition
-      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true
+        in the relevant flag variable.
       iscommand: false
       brand: ""
     nexttasks:
@@ -1051,3 +1058,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

@@ -539,7 +539,8 @@ tasks:
       id: cc9c4b4c-dbf5-4696-82f5-f19c331f90da
       version: -1
       name: Extract similar emails
-      description: From the retrieved emails, extracts only emails with a subject identical to the searched email's subject.
+      description: From the retrieved emails, extracts only emails with a subject
+        identical to the searched email's subject.
       scriptName: Set
       type: regular
       iscommand: false
@@ -719,3 +720,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

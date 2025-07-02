@@ -11,10 +11,12 @@ enabled: true
 args:
 - name: src_coords
   required: true
-  description: Latitude and Longitude coordinates for the first location.  Required format 1.23,4.56.
+  description: Latitude and Longitude coordinates for the first location.  Required
+    format 1.23,4.56.
   isArray: true
 - name: dest_coords
-  description: Latitude and Longitude coordinates for the second location.  Required format 1.23,4.56.
+  description: Latitude and Longitude coordinates for the second location.  Required
+    format 1.23,4.56.
   isArray: true
 outputs:
 - contextPath: GeoEvents

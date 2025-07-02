@@ -42,7 +42,8 @@ tasks:
       id: 27c5352a-022a-4aff-87d4-8d948fa788bc
       version: -1
       name: What provider is this service?
-      description: Determines which cloud provider the service is in order to direct to the correct enrichment.
+      description: Determines which cloud provider the service is in order to direct
+        to the correct enrichment.
       type: condition
       iscommand: false
       brand: ''
@@ -329,7 +330,14 @@ tasks:
       id: 0d8eb068-70f3-4fe0-80ef-ca218e2cd125
       version: -1
       name: AWS - Security Group Remediation v2
-      description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive. It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+      description: This playbook takes in some information about an EC2 instance (ID
+        and public_ip) and with provided port and protocol, determines what security
+        groups on the primary interface of an EC2 instance are over-permissive. It
+        uses an automation to determine what interface on an EC2 instance has an over-permissive
+        security group on, determine which security groups have over-permissive rules
+        and to replace them with a copy of the security group that has only the over-permissive
+        portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP,
+        etc) being exposed to the internet via IPv4.
       type: playbook
       iscommand: false
       brand: ''
@@ -491,7 +499,8 @@ tasks:
       id: 231659ad-e527-4ca9-806c-e9392b78dabb
       version: -1
       name: Is AWSAssumeRoleName Input defined?
-      description: Determines which cloud provider the service is in order to direct to the correct enrichment.
+      description: Determines which cloud provider the service is in order to direct
+        to the correct enrichment.
       type: condition
       iscommand: false
       brand: ''
@@ -533,7 +542,14 @@ tasks:
       id: 438b1fed-2bbe-4214-8883-bcfd8f9e2000
       version: -1
       name: AWS - Security Group Remediation v2
-      description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+      description: This playbook takes in some information about an EC2 instance (ID
+        and public_ip) and with provided port and protocol, determines what security
+        groups on the primary interface of an EC2 instance are over-permissive.  It
+        uses an automation to determine what interface on an EC2 instance has an over-permissive
+        security group on, determine which security groups have over-permissive rules
+        and to replace them with a copy of the security group that has only the over-permissive
+        portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP,
+        etc) being exposed to the internet via IPv4.
       type: playbook
       iscommand: false
       brand: ''
@@ -625,7 +641,9 @@ tasks:
       id: c8e87bd8-3019-42db-8ac9-2e8193077cc6
       version: -1
       name: Cortex ASM - On Prem Remediation
-      description: "This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.\n\nConditions:\nThis is currently limited to stand-alone firewalls for PAN-OS."
+      description: "This playbook adds new block rule(s) to on-prem firewall vendors
+        in order to block internet access for internet exposures.\n\nConditions:\n
+        This is currently limited to stand-alone firewalls for PAN-OS."
       type: playbook
       iscommand: false
       brand: ''
@@ -810,7 +828,8 @@ tasks:
     skipunavailable: true
     task:
       brand: ""
-      description: This playbook upgrades supported packages on an AWS EC2 instance using AWS Systems manager.
+      description: This playbook upgrades supported packages on an AWS EC2 instance
+        using AWS Systems manager.
       id: d22ca941-9360-417f-8d13-c86eae687622
       iscommand: false
       name: AWS - Package Upgrade
@@ -905,7 +924,8 @@ inputs:
 - key: AWSAssumeRoleName
   value: {}
   required: false
-  description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations)
+  description: If assuming roles for AWS, this is the name of the role to assume (should
+    be the same for all organizations)
   playbookInputQuery:
 outputs: []
 fromversion: 6.10.0
@@ -916,3 +936,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

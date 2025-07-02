@@ -240,7 +240,9 @@ tasks:
       id: e1035ce5-63ee-4801-854b-8c9871d780b9
       version: -1
       name: Get project
-      description: 'Lists project under the specified parent, or retrieves a specific project''s information. One of the following arguments must be provided: "parent" or "project_name".'
+      description: 'Lists project under the specified parent, or retrieves a specific
+        project''s information. One of the following arguments must be provided: "parent"
+        or "project_name".'
       script: '|||gcp-iam-projects-get'
       type: regular
       iscommand: true
@@ -598,3 +600,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

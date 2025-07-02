@@ -2,8 +2,8 @@ id: PAN-OS - Add Static Routes
 version: -1
 fromversion: 5.0.0
 name: PAN-OS - Add Static Routes
-description: This playbook accepts a PAN-OS static route configuration and creates it
-  in the PAN-OS instance.
+description: This playbook accepts a PAN-OS static route configuration and creates
+  it in the PAN-OS instance.
 starttaskid: "0"
 tasks:
   "0":
@@ -478,8 +478,8 @@ inputs:
 - key: destination
   value: {}
   required: true
-  description: 'Enter an IP address and network mask in CIDR notation: ip_address/mask (for example, 192.168.2.0/24 for IPv4 or 2001:db8::/32
-    for IPv6).'
+  description: 'Enter an IP address and network mask in CIDR notation: ip_address/mask
+    (for example, 192.168.2.0/24 for IPv4 or 2001:db8::/32 for IPv6).'
 - key: nexthop_type
   value: {}
   required: true
@@ -493,8 +493,8 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: This input determines whether to auto-commit the configuration to
-    PAN-OS. Specify Yes/No.
+  description: This input determines whether to auto-commit the configuration to PAN-OS.
+    Specify Yes/No.
 outputs: []
 tests:
 - No test
@@ -503,3 +503,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

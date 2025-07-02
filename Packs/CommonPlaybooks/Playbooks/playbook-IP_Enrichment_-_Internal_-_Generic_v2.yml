@@ -328,7 +328,9 @@ tasks:
       id: 711a6f17-1f6f-4b1f-86d6-2808ea6ea255
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". \n"
+      description: "Checks if the IP address is in the internal IP address ranges.\n
+        If internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets
+        the \"InRange\" attribute to \"no\". \n"
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -574,7 +576,9 @@ inputs:
             value:
               simple: ','
   required: false
-  description: "A comma-separated list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. \nFor example: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes)."
+  description: "A comma-separated list of IP address ranges (in CIDR notation). Use
+    this list to check if an IP address is found within a set of IP address ranges.
+    \nFor example: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes)."
   playbookInputQuery:
 - key: ResolveIP
   value:
@@ -600,7 +604,10 @@ inputs:
 - key: Hostnames
   value: {}
   required: false
-  description: Hostnames to enrich. If the ExecutedFromParent playbook is set to True in the IP - Enrichment - Generic v2 playbook, and an internal IP resolves to an endpoint hostname that you want to enrich, the hostnames defined here will be used.
+  description: Hostnames to enrich. If the ExecutedFromParent playbook is set to True
+    in the IP - Enrichment - Generic v2 playbook, and an internal IP resolves to an
+    endpoint hostname that you want to enrich, the hostnames defined here will be
+    used.
   playbookInputQuery:
 outputs:
 - contextPath: IP
@@ -674,7 +681,8 @@ outputs:
   description: The class of the device.
   type: String
 - contextPath: ExtraHop.Device.UserModTime
-  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
   type: Number
 - contextPath: ExtraHop.Device.AutoRole
   description: The role automatically detected by the ExtraHop.
@@ -701,7 +709,8 @@ outputs:
   description: Whether the device is on the advanced analysis allow list.
   type: Boolean
 - contextPath: ExtraHop.Device.ModTime
-  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
   type: Number
 - contextPath: ExtraHop.Device.IsL3
   description: Indicates whether the device is a Layer 3 device.
@@ -749,7 +758,8 @@ outputs:
   description: The endpoint that was enriched.
   type: string
 - contextPath: ActiveDirectory.ComputersPageCookie
-  description: An opaque string received in a paged search, used for requesting subsequent entries.
+  description: An opaque string received in a paged search, used for requesting subsequent
+    entries.
   type: string
 - contextPath: ActiveDirectory.Computers
   description: The information about the hostname that was enriched using Active Directory.
@@ -767,7 +777,8 @@ outputs:
   description: The information about  the endpoint.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
-  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed. installed.
+  description: The size, in bytes, of the system volume of the endpoint on which the
+    sensor is installed. installed.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
   description: The path of the EMET telemetry associated with the sensor.
@@ -797,7 +808,8 @@ outputs:
   description: The size in bytes of physical memory.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.build_id
-  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
+  description: The sensor version installed on this endpoint. From the /api/builds/
+    endpoint.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uptime
   description: Endpoint uptime in seconds.
@@ -852,7 +864,8 @@ outputs:
   description: Machine SID of this host.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.next_checkin_time
-  description: Next expected communication from this computer in server-local time and zone.
+  description: Next expected communication from this computer in server-local time
+    and zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.node_id
   description: The node ID associated with the sensor.
@@ -882,10 +895,12 @@ outputs:
   description: A pipe-delimited list of IP,MAC pairs for each network interface.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_status
-  description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
+  description: Self-reported health score, from 0 to 100. Higher numbers indicate
+    a better health status.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.registration_time
-  description: Time this sensor was originally registered in server-local time and zone.
+  description: Time this sensor was originally registered in server-local time and
+    zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.restart_queued
   description: Whether a restart of the sensor is queued.
@@ -915,7 +930,8 @@ outputs:
   description: The sensor group ID this sensor is assigned to.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uninstall
-  description: When set, indicates that the sensor will be directed to uninstall on next check-in.
+  description: When set, indicates that the sensor will be directed to uninstall on
+    next check-in.
   type: string
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
   description: The endpoint ID.
@@ -1105,3 +1121,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

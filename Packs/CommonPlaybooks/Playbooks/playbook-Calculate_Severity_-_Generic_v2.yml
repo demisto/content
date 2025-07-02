@@ -230,7 +230,8 @@ tasks:
       id: b8bbb253-9e4b-406f-8253-31c2440b2338
       version: -1
       name: Determine incident severity
-      description: Determines the severity level based on the highest result of all severity calculations.
+      description: Determines the severity level based on the highest result of all
+        severity calculations.
       type: condition
       iscommand: false
       brand: ""
@@ -643,7 +644,8 @@ tasks:
       id: 86c4ba1f-fddb-4f6b-8712-c5b0fc6bb55a
       version: -1
       name: Calculate Severity By Email Authenticity
-      description: Calculates a severity according to the verdict coming from the CheckEmailAuthenticity script.
+      description: Calculates a severity according to the verdict coming from the
+        CheckEmailAuthenticity script.
       playbookName: Calculate Severity By Email Authenticity
       type: playbook
       iscommand: false
@@ -720,7 +722,8 @@ tasks:
       id: 2b705d3f-b982-4480-806a-42ab6f3026be
       version: -1
       name: Set Microsoft Headers Severity Check
-      description: Calculates the severity after processing the PCL, BCL and PCL values inside Microsoft headers. If no value is entered, nothing is returned.
+      description: Calculates the severity after processing the PCL, BCL and PCL values
+        inside Microsoft headers. If no value is entered, nothing is returned.
       scriptName: Set
       type: regular
       iscommand: false
@@ -758,7 +761,8 @@ tasks:
       id: 6e24dd7e-cb39-474c-87e1-8a94d2e42577
       version: -1
       name: Check if MicrosoftHeadersSeverityCheck is not empty
-      description: This task verifies that the playbook input "MicrosoftHeadersSeverityCheck" is not empty.
+      description: This task verifies that the playbook input "MicrosoftHeadersSeverityCheck"
+        is not empty.
       type: condition
       iscommand: false
       brand: ""
@@ -843,7 +847,8 @@ tasks:
       id: 92cbfafa-4642-43ae-8756-56081a975704
       version: -1
       name: Calculate Severity By Highest DBotScore
-      description: Calculates the incident severity level according to the highest DBotScore.
+      description: Calculates the incident severity level according to the highest
+        DBotScore.
       playbookName: Calculate Severity By Highest DBotScore
       type: playbook
       iscommand: false
@@ -963,13 +968,16 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
+  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck
+    script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
   playbookInputQuery:
 - key: MicrosoftHeadersSeverityCheck
   value:
     simple: ${Email.MicrosoftHeadersSeverityCheck}
   required: false
-  description: The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates the severity after processing the PCL, BCL and PCL values inside Microsoft's headers.
+  description: The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook,
+    which calculates the severity after processing the PCL, BCL and PCL values inside
+    Microsoft's headers.
   playbookInputQuery:
 - key: XDRRiskyUsers
   value:
@@ -979,7 +987,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: An object of risky users and their corresponding scores, as outputted by the "xdr-list-risky-users" command.
+  description: An object of risky users and their corresponding scores, as outputted
+    by the "xdr-list-risky-users" command.
   playbookInputQuery:
 - key: XDRRiskyHosts
   value:
@@ -989,7 +998,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: An object of risky hosts and their corresponding scores, as outputted by the "xdr-list-risky-hosts" command.
+  description: An object of risky hosts and their corresponding scores, as outputted
+    by the "xdr-list-risky-hosts" command.
   playbookInputQuery:
 - key: DBotScoreMaxScore
   value:
@@ -1031,3 +1041,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

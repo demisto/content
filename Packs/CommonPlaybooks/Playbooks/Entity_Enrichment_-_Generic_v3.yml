@@ -545,7 +545,9 @@ inputs:
             value:
               simple: ','
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
+  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated
+    list should be provided in CIDR notation. For example, of a list of ranges would
+    be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 - key: MD5
   value:
@@ -631,12 +633,15 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. True - Resolves the IP addresses to hostnames. False - Does not resolve the IP addresses to hostnames.
+  description: Determines whether the IP Enrichment - Generic playbook should convert
+    IP addresses to hostnames using a DNS query. True - Resolves the IP addresses
+    to hostnames. False - Does not resolve the IP addresses to hostnames.
   playbookInputQuery:
 - key: InternalDomains
   value: {}
   required: false
-  description: A CSV list of internal domains. The list will be used to determine whether an email address is internal or external.
+  description: A CSV list of internal domains. The list will be used to determine
+    whether an email address is internal or external.
   playbookInputQuery:
 - key: CVE
   value:
@@ -748,7 +753,8 @@ outputs:
   description: The email account NetworkType (Internal/External).
   type: string
 - contextPath: Account.Email.Distance
-  description: 'The object that contains the distance between the email domain and the compared domain. '
+  description: 'The object that contains the distance between the email domain and
+    the compared domain. '
   type: unknown
 - contextPath: Account.Email.Distance.Domain
   description: The compared domain.
@@ -768,7 +774,8 @@ outputs:
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
 - contextPath: CylanceProtectDevice
-  description: The device information about the hostname that was enriched using Cylance Protect v2.
+  description: The device information about the hostname that was enriched using Cylance
+    Protect v2.
   type: unknown
 - contextPath: PaloAltoNetworksXDR.RiskyUser
   description: The account object.
@@ -831,7 +838,8 @@ outputs:
   description: The score.
   type: string
 - contextPath: Core
-  description: An object containing risky users and risky hosts as identified by the Core ITDR module.
+  description: An object containing risky users and risky hosts as identified by the
+    Core ITDR module.
   type: unknown
 - contextPath: Core.RiskyUser
   description: The risky user object.
@@ -931,3 +939,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

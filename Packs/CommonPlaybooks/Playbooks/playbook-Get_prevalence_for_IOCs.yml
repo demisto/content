@@ -645,7 +645,8 @@ tasks:
       id: 950a0f87-5153-4ca7-8cb3-f93cf87dfda9
       version: -1
       name: Get prevalence for Registry key and value
-      description: Get the prevalence of a registry_path, identified by key_name, value_name.
+      description: Get the prevalence of a registry_path, identified by key_name,
+        value_name.
       script: '|||core-get-registry-analytics-prevalence'
       type: regular
       iscommand: true
@@ -944,3 +945,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

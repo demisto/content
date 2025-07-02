@@ -591,7 +591,8 @@ inputs:
   playbookInputQuery:
 - key: IPDescription
   value:
-    simple: Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in Cortex XSOAR.
+    simple: Automatically created using "PAN-OS - Block IP - Static Address Group"
+      playbook in Cortex XSOAR.
   required: false
   description: The description of the IP in case it will get created by the playbook.
   playbookInputQuery:
@@ -617,3 +618,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

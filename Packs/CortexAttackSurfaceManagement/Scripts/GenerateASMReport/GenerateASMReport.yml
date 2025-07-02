@@ -28,7 +28,8 @@ args:
 - description: Collect information on data collection tasks.
   isArray: true
   name: asm_data_collection
-- description: Tags from objects that can be used to determine other information (if server is Dev for example).
+- description: Tags from objects that can be used to determine other information (if
+    server is Dev for example).
   isArray: true
   name: asm_tags
 - description: Private IP addresses found.
@@ -77,3 +78,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

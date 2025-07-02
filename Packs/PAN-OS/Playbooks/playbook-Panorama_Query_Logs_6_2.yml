@@ -218,70 +218,70 @@ inputs:
   value: {}
   required: true
   description: 'Log type to query. Can be: traffic, threat, wildfire, url or data-filtering.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: query
   value: {}
   required: false
   description: The query string by which to match criteria for the logs. This is similar
     to the query provided in the web interface under the Monitor tab when viewing
     the logs.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: time-generated
   value: {}
   required: false
   description: 'The time the log was generated from the timestamp and prior to it.
     For example: "2019/08/11 01:10:44".'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: addr-src
   value: {}
   required: false
   description: Source address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: addr-dst
   value: {}
   required: false
   description: Destination address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ip
   value: {}
   required: false
   description: Source or destination IP address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: zone-src
   value: {}
   required: false
   description: Source zone.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: zone-dst
   value: {}
   required: false
   description: Destination zone.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: action
   value: {}
   required: false
   description: Rule action.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: port-dst
   value: {}
   required: false
   description: Destination port.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: rule
   value: {}
   required: false
   description: 'Rule name, for example: "Allow all outbound".'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: url
   value: {}
   required: false
   description: 'URL, for example: "safebrowsing.googleapis.com".'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: filedigest
   value: {}
   required: false
   description: File hash (for WildFIre logs only).
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Panorama.Monitor
   description: Monitor logs object.
@@ -442,3 +442,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

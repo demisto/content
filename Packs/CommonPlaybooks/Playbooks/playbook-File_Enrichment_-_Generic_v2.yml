@@ -121,7 +121,8 @@ tasks:
       id: 27539369-ccb3-441c-89d9-001a4fc03093
       version: -1
       name: Is Cylance Protect v2 enabled?
-      description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
+      description: Checks if there is an active instance of the Cylance Protect v2
+        integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -649,7 +650,8 @@ outputs:
   description: Identifies if the threat is on the Global Quarantine list.
   type: string
 - contextPath: File.Running
-  description: Identifies if the threat is executing, or another executable loaded or called it.
+  description: Identifies if the threat is executing, or another executable loaded
+    or called it.
   type: string
 - contextPath: File.Safelisted
   description: Identifies if the threat is on the Safe List.
@@ -661,7 +663,8 @@ outputs:
   description: The threat sub-classification for the threat.
   type: string
 - contextPath: File.UniqueToCylance
-  description: Whether the threat was identified by Cylance, and not by other anti-virus sources.
+  description: Whether the threat was identified by Cylance, and not by other anti-virus
+    sources.
   type: string
 - contextPath: File.Relationships.EntityA
   description: The source of the relationship.
@@ -679,7 +682,8 @@ outputs:
   description: The type of the destination of the relationship.
   type: String
 - contextPath: File.Malicious.TotalEngines
-  description: For malicious files, the total number of engines that checked the file hash.
+  description: For malicious files, the total number of engines that checked the file
+    hash.
   type: Unknown
 - contextPath: DBotScore.Reliability
   description: Reliability of the source providing the intelligence data.
@@ -879,3 +883,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

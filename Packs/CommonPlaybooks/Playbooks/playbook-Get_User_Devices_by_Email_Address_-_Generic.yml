@@ -221,7 +221,8 @@ tasks:
       id: 37e9ddaf-5126-4655-8379-bea5b950e24a
       version: -1
       name: GSuiteAdmin enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -322,7 +323,8 @@ tasks:
       id: 1ebadc42-526d-4d3d-8c4a-f436142037d3
       version: -1
       name: Jamf Pro - Get computer details
-      description: Matches computers by specific characteristics and returns general data on each of the computers.
+      description: Matches computers by specific characteristics and returns general
+        data on each of the computers.
       script: jamf v2|||jamf-get-computer-by-match
       type: regular
       iscommand: true
@@ -358,7 +360,8 @@ tasks:
       id: 4ce06688-5049-4290-871b-1407d8dd7444
       version: -1
       name: jamf v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -398,7 +401,8 @@ tasks:
       id: 503fdfc8-c837-4070-8e40-57fa280c0d0a
       version: -1
       name: Jamf Pro - Get mobile device details
-      description: Matches mobile devices by specific characteristics and returns general data on each one of the mobile devices.
+      description: Matches mobile devices by specific characteristics and returns
+        general data on each one of the mobile devices.
       script: '|||jamf-get-mobile-device-by-match'
       type: regular
       iscommand: true
@@ -524,7 +528,8 @@ tasks:
       id: cc138021-9029-463e-8771-2d84742a4ef9
       version: -1
       name: ServiceNow v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -965,7 +970,8 @@ tasks:
       id: 39851b37-ed87-40cf-8826-e09f468f47fd
       version: -1
       name: Active Directory Query v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1004,7 +1010,9 @@ tasks:
       id: 29684d8f-17d1-4eb4-8829-78927db140df
       version: -1
       name: Get user details
-      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -1213,7 +1221,8 @@ tasks:
       id: 3853d860-e3a9-45c7-8462-42c88f1a0587
       version: -1
       name: Get computer information
-      description: 'Returns the "general" subset of a specific computer, e.g.: name, MAC address, IP, serial number, UDID, etc.'
+      description: 'Returns the "general" subset of a specific computer, e.g.: name,
+        MAC address, IP, serial number, UDID, etc.'
       script: '|||jamf-get-computer-by-id'
       type: regular
       iscommand: true
@@ -1250,7 +1259,8 @@ tasks:
       id: 910a38ab-dbb4-42b1-8efb-e047703d1c5e
       version: -1
       name: Get mobile device information
-      description: 'Returns the "general" subset of a specific mobile device, e.g.: name, MAC address, IP, serial number, UDID. etc.'
+      description: 'Returns the "general" subset of a specific mobile device, e.g.:
+        name, MAC address, IP, serial number, UDID. etc.'
       script: '|||jamf-get-mobile-device-by-id'
       type: regular
       iscommand: true
@@ -1306,7 +1316,9 @@ tasks:
       key:
         simple: JamfComputers
       value:
-        simple: '${JAMF.Computer={Name: val[''name''], SerialNumber: val[''serial_number''], ID: val[''id''], Model: val[''platform''], MACAddress: val[''mac_address''], OS: '''', Integration: ''jamf v2''}}'
+        simple: '${JAMF.Computer={Name: val[''name''], SerialNumber: val[''serial_number''],
+          ID: val[''id''], Model: val[''platform''], MACAddress: val[''mac_address''],
+          OS: '''', Integration: ''jamf v2''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1350,7 +1362,9 @@ tasks:
       key:
         simple: JamfMobileDevices
       value:
-        simple: '${JAMF.MobileDevice={Name: val[''name''], SerialNumber: val[''serial_number''], ID: val[''id''], Model: val[''model''], MACAddress: val[''wifi_mac_address''], OS: '''', Integration: ''jamf v2''}}'
+        simple: '${JAMF.MobileDevice={Name: val[''name''], SerialNumber: val[''serial_number''],
+          ID: val[''id''], Model: val[''model''], MACAddress: val[''wifi_mac_address''],
+          OS: '''', Integration: ''jamf v2''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1491,7 +1505,9 @@ tasks:
       key:
         simple: GoogleDevices
       value:
-        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber: val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], MACAddress: val[''wifiMacAddress''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
+        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber:
+          val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], MACAddress:
+          val[''wifiMacAddress''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1578,7 +1594,9 @@ tasks:
       key:
         simple: SnowComputers
       value:
-        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID: val[''ID''], Model: '''', MACAddress: '''', OS: val[''OperatingSystem''], Integration: ''ServiceNow v2''}}'
+        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID:
+          val[''ID''], Model: '''', MACAddress: '''', OS: val[''OperatingSystem''],
+          Integration: ''ServiceNow v2''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1723,7 +1741,8 @@ tasks:
       id: b3ca6346-d3f9-41e6-8085-ed27033345a9
       version: -1
       name: Microsoft Graph API enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1893,7 +1912,9 @@ tasks:
       key:
         simple: MSGraphDevices
       value:
-        simple: '${MicrosoftGraph={Name: val[''displayName''], SerialNumber: '''', ID: val[''deviceId''], Model: '''', MACAddress: '''', OS: val[''operatingSystem''], Integration: ''Microsoft Graph API''}}'
+        simple: '${MicrosoftGraph={Name: val[''displayName''], SerialNumber: '''',
+          ID: val[''deviceId''], Model: '''', MACAddress: '''', OS: val[''operatingSystem''],
+          Integration: ''Microsoft Graph API''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1978,7 +1999,8 @@ outputs:
 - contextPath: GSuite.MobileDevices.MobileListObjects.resourceId
   description: The unique ID the API service uses to identify the mobile device.
 - contextPath: GSuite.MobileDevices.MobileListObjects.deviceId
-  description: The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier.
+  description: The serial number for a Google Sync mobile device. For Android and
+    iOS devices, this is a software-generated unique identifier.
 - contextPath: GSuite.MobileDevices.MobileListObjects.name
   description: A list of the owner's usernames.
 - contextPath: GSuite.MobileDevices.MobileListObjects.email
@@ -1994,9 +2016,11 @@ outputs:
 - contextPath: GSuite.MobileDevices.MobileListObjects.hardwareId
   description: The IMEI/MEID unique identifier for Android hardware.
 - contextPath: GSuite.MobileDevices.MobileListObjects.firstSync
-  description: The date and time the mobile device was initially synchronized with the policy settings in the Admin console.
+  description: The date and time the mobile device was initially synchronized with
+    the policy settings in the Admin console.
 - contextPath: GSuite.MobileDevices.MobileListObjects.lastSync
-  description: The date and time the mobile device was last synchronized with the policy settings in the Admin console.
+  description: The date and time the mobile device was last synchronized with the
+    policy settings in the Admin console.
 - contextPath: GSuite.MobileDevices.MobileListObjects.userAgent
   description: Information about the mobile device such as the operating system version.
 - contextPath: GSuite.MobileDevices.MobileListObjects.serialNumber
@@ -2217,3 +2241,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

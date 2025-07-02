@@ -65,19 +65,18 @@ tasks:
       id: 9b9c34a8-15c4-46c8-83b9-5a15e108b370
       version: -1
       name: Search for Azure AD service account created or modified
-      description: "Hunt for a Azure AD new or modified service account.\nXDR example\
-        \ query:\npreset = msft_azure_ad_audit // go over azure ad audit logs\n| filter\
-        \ activityDisplayName IN (\"Add service principal credentials\", \"Add service\
-        \ principal\")\nAND result = \"success\" // find cases where someone adds\
-        \ SPNs to an account\n\nSplunk example queries:\nsourcetype=\"azure:aad:audit\"\
-        \ activityDisplayName=\"Add service principal\" \n| stats values(activityDisplayName)\
-        \ AS Action, values(initiatedBy.user.userPrincipalName) \nAS UPN, values(targetResources{}.displayName)\
-        \ AS Target,\nvalues(targetResources{}.modifiedProperties{}.displayName) AS\
-        \ \"Modified Resources\",\nvalues(targetResources{}.modifiedProperties{}.oldValue)\
-        \ AS \"Old Values\",\nvalues(targetResources{}.modifiedProperties{}.newValue)\
-        \ AS \"New Values\" by correlationId \n| fields - correlationId\n---------\n\
-        sourcetype=\"azure:aad:audit\" activityDisplayName=\"Add service principal\
-        \ credentials\"\n"
+      description: "Hunt for a Azure AD new or modified service account.\nXDR example
+        query:\npreset = msft_azure_ad_audit // go over azure ad audit logs\n| filter
+        activityDisplayName IN (\"Add service principal credentials\", \"Add service
+        principal\")\nAND result = \"success\" // find cases where someone adds SPNs
+        to an account\n\nSplunk example queries:\nsourcetype=\"azure:aad:audit\" activityDisplayName=\"\
+        Add service principal\" \n| stats values(activityDisplayName) AS Action, values(initiatedBy.user.userPrincipalName)
+        \nAS UPN, values(targetResources{}.displayName) AS Target,\nvalues(targetResources{}.modifiedProperties{}.displayName)
+        AS \"Modified Resources\",\nvalues(targetResources{}.modifiedProperties{}.oldValue)
+        AS \"Old Values\",\nvalues(targetResources{}.modifiedProperties{}.newValue)
+        AS \"New Values\" by correlationId \n| fields - correlationId\n---------\n\
+        sourcetype=\"azure:aad:audit\" activityDisplayName=\"Add service principal
+        credentials\"\n"
       type: regular
       iscommand: false
       brand: ""
@@ -105,16 +104,16 @@ tasks:
       id: 6240c9dc-c4d0-4e19-8055-d90a16ed5bec
       version: -1
       name: Search for Azure AD application sharing with additional tenants
-      description: "Hunt for Azure AD application sharing with additional tenants.\n\
-        **XDR example query:**\npreset = msft_azure_ad_audit  // go over azure ad\
-        \ audit logs\n| filter activityDisplayName = \"Update application\"\nAND operationType=\"\
+      description: "Hunt for Azure AD application sharing with additional tenants.\n
+        **XDR example query:**\npreset = msft_azure_ad_audit  // go over azure ad
+        audit logs\n| filter activityDisplayName = \"Update application\"\nAND operationType=\"\
         Update\"\nand result=\"success\"\nand modifiedDisplayName = \"AvailableToOtherTenants\"\
-          // find cases where someone grants permission to access an app from another\
-        \ azure ad tenant\n\n**Splunk example query:**\nsourcetype=\"azure:aad:audit\"\
-        \ activityDisplayName=\"Update application\" operationType=Update \nresult=success\
-        \ targetResources{}.modifiedProperties{}.displayName=AvailableToOtherTenants\
-        \ \n| table activityDateTime initiatedBy.user.userPrincipalName, \ntargetResources{}.displayName\
-        \ additionalDetails{}.value"
+          // find cases where someone grants permission to access an app from another
+        azure ad tenant\n\n**Splunk example query:**\nsourcetype=\"azure:aad:audit\"\
+        \ activityDisplayName=\"Update application\" operationType=Update \nresult=success
+        targetResources{}.modifiedProperties{}.displayName=AvailableToOtherTenants
+        \n| table activityDateTime initiatedBy.user.userPrincipalName, \ntargetResources{}.displayName
+        additionalDetails{}.value"
       type: regular
       iscommand: false
       brand: ""
@@ -726,7 +725,8 @@ tasks:
       id: 5ce1ba8d-8292-476c-8a58-70f3248c1296
       version: -1
       name: Found mail permissions were added to a service principal?
-      description: Checks for cases where mail permissions were added to a service principal.
+      description: Checks for cases where mail permissions were added to a service
+        principal.
       type: condition
       iscommand: false
       brand: ""
@@ -807,3 +807,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

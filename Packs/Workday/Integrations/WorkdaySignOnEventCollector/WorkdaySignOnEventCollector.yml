@@ -11,16 +11,19 @@ configuration:
   required: true
   defaultvalue: 'https://services1.myworkday.com'
   type: 0
-  additionalinfo: 'API endpoint of Workday server. Can be obtained from the View API Clients report in the Workday application.'
+  additionalinfo: 'API endpoint of Workday server. Can be obtained from the View API
+    Clients report in the Workday application.'
   section: Connect
 - name: tenant_name
   display: Tenant Name
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'The name of the Workday Tenant. Can be obtained from View API Clients report in Workday application.'
+  additionalinfo: 'The name of the Workday Tenant. Can be obtained from View API Clients
+    report in Workday application.'
   section: Connect
-- additionalinfo: Some tenants may be using different API versions. Check in your Workday tenant to determine the version to use. Default is v40.0.
+- additionalinfo: Some tenants may be using different API versions. Check in your
+    Workday tenant to determine the version to use. Default is v40.0.
   defaultvalue: v40.0
   display: API Version
   name: api_version
@@ -29,7 +32,8 @@ configuration:
   required: false
 - name: credentials
   display: Username
-  additionalinfo: "Username should include tenant info and should be in the Username@TenantName format."
+  additionalinfo: "Username should include tenant info and should be in the Username@TenantName
+    format."
   required: true
   defaultvalue:
   type: 9
@@ -50,7 +54,8 @@ configuration:
   additionalinfo:
   section: Connect
   advanced: true
-- additionalinfo: The maximum number of sign on events to retrieve. Large amount of events may cause performance issues.
+- additionalinfo: The maximum number of sign on events to retrieve. Large amount of
+    events may cause performance issues.
   defaultvalue: '10000'
   display: Max events per fetch
   name: max_fetch
@@ -66,18 +71,22 @@ configuration:
   type: 19
   section: Collect
   advanced: true
-description: Use the Workday Sign On Event Collector integration to get sign on logs from Workday.
+description: Use the Workday Sign On Event Collector integration to get sign on logs
+  from Workday.
 display: Workday Sign On Event Collector
 name: Workday Sign On Event Collector
 script:
   commands:
   - name: workday-get-sign-on-events
-    description: Returns sign on events extracted from Workday. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
+    description: Returns sign on events extracted from Workday. This command is used
+      for developing/debugging and is to be used with caution, as it can create events,
+      leading to events duplication and exceeding the API request limitation.
     deprecated: false
     arguments:
     - auto: PREDEFINED
       defaultValue: "False"
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise
+        the command will only display them.
       name: should_push_events
       predefined:
       - "True"
@@ -89,17 +98,21 @@ script:
       isArray: false
       defaultValue: 1000
     - name: from_date
-      description: 'The date and time of the earliest event. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+      description: 'The date and time of the earliest event. The default timezone
+        is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example:
+        "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: false
       isArray: false
       defaultValue: ""
     - name: to_date
-      description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+      description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example:
+        "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
       required: false
       isArray: false
       defaultValue: ""
     - name: relative_from_date
-      description: 'The query from date, for example, "5 minutes". Note: We strongly suggest to limit the value of this parameter.'
+      description: 'The query from date, for example, "5 minutes". Note: We strongly
+        suggest to limit the value of this parameter.'
       required: false
       isArray: false
       defaultValue: ""
@@ -122,3 +135,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
