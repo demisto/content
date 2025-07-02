@@ -11,8 +11,8 @@ from boto3 import Session
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
-DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv('EGRESSPROXY_CA_PATH') or "/etc/certs/egress.crt"
-DEFAULT_PROXYDOME = os.getenv('CRTX_HTTP_PROXY') or "10.181.0.100:11117"
+DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
+DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
 
@@ -1156,7 +1156,6 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
-    
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -1164,7 +1163,6 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-user-policy-put": IAM.put_user_policy_command,
     "aws-iam-role-from-instance-profile-remove": IAM.remove_role_from_instance_profile_command,
     "aws-iam-access-key-update": IAM.update_access_key_command,
-    
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
     "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
@@ -1172,14 +1170,11 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
-    
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
-    
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
-    
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
 }
@@ -1222,20 +1217,17 @@ REQUIRED_ACTIONS: list[str] = [
 
 
 def test_module(params):
-    if params.get("test_account_id"): 
+    if params.get("test_account_id"):
         sts_client, _ = get_service_client(
             params=params,
-            service_name=AWSServices.STS.value, 
-            config=Config(
-                connect_timeout=5,
-                read_timeout=5,
-                retries={'max_attempts': 1}
-            )
+            service_name=AWSServices.STS.value,
+            config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
         )
         identity = sts_client.get_caller_identity()
         demisto.info(f"[AWS Automation Test Module] STS {identity=}")
     else:
         raise DemistoException("Missing AWS credentials or account ID for health check")
+
 
 def health_check(credentials: dict, account_id: str, connector_id: str) -> list[HealthCheckError] | HealthCheckError | None:
     """
@@ -1256,52 +1248,43 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
         # Verify STS connectivity first
         try:
             sts_client, session = get_service_client(
-                credentials=credentials, 
-                service_name=AWSServices.STS.value, 
-                config=Config(
-                    connect_timeout=5,
-                    read_timeout=5,
-                    retries={'max_attempts': 1}
-                )
+                credentials=credentials,
+                service_name=AWSServices.STS.value,
+                config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
             )
-            
+
             identity = sts_client.get_caller_identity()
             demisto.info(f"[AWS Automation Health Check] STS {identity=}")
-        
+
         except Exception as sts_error:
             demisto.error(f"[AWS Automation Health Check] STS Caller Identity check failed: {sts_error}")
             sts_error_obj = HealthCheckError(
                 account_id=account_id,
                 connector_id=connector_id,
                 message=f"STS Caller Identity check failed: {str(sts_error)}",
-                error_type=ErrorType.CONNECTIVITY_ERROR
+                error_type=ErrorType.CONNECTIVITY_ERROR,
             )
             connectivity_errors.append(sts_error_obj)
-            
-                    
+
         # Connectivity check for services
         for service in AWSServices:
             try:
                 # Skip STS it is already checked.
                 if service == AWSServices.STS:
                     continue
-                
+
                 # Attempt to create a client for each service
                 client, _ = get_service_client(
-                    session=session, 
-                    service_name=service, 
-                    config=Config(
-                        connect_timeout=3,
-                        read_timeout=3,
-                        retries={'max_attempts': 1}
-                    )
+                    session=session,
+                    service_name=service,
+                    config=Config(connect_timeout=3, read_timeout=3, retries={"max_attempts": 1}),
                 )
                 demisto.info(f"[AWS Automation Health Check] Successfully created client for {service.value}")
-            
+
             except Exception as service_error:
                 error_msg = f"Failed to create client for {service.value}: {str(service_error)}"
                 demisto.error(error_msg)
-                
+
                 # Create a specific HealthCheckError for this service
                 service_error_obj = HealthCheckError(
                     account_id=account_id,
@@ -1310,21 +1293,21 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
                     error_type=ErrorType.CONNECTIVITY_ERROR,
                 )
                 connectivity_errors.append(service_error_obj)
-        
+
         demisto.info(f"[AWS Automation Health Check] {connectivity_errors=}")
         return connectivity_errors if connectivity_errors else None
 
     except Exception as general_error:
         demisto.error(f"[AWS Automation Health Check] Unexpected error during health check: {general_error}")
-        
+
         # Create a general internal error
         internal_error = HealthCheckError(
             account_id=account_id,
             connector_id=connector_id,
             message=f"Unexpected error during health check: {str(general_error)}",
-            error_type=ErrorType.INTERNAL_ERROR
+            error_type=ErrorType.INTERNAL_ERROR,
         )
-        
+
         return internal_error
 
 
@@ -1348,7 +1331,15 @@ def register_proxydome_header(boto_client: BotoClient) -> None:
     event_system.register_last("before-send.*.*", _add_proxydome_header)
 
 
-def get_service_client(credentials: dict = {}, params: dict = {}, args: dict = {}, command: str = "", session: Optional[Session] = None, service_name: str = "", config: Optional[Config] = None) -> tuple[BotoClient, Optional[Session]]:
+def get_service_client(
+    credentials: dict = {},
+    params: dict = {},
+    args: dict = {},
+    command: str = "",
+    session: Optional[Session] = None,
+    service_name: str = "",
+    config: Optional[Config] = None,
+) -> tuple[BotoClient, Optional[Session]]:
     """
     Create and configure a boto3 client for the specified AWS service.
 
@@ -1373,12 +1364,12 @@ def get_service_client(credentials: dict = {}, params: dict = {}, args: dict = {
     service_name = service_name or command.split("-")[1]
     service = AWSServices(service_name)
 
-    client_config =  Config(
+    client_config = Config(
         proxies={"https": DEFAULT_PROXYDOME}, proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH}
     )
-    if config: 
+    if config:
         client_config.merge(config)
-        
+
     client = aws_session.client(service, verify=False, config=client_config)
 
     register_proxydome_header(client)
@@ -1417,10 +1408,14 @@ def main():  # pragma: no cover
 
     try:
         if command == "test-module":
-            results = run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check) if (connector_id := get_connector_id()) else test_module(params)
+            results = (
+                run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check)
+                if (connector_id := get_connector_id())
+                else test_module(params)
+            )
             demisto.info(f"[AWS Automation] Health Check Results: {results}")
             return_results(results)
-            
+
         elif command in COMMANDS_MAPPING:
             return_results(execute_aws_command(command, args, params))
         else:
