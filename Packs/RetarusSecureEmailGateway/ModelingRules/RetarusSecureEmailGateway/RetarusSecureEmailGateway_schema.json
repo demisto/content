@@ -1,5 +1,5 @@
 {
-    "retarus_secure_email_gateway": {
+    "retarus_secure_email_gateway_raw": {
         "ts": {
             "type": "string",
             "is_array": false
