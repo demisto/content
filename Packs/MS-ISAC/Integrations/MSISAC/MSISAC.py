@@ -17,7 +17,7 @@ urllib3.disable_warnings()
 API_ROUTE = "/api/v1"
 MSISAC_FETCH_WINDOW_DEFAULT = 1
 XSOAR_INCIDENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-MSISAC_S_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+MSISAC_CREATED_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%Z"
 
 
 """ CLIENT CLASS """
@@ -378,7 +378,7 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
     latest_fetched_case: str = last_run.get("lastFetchedCase", "")
 
     for case in retrieve_cases_data:
-        case_created_time = datetime.strptime(case.get("createdAt"), XSOAR_INCIDENT_DATE_FORMAT)
+        case_created_time = datetime.strptime(case.get("createdAt"), MSISAC_CREATED_TIME_FORMAT)
         case_id = case.get("caseId", "")
 
         # Make sure case was created after last fetch and was not previously fetched.
