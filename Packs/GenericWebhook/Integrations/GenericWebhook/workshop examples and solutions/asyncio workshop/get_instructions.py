@@ -1,0 +1,34 @@
+import aiohttp
+import asyncio
+
+
+async def send_request(params, endpoint):
+    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_2/"
+    headers = {
+    'Authorization': 'Basic YTph',
+    }
+    async with aiohttp.ClientSession(base_url=url, headers=headers) as session, session.get(url=endpoint, params=params) as response:
+        try:
+            response.raise_for_status()  # Check for any HTTP errors
+            raw_response = await response.text()
+            return raw_response
+        except aiohttp.ClientError as e:
+            print(e)
+            raw_response = ''
+    print(raw_response)
+    return raw_response
+
+
+async def main():
+    # params = {}
+    params = {"step_number": 1}
+    # params = {"step_number": 1, "hint": "true"}
+    # params = {"step_number": 2, "arad": "naknik"}
+    # params = {"step_number": 2, "hint": "true"}
+    # params = {"step_number": 3}
+    # params = {"step_number": 3, "hint": "true"}
+    print(f"going to send request with {params=}")
+    raw_response = await send_request(params, endpoint="instructions")
+    print(raw_response)
+
+asyncio.run(main())

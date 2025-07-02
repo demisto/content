@@ -25,6 +25,7 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name="Authorization")
 EXAMPLE_6_COUNTER = 1
+EXAMPLE_7_STR = ""
 STEP_1_DICT = defaultdict(int)
 STEP_2_DICT = defaultdict(int)
 STEP_3_DICT = defaultdict(dict)
@@ -166,6 +167,78 @@ async def handle_get_request_example_6():
     return Response(status_code=status.HTTP_200_OK, content=str(val), media_type="application/json")
 
 
+@app.post('/example_7')
+async def handle_post_request_example_7(request: Request):
+    """
+        for example 7.
+    """
+    try:
+        request_data = await request.json() # Renamed from 'request' to avoid shadowing
+        demisto.debug(f"WH: Got request; {request_data}")
+
+        # Remove or comment out this line if 'event' is not present in your client's payload
+        # event_type = request_data['event'] # <--- THIS IS LIKELY THE CULPRIT
+
+        payload = request_data['payload']
+        phrase_to_save = payload["phrase"]
+
+        global EXAMPLE_7_STR
+        EXAMPLE_7_STR = phrase_to_save
+        await asyncio.sleep(5) # Shorter sleep
+        return Response(status_code=status.HTTP_200_OK, content=f'Finished post request to Example 7 endpoint.') # Return 200 OK
+    except Exception as e:
+        await handle_listen_error(f'An error occurred while handling a response: {e}')
+        # Ensure you return an error response to the client
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=f'Server error: {e}')
+
+
+@app.get('/example_7')
+async def handle_get_request_example_7():
+    """
+        for example 7.
+    """
+    await asyncio.sleep(0.1) # Shorter sleep
+    global EXAMPLE_7_STR
+    return Response(status_code=status.HTTP_200_OK, content=f"was that your phrase? {EXAMPLE_7_STR}", media_type="application/json")
+
+
+async def handle_listen_error(error: str):
+    """
+    Logs an error and updates the module health accordingly.
+    Args:
+        error: The error string.
+    """
+    demisto.error(error)
+    demisto.updateModuleHealth(error)
+
+
+@app.post('/step_1')
+async def handle_post_request_step_1(request: Request):
+    """handle any response that came from Zoom app"""
+    try:
+        request_data = await request.json() # Renamed from 'request' to avoid shadowing
+        demisto.debug(f"WH: Got request; {request_data}")
+
+        # Remove or comment out this line if 'event' is not present in your client's payload
+        # event_type = request_data['event'] # <--- THIS IS LIKELY THE CULPRIT
+
+        payload = request_data['payload']
+        name = payload["name"]
+
+        global STEP_1_DICT
+        global lock_1
+        async with lock_1:
+            STEP_1_DICT[name] = STEP_1_DICT.get(name, 0) + 1
+        await asyncio.sleep(3) # Shorter sleep
+        async with lock_1:
+            STEP_1_DICT[name] -= 1
+        return Response(status_code=status.HTTP_200_OK, content=f'{name=} processed successfully.') # Return 200 OK
+    except Exception as e:
+        await handle_listen_error(f'An error occurred while handling a response: {e}')
+        # Ensure you return an error response to the client
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=f'Server error: {e}')
+
+
 @app.get('/step_1')
 async def handle_get_request_step_1(name=""):
     """
@@ -173,34 +246,42 @@ async def handle_get_request_step_1(name=""):
     """
     global STEP_1_DICT
     global lock_1
+    await asyncio.sleep(1) # Shorter sleep
     async with lock_1:
-        STEP_1_DICT[name] += 1
         if STEP_1_DICT[name] == 3:
             response = "You passed the first step! you know how to get instructions for the second step, this time, add arad (str) field to your request params."
         else:
-            response = str(STEP_1_DICT[name])
-    await asyncio.sleep(3)
-    async with lock_1:
-        STEP_1_DICT[name] -= 1
+            response = f"Currently got only {STEP_1_DICT[name]} subscriptions under {name=}"
     if not name:
         response = "Make sure to add your name to the params."
     return Response(status_code=status.HTTP_200_OK, content=str(response), media_type="application/json")
 
 
-@app.get('/step_2')
-async def handle_get_request_step_2(name=""):
-    """
-        for step 2.
-    """
-    global STEP_2_DICT
-    global lock_2
-    await asyncio.sleep(2)
-    async with lock_2:
-        STEP_2_DICT[name] += 1
-    await asyncio.sleep(3)
-    async with lock_2:
-        STEP_2_DICT[name] -= 1
-    return Response(status_code=status.HTTP_200_OK, content='Finished call to step_2 endpoint.', media_type="application/json")
+@app.post('/step_2')
+async def handle_post_request_step_2(request: Request):
+    """handle any response that came from Zoom app"""
+    try:
+        request_data = await request.json() # Renamed from 'request' to avoid shadowing
+        demisto.debug(f"WH: Got request; {request_data}")
+
+        # Remove or comment out this line if 'event' is not present in your client's payload
+        # event_type = request_data['event'] # <--- THIS IS LIKELY THE CULPRIT
+
+        payload = request_data['payload']
+        name = payload["name"]
+
+        global STEP_2_DICT
+        global lock_2
+        async with lock_2:
+            STEP_2_DICT[name] = STEP_2_DICT.get(name, 0) + 1
+        await asyncio.sleep(3) # Shorter sleep
+        async with lock_2:
+            STEP_2_DICT[name] -= 1
+        return Response(status_code=status.HTTP_200_OK, content='Finished call to step_2 endpoint.') # Return 200 OK
+    except Exception as e:
+        await handle_listen_error(f'An error occurred while handling a response: {e}')
+        # Ensure you return an error response to the client
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=f'Server error: {e}')
 
 
 @app.get('/step_2_completion_attempt')
@@ -220,22 +301,35 @@ async def handle_get_request_step_2_completion_attempt(name=""):
     return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
 
 
-@app.get('/step_3')
-async def handle_get_request_step_3(name=""):
+@app.post('/step_3')
+async def handle_get_request_step_3(request: Request):
     """
         for step 3.
     """
-    global STEP_3_DICT
-    global lock_3
-    async with lock_3:
-        STEP_3_DICT[name]["counter"] = STEP_3_DICT[name].get("counter", 0) + 1
-        password = random.randint(0,1000)
-        STEP_3_DICT[name]["password"] = password
-    await asyncio.sleep(3)
-    async with lock_3:
-        STEP_3_DICT[name]["counter"] -= 1
-    response = 'well, I was not going to give it easily.. to obtain the password, send your name to the "step_3/get_pass" endpoint.'
-    return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
+    try:
+        request_data = await request.json() # Renamed from 'request' to avoid shadowing
+        demisto.debug(f"WH: Got request; {request_data}")
+        payload = request_data['payload']
+        name = payload["name"]
+        global STEP_3_DICT
+        global lock_3
+        async with lock_3:
+            STEP_3_DICT[name]["counter"] = STEP_3_DICT[name].get("counter", 0) + 1
+            update_pass = STEP_3_DICT[name]["counter"] == 1
+            if update_pass:
+                password = random.randint(0,1000)
+                STEP_3_DICT[name]["password"] = password
+        await asyncio.sleep(5)
+        async with lock_3:
+            STEP_3_DICT[name]["counter"] -= 1
+            if update_pass:
+                del STEP_3_DICT[name]["password"]
+        response = 'Time is over, password is restarted.'
+        return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
+    except Exception as e:
+        await handle_listen_error(f'An error occurred while handling a response: {e}')
+        # Ensure you return an error response to the client
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=f'Server error: {e}')
 
 
 @app.get('/step_3/get_pass')
@@ -246,6 +340,7 @@ async def handle_get_request_step_3_get_pass(name=""):
     global STEP_3_DICT
     global lock_3
     password = ""
+    await asyncio.sleep(0.5)
     async with lock_3:
         password = STEP_3_DICT[name].get("password", "")
     if password:
@@ -255,7 +350,7 @@ async def handle_get_request_step_3_get_pass(name=""):
     return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
 
 
-@app.get('/step_3_enter_password')
+@app.get('/step_3/enter_password')
 async def handle_get_request_step_3_enter_password(name="", password=""):
     """
         for step 3.
@@ -265,8 +360,7 @@ async def handle_get_request_step_3_enter_password(name="", password=""):
     global FINISH_LIST
     async with lock_3:
         counter = STEP_3_DICT[name].get("counter", 0)
-        expected_password = STEP_3_DICT[name].get("password", "")
-        password = random.randint(0,1000)
+        expected_password = str(STEP_3_DICT[name].get("password", ""))
     if counter != 1:
         response = f"your current call count is {counter}, it must be 1."
     elif password == expected_password:
