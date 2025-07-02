@@ -130,11 +130,11 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-  section: Connect
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
