@@ -1,7 +1,7 @@
 import ipaddress
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import * # noqa: F401
-from typing import Any, List, Union, Dict, Optional
+from CommonServerPython import *  # noqa: F401
+from typing import Any
 
 
 def is_private_ip(ip: str) -> bool:
@@ -34,12 +34,12 @@ def ip_in_range(ip: str, ip_range: str) -> bool:
     """
     try:
         ip_obj = ipaddress.ip_address(ip)
-        if '-' in ip_range:
-            start_ip_str, end_ip_str = ip_range.split('-')
+        if "-" in ip_range:
+            start_ip_str, end_ip_str = ip_range.split("-")
             start_ip = ipaddress.ip_address(start_ip_str)
             end_ip = ipaddress.ip_address(end_ip_str)
             return start_ip <= ip_obj <= end_ip
-        elif '/' in ip_range:
+        elif "/" in ip_range:
             return ip_obj in ipaddress.ip_network(ip_range, strict=False)
         else:
             return ip_obj == ipaddress.ip_address(ip_range)
@@ -48,7 +48,7 @@ def ip_in_range(ip: str, ip_range: str) -> bool:
         return False
 
 
-def _get_command_error_details(res: Dict[str, Any]) -> str:
+def _get_command_error_details(res: dict[str, Any]) -> str:
     """
     Extracts a readable error message from a Demisto command result.
     This function handles specific formatting of errors returned by certain commands.
@@ -72,8 +72,8 @@ def _get_command_error_details(res: Dict[str, Any]) -> str:
                     return f"Unparsed API error: {raw_contents}"
             try:
                 parsed_contents = json.loads(raw_contents)
-                if isinstance(parsed_contents, dict) and 'error' in parsed_contents:
-                    error = parsed_contents['error']
+                if isinstance(parsed_contents, dict) and "error" in parsed_contents:
+                    error = parsed_contents["error"]
                     return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
             except json.JSONDecodeError:
                 pass
@@ -86,7 +86,7 @@ def _get_command_error_details(res: Dict[str, Any]) -> str:
         return f"Error extracting error message: {str(ex)}"
 
 
-def _execute_demisto_command(command: str, args: Dict[str, Any], error_message_prefix: str) -> Any:
+def _execute_demisto_command(command: str, args: dict[str, Any], error_message_prefix: str) -> Any:
     """
     Executes a Demisto command and handles potential errors.
 
@@ -114,7 +114,7 @@ def _execute_demisto_command(command: str, args: Dict[str, Any], error_message_p
     return res[0].get("Contents")
 
 
-def get_blocked_ip_zone_info() -> Dict[str, Any]:
+def get_blocked_ip_zone_info() -> dict[str, Any]:
     """
     Retrieves the 'BlockedIpZone' information from Okta zones.
 
@@ -127,7 +127,7 @@ def get_blocked_ip_zone_info() -> Dict[str, Any]:
     """
     res_zones = _execute_demisto_command("okta-list-zones", {}, "Failed to list Okta zones")
 
-    zones: List[Dict[str, Any]] = []
+    zones: list[dict[str, Any]] = []
     if isinstance(res_zones, dict):
         zones = res_zones.get("result", [])
     elif isinstance(res_zones, list):
@@ -153,7 +153,7 @@ def get_blocked_ip_zone_info() -> Dict[str, Any]:
     return {"zone_id": zone_id, "zone_gateways": zone_gateways}
 
 
-def update_blocked_ip_zone(zone_id: str, zone_gateways: List[str], ip_to_add: str) -> None:
+def update_blocked_ip_zone(zone_id: str, zone_gateways: list[str], ip_to_add: str) -> None:
     """
     Appends a new IP CIDR to the 'BlockedIpZone' in Okta.
 
@@ -180,7 +180,7 @@ def update_blocked_ip_zone(zone_id: str, zone_gateways: List[str], ip_to_add: st
         "type": "IP",
         "name": "BlockedIpZone",
         "status": "ACTIVE",
-        "updateType": "APPEND"
+        "updateType": "APPEND",
     }
 
     _execute_demisto_command("okta-update-zone", update_args, "Failed to update BlockedIpZone")

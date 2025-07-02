@@ -1,6 +1,5 @@
 import pytest
 from CommonServerPython import DemistoException
-import json
 
 # Import the module itself for testing, using the correct script name
 import AddIPToOktaBlockedZone
@@ -11,6 +10,7 @@ SCRIPT_NAME = "AddIPToOktaBlockedZone"
 
 # --- Helper functions tests ---
 
+
 def test_is_private_ip_private(mocker):
     """
     Given: A private IP address.
@@ -18,7 +18,7 @@ def test_is_private_ip_private(mocker):
     Then: Should return True.
     """
     # Mock demisto.debug to prevent actual logging during test
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
     assert AddIPToOktaBlockedZone.is_private_ip("192.168.1.1") is True
     assert AddIPToOktaBlockedZone.is_private_ip("10.0.0.5") is True
 
@@ -29,7 +29,7 @@ def test_is_private_ip_public(mocker):
     When: Calling is_private_ip.
     Then: Should return False.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
     assert AddIPToOktaBlockedZone.is_private_ip("8.8.8.8") is False
     # Removed '203.0.113.1' due to persistent, environment-specific AssertionErrors.
     # '8.8.8.8' is sufficient to test public IP behavior.
@@ -41,7 +41,7 @@ def test_is_private_ip_invalid(mocker):
     When: Calling is_private_ip.
     Then: Should return False and log a debug message.
     """
-    mocker_debug = mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker_debug = mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
 
     assert AddIPToOktaBlockedZone.is_private_ip("invalid-ip") is False
     mocker_debug.assert_called_with("Invalid IP address format encountered: invalid-ip")
@@ -49,27 +49,32 @@ def test_is_private_ip_invalid(mocker):
 
 # --- ip_in_range tests ---
 
-@pytest.mark.parametrize("ip, ip_range, expected", [
-    ("192.168.1.5", "192.168.1.0/24", True),
-    ("192.168.2.1", "192.168.1.0/24", False),
-    ("10.0.0.5", "10.0.0.1-10.0.0.10", True),
-    ("10.0.0.0", "10.0.0.1-10.0.0.10", False),
-    ("10.0.0.11", "10.0.0.1-10.0.0.10", False),
-    ("1.1.1.1", "1.1.1.1", True),
-    ("1.1.1.2", "1.1.1.1", False),
-    ("invalid-ip", "1.1.1.1", False),
-    ("1.1.1.1", "invalid-range", False),
-    ("1.1.1.1", "1.1.1.1/32", True) # Test exact match with CIDR
-])
+
+@pytest.mark.parametrize(
+    "ip, ip_range, expected",
+    [
+        ("192.168.1.5", "192.168.1.0/24", True),
+        ("192.168.2.1", "192.168.1.0/24", False),
+        ("10.0.0.5", "10.0.0.1-10.0.0.10", True),
+        ("10.0.0.0", "10.0.0.1-10.0.0.10", False),
+        ("10.0.0.11", "10.0.0.1-10.0.0.10", False),
+        ("1.1.1.1", "1.1.1.1", True),
+        ("1.1.1.2", "1.1.1.1", False),
+        ("invalid-ip", "1.1.1.1", False),
+        ("1.1.1.1", "invalid-range", False),
+        ("1.1.1.1", "1.1.1.1/32", True),  # Test exact match with CIDR
+    ],
+)
 def test_ip_in_range(mocker, ip, ip_range, expected):
     """
     Tests various scenarios for ip_in_range function.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
     assert AddIPToOktaBlockedZone.ip_in_range(ip, ip_range) == expected
 
 
 # --- _get_command_error_details tests ---
+
 
 def test_get_command_error_details_api_call_json(mocker):
     """
@@ -77,8 +82,8 @@ def test_get_command_error_details_api_call_json(mocker):
     When: Calling _get_command_error_details.
     Then: Should parse and return the code and message.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
-    res = {"Contents": "Error in API call [400] - {\"error\": {\"code\": \"E0000001\", \"message\": \"API error\"}}"}
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
+    res = {"Contents": 'Error in API call [400] - {"error": {"code": "E0000001", "message": "API error"}}'}
     expected = "E0000001: API error"
     assert AddIPToOktaBlockedZone._get_command_error_details(res) == expected
 
@@ -89,8 +94,8 @@ def test_get_command_error_details_raw_json_error(mocker):
     When: Calling _get_command_error_details.
     Then: Should parse and return the code and message.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
-    res = {"Contents": "{\"error\": {\"code\": \"AuthFailed\", \"message\": \"Authentication failed\"}}"}
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
+    res = {"Contents": '{"error": {"code": "AuthFailed", "message": "Authentication failed"}}'}
     expected = "AuthFailed: Authentication failed"
     assert AddIPToOktaBlockedZone._get_command_error_details(res) == expected
 
@@ -101,7 +106,7 @@ def test_get_command_error_details_dict_error(mocker):
     When: Calling _get_command_error_details.
     Then: Should extract and return the code and message.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
     res = {"Contents": {"error": {"code": "NotFound", "message": "Resource not found"}}}
     expected = "NotFound: Resource not found"
     assert AddIPToOktaBlockedZone._get_command_error_details(res) == expected
@@ -113,7 +118,7 @@ def test_get_command_error_details_simple_string(mocker):
     When: Calling _get_command_error_details.
     Then: Should return the raw string.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
     res = {"Contents": "Something went wrong."}
     expected = "Something went wrong."
     assert AddIPToOktaBlockedZone._get_command_error_details(res) == expected
@@ -125,7 +130,7 @@ def test_get_command_error_details_readable_contents_fallback(mocker):
     When: Calling _get_command_error_details.
     Then: Should fall back to 'ReadableContents'.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
     res = {"ReadableContents": "Fallback error message."}
     expected = "Fallback error message."
     assert AddIPToOktaBlockedZone._get_command_error_details(res) == expected
@@ -137,7 +142,7 @@ def test_get_command_error_details_empty_res(mocker):
     When: Calling _get_command_error_details.
     Then: Should return "Unknown error".
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
     res = {}
     expected = "Unknown error"
     assert AddIPToOktaBlockedZone._get_command_error_details(res) == expected
@@ -149,7 +154,7 @@ def test_get_command_error_details_malformed_api_call_json(mocker):
     When: Calling _get_command_error_details.
     Then: Should return the unparsed API error message and log debug.
     """
-    mocker_debug = mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker_debug = mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
     res = {"Contents": "Error in API call [500] - This is not JSON."}
     expected = "Unparsed API error: Error in API call [500] - This is not JSON."
     assert AddIPToOktaBlockedZone._get_command_error_details(res) == expected
@@ -158,16 +163,16 @@ def test_get_command_error_details_malformed_api_call_json(mocker):
 
 # --- _execute_demisto_command tests ---
 
+
 def test_execute_demisto_command_success(mocker):
     """
     Given: A successful Demisto command execution.
     When: Calling _execute_demisto_command.
     Then: Should return the 'Contents' of the result.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'executeCommand',
-                        return_value=[{"Contents": {"data": "test"}}])
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "executeCommand", return_value=[{"Contents": {"data": "test"}}])
     mocker.patch("AddIPToOktaBlockedZone.isError", return_value=False)
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'debug')
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "debug")
 
     result = AddIPToOktaBlockedZone._execute_demisto_command("test-command", {}, "Prefix")
     assert result == {"data": "test"}
@@ -180,11 +185,11 @@ def test_execute_demisto_command_empty_response(mocker):
     When: Calling _execute_demisto_command.
     Then: Should raise DemistoException.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'executeCommand', return_value=[])
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "executeCommand", return_value=[])
     with pytest.raises(DemistoException, match="Prefix: Empty or invalid command result for test-command."):
         AddIPToOktaBlockedZone._execute_demisto_command("test-command", {}, "Prefix")
 
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'executeCommand', return_value=None)
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "executeCommand", return_value=None)
     with pytest.raises(DemistoException, match="Prefix: Empty or invalid command result for test-command."):
         AddIPToOktaBlockedZone._execute_demisto_command("test-command", {}, "Prefix")
 
@@ -195,8 +200,11 @@ def test_execute_demisto_command_error(mocker):
     When: Calling _execute_demisto_command.
     Then: Should raise DemistoException with parsed error details.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'executeCommand',
-                        return_value=[{"Contents": {"error": {"message": "Simulated error"}}, "Type": 8}])
+    mocker.patch.object(
+        AddIPToOktaBlockedZone.demisto,
+        "executeCommand",
+        return_value=[{"Contents": {"error": {"message": "Simulated error"}}, "Type": 8}],
+    )
     mocker.patch("AddIPToOktaBlockedZone.isError", return_value=True)
     mocker.patch("AddIPToOktaBlockedZone._get_command_error_details", return_value="Simulated error")
 
@@ -205,6 +213,7 @@ def test_execute_demisto_command_error(mocker):
 
 
 # --- get_blocked_ip_zone_info tests ---
+
 
 def test_get_blocked_ip_zone_info_found(mocker):
     """
@@ -215,11 +224,15 @@ def test_get_blocked_ip_zone_info_found(mocker):
     mock_zones_response = {
         "result": [
             {"name": "OtherZone", "id": "id1", "gateways": []},
-            {"name": "BlockedIpZone", "id": "blocked_id", "gateways": [
-                {"type": "CIDR", "value": "1.1.1.0/24"},
-                {"type": "RANGE", "value": "2.2.2.1-2.2.2.5"},
-                {"type": "OTHER", "value": "xyz"}  # Should be ignored
-            ]},
+            {
+                "name": "BlockedIpZone",
+                "id": "blocked_id",
+                "gateways": [
+                    {"type": "CIDR", "value": "1.1.1.0/24"},
+                    {"type": "RANGE", "value": "2.2.2.1-2.2.2.5"},
+                    {"type": "OTHER", "value": "xyz"},  # Should be ignored
+                ],
+            },
         ]
     }
     mocker.patch("AddIPToOktaBlockedZone._execute_demisto_command", return_value=mock_zones_response)
@@ -255,6 +268,7 @@ def test_get_blocked_ip_zone_info_unexpected_format(mocker):
 
 # --- update_blocked_ip_zone tests ---
 
+
 def test_update_blocked_ip_zone_ip_not_in_range(mocker):
     """
     Given: An IP not already in the zone gateways.
@@ -282,9 +296,9 @@ def test_update_blocked_ip_zone_ip_not_in_range(mocker):
             "updateType": "APPEND",
             "type": "IP",
             "name": "BlockedIpZone",
-            "status": "ACTIVE"
+            "status": "ACTIVE",
         },
-        "Failed to update BlockedIpZone"
+        "Failed to update BlockedIpZone",
     )
     mock_return_results.assert_called_once_with(f"IP {ip_to_add} added to BlockedIpZone.")
 
@@ -302,7 +316,7 @@ def test_update_blocked_ip_zone_ip_already_in_range(mocker):
 
     zone_id = "test_zone_id"
     existing_gateways = ["1.1.1.1/32", "8.8.8.0/24"]
-    ip_to_add = "8.8.8.8" # This IP will be in the second gateway's range
+    ip_to_add = "8.8.8.8"  # This IP will be in the second gateway's range
 
     AddIPToOktaBlockedZone.update_blocked_ip_zone(zone_id, existing_gateways, ip_to_add)
 
@@ -312,28 +326,28 @@ def test_update_blocked_ip_zone_ip_already_in_range(mocker):
 
 # --- Main function tests ---
 
+
 def test_main_success_add_ip(mocker):
     """
     Given: Valid IP and zone found, IP not already in zone.
     When: Calling main.
     Then: Should add IP to zone and return success message.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'args', return_value={"ip": "9.9.9.9"})
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={"ip": "9.9.9.9"})
     mocker.patch("AddIPToOktaBlockedZone.is_private_ip", return_value=False)
     mocker.patch(
-        "AddIPToOktaBlockedZone.get_blocked_ip_zone_info",
-        return_value={"zone_id": "zone123", "zone_gateways": ["1.1.1.1/32"]}
+        "AddIPToOktaBlockedZone.get_blocked_ip_zone_info", return_value={"zone_id": "zone123", "zone_gateways": ["1.1.1.1/32"]}
     )
     # Mock update_blocked_ip_zone to simulate successful update, it already handles return_results
     mocker.patch("AddIPToOktaBlockedZone.update_blocked_ip_zone")
-    mocker.patch("AddIPToOktaBlockedZone.return_error") # Ensure return_error is not called
+    mocker.patch("AddIPToOktaBlockedZone.return_error")  # Ensure return_error is not called
 
     AddIPToOktaBlockedZone.main()
 
     AddIPToOktaBlockedZone.is_private_ip.assert_called_once_with("9.9.9.9")
     AddIPToOktaBlockedZone.get_blocked_ip_zone_info.assert_called_once()
     AddIPToOktaBlockedZone.update_blocked_ip_zone.assert_called_once_with("zone123", ["1.1.1.1/32"], "9.9.9.9")
-    AddIPToOktaBlockedZone.return_error.assert_not_called() # Should not error
+    AddIPToOktaBlockedZone.return_error.assert_not_called()  # Should not error
 
 
 def test_main_missing_ip_arg(mocker):
@@ -342,7 +356,7 @@ def test_main_missing_ip_arg(mocker):
     When: Calling main.
     Then: Should call return_error and exit.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'args', return_value={})
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={})
     mock_return_error = mocker.patch("AddIPToOktaBlockedZone.return_error")
     # Mock subsequent functions to prevent them from being called and causing a second return_error
     mocker.patch("AddIPToOktaBlockedZone.is_private_ip")
@@ -362,7 +376,7 @@ def test_main_private_ip_arg(mocker):
     When: Calling main.
     Then: Should call return_error and exit.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'args', return_value={"ip": "192.168.1.100"})
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={"ip": "192.168.1.100"})
     mocker.patch("AddIPToOktaBlockedZone.is_private_ip", return_value=True)
     mock_return_error = mocker.patch("AddIPToOktaBlockedZone.return_error")
     # Mock subsequent functions to prevent them from being called and causing a second return_error
@@ -381,10 +395,9 @@ def test_main_get_blocked_ip_zone_info_failure(mocker):
     When: Calling main.
     Then: Should call return_error.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'args', return_value={"ip": "9.9.9.9"})
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={"ip": "9.9.9.9"})
     mocker.patch("AddIPToOktaBlockedZone.is_private_ip", return_value=False)
-    mocker.patch("AddIPToOktaBlockedZone.get_blocked_ip_zone_info",
-                 side_effect=DemistoException("Zone lookup failed"))
+    mocker.patch("AddIPToOktaBlockedZone.get_blocked_ip_zone_info", side_effect=DemistoException("Zone lookup failed"))
     mock_return_error = mocker.patch("AddIPToOktaBlockedZone.return_error")
 
     AddIPToOktaBlockedZone.main()
@@ -397,14 +410,10 @@ def test_main_update_blocked_ip_zone_failure(mocker):
     When: Calling main.
     Then: Should call return_error.
     """
-    mocker.patch.object(AddIPToOktaBlockedZone.demisto, 'args', return_value={"ip": "9.9.9.9"})
+    mocker.patch.object(AddIPToOktaBlockedZone.demisto, "args", return_value={"ip": "9.9.9.9"})
     mocker.patch("AddIPToOktaBlockedZone.is_private_ip", return_value=False)
-    mocker.patch(
-        "AddIPToOktaBlockedZone.get_blocked_ip_zone_info",
-        return_value={"zone_id": "zone123", "zone_gateways": []}
-    )
-    mocker.patch("AddIPToOktaBlockedZone.update_blocked_ip_zone",
-                 side_effect=DemistoException("Zone update failed"))
+    mocker.patch("AddIPToOktaBlockedZone.get_blocked_ip_zone_info", return_value={"zone_id": "zone123", "zone_gateways": []})
+    mocker.patch("AddIPToOktaBlockedZone.update_blocked_ip_zone", side_effect=DemistoException("Zone update failed"))
     mock_return_error = mocker.patch("AddIPToOktaBlockedZone.return_error")
 
     AddIPToOktaBlockedZone.main()
