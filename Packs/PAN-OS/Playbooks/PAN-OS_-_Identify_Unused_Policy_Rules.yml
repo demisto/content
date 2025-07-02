@@ -138,7 +138,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '11'
+      - '48'
     note: false
     quietmode: 0
     separatecontext: false
@@ -153,7 +153,7 @@ tasks:
     taskid: 0b8f2578-c7af-44ca-8327-3fcaae243241
     timertriggers: []
     type: start
-    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 188\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 358\n  }\n}"
   '1':
     continueonerrortype: ''
     id: '1'
@@ -240,35 +240,6 @@ tasks:
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 1230\n  }\n}"
-  '11':
-    continueonerrortype: ''
-    id: '11'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '48'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: yes
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      id: 64511f84-2f1c-4881-8216-cbaa9b1e65bf
-      iscommand: false
-      name: Delete Context
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 64511f84-2f1c-4881-8216-cbaa9b1e65bf
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 382\n  }\n}"
   '15':
     continueonerrortype: ''
     id: '15'
@@ -346,13 +317,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks that the selected rulebase to analyze is valid.
-      id: fe1cedc5-cfa9-489f-8ca5-4f6e3c7f3785
+      description: Determines if the provided input for rulebase is valid.
+      id: 749fa8d1-3a96-496a-a0e2-a4a42a68957c
       iscommand: false
       name: Is Selected Rulebase Valid?
       type: condition
       version: -1
-    taskid: fe1cedc5-cfa9-489f-8ca5-4f6e3c7f3785
+    taskid: 749fa8d1-3a96-496a-a0e2-a4a42a68957c
     timertriggers: []
     type: condition
     view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 529\n  }\n}"
@@ -362,6 +333,9 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    nexttasks:
+      '#none#':
+      - '37'
     note: false
     quietmode: 0
     scriptarguments:
@@ -381,9 +355,9 @@ tasks:
     taskid: fd49cca5-3c58-4041-a5a0-4f95597610e3
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 1230\n  }\n}"
 version: -1
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1296,\n      \"width\": 861,\n      \"x\": 50,\n      \"y\": 188\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1126,\n      \"width\": 911,\n      \"x\": 0,\n      \"y\": 358\n    }\n  }\n}"
 fromversion: 6.10.0
 tests:
 - PAN-OS-panorama-topology-test-pb

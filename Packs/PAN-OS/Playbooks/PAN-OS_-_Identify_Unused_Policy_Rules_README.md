@@ -20,7 +20,6 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* DeleteContext
 * PAN-OS-AnalyzeRuleHitCounts
 * PrintErrorEntry
 

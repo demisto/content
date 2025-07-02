@@ -1,14 +1,5 @@
-description: |-
-  This playbook automates the download and installation of the following Dynamic Update types on Palo Alto firewalls:
-    - App/Threat
-    - Anti-Virus
-    - WildFire
-    - GlobalProtect Clientless VPN
-
-  Use the "itemsToUpdate" input to control which update type(s) to download and install.  All types are updated by default.
-
-  NOTE: This playbook is intended for use with a single PAN-OS Integration Instance.
-id: 'PAN-OS - Download and Install Dynamic Content Updates'
+description: "This playbook automates the download and installation of the following Dynamic Update types on Palo Alto firewalls:\n  - App/Threat\n  - Anti-Virus\n  - WildFire\n  - GlobalProtect Clientless VPN\n\nUse the \"itemsToUpdate\" input to control which update type(s) to download and install.  All types are updated by default.\n\nNOTE: This playbook is intended for use with a single PAN-OS Integration Instance."
+id: PAN-OS - Download and Install Dynamic Content Updates
 inputSections:
 - description: Generic group for inputs
   inputs:
@@ -16,18 +7,12 @@ inputSections:
   - itemsToUpdate
   name: General (Inputs group)
 inputs:
-- description: |
-    The serial number of a specific firewall to target (Used when connected to Panorama) [Optional].
+- description: "The serial number of a specific firewall to target (Used when connected to Panorama) [Optional].\n"
   key: targetDevice
   playbookInputQuery:
   required: false
   value: {}
-- description: |-
-    Specifies which item types to download and instasll.  Can either be "all" (default) or a comma-separated list of types.  Available options are:
-    app/threat
-    anti-virus
-    wildfire
-    gp
+- description: "Specifies which item types to download and install.  Select ONE of the following options:\nall\napp/threat\nanti-virus\nwildfire\ngp"
   key: itemsToUpdate
   playbookInputQuery:
   required: true
@@ -44,39 +29,33 @@ outputs:
   description: A dictionary containing details of the Dynamic Update type(s) downloaded and installed, including their version number and associated job IDs.
   type: unknown
 quiet: true
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    continueonerrortype: ""
-    id: "0"
+  '0':
+    continueonerrortype: ''
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: ae08e3f3-db0a-454b-8f86-d5b01a78e5df
       iscommand: false
-      name: ""
+      name: ''
       version: -1
       description: ''
     taskid: ae08e3f3-db0a-454b-8f86-d5b01a78e5df
     timertriggers: []
     type: start
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-  "1":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 70\n  }\n}"
+  '1':
     conditions:
     - condition:
       - - ignorecase: true
@@ -133,61 +112,56 @@ tasks:
             value:
               simple: gp
       label: GP
-    continueonerrortype: ""
-    id: "1"
+    continueonerrortype: ''
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       All Types:
-      - "2"
+      - '2'
       Anti-Virus:
-      - "12"
+      - '12'
       App/Threat:
-      - "11"
+      - '11'
       GP:
-      - "14"
+      - '14'
       WildFire:
-      - "13"
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      id: d83c4d1f-067d-4bec-ac8d-620c6d648ba7
+      brand: ''
+      description: Determine dynamic update type(s) to install based on playbook input.
+      id: b1e1b6a3-c43f-4cb2-9237-c4177bc92269
       iscommand: false
       name: Identify Dynamic Update Type(s) To Download/Install
       type: condition
       version: -1
-    taskid: d83c4d1f-067d-4bec-ac8d-620c6d648ba7
+    taskid: b1e1b6a3-c43f-4cb2-9237-c4177bc92269
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 250
-        }
-      }
-  "2":
-    continueonerrortype: ""
-    id: "2"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 250\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
-      - "5"
-      - "7"
-      - "9"
+      - '3'
+      - '5'
+      - '7'
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 398bcca4-8b0e-41b0-a699-c248b4c72781
       iscommand: false
       name: Update All Types
@@ -197,33 +171,27 @@ tasks:
     taskid: 398bcca4-8b0e-41b0-a699-c248b4c72781
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 450
-        }
-      }
-  "3":
-    continueonerrortype: ""
-    id: "3"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 450\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
       polling:
-        simple: "true"
+        simple: 'true'
       target:
         simple: ${inputs.targetDevice}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Downloads the latest app/threat dynamic update.
       id: af78fea2-5a0d-4622-b4d7-7d2e409b642e
       iscommand: true
@@ -234,33 +202,27 @@ tasks:
     taskid: af78fea2-5a0d-4622-b4d7-7d2e409b642e
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -470,
-          "y": 670
-        }
-      }
-  "4":
-    continueonerrortype: ""
-    id: "4"
+    view: "{\n  \"position\": {\n    \"x\": -420,\n    \"y\": 670\n  }\n}"
+  '4':
+    continueonerrortype: ''
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: false
     quietmode: 0
     scriptarguments:
       polling:
-        simple: "true"
+        simple: 'true'
       target:
         simple: ${inputs.targetDevice}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Installs the latest app/threat dynamic update.
       id: 12b78d3c-6e7c-40df-8848-a8bf8bfa6e95
       iscommand: true
@@ -271,22 +233,16 @@ tasks:
     taskid: 12b78d3c-6e7c-40df-8848-a8bf8bfa6e95
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -470,
-          "y": 890
-        }
-      }
-  "5":
-    continueonerrortype: ""
-    id: "5"
+    view: "{\n  \"position\": {\n    \"x\": -420,\n    \"y\": 890\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -295,7 +251,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Downloads the latest antivirus dynamic update.
       id: e0715674-719c-4179-b3a7-e5b8e15bb0e9
       iscommand: true
@@ -306,22 +262,16 @@ tasks:
     taskid: e0715674-719c-4179-b3a7-e5b8e15bb0e9
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 20,
-          "y": 670
-        }
-      }
-  "6":
-    continueonerrortype: ""
-    id: "6"
+    view: "{\n  \"position\": {\n    \"x\": 20,\n    \"y\": 670\n  }\n}"
+  '6':
+    continueonerrortype: ''
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     note: false
     quietmode: 0
     scriptarguments:
@@ -330,7 +280,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Installs the latest Antivirus update.
       id: b3244c7a-9b57-4fc0-8f7d-205aee1d3d56
       iscommand: true
@@ -341,22 +291,16 @@ tasks:
     taskid: b3244c7a-9b57-4fc0-8f7d-205aee1d3d56
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 20,
-          "y": 890
-        }
-      }
-  "7":
-    continueonerrortype: ""
-    id: "7"
+    view: "{\n  \"position\": {\n    \"x\": 20,\n    \"y\": 890\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -365,7 +309,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Downloads the latest WildFire dynamic update.
       id: 6f02f605-8d84-4f88-abf2-ca5230bf192c
       iscommand: true
@@ -376,22 +320,16 @@ tasks:
     taskid: 6f02f605-8d84-4f88-abf2-ca5230bf192c
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 670
-        }
-      }
-  "8":
-    continueonerrortype: ""
-    id: "8"
+    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 670\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     note: false
     quietmode: 0
     scriptarguments:
@@ -400,7 +338,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Installs the latest WildFire dynamic update.
       id: 30e46b47-600c-4a84-97d0-2866e651b938
       iscommand: true
@@ -411,22 +349,16 @@ tasks:
     taskid: 30e46b47-600c-4a84-97d0-2866e651b938
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 890
-        }
-      }
-  "9":
-    continueonerrortype: ""
-    id: "9"
+    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 890\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     note: false
     quietmode: 0
     scriptarguments:
@@ -435,7 +367,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Downloads the latest GlobalProtect Clientless VPN dynamic update.
       id: c1eefc32-ce5e-4858-b73c-fb6e3c63455c
       iscommand: true
@@ -446,22 +378,16 @@ tasks:
     taskid: c1eefc32-ce5e-4858-b73c-fb6e3c63455c
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1390,
-          "y": 670
-        }
-      }
-  "10":
-    continueonerrortype: ""
-    id: "10"
+    view: "{\n  \"position\": {\n    \"x\": 1320,\n    \"y\": 670\n  }\n}"
+  '10':
+    continueonerrortype: ''
+    id: '10'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     note: false
     quietmode: 0
     scriptarguments:
@@ -470,7 +396,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Installs the latest GlobalProtect Clientless VPN dynamic update.
       id: a953a1b0-f293-44df-9131-df3a21548d69
       iscommand: true
@@ -481,28 +407,22 @@ tasks:
     taskid: a953a1b0-f293-44df-9131-df3a21548d69
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1390,
-          "y": 890
-        }
-      }
-  "11":
-    continueonerrortype: ""
-    id: "11"
+    view: "{\n  \"position\": {\n    \"x\": 1320,\n    \"y\": 890\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 5232d21f-2ca6-4123-9a11-b74d7852615c
       iscommand: false
       name: App/Threat Only
@@ -512,28 +432,22 @@ tasks:
     taskid: 5232d21f-2ca6-4123-9a11-b74d7852615c
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": -470,
-          "y": 450
-        }
-      }
-  "12":
-    continueonerrortype: ""
-    id: "12"
+    view: "{\n  \"position\": {\n    \"x\": -420,\n    \"y\": 450\n  }\n}"
+  '12':
+    continueonerrortype: ''
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 19ba4187-000d-47dd-a69e-bb0ac562dbc1
       iscommand: false
       name: Anti-Virus Only
@@ -543,28 +457,22 @@ tasks:
     taskid: 19ba4187-000d-47dd-a69e-bb0ac562dbc1
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 20,
-          "y": 450
-        }
-      }
-  "13":
-    continueonerrortype: ""
-    id: "13"
+    view: "{\n  \"position\": {\n    \"x\": 20,\n    \"y\": 450\n  }\n}"
+  '13':
+    continueonerrortype: ''
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: f88cb4f2-ef2e-49d0-9806-9a97f0ac9ab7
       iscommand: false
       name: WildFire Only
@@ -574,28 +482,22 @@ tasks:
     taskid: f88cb4f2-ef2e-49d0-9806-9a97f0ac9ab7
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 450
-        }
-      }
-  "14":
-    continueonerrortype: ""
-    id: "14"
+    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 450\n  }\n}"
+  '14':
+    continueonerrortype: ''
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: b4365e9c-3cc3-48f2-b3af-f4017833350d
       iscommand: false
       name: GP Only
@@ -605,22 +507,16 @@ tasks:
     taskid: b4365e9c-3cc3-48f2-b3af-f4017833350d
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 1390,
-          "y": 450
-        }
-      }
-  "15":
-    continueonerrortype: ""
-    id: "15"
+    view: "{\n  \"position\": {\n    \"x\": 1320,\n    \"y\": 450\n  }\n}"
+  '15':
+    continueonerrortype: ''
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     note: false
     quietmode: 0
     scriptarguments:
@@ -631,7 +527,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: 604eacdb-7323-47eb-8cbc-411b3fbc2709
       iscommand: false
@@ -642,22 +538,16 @@ tasks:
     taskid: 604eacdb-7323-47eb-8cbc-411b3fbc2709
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -470,
-          "y": 1080
-        }
-      }
-  "16":
-    continueonerrortype: ""
-    id: "16"
+    view: "{\n  \"position\": {\n    \"x\": -420,\n    \"y\": 1080\n  }\n}"
+  '16':
+    continueonerrortype: ''
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     note: false
     quietmode: 0
     scriptarguments:
@@ -668,7 +558,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: 8fb320b2-752b-47d6-92bc-8d695d083d1f
       iscommand: false
@@ -679,22 +569,16 @@ tasks:
     taskid: 8fb320b2-752b-47d6-92bc-8d695d083d1f
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 20,
-          "y": 1080
-        }
-      }
-  "17":
-    continueonerrortype: ""
-    id: "17"
+    view: "{\n  \"position\": {\n    \"x\": 20,\n    \"y\": 1080\n  }\n}"
+  '17':
+    continueonerrortype: ''
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     note: false
     quietmode: 0
     scriptarguments:
@@ -705,7 +589,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: 2ae1939f-0d9e-4944-94a8-663d7caf3729
       iscommand: false
@@ -716,22 +600,16 @@ tasks:
     taskid: 2ae1939f-0d9e-4944-94a8-663d7caf3729
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 1080
-        }
-      }
-  "18":
-    continueonerrortype: ""
-    id: "18"
+    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 1080\n  }\n}"
+  '18':
+    continueonerrortype: ''
+    id: '18'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     note: false
     quietmode: 0
     scriptarguments:
@@ -742,7 +620,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: 358fe409-821d-4a9b-b225-01dc055098ae
       iscommand: false
@@ -753,22 +631,16 @@ tasks:
     taskid: 358fe409-821d-4a9b-b225-01dc055098ae
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1390,
-          "y": 1080
-        }
-      }
-  "19":
-    continueonerrortype: ""
-    id: "19"
+    view: "{\n  \"position\": {\n    \"x\": 1320,\n    \"y\": 1080\n  }\n}"
+  '19':
+    continueonerrortype: ''
+    id: '19'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     note: false
     quietmode: 0
     scriptarguments:
@@ -799,7 +671,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       id: 6d86fc0c-be5a-43a5-a012-353c545b00b2
       iscommand: false
@@ -810,16 +682,10 @@ tasks:
     taskid: 6d86fc0c-be5a-43a5-a012-353c545b00b2
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1270
-        }
-      }
-  "20":
-    continueonerrortype: ""
-    id: "20"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1270\n  }\n}"
+  '20':
+    continueonerrortype: ''
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -828,7 +694,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: bce60651-e397-45f3-b0c1-13de9a91153d
       iscommand: false
       name: Done
@@ -838,28 +704,9 @@ tasks:
     taskid: bce60651-e397-45f3-b0c1-13de9a91153d
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1430
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1430\n  }\n}"
 version: -1
-view: |-
-  {
-    "linkLabelsPosition": {
-      "1_13_WildFire": 0.72
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1440,
-        "width": 2240,
-        "x": -470,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"1_13_WildFire\": 0.72\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1420,\n      \"width\": 2120,\n      \"x\": -420,\n      \"y\": 70\n    }\n  }\n}"
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0

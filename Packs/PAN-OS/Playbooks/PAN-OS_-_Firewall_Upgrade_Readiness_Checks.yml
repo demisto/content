@@ -128,20 +128,18 @@ tasks:
             operator: If-Then-Else
       type:
         simple: op
-      using:
-        simple: ${PANOSIntegrationInstance}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Runs any command supported in the API.
-      id: eabae67e-1162-43cf-93d0-aab0855f30c9
+      id: 2a34a63e-de5b-41dd-9a17-7d65eab9d0e6
       iscommand: true
       name: Get NTP Status
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: eabae67e-1162-43cf-93d0-aab0855f30c9
+    taskid: 2a34a63e-de5b-41dd-9a17-7d65eab9d0e6
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 340\n  }\n}"
@@ -457,20 +455,18 @@ tasks:
             operator: If-Then-Else
       type:
         simple: op
-      using:
-        simple: ${PANOSIntegrationInstance}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Runs any command supported in the API.
-      id: de1e962e-b998-40de-be65-02a9250bb528
+      id: afac6a1d-46f0-421b-af28-812dda71dc76
       iscommand: true
       name: Get Support Status
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: de1e962e-b998-40de-be65-02a9250bb528
+    taskid: afac6a1d-46f0-421b-af28-812dda71dc76
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 340\n  }\n}"
@@ -690,20 +686,18 @@ tasks:
             operator: If-Then-Else
       type:
         simple: op
-      using:
-        simple: ${PANOSIntegrationInstance}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Runs any command supported in the API.
-      id: a8b6ecb3-b13c-43f5-ba1c-9a4f63813e95
+      id: f7e3f98f-5138-48de-b4c5-b21dfd984c77
       iscommand: true
       name: Get Full HA Configuration
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: a8b6ecb3-b13c-43f5-ba1c-9a4f63813e95
+    taskid: f7e3f98f-5138-48de-b4c5-b21dfd984c77
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 340\n  }\n}"
@@ -965,7 +959,7 @@ tasks:
     taskid: e16fda54-1714-4c9c-871a-3e6a62509878
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 3250,\n    \"y\": 2180\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 3140,\n    \"y\": 2180\n  }\n}"
   '36':
     conditions:
     - condition:
@@ -1119,20 +1113,18 @@ tasks:
             operator: If-Then-Else
       type:
         simple: op
-      using:
-        simple: ${PANOSIntegrationInstance}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Runs any command supported in the API.
-      id: 2505c27a-acd4-4e99-8bf9-e2b307ff1672
+      id: c7a43e8f-a1a6-4621-81b3-4bea617ac659
       iscommand: true
       name: Get Full Commit Required Info
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: 2505c27a-acd4-4e99-8bf9-e2b307ff1672
+    taskid: c7a43e8f-a1a6-4621-81b3-4bea617ac659
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 340\n  }\n}"
@@ -1184,20 +1176,18 @@ tasks:
             operator: If-Then-Else
       type:
         simple: op
-      using:
-        simple: ${PANOSIntegrationInstance}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Runs any command supported in the API.
-      id: 2fcdf2b8-cdb8-4b18-bd93-65aaf0f1bc64
+      id: ae7f6834-2786-430e-a97a-c1464f28b724
       iscommand: true
       name: Get Pending Changes Info
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: 2fcdf2b8-cdb8-4b18-bd93-65aaf0f1bc64
+    taskid: ae7f6834-2786-430e-a97a-c1464f28b724
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 517\n  }\n}"
@@ -2073,21 +2063,18 @@ tasks:
       - '114'
     note: false
     quietmode: 0
-    scriptarguments:
-      using:
-        simple: ${PANOSIntegrationInstance}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Gets information from all PAN-OS systems in the topology.
-      id: d3799b45-a193-4986-ad80-0e12fa357093
+      id: 87c15f0d-da73-4848-81ae-bcc82f39e761
       iscommand: true
       name: Get Version Currently Running On Device
       script: '|||pan-os-platform-get-system-info'
       type: regular
       version: -1
-    taskid: d3799b45-a193-4986-ad80-0e12fa357093
+    taskid: 87c15f0d-da73-4848-81ae-bcc82f39e761
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -783\n  }\n}"
@@ -2164,20 +2151,18 @@ tasks:
                 value:
                   simple: inputs.targetDevice
             operator: If-Then-Else
-      using:
-        simple: ${PANOSIntegrationInstance}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
-      id: c6328b3e-d82c-44ce-a313-3059e4169a01
+      id: 0b791a61-5f28-4ef7-965b-3b7ed5544630
       iscommand: true
       name: Get Dynamic Update Status
       script: '|||pan-os-check-dynamic-updates-status'
       type: regular
       version: -1
-    taskid: c6328b3e-d82c-44ce-a313-3059e4169a01
+    taskid: 0b791a61-5f28-4ef7-965b-3b7ed5544630
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 340\n  }\n}"
@@ -2263,17 +2248,18 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: a824c13b-1e4e-439f-9844-25c890861e97
+      description: Check whether firewall has HA enabled.
+      id: c4f826b8-a675-4c38-a21f-81461fbf6e55
       iscommand: false
       name: Is High Availability Enabled?
       type: condition
       version: -1
-    taskid: a824c13b-1e4e-439f-9844-25c890861e97
+    taskid: c4f826b8-a675-4c38-a21f-81461fbf6e55
     timertriggers: []
     type: condition
     view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 490\n  }\n}"
 version: -1
-view: "{\n  \"linkLabelsPosition\": {\n    \"69_66_#default#\": 0.28\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3763,\n      \"width\": 5072,\n      \"x\": -1442,\n      \"y\": -954\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"69_66_#default#\": 0.28\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3763,\n      \"width\": 4962,\n      \"x\": -1442,\n      \"y\": -954\n    }\n  }\n}"
 fromversion: 6.10.0
 tests:
 - palo_alto_panorama_test_pb

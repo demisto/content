@@ -43,7 +43,7 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | targetDevice | The serial number of a specific firewall to target \(Used when connected to Panorama\) \[Optional\].<br/> |  | Optional |
-| itemsToUpdate | Specifies which item types to download and instasll.  Can either be "all" \(default\) or a comma-separated list of types.  Available options are:<br/>app/threat<br/>anti-virus<br/>wildfire<br/>gp | all | Required |
+| itemsToUpdate | Specifies which item types to download and install.  Select ONE of the following options:<br/>all<br/>app/threat<br/>anti-virus<br/>wildfire<br/>gp | all | Required |
 
 ## Playbook Outputs
 
