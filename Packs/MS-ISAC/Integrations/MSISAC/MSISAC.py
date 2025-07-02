@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 
 import json
-import math
 
 import urllib3
 
@@ -114,30 +113,6 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
-
-
-@logger
-def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
-    """Calculates the lookback period in days between two datetimes.
-
-    Args:
-        start_time: The start datetime.
-        end_time: The end datetime.
-
-    Returns:
-        The number of days to look back, rounded according to round_down flag, with a minimum of 1.
-    """
-
-    if not (start_time or end_time):
-        return MSISAC_FETCH_WINDOW_DEFAULT
-
-    time_diff = end_time - start_time
-    diff_in_days = time_diff.total_seconds() / (24 * 60 * 60)  # Calculate difference in days
-
-    rounded_days = math.ceil(diff_in_days)
-
-    days_param = max(MSISAC_FETCH_WINDOW_DEFAULT, rounded_days)
-    return days_param
 
 
 @logger
@@ -396,52 +371,52 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
     else:
         fetch_time = datetime.strptime(last_run.get("lastRun", ""), XSOAR_INCIDENT_DATE_FORMAT)
 
-    fetch_time_lookback_days: int = calculate_lookback_days(fetch_time, datetime.now())
+    retrieve_cases_data: list = client.retrieve_cases(timestamp=fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT))
 
-    retrieve_events_data: dict = client.retrieve_events(days=fetch_time_lookback_days).get("data", [])
+    cases_to_fetch: list[dict] = []
+    latest_case_created_time: datetime = fetch_time
+    latest_fetched_case: str = last_run.get("lastFetchedCase", "")
 
-    events_to_fetch: list[dict] = []
-    latest_event_s_time: datetime = fetch_time
+    for case in retrieve_cases_data:
+        case_created_time = datetime.strptime(case.get("createdAt"), XSOAR_INCIDENT_DATE_FORMAT)
+        case_id = case.get("caseId", "")
 
-    # API returns a list if there is albert event data. data key is a string if there is no data.
-    if isinstance(retrieve_events_data, list):
-        for event in retrieve_events_data:
-            event_s_time = datetime.strptime(event.get("stime"), MSISAC_S_TIME_FORMAT)
-            event_id = event.get("event_id", "")
+        # Make sure case was created after last fetch and was not previously fetched.
+        if case_created_time > fetch_time and case_id != latest_fetched_case:
+            case["Alert Data"] = []
+            affected_ip = case.get("affectedIp")
 
-            if event_s_time > fetch_time:  # Make sure event happened after last fetch
-                event_description = event.get("description", "")
-                # Populating stream data for each ingested event.
-                get_event_data = client.get_event(event_id=event_id)
-                event["stream"] = format_stream_data(get_event_data)
-                events_to_fetch.append(
-                    {
-                        "name": f"{event_id} - {event_description}",
-                        "occurred": event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT),
-                        "rawJSON": json.dumps(event),
-                        # We are not using mirroring.
-                        # This will show ingested event numbers in fetch history modal.
-                        "dbotMirrorId": f"{event_id}",
-                    }
-                )
-                demisto.debug(f"Albert Event: {event_id} has been fetched.")
-                if event_s_time > latest_event_s_time:
-                    latest_event_s_time = event_s_time
+            for alert_id in case.get("alertIds", []):
+                # Populating alert data for each ingested case.
+                get_alert_data = client.get_alert(alert_id=alert_id)
 
-            else:
-                demisto.debug(f"""
-                    Albert Event: {event_id} was not fetched.
-                    Event S_Time: {event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
-                    Fetch Start Time: {fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
-                    Fetch End Time: {datetime.now().strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
-                    """)
+                case["Alert Data"].append(get_alert_data)
 
-    else:
-        demisto.debug(f"Here is the event data that was returned: {retrieve_events_data}")
+            cases_to_fetch.append(
+                {
+                    "name": f"MS-ISAC Case: {case_id} - Affected IP {affected_ip}",
+                    "occurred": case_created_time.strftime(XSOAR_INCIDENT_DATE_FORMAT),
+                    "rawJSON": json.dumps(case),
+                    # We are not using mirroring.
+                    # This will show ingested event numbers in fetch history modal.
+                    "dbotMirrorId": f"{case_id}",
+                }
+            )
+            demisto.debug(f"Albert Event: {case_id} has been fetched.")
+            if case_created_time > latest_case_created_time:
+                latest_case_created_time = case_created_time
+                latest_fetched_case = case_id
 
-    next_run_dict = {"lastRun": latest_event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}
+        else:
+            demisto.debug(f"""
+                Albert Case: {case_id} was not fetched.
+                Case Created Time: {case_created_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                Fetch Start Time: {fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                """)
 
-    return events_to_fetch, next_run_dict
+    next_run_dict = {"lastRun": latest_case_created_time.strftime(XSOAR_INCIDENT_DATE_FORMAT), "lastFetchedCase": case_id}
+
+    return cases_to_fetch, next_run_dict
 
 
 """ MAIN FUNCTION """
