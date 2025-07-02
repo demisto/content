@@ -109,7 +109,7 @@ configuration:
   - very-high
   required: false
   type: 16
-  section: Connect
+  section: Collect
 - additionalinfo: If you don't want to ingest rejected/resolved/closed incidents then set it to False. Otherwise incidents will ingested with auto-closed=True
   defaultvalue: "true"
   display: Ingest Closed / Auto-rejected Alerts
