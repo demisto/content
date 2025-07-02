@@ -65,7 +65,7 @@ configuration:
   required: false
   advanced: true
   section: Collect
-description: AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs..
+description: AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs.
 display: Cisco AppDynamics
 name: Cisco AppDynamics
 script:
@@ -83,7 +83,7 @@ script:
       required: true
     - description: 'The maximum number of events to fetch.'
       name: limit
-      defaultValue: 1000
+      defaultValue: 3000
       required: false
     - auto: PREDEFINED
       description: 'Which events to fetch.'
