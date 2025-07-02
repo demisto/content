@@ -541,10 +541,13 @@ Set authorization status for an application in Reco.
 | Reco.AppAuthorization.rows_affected | Number | Number of rows affected by the update operation |
 
 #### Command example
+
 ```
 !reco-set-app-authorization-status app_id="microsoft.com" authorization_status="AUTH_STATUS_SANCTIONED"
 ```
+
 #### Context Example
+
 ```json
 {
     "Reco": {
