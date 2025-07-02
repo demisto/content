@@ -42,13 +42,43 @@ description: 'The SAP Cloud for Customer solution helps you manage day-to-day sa
 display: SAP Cloud For Customer C4C
 name: SAPCloudForCustomerC4C
 script:
-  commands: []
+  commands: 
+  - arguments:
+    - description: |
+        The **start date** for filtering events. Events newer than or equal to this date will be retrieved.
+        Must be in `DD-MM-YYYY HH:MM:SS` format (e.g., `10-07-2025 14:17:46`).
+      name: start_date
+      required: true
+    - description: |
+        The **number of days** to include events after the `start_date`. For example, if `start_date` is 
+        '10-07-2025 10:00:00' and `days_from_start` is '2', events will be retrieved up to '12-07-2025 10:00:00'.
+        It's recommended to keep this value no more than 5 days to avoid very large result sets.
+      defaultValue: '2'
+      name: days_from_start
+      required: false
+    - description: |
+        Set to **true** to create events in your system from the retrieved data. 
+        If **false** (default), the command will only display the events without creating them.
+      name: should_push_events  
+      predefined:  
+      - 'true'  
+      - 'false'  
+      defaultValue: 'false'
+      required: false  
+      auto: PREDEFINED  
+    - description: |
+        The **maximum number of events** to retrieve. If more events match the criteria, only this
+        specified amount will be returned.
+      defaultValue: '10'
+      name: limit
+      required: false
+    description: Retrieves events from the SAP Cloud for Customer API based on specified filters.
+    name: sap-cloud-get-events
   runonce: false
   script: '-'
   type: python
   subtype: python3
   isfetchevents: true
-  longRunning: true
   dockerimage: demisto/python3:3.12.11.3982393
 fromversion: 8.0.0
 marketplaces:
