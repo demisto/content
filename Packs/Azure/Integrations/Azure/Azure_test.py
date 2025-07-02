@@ -506,7 +506,6 @@ def test_postgres_server_update_command(mocker, client, mock_params):
     When: The postgres_server_update_command function is called with valid parameters.
     Then: The function should successfully call the server update method.
     """
-    from Azure import postgres_server_update_command
 
     # Prepare mock response
     postgres_response = {
@@ -1659,98 +1658,6 @@ def test_azure_client_storage_blob_service_properties_set_request_success(mocker
     assert result["properties"]["deleteRetentionPolicy"]["days"] == 7
 
 
-def test_postgres_server_update_command(mocker, client, mock_params):
-    """
-    Given: An Azure client and PostgreSQL server update parameters.
-    When: The postgres_server_update_command function is called.
-    Then: The function should call the client method and return success message.
-    """
-    # Mock the client method
-    mocker.patch.object(client, "postgres_server_update", return_value={})
-
-    # Call the function
-    args = {"server_name": "test-postgres", "ssl_enforcement": "Enabled"}
-    result = postgres_server_update_command(client, mock_params, args)
-
-    # Verify the client method was called
-    client.postgres_server_update.assert_called_once_with(
-        mock_params.get("subscription_id"), mock_params.get("resource_group_name"), "test-postgres", "Enabled"
-    )
-
-    # Verify response
-    assert isinstance(result, CommandResults)
-    assert "Updated postgreSQL server test-postgres" in result.readable_output
-
-
-def test_azure_client_handle_azure_error_404(client):
-    """
-    Given: A 404 error from Azure API.
-    When: handle_azure_error is called.
-    Then: The function should raise ValueError with appropriate message.
-    """
-    error = Exception("404 - Resource not found")
-
-    with pytest.raises(ValueError) as excinfo:
-        client.handle_azure_error(
-            e=error,
-            resource_name="test-resource",
-            resource_type="Storage Account",
-            subscription_id="sub-id",
-            resource_group_name="test-rg",
-        )
-
-    assert 'Storage Account "test-resource"' in str(excinfo.value)
-    assert 'subscription ID "sub-id"' in str(excinfo.value)
-    assert 'resource group "test-rg"' in str(excinfo.value)
-    assert "was not found" in str(excinfo.value)
-
-
-def test_azure_client_handle_azure_error_403(client):
-    """
-    Given: A 403 permission error from Azure API.
-    When: handle_azure_error is called.
-    Then: The function should raise DemistoException with permission message.
-    """
-    error = Exception("403 - Forbidden")
-
-    with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(
-            e=error, resource_name="test-resource", resource_type="Virtual Machine", subscription_id="sub-id"
-        )
-
-    assert 'Insufficient permissions to access Virtual Machine "test-resource"' in str(excinfo.value)
-
-
-def test_azure_client_handle_azure_error_401(client):
-    """
-    Given: A 401 authentication error from Azure API.
-    When: handle_azure_error is called.
-    Then: The function should raise DemistoException with authentication message.
-    """
-    error = Exception("401 - Unauthorized")
-
-    with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(e=error, resource_name="test-resource", resource_type="Key Vault")
-
-    assert 'Authentication failed when accessing Key Vault "test-resource"' in str(excinfo.value)
-    assert "Please check credentials" in str(excinfo.value)
-
-
-def test_azure_client_handle_azure_error_400(client):
-    """
-    Given: A 400 bad request error from Azure API.
-    When: handle_azure_error is called.
-    Then: The function should raise DemistoException with invalid request message.
-    """
-    error = Exception("400 - Bad Request")
-
-    with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(e=error, resource_name="test-resource", resource_type="Network Security Group")
-
-    assert 'Invalid request for Network Security Group "test-resource"' in str(excinfo.value)
-    assert "Please check the parameters" in str(excinfo.value)
-
-
 def test_azure_client_handle_azure_error_other(client):
     """
     Given: An unknown error from Azure API.
@@ -1833,7 +1740,10 @@ def test_azure_client_flexible_server_param_set_success(mocker, client):
     # Setup mock response
     mock_response = {
         "name": "require_secure_transport",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.DBforMySQL/flexibleServers/test-mysql/configurations/require_secure_transport",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.DBforMySQL/flexibleServers/test-mysql/"
+            "configurations/require_secure_transport"
+        ),
         "properties": {"value": "ON", "source": "user-override", "description": "Whether to require SSL connections"},
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
@@ -1849,7 +1759,10 @@ def test_azure_client_flexible_server_param_set_success(mocker, client):
     )
 
     # Verify correct API call was made
-    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.DBforMySQL/flexibleServers/test-mysql/configurations/require_secure_transport"
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.DBforMySQL/flexibleServers/test-mysql/"
+        "configurations/require_secure_transport"
+    )
     client.http_request.assert_called_once_with(
         method="PUT",
         full_url=expected_url,
@@ -1862,3 +1775,363 @@ def test_azure_client_flexible_server_param_set_success(mocker, client):
     assert result["name"] == "require_secure_transport"
     assert result["properties"]["value"] == "ON"
     assert result["properties"]["source"] == "user-override"
+
+
+def test_set_webapp_config(mocker, client):
+    """
+    Given: An Azure client and arguments for setting webapp configuration.
+    When: The set_webapp_config method is called.
+    Then: The method should make the correct HTTP request with proper parameters and handle the response.
+    """
+    # Mock arguments
+    name = "test-webapp"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+    http20_enabled = "true"
+    remote_debugging_enabled = "false"
+    min_tls_version = "1.2"
+
+    # Mock response
+    mock_response = {
+        "id": f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/config/web",
+        "name": "web",
+        "properties": {"http20Enabled": True, "remoteDebuggingEnabled": False, "minTlsVersion": "1.2"},
+    }
+
+    # Mock the client's http_request method
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the method
+    result = client.set_webapp_config(
+        name=name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        http20_enabled=http20_enabled,
+        remote_debugging_enabled=remote_debugging_enabled,
+        min_tls_version=min_tls_version,
+    )
+
+    # Verify the HTTP request was called with correct parameters
+    expected_url = (
+        f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}"
+        f"/providers/Microsoft.Web/sites/{name}/config/web"
+    )
+    expected_data = {
+        "properties": {
+            "http20Enabled": http20_enabled,
+            "remoteDebuggingEnabled": remote_debugging_enabled,
+            "minTlsVersion": min_tls_version,
+        }
+    }
+    expected_params = {"api-version": "2024-04-01"}
+
+    client.http_request.assert_called_once_with(
+        method="PATCH", full_url=expected_url, json_data=expected_data, params=expected_params
+    )
+
+    # Verify the result matches the mock response
+    assert result == mock_response
+
+
+def test_get_webapp_auth(mocker, client):
+    """
+    Given: An Azure client and arguments for getting webapp authentication settings.
+    When: The get_webapp_auth method is called.
+    Then: The method should make the correct HTTP request and return the authentication settings.
+    """
+    # Mock arguments
+    name = "test-webapp"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+
+    # Mock response
+    mock_response = {
+        "id": f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/config/authsettings",
+        "name": "authsettings",
+        "properties": {"enabled": True, "unauthenticatedClientAction": "RedirectToLoginPage"},
+    }
+
+    # Mock the client's http_request method
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the method
+    result = client.get_webapp_auth(name=name, subscription_id=subscription_id, resource_group_name=resource_group_name)
+
+    # Verify the HTTP request was called with correct parameters
+    expected_url = (
+        f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}"
+        f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
+    )
+    expected_params = {"api-version": "2024-04-01"}
+
+    client.http_request.assert_called_once_with(method="GET", full_url=expected_url, params=expected_params)
+
+    # Verify the result matches the mock response
+    assert result == mock_response
+
+
+def test_get_webapp_auth_error_handling(mocker, client):
+    """
+    Given: An Azure client and arguments for getting webapp authentication settings.
+    When: The get_webapp_auth method is called and an exception occurs.
+    Then: The method should call handle_azure_error with appropriate parameters.
+    """
+    # Mock arguments
+    name = "test-webapp"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+
+    # Mock exception
+    mock_exception = Exception("404 Not Found")
+
+    # Mock the client's methods
+    mocker.patch.object(client, "http_request", side_effect=mock_exception)
+    mocker.patch.object(client, "handle_azure_error", side_effect=ValueError("Web App not found"))
+
+    # Call the method and expect it to raise an exception
+    with pytest.raises(ValueError, match="Web App not found"):
+        client.get_webapp_auth(name=name, subscription_id=subscription_id, resource_group_name=resource_group_name)
+
+    # Verify handle_azure_error was called with correct parameters
+    client.handle_azure_error.assert_called_once_with(
+        e=mock_exception,
+        resource_name=name,
+        resource_type="Web App",
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+
+def test_update_webapp_auth(mocker, client):
+    """
+    Given: An Azure client and arguments for updating webapp authentication settings.
+    When: The update_webapp_auth method is called.
+    Then: The method should make the correct HTTP request with the current settings.
+    """
+    # Mock arguments
+    name = "test-webapp"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+    current = {"properties": {"enabled": True, "unauthenticatedClientAction": "RedirectToLoginPage"}}
+
+    # Mock response
+    mock_response = {
+        "id": f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/config/authsettings",
+        "name": "authsettings",
+        "properties": {"enabled": True, "unauthenticatedClientAction": "RedirectToLoginPage"},
+    }
+
+    # Mock the client's http_request method
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the method
+    result = client.update_webapp_auth(
+        name=name, subscription_id=subscription_id, resource_group_name=resource_group_name, current=current
+    )
+
+    # Verify the HTTP request was called with correct parameters
+    expected_url = (
+        f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}"
+        f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
+    )
+    expected_params = {"api-version": "2024-04-01"}
+
+    client.http_request.assert_called_once_with(method="PUT", full_url=expected_url, json_data=current, params=expected_params)
+
+    # Verify the result matches the mock response
+    assert result == mock_response
+
+
+def test_update_webapp_auth_error_handling(mocker, client):
+    """
+    Given: An Azure client and arguments for updating webapp authentication settings.
+    When: The update_webapp_auth method is called and an exception occurs.
+    Then: The method should call handle_azure_error with appropriate parameters.
+    """
+    # Mock arguments
+    name = "test-webapp"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+    current = {"properties": {"enabled": True}}
+
+    # Mock exception
+    mock_exception = Exception("403 Forbidden")
+
+    # Mock the client's methods
+    mocker.patch.object(client, "http_request", side_effect=mock_exception)
+    mocker.patch.object(client, "handle_azure_error", side_effect=DemistoException("Insufficient permissions"))
+
+    # Call the method and expect it to raise an exception
+    with pytest.raises(DemistoException, match="Insufficient permissions"):
+        client.update_webapp_auth(
+            name=name, subscription_id=subscription_id, resource_group_name=resource_group_name, current=current
+        )
+
+    # Verify handle_azure_error was called with correct parameters
+    client.handle_azure_error.assert_called_once_with(
+        e=mock_exception,
+        resource_name=name,
+        resource_type="Web App",
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+
+def test_flexible_server_param_set(mocker, client):
+    """
+    Given: An Azure client and arguments for setting MySQL flexible server parameters.
+    When: The flexible_server_param_set method is called.
+    Then: The method should make the correct HTTP request with proper parameters.
+    """
+    # Mock arguments
+    server_name = "test-mysql-server"
+    configuration_name = "max_connections"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+    source = "user-override"
+    value = "1000"
+
+    # Mock response
+    mock_response = {
+        "id": f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.DBforMySQL/flexibleServers/{server_name}/configurations/{configuration_name}",
+        "name": configuration_name,
+        "properties": {"source": source, "value": value},
+    }
+
+    # Mock the client's http_request method
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the method
+    result = client.flexible_server_param_set(
+        server_name=server_name,
+        configuration_name=configuration_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        source=source,
+        value=value,
+    )
+
+    # Verify the HTTP request was called with correct parameters
+    expected_url = (
+        f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}"
+        f"/providers/Microsoft.DBforMySQL/flexibleServers/{server_name}/configurations/{configuration_name}"
+    )
+    expected_data = {"properties": {"source": source, "value": value}}
+    expected_params = {"api-version": "2023-12-30"}
+
+    client.http_request.assert_called_once_with(
+        method="PUT", full_url=expected_url, json_data=expected_data, params=expected_params
+    )
+
+    # Verify the result matches the mock response
+    assert result == mock_response
+
+
+def test_flexible_server_param_set_error_handling(mocker, client):
+    """
+    Given: An Azure client and arguments for setting MySQL flexible server parameters.
+    When: The flexible_server_param_set method is called and an exception occurs.
+    Then: The method should call handle_azure_error with appropriate parameters.
+    """
+    # Mock arguments
+    server_name = "test-mysql-server"
+    configuration_name = "max_connections"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+    source = "user-override"
+    value = "1000"
+
+    # Mock exception
+    mock_exception = Exception("404 Not Found")
+
+    # Mock the client's methods
+    mocker.patch.object(client, "http_request", side_effect=mock_exception)
+    mocker.patch.object(client, "handle_azure_error", side_effect=ValueError("MySQL Flexible Server Configuration not found"))
+
+    # Call the method and expect it to raise an exception
+    with pytest.raises(ValueError, match="MySQL Flexible Server Configuration not found"):
+        client.flexible_server_param_set(
+            server_name=server_name,
+            configuration_name=configuration_name,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            source=source,
+            value=value,
+        )
+
+    # Verify handle_azure_error was called with correct parameters
+    client.handle_azure_error.assert_called_once_with(
+        e=mock_exception,
+        resource_name=f"{server_name}/{configuration_name}",
+        resource_type="MySQL Flexible Server Configuration",
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+
+def test_get_monitor_log_profile(mocker, client):
+    """
+    Given: An Azure client and arguments for getting a monitor log profile.
+    When: The get_monitor_log_profile method is called.
+    Then: The method should make the correct HTTP request and return the log profile.
+    """
+    # Mock arguments
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    log_profile_name = "test-log-profile"
+
+    # Mock response
+    mock_response = {
+        "id": f"/subscriptions/{subscription_id}/providers/Microsoft.Insights/logprofiles/{log_profile_name}",
+        "name": log_profile_name,
+        "location": "global",
+        "properties": {
+            "storageAccountId": "/subscriptions/test/resourceGroups/test/providers/Microsoft.Storage/storageAccounts/test",
+            "retentionPolicy": {"enabled": True, "days": 30},
+        },
+    }
+
+    # Mock the client's http_request method
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the method
+    result = client.get_monitor_log_profile(subscription_id=subscription_id, log_profile_name=log_profile_name)
+
+    # Verify the HTTP request was called with correct parameters
+    expected_url = f"https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
+    expected_params = {"api-version": "2016-03-01"}
+
+    client.http_request.assert_called_once_with(method="GET", full_url=expected_url, params=expected_params)
+
+    # Verify the result matches the mock response
+    assert result == mock_response
+
+
+def test_get_monitor_log_profile_error_handling(mocker, client):
+    """
+    Given: An Azure client and arguments for getting a monitor log profile.
+    When: The get_monitor_log_profile method is called and an exception occurs.
+    Then: The method should call handle_azure_error with appropriate parameters.
+    """
+    # Mock arguments
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    log_profile_name = "test-log-profile"
+
+    # Mock exception
+    mock_exception = Exception("404 Not Found")
+
+    # Mock the client's methods
+    mocker.patch.object(client, "http_request", side_effect=mock_exception)
+    mocker.patch.object(client, "handle_azure_error", side_effect=ValueError("Monitor Log Profile not found"))
+
+    # Call the method and expect it to raise an exception
+    with pytest.raises(ValueError, match="Monitor Log Profile not found"):
+        client.get_monitor_log_profile(subscription_id=subscription_id, log_profile_name=log_profile_name)
+
+    # Verify handle_azure_error was called with correct parameters
+    client.handle_azure_error.assert_called_once_with(
+        e=mock_exception,
+        resource_name=log_profile_name,
+        resource_type="Monitor Log Profile",
+        subscription_id=subscription_id,
+        resource_group_name=None,
+    )
