@@ -680,45 +680,89 @@
         }
     },
     "msft_o365_emails_raw": {
-        "Attachments": {
+          "isRead": {
+            "type": "boolean",
+            "is_array": false
+          },
+          "isDraft": {
+            "type": "boolean",
+            "is_array": false
+          },
+          "sentDateTime": {
+            "type": "datetime",
+            "is_array": false
+          },
+          "hasAttachments": {
+            "type": "boolean",
+            "is_array": false
+          },
+          "receivedDateTime": {
+            "type": "datetime",
+            "is_array": false
+          },
+          "isReadReceiptRequested": {
+            "type": "boolean",
+            "is_array": false
+          },
+          "isDeliveryReceiptRequested": {
+            "type": "boolean",
+            "is_array": false
+          },
+          "id": {
             "type": "string",
             "is_array": false
-        },
-        "bccRecipients": {
+          },
+          "from": {
             "type": "string",
             "is_array": false
-        },
-        "ccRecipients": {
+          },
+          "sender": {
             "type": "string",
             "is_array": false
-        },
-        "From": {
+          },
+          "replyTo": {
             "type": "string",
             "is_array": false
-        },
-        "importance": {
+          },
+          "webLink": {
             "type": "string",
             "is_array": false
-        },
-        "internetMessageHeaders": {
+          },
+          "importance": {
             "type": "string",
             "is_array": false
-        },
-        "InternetMessageId": {
+          },
+          "attachments": {
             "type": "string",
             "is_array": false
-        },
-        "Sender": {
+          },
+          "ccRecipients": {
             "type": "string",
             "is_array": false
-        },
-        "toRecipients": {
+          },
+          "mailboxOwner": {
             "type": "string",
             "is_array": false
-        },
-        "webLink": {
+          },
+          "toRecipients": {
             "type": "string",
             "is_array": false
-        }
+          },
+          "bccRecipients": {
+            "type": "string",
+            "is_array": false
+          },
+          "internetMessageId": {
+            "type": "string",
+            "is_array": false
+          },
+          "internetMessageHeaders": {
+            "type": "string",
+            "is_array": false
+          },
+          "subject": {
+            "type": "string",
+            "is_array": false
+          }
     }
 }

@@ -9,7 +9,10 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Breach",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "zero-day",

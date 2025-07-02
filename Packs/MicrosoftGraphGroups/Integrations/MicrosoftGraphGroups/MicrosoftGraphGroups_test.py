@@ -1,27 +1,27 @@
 import pytest
+from MicrosoftApiModule import MicrosoftClient, NotFoundError
 from MicrosoftGraphGroups import (
-    parse_outputs,
-    camel_case_to_readable,
     MsGraphClient,
-    list_groups_command,
-    get_group_command,
-    create_group_command,
-    list_members_command,
     add_member_command,
+    camel_case_to_readable,
+    create_group_command,
     delete_group_command,
-    remove_member_command,
     demisto,
+    get_group_command,
+    list_groups_command,
+    list_members_command,
     main,
+    parse_outputs,
+    remove_member_command,
 )
 from test_data.response_constants import (
-    RESPONSE_LIST_GROUPS,
-    RESPONSE_GET_GROUP,
     RESPONSE_CREATE_GROUP,
-    RESPONSE_LIST_MEMBERS_UNDER_100,
+    RESPONSE_GET_GROUP,
+    RESPONSE_LIST_GROUPS,
     RESPONSE_LIST_MEMBERS_ABOVE_100,
+    RESPONSE_LIST_MEMBERS_UNDER_100,
 )
-from test_data.result_constants import EXPECTED_LIST_GROUPS, EXPECTED_GET_GROUP, EXPECTED_CREATE_GROUP, EXPECTED_LIST_MEMBERS
-from MicrosoftApiModule import NotFoundError, MicrosoftClient
+from test_data.result_constants import EXPECTED_CREATE_GROUP, EXPECTED_GET_GROUP, EXPECTED_LIST_GROUPS, EXPECTED_LIST_MEMBERS
 
 
 def create_ms_graph_client():
@@ -192,9 +192,10 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     Then:
         - Ensure the output are as expected.
     """
-    from MicrosoftGraphGroups import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
-    import demistomock as demisto
     import re
+
+    import demistomock as demisto
+    from MicrosoftGraphGroups import MANAGED_IDENTITIES_TOKEN_URL, Resources, main
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
@@ -212,7 +213,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert "ok" in demisto.results.call_args[0][0]["Contents"]
     qs = get_mock.last_request.qs
     assert qs["resource"] == [Resources.graph]
-    assert client_id and qs["client_id"] == [client_id] or "client_id" not in qs
+    assert (client_id and qs["client_id"] == [client_id]) or "client_id" not in qs
 
 
 def test_list_members(mocker):

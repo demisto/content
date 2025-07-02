@@ -1,7 +1,7 @@
 !abnormal-security-check-case-action-status case_id=12345 action_id=abcdefgh-1234-5678-ijkl-mnop9qrstuvwx
 !abnormal-security-check-threat-action-status threat_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba action_id=abcdefgh-1234-5678-ijkl-mnop9qrstuvwx
 !abnormal-security-list-abnormal-cases filter="lastModifiedTime gte 2020-12-01T01:01:01Z"
-!abnormal-security-list-threats filter="receivedTime gte 2020-12-01T01:01:01Z"
+!abnormal-security-list-threats filter="latestTimeRemediated gte 2020-12-01T01:01:01Z"
 !abnormal-security-download-threat-log-csv filter="receivedTime gte 2020-12-01T01:01:01Z"
 !abnormal-security-get-threat threat_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba
 !abnormal-security-get-abnormal-case case_id=12805

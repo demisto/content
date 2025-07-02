@@ -3,6 +3,7 @@ import pytest
 from CommonServerPython import *  # noqa: F401
 from requests import Response
 from MicrosoftTeams import GraphPermissions as Perms
+from freezegun import freeze_time
 
 entryTypes["warning"] = 11
 
@@ -115,6 +116,8 @@ integration_context: dict = {
 
 CLIENT_CREDENTIALS_FLOW = "Client Credentials"
 AUTHORIZATION_CODE_FLOW = "Authorization Code"
+CREDENTIALS_TOKEN_PARAMS = "credentials_token_params"
+AUTHCODE_TOKEN_PARAMS = "authcode_token_params"
 ONEONONE_CHAT_ID = "19:09ddc990-3821-4ceb-8019-24d39998f93e_48d31887-5fad-4d73-a9f5-3c356e68a038@unq.gbl.spaces"
 GROUP_CHAT_ID = "19:2da4c29f6d7041eca70b638b43d45437@thread.v2"
 
@@ -272,7 +275,6 @@ def test_mirror_investigation(mocker, requests_mock):
     )
     expected_integration_context: dict = {
         "bot_name": "DemistoBot",
-        "current_refresh_token": "",
         "tenant_id": tenant_id,
         "service_url": service_url,
         "teams": json.dumps(
@@ -302,8 +304,7 @@ def test_mirror_investigation(mocker, requests_mock):
     assert demisto.setIntegrationContext.call_count == 3
     set_integration_context = demisto.setIntegrationContext.call_args[0]
     assert len(set_integration_context) == 1
-    set_integration_context[0].pop("graph_access_token")
-    set_integration_context[0].pop("graph_valid_until")
+    set_integration_context[0].pop(CREDENTIALS_TOKEN_PARAMS)
     set_integration_context[0].pop("bot_access_token")
     set_integration_context[0].pop("bot_valid_until")
     assert set_integration_context[0] == expected_integration_context
@@ -2582,9 +2583,13 @@ def test_switch_auth_type_to_client_credentials(mocker):
         "MicrosoftTeams.get_integration_context",
         return_value={
             "current_auth_type": "Authorization Code",
-            "current_refresh_token": "test_refresh_token",
-            "graph_access_token": "test_graph_token",
-            "graph_valid_until": "test_valid_until",
+            AUTHCODE_TOKEN_PARAMS: json.dumps(
+                {
+                    "current_refresh_token": "test_refresh_token",
+                    "graph_access_token": "test_graph_token",
+                    "graph_valid_until": "test_valid_until",
+                }
+            ),
         },
     )
     set_integration_context_mocker = mocker.patch("MicrosoftTeams.set_integration_context", return_value={})
@@ -2596,9 +2601,8 @@ def test_switch_auth_type_to_client_credentials(mocker):
     assert set_integration_context_mocker.call_count == 2
     assert set_integration_context_mocker.call_args[0][0] == {
         "current_auth_type": "Client Credentials",
-        "current_refresh_token": "",
-        "graph_access_token": "",
-        "graph_valid_until": "",
+        AUTHCODE_TOKEN_PARAMS: "{}",
+        CREDENTIALS_TOKEN_PARAMS: "{}",
     }
     assert "Setting the current_auth_type in the integration context to Client Credentials" in debug_log_mocker.call_args[0][0]
     assert debug_log_mocker.call_count == 4
@@ -2627,9 +2631,13 @@ def test_switch_auth_type_to_authorization_code_flow(mocker):
         "MicrosoftTeams.get_integration_context",
         return_value={
             "current_auth_type": "Client Credentials",
-            "current_refresh_token": "test_refresh_token",
-            "graph_access_token": "test_graph_token",
-            "graph_valid_until": "test_valid_until",
+            AUTHCODE_TOKEN_PARAMS: json.dumps(
+                {
+                    "current_refresh_token": "test_refresh_token",
+                    "graph_access_token": "test_graph_token",
+                    "graph_valid_until": "test_valid_until",
+                }
+            ),
         },
     )
     set_integration_context_mocker = mocker.patch("MicrosoftTeams.set_integration_context", return_value={})
@@ -2641,9 +2649,8 @@ def test_switch_auth_type_to_authorization_code_flow(mocker):
     assert set_integration_context_mocker.call_count == 2
     assert set_integration_context_mocker.call_args[0][0] == {
         "current_auth_type": "Authorization Code",
-        "current_refresh_token": "",
-        "graph_access_token": "",
-        "graph_valid_until": "",
+        AUTHCODE_TOKEN_PARAMS: "{}",
+        CREDENTIALS_TOKEN_PARAMS: "{}",
     }
     assert "Setting the current_auth_type in the integration context to Authorization Code" in debug_log_mocker.call_args[0][0]
     assert debug_log_mocker.call_count == 4
@@ -2732,6 +2739,7 @@ def test_message_update(mocker, requests_mock):
                 Perms.CHANNEL_CREATE,
                 Perms.CHANNEL_READBASIC_ALL,
                 Perms.CHANNEL_DELETE_ALL,
+                Perms.CHANNELMESSAGE_SEND,
             },
         ),
         (
@@ -2766,16 +2774,17 @@ def test_expand_permissions_list(permissions, expected_out):
 
 
 @pytest.mark.parametrize(
-    "command, expected_missing",
+    "auth_type, command, expected_missing",
     [
-        ("microsoft-teams-create-channel", {Perms.CHANNEL_CREATE, Perms.GROUPMEMBER_READ_ALL}),
+        (CLIENT_CREDENTIALS_FLOW, "microsoft-teams-create-channel", {Perms.CHANNEL_CREATE, Perms.GROUPMEMBER_READ_ALL}),
         (
+            AUTHORIZATION_CODE_FLOW,
             "microsoft-teams-message-send-to-chat",
             {Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL, Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT},
         ),
     ],
 )
-def test_insufficient_permissions_handler(mocker, command, expected_missing):
+def test_insufficient_permissions_handler(mocker, auth_type, command, expected_missing):
     """
     Given:
         - Microsoft Graph API returns a 403 Forbidden error due to insufficient permissions.
@@ -2790,12 +2799,18 @@ def test_insufficient_permissions_handler(mocker, command, expected_missing):
 
     mocker.patch.object(demisto, "command", return_value=command)
     mocker.patch("MicrosoftTeams.get_token_permissions", return_value=mock_permissions)
-    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"graph_access_token": "mock_token"})
+    mocker.patch(
+        "MicrosoftTeams.get_integration_context",
+        return_value={
+            CREDENTIALS_TOKEN_PARAMS: json.dumps({"graph_access_token": "mock_token"}),
+            AUTHCODE_TOKEN_PARAMS: json.dumps({"graph_access_token": "mock_token"}),
+        },
+    )
     missing_permissions_mock = mocker.patch(
         "MicrosoftTeams.create_missing_permissions_section", side_effect=create_missing_permissions_section
     )
 
-    error_msg = insufficient_permissions_error_handler()
+    error_msg = insufficient_permissions_error_handler(auth_type=auth_type)
 
     assert error_msg
     assert set(missing_permissions_mock.call_args[0][0]) == expected_missing
@@ -2823,8 +2838,9 @@ def test_commands_required_includes_all_commands():
     except FileNotFoundError:
         pytest.skip("yml file is unavailable for testing in this environment")
 
-    for command in yml['script']['commands']:
-        assert command['name'] in COMMANDS_REQUIRED_PERMISSIONS
+    for command in yml["script"]["commands"]:
+        assert command["name"] in COMMANDS_REQUIRED_PERMISSIONS[AUTHORIZATION_CODE_FLOW]
+        assert command["name"] in COMMANDS_REQUIRED_PERMISSIONS[CLIENT_CREDENTIALS_FLOW]
 
 
 def test_get_one_on_one_chat_id(mocker, requests_mock):
@@ -2839,21 +2855,20 @@ def test_get_one_on_one_chat_id(mocker, requests_mock):
       - Ensure the expected request body is sent and the chat id is retrieved successfully
     """
     from MicrosoftTeams import get_one_on_one_chat_id
-    mock_signed_in_response = test_data.get('signed_in_user')
-    mocker.patch('MicrosoftTeams.get_signed_in_user', return_value=mock_signed_in_response)
-    mock_chat_response = test_data.get('get_oneOnOne_chat_id_response')
-    mock_user_id = mock_chat_response.get('value')[0].get('members')[0].get('userId')
-    expected_request_qs = {
-        '$expand': ['members'],
-        '$filter': ["chattype eq 'oneonone' and members/any(m:m/microsoft.graph.aaduserconversationmember/userid "
-                    f"eq '{mock_user_id}')"]
-    }
-    expected_chat_id = mock_chat_response.get('value')[0].get('id')
 
-    requests_mock.get(
-        'https://graph.microsoft.com/v1.0/me/chats',
-        json=mock_chat_response
-    )
+    mock_signed_in_response = test_data.get("signed_in_user")
+    mocker.patch("MicrosoftTeams.get_signed_in_user", return_value=mock_signed_in_response)
+    mock_chat_response = test_data.get("get_oneOnOne_chat_id_response")
+    mock_user_id = mock_chat_response.get("value")[0].get("members")[0].get("userId")
+    expected_request_qs = {
+        "$expand": ["members"],
+        "$filter": [
+            f"chattype eq 'oneonone' and members/any(m:m/microsoft.graph.aaduserconversationmember/userid eq '{mock_user_id}')"
+        ],
+    }
+    expected_chat_id = mock_chat_response.get("value")[0].get("id")
+
+    requests_mock.get("https://graph.microsoft.com/v1.0/me/chats", json=mock_chat_response)
 
     chat_id = get_one_on_one_chat_id(mock_user_id)
 
@@ -2875,18 +2890,18 @@ def test_get_chat_id_and_type_no_chat_creation_permission(mocker, requests_mock)
     """
     from MicrosoftTeams import get_chat_id_and_type
 
-    mock_chat_id = 'test_oneonone_chat_id'
-    mock_user_id = 'user_id'
-    chat_name = 'test_admin'
+    mock_chat_id = "test_oneonone_chat_id"
+    mock_user_id = "user_id"
+    chat_name = "test_admin"
     requests_mock.get(
         f"https://graph.microsoft.com/v1.0/chats/?$select=id, chatType&$filter=topic eq '{chat_name}'",
-        json=test_data.get('get_chat_id_and_type_no_chat_response')
+        json=test_data.get("get_chat_id_and_type_no_chat_response"),
     )
-    get_user_mock = mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': mock_user_id, 'userType': 'Member'}])
-    get_one_on_one_chat_id_mock = mocker.patch('MicrosoftTeams.get_one_on_one_chat_id', return_value=mock_chat_id)
-    create_chat_mock = mocker.patch('MicrosoftTeams.create_chat')
+    get_user_mock = mocker.patch("MicrosoftTeams.get_user", return_value=[{"id": mock_user_id, "userType": "Member"}])
+    get_one_on_one_chat_id_mock = mocker.patch("MicrosoftTeams.get_one_on_one_chat_id", return_value=mock_chat_id)
+    create_chat_mock = mocker.patch("MicrosoftTeams.create_chat")
 
-    assert get_chat_id_and_type(chat_name, create_dm_chat=False) == (mock_chat_id, 'oneOnOne')
+    assert get_chat_id_and_type(chat_name, create_dm_chat=False) == (mock_chat_id, "oneOnOne")
     create_chat_mock.assert_not_called()
     get_one_on_one_chat_id_mock.assert_called_once_with(mock_user_id)
     assert get_user_mock.call_count == 1
@@ -2905,21 +2920,387 @@ def test_get_chat_id_and_type_not_found_no_chat_creation_permission(mocker, requ
     """
     from MicrosoftTeams import get_chat_id_and_type
 
-    mock_signed_in_response = test_data.get('signed_in_user')
-    mocker.patch('MicrosoftTeams.get_signed_in_user', return_value=mock_signed_in_response)
-    mock_chat_response = test_data.get('get_oneOnOne_chat_id_no_chat_response')
-    chat_name = 'unknown'
+    mock_signed_in_response = test_data.get("signed_in_user")
+    mocker.patch("MicrosoftTeams.get_signed_in_user", return_value=mock_signed_in_response)
+    mock_chat_response = test_data.get("get_oneOnOne_chat_id_no_chat_response")
+    chat_name = "unknown"
     requests_mock.get(
         f"https://graph.microsoft.com/v1.0/chats/?$select=id, chatType&$filter=topic eq '{chat_name}'",
-        json=test_data.get('get_chat_id_and_type_no_chat_response')
+        json=test_data.get("get_chat_id_and_type_no_chat_response"),
     )
-    requests_mock.get(
-        'https://graph.microsoft.com/v1.0/me/chats',
-        json=mock_chat_response
-    )
-    mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': 'mock_user_id', 'userType': 'Member'}])
+    requests_mock.get("https://graph.microsoft.com/v1.0/me/chats", json=mock_chat_response)
+    mocker.patch("MicrosoftTeams.get_user", return_value=[{"id": "mock_user_id", "userType": "Member"}])
 
     with pytest.raises(ValueError) as e:
         get_chat_id_and_type(chat_name, create_dm_chat=False)
 
-    assert str(e.value) == f'Could not find chat: {chat_name}'
+    assert str(e.value) == f"Could not find chat: {chat_name}"
+
+
+def test_ring_user_in_auth_code(mocker, requests_mock):
+    """
+    Given:
+      - Authentication type is set to authorization code.
+    When:
+      - Calling the ring-user command.
+    Then:
+      - Ring user is called with a token obtained from client credentials instead of auth code.
+    """
+    from MicrosoftTeams import ring_user
+
+    mocker.patch("MicrosoftTeams.AUTH_TYPE", new=AUTHORIZATION_CODE_FLOW)
+    mocker.patch.object(demisto, "args", return_value={"username": "test_user"})
+    mocker.patch("MicrosoftTeams.get_user", return_value=[{"id": "test_user_id", "userType": "Member"}])
+
+    mock_credentials_token = "credentials_token"
+
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json={"access_token": mock_credentials_token},
+        status_code=200,
+        additional_matcher=lambda request: "grant_type=client_credentials" in request.text,
+    )
+
+    requests_mock.post(
+        f"{GRAPH_BASE_URL}/v1.0/communications/calls",
+        json={},
+    )
+    integration_context.pop(CREDENTIALS_TOKEN_PARAMS)
+
+    ring_user()
+
+    assert requests_mock.last_request.headers["Authorization"] == f"Bearer {mock_credentials_token}"
+
+
+@freeze_time("2025-03-20")
+@pytest.mark.parametrize("auth_type", [AUTHORIZATION_CODE_FLOW, CLIENT_CREDENTIALS_FLOW])
+def test_integration_context_format_migration(mocker, auth_type):
+    """
+    Test the context migration logic from the old single graph token format to
+    handling both token types individually.
+
+    Given:
+        - The integration context contains a cached graph token in the old format.
+    When:
+        - Requesting a graph access token.
+    Then:
+        - The integration context is updated to the new format.
+        - The existing token is migrated to the appropriate token type.
+        - The existing token is returned as expected.
+    """
+    from MicrosoftTeams import get_graph_access_token, AUTHCODE_TOKEN_PARAMS, CREDENTIALS_TOKEN_PARAMS
+
+    mock_integration_context = {
+        "current_refresh_token": "mock_refresh_token",
+        "graph_access_token": "mock_cached_token",
+        "graph_valid_until": 1742438800,
+    }
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=mock_integration_context)
+    mocker.patch("MicrosoftTeams.AUTH_TYPE", new=auth_type)
+
+    token = get_graph_access_token()
+
+    assert token == "mock_cached_token"
+
+    context_token_key = AUTHCODE_TOKEN_PARAMS if auth_type == AUTHORIZATION_CODE_FLOW else CREDENTIALS_TOKEN_PARAMS
+    assert json.loads(str(mock_integration_context.get(context_token_key, "{}"))) == {
+        "current_refresh_token": "mock_refresh_token",
+        "graph_access_token": "mock_cached_token",
+        "graph_valid_until": 1742438800,
+    }
+    assert "current_refresh_token" not in mock_integration_context
+    assert "graph_access_token" not in mock_integration_context
+    assert "graph_valid_until" not in mock_integration_context
+
+
+@freeze_time("2025-03-20")
+def test_integration_context_format_migration_auth_override(mocker, requests_mock):
+    """
+    Test the context migration logic when the requested auth type is different from the integration configuration.
+
+    Given:
+        - The integration context contains a cached graph token in the old format.
+    When:
+        - Requesting a graph access token.
+        - The request is made with the auth type argument overriding the integration configuration.
+    Then:
+        - The integration context is updated to the new format.
+        - The existing token is migrated to the correct token type key.
+        - A token of the requested type is created and returned as expected.
+    """
+    from MicrosoftTeams import get_graph_access_token, CREDENTIALS_TOKEN_PARAMS, AUTHCODE_TOKEN_PARAMS
+
+    mock_integration_context = {
+        "tenant_id": tenant_id,
+        "current_refresh_token": "mock_refresh_token",
+        "graph_access_token": "mock_cached_token",
+        "graph_valid_until": 1742438800,
+    }
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=mock_integration_context)
+    mocker.patch("MicrosoftTeams.AUTH_TYPE", new=CLIENT_CREDENTIALS_FLOW)
+    mocker.patch("MicrosoftTeams.AUTH_CODE", new="mock_auth_code")
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json={
+            "access_token": "mock_auth_token",
+            "refresh_token": "mock_auth_refresh_token",
+            "expires_in": 3600,
+        },
+    )
+
+    token = get_graph_access_token(AUTHORIZATION_CODE_FLOW)
+
+    assert token == "mock_auth_token"
+
+    assert json.loads(str(mock_integration_context.get(CREDENTIALS_TOKEN_PARAMS, "{}"))) == {
+        "current_refresh_token": "mock_refresh_token",
+        "graph_access_token": "mock_cached_token",
+        "graph_valid_until": 1742438800,
+    }
+    assert json.loads(str(mock_integration_context.get(AUTHCODE_TOKEN_PARAMS, "{}"))) == {
+        "current_refresh_token": "mock_auth_refresh_token",
+        "graph_access_token": "mock_auth_token",
+        "graph_valid_until": 1742432395,
+    }
+
+    assert get_graph_access_token() == "mock_cached_token"
+
+
+def test_team_deleted_message_handler(mocker):
+    """
+    Given:
+        - Integration context contains team entries with some name.
+    When:
+        - An event message is received about that team's name changing.
+    Then:
+        - The team name is changed in the integration cache.
+    """
+    from MicrosoftTeams import APP
+
+    mock_request_body = {
+        "channelData": {
+            "eventType": "teamDeleted",
+            "team": {
+                "aadGroupId": "33333333-3333-3333-3333-333333333333",
+                "id": "19:333333333333333333333333333333333333333333333333333333333",
+                "name": "Test3",
+            },
+            "tenant": {
+                "id": "00000000-0000-0000-0000-000000000000",
+            },
+        },
+        "channelId": "msteams",
+        "conversation": {
+            "conversationType": "channel",
+            "id": "19:000000000000000000000000000000000000000000000000000000000",
+            "isGroup": True,
+            "tenantId": "00000000-0000-0000-0000-000000000000",
+        },
+        "from": {
+            "aadObjectId": "00000000-0000-0000-0000-000000000000",
+            "id": "29:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        },
+        "id": "f:00000000-0000-0000-0000-000000000000",
+        "recipient": {
+            "id": "28:000000000000000000000000000000000000",
+            "name": "TestBot",
+        },
+        "type": "conversationUpdate",
+    }
+
+    mock_teams_cache = [
+        {
+            "team_aad_id": "11111111-1111-1111-1111-111111111111",
+            "team_id": "19:111111111111111111111111111111111111111111111111111111111",
+            "team_members": [],
+            "team_name": "Test",
+        },
+        {
+            "team_aad_id": "22222222-2222-2222-2222-222222222222",
+            "team_id": "19:222222222222222222222222222222222222222222222222222222222",
+            "team_members": [],
+            "team_name": "Test2",
+        },
+        {
+            "team_aad_id": "33333333-3333-3333-3333-333333333333",
+            "team_id": "19:333333333333333333333333333333333333333333333333333333333",
+            "team_members": [],
+            "team_name": "Test3",
+        },
+    ]
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+
+    APP.testing = True
+    app = APP.test_client()
+    app.post("/", data=json.dumps(mock_request_body), content_type="application/json")
+
+    set_context_mock.assert_called_once_with({"teams": json.dumps(mock_teams_cache[:2])})
+
+
+def test_team_renamed_message_handler(mocker):
+    """
+    Given:
+        - Integration context contains team entries with some name.
+    When:
+        - An event message is received about that team's name changing.
+    Then:
+        - The team name is changed in the integration cache.
+    """
+    from MicrosoftTeams import APP
+
+    mock_request_body = {
+        "channelData": {
+            "eventType": "teamRenamed",
+            "team": {
+                "aadGroupId": "33333333-3333-3333-3333-333333333333",
+                "id": "19:333333333333333333333333333333333333333333333333333333333",
+                "name": "Test30",
+            },
+            "tenant": {
+                "id": "00000000-0000-0000-0000-000000000000",
+            },
+        },
+        "channelId": "msteams",
+        "conversation": {
+            "conversationType": "channel",
+            "id": "19:000000000000000000000000000000000000000000000000000000000",
+            "isGroup": True,
+            "tenantId": "00000000-0000-0000-0000-000000000000",
+        },
+        "from": {
+            "aadObjectId": "00000000-0000-0000-0000-000000000000",
+            "id": "29:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        },
+        "id": "f:00000000-0000-0000-0000-000000000000",
+        "recipient": {
+            "id": "28:000000000000000000000000000000000000",
+            "name": "TestBot",
+        },
+        "type": "conversationUpdate",
+    }
+
+    mock_teams_cache = [
+        {
+            "team_aad_id": "11111111-1111-1111-1111-111111111111",
+            "team_id": "19:111111111111111111111111111111111111111111111111111111111",
+            "team_members": [],
+            "team_name": "Test",
+        },
+        {
+            "team_aad_id": "22222222-2222-2222-2222-222222222222",
+            "team_id": "19:222222222222222222222222222222222222222222222222222222222",
+            "team_members": [],
+            "team_name": "Test2",
+        },
+        {
+            "team_aad_id": "33333333-3333-3333-3333-333333333333",
+            "team_id": "19:333333333333333333333333333333333333333333333333333333333",
+            "team_members": [],
+            "team_name": "Test3",
+        },
+    ]
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+
+    APP.testing = True
+    app = APP.test_client()
+    app.post("/", data=json.dumps(mock_request_body), content_type="application/json")
+
+    mock_teams_cache[2]["team_name"] = "Test30"
+    set_context_mock.assert_called_once_with({"teams": json.dumps(mock_teams_cache)})
+
+
+def test_message_handler_filters_invalid_cache_entries(mocker, requests_mock):
+    """
+    Given:
+        - Integration context contains multiple team entries with the same name.
+    When:
+        - An event message is received about a team with that name.
+        - One of the cached teams no longer exists.
+    Then:
+        - The validity of each entry is tested and invalid entries are removed.
+    """
+    from MicrosoftTeams import APP
+
+    mock_request_body = {
+        "channelData": {
+            "eventType": "teamRenamed",
+            "team": {
+                "aadGroupId": "33333333-3333-3333-3333-333333333333",
+                "id": "19:333333333333333333333333333333333333333333333333333333333",
+                "name": "Test2",
+            },
+            "tenant": {
+                "id": "00000000-0000-0000-0000-000000000000",
+            },
+        },
+        "channelId": "msteams",
+        "conversation": {
+            "conversationType": "channel",
+            "id": "19:000000000000000000000000000000000000000000000000000000000",
+            "isGroup": True,
+            "tenantId": "00000000-0000-0000-0000-000000000000",
+        },
+        "from": {
+            "aadObjectId": "00000000-0000-0000-0000-000000000000",
+            "id": "29:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        },
+        "id": "f:00000000-0000-0000-0000-000000000000",
+        "recipient": {
+            "id": "28:000000000000000000000000000000000000",
+            "name": "TestBot",
+        },
+        "type": "conversationUpdate",
+    }
+
+    mock_teams_cache = [
+        {
+            "team_aad_id": "11111111-1111-1111-1111-111111111111",
+            "team_id": "19:111111111111111111111111111111111111111111111111111111111",
+            "team_members": [],
+            "team_name": "Test",
+        },
+        {
+            "team_aad_id": "22222222-2222-2222-2222-222222222222",
+            "team_id": "19:222222222222222222222222222222222222222222222222222222222",
+            "team_members": [],
+            "team_name": "Test2",
+        },
+        {
+            "team_aad_id": "33333333-3333-3333-3333-333333333333",
+            "team_id": "19:333333333333333333333333333333333333333333333333333333333",
+            "team_members": [],
+            "team_name": "Test3",
+        },
+    ]
+
+    mock_team_query_response = {
+        "value": [
+            {
+                "displayName": "Test2",
+                "id": "33333333-3333-3333-3333-333333333333",
+            },
+        ]
+    }
+
+    url = f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq 'Test2' and resourceProvisioningOptions/Any(x:x eq 'Team')"
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
+    mocker.patch("MicrosoftTeams.get_graph_access_token", return_value="mock_token")
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+    requests_mock.get(url, json=mock_team_query_response)
+
+    APP.testing = True
+    app = APP.test_client()
+    app.post("/", data=json.dumps(mock_request_body), content_type="application/json")
+
+    # Check that the old invalid Test2 was removed, and "Test3" name was changed to "Test2"
+    mock_teams_cache[2]["team_name"] = "Test2"
+    mock_teams_cache.pop(1)
+    set_context_mock.assert_called_once_with({"teams": json.dumps(mock_teams_cache)})

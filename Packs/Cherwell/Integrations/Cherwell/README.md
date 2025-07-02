@@ -3,7 +3,6 @@ This integration was integrated and tested with version 10.1.1 of Cherwell
 
 ## Configure Cherwell in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | URL (example: https://my.domain.com) | True |
@@ -21,36 +20,39 @@ This integration was integrated and tested with version 10.1.1 of Cherwell
 | Incident type | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cherwell-create-business-object
+
 ***
 Creates a business object.
-
 
 #### Base Command
 
 `cherwell-create-business-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| json | Data JSON containing the relevant fields and their values, for example:<br/>{"title": "some value"}). | Required | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| json | Data JSON containing the relevant fields and their values, for example:<br/>{"title": "some value"}). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.BusinessObjects.RecordId | String | Business object record ID.  | 
-| Cherwell.BusinessObjects.PublicId | String | Business object public ID.  | 
-
+| Cherwell.BusinessObjects.RecordId | String | Business object record ID.  |
+| Cherwell.BusinessObjects.PublicId | String | Business object public ID.  |
 
 #### Command Example
+
 ```!cherwell-create-business-object type=incident json={"Priority": "3", "CustomerDisplayName": "demisto admin", "Description": "This incident was created by Cherwell test playbook","Service":"Enterprise Apps","Category":"PeopleSoft","Subcategory":"Submit Incident"}```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -65,41 +67,42 @@ Creates a business object.
 #### Human Readable Output
 
 >### New Incident was created
+>
 >|Public Id|Record Id|
 >|---|---|
 >| 102384 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 |
 
-
 ### cherwell-update-business-object
+
 ***
 Update a business object with the specified fields.
-
 
 #### Base Command
 
 `cherwell-update-business-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| json | Data JSON containing the relevant fields and their values. | Required | 
-| id_value | Public ID or record ID. | Required | 
-| id_type | Type of ID. Possible values are: public_id, record_id. | Required | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| json | Data JSON containing the relevant fields and their values. | Required |
+| id_value | Public ID or record ID. | Required |
+| id_type | Type of ID. Possible values are: public_id, record_id. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.BusinessObjects.RecordId | String | Business object record ID.  | 
-| Cherwell.BusinessObjects.PublicId | Unknown | Business object public ID.  | 
-
+| Cherwell.BusinessObjects.RecordId | String | Business object record ID.  |
+| Cherwell.BusinessObjects.PublicId | Unknown | Business object public ID.  |
 
 #### Command Example
+
 ```!cherwell-update-business-object type=incident id_type=public_id id_value=102383 json={"Priority": "1"}```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -114,64 +117,67 @@ Update a business object with the specified fields.
 #### Human Readable Output
 
 >### Incident 102383 was updated
+>
 >|Public Id|Record Id|
 >|---|---|
 >| 102383 | 94757184cce46253b3ab694ae58289b64d0cd867ce |
 
-
 ### cherwell-delete-business-object
+
 ***
 Deletes a given business object.
-
 
 #### Base Command
 
 `cherwell-delete-business-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| id_value | Public ID or record ID. | Required | 
-| id_type | Type of ID. Possible values are: public_id, record_id. | Required | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| id_value | Public ID or record ID. | Required |
+| id_type | Type of ID. Possible values are: public_id, record_id. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!cherwell-delete-business-object id_type=record_id id_value=94757184cce46253b3ab694ae58289b64d0cd867ce type=incident```
 
 #### Human Readable Output
 
->### Record 94757184cce46253b3ab694ae58289b64d0cd867ce of type incident was deleted.
+>### Record 94757184cce46253b3ab694ae58289b64d0cd867ce of type incident was deleted
 
 ### cherwell-get-business-object
+
 ***
 Gets a business object by an ID.
-
 
 #### Base Command
 
 `cherwell-get-business-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| id_value | Public ID or record ID. | Required | 
-| id_type | Type of ID. Possible values are: record_id, public_id. | Required | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| id_value | Public ID or record ID. | Required |
+| id_type | Type of ID. Possible values are: record_id, public_id. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!cherwell-get-business-object type=incident id_type=public_id id_value=102383```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -342,39 +348,40 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Incident: 102383
+>
 >|Approval Block ID|Assigned Team|Assigned Team ID|Assigned To|Assigned To ID|Assigned To Manager|Barcode|Breach Notes|CI Down End Date Time|CI Down Start Date Time|CI Downtime In Minutes|Call Source|Cart Item ID|Category|Cause|Change ID|Cloned Incident|Cloned Incident ID|Close Description|Closed By|Closed By ID|Closed Date Time|Closed On 1 St Call|Combined KB|Comments|Config Item Display Name|Config Item Rec ID|Config Item Type|Config Item Type ID|Cost|Created By|Created By Email|Created By ID|Created Date Time|Created During|Customer Department|Customer Display Name|Customer Rec ID|Customer Subscription Level|Customer Type ID|Default Team|Description|Description Sentiment Value|Email Notifications|ISMS Audits ID|Impact|In cident Duration In Days|In cident Duration In Hours|Incident ID|Incident Type|Incidentchild ID|Incidentchild Rec ID|Knowledge Article ID|Last Mod By|Last Mod By ID|Last Mod Time Stamp|Last Modified Date Time|Level 2 Escalation Complete|Level 2 Escalation Team|Level 3 Escalation Complete|Level 3 Escalation Team|Linked Problem|Linked SL As|Linked To Problem|Location|Major Incident|Major Incident ID|Major Incident Rec ID|Network Event ID|Next Status|Next Status One Step|Next Status Text|On Behalf Of|Pending End Date Time|Pending Previous Status|Pending Reason|Pending Start Date Time|Picked Up Date Time|Portal Affects Multiple Users|Portal Affects Primary Function|Portal Alt Contact Info|Priority|Public Id|Rec ID|Record Id|Recurring Incident|Reopened|Requester|Requester Department|Requester Email|Requester ID|Review By Deadline|SCT Fired|SCT Rec ID|SLAID|SLAID For CI|SLAID For Customer|SLAID For Service|SLA Name|SLA Name For CI|SLA Name For Customer|SLA Name For Service|SLA Resolution Warning|SLA Resolve By Deadline|SLA Respond By Deadline|SLA Response Warning|SLA Target Time ID|SLA_ Key|STC Time In Minutes|Security Event ID|Service|Service Cart ID|Service Catalog Template Name|Service Customer Is Entitled|Service Entitlements|Service ID|Show All Services|Show Contact Information|Skill ID|Smart Classify Search String|Specifics Type Id|Stat _24 X 7 Elapsed Time|Stat _ Date Time Assigned|Stat _ Date Time Closed|Stat _ Date Time In Progress|Stat _ Date Time Re Opened|Stat _ Date Time Resolved|Stat _ Date Time Responded|Stat _ First Call Resolution|Stat _ Incident Escalated|Stat _ Incident Reopened|Stat _ Number Of Escalations|Stat _ Number Of Touches|Stat _ Response Time|Stat _SLA Resolution Breached|Stat _SLA Resolution Good|Stat _SLA Resolution Warning|Stat _SLA Response Breached|Stat _SLA Response Good|Stat _SLA Response Warning|Status|Status Desc|Status ID|Status Order|Subcategory|Subcategory ID|Task Closed Count|Tasks Closed|Tasks In Progress|Tasks On Hold|Total STC Time In Minutes|Total Task Time|Total Tasks|Urgency|Wait Time|Walk Up Support Location|Was CI Down|Withdraw|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  |  |  | 0 | Phone |  | PeopleSoft |  |  | False |  |  |  |  |  | False |  |  |  |  |  |  | 0 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:22 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook-<br/>-<br/>This is from the REST API-<br/>-<br/>This is from the REST API | 2 |  |  |  | 0.02 | 0.53 | 102383 | Service Request |  |  |  | demisto admin | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 |  | 7/22/2021 12:53 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102383 | 94757184cce46253b3ab694ae58289b64d0cd867ce | 94757184cce46253b3ab694ae58289b64d0cd867ce | False | False |  | Accounting |  |  |  | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:07 PM | 7/26/2021 12:22 PM | 7/22/2021 4:22 PM | 7/22/2021 4:07 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 4 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0 | 0 |  | 0 |  | False | False |
 
-
 ### cherwell-download-attachments
+
 ***
 Downloads imported attachements from a specified business object.
-
 
 #### Base Command
 
 `cherwell-download-attachments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| id_type | Type of ID. Possible values are: public_id, record_id. | Required | 
-| id_value | Public ID or record ID. | Required | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| id_type | Type of ID. Possible values are: public_id, record_id. | Required |
+| id_value | Public ID or record ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File | Unknown | File result entries. | 
-
+| File | Unknown | File result entries. |
 
 #### Command Example
+
 ```!cherwell-download-attachments type=incident id_type=public_id id_value=102383```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -395,40 +402,39 @@ Downloads imported attachements from a specified business object.
 
 #### Human Readable Output
 
-
-
 ### cherwell-upload-attachment
+
 ***
 Uploads an attachment to a specified business object.
-
 
 #### Base Command
 
 `cherwell-upload-attachment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| id_type | Type of ID. Possible values are: record_id, public_id. | Required | 
-| id_value | Public ID or record ID. | Required | 
-| file_entry_id | File entry ID. | Required | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| id_type | Type of ID. Possible values are: record_id, public_id. | Required |
+| id_value | Public ID or record ID. | Required |
+| file_entry_id | File entry ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.UploadedAttachments.AttachmentFileId | String | AttachmentFileId to use to get information about the attachment. attachment | 
-| Cherwell.UploadedAttachments.BusinessObjectType | String |  Business object type, for example: "Incident".  | 
-| Cherwell.UploadedAttachments.PublicId | String | Public ID.  | 
-| Cherwell.UploadedAttachments.RecordId | String | Record ID. | 
-
+| Cherwell.UploadedAttachments.AttachmentFileId | String | AttachmentFileId to use to get information about the attachment. attachment |
+| Cherwell.UploadedAttachments.BusinessObjectType | String |  Business object type, for example: "Incident".  |
+| Cherwell.UploadedAttachments.PublicId | String | Public ID.  |
+| Cherwell.UploadedAttachments.RecordId | String | Record ID. |
 
 #### Command Example
+
 ```!cherwell-upload-attachment file_entry_id=13570@f0716e08-9825-481c-8938-8e0a91a20557 type=incident id_type=public_id id_value=102383```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -446,29 +452,30 @@ Uploads an attachment to a specified business object.
 >### Attachment: 947571fbce24025d9bee3b42d99e6eb4dd887100f4, was successfully attached to incident 102383
 
 ### cherwell-link-business-objects
+
 ***
 Links business objects that are related.
-
 
 #### Base Command
 
 `cherwell-link-business-objects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| parent_type | Parent business object type name. | Required | 
-| parent_record_id | Parent business object record ID. | Required | 
-| child_type | Child business object type name. | Required | 
-| child_record_id | Child business object record ID. | Required | 
-| relationship_id | Relationship ID. | Required | 
-
+| parent_type | Parent business object type name. | Required |
+| parent_record_id | Parent business object record ID. | Required |
+| child_type | Child business object type name. | Required |
+| child_record_id | Child business object record ID. | Required |
+| relationship_id | Relationship ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!cherwell-link-business-objects parent_type=incident child_type=task relationship_id=9369187528b417b4a17aaa4646b7f7a78b3c821be9 child_record_id=94757210152427ef6ff98741a9a1c01d9fbe80545d parent_record_id=94757184cce46253b3ab694ae58289b64d0cd867ce```
 
 #### Human Readable Output
@@ -476,29 +483,30 @@ There is no context output for this command.
 >### Incident 94757184cce46253b3ab694ae58289b64d0cd867ce and Task 94757210152427ef6ff98741a9a1c01d9fbe80545d were linked
 
 ### cherwell-unlink-business-objects
+
 ***
 Unlinks business objects that are linked and related.
-
 
 #### Base Command
 
 `cherwell-unlink-business-objects`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| parent_type | Parent business object type name. | Required | 
-| parent_record_id | Parent business object record ID. | Required | 
-| child_type | Child business object type name. | Required | 
-| child_record_id | Child business object record ID. | Required | 
-| relationship_id | Relationship ID. | Required | 
-
+| parent_type | Parent business object type name. | Required |
+| parent_record_id | Parent business object record ID. | Required |
+| child_type | Child business object type name. | Required |
+| child_record_id | Child business object record ID. | Required |
+| relationship_id | Relationship ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!cherwell-unlink-business-objects parent_type=incident child_type=task relationship_id=9369187528b417b4a17aaa4646b7f7a78b3c821be9 child_record_id=94757210152427ef6ff98741a9a1c01d9fbe80545d parent_record_id=94757184cce46253b3ab694ae58289b64d0cd867ce```
 
 #### Human Readable Output
@@ -506,39 +514,40 @@ There is no context output for this command.
 >### Incident 94757184cce46253b3ab694ae58289b64d0cd867ce and Task 94757210152427ef6ff98741a9a1c01d9fbe80545d were unlinked
 
 ### cherwell-get-attachments-info
+
 ***
 Gets information for business object attachments.
-
 
 #### Base Command
 
 `cherwell-get-attachments-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| id_type | Type of ID. Possible values are: record_id, public_id. | Required | 
-| id_value | Public ID or record ID. | Required | 
-| attachment_type | Type of attachment. Possible values are: linked, imported, url. | Required | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| id_type | Type of ID. Possible values are: record_id, public_id. | Required |
+| id_value | Public ID or record ID. | Required |
+| attachment_type | Type of attachment. Possible values are: linked, imported, url. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.AttachmentsInfo.AttachmentFiledId | String | Attachment field ID. | 
-| Cherwell.AttachmentsInfo.FileName | String | File name. | 
-| Cherwell.AttachmentsInfo.AttachmentId | String | Attachment ID. | 
-| Cherwell.AttachmentsInfo.BusinessObjectType | String |  Business object type, for example: "Incident".  | 
-| Cherwell.AttachmentsInfo.BusinessObjectPublicId | String | Business object public ID. | 
-| Cherwell.AttachmentsInfo.BusinessObjectRecordId | String | Business object record ID. | 
-
+| Cherwell.AttachmentsInfo.AttachmentFiledId | String | Attachment field ID. |
+| Cherwell.AttachmentsInfo.FileName | String | File name. |
+| Cherwell.AttachmentsInfo.AttachmentId | String | Attachment ID. |
+| Cherwell.AttachmentsInfo.BusinessObjectType | String |  Business object type, for example: "Incident".  |
+| Cherwell.AttachmentsInfo.BusinessObjectPublicId | String | Business object public ID. |
+| Cherwell.AttachmentsInfo.BusinessObjectRecordId | String | Business object record ID. |
 
 #### Command Example
+
 ```!cherwell-get-attachments-info attachment_type=imported type=incident id_type=public_id id_value=102383```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -557,35 +566,36 @@ Gets information for business object attachments.
 
 #### Human Readable Output
 
->### Incident 102383 attachments:
+>### Incident 102383 attachments
+>
 >|Attachment Filed Id|Attachment Id|Business Object Public Id|Business Object Type|File Name|
 >|---|---|---|---|---|
 >| 9475718f7de6f1508ca8704bd9b83d215763f567d1 | 9475718f7e153c3d751b5046b389eeba6df7d6d778 | 102383 | incident | 60X80.jpg |
 
-
 ### cherwell-remove-attachment
+
 ***
 Remove the attachment from the specified business object.
-
 
 #### Base Command
 
 `cherwell-remove-attachment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| id_type | Type of ID. Possible values are: record_id, public_id. | Required | 
-| id_value | Public ID or record ID. | Required | 
-| attachment_id | Attachment ID to reomve. | Required | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| id_type | Type of ID. Possible values are: record_id, public_id. | Required |
+| id_value | Public ID or record ID. | Required |
+| attachment_id | Attachment ID to reomve. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!cherwell-remove-attachment type=incident id_type=public_id id_value=102383 attachment_id=9475718f7e153c3d751b5046b389eeba6df7d6d778```
 
 #### Human Readable Output
@@ -593,30 +603,32 @@ There is no context output for this command.
 >### Attachment: 9475718f7e153c3d751b5046b389eeba6df7d6d778, was successfully removed from incident 102383
 
 ### cherwell-query-business-object
+
 ***
 Runs advanced queries to search in a specified business object.
-
 
 #### Base Command
 
 `cherwell-query-business-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| query | The query to run. A CSV list of filters such that each filter is of the form: ["field_name","operator","value"] and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than, 'contains', 'startwith'. Special characters should be escaped.<br/>Example: `[["CreatedDateTime":"gt":"4/10/2019 3:10:12 PM"]["Priority","eq","1"]]`. <br/>NOTE: If multiple filters are received for the same field name, an 'OR' operation between the filters will be performed, if the field names are different an 'AND' operation will be performed. | Required | 
-| max_results | Maximum number of results to pull. Default is 30. | Optional | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| query | The query to run. A CSV list of filters such that each filter is of the form: ["field_name","operator","value"] and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than, 'contains', 'startwith'. Special characters should be escaped.<br/>Example: `[["CreatedDateTime":"gt":"4/10/2019 3:10:12 PM"]["Priority","eq","1"]]`. <br/>NOTE: If multiple filters are received for the same field name, an 'OR' operation between the filters will be performed, if the field names are different an 'AND' operation will be performed. | Required |
+| max_results | Maximum number of results to pull. Default is 30. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!cherwell-query-business-object type=incident query=[["Description","eq","This incident was created by Cherwell test playbook"]]```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -1434,6 +1446,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Query Results
+>
 >|Approval Block ID|Assigned Team|Assigned Team ID|Assigned To|Assigned To ID|Assigned To Manager|Barcode|Breach Notes|Business Object Id|CI Down End Date Time|CI Down Start Date Time|CI Downtime In Minutes|Call Source|Cart Item ID|Category|Cause|Change ID|Cloned Incident|Cloned Incident ID|Close Description|Closed By|Closed By ID|Closed Date Time|Closed On 1 St Call|Combined KB|Comments|Config Item Display Name|Config Item Rec ID|Config Item Type|Config Item Type ID|Cost|Created By|Created By Email|Created By ID|Created Date Time|Created During|Customer Department|Customer Display Name|Customer Rec ID|Customer Subscription Level|Customer Type ID|Default Team|Description|Description Sentiment Value|Email Notifications|ISMS Audits ID|Impact|In cident Duration In Days|In cident Duration In Hours|Incident ID|Incident Type|Incidentchild ID|Incidentchild Rec ID|Knowledge Article ID|Last Mod By|Last Mod By ID|Last Mod Time Stamp|Last Modified Date Time|Level 2 Escalation Complete|Level 2 Escalation Team|Level 3 Escalation Complete|Level 3 Escalation Team|Linked Problem|Linked SL As|Linked To Problem|Location|Major Incident|Major Incident ID|Major Incident Rec ID|Network Event ID|Next Status|Next Status One Step|Next Status Text|On Behalf Of|Pending End Date Time|Pending Previous Status|Pending Reason|Pending Start Date Time|Picked Up Date Time|Portal Affects Multiple Users|Portal Affects Primary Function|Portal Alt Contact Info|Priority|Public Id|Rec ID|Record Id|Recurring Incident|Reopened|Requester|Requester Department|Requester Email|Requester ID|Review By Deadline|SCT Fired|SCT Rec ID|SLAID|SLAID For CI|SLAID For Customer|SLAID For Service|SLA Name|SLA Name For CI|SLA Name For Customer|SLA Name For Service|SLA Resolution Warning|SLA Resolve By Deadline|SLA Respond By Deadline|SLA Response Warning|SLA Target Time ID|SLA_ Key|STC Time In Minutes|Security Event ID|Service|Service Cart ID|Service Catalog Template Name|Service Customer Is Entitled|Service Entitlements|Service ID|Show All Services|Show Contact Information|Skill ID|Smart Classify Search String|Specifics Type Id|Stat _24 X 7 Elapsed Time|Stat _ Date Time Assigned|Stat _ Date Time Closed|Stat _ Date Time In Progress|Stat _ Date Time Re Opened|Stat _ Date Time Resolved|Stat _ Date Time Responded|Stat _ First Call Resolution|Stat _ Incident Escalated|Stat _ Incident Reopened|Stat _ Number Of Escalations|Stat _ Number Of Touches|Stat _ Response Time|Stat _SLA Resolution Breached|Stat _SLA Resolution Good|Stat _SLA Resolution Warning|Stat _SLA Response Breached|Stat _SLA Response Good|Stat _SLA Response Warning|Status|Status Desc|Status ID|Status Order|Subcategory|Subcategory ID|Task Closed Count|Tasks Closed|Tasks In Progress|Tasks On Hold|Total STC Time In Minutes|Total Task Time|Total Tasks|Urgency|Wait Time|Walk Up Support Location|Was CI Down|Withdraw|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 11:00:09 AM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.17 | 4.00 | 102379 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/21/2021 3:00:15 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102379 | 947563943db20d178bf122451b8946535670196726 | 947563943db20d178bf122451b8946535670196726 | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/23/2021 10:45:09 AM | 7/23/2021 11:00:09 AM | 7/21/2021 3:00:09 PM | 7/21/2021 2:45:09 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 5 | 0 | False | False | False | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
@@ -1442,36 +1455,36 @@ There is no context output for this command.
 >|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:22:27 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.00 | 0.00 | 102382 | Service Request |  |  |  | demisto admin | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | Byte[] Array | 7/22/2021 12:22:31 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102382 | 947571842387f6d7df118546e29cac13df2afafebc | 947571842387f6d7df118546e29cac13df2afafebc | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:07:27 PM | 7/26/2021 12:22:27 PM | 7/22/2021 4:22:27 PM | 7/22/2021 4:07:27 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 1 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
 >|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:54:18 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.00 | 0.00 | 102384 | Service Request |  |  |  | demisto admin | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | Byte[] Array | 7/22/2021 12:54:18 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102384 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:39:18 PM | 7/26/2021 12:54:18 PM | 7/22/2021 4:54:18 PM | 7/22/2021 4:39:18 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 1 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
 
-
 ### cherwell-get-field-info
+
 ***
 Gets information for a field, by one of its properties (Name, Display Name, or id).
-
 
 #### Base Command
 
 `cherwell-get-field-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type |  Business object type, for example: "Incident". . | Required | 
-| field_property | Field property to search by (Name, DIsplay Name or Field id). | Required | 
-
+| type |  Business object type, for example: "Incident". . | Required |
+| field_property | Field property to search by (Name, DIsplay Name or Field id). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.FieldInfo.DisplayName | String | Field display name \(as it displays in the Cherwell UI\). | 
-| Cherwell.FieldInfo.FieldId | String | Field ID. | 
-| Cherwell.FieldInfo.Name | String | The name to use when working with business object commands. | 
-
+| Cherwell.FieldInfo.DisplayName | String | Field display name \(as it displays in the Cherwell UI\). |
+| Cherwell.FieldInfo.FieldId | String | Field ID. |
+| Cherwell.FieldInfo.Name | String | The name to use when working with business object commands. |
 
 #### Command Example
+
 ```!cherwell-get-field-info type=incident field_property=Customer Display Name```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -1486,68 +1499,68 @@ Gets information for a field, by one of its properties (Name, Display Name, or i
 
 #### Human Readable Output
 
->### Field info:
+>### Field info
+>
 >|Display Name|Field Id|Name|
 >|---|---|---|
 >| Customer Display Name | 93734aaff77b19d1fcfd1d4b4aba1b0af895f25788 | CustomerDisplayName |
 
-
 ### cherwell-run-saved-search
+
 ***
 Returns the results of a saved search.
-
 
 #### Base Command
 
 `cherwell-run-saved-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| association_id | Business object association ID for the saved search. | Required | 
-| scope | Scope name or ID for the saved search. | Required | 
-| scope_owner | Scope owner ID for the saved search. Use "(None)" when no scope owner exists. | Required | 
-| search_name | Name of the saved search. | Required | 
-
+| association_id | Business object association ID for the saved search. | Required |
+| scope | Scope name or ID for the saved search. | Required |
+| scope_owner | Scope owner ID for the saved search. Use "(None)" when no scope owner exists. | Required |
+| search_name | Name of the saved search. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### cherwell-get-business-object-id
+
 ***
 Get a general business object id by name
-
 
 #### Base Command
 
 `cherwell-get-business-object-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| business_object_name | Business object name. | Required | 
-
+| business_object_name | Business object name. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.BusinessObjectInfo.BusinessObjectId | String | Business object ID. | 
-| Cherwell.BusinessObjectInfo.BusinessObjectName | String | Business object name. | 
-
+| Cherwell.BusinessObjectInfo.BusinessObjectId | String | Business object ID. |
+| Cherwell.BusinessObjectInfo.BusinessObjectName | String | Business object name. |
 
 #### Command Example
+
 ```!cherwell-get-business-object-id business_object_name=incident```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -1561,49 +1574,50 @@ Get a general business object id by name
 
 #### Human Readable Output
 
->### Business Object Info:
+>### Business Object Info
+>
 >|Business Object Id|Business Object Name|
 >|---|---|
 >| 6dd53665c0c24cab86870a21cf6434ae | incident |
 
-
 ### cherwell-get-business-object-summary
+
 ***
 Get business object summary by name or ID.
-
 
 #### Base Command
 
 `cherwell-get-business-object-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the business object. | Optional | 
-| id | The ID of the business object. | Optional | 
-
+| name | The name of the business object. | Optional |
+| id | The ID of the business object. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.BusinessObjectSummary.supporting | Boolean | Whether the business object is a supporting business object or not. | 
-| Cherwell.BusinessObjectSummary.major | Boolean | Whether the business object is a major business object or not. | 
-| Cherwell.BusinessObjectSummary.group | Boolean | Whether the business object is a group business object or not. | 
-| Cherwell.BusinessObjectSummary.name | String | The name of the business object. | 
-| Cherwell.BusinessObjectSummary.stateFieldId | String | The ID of the business object state field. | 
-| Cherwell.BusinessObjectSummary.busObId | String | The ID of the business object. | 
-| Cherwell.BusinessObjectSummary.states | String | The valid states of the business object. | 
-| Cherwell.BusinessObjectSummary.lookup | Boolean | Whether the object is a lookup object or not. | 
-| Cherwell.BusinessObjectSummary.displayName | String | The display name of the business object. | 
-| Cherwell.BusinessObjectSummary.firstRecIdField | String | The ID value of the first business object record ID (RecID) field. | 
-| Cherwell.BusinessObjectSummary.recIdFields | String | The IDs of business object record ID (RecID) fields. | 
-
+| Cherwell.BusinessObjectSummary.supporting | Boolean | Whether the business object is a supporting business object or not. |
+| Cherwell.BusinessObjectSummary.major | Boolean | Whether the business object is a major business object or not. |
+| Cherwell.BusinessObjectSummary.group | Boolean | Whether the business object is a group business object or not. |
+| Cherwell.BusinessObjectSummary.name | String | The name of the business object. |
+| Cherwell.BusinessObjectSummary.stateFieldId | String | The ID of the business object state field. |
+| Cherwell.BusinessObjectSummary.busObId | String | The ID of the business object. |
+| Cherwell.BusinessObjectSummary.states | String | The valid states of the business object. |
+| Cherwell.BusinessObjectSummary.lookup | Boolean | Whether the object is a lookup object or not. |
+| Cherwell.BusinessObjectSummary.displayName | String | The display name of the business object. |
+| Cherwell.BusinessObjectSummary.firstRecIdField | String | The ID value of the first business object record ID (RecID) field. |
+| Cherwell.BusinessObjectSummary.recIdFields | String | The IDs of business object record ID (RecID) fields. |
 
 #### Command Example
+
 ```!cherwell-get-business-object-summary name=task```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -1642,39 +1656,40 @@ Get business object summary by name or ID.
 
 #### Human Readable Output
 
->### Business Object Summary:
+>### Business Object Summary
+>
 >|Bus Ob Id|Display Name|First Rec Id Field|Group|Group Summaries|Lookup|Major|Name|Rec Id Fields|State Field Id|States|Supporting|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 9446978f53c84aef2835904a7ab96cfc882efe030c | Task | 9355d5ed41677b1e9c897e4fa9b4065d34319187f0 | true | {'firstRecIdField': '9355d5ed41677b1e9c897e4fa9b4065d34319187f0', 'groupSummaries': [], 'recIdFields': '9355d5ed41677b1e9c897e4fa9b4065d34319187f0', 'stateFieldId': '9368f0fb7b744108a666984c21afc932562eb7dc16', 'states': 'New,In Progress,Closed,Acknowledged', 'busObId': '9355d5ed41e384ff345b014b6cb1c6e748594aea5b', 'displayName': 'Work Item', 'group': False, 'lookup': False, 'major': False, 'name': 'Work_Item', 'supporting': True} | false | false | Task | 9355d5ed41677b1e9c897e4fa9b4065d34319187f0 | 9368f0fb7b744108a666984c21afc932562eb7dc16 | New,In Progress,Closed,Acknowledged | false |
 
-
 ### cherwell-get-one-step-actions-for-business-object
+
 ***
 Get One-Step Actions by business object ID.
-
 
 #### Base Command
 
 `cherwell-get-one-step-actions-for-business-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| busobjectid | The ID of the business object. | Required | 
-
+| busobjectid | The ID of the business object. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.OneStepActions.BusinessObjectId | String | The ID of the business object. | 
-| Cherwell.OneStepActions.Actions | Unknown | The business object actions. | 
-
+| Cherwell.OneStepActions.BusinessObjectId | String | The ID of the business object. |
+| Cherwell.OneStepActions.Actions | Unknown | The business object actions. |
 
 #### Command Example
+
 ```!cherwell-get-one-step-actions-for-business-object busobjectid=6dd53665c0c24cab86870a21cf6434ae```
 
 #### Context Example
+
 ```json
 {
     "Cherwell": {
@@ -2631,7 +2646,8 @@ Get One-Step Actions by business object ID.
 
 #### Human Readable Output
 
->### Global one-step actions:
+>### Global one-step actions
+>
 >|Name|Display Name|Description|Id|Association|Stand In Key|
 >|---|---|---|---|---|---|
 >| RDP to Primary CI | RDP to Primary CI | Launches Remote Desktop Connection (MSTSC.exe) to the selected CI.  Assumes the current User has rights to use remote desktop and remote connections are configured on the target CI. | 939850e292d4b54454e9d8471db023c97db04ec279 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:939850e292d4b54454e9d8471db023c97db04ec279#Owner:6dd53665c0c24cab86870a21cf6434ae |
@@ -2672,7 +2688,9 @@ Get One-Step Actions by business object ID.
 >| Recommended Assignee | Recommended Assignee |  | 9454e641d3819fbf16c6394037af3814de18670bf8 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9454e641d3819fbf16c6394037af3814de18670bf8#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| Create and Send Survey | Create and Send Survey |  | 943a2f7631f172ade8507347a5ada7b2a39daec900 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:943a2f7631f172ade8507347a5ada7b2a39daec900#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| Sample Onestep Called from API | Sample Onestep Called from API |  | 947509fc528a451570e6c14223a9a8ca12b0856fc2 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:947509fc528a451570e6c14223a9a8ca12b0856fc2#Owner:6dd53665c0c24cab86870a21cf6434ae |
->### Buttons one-step actions:
+>
+>### Buttons one-step actions
+>
 >|Name|Display Name|Description|Id|Association|Stand In Key|
 >|---|---|---|---|---|---|
 >| Call Contact | Call Contact | Launches Skype to contact the Customer. | 9389e70ed88b73a6b1393948a0951e25993cff6c66 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9389e70ed88b73a6b1393948a0951e25993cff6c66#Owner:6dd53665c0c24cab86870a21cf6434ae |
@@ -2685,24 +2703,32 @@ Get One-Step Actions by business object ID.
 >| Impacted CIs Button Actions | Impacted CI's Button Actions | Conditional expression One-Step that shows a Configuration Map | 93dfe7325dd236465ec873418e97ca948f738974a0 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dfe7325dd236465ec873418e97ca948f738974a0#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| Nominate for KB | Nominate for KB | Creates a new Knowledge Article (KA) populated with the Categorization,  Description and Solution/Workaround from the Incident. | 9365abfe787a1bce3282c446a9ae9914204703a7fe | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9365abfe787a1bce3282c446a9ae9914204703a7fe#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| Marcar tempo da tarefa contra o incidente | Track Task Time Against Incident | Creates a Task time tracking entry and prompts the User for time spent and task completion details. Sets the Task Close Code to Completed. | 93d4ee5220e714428a9a4f4189a329409e69e48056 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93d4ee5220e714428a9a4f4189a329409e69e48056#Owner:6dd53665c0c24cab86870a21cf6434ae |
->### Config Item Tasks one-step actions:
+>
+>### Config Item Tasks one-step actions
+>
 >|Name|Display Name|Description|Id|Association|Stand In Key|
 >|---|---|---|---|---|---|
 >| Ping System | Ping System | Pings the Primary CI (specified on the Incident Form) using the IP Address provided in the CI details. | 9379e37ed996514927afa143658d9d46c06b3f1558 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9379e37ed996514927afa143658d9d46c06b3f1558#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| RDP to Primary CI | RDP to Primary CI | Launches Remote Desktop Connection (MSTSC.exe) to the selected CI.  Assumes the current User has rights to use remote desktop and remote connections are configured on the target CI. | 939850e292d4b54454e9d8471db023c97db04ec279 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:939850e292d4b54454e9d8471db023c97db04ec279#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| Reboot Computer | Reboot Computer | Reboots the Primary CI (specified on the Incident Form), and then updates the Close Description field to track that the CI was rebooted. | 936592312d5676ab8accd94673a45ceaa41777e31e | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:936592312d5676ab8accd94673a45ceaa41777e31e#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| Reset Password | Reset Password | Sets password for selected User or Customer to "ChangeMe," and sets account to active if locked out. Updates Incident Form to indicate that password was reset and changes Status to Resolved. | 935467d76aacbb0fe7317345f58cc75e38c6640e38 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:935467d76aacbb0fe7317345f58cc75e38c6640e38#Owner:6dd53665c0c24cab86870a21cf6434ae |
->### Record Templates one-step actions:
+>
+>### Record Templates one-step actions
+>
 >|Name|Display Name|Description|Id|Association|Stand In Key|
 >|---|---|---|---|---|---|
 >| Close as Duplicate | Close as Duplicate | Closes an Incident Record as a duplicate of another Incident. Prompts the User to enter the number (RecID) of the Incident that it duplicates. | 938737bddabf85fd0c881a4c26b93982d9411e91ef | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:938737bddabf85fd0c881a4c26b93982d9411e91ef#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| Crear incidencia | Create Incident |  | 93dbbd9b58b12daa093a9944d8a356e57cefd7d277 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dbbd9b58b12daa093a9944d8a356e57cefd7d277#Owner:6dd53665c0c24cab86870a21cf6434ae |
->### Service Request Models one-step actions:
+>
+>### Service Request Models one-step actions
+>
 >|Name|Display Name|Description|Id|Association|Stand In Key|
 >|---|---|---|---|---|---|
 >| New Employee Request Denied | New Employee Request Denied | Creates and sends an e-mail to a Customer that her request for a new employee computer is denied. Attaches the e-mail to the Incident History Record. | 93d5744310efa377c99eac4cd6a029e203095cfdf6 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93d5744310efa377c99eac4cd6a029e203095cfdf6#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| New Employee Tasks | New Employee Tasks | Creates Tasks for new employee items and adds request to New Request Queue. | 93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b#Owner:6dd53665c0c24cab86870a21cf6434ae |
->### Workflow Actions one-step actions:
+>
+>### Workflow Actions one-step actions
+>
 >|Name|Display Name|Description|Id|Association|Stand In Key|
 >|---|---|---|---|---|---|
 >| Escalate to Level 3 | Escalate to Level 3 |  | 940794577aeb1e8265242c452eb83401abcefda781 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:940794577aeb1e8265242c452eb83401abcefda781#Owner:6dd53665c0c24cab86870a21cf6434ae |
@@ -2712,32 +2738,31 @@ Get One-Step Actions by business object ID.
 >| SLA Escalate if not Touched in 3 Days | SLA Escalate if not Touched in 3 Days | When 3 days lapse from the last modified date time, sends a reminder e-mail to the Incident Owner to follow up with the Customer. | 93a606bfdcaf4fa68bf8284a7d8e195bae5e851992 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93a606bfdcaf4fa68bf8284a7d8e195bae5e851992#Owner:6dd53665c0c24cab86870a21cf6434ae |
 >| Take Ownership | Take Ownership | Makes the current user the owner of the Incident. <br/>Changes the Incident status from new to assigned. | 93d50acaac30f5fe73aef345cf923763d34f756c0c | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93d50acaac30f5fe73aef345cf923763d34f756c0c#Owner:6dd53665c0c24cab86870a21cf6434ae |
 
-
 ### cherwell-run-one-step-action-on-business-object
+
 ***
 Run a One-Step Action using a OneStepActionRequest. This request is used to start a One-Step Action run with additional information, such as prompt values.
-
 
 #### Base Command
 
 `cherwell-run-one-step-action-on-business-object`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| busobjectid | The ID of the business object. | Required | 
-| busobrecid | The ID of the business object record. | Required | 
-| oneStepAction_StandInKey | The key to find the One-Step Action to run. You can get it using the command cherwell-get-one-step-actions-for-business-object. | Required | 
-| prompt_values | Additional information to run the action in JSON format. | Required | 
-
+| busobjectid | The ID of the business object. | Required |
+| busobrecid | The ID of the business object record. | Required |
+| oneStepAction_StandInKey | The key to find the One-Step Action to run. You can get it using the command cherwell-get-one-step-actions-for-business-object. | Required |
+| prompt_values | Additional information to run the action in JSON format. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 
-
 #### Command Example
+
 ```!cherwell-run-one-step-action-on-business-object busobjectid=6dd53665c0c24cab86870a21cf6434ae busobrecid=94757184cce46253b3ab694ae58289b64d0cd867ce oneStepAction_StandInKey=DefType:OneStepDef#Scope:Global#Id:947509fc528a451570e6c14223a9a8ca12b0856fc2#Owner:6dd53665c0c24cab86870a21cf6434ae prompt_values=[{"promptDefId": "947509fe4c84176152bcaa472b929d556b47c5df6d","value": "This is from the REST API"}]```
 
 #### Human Readable Output

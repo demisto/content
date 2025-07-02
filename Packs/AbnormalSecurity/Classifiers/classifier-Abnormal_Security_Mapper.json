@@ -78,6 +78,9 @@
                 "Abnormal Security Case Status": {
                     "simple": "case_status"
                 },
+                "Abnormal Security Case GenAI Summary": {
+                    "simple": "genai_summary"
+                },
                 "Abnormal Security Customer Visible Time": {
                     "simple": "customerVisibleTime"
                 },

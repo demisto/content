@@ -1,0 +1,86 @@
+[
+    {
+        "fields": {
+            "tags": []
+        },
+        "rawJSON": {
+            "tags": [],
+            "type": "CIDR",
+            "value": "14.14.14.14/32"
+        },
+        "type": "CIDR",
+        "value": "14.14.14.14/32"
+    },
+    {
+        "fields": {
+            "tags": []
+        },
+        "rawJSON": {
+            "tags": [],
+            "type": "CIDR",
+            "value": "12.12.12.24/29"
+        },
+        "type": "CIDR",
+        "value": "12.12.12.24/29"
+    },
+    {
+        "fields": {
+            "tags": []
+        },
+        "rawJSON": {
+            "tags": [],
+            "type": "CIDR",
+            "value": "12.12.12.32/27"
+        },
+        "type": "CIDR",
+        "value": "12.12.12.32/27"
+    },
+    {
+        "fields": {
+            "tags": []
+        },
+        "rawJSON": {
+            "tags": [],
+            "type": "CIDR",
+            "value": "12.12.12.64/26"
+        },
+        "type": "CIDR",
+        "value": "12.12.12.64/26"
+    },
+    {
+        "fields": {
+            "tags": []
+        },
+        "rawJSON": {
+            "tags": [],
+            "type": "CIDR",
+            "value": "12.12.12.128/25"
+        },
+        "type": "CIDR",
+        "value": "12.12.12.128/25"
+    },
+    {
+        "fields": {
+            "tags": []
+        },
+        "rawJSON": {
+            "tags": [],
+            "type": "CIDR",
+            "value": "198.51.100.0/24"
+        },
+        "type": "CIDR",
+        "value": "198.51.100.0/24"
+    },
+    {
+        "fields": {
+            "tags": []
+        },
+        "rawJSON": {
+            "tags": [],
+            "type": "CIDR",
+            "value": "fe80::c000/116"
+        },
+        "type": "CIDR",
+        "value": "fe80::c000/116"
+    }
+]

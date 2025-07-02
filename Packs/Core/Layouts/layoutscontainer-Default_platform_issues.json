@@ -25,8 +25,8 @@
         ]
     },
     "group": "incident",
-    "id": "Default Platform Issues",
-    "name": "Default Platform Issues",
+    "id": "Default",
+    "name": "Default",
     "quickView": {
         "sections": [
             {
@@ -147,5 +147,13 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "description": "",
-    "marketplaces": ["platform"]
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

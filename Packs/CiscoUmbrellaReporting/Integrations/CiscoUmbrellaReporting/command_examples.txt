@@ -6,6 +6,7 @@
 !umbrella-reporting-activity-get traffic_type=proxy limit=2
 !umbrella-reporting-activity-get traffic_type=firewall limit=2
 !umbrella-reporting-activity-get traffic_type=intrusion limit=2
+!umbrella-reporting-activity-get traffic_type=intrusion limit=2 identityids="126978153,542967313"
 !umbrella-reporting-activity-get traffic_type=ip limit=2
 !umbrella-reporting-destination-list limit=2
 !umbrella-reporting-category-list limit=2

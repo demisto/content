@@ -19,16 +19,19 @@ Gamma Enterprise DLP provides 1-click automatic discovery and remediation of dat
 Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gamma-get-violation-list
+
 ***
-Fetch DLP violations found across SaaS applications monitored by Gamma 
+Fetch DLP violations found across SaaS applications monitored by Gamma
 
 #### Base Command
 
 `gamma-get-violation-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -36,25 +39,26 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 | minimum_violation | Violation ID to begin pulling from. Defaults to the earliest existing violation for your account. | Required |
 | limit | Default is "10". | Required |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GammaViolation.violation_id | Integer | Violation ID | 
-| GammaViolation.file_labels_map | Array | File in reference to the DLP violation | 
-| GammaViolation.violation_status | String | one of 'OPEN', 'RESOLVED', 'IGNORED' | 
-| GammaViolation.violation_category | String | Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc. | 
-| GammaViolation.violation_event_timestamp | Integer | Timestamp of violation in epoch milliseconds | 
+| GammaViolation.violation_id | Integer | Violation ID |
+| GammaViolation.file_labels_map | Array | File in reference to the DLP violation |
+| GammaViolation.violation_status | String | one of 'OPEN', 'RESOLVED', 'IGNORED' |
+| GammaViolation.violation_category | String | Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc. |
+| GammaViolation.violation_event_timestamp | Integer | Timestamp of violation in epoch milliseconds |
 | GammaViolation.text_labels | Array | Data classification labels |
 | GammaViolation.user | JSON Object | a JSON field containing optional information (based on what the app allows us to access) like email address, name, atlassian account id, AD id, github login, etc. All these fields are nullable. |
 | GammaViolation.dashboard_url | String | Gamma dashboard URL |
 | GammaViolation.app_name | String | Name of the application |
 
 #### Command Example
+
 ```!gamma-get-violation-list minimum_violation=998 limit=1```
 
 #### Context Example
+
 ```json
 {
     "response": [
@@ -85,6 +89,7 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 ```
 
 ### gamma-get-violation
+
 ***
 Fetches a single DLP violation. This command is the same as gamma-get-violation-list except that this
  command only returns the DLP violation details of the given violation id.  
@@ -97,7 +102,7 @@ Fetches a single DLP violation. This command is the same as gamma-get-violation-
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| violation | Violation id | Required | 
+| violation | Violation id | Required |
 
 #### Context Output
 
@@ -114,9 +119,11 @@ Fetches a single DLP violation. This command is the same as gamma-get-violation-
 | GammaViolation.app_name | String | Name of the application |
 
 #### Command Example
+
 ```!gamma-get-violation violation=998```
 
 #### Context Example
+
 ```json
 {
     "response": [
@@ -147,6 +154,7 @@ Fetches a single DLP violation. This command is the same as gamma-get-violation-
 ```
 
 ### gamma-update-violation
+
 ***
 Updates a DLP violation status in Gamma  
 
@@ -158,10 +166,10 @@ Updates a DLP violation status in Gamma
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| violation | Violation id | Required | 
+| violation | Violation id | Required |
 | status | Status of violation | Required |
-| notes | Notes for violation | Optional | 
-
+| notes | Notes for violation | Optional |
 
 #### Context Output
+
 There is no context output for this command

@@ -10,7 +10,9 @@
     "categories": [
         "Messaging and Conferencing"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
         "ActiveMQ"

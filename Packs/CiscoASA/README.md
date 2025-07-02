@@ -3,18 +3,21 @@
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
-1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**. 
+1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the Syslog app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, set the following parameters:
-   | Parameter     | Value    
-   | :---          | :---                    
-   | `Vendor`      | Enter **Cisco**. 
-   | `Product`     | Enter **ASA**. 
+
+   | Parameter     | Value
+   | :---          | :---
+   | `Vendor`      | Enter **Cisco**.
+   | `Product`     | Enter **ASA**.
 
 ### Configure Timestamp on Cisco ASA
+
 Supported date format is RFC 5424, for example: "2023-04-09T16:30:00Z", "2023-04-09T16:30:00+07:00".
 
 1. Access the Cisco ADSM.
@@ -28,9 +31,10 @@ Another supported date format is "Jul 08 09:14:35 UTC".
 
 ![Server Screenshot](docs_imgs/CiscoASDM_timestamp.png)
 
+### The supported events on Modeling rules
 
-### The supported events on Modeling rules:
 The following events are supported by modeling rules (220 events):
+
 - 103001,104001,104002,104004,105001,105002,105003,105004,105005,105006,105007,105008,105009,105043,106001,106006,106007,106014,106015,106016,106017,106020,106021,106023,106023,106100,106102,108004,108005,109201,109207,109210,110002,110003,111001,111004,111005,111007,111008,111009,111010,113003,113004,113005,113008,113009,113010,113011,113012,113013,113014,113015,113019,113022,113023,113039,120003,120005,120006,120007
 - 209005,209006,201010,210022,212004,212010,216004
 - 302004,302010,302012,302013,302014,302015,302016,302020,302021,303002,305009,305011,305011,305012,308001,313001,313004,313005,313008,313009,315011,317077,317078,318039,323006,336010,336013

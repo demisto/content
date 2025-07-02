@@ -1,0 +1,80 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Cybercriminal Threat Actor"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibcybercriminalthreatactorreportstable",
+    "closeForm": true,
+    "columns": [
+        {
+            "displayName": "ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "id",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 181
+        },
+        {
+            "displayName": "Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "name",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 208
+        },
+        {
+            "displayName": "Date Published",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "datepublished",
+            "orgType": "date",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "date",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibcybercriminalthreatactorreportstable",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Cybercriminal Threat Actor Reports Table",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Cybercriminal Threat Actor"
+    ],
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

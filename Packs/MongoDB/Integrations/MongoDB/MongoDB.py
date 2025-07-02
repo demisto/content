@@ -16,25 +16,34 @@ SORT_TYPE_DICT = {"asc": 1, "desc": -1}
 
 class Client:
     def __init__(
-        self,
-        urls: list[str],
-        username: str,
-        password: str,
-        database: str,
-        ssl: bool = False,
-        insecure: bool = False,
-        timeout: int = 5000,
+            self,
+            urls: list[str],
+            username: str,
+            password: str,
+            database: str,
+            ssl: bool = False,
+            insecure: bool = False,
+            auth_source: str = None,
+            timeout: int = 5000
     ):
         if insecure and not ssl:
-            raise DemistoException('"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
-        if not insecure and not ssl:
-            self._client = MongoClient(  # type: ignore[var-annotated]
-                urls, username=username, password=password, ssl=ssl, socketTimeoutMS=timeout
-            )
-        else:
-            self._client = MongoClient(
-                urls, username=username, password=password, ssl=ssl, tlsAllowInvalidCertificates=insecure, socketTimeoutMS=timeout
-            )
+            raise DemistoException(
+                '"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
+        
+        # Configure the connection arguments
+        connection_args: dict[str, Any] = {
+            "host": urls,
+            "username": username,
+            "password": password,
+            "ssl": ssl,
+            "socketTimeoutMS": timeout
+        }
+        if insecure:
+            connection_args["tlsAllowInvalidCertificates"] = True
+        if auth_source:
+            connection_args["authSource"] = auth_source
+
+        self._client: MongoClient = MongoClient(**connection_args)
         self.db: Database = self._client.get_database(database)
 
     def is_collection_in_db(self, collection: str) -> bool:
@@ -569,12 +578,13 @@ def main():
     args = demisto.args()
     command = demisto.command()
     client = Client(
-        argToList(params.get("urls")),
-        params.get("credentials", {}).get("identifier"),
-        params.get("credentials", {}).get("password"),
-        params["database"],
-        bool(params.get("use_ssl", False)),
-        bool(params.get("insecure", False)),
+        urls=argToList(params.get('urls')),
+        username=params.get('credentials', {}).get('identifier'),
+        password=params.get('credentials', {}).get('password'),
+        database=params['database'],
+        ssl=bool(params.get('use_ssl', False)),
+        insecure=bool(params.get('insecure', False)),
+        auth_source=params.get('auth_source', None)
     )
     commands = {
         "test-module": test_module,

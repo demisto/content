@@ -1,7 +1,6 @@
 import pytest
 import requests_mock
-from AWSILM import Client, main, get_group_command, create_group_command, update_group_command, delete_group_command
-
+from AWSILM import Client, create_group_command, delete_group_command, get_group_command, main, update_group_command
 from IAMApiModule import *
 
 userUri = "/scim/v2/Users/"

@@ -6,7 +6,12 @@
         "GIB Brand Protection Phishing Kit",
         "GIB OSI Git Leak",
         "GIB Compromised Card",
-        "GIB Compromised Account"
+        "GIB Compromised Account",
+        "GIB Attacks Phishing Kit",
+        "GIB Suspicious IP Open Proxy",
+        "GIB Malware CNC",
+        "GIB Attacks Phishing Group",
+        "GIB Suspicious IP Socks Proxy"
     ],
     "caseInsensitive": true,
     "cliName": "gibdateofdetection",
@@ -30,5 +35,20 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "itemVersion": "1.4.2",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB Targeted Malware",
+        "GIB Brand Protection Phishing",
+        "GIB Brand Protection Phishing Kit",
+        "GIB OSI Git Leak",
+        "GIB Compromised Card",
+        "GIB Compromised Account",
+        "GIB Attacks Phishing Kit",
+        "GIB Suspicious IP Open Proxy",
+        "GIB Malware CNC",
+        "GIB Attacks Phishing Group",
+        "GIB Suspicious IP Socks Proxy"
+    ]
 }

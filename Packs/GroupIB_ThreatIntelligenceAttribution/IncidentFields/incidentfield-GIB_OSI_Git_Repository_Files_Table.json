@@ -1,0 +1,158 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB OSI Git Leak"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibosigitrepositoryfilestable",
+    "closeForm": true,
+    "columns": [
+        {
+            "displayName": "File ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "fileid",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "File Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "filename",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Hash",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "hash",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Date Created",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "datecreated",
+            "orgType": "date",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "date",
+            "width": 150
+        },
+        {
+            "displayName": "Date Detected",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "datedetected",
+            "orgType": "date",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "date",
+            "width": 150
+        },
+        {
+            "displayName": "Author Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "authorname",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Author Email",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "authoremail",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Url",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "url",
+            "orgType": "url",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "url",
+            "width": 150
+        },
+        {
+            "displayName": "Data Found",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "datafound",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "selectValues": [],
+            "type": "longText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibosigitrepositoryfilestable",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB OSI Git Repository Files Table",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB OSI Git Leak"
+    ],
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

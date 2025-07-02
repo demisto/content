@@ -188,7 +188,7 @@ class HuntingQueryBuilder:
         insert_pos = query.find("|")
         if insert_pos == -1:
             return f"{query} | where {time_range_query}"
-        return f"{query[:insert_pos - 1]} | where {time_range_query} {query[insert_pos:]}"
+        return f"{query[:insert_pos]}| where {time_range_query} {query[insert_pos:]}"
 
     @staticmethod
     def get_filter_values(list_values: list | str | None) -> str | None:
@@ -350,17 +350,17 @@ class HuntingQueryBuilder:
             'DeviceEvents | where ActionType == "ScheduledTaskCreated" and InitiatingProcessAccountSid != "S-1-5-18" and'  # noqa: E501
         )
         REGISTRY_ENTRY_QUERY_PREFIX = 'DeviceRegistryEvents | where ActionType == "RegistryValueSet" and'
-        STARTUP_FOLDER_CHANGES_QUERY_PREFIX = 'DeviceFileEvents | where FolderPath contains @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" and ActionType == "FileCreated" and'  # noqa: E501
-        NEW_SERVICE_CREATED_QUERY_PREFIX = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType == "RegistryKeyCreated" and'  # noqa: E501
-        SERVICE_UPDATED_QUERY_PREFIX = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType has_any ("RegistryValueSet","RegistryKeyCreated") and'  # noqa: E501
+        STARTUP_FOLDER_CHANGES_QUERY_PREFIX = r"""DeviceFileEvents | where FolderPath contains @"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" and ActionType == "FileCreated" and"""  # noqa: E501
+        NEW_SERVICE_CREATED_QUERY_PREFIX = r"""DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType == "RegistryKeyCreated" and"""  # noqa: E501
+        SERVICE_UPDATED_QUERY_PREFIX = r"""DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services" and ActionType has_any ("RegistryValueSet","RegistryKeyCreated") and"""  # noqa: E501
         FILE_REPLACED_QUERY_PREFIX = (
-            'DeviceFileEvents | where FolderPath contains @"C:\Program Files" and ActionType == "FileModified" and'  # noqa: E501
+            r"""DeviceFileEvents | where FolderPath contains @"C:\Program Files" and ActionType == "FileModified" and"""  # noqa: E501
         )
         NEW_USER_QUERY_PREFIX = 'DeviceEvents | where ActionType == "UserAccountCreated" and'
         NEW_GROUP_QUERY_PREFIX = 'DeviceEvents | where ActionType == "SecurityGroupCreated" and'
         GROUP_USER_CHANGE_QUERY_PREFIX = 'DeviceEvents | where ActionType == "UserAccountAddedToLocalGroup" and'
-        LOCAL_FIREWALL_CHANGE_QUERY_PREFIX = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy" and'  # noqa: E501
-        HOST_FILE_CHANGE_QUERY_PREFIX = 'DeviceFileEvents | where FolderPath contains @"C:\Windows\System32\drivers\etc\hosts" and ActionType == "FileModified" and'  # noqa: E501
+        LOCAL_FIREWALL_CHANGE_QUERY_PREFIX = r"""DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy" and"""  # noqa: E501
+        HOST_FILE_CHANGE_QUERY_PREFIX = r"""DeviceFileEvents | where FolderPath contains @"C:\Windows\System32\drivers\etc\hosts" and ActionType == "FileModified" and"""  # noqa: E501
 
         """QUERY SUFFIX"""
         SCHEDULE_JOB_QUERY_SUFFIX = "\n| project Timestamp, DeviceName, InitiatingProcessAccountDomain, InitiatingProcessAccountName, AdditionalFields\n| limit {}"  # noqa: E501
@@ -668,7 +668,7 @@ class HuntingQueryBuilder:
         POWERSHELL_EXECUTION_PROCESS_QUERY_PREFIX = (
             'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and'  # noqa: E501
         )
-        POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and ( InitiatingProcessFileName != "SenerIR.exe" and InitiatingProcessParentFileName != "MsSense.exe" and InitiatingProcessSignatureStatus != "Valid" ) and (InitiatingProcessFileName != "CompatTelRunner.exe" and InitiatingProcessParentFileName != "CompatTelRunner.exe")'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and ( InitiatingProcessFileName != "SenseIR.exe" and InitiatingProcessParentFileName != "MsSense.exe" and InitiatingProcessSignatureStatus != "Valid" ) and (InitiatingProcessFileName != "CompatTelRunner.exe" and InitiatingProcessParentFileName != "CompatTelRunner.exe")'  # noqa: E501
 
         """QUERY SUFFIX"""
         PARENT_PROCESS_QUERY_SUFFIX = "\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessCreationTime, AccountSid, AccountName, AccountDomain,InitiatingProcessAccountDomain, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid, InitiatingProcessAccountSid, InitiatingProcessAccountUpn, InitiatingProcessAccountObjectId, InitiatingProcessLogonId, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessFileSize, InitiatingProcessVersionInfoCompanyName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoProductVersion, InitiatingProcessVersionInfoInternalFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoFileDescription, InitiatingProcessId, InitiatingProcessCommandLine, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid\n| limit {}"  # noqa: E501
@@ -941,7 +941,7 @@ class HuntingQueryBuilder:
             return query
 
     class Tampering:
-        QUERY_PREFIX = 'let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic([\'sense\', \'windefend\', \'mssecflt\']); let service2 = dynamic([\'sense\', \'windefend\', \'mssecflt\', \'healthservice\']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic([\'reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows Defender"\', \'reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows Advanced Threat Protection"\']); let regparams2 = dynamic([\'ForceDefenderPassiveMode\', \'DisableAntiSpyware\']); let regparams3 = dynamic([\'sense\', \'windefend\']); let regparams4 = dynamic([\'demand\', \'disabled\']); let timeframe = 1d; DeviceProcessEvents'  # noqa: E501
+        QUERY_PREFIX = r"""let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic(['sense', 'windefend', 'mssecflt']); let service2 = dynamic(['sense', 'windefend', 'mssecflt', 'healthservice']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic(['reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender"', 'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Advanced Threat Protection"']); let regparams2 = dynamic(['ForceDefenderPassiveMode', 'DisableAntiSpyware']); let regparams3 = dynamic(['sense', 'windefend']); let regparams4 = dynamic(['demand', 'disabled']); let timeframe = 1d; DeviceProcessEvents"""  # noqa: E501
         QUERY_SUFFIX = "\n| where InitiatingProcessFileName in~ (includeProc) | where (InitiatingProcessCommandLine has_any(action) and InitiatingProcessCommandLine has_any (service2) and InitiatingProcessParentFileName != 'cscript.exe') or (InitiatingProcessCommandLine has_any (params1) and InitiatingProcessCommandLine has 'Set-MpPreference' and InitiatingProcessCommandLine has '$true') or (InitiatingProcessCommandLine has_any (params2) and InitiatingProcessCommandLine has \"/IM\") or (InitiatingProcessCommandLine has_any (regparams1) and InitiatingProcessCommandLine has_any (regparams2) and InitiatingProcessCommandLine has '/d 1') or (InitiatingProcessCommandLine has_any(\"start\") and InitiatingProcessCommandLine has \"config\" and InitiatingProcessCommandLine has_any (regparams3) and InitiatingProcessCommandLine has_any (regparams4))| extend Account = iff(isnotempty(InitiatingProcessAccountUpn), InitiatingProcessAccountUpn, InitiatingProcessAccountName), Computer = DeviceName| project Timestamp, Computer, Account, AccountDomain, ProcessName = InitiatingProcessFileName, ProcessNameFullPath = FolderPath, Activity = ActionType, CommandLine = InitiatingProcessCommandLine, InitiatingProcessParentFileName\n| limit {}"  # noqa: E501
 
         def __init__(
@@ -2250,6 +2250,29 @@ class MsClient:
 
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
+    def get_missing_kbs_by_machine_id(self, machine_id: str) -> dict:
+        """Retrieves a list of missing security updates (KBs) by machine id.
+        https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-missing-kbs-machine?view=o365-worldwide
+
+        Args:
+            machine_id (str): Machine ID
+
+        Returns:
+            dict. Machine's info
+        """
+        cmd_url = f"/machines/{machine_id}/getmissingkbs"
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+
+    def get_software_by_machine_id(self, machine_id: str) -> dict:
+        """Retrieve a list of the installed software from the defined machine_id .
+        Args:
+            machine_id (str): Machine ID.
+        Returns:
+            dict:  machine specific software inventory.
+        """
+        cmd_url = f"/machines/{machine_id}/software"
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+
     def get_list_vulnerabilities_by_machine(self, filter_req: str, limit: str, offset: str) -> dict:
         """Retrieves a list of all the vulnerabilities affecting the organization per machine.
 
@@ -2261,6 +2284,19 @@ class MsClient:
         if filter_req:
             params["$filter"] = filter_req
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+
+    def get_vulnerabilities_by_machine_id(self, machine_id: str) -> dict:
+        """Retrieves a list of vulnerabilities affected by a machine id.
+        https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-discovered-vulnerabilities?view=o365-worldwide
+
+        Args:
+            machine_id (str): Machine ID
+
+        Returns:
+            dict. Machine's info
+        """
+        cmd_url = f"/machines/{machine_id}/vulnerabilities"
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url)
 
     def get_list_vulnerabilities(self, filter_req: str, limit: str, offset: str) -> dict:
         """Retrieves a list of all vulnerabilities.
@@ -2513,6 +2549,54 @@ def get_machines_list(machines_response):
     return machines_list
 
 
+def get_machine_softwares_list(machine_softwares_response):
+    """Get a raw response of machines softwares
+
+    Args:
+        Machine_softwares_response (dict): The raw response with the machines software list in it
+
+    Returns:
+        list. Machines list
+    """
+    machine_softwares_list = []
+    for machine_software in machine_softwares_response["value"]:
+        machine_software_data = get_machine_software_data(machine_software)
+        machine_softwares_list.append(machine_software_data)
+    return machine_softwares_list
+
+
+def get_machine_missing_kbs_list(missing_kbs_response):
+    """Get a raw response of a machine's missing kbs
+
+    Args:
+        missing_kbs_response (dict): The raw response with the machines missing kbs list in it
+
+    Returns:
+        list. Machines list
+    """
+    missing_kbs_list = []
+    for kb in missing_kbs_response["value"]:
+        missing_kb_data = get_machine_missing_kb_data(kb)
+        missing_kbs_list.append(missing_kb_data)
+    return missing_kbs_list
+
+
+def get_machine_vulnerabilities_list(vulnerabilities_response):
+    """Get a raw response of machine vulnerabilities
+
+    Args:
+        missing_kbs_response (dict): The raw response with the machines vulnerability list in it
+
+    Returns:
+        list. Machines list
+    """
+    vulnerabilities_list = []
+    for vuln in vulnerabilities_response["value"]:
+        missing_kb_data = get_machine_vulnerability_data(vuln)
+        vulnerabilities_list.append(missing_kb_data)
+    return vulnerabilities_list
+
+
 def get_machine_mac_address(machine):
     """
     return the machine MAC address where “ipAddresses[].ipAddress” = “lastIpAddress”
@@ -2729,6 +2813,129 @@ def get_machine_details_command(client: MsClient, args: dict) -> CommandResults:
         outputs_prefix="MicrosoftATP.Machine",
         outputs_key_field="ID",
         outputs=machines_outputs,
+        readable_output=human_readable,
+        raw_response=raw_response,
+    )
+
+
+def get_machine_software_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of installed software on a specific device.
+    https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-installed-software?view=o365-worldwide
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR. May include 'machine_id'.
+
+    Returns:
+        CommandResults.
+    """
+    headers = [
+        "ID",
+        "Name",
+        "Vendor",
+        "Weakness",
+        "PublicExploit",
+        "ActiveAlert",
+        "ExposedMachines",
+        "InstalledMachines",
+        "ImpactScore",
+        "IsNormalized",
+        "Category",
+    ]
+    machine_id = args.get("machine_id", "")
+
+    raw_response = client.get_software_by_machine_id(machine_id)
+    software_outputs = get_machine_softwares_list(raw_response)
+
+    human_readable = tableToMarkdown(
+        f"{INTEGRATION_NAME} software on machine: {machine_id}", software_outputs, headers=headers, removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix="MicrosoftATP.Software",
+        outputs_key_field="ID",
+        outputs=software_outputs,
+        readable_output=human_readable,
+        raw_response=raw_response,
+    )
+
+
+def get_machine_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of vulnerabilities related to specific device.
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR. May include 'machine_id'.
+
+    Returns:
+        CommandResults.
+    """
+    headers = [
+        "ID",
+        "Name",
+        "CVESupportability",
+        "CVSSV3",
+        "CVSSVector",
+        "Description",
+        "EPSS",
+        "ExploitInKit",
+        "ExploitTypes",
+        "ExploitURIs",
+        "ExploitVerified",
+        "ExposedMachines",
+        "FirstDetected",
+        "PublicExploit",
+        "PublishedOn",
+        "Severity",
+        "Tags",
+        "UpdatedOn",
+    ]  # noqa: E501
+
+    machine_id = args.get("machine_id", "")
+    raw_response = client.get_vulnerabilities_by_machine_id(machine_id)
+    vulns_outputs = get_machine_vulnerabilities_list(raw_response)
+
+    human_readable = tableToMarkdown(
+        f"{INTEGRATION_NAME} Vulnerabilities for machine: {machine_id}", vulns_outputs, headers=headers, removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix="MicrosoftATP.PublicVulnerability",
+        outputs_key_field="ID",
+        outputs=vulns_outputs,
+        readable_output=human_readable,
+        raw_response=raw_response,
+    )
+
+
+def get_machine_missing_kbs_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of missing security updates on a specific device.
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR. May include 'machine_id'.
+
+    Returns:
+        CommandResults.
+    """
+
+    headers = ["ID", "Name", "OSBuild", "URL", "MachineMissedOn", "CVEAddressed", "ProductNames"]
+    machine_id = args.get("machine_id", "")
+
+    raw_response = client.get_missing_kbs_by_machine_id(machine_id)
+
+    missing_kbs_output = get_machine_missing_kbs_list(raw_response)
+
+    human_readable = tableToMarkdown(
+        f"Missing Security Updates (KBs) for machine: {machine_id}",
+        missing_kbs_output,
+        headers=headers,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MicrosoftATP.PublicProductFix",
+        outputs=missing_kbs_output,
+        outputs_key_field="ID",
         readable_output=human_readable,
         raw_response=raw_response,
     )
@@ -3577,6 +3784,75 @@ def get_machine_data(machine):
         IPAddresses=machine.get("ipAddresses"),
     )
     return machine_data
+
+
+def get_machine_software_data(machine_software):
+    """Get machine raw response and returns the machine's software info in context and human readable format.
+
+    Returns:
+        dict. Machine's software info
+    """
+    machine_software_data = assign_params(
+        ID=machine_software.get("id"),
+        Name=machine_software.get("name"),
+        Vendor=machine_software.get("vendor"),
+        Weakness=machine_software.get("weakness"),
+        PublicExploit=machine_software.get("publicExploit"),
+        ActiveAlerts=machine_software.get("activeAlert"),
+        ExposedMachines=machine_software.get("exposedMachines"),
+        InstalledMachines=machine_software.get("installedMachines"),
+        ImpactScore=machine_software.get("impactScore"),
+        IsNormalized=machine_software.get("isNormalized"),
+        Category=machine_software.get("category"),
+    )
+    return machine_software_data
+
+
+def get_machine_missing_kb_data(missing_kb):
+    """Get machine missing KB raw response and returns the machine's missing KB info in context and human readable format.
+
+    Returns:
+        dict. Machine's missing KB info
+    """
+    missing_kb_data = assign_params(
+        ID=missing_kb.get("id"),
+        Name=missing_kb.get("name"),
+        OSBuild=missing_kb.get("osBuild"),
+        URL=missing_kb.get("url"),
+        MachinesMissedOn=missing_kb.get("machinesMissedOn"),
+        CVEAddressed=missing_kb.get("cveAddressed"),
+        ProductNames=missing_kb.get("productNames"),
+    )
+    return missing_kb_data
+
+
+def get_machine_vulnerability_data(vulnerabiliy):
+    """Get machine vulnerability raw response and returns the machine's vulnerability info in context and human readable format.
+
+    Returns:
+        dict. Machine's vulnerability info
+    """
+    vulnerability_data = assign_params(
+        ID=vulnerabiliy.get("id"),
+        Name=vulnerabiliy.get("name"),
+        CVESupportability=vulnerabiliy.get("cveSupportability"),
+        CVSSV3=vulnerabiliy.get("cvssV3"),
+        CVSSVector=vulnerabiliy.get("cvssVector"),
+        Description=vulnerabiliy.get("description"),
+        EPSS=vulnerabiliy.get("epss"),
+        ExploitInKit=vulnerabiliy.get("exploitInKit"),
+        ExploitTypes=vulnerabiliy.get("exploitTypes"),
+        ExploitURIs=vulnerabiliy.get("exploitURIs"),
+        ExploitVerified=vulnerabiliy.get("exploitVerified"),
+        ExposedMachines=vulnerabiliy.get("exposedMachines"),
+        FirstDetected=vulnerabiliy.get("firstDetected"),
+        PublicExploit=vulnerabiliy.get("publicExploit"),
+        PublishedOn=vulnerabiliy.get("publishedOn"),
+        Severity=vulnerabiliy.get("severity"),
+        Tags=vulnerabiliy.get("tags"),
+        UpdatedOn=vulnerabiliy.get("updatedOn"),
+    )
+    return vulnerability_data
 
 
 def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
@@ -4966,7 +5242,7 @@ def add_backslash_infront_of_underscore_list(markdown_data: list[dict] | None) -
             dict = {}
             for k, v in dict_item.items():
                 if isinstance(v, str):
-                    v = str(v.replace("_", "\_"))
+                    v = str(v.replace("_", r"""\_"""))
                 dict[k] = v
             markdown_data_to_return.append(dict)
     return markdown_data_to_return
@@ -5929,6 +6205,12 @@ def main():  # pragma: no cover
         elif command == "microsoft-atp-get-machine-details":
             return_results(get_machine_details_command(client, args))
 
+        elif command == "microsoft-atp-get-machine-software":
+            return_results(get_machine_software_command(client, args))
+
+        elif command == "microsoft-atp-get-machine-missing-kbs":
+            return_results(get_machine_missing_kbs_command(client, args))
+
         elif command == "microsoft-atp-run-antivirus-scan":
             return_outputs(*run_antivirus_scan_command(client, args))
 
@@ -6093,6 +6375,8 @@ def main():  # pragma: no cover
             return_results(get_machine_users_command(client, args))
         elif command == "microsoft-atp-get-machine-alerts":
             return_results(get_machine_alerts_command(client, args))
+        elif command == "microsoft-atp-get-machine-vulnerabilities":
+            return_results(get_machine_vulnerabilities_command(client, args))
         elif command == "microsoft-atp-request-and-download-investigation-package":
             return_results(request_download_investigation_package_command(client, args))
         elif command == "microsoft-atp-generate-login-url":

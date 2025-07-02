@@ -8,11 +8,18 @@
             },
             "Relationships": [
                 {
-                    "Relationship": "indicator-of",
+                    "Relationship": "related-to",
                     "EntityA": "0.0.0.1",
                     "EntityAType": "IP",
-                    "EntityB": "T1001",
-                    "EntityBType": "Attack Pattern"
+                    "EntityB": "dummy_latest_sighting_related_ioc_value_1",
+                    "EntityBType": "File"
+                },
+                {
+                    "Relationship": "related-to",
+                    "EntityA": "0.0.0.1",
+                    "EntityAType": "IP",
+                    "EntityB": "dummy_related_ioc_value_1.com",
+                    "EntityBType": "Domain"
                 }
             ]
         }
@@ -26,35 +33,80 @@
             "Reliability": "B - Usually reliable"
         }
     ],
-    "Ignite.IP.Event(val.Fpid && val.Fpid == obj.Fpid)": [
-        {
-            "Address": "0.0.0.1",
-            "EventDetails": {
-                "RelatedEvent": [],
-                "Tags": [
-                    "asn:as10000",
-                    "infrastructure:c2",
-                    "mitre:T1071",
-                    "source:scan",
-                    "tool:strike"
+    "Ignite.IP(val.id && val.id == obj.id)":{
+        "id": " dummy_id_123",
+        "type": "ipv4",
+        "value": "0.0.0.1",
+        "href": "https://dummy.href.com",
+        "entity_type": "indicator",
+        "score": {
+            "value": "malicious",
+            "last_scored_at": "2025-04-21T06:44:37.633000"
+        },
+        "modified_at": "2025-04-21T06:44:37.633000",
+        "created_at": "2025-04-14T15:28:26.371000",
+        "last_seen_at": "2025-04-21T06:34:55.617000",
+        "sort_date": "2025-04-21T06:34:55.617000",
+        "platform_urls": {
+            "ignite": "https://dummy.ignite.com"
+        },
+        "apt_description": "N/A",
+        "malware_description": "dummy_malware_description",
+        "mitre_attack_ids": [
+            {
+                "id": "dummy_attack_id_123",
+                "name": "dummy_attack_name",
+                "tactics": [
+                    "Discovery"
+                ]
+            }
+        ],
+        "relationships": {
+            "iocs": [
+                {
+                    "id": "dummy_ioc_id_1",
+                    "type": "dummy_ioc_type_1",
+                    "value": "dummy_ioc_value_1",
+                    "href": "https://dummy.ioc.href.com/1"
+                }
+            ]
+        },
+        "sightings": [
+            {
+                "source": "dummy_source",
+                "sighted_at": "2025-04-21T06:34:55.617000",
+                "tags": [
+                    "dummy_tag_1",
+                    "dummy_tag_2",
+                    "dummy_tag_3"
                 ],
-                "attack_ids": [
-                    "T1001"
-                ],
-                "event_uuid": "00000000-0000-0000-0000-000000000001",
-                "fpid": "0000000000000000000001",
-                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
-                "info": "Observation: StrikeVariant [2024-05-26 14:04:56]",
-                "reports": [],
-                "timestamp": "1716758167"
-            },
-            "Category": "Network activity",
-            "Fpid": "0000000000000000000001",
-            "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
-            "Timestamp": "1716737486",
-            "Type": "ip-dst",
-            "Uuid": "00000000-0000-0000-0000-000000000001",
-            "Comment": ""
-        }
-    ]
+                "related_iocs": [
+                    {
+                        "id": "dummy_related_ioc_id_1",
+                        "type": "domain",
+                        "value": "dummy_related_ioc_value_1.com",
+                        "href": "https://dummy.related_ioc.href.com/1"
+                    }
+                ]
+            }
+        ],
+        "latest_sighting": {
+            "source": "dummy_latest_sighting_source",
+            "sighted_at": "2025-04-21T06:34:55.617000",
+            "tags": [
+                "dummy_latest_sighting_tag_1",
+                "dummy_latest_sighting_tag_2",
+                "dummy_latest_sighting_tag_3"
+            ],
+            "related_iocs": [
+                {
+                    "id": "dummy_latest_sighting_related_ioc_id_1",
+                    "type": "file",
+                    "value": "dummy_latest_sighting_related_ioc_value_1",
+                    "href": "https://dummy.latest_sighting.related_ioc.href.com/1"
+                }
+            ]
+        },
+        "total_sightings": 11
+    }
 }

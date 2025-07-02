@@ -185,7 +185,7 @@ def handle_results(command_results: dict, playbook_id: str, alert_ids: str | lis
                 results_summary.update_success(playbook_id, succeeded_ids)
 
     except Exception as e:
-        return f"Unexpected error occurred: {str(e)}. Response: {command_results[0]}"
+        return f"Unexpected error occurred: {e!s}. Response: {command_results[0]}"
 
 
 def open_investigation(results_summary: ResultsSummary, alert_ids: list) -> None:
@@ -249,15 +249,15 @@ def split_alert_ids_into_bulks(alert_inv_status: dict[str, list]) -> tuple[list,
         tuple[list, list, list]: Bulked lists for closed, open, and all alert IDs.
     """
     alert_closed_bulks = [
-        alert_inv_status["close_ids"][i: i + MAX_BULK_SIZE_ALLOWED]
+        alert_inv_status["close_ids"][i : i + MAX_BULK_SIZE_ALLOWED]
         for i in range(0, len(alert_inv_status["close_ids"]), MAX_BULK_SIZE_ALLOWED)
     ]
     alert_open_bulks = [
-        alert_inv_status["open_ids"][i: i + MAX_BULK_SIZE_ALLOWED]
+        alert_inv_status["open_ids"][i : i + MAX_BULK_SIZE_ALLOWED]
         for i in range(0, len(alert_inv_status["open_ids"]), MAX_BULK_SIZE_ALLOWED)
     ]
     alert_all_ids_bulks = [
-        alert_inv_status["all_ids"][i: i + MAX_BULK_SIZE_ALLOWED]
+        alert_inv_status["all_ids"][i : i + MAX_BULK_SIZE_ALLOWED]
         for i in range(0, len(alert_inv_status["all_ids"]), MAX_BULK_SIZE_ALLOWED)
     ]
     return alert_closed_bulks, alert_open_bulks, alert_all_ids_bulks

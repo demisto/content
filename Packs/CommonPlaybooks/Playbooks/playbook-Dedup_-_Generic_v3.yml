@@ -4,15 +4,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Dedup - Generic v3
-description: "Deprecated. Use the `Dedup - Generic v4` playbook instead. This playbook identifies duplicate incidents using one of the supported\
-  \ methods.\nSelect one of the following methods to identify duplicate incidents\
-  \ in Cortex XSOAR.\n- ml: Machine learning model, which is trained mostly on phishing\
-  \ incidents.\n-rules: Rules help identify duplicate incidents when the logic is\
-  \ well defined, for example, the same label or custom fields.\n-text: Statistics\
-  \ algorithm that compares text, which is generally useful for phishing incidents.\n\
-  For each method, the playbook will search for the oldest similar incident. when\
-  \ there is a match for a similar incident the playbook will close the current incident\
-  \ and will link it to the older incident. "
+description: "Deprecated. Use the `Dedup - Generic v4` playbook instead. This playbook identifies duplicate incidents using one of the supported methods.\nSelect one of the following methods to identify duplicate incidents in Cortex XSOAR.\n- ml: Machine learning model, which is trained mostly on phishing incidents.\n-rules: Rules help identify duplicate incidents when the logic is well defined, for example, the same label or custom fields.\n-text: Statistics algorithm that compares text, which is generally useful for phishing incidents.\nFor each method, the playbook will search for the oldest similar incident. when there is a match for a similar incident the playbook will close the current incident and will link it to the older incident. "
 starttaskid: "0"
 tasks:
   "0":
@@ -272,8 +264,7 @@ tasks:
       id: 821fea71-8442-4647-8281-52c916a04b43
       version: -1
       name: Close investigation as duplicate
-      description: Closes the investigation as a duplicate to one of the incidents.
-        identified.
+      description: Closes the investigation as a duplicate to one of the incidents. identified.
       scriptName: CloseInvestigationAsDuplicate
       type: regular
       iscommand: false
@@ -552,8 +543,7 @@ tasks:
       id: e69901e9-ee05-4b11-8b09-2db95aba308e
       version: -1
       name: Identify Phishing duplicates using ML
-      description: Finds similar incidents using an out-of-the-box deduplication preprocessing script that is based on a
-        machine learning algorithm.
+      description: Finds similar incidents using an out-of-the-box deduplication preprocessing script that is based on a machine learning algorithm.
       scriptName: PhishingDedupPreprocessingRule
       type: regular
       iscommand: false
@@ -648,13 +638,7 @@ inputs:
 - key: DuplicateMethod
   value: {}
   required: true
-  description: "Select a method for identifying duplicate incidents. Can be \"ml\"\
-    , \"rules\", or \"text\". \n'rules' - define specific rules, such as similar incident\
-    \ fields & labels. This method works best if you know the exact logic to find\
-    \ similar incidents. \n'text' - text similarity, based on TF-IDF - unique word\
-    \ frequency in the incidents (based on similar incident fields) \n'ml' - machine\
-    \ learning model, which was trained on similar phishing incidents. Considers similar\
-    \ labels, incident fields, and indicators."
+  description: "Select a method for identifying duplicate incidents. Can be \"ml\", \"rules\", or \"text\". \n'rules' - define specific rules, such as similar incident fields & labels. This method works best if you know the exact logic to find similar incidents. \n'text' - text similarity, based on TF-IDF - unique word frequency in the incidents (based on similar incident fields) \n'ml' - machine learning model, which was trained on similar phishing incidents. Considers similar labels, incident fields, and indicators."
   playbookInputQuery:
 - key: exsitingIncidentsLookback
   value:
@@ -667,36 +651,24 @@ inputs:
 - key: statusScope
   value: {}
   required: false
-  description: "Use only with ML Method.\nWhether to compare the new incident to past\
-    \ closed or non-closed incidents only.   \n\"All\" - Default. Compares to all\
-    \ incidents.\n\"ClosedOnly\" - Compares to closed incidents.\n\"NonClosedOnly\"\
-    \ - Compare to open incidents."
+  description: "Use only with ML Method.\nWhether to compare the new incident to past closed or non-closed incidents only.   \n\"All\" - Default. Compares to all incidents.\n\"ClosedOnly\" - Compares to closed incidents.\n\"NonClosedOnly\" - Compare to open incidents."
   playbookInputQuery:
 - key: fromPolicy
   value: {}
   required: false
-  description: "Use only with ML Method.\nWhether to take into account the email from\
-    \ field for deduplication.\n\n\"TextOnly\" - incidents will be considered duplicated\
-    \ based on test similarity only, ignoring the sender's address. \n\n\"Exact\"\
-    \ - incidents will be considered duplicated if their text is similar, and their\
-    \ sender is the same. \n\n\"Domain\" -  Default. Incidents will be considered\
-    \ duplicated if their text is similar, and their senders' address has the same\
-    \ domain."
+  description: "Use only with ML Method.\nWhether to take into account the email from field for deduplication.\n\n\"TextOnly\" - incidents will be considered duplicated based on test similarity only, ignoring the sender's address. \n\n\"Exact\" - incidents will be considered duplicated if their text is similar, and their sender is the same. \n\n\"Domain\" -  Default. Incidents will be considered duplicated if their text is similar, and their senders' address has the same domain."
   playbookInputQuery:
 - key: DuplicateThreshold
   value:
     simple: "0.7"
   required: true
-  description: The similarity threshold by which to consider an incident as a duplicate
-    (0-1), where "1" is a duplicate and "0" is not a duplicate. Use this argument
-    in the ML or text methods.
+  description: The similarity threshold by which to consider an incident as a duplicate (0-1), where "1" is a duplicate and "0" is not a duplicate. Use this argument in the ML or text methods.
   playbookInputQuery:
 - key: TimeFrameHours
   value:
     simple: "72"
   required: false
-  description: The time frame (in hours) in which to check for duplicate incident
-    candidates.
+  description: The time frame (in hours) in which to check for duplicate incident candidates.
   playbookInputQuery:
 - key: IgnoreClosedIncidents
   value:
@@ -714,31 +686,24 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Whether to close incidents identified as duplicates. Can be "true"
-    or "false".
+  description: Whether to close incidents identified as duplicates. Can be "true" or "false".
   playbookInputQuery:
 - key: TimeField
   value:
     simple: created
   required: false
-  description: 'The Time field by which to query for past incidents to check for duplicate
-    incident candidates. Values: created, occurred, modified'
+  description: 'The Time field by which to query for past incidents to check for duplicate incident candidates. Values: created, occurred, modified'
   playbookInputQuery:
 - key: similarLabelsKeys
   value: {}
   required: false
-  description: 'A comma-separated list of similar label keys. Comma separated value.
-    Also supports allowing X different words between labels, within the following
-    way: label_name:X, where X is the number of words. X can also be ''*'' for contains.
-    For example: the value "Email/subject:*" will consider email subject similar,
-    if one is substring of the other. Relevant for ''Rules'' method.'
+  description: 'A comma-separated list of similar label keys. Comma separated value. Also supports allowing X different words between labels, within the following way: label_name:X, where X is the number of words. X can also be ''*'' for contains. For example: the value "Email/subject:*" will consider email subject similar, if one is substring of the other. Relevant for ''Rules'' method.'
   playbookInputQuery:
 - key: similarIncidentFields
   value:
     simple: name,type,details
   required: false
-  description: Fields to compare. Can be label name, incident fields, or custom fields.
-    Comma-separated value. Relevant for 'Text' and 'Rules' methods.
+  description: Fields to compare. Can be label name, incident fields, or custom fields. Comma-separated value. Relevant for 'Text' and 'Rules' methods.
   playbookInputQuery:
 outputs:
 - contextPath: isSimilarIncidentFound
@@ -750,3 +715,8 @@ outputs:
 tests:
 - No tests
 fromversion: 5.5.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

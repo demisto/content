@@ -1,6 +1,5 @@
 """IMPORTS"""
 
-
 import pytz
 import urllib3
 
@@ -10,26 +9,75 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 """ CONSTANTS """
-
-
-class AccessToken:
-    def __init__(self, token: str, expiration: datetime):
-        self._expiration = expiration
-        self._token = token
-
-    def __str__(self):
-        return self._token
-
-    @property
-    def expired(self) -> bool:
-        return self._expiration < datetime.now()
+DEFAULT_FIRST_FETCH = "3 days"
+DEFAULT_MAX_FETCH = "10"
 
 
 class Client(BaseClient):
     def __init__(self, secret: str, base_url: str, verify: bool, proxy):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._secret = secret
-        self._token: AccessToken = AccessToken("", datetime.now())
+
+    def http_request(
+        self, method="GET", url_suffix=None, resp_type="json", headers=None, json_data=None, params=None, data=None
+    ) -> Any:
+        """
+        Function to make http requests using inbuilt _http_request() method.
+        Handles token expiration case and makes request using secret key.
+        Args:
+            method (str): HTTP method to use. Defaults to "GET".
+            url_suffix (str): URL suffix to append to base_url. Defaults to None.
+            resp_type (str): Response type. Defaults to "json".
+            headers (dict): Headers to include in the request. Defaults to None.
+            json_data (dict): JSON data to include in the request body. Defaults to None.
+            params (dict): Parameters to include in the request. Defaults to None.
+            data (dict): Data to include in the request body. Defaults to None.
+        Returns:
+            Any: Response from the request.
+        """
+        headers = headers or {}
+
+        try:
+            token = self._get_token()
+            headers["Authorization"] = str(token)
+            response = self._http_request(
+                method=method,
+                url_suffix=url_suffix,
+                params=params,
+                json_data=json_data,
+                headers=headers,
+                resp_type=resp_type,
+                data=data,
+            )
+        except DemistoException as e:
+            if "Error in API call [401]" in str(e):
+                demisto.debug(f"One retry for 401 error. Error: {str(e)}")
+                # Token has expired, refresh token and retry request
+                token = self._get_token(force_new=True)
+                headers["Authorization"] = str(token)
+                response = self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    json_data=json_data,
+                    headers=headers,
+                    resp_type=resp_type,
+                    data=data,
+                )
+            else:
+                raise e
+        return response
+
+    def is_token_expired(self) -> bool:
+        demisto.debug("Checking if token is expired")
+        token_expiration = get_integration_context().get("token_expiration", None)
+        if token_expiration is not None:
+            expire_time = dateparser.parse(token_expiration).replace(tzinfo=datetime.now().tzinfo)  # type: ignore
+            current_time = datetime.now() - timedelta(seconds=30)
+            demisto.debug(f"Comparing current time: {current_time} with expire time: {expire_time}")
+            return expire_time < current_time
+        else:
+            return True
 
     def _get_token(self, force_new: bool = False):
         """
@@ -37,17 +85,22 @@ class Client(BaseClient):
         Args:
             force_new (bool): create a new access token even if an existing one is available
         Returns:
-            AccessToken: A valid Access Token to authorize requests
+            str: A valid Access Token to authorize requests
         """
-        if self._token is None or force_new or self._token.expired:
+        token = get_integration_context().get("token", None)
+        if token is None or force_new or self.is_token_expired():
+            demisto.debug("Creating a new access token")
             response = self._http_request("POST", "/access_token/", data={"secret_key": self._secret})
             token = response.get("data", {}).get("access_token")
             expiration = response.get("data", {}).get("expiration_utc")
             expiration_date = dateparser.parse(expiration)
             assert expiration_date is not None, f"failed parsing {expiration}"
 
-            self._token = AccessToken(token, expiration_date)
-        return self._token
+            set_integration_context({"token": token, "token_expiration": str(expiration_date)})
+
+            demisto.debug(f"setting new token to integration context with expiration time: {expiration_date}.")
+            return token
+        return token
 
     def search_by_aql_string(self, aql_string: str, order_by: str = None, max_results: int = None, page_from: int = None):
         """
@@ -62,7 +115,6 @@ class Client(BaseClient):
         Returns:
             dict: A JSON containing a list of results represented by JSON objects
         """
-        token = self._get_token()
         params = {"aql": aql_string}
         if order_by is not None:
             params["orderBy"] = order_by
@@ -71,18 +123,14 @@ class Client(BaseClient):
         if page_from is not None:
             params["from"] = str(page_from)
 
-        response = self._http_request(
-            "GET", "/search/", params=params, headers={"accept": "application/json", "Authorization": str(token)}
-        )
+        response = self.http_request("GET", "/search/", params=params, headers={"accept": "application/json"})
         if max_results is None:
             # if max results was not specified get all results.
             results: list = response.get("data", {}).get("results")
             while response.get("data", {}).get("next") is not None:
                 # while the response says there are more results use the 'page from' parameter to get the next results
                 params["from"] = str(len(results))
-                response = self._http_request(
-                    "GET", "/search/", params=params, headers={"accept": "application/json", "Authorization": str(token)}
-                )
+                response = self.http_request("GET", "/search/", params=params, headers={"accept": "application/json"})
                 results.extend(response.get("data", {}).get("results", []))
 
             response["data"]["results"] = results
@@ -118,15 +166,15 @@ class Client(BaseClient):
         aql_string = ["in:alerts", f'timeFrame:"{time_frame}"']
         if severity:
             severity_string = ",".join(list(severity))
-            aql_string.append(f"riskLevel:{severity_string}")
+            aql_string.append(f"riskLevel:{severity_string}")  # noqa: E231
         if status:
             status_string = ",".join(list(status))
-            aql_string.append(f"status:{status_string}")
+            aql_string.append(f"status:{status_string}")  # noqa: E231
         if alert_type:
             alert_string = ",".join([f'"{alert_option}"' for alert_option in alert_type])
-            aql_string.append(f"type:{alert_string}")
+            aql_string.append(f"type:{alert_string}")  # noqa: E231
         if alert_id:
-            aql_string.append(f"alertId:({alert_id})")
+            aql_string.append(f"alertId:({alert_id})")  # noqa: E231
 
         aql_string = " ".join(aql_string)  # type: ignore
         # type: ignore
@@ -144,7 +192,10 @@ class Client(BaseClient):
             dict: A JSON containing a list of matching Alerts represented by JSON objects
         """
         return self.search_by_aql_string(
-            f"in:alerts {aql_string}", order_by=order_by, max_results=max_results, page_from=page_from
+            f"in:alerts {aql_string}",  # noqa: E231
+            order_by=order_by,
+            max_results=max_results,
+            page_from=page_from,
         )
 
     def update_alert_status(self, alert_id: str, status: str):
@@ -154,13 +205,11 @@ class Client(BaseClient):
             status (str): The new status of the Alert to set
             alert_id (str): The Id of the Alert
         """
-        token = self._get_token()
-        return self._http_request(
+        return self.http_request(
             "PATCH",
             f"/alerts/{alert_id}/",
             headers={
                 "accept": "application/json",
-                "Authorization": str(token),
                 "content-type": "application/x-www-form-urlencoded",
             },
             data={"status": status},
@@ -173,12 +222,11 @@ class Client(BaseClient):
             tags (str): The tags to add to the Device
             device_id (str): The Id of the Device
         """
-        token = self._get_token()
-        return self._http_request(
+        return self.http_request(
             "POST",
             f"/devices/{device_id}/tags/",
             json_data={"tags": tags},
-            headers={"accept": "application/json", "Authorization": str(token)},
+            headers={"accept": "application/json"},
         )
 
     def untag_device(self, device_id: str, tags: list[str]):
@@ -188,12 +236,11 @@ class Client(BaseClient):
             tags (List[str]): The tags to remove from the Device
             device_id (str): The Id of the Device
         """
-        token = self._get_token()
-        return self._http_request(
+        return self.http_request(
             "DELETE",
             f"/devices/{device_id}/tags/",
             json_data={"tags": tags},
-            headers={"accept": "application/json", "Authorization": str(token)},
+            headers={"accept": "application/json"},
         )
 
     def search_devices(
@@ -227,19 +274,19 @@ class Client(BaseClient):
         time_frame = "3 Days" if time_frame is None else time_frame
         aql_string = ["in:devices", f'timeFrame:"{time_frame}"']
         if name is not None:
-            aql_string.append(f"name:({name})")
+            aql_string.append(f"name:({name})")  # noqa: E231
         if device_type is not None:
             type_string = ",".join([f'"{type_option}"' for type_option in device_type])
-            aql_string.append(f"type:{type_string}")
+            aql_string.append(f"type:{type_string}")  # noqa: E231
         if mac_address is not None:
-            aql_string.append(f"macAddress:({mac_address})")
+            aql_string.append(f"macAddress:({mac_address})")  # noqa: E231
         if ip_address is not None:
-            aql_string.append(f"ipAddress:({ip_address})")
+            aql_string.append(f"ipAddress:({ip_address})")  # noqa: E231
         if device_id is not None:
-            aql_string.append(f"deviceId:({device_id})")
+            aql_string.append(f"deviceId:({device_id})")  # noqa: E231
         if risk_level is not None:
             risk_level_string = ",".join(list(risk_level))
-            aql_string.append(f"riskLevel:{risk_level_string}")
+            aql_string.append(f"riskLevel:{risk_level_string}")  # noqa: E231
 
         aql_string = " ".join(aql_string)  # type: ignore
         return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results)  # type: ignore
@@ -254,25 +301,59 @@ class Client(BaseClient):
         Returns:
             dict: A JSON containing a list of matching Devices represented by JSON objects
         """
-        return self.search_by_aql_string(f"in:devices {aql_string}", order_by=order_by, max_results=max_results)
+        return self.search_by_aql_string(f"in:devices {aql_string}", order_by=order_by, max_results=max_results)  # noqa: E231
 
 
-def test_module(client: Client):
+def test_module(client: Client, params: dict):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     This test works by using a Client instance to create a temporary access token using the provided secret key,
     thereby testing both the connection to the server and the validity of the secret key
     Args:
         client: Armis client
+        params: A dictionary containing the parameters provided by the user.
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
 
     try:
-        client._get_token(force_new=True)
+        if argToBoolean(params.get("isFetch", False)):
+            demisto.debug("Calling fetch incidents")
+            first_fetch_time, minimum_severity, alert_type, alert_status, free_search_string, max_fetch = get_fetch_params(params)
+            fetch_incidents(
+                client,
+                {},
+                first_fetch_time,
+                minimum_severity,
+                alert_type,
+                alert_status,  # type: ignore
+                free_search_string,
+                max_fetch,
+                is_test=True,
+            )  # type: ignore
+        else:
+            client._get_token(force_new=True)
         return "ok"
     except Exception as e:
         return f"Test failed with the following error: {repr(e)}"
+
+
+def get_fetch_params(params: dict) -> tuple:
+    """
+    Get the tuple of parameters required for calling fetch incidents
+    Args:
+        params: A dictionary containing the parameters provided by the user
+    Returns:
+        tuple: A tuple containing the first fetch time, minimum severity, alert type,
+               alert status, free search string and max fetch
+    """
+    first_fetch_time = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
+    minimum_severity = params.get("min_severity")
+    alert_type = params.get("alert_type")
+    alert_status = params.get("alert_status")
+    free_search_string = params.get("free_fetch_string")
+    max_fetch = arg_to_number(params.get("max_fetch") or DEFAULT_MAX_FETCH)
+    return first_fetch_time, minimum_severity, alert_type, alert_status, free_search_string, max_fetch
 
 
 def _ensure_timezone(date: datetime):
@@ -307,24 +388,26 @@ def _create_time_frame_string(last_fetch: datetime):
 def fetch_incidents(
     client: Client,
     last_run: dict,
-    first_fetch_time: str,
+    first_fetch_time: Optional[datetime],
     minimum_severity: str,
     alert_type: list[str],
     alert_status: list[str],
     free_search_string: str,
-    max_results: int,
+    max_results: Optional[int],
+    is_test: bool = False,
 ):
     """
     This function will execute each interval (default is 1 minute).
     Args:
         client (Client): Armis client
         last_run (dict): The greatest incident created_time we fetched from last fetch
-        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
+        first_fetch_time (Optional[datetime]): If last_run is None then fetch all incidents since first_fetch_time
         minimum_severity (str): the minimum severity of alerts to fetch
         alert_type (List[str]): the type of alerts to fetch
         alert_status (List[str]): the status of alerts to fetch
         free_search_string (str): A custom search string for fetching alerts
-        max_results: (int): The maximum number of alerts to fetch at once
+        max_results: (Optional[int]): The maximum number of alerts to fetch at once
+        is_test (bool): A boolean indicating whether the command is being run in test mode.
     Returns:
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
@@ -345,7 +428,7 @@ def fetch_incidents(
 
         last_fetch = _ensure_timezone(last_fetch_date)
     else:
-        last_fetch_time_date = dateparser.parse(first_fetch_time)
+        last_fetch_time_date = first_fetch_time
         assert last_fetch_time_date is not None
         last_fetch = _ensure_timezone(last_fetch_time_date)
 
@@ -357,7 +440,7 @@ def fetch_incidents(
     # get a list of severities from the minimum specified and upward
     # for example if min_severity is Medium requested_severities will be ['Medium', 'High']
     severities_in_order = ["Low", "Medium", "High"]
-    requested_severities = severities_in_order[severities_in_order.index(minimum_severity):]
+    requested_severities = severities_in_order[severities_in_order.index(minimum_severity) :]  # noqa: E203
     incidents = []
 
     # when the previous fetch returned more than max_results alerts, the same query is made again and max_results alerts
@@ -366,7 +449,10 @@ def fetch_incidents(
     page_from = max_results * incomplete_fetches or None
     if free_search_string:
         data = client.free_string_search_alerts(
-            f"{free_search_string} timeFrame:{time_frame}", order_by="time", max_results=max_results, page_from=page_from
+            f"{free_search_string} timeFrame:{time_frame}",  # noqa: E231
+            order_by="time",
+            max_results=max_results,
+            page_from=page_from,
         )
     else:
         data = client.search_alerts(
@@ -378,6 +464,9 @@ def fetch_incidents(
             max_results=max_results,
             page_from=page_from,
         )
+
+    if is_test:
+        return last_run, []
 
     for alert in data.get("results", []):
         time_date = dateparser.parse(alert.get("time"))
@@ -656,9 +745,6 @@ def main():
         base_url = urljoin(base_url, "/api/v1/")
     verify = not params.get("insecure", False)
 
-    # How much time before the first fetch to retrieve incidents
-    first_fetch_time = params.get("fetch_time", "3 days").strip()
-
     proxy = params.get("proxy", False)
 
     demisto.info(f"Command being called is {command}")
@@ -667,14 +753,11 @@ def main():
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, params)
             return_results(result)
 
         elif command == "fetch-incidents":
-            minimum_severity = params.get("min_severity")
-            alert_status = params.get("alert_status")
-            alert_type = params.get("alert_type")
-            free_search_string = params.get("free_fetch_string")
+            first_fetch_time, minimum_severity, alert_type, alert_status, free_search_string, max_fetch = get_fetch_params(params)
 
             # Set and define the fetch incidents command to run after activated via integration settings.
             next_run, incidents = fetch_incidents(
@@ -685,7 +768,7 @@ def main():
                 alert_status=alert_status,
                 minimum_severity=minimum_severity,
                 free_search_string=free_search_string,
-                max_results=int(params.get("max_fetch")),
+                max_results=max_fetch,
             )
 
             demisto.setLastRun(next_run)

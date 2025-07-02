@@ -8,10 +8,12 @@
     "email": "",
     "created": "2020-05-25T11:48:45Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Case Management"
     ],
     "tags": [
-        "Use Case"
+        "Use Case",
+        "Security"
     ],
     "useCases": [],
     "keywords": [],

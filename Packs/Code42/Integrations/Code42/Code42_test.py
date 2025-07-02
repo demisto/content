@@ -1531,7 +1531,7 @@ def test_list_watchlists_included_users_calls_by_id_when_watchlist_type_arg_prov
     cmd_res = list_watchlists_included_users(client, {"watchlist": "DEPARTING_EMPLOYEE"})
     actual_response = cmd_res.raw_response
     expected_response = json.loads(MOCK_WATCHLISTS_INCLUDED_USERS_RESPONSE)["includedUsers"]
-    assert code42_watchlists_included_users_mock.watchlists.get_all_included_users.called_once_with(watchlist_id)
+    code42_watchlists_included_users_mock.watchlists.get_all_included_users.assert_called_once_with(watchlist_id)
     assert cmd_res.outputs_prefix == "Code42.WatchlistUsers"
     assert len(expected_response) == len(actual_response)
     for i in range(0, len(actual_response)):
@@ -1549,7 +1549,7 @@ def test_add_user_to_watchlist_command_with_UUID_calls_add_by_id_method(code42_s
     code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.return_value = create_mock_code42_sdk_response(mocker, "")
     client = _create_client(code42_sdk_mock)
     cmd_res = add_user_to_watchlist_command(client, {"watchlist": watchlist_id, "username": "user_a@example.com"})
-    assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.called_once_with(user_id, watchlist_id)
+    code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.assert_called_once_with(user_id, watchlist_id)
     assert cmd_res.raw_response == {
         "Watchlist": "b55978d5-2d50-494d-bec9-678867f3830c",
         "Username": "user_a@example.com",
@@ -1566,7 +1566,7 @@ def test_add_user_to_watchlist_command_with_watchlist_type_calls_add_by_type_met
     code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.return_value = create_mock_code42_sdk_response(mocker, "")
     client = _create_client(code42_sdk_mock)
     cmd_res = add_user_to_watchlist_command(client, {"watchlist": watchlist_type, "username": "user_a@example.com"})
-    assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.called_once_with(user_id, watchlist_type)
+    code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.assert_called_once_with(user_id, watchlist_type)
     assert cmd_res.raw_response == {
         "Watchlist": "DEPARTING_EMPLOYEE",
         "Username": "user_a@example.com",
@@ -1583,7 +1583,7 @@ def test_remove_user_from_watchlist_command_with_UUID_calls_add_by_id_method(cod
     code42_sdk_mock.watchlists.remove_included_users_by_watchlist_id.return_value = create_mock_code42_sdk_response(mocker, "")
     client = _create_client(code42_sdk_mock)
     cmd_res = remove_user_from_watchlist_command(client, {"watchlist": watchlist_id, "username": "user_a@example.com"})
-    assert code42_sdk_mock.watchlists.remove_included_users_by_watchlist_id.called_once_with(user_id, watchlist_id)
+    code42_sdk_mock.watchlists.remove_included_users_by_watchlist_id.assert_called_once_with(user_id, watchlist_id)
     assert cmd_res.raw_response == {
         "Watchlist": "b55978d5-2d50-494d-bec9-678867f3830c",
         "Username": "user_a@example.com",
@@ -1600,7 +1600,7 @@ def test_remove_user_from_watchlist_command_with_watchlist_type_calls_add_by_typ
     code42_sdk_mock.watchlists.remove_included_users_by_watchlist_type.return_value = create_mock_code42_sdk_response(mocker, "")
     client = _create_client(code42_sdk_mock)
     cmd_res = remove_user_from_watchlist_command(client, {"watchlist": watchlist_type, "username": "user_a@example.com"})
-    assert code42_sdk_mock.watchlists.remove_included_users_by_watchlist_type.called_once_with(user_id, watchlist_type)
+    code42_sdk_mock.watchlists.remove_included_users_by_watchlist_type.assert_called_once_with(user_id, watchlist_type)
     assert cmd_res.raw_response == {
         "Watchlist": "DEPARTING_EMPLOYEE",
         "Username": "user_a@example.com",

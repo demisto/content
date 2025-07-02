@@ -12,8 +12,8 @@ Display random GIF in the War Room (e.g. !giphy hello)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag | The GIF tag to limit randomness by. | Optional | 
-| as-json | Returns the response as JSON. Possible values are: true, false. | Optional | 
+| tag | The GIF tag to limit randomness by. | Optional |
+| as-json | Returns the response as JSON. Possible values are: true, false. | Optional |
 
 #### Context Output
 

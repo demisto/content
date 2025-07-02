@@ -66,18 +66,18 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| submissionID | Submission ID of the submission. | Required | 
-| info_level | Specifies the level of information to be returned. Unless otherwise specified, the info_level is set to concise. You can select the following information levels concise: (default), normal, extended. Possible values are: concise, normal, extended. Default is concise. | Optional | 
+| submissionID | Submission ID of the submission. | Required |
+| info_level | Specifies the level of information to be returned. Unless otherwise specified, the info_level is set to concise. You can select the following information levels concise: (default), normal, extended. Possible values are: concise, normal, extended. Default is concise. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeAX.Submissions.Key | unknown | The submission key | 
-| FireEyeAX.Submissions.Severity | unknown | The severity level of the file | 
-| FireEyeAX.Submissions.InfoLevel | String | The info level of the report. | 
-| DBotScore.Score | unknown | The actual score | 
-| DBotScore.Indicator | unknown | The indicator we tested | 
-| DBotScore.Vendor | unknown | Vendor used to calculate the score | 
-| File.MD5 | unknown | Bad hash found | 
-| File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision | 
+| FireEyeAX.Submissions.Key | unknown | The submission key |
+| FireEyeAX.Submissions.Severity | unknown | The severity level of the file |
+| FireEyeAX.Submissions.InfoLevel | String | The info level of the report. |
+| DBotScore.Score | unknown | The actual score |
+| DBotScore.Indicator | unknown | The indicator we tested |
+| DBotScore.Vendor | unknown | Vendor used to calculate the score |
+| File.MD5 | unknown | Bad hash found |
+| File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision |
