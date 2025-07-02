@@ -4,7 +4,9 @@ from CommonServerPython import * # noqa: F401
 import json
 import ipaddress
 import time
-from typing import Any, List, Union, Optional # Removed Dict
+# Removed List and Union from typing import, as we'll use built-in list and X | Y syntax.
+# Optional is still needed for Python < 3.10 if not using from __future__ import annotations
+from typing import Any, Optional
 
 # --- Constants ---
 GLOBAL_ADMIN_ROLE_ID = "62e90394-69f5-4237-9190-012177145e10"  # Azure Global Administrator role ID
@@ -23,7 +25,7 @@ def is_private_ip(ip: str) -> bool:
         demisto.debug(f"Invalid IP address format encountered: {ip}")
         return False
 
-def get_azure_command_error_details(res: dict[str, Any]) -> str: # Changed Dict to dict
+def get_azure_command_error_details(res: dict[str, Any]) -> str:
     """
     Extracts a readable error message from an Azure command result.
     Tries to parse the 'Contents' field for JSON structured error info.
@@ -58,7 +60,7 @@ def get_azure_command_error_details(res: dict[str, Any]) -> str: # Changed Dict 
         demisto.debug(f"Exception during error details extraction: {ex}")
         return f"Error extracting error message: {str(ex)}"
 
-def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_message_prefix: str) -> dict[str, Any]: # Changed Dict to dict
+def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_message_prefix: str) -> dict[str, Any]:
     """
     Executes a Demisto command and checks for errors.
     Raises an exception if command execution fails.
@@ -72,7 +74,8 @@ def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_
     demisto.debug(f"Successfully executed {command}. Result: {res[0].get('Contents')}")
     return res[0].get('Contents', {})
 
-def get_named_ip_location(named_location_name: str) -> Optional[dict[str, Any]]: # Changed Dict to dict
+# Fix 1: Change Optional[dict[str, Any]] to dict[str, Any] | None
+def get_named_ip_location(named_location_name: str) -> dict[str, Any] | None:
     """
     Retrieves an existing named IP location by display name.
     """
@@ -90,7 +93,8 @@ def get_named_ip_location(named_location_name: str) -> Optional[dict[str, Any]]:
         existing_locations = []
     return existing_locations[0] if existing_locations else None
 
-def update_existing_named_location(named_location_id: str, named_location_name: str, existing_cidrs: List[str], new_ip_cidr: str) -> None:
+# Fix 2: Change List[str] to list[str]
+def update_existing_named_location(named_location_id: str, named_location_name: str, existing_cidrs: list[str], new_ip_cidr: str) -> None:
     """
     Adds a new IP CIDR to an existing named IP location if not already present.
     """
@@ -172,6 +176,7 @@ def create_conditional_access_policy(policy_name: str, named_location_id: str) -
     )
     demisto.debug(f"Successfully created Conditional Access policy '{policy_name}'.")
 
+# Fix 3: Change Optional[str] to str | None
 def block_external_ip_with_ca_policy_main_logic(ip: str, named_location_name: str, policy_name: str) -> str:
     """
     Orchestrates the blocking of an external IP address via Azure Conditional Access.
@@ -181,7 +186,7 @@ def block_external_ip_with_ca_policy_main_logic(ip: str, named_location_name: st
     if is_private_ip(ip):
         raise DemistoException(f"The IP {ip} appears to be internal/private and will not be blocked.")
     named_location = get_named_ip_location(named_location_name)
-    named_location_id: Optional[str] = None
+    named_location_id: str | None = None # Fix 4: Use str | None for type annotation
     if named_location:
         named_location_id = named_location.get('id')
         ip_ranges = named_location.get('ipRanges', [])
