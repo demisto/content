@@ -84,7 +84,7 @@ alter
         xdm.alert.description = extract_details;
 
 
-[RULE: sanboxing_fields]
+[RULE: sandboxing_fields]
 alter 
         extract_hash = metaData -> hashFunction,
         extract_checksum = metaData -> checksum
@@ -122,7 +122,7 @@ filter type = "PZD"
 
 filter type = "Sandboxing"
 |call retarus_secure_email_gw_common_fields
-|call sanboxing_fields
+|call sandboxing_fields
 |call mapping_sender_field;
 
 
@@ -142,13 +142,3 @@ filter type = "MTA" and direction ="OUTBOUND"
 |call retarus_secure_email_gw_common_fields
 |call mta_outbound_fields
 |call mapping_sender_field_for_mta_events;
-
-
-filter type = "MultiScan"
-|call retarus_secure_email_gw_common_fields
-|call multiscan_fields;
-
-
-filter type = "Sandboxing"
-|call retarus_secure_email_gw_common_fields
-|call sanboxing_fields;
