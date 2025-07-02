@@ -8497,6 +8497,73 @@ def test_show_jobs_id_not_found(patched_run_op_command):
         UniversalCommand.show_jobs(topology=MockTopology(), id=23)
 
 
+@patch("Panorama.TemplateStack.refreshall")
+@patch("Panorama.Template.refreshall")
+@patch("Panorama.run_op_command")
+def test_pan_os_get_certificate_info_command(
+    patched_run_op_command, template_refreshall, template_stack_refreshall, mocker: MockerFixture, requests_mock: RequestsMock
+):
+    """
+    Test pan-os-get-certificate-expiration command.
+
+    This test validates that:
+    1. The command correctly fetches certificates from Panorama devices
+    2. The command correctly fetches certificates from Firewall devices
+    3. The command correctly fetches predefined certificates
+    4. The command returns appropriate output
+    """
+
+    from Panorama import pan_os_get_certificate_info_command
+
+    def side_effect_func(device, cmd, **kwargs):
+        if cmd == "request certificate show":
+            return load_xml_root_from_test_file("test_data/request_certificate_show.xml")
+        elif cmd == "show config running":
+            return load_xml_root_from_test_file("test_data/show_running_config.xml")
+        elif cmd == "show config pushed-template":
+            return load_xml_root_from_test_file("test_data/show_config_pushed_template.xml")
+        else:
+            return None
+
+    mock_template = MagicMock(spec=Template)
+    mock_template.devices = []
+    template_refreshall.return_value = [mock_template]
+
+    mock_template_stack = MagicMock(spec=TemplateStack)
+    mock_template_stack.devices = [MOCK_FIREWALL_1_SERIAL]
+    template_stack_refreshall.return_value = [mock_template_stack]
+
+    patched_run_op_command.side_effect = side_effect_func
+
+    # # Mock Panorama device
+    mock_panorama = MagicMock(spec=Panorama)
+    mock_panorama.hostname = "panorama.test"
+    mock_panorama_devices = [mock_panorama]
+
+    # # Mock Firewall device
+    mock_firewall = MagicMock(spec=Firewall)
+    mock_firewall.serial = MOCK_FIREWALL_1_SERIAL
+    mock_firewall.parent = MagicMock(get=lambda x: "panorama.test" if x == "hostname" else None)
+    mock_firewall_devices = [mock_firewall]
+
+    # Mock empty topology
+    mock_topology = MagicMock()
+    mock_topology.panorama_devices.return_value = mock_panorama_devices
+    mock_topology.firewall_devices.return_value = mock_firewall_devices
+
+    Panorama.URL = "https://1.1.1.1:443/api/"
+
+    # Define output of http request to "/config/predefined/certificate"
+    with open("test_data/config_predefined_certificate.txt") as f:
+        requests_mock.get(Panorama.URL, text=f.read())
+
+    result = pan_os_get_certificate_info_command(topology=mock_topology, args={"show_expired_only": False})
+
+    assert isinstance(result, CommandResults)
+
+    assert result.outputs == load_json("test_data/get_certificate_info_command.json")
+
+
 class TestDynamicUpdateCommands:
     @pytest.mark.parametrize(
         "update_type_str, expected_api_call",
@@ -8575,7 +8642,18 @@ class TestDynamicUpdateCommands:
         "update_phase, job_id, api_response_payload",
         [
             (
-                "start",
+                "start-no-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Download job enqueued with jobid 1309"}, "job": "1309"},
+                    },
+                },
+            ),
+            (
+                "start-with-polling",
                 "",
                 {
                     "response": {
@@ -8659,7 +8737,17 @@ class TestDynamicUpdateCommands:
 
         mock_command_return = mocker.patch("Panorama.return_results")
 
-        if update_phase == "start":
+        if update_phase == "start-no-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains job info with no subsquent scheduled command.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "polling": "false"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert returned_results.scheduled_command is None
+            assert returned_results.readable_output == "Content download JobID 1309 started on device 1337."
+
+        elif update_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
             Verify that the response contains a ScheduledCommand object to poll for job status.
@@ -8761,7 +8849,18 @@ class TestDynamicUpdateCommands:
         "install_phase, job_id, api_response_payload",
         [
             (
-                "start",
+                "start-no-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Content install job enqueued with jobid 1318"}, "job": "1318"},
+                    }
+                },
+            ),
+            (
+                "start-with-polling",
                 "",
                 {
                     "response": {
@@ -8839,7 +8938,17 @@ class TestDynamicUpdateCommands:
 
         mock_command_return = mocker.patch("Panorama.return_results")
 
-        if install_phase == "start":
+        if install_phase == "start-no-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains job info with no subsequent scheduled command.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "polling": "false"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert returned_results.scheduled_command is None
+            assert returned_results.readable_output == "Content install JobID 1318 started on device 1337."
+
+        elif install_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
             Verify that the response contains a ScheduledCommand object to poll for job status.
