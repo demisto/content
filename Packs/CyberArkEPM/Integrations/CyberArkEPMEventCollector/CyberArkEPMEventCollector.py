@@ -226,6 +226,7 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
     if context_set_items.keys() != set(set_names):
         demisto.debug("CyberArkEPM: context_set_items is empty")
         result = client.get_set_list()
+        demisto.debug(f"CyberArkEPM: Fetching set list result {result}")
         context_set_items = {
             set_item.get("Name"): set_item.get("Id") for set_item in result.get("Sets", []) if set_item.get("Name") in set_names
         }
@@ -287,7 +288,7 @@ def get_events(client_function: Callable, event_type: str, last_run_per_id: dict
 
         add_fields_to_events(events[set_id]["events"], "arrivalTime", event_type)  # type: ignore
         events[set_id]["next_cursor"] = next_cursor or "start"
-        demisto.debug(f"CyberArkEPM: for {set_id=} {event_type=} fetched events: {events[set_id][:25]}")
+        demisto.debug(f"CyberArkEPM: for {set_id=} {event_type=} fetched events: {events[set_id]}")
 
     return events
 
