@@ -12,7 +12,7 @@ def test_main(mocker: MockerFixture):
     """
     from PANOSQueryLogs import main
 
-    args = {"log-type":"traffic", "number_of_logs":1}
+    args = {"log-type": "traffic", "number_of_logs": 1}
     mocker.patch("PANOSQueryLogs.demisto.args", return_value=args)
     mock_execute_polling_command = mocker.patch("PANOSQueryLogs.execute_polling_command", return_value=[])
 
