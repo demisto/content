@@ -44,6 +44,10 @@
         "type": "string",
         "is_array": false
       },
+      "reason": {
+        "type": "string",
+        "is_array": false
+      },
       "eventText": {
         "type": "string",
         "is_array": false
