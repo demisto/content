@@ -6,7 +6,7 @@ commonfields:
   id: Cisco AppDynamics
   version: -1
 configuration:
-- defaultvalue: When using controller API https://<controller address>/controller
+- defaultvalue: https://<controller address>/controller
   display: Server URL
   name: url
   required: true

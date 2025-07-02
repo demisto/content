@@ -130,11 +130,11 @@ class Client(BaseClient):
         token_expiry = integration_context.get("token_expiry", "")
 
         if not access_token or not token_expiry:
-            demisto.debug("Token doesn't exists")
+            demisto.debug("Token doesn't exists, requesting new token.")
             return self.create_access_token()
 
         if datetime.now(timezone.utc) >= datetime.fromisoformat(token_expiry):
-            demisto.debug("Token Expired")
+            demisto.debug("Token Expired, requesting new token.")
             return self.create_access_token()
 
         demisto.debug(f"Using cached access token. Expires at {token_expiry}")
@@ -151,7 +151,6 @@ class Client(BaseClient):
             List[Dict]: JSON-decoded list of events.
         """
         token = self.get_access_token()
-        demisto.debug("Access token exists")
         headers = {"Authorization": f"Bearer {token}"}
         params["output"] = "JSON"
         response = self._http_request(
@@ -161,7 +160,6 @@ class Client(BaseClient):
             headers=headers,
             resp_type="json",
         )
-        demisto.debug("Request successful")
         return response
 
     def get_audit_logs(self, start_time: str, end_time: str) -> list[dict]:
@@ -252,17 +250,16 @@ def fetch_events(
 
     for event_type in events_type_to_fetch:
         demisto.debug(f"Fetching {event_type.name}")
-        last_time = last_run[event_type.name]  # in timestamp
-        demisto.debug(f"Last run {last_time}")
-        events = event_fetch_function[event_type.name](  # type: ignore
-            start_time=timestamp_to_api_format(last_time, event_type),
+        start_time = last_run[event_type.name]  # in timestamp
+        demisto.debug(f"Last run {start_time}")
+        events = event_fetch_function.get(event_type.name)(  # type: ignore
+            start_time=timestamp_to_api_format(start_time, event_type),
             end_time=timestamp_to_api_format(current_time, event_type),
         )
         demisto.debug(f"Fetched {len(events)} events")
         if events:
             events = events[: event_type.max_fetch]
             all_events.extend(events)
-        if events:
             last_run[event_type.name] = int(events[-1][event_type.time_field]) + 1
         else:
             last_run[event_type.name] = current_time + 1
