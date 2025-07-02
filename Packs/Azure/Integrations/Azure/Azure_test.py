@@ -1294,7 +1294,7 @@ def test_azure_client_initialization_without_refresh_token(mocker):
     mocker.patch("Azure.MicrosoftClient")
 
     # Initialize client without refresh token
-    client = AzureClient(app_id="test_app_id")
+    AzureClient(app_id="test_app_id")
 
     # Verify integration context was not modified
     mock_set_context.assert_not_called()
@@ -1402,7 +1402,7 @@ def test_azure_client_create_policy_assignment(mocker, client):
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
     # Call the function
-    result = client.create_policy_assignment(
+    client.create_policy_assignment(
         name="test-policy",
         policy_definition_id="test-def",
         display_name="Test Policy",
@@ -1615,7 +1615,10 @@ def test_azure_client_storage_blob_service_properties_set_request_success(mocker
     # Setup mock response
     mock_response = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/default",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/"
+            "blobServices/default"
+        ),
         "properties": {"deleteRetentionPolicy": {"enabled": True, "days": 7}},
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
@@ -1630,7 +1633,10 @@ def test_azure_client_storage_blob_service_properties_set_request_success(mocker
     )
 
     # Verify correct API call was made
-    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/default"
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/"
+        "blobServices/default"
+    )
     client.http_request.assert_called_once()
     call_args = client.http_request.call_args
 
