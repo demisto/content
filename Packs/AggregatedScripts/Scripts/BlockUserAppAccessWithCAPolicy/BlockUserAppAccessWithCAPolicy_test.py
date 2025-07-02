@@ -1,5 +1,5 @@
 import pytest
-from CommonServerPython import DemistoException # Removed CommandResults
+from CommonServerPython import DemistoException  # Removed CommandResults
 import json
 
 # Import the module itself. This is the correct approach.
@@ -109,9 +109,11 @@ def test__parse_demisto_error_message_json_parse_fails(mocker):
 
     # Test case for ValueError (if .index() fails)
     mocker.patch("json.loads", side_effect=lambda x: json.loads(x))  # Reset json.loads
-    res_no_json_part = {"Contents": 'Error in API call [400] - Malformed string not json'}
-    assert BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(
-        res_no_json_part) == f"Unparsed API error: {res_no_json_part['Contents']}"
+    res_no_json_part = {"Contents": "Error in API call [400] - Malformed string not json"}
+    assert (
+        BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res_no_json_part)
+        == f"Unparsed API error: {res_no_json_part['Contents']}"
+    )
 
 
 def test__parse_demisto_error_message_raw_json_error_string():
@@ -177,7 +179,7 @@ def test__parse_demisto_error_message_unexpected_exception(mocker):
         - Should return a generic error extraction message
     """
     # Mock demisto.debug to prevent actual logging during test
-    mocker.patch.object(BlockUserAppAccessWithCAPolicy.demisto, 'debug')
+    mocker.patch.object(BlockUserAppAccessWithCAPolicy.demisto, "debug")
 
     # Simulate an unexpected exception *within* the parsing logic itself.
     # For example, if raw_contents is an object that raises an error when converted to string or loaded as JSON.
@@ -259,8 +261,9 @@ def test__execute_command_and_handle_error_invalid_res_structure(mocker):
     """
     # Case 1: First element is not a dict
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.executeCommand", return_value=["not a dict"])
-    with pytest.raises(DemistoException,
-                       match="Error Prefix: Unexpected type for command result contents: Expected dict, got str."):
+    with pytest.raises(
+        DemistoException, match="Error Prefix: Unexpected type for command result contents: Expected dict, got str."
+    ):
         BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error("command", {}, "Error Prefix")
 
     # Case 2: First element is None (empty first element)
@@ -274,7 +277,7 @@ def test__execute_command_and_handle_error_invalid_res_structure(mocker):
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.executeCommand", return_value=[{}])
     mocker.patch("BlockUserAppAccessWithCAPolicy.is_error", return_value=False)
     result = BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error("command", {}, "Error Prefix")
-    assert result == {} # Assert it returns an empty dict, as that's what `get("Contents", {})` would produce
+    assert result == {}  # Assert it returns an empty dict, as that's what `get("Contents", {})` would produce
 
 
 # --- Tests for resolve_app_object_id ---
@@ -574,12 +577,10 @@ def test_main_existing_policy_updates(mocker):
         return_value={
             "id": "policy-id",
             "displayName": "Cortex App Block Access - TestApp",
-            "conditions": {"users": {"includeUsers": []}}
+            "conditions": {"users": {"includeUsers": []}},
         },
     )
-    mock_update_policy = mocker.patch(
-        "BlockUserAppAccessWithCAPolicy.update_policy", return_value="User updated message"
-    )
+    mock_update_policy = mocker.patch("BlockUserAppAccessWithCAPolicy.update_policy", return_value="User updated message")
     mock_return_results = mocker.patch("BlockUserAppAccessWithCAPolicy.return_results")
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_app_object_id")  # Mock, though not used in this branch
 
@@ -602,12 +603,8 @@ def test_main_new_policy_created(mocker):
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "NewApp"})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value="user-id-abc")
     mocker.patch("BlockUserAppAccessWithCAPolicy.fetch_policy_by_name", return_value=None)
-    mock_resolve_app_id = mocker.patch(
-        "BlockUserAppAccessWithCAPolicy.resolve_app_object_id", return_value="app-id-xyz"
-    )
-    mock_create_policy = mocker.patch(
-        "BlockUserAppAccessWithCAPolicy.create_policy", return_value="Policy created message"
-    )
+    mock_resolve_app_id = mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_app_object_id", return_value="app-id-xyz")
+    mock_create_policy = mocker.patch("BlockUserAppAccessWithCAPolicy.create_policy", return_value="Policy created message")
     mock_return_results = mocker.patch("BlockUserAppAccessWithCAPolicy.return_results")
 
     BlockUserAppAccessWithCAPolicy.main()  # Call main from the module
@@ -632,7 +629,9 @@ def test_main_user_id_resolution_failure(mocker):
     mock_return_error = mocker.patch("BlockUserAppAccessWithCAPolicy.return_error")
 
     BlockUserAppAccessWithCAPolicy.main()  # Call main from the module
-    mock_return_error.assert_called_once_with("Error blocking app access: Could not resolve user ID from username: nonexistent_user")
+    mock_return_error.assert_called_once_with(
+        "Error blocking app access: Could not resolve user ID from username: nonexistent_user"
+    )
 
 
 def test_main_general_exception_handling(mocker):
@@ -647,8 +646,9 @@ def test_main_general_exception_handling(mocker):
     """
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "TestApp"})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value="user-id-123")
-    mocker.patch("BlockUserAppAccessWithCAPolicy.fetch_policy_by_name",
-                 side_effect=ValueError("Simulated error"))  # Force an exception
+    mocker.patch(
+        "BlockUserAppAccessWithCAPolicy.fetch_policy_by_name", side_effect=ValueError("Simulated error")
+    )  # Force an exception
     mock_return_error = mocker.patch("BlockUserAppAccessWithCAPolicy.return_error")
 
     BlockUserAppAccessWithCAPolicy.main()  # Call main from the module

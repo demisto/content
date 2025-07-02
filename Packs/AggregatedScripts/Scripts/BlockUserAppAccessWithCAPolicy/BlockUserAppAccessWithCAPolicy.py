@@ -1,20 +1,13 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import * # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import re
-# from typing import Any, Optional # Original import
-
-# Change 1: Update type hints based on UP035 and UP007
-# No need to import List, as we'll use lowercase list.
-# Optional[X] becomes X | None
 from typing import Any
 
 DEFAULT_POLICY_NAME_PREFIX = "Cortex App Block Access"
 
 
-def _execute_command_and_handle_error(
-    command: str, args: dict[str, Any], error_message_prefix: str
-) -> dict[str, Any]:
+def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_message_prefix: str) -> dict[str, Any]:
     """
     Executes a Demisto command and raises a DemistoException if it fails.
 
@@ -30,10 +23,10 @@ def _execute_command_and_handle_error(
     # Fix: Ensure the function raises and exits if the response is invalid or empty
     if not res:
         raise DemistoException(f"{error_message_prefix}: Empty response for {command}.")
-    if not isinstance(res, list) or not res: # res is now guaranteed not None, check if it's an empty list or not a list
+    if not isinstance(res, list) or not res:  # res is now guaranteed not None, check if it's an empty list or not a list
         raise DemistoException(f"{error_message_prefix}: Invalid command result structure (not a list) for {command}.")
     # Fix for previous error: Explicitly check for None, not just falsy.
-    if res[0] is None: # Check if the first element of the list is explicitly None
+    if res[0] is None:  # Check if the first element of the list is explicitly None
         raise DemistoException(f"{error_message_prefix}: Empty first element in command result for {command}.")
 
     # Now res is guaranteed to be a non-empty list, and res[0] is not None.
@@ -43,7 +36,9 @@ def _execute_command_and_handle_error(
 
     # Ensure res[0] is a dict before calling .get()
     if not isinstance(res[0], dict):
-        raise DemistoException(f"{error_message_prefix}: Unexpected type for command result contents: Expected dict, got {type(res[0]).__name__}.")
+        raise DemistoException(
+            f"{error_message_prefix}: Unexpected type for command result contents: Expected dict, got {type(res[0]).__name__}."
+        )
 
     return res[0].get("Contents", {})
 
@@ -69,10 +64,10 @@ def resolve_app_object_id(app_name: str) -> str:
 
     demisto.info(f"[DEBUG] Service principal list response: {json.dumps(res, indent=2)[:1000]}")
 
-    apps: list[Any] = [] # Change 2: Use lowercase 'list' instead of 'List'
+    apps: list[Any] = []  # Change 2: Use lowercase 'list' instead of 'List'
     if isinstance(res, dict):
         apps = res.get("MSGraphApplication", [])
-    elif isinstance(res, list): # Change 3: Use lowercase 'list'
+    elif isinstance(res, list):  # Change 3: Use lowercase 'list'
         apps = res
     else:
         demisto.info(f"[DEBUG] Unexpected service principal list structure: {res}")
@@ -109,18 +104,18 @@ def _parse_demisto_error_message(res: dict[str, Any]) -> str:
                     json_start_index = raw_contents.index("{", raw_contents.index("Error in API call"))
                     err = json.loads(raw_contents[json_start_index:])
                     return f"{err.get('error', {}).get('code', '')}: {err.get('error', {}).get('message', '')}"
-                except (json.JSONDecodeError, ValueError): # ValueError for .index() if substring not found
+                except (json.JSONDecodeError, ValueError):  # ValueError for .index() if substring not found
                     demisto.debug(f"Failed to parse detailed JSON from API error string: {raw_contents}")
                     return f"Unparsed API error: {raw_contents}"
             # Case 2: Raw string that is a JSON error object
             try:
                 parsed_contents = json.loads(raw_contents)
-                if isinstance(parsed_contents, dict) and 'error' in parsed_contents:
-                    error = parsed_contents['error']
+                if isinstance(parsed_contents, dict) and "error" in parsed_contents:
+                    error = parsed_contents["error"]
                     return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
             except json.JSONDecodeError:
-                pass # Not a JSON string, fall through to raw_contents or ReadableContents
-            return raw_contents # If it's a plain string, return as is
+                pass  # Not a JSON string, fall through to raw_contents or ReadableContents
+            return raw_contents  # If it's a plain string, return as is
 
         # Case 3: Contents is already a dict with an 'error' key
         elif isinstance(raw_contents, dict) and "error" in raw_contents:
@@ -190,7 +185,7 @@ def fetch_policy_by_name(policy_name: str) -> dict[str, Any] | None:
         raise DemistoException(f"Failed to list CA policies: {_parse_demisto_error_message(res[0])}")
 
     contents = res[0].get("Contents", {})
-    if isinstance(contents, list): # Change 7: Use lowercase 'list'
+    if isinstance(contents, list):  # Change 7: Use lowercase 'list'
         policies = contents
     elif isinstance(contents, dict):
         policies = contents.get("value", [])
