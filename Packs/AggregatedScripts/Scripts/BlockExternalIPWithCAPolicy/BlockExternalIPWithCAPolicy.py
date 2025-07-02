@@ -1,10 +1,11 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import * # noqa: F401
 
 import json
 import ipaddress
 import time
-from typing import Any
+from typing import Any, List, Union, Dict, Optional # Kept original imports and fixed as per previous discussions if needed
+
 
 # --- Constants ---
 GLOBAL_ADMIN_ROLE_ID = "62e90394-69f5-4237-9190-012177145e10"  # Azure Global Administrator role ID
@@ -16,7 +17,13 @@ DEFAULT_POLICY_NAME = "Cortex - Block Malicious IPs"
 
 def is_private_ip(ip: str) -> bool:
     """
-    Checks if the given IP address is a private IP address.
+    Checks if the given IP address is a private (RFC 1918) IP address.
+
+    Args:
+        ip (str): The IP address string to check.
+
+    Returns:
+        bool: True if the IP is private, False otherwise or if the IP is invalid.
     """
     try:
         return ipaddress.ip_address(ip).is_private
@@ -28,7 +35,16 @@ def is_private_ip(ip: str) -> bool:
 def get_azure_command_error_details(res: dict[str, Any]) -> str:
     """
     Extracts a readable error message from an Azure command result.
-    Tries to parse the 'Contents' field for JSON structured error info.
+
+    This function attempts to parse the 'Contents' field of a command result for
+    structured JSON error information (e.g., from MS Graph API calls). If no
+    structured error is found, it falls back to the raw contents or a generic message.
+
+    Args:
+        res (dict[str, Any]): The result object from a Demisto command, typically res[0] from executeCommand.
+
+    Returns:
+        str: A human-readable string containing the error code and message, or the raw error string.
     """
     raw_contents = res.get("Contents")
     try:
@@ -63,8 +79,23 @@ def get_azure_command_error_details(res: dict[str, Any]) -> str:
 
 def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_message_prefix: str) -> dict[str, Any]:
     """
-    Executes a Demisto command and checks for errors.
-    Raises an exception if command execution fails.
+    Executes a Demisto command and raises a DemistoException if it fails.
+
+    This function abstracts the common pattern of executing a command and
+    checking its result for errors, providing a consistent error handling mechanism.
+
+    Args:
+        command (str): The name of the Demisto command to execute (e.g., 'msgraph-identity-ip-named-locations-list').
+        args (dict[str, Any]): A dictionary of arguments to pass to the command.
+        error_message_prefix (str): A string prefix to prepend to any DemistoException messages,
+                                    indicating the context of the error.
+
+    Returns:
+        dict[str, Any]: The parsed 'Contents' dictionary from the command's successful result.
+
+    Raises:
+        DemistoException: If the command execution fails, returns an empty/invalid response structure,
+                          or indicates an error via `is_error(res)`.
     """
     res = demisto.executeCommand(command, args)
     if not res or not isinstance(res, list) or not res[0]:
@@ -76,10 +107,18 @@ def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_
     return res[0].get("Contents", {})
 
 
-# Fix 1: Change Optional[dict[str, Any]] to dict[str, Any] | None
 def get_named_ip_location(named_location_name: str) -> dict[str, Any] | None:
     """
-    Retrieves an existing named IP location by display name.
+    Retrieves an existing Azure AD named IP location based on its display name.
+
+    Args:
+        named_location_name (str): The display name of the named IP location to search for.
+
+    Returns:
+        dict[str, Any] | None: A dictionary representing the found named IP location if it exists,
+                               otherwise None.
+    Raises:
+        DemistoException: If listing named IP locations fails.
     """
     filter_query = f"$filter=displayName eq '{named_location_name}'"
     contents = _execute_command_and_handle_error(
@@ -94,12 +133,26 @@ def get_named_ip_location(named_location_name: str) -> dict[str, Any] | None:
     return existing_locations[0] if existing_locations else None
 
 
-# Fix 2: Change List[str] to list[str]
 def update_existing_named_location(
     named_location_id: str, named_location_name: str, existing_cidrs: list[str], new_ip_cidr: str
 ) -> None:
     """
-    Adds a new IP CIDR to an existing named IP location if not already present.
+    Adds a new IP CIDR (Classless Inter-Domain Routing) to an existing Azure AD named IP location.
+
+    The function checks if the new IP CIDR is already present in the existing list to avoid duplicates.
+    It then updates the named location in Azure AD.
+
+    Args:
+        named_location_id (str): The unique ID of the existing named IP location to update.
+        named_location_name (str): The display name of the named IP location.
+        existing_cidrs (list[str]): A list of existing CIDR strings already configured in the named location.
+        new_ip_cidr (str): The new IP CIDR string (e.g., "1.2.3.4/32") to add.
+
+    Returns:
+        None
+
+    Raises:
+        DemistoException: If the update operation to Azure AD fails.
     """
     if new_ip_cidr not in existing_cidrs:
         existing_cidrs.append(new_ip_cidr)
@@ -119,7 +172,20 @@ def update_existing_named_location(
 
 def create_new_named_ip_location(named_location_name: str, ip: str) -> str:
     """
-    Creates a new named IP location and returns its ID.
+    Creates a new Azure AD named IP location with the specified IP address.
+
+    After creation, the script waits for a short period to allow Azure to propagate the new location,
+    which is recommended before associating it with Conditional Access policies.
+
+    Args:
+        named_location_name (str): The desired display name for the new named IP location.
+        ip (str): The IP address (e.g., "1.2.3.4") to be included in the new named location as a /32 CIDR.
+
+    Returns:
+        str: The unique ID of the newly created named IP location.
+
+    Raises:
+        DemistoException: If the creation of the named location fails or does not return a valid ID.
     """
     create_args = {"display_name": named_location_name, "ips": f"{ip}/32", "is_trusted": False}
     contents = _execute_command_and_handle_error(
@@ -135,7 +201,20 @@ def create_new_named_ip_location(named_location_name: str, ip: str) -> str:
 
 def create_conditional_access_policy(policy_name: str, named_location_id: str) -> None:
     """
-    Creates a Conditional Access policy to block access from the specified named location.
+    Creates a new Azure AD Conditional Access policy to block access from a specified named location.
+
+    The policy is configured to apply to all users (excluding Global Administrators) and all applications,
+    blocking access when originating from the specified named location.
+
+    Args:
+        policy_name (str): The desired display name for the new Conditional Access policy.
+        named_location_id (str): The unique ID of the named IP location that this policy will block.
+
+    Returns:
+        None
+
+    Raises:
+        DemistoException: If the creation of the Conditional Access policy fails.
     """
     policy_json = {
         "displayName": policy_name,
@@ -162,17 +241,31 @@ def create_conditional_access_policy(policy_name: str, named_location_id: str) -
     demisto.debug(f"Successfully created Conditional Access policy '{policy_name}'.")
 
 
-# Fix 3: Change Optional[str] to str | None
 def block_external_ip_with_ca_policy_main_logic(ip: str, named_location_name: str, policy_name: str) -> str:
     """
-    Orchestrates the blocking of an external IP address via Azure Conditional Access.
+    Orchestrates the blocking of an external IP address using Azure Conditional Access policies.
+
+    This function checks if the IP is private, retrieves or updates a named IP location in Azure AD,
+    and then either updates an existing Conditional Access policy or creates a new one to block
+    access from the specified IP.
+
+    Args:
+        ip (str): The external IP address to block.
+        named_location_name (str): The name of the Azure AD named IP location to use/create.
+        policy_name (str): The name of the Conditional Access policy to use/create.
+
+    Returns:
+        str: A message indicating the successful processing and blocking status of the IP.
+
+    Raises:
+        DemistoException: If the input IP is missing, private, or if any Azure AD operation fails.
     """
     if not ip:
         raise DemistoException("Missing required argument: 'ip'.")
     if is_private_ip(ip):
         raise DemistoException(f"The IP {ip} appears to be internal/private and will not be blocked.")
     named_location = get_named_ip_location(named_location_name)
-    named_location_id: str | None = None  # Fix 4: Use str | None for type annotation
+    named_location_id: str | None = None
     if named_location:
         named_location_id = named_location.get("id")
         ip_ranges = named_location.get("ipRanges", [])
@@ -187,7 +280,10 @@ def block_external_ip_with_ca_policy_main_logic(ip: str, named_location_name: st
 
 def main():
     """
-    Entry point of the XSOAR script. Handles args and exception logging.
+    Main function for the XSOAR script to block an external IP address using Azure Conditional Access.
+
+    This is the entry point that retrieves arguments, orchestrates the blocking logic,
+    and handles top-level exceptions, returning results or errors to Demisto.
     """
     try:
         args = demisto.args()
