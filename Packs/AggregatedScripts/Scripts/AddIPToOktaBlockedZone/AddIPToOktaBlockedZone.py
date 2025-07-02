@@ -1,7 +1,7 @@
 import ipaddress
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import * # noqa: F401
-from typing import Any, List, Union, Dict, Optional
+from CommonServerPython import *  # noqa: F401
+from typing import Any
 
 
 def is_private_ip(ip: str) -> bool:
@@ -26,55 +26,70 @@ def is_private_ip(ip: str) -> bool:
 
 def ip_in_range(ip: str, ip_range: str) -> bool:
     """
-    Checks if a given IP address falls within a specified IP range (CIDR, dash-separated range, or single IP).
+    Checks if a given IPv4 address falls within a specified IPv4 range (CIDR, dash-separated range, or single IP).
 
     Args:
-        ip (str): The IP address string to check.
-        ip_range (str): The IP range string (e.g., '192.168.1.0/24', '10.0.0.1-10.0.0.10', '1.1.1.1').
+        ip (str): The IPv4 address string to check.
+        ip_range (str): The IPv4 range string (e.g., '192.168.1.0/24', '10.0.0.1-10.0.0.10', '1.1.1.1').
 
     Returns:
-        bool: True if the IP is within the range, False otherwise or if inputs are invalid.
+        bool: True if the IPv4 is within the IPv4 range, False otherwise or if inputs are invalid
+              or if IP versions are mismatched.
     """
     try:
         ip_obj = ipaddress.ip_address(ip)
+
+        # Pre-check for IPv6 here if main is not strictly enforcing IPv4, though main now does.
+        # This is primarily for mypy to infer the type consistently.
+        if ip_obj.version != 4:
+            demisto.debug(f"Non-IPv4 address '{ip}' passed to ip_in_range. Script expects IPv4.")
+            return False
+
+        # Cast to IPv4Address for mypy's benefit, now that we've checked the version
+        ip_obj = cast(ipaddress.IPv4Address, ip_obj)
 
         if '-' in ip_range:
             start_ip_str, end_ip_str = ip_range.split('-')
             start_ip = ipaddress.ip_address(start_ip_str)
             end_ip = ipaddress.ip_address(end_ip_str)
 
-            # FIX: Ensure comparison is only between IPs of the same version.
-            # If the IP versions are different, they cannot be compared.
-            if ip_obj.version != start_ip.version or ip_obj.version != end_ip.version:
-                demisto.debug(f"IP version mismatch for comparison: IP {ip_obj} (v{ip_obj.version}) "
-                              f"vs range {ip_range} (v{start_ip.version}/{end_ip.version})")
+            if start_ip.version != 4 or end_ip.version != 4:
+                demisto.debug(f"Non-IPv4 range '{ip_range}' detected. Script expects IPv4 ranges.")
                 return False
+
+            # Cast for mypy
+            start_ip = cast(ipaddress.IPv4Address, start_ip)
+            end_ip = cast(ipaddress.IPv4Address, end_ip)
 
             return start_ip <= ip_obj <= end_ip
         elif '/' in ip_range:
             ip_network_obj = ipaddress.ip_network(ip_range, strict=False)
 
-            # FIX: Ensure IP object and network are of the same version
-            if ip_obj.version != ip_network_obj.version:
-                demisto.debug(f"IP version mismatch for containment: IP {ip_obj} (v{ip_obj.version}) "
-                              f"vs network {ip_network_obj} (v{ip_network_obj.version})")
+            if ip_network_obj.version != 4:
+                demisto.debug(f"Non-IPv4 network '{ip_range}' detected. Script expects IPv4 networks.")
                 return False
 
+            # Cast for mypy
+            ip_network_obj = cast(ipaddress.IPv4Network, ip_network_obj)
+
             return ip_obj in ip_network_obj
-        else:
+        else: # Single IP
             single_ip_obj = ipaddress.ip_address(ip_range)
-            # FIX: Ensure IP objects are of the same version for equality
-            if ip_obj.version != single_ip_obj.version:
-                demisto.debug(f"IP version mismatch for equality: IP {ip_obj} (v{ip_obj.version}) "
-                              f"vs single IP {single_ip_obj} (v{single_ip_obj.version})")
+
+            if single_ip_obj.version != 4:
+                demisto.debug(f"Non-IPv4 single IP '{ip_range}' detected. Script expects IPv4 IPs.")
                 return False
+
+            # Cast for mypy
+            single_ip_obj = cast(ipaddress.IPv4Address, single_ip_obj)
+
             return ip_obj == single_ip_obj
     except Exception as e:
         demisto.debug(f"Error checking IP '{ip}' against range '{ip_range}': {e}")
         return False
 
 
-def _get_command_error_details(res: Dict[str, Any]) -> str:
+def _get_command_error_details(res: dict[str, Any]) -> str:
     """
     Extracts a readable error message from a Demisto command result.
     This function handles specific formatting of errors returned by certain commands.
@@ -98,8 +113,8 @@ def _get_command_error_details(res: Dict[str, Any]) -> str:
                     return f"Unparsed API error: {raw_contents}"
             try:
                 parsed_contents = json.loads(raw_contents)
-                if isinstance(parsed_contents, dict) and 'error' in parsed_contents:
-                    error = parsed_contents['error']
+                if isinstance(parsed_contents, dict) and "error" in parsed_contents:
+                    error = parsed_contents["error"]
                     return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
             except json.JSONDecodeError:
                 pass
@@ -112,7 +127,7 @@ def _get_command_error_details(res: Dict[str, Any]) -> str:
         return f"Error extracting error message: {str(ex)}"
 
 
-def _execute_demisto_command(command: str, args: Dict[str, Any], error_message_prefix: str) -> Any:
+def _execute_demisto_command(command: str, args: dict[str, Any], error_message_prefix: str) -> Any:
     """
     Executes a Demisto command and handles potential errors.
 
@@ -140,7 +155,7 @@ def _execute_demisto_command(command: str, args: Dict[str, Any], error_message_p
     return res[0].get("Contents")
 
 
-def get_blocked_ip_zone_info() -> Dict[str, Any]:
+def get_blocked_ip_zone_info() -> dict[str, Any]:
     """
     Retrieves the 'BlockedIpZone' information from Okta zones.
 
@@ -153,7 +168,7 @@ def get_blocked_ip_zone_info() -> Dict[str, Any]:
     """
     res_zones = _execute_demisto_command("okta-list-zones", {}, "Failed to list Okta zones")
 
-    zones: List[Dict[str, Any]] = []
+    zones: list[dict[str, Any]] = []
     if isinstance(res_zones, dict):
         zones = res_zones.get("result", [])
     elif isinstance(res_zones, list):
@@ -179,7 +194,7 @@ def get_blocked_ip_zone_info() -> Dict[str, Any]:
     return {"zone_id": zone_id, "zone_gateways": zone_gateways}
 
 
-def update_blocked_ip_zone(zone_id: str, zone_gateways: List[str], ip_to_add: str) -> None:
+def update_blocked_ip_zone(zone_id: str, zone_gateways: list[str], ip_to_add: str) -> None:
     """
     Appends a new IP CIDR to the 'BlockedIpZone' in Okta.
 
@@ -206,7 +221,7 @@ def update_blocked_ip_zone(zone_id: str, zone_gateways: List[str], ip_to_add: st
         "type": "IP",
         "name": "BlockedIpZone",
         "status": "ACTIVE",
-        "updateType": "APPEND"
+        "updateType": "APPEND",
     }
 
     _execute_demisto_command("okta-update-zone", update_args, "Failed to update BlockedIpZone")
@@ -231,7 +246,6 @@ def main():
         except ValueError:
             return_error(f"The input '{ip}' is not a valid IP address.")
             return
-
 
         if is_private_ip(ip):
             return_error(f"The IP {ip} is private/internal and should not be added.")
