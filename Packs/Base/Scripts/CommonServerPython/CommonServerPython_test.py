@@ -10056,7 +10056,7 @@ class TestMirrorObjectInitialization:
 
         # Then
         assert mirror_obj.object_url == ticket_url, "object_url should be initialized correctly."
-        assert mirror_obj.ticket_id == ticket_id, "ticket_id should be initialized correctly."
+        assert mirror_obj.object_id == ticket_id, "ticket_id should be initialized correctly."
         mock_demisto_debug.assert_not_called()
 
     def test_initialization_with_no_fields(self, mocker: MagicMock) -> None:
@@ -10074,7 +10074,7 @@ class TestMirrorObjectInitialization:
 
         # Then
         assert mirror_obj.object_url is None, "object_url should be None."
-        assert mirror_obj.ticket_id is None, "ticket_id should be None."
+        assert mirror_obj.object_id is None, "ticket_id should be None."
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
     def test_initialization_with_only_ticket_url(self, mocker: MagicMock) -> None:
@@ -10093,7 +10093,7 @@ class TestMirrorObjectInitialization:
 
         # Then
         assert mirror_obj.object_url == ticket_url
-        assert mirror_obj.ticket_id is None
+        assert mirror_obj.object_id is None
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
     def test_initialization_with_only_ticket_id(self, mocker: MagicMock) -> None:
@@ -10112,7 +10112,7 @@ class TestMirrorObjectInitialization:
 
         # Then
         assert mirror_obj.object_url is None
-        assert mirror_obj.ticket_id == ticket_id
+        assert mirror_obj.object_id == ticket_id
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
     @pytest.mark.parametrize(
@@ -10141,7 +10141,7 @@ class TestMirrorObjectInitialization:
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
 
         # When
-        MirrorObject(object_url=ticket_url_in, ticket_id=ticket_id_in)
+        MirrorObject(object_url=ticket_url_in, object_id=ticket_id_in)
 
         # Then
         if should_log:
@@ -10185,7 +10185,7 @@ class TestMirrorObjectToContext:
         Then:  A dictionary representation of the object is returned with the correct key-value pairs.
         """
         # Given
-        mirror_obj = MirrorObject(object_url=ticket_url_in, ticket_id=ticket_id_in)
+        mirror_obj = MirrorObject(object_url=ticket_url_in, object_id=ticket_id_in)
 
         # When
         context_dict: Dict[str, Any] = mirror_obj.to_context()

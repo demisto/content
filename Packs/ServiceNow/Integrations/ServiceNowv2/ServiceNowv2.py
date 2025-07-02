@@ -1535,7 +1535,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     else:
         additional_fields_keys = list(args.keys())
 
-    instance_url = client.base_url.replace('/api/now/', '/')
+    instance_url = client.base_url.replace("/api/now/", "/")
 
     ticket_type = ticket.get("sys_class_name")
     ticket_sys_id = ticket.get("sys_id")
@@ -1554,12 +1554,14 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
         "ServiceNow.Ticket(val.ID===obj.ID)": created_ticket_context,
     }
     if is_quick_action:
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'MirrorObject created successfully.',
-            'ExtendedPayload': {'MirrorObject': mirror_obj}
-        })
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["text"],
+                "Contents": "MirrorObject created successfully.",
+                "ExtendedPayload": {"MirrorObject": mirror_obj},
+            }
+        )
 
     return human_readable, entry_context, result, True
 
@@ -2981,13 +2983,13 @@ def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> Com
     demisto.debug(f"Raw ticket data for preview: {ticket_data}")
 
     qa_preview_data = {
-        "id": ticket_data.get("number",{}).get('display_value'),
-        "title": ticket_data.get("short_description", {}).get('display_value'),
-        "description": ticket_data.get("description", {}).get('display_value'),
-        "status": ticket_data.get("state",{}).get('display_value'),
-        "assignee": ticket_data.get("assigned_to", {}).get('display_value'),
-        "creation_date": ticket_data.get("sys_created_on", {}).get('display_value'),
-        "severity": ticket_data.get("priority", {}).get('display_value'),
+        "id": ticket_data.get("number", {}).get("display_value"),
+        "title": ticket_data.get("short_description", {}).get("display_value"),
+        "description": ticket_data.get("description", {}).get("display_value"),
+        "status": ticket_data.get("state", {}).get("display_value"),
+        "assignee": ticket_data.get("assigned_to", {}).get("display_value"),
+        "creation_date": ticket_data.get("sys_created_on", {}).get("display_value"),
+        "severity": ticket_data.get("priority", {}).get("display_value"),
     }
     qa_preview = QuickActionPreview(**qa_preview_data)
 
@@ -3234,20 +3236,23 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     demisto.debug(f"state will change to= {parsed_args.delta.get('state')}")
     if parsed_args.incident_changed:
         demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
-        if (parsed_args.inc_status == IncidentStatus.DONE) or ('state' in parsed_args.delta):
+        if (parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta):
             demisto.debug("Closing incident by closure case")
             if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta["state"] == "3":
                 parsed_args.delta["state"] = "3"
             # These ticket types are closed by changing their state.
-            if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta["state"] == "7" :
+            if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta["state"] == "7":
                 parsed_args.delta["state"] = "7"  # Closing incident ticket.
                 parsed_args.delta["close_code"] = "Resolved by caller"
-                parsed_args.delta[
-                    "close_notes"] = "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+                parsed_args.delta["close_notes"] = (
+                    "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+                )
             elif (closure_case == "resolved" and ticket_type == INCIDENT) or parsed_args.delta["state"] == "6":
                 parsed_args.delta["state"] = "6"  # resolving incident ticket.
                 parsed_args.delta["close_code"] = "Resolved by caller"
-                parsed_args.delta["close_notes"] = "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+                parsed_args.delta["close_notes"] = (
+                    "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+                )
             if close_custom_state:  # Closing by custom state
                 demisto.debug(f"Closing by custom state = {close_custom_state}")
                 is_custom_close = True
