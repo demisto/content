@@ -2360,8 +2360,8 @@ def send_message():
         if entitlement_match_ac:
             adaptive_card_processed = process_adaptive_card(adaptive_card)
             conversation = {"type": "message", "attachments": [adaptive_card_processed]}
-        # else:
-        #     conversation = {"type": "message", "attachments": [adaptive_card]}
+        else:
+            conversation = {"type": "message", "attachments": [adaptive_card]}
 
     service_url: str = integration_context.get("service_url", "")
     if not service_url:

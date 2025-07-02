@@ -3332,7 +3332,7 @@ def test_send_notification_with_adaptive_card_from_DlpAskFeedback(mocker, reques
                     "title": "Yes",
                     "data": {
                         "response": "Yes",
-                        "entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8",
+                        "entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8",
                         "investigation_id": "1",
                         "task_id": "1",
                     },
@@ -3342,7 +3342,7 @@ def test_send_notification_with_adaptive_card_from_DlpAskFeedback(mocker, reques
                     "title": "No",
                     "data": {
                         "response": "No",
-                        "entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8",
+                        "entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8",
                         "investigation_id": "1",
                         "task_id": "1",
                     },
@@ -3387,7 +3387,7 @@ def test_send_notification_with_adaptive_card_from_TeamAsk(mocker, requests_mock
     }
     adaptive_card_arg_from_TeamsAsk: dict = {
         "adaptive_card": adaptive_card,
-        "entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8",
+        "entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8",
         "investigation_id": "1",
         "task_id": "1",
     }
@@ -3403,12 +3403,12 @@ def test_send_notification_with_adaptive_card_from_TeamAsk(mocker, requests_mock
                 {
                     "type": "Action.Submit",
                     "title": "Yes",
-                    "data": {"entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
+                    "data": {"entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
                 },
                 {
                     "type": "Action.Submit",
                     "title": "No",
-                    "data": {"entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
+                    "data": {"entitlement": "44111dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
                 },
             ],
         },
@@ -3440,7 +3440,7 @@ def test_process_ask_user():
     message = {
         "message_text": "message_text",
         "options": ["Yes", "No"],
-        "entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8",
+        "entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8",
         "investigation_id": "1",
         "task_id": "1",
         "form_type": "predefined-options",
@@ -3459,7 +3459,7 @@ def test_process_ask_user():
                     "title": "Yes",
                     "data": {
                         "response": "Yes",
-                        "entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8",
+                        "entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8",
                         "investigation_id": "1",
                         "task_id": "1",
                     },
@@ -3469,7 +3469,7 @@ def test_process_ask_user():
                     "title": "No",
                     "data": {
                         "response": "No",
-                        "entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8",
+                        "entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8",
                         "investigation_id": "1",
                         "task_id": "1",
                     },
