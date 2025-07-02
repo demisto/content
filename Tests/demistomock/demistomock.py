@@ -9,6 +9,7 @@ integrationContext = {}
 is_debug = False  # type: bool
 ARGS_COMMAND_PATH = os.path.join(os.path.dirname(__file__), ".args_command.json")
 
+
 exampleIncidents = [
     {
         "Brand": "Builtin",
