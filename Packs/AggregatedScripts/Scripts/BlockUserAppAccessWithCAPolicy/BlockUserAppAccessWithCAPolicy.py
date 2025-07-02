@@ -9,7 +9,7 @@ DEFAULT_POLICY_NAME_PREFIX = "Cortex App Block Access"
 
 def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_message_prefix: str) -> dict[str, Any]:
     """
-    Executes a Demisto command and raises a DemistoException if it fails.
+    Executes a command and raises a DemistoException if it fails.
 
     Args:
         command (str): The command to execute.
@@ -32,7 +32,7 @@ def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_
     # Now res is guaranteed to be a non-empty list, and res[0] is not None.
     if is_error(res):
         # Using the renamed internal error parsing function
-        raise DemistoException(f"{error_message_prefix}: {_parse_demisto_error_message(res[0])}")
+        raise DemistoException(f"{error_message_prefix}: {_parse_error_message(res[0])}")
 
     # Ensure res[0] is a dict before calling .get()
     if not isinstance(res[0], dict):
@@ -84,9 +84,9 @@ def resolve_app_object_id(app_name: str) -> str:
     return app_id
 
 
-def _parse_demisto_error_message(res: dict[str, Any]) -> str:
+def _parse_error_message(res: dict[str, Any]) -> str:
     """
-    Parses an error message from a Demisto command result.
+    Parses an error message from a command result.
     This function handles specific formatting of errors returned by certain commands.
 
     Args:
@@ -127,7 +127,7 @@ def _parse_demisto_error_message(res: dict[str, Any]) -> str:
         return str(raw_contents or res.get("ReadableContents", "Unknown error"))
     except Exception as ex:
         # Catch any unexpected exceptions during the parsing process itself
-        demisto.debug(f"Exception during error details extraction in _parse_demisto_error_message: {ex}")
+        demisto.debug(f"Exception during error details extraction in _parse_error_message: {ex}")
         return f"Error extracting error message: {str(ex)}"
 
 
@@ -182,7 +182,7 @@ def fetch_policy_by_name(policy_name: str) -> dict[str, Any] | None:
 
     if is_error(res):
         # Using the renamed internal error parsing function
-        raise DemistoException(f"Failed to list CA policies: {_parse_demisto_error_message(res[0])}")
+        raise DemistoException(f"Failed to list CA policies: {_parse_error_message(res[0])}")
 
     contents = res[0].get("Contents", {})
     if isinstance(contents, list):  # Change 7: Use lowercase 'list'

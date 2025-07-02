@@ -66,115 +66,115 @@ def test_resolve_user_object_id_when_upn(mocker):
     assert BlockUserAppAccessWithCAPolicy.resolve_user_object_id("user@example.com") == "user-object-id-1234"
 
 
-# --- Tests for _parse_demisto_error_message ---
-def test__parse_demisto_error_message_parsing_json_error():
+# --- Tests for _parse_error_message ---
+def test__parse_error_message_parsing_json_error():
     """
     Given:
         - Command result with embedded API error JSON string (Error in API call)
     When:
-        - Calling _parse_demisto_error_message
+        - Calling _parse_error_message
     Then:
         - Should parse and extract a formatted error code and message
     """
     res = {"Contents": 'Error in API call [403] - { "error": { "code": "Forbidden", "message": "Not allowed" } }'}
-    assert BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res) == "Forbidden: Not allowed"
+    assert BlockUserAppAccessWithCAPolicy._parse_error_message(res) == "Forbidden: Not allowed"
 
 
-def test__parse_demisto_error_message_unparsed_string():
+def test__parse_error_message_unparsed_string():
     """
     Given:
         - Command result with a string error message not containing JSON or "Error in API call"
     When:
-        - Calling _parse_demisto_error_message
+        - Calling _parse_error_message
     Then:
         - Should return the raw string as-is
     """
     res = {"Contents": "Some simple error occurred"}
-    assert BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res) == "Some simple error occurred"
+    assert BlockUserAppAccessWithCAPolicy._parse_error_message(res) == "Some simple error occurred"
 
 
-def test__parse_demisto_error_message_json_parse_fails(mocker):
+def test__parse_error_message_json_parse_fails(mocker):
     """
     Given:
         - Command result with "Error in API call" but malformed JSON (ValueError for index or JSONDecodeError)
     When:
-        - Calling _parse_demisto_error_message
+        - Calling _parse_error_message
     Then:
         - Should return the unparsed API error message
     """
     # Test case for json.JSONDecodeError
     mocker.patch("json.loads", side_effect=json.JSONDecodeError("Expecting value", "raw", 0))
     res = {"Contents": 'Error in API call [400] - { "error": "malformed json"'}
-    assert BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res) == f"Unparsed API error: {res['Contents']}"
+    assert BlockUserAppAccessWithCAPolicy._parse_error_message(res) == f"Unparsed API error: {res['Contents']}"
 
     # Test case for ValueError (if .index() fails)
     mocker.patch("json.loads", side_effect=lambda x: json.loads(x))  # Reset json.loads
     res_no_json_part = {"Contents": "Error in API call [400] - Malformed string not json"}
     assert (
-        BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res_no_json_part)
+        BlockUserAppAccessWithCAPolicy._parse_error_message(res_no_json_part)
         == f"Unparsed API error: {res_no_json_part['Contents']}"
     )
 
 
-def test__parse_demisto_error_message_raw_json_error_string():
+def test__parse_error_message_raw_json_error_string():
     """
     Given:
         - Command result with a string that is a direct JSON error object (not prefixed)
     When:
-        - Calling _parse_demisto_error_message
+        - Calling _parse_error_message
     Then:
         - Should parse and extract the error code and message
     """
     res = {"Contents": '{ "error": { "code": "BadRequest", "message": "Invalid request" } }'}
-    assert BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res) == "BadRequest: Invalid request"
+    assert BlockUserAppAccessWithCAPolicy._parse_error_message(res) == "BadRequest: Invalid request"
 
 
-def test__parse_demisto_error_message_raw_dict_error():
+def test__parse_error_message_raw_dict_error():
     """
     Given:
         - Command result where 'Contents' is directly a dictionary with an 'error' key
     When:
-        - Calling _parse_demisto_error_message
+        - Calling _parse_error_message
     Then:
         - Should extract the error code and message from the dictionary
     """
     res = {"Contents": {"error": {"code": "Unauthorized", "message": "Access denied"}}}
-    assert BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res) == "Unauthorized: Access denied"
+    assert BlockUserAppAccessWithCAPolicy._parse_error_message(res) == "Unauthorized: Access denied"
 
 
-def test__parse_demisto_error_message_fallback_no_contents():
+def test__parse_error_message_fallback_no_contents():
     """
     Given:
         - Command result with no 'Contents' but 'ReadableContents'
     When:
-        - Calling _parse_demisto_error_message
+        - Calling _parse_error_message
     Then:
         - Should return 'ReadableContents'
     """
     res = {"ReadableContents": "Something went wrong readable."}
-    assert BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res) == "Something went wrong readable."
+    assert BlockUserAppAccessWithCAPolicy._parse_error_message(res) == "Something went wrong readable."
 
 
-def test__parse_demisto_error_message_fallback_empty_res():
+def test__parse_error_message_fallback_empty_res():
     """
     Given:
         - An empty dictionary as result (no Contents, no ReadableContents)
     When:
-        - Calling _parse_demisto_error_message
+        - Calling _parse_error_message
     Then:
         - Should return "Unknown error"
     """
     res = {}
-    assert BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res) == "Unknown error"
+    assert BlockUserAppAccessWithCAPolicy._parse_error_message(res) == "Unknown error"
 
 
-def test__parse_demisto_error_message_unexpected_exception(mocker):
+def test__parse_error_message_unexpected_exception(mocker):
     """
     Given:
-        - An unexpected exception occurs within _parse_demisto_error_message
+        - An unexpected exception occurs within _parse_error_message
         (e.g., if res.get('Contents') returns a complex object that str() fails on or other unexpected structure)
     When:
-        - Calling _parse_demisto_error_message
+        - Calling _parse_error_message
     Then:
         - Should return a generic error extraction message
     """
@@ -190,7 +190,7 @@ def test__parse_demisto_error_message_unexpected_exception(mocker):
             raise ValueError("Forced str() conversion error")
 
     res = {"Contents": UnstringifiableObject()}
-    result = BlockUserAppAccessWithCAPolicy._parse_demisto_error_message(res)
+    result = BlockUserAppAccessWithCAPolicy._parse_error_message(res)
     assert "Error extracting error message: Forced str() conversion error" in result
 
 
@@ -225,7 +225,7 @@ def test__execute_command_and_handle_error_failure(mocker):
     """
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.executeCommand", return_value=[{"Contents": "Error"}])
     mocker.patch("BlockUserAppAccessWithCAPolicy.is_error", return_value=True)
-    mocker.patch("BlockUserAppAccessWithCAPolicy._parse_demisto_error_message", return_value="bad error")
+    mocker.patch("BlockUserAppAccessWithCAPolicy._parse_error_message", return_value="bad error")
 
     with pytest.raises(DemistoException, match="Error Prefix: bad error"):
         BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error("command", {}, "Error Prefix")

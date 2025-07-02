@@ -41,7 +41,7 @@ def get_azure_command_error_details(res: dict[str, Any]) -> str:
     structured error is found, it falls back to the raw contents or a generic message.
 
     Args:
-        res (dict[str, Any]): The result object from a Demisto command, typically res[0] from executeCommand.
+        res (dict[str, Any]): The result object from a command, typically res[0] from executeCommand.
 
     Returns:
         str: A human-readable string containing the error code and message, or the raw error string.
@@ -79,13 +79,13 @@ def get_azure_command_error_details(res: dict[str, Any]) -> str:
 
 def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_message_prefix: str) -> dict[str, Any]:
     """
-    Executes a Demisto command and raises a DemistoException if it fails.
+    Executes a command and raises a DemistoException if it fails.
 
     This function abstracts the common pattern of executing a command and
     checking its result for errors, providing a consistent error handling mechanism.
 
     Args:
-        command (str): The name of the Demisto command to execute (e.g., 'msgraph-identity-ip-named-locations-list').
+        command (str): The name of the command to execute (e.g., 'msgraph-identity-ip-named-locations-list').
         args (dict[str, Any]): A dictionary of arguments to pass to the command.
         error_message_prefix (str): A string prefix to prepend to any DemistoException messages,
                                     indicating the context of the error.
@@ -280,10 +280,10 @@ def block_external_ip_with_ca_policy_main_logic(ip: str, named_location_name: st
 
 def main():
     """
-    Main function for the XSOAR script to block an external IP address using Azure Conditional Access.
+    Main function for the script to block an external IP address using Azure Conditional Access.
 
     This is the entry point that retrieves arguments, orchestrates the blocking logic,
-    and handles top-level exceptions, returning results or errors to Demisto.
+    and handles top-level exceptions, returning results or errors.
     """
     try:
         args = demisto.args()
