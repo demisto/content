@@ -1,5 +1,5 @@
 import pytest
-from CommonServerPython import DemistoException, CommandResults
+from CommonServerPython import DemistoException # Removed CommandResults
 import json
 
 # Import the module itself. This is the correct approach.
@@ -269,8 +269,8 @@ def test__execute_command_and_handle_error_invalid_res_structure(mocker):
         BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error("command", {}, "Error Prefix")
 
     # Case 3: First element is an empty dict, but not an error.
-    # The original script does NOT raise for [{}] if is_error is False,
-    # because {} is a valid, non-falsy dict. The test should assert it returns {}.
+    # The script should now correctly handle [{}] returning {} because `res[0] is None`
+    # is the specific check for empty first element error, not `not res[0]`.
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.executeCommand", return_value=[{}])
     mocker.patch("BlockUserAppAccessWithCAPolicy.is_error", return_value=False)
     result = BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error("command", {}, "Error Prefix")
@@ -348,7 +348,10 @@ def test_resolve_app_object_id_unexpected_res_type(mocker):
     # So, we expect the exception from _execute_command_and_handle_error.
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error",
-        side_effect=DemistoException("Failed to list service principals: Invalid command result structure (not a list) for msgraph-apps-service-principal-list."),
+        side_effect=DemistoException(
+            "Failed to list service principals: Invalid command result structure (not a list) "
+            "for msgraph-apps-service-principal-list."
+        ),
     )
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.info")
 
@@ -565,10 +568,14 @@ def test_main_existing_policy_updates(mocker):
     """
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "TestApp"})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value="user-id-123")
+    # E501 fix: Breaking the dictionary across multiple lines
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy.fetch_policy_by_name",
-        return_value={"id": "policy-id", "displayName": "Cortex App Block Access - TestApp",
-                      "conditions": {"users": {"includeUsers": []}}},
+        return_value={
+            "id": "policy-id",
+            "displayName": "Cortex App Block Access - TestApp",
+            "conditions": {"users": {"includeUsers": []}}
+        },
     )
     mock_update_policy = mocker.patch(
         "BlockUserAppAccessWithCAPolicy.update_policy", return_value="User updated message"

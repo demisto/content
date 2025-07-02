@@ -1,8 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import * # noqa: F401
-import json # Added import for json
+import json
 import re
-from typing import Any, Optional
+# from typing import Any, Optional # Original import
+
+# Change 1: Update type hints based on UP035 and UP007
+# No need to import List, as we'll use lowercase list.
+# Optional[X] becomes X | None
+from typing import Any
 
 DEFAULT_POLICY_NAME_PREFIX = "Cortex App Block Access"
 
@@ -27,11 +32,8 @@ def _execute_command_and_handle_error(
         raise DemistoException(f"{error_message_prefix}: Empty response for {command}.")
     if not isinstance(res, list) or not res: # res is now guaranteed not None, check if it's an empty list or not a list
         raise DemistoException(f"{error_message_prefix}: Invalid command result structure (not a list) for {command}.")
-
-    # ORIGINAL: if not res[0]: # Check if the first element of the list is empty/None
-    # This was problematic because {} is falsy.
-    # We should only raise if res[0] is None or if it's an error.
-    if res[0] is None: # Explicitly check for None
+    # Fix for previous error: Explicitly check for None, not just falsy.
+    if res[0] is None: # Check if the first element of the list is explicitly None
         raise DemistoException(f"{error_message_prefix}: Empty first element in command result for {command}.")
 
     # Now res is guaranteed to be a non-empty list, and res[0] is not None.
@@ -40,7 +42,6 @@ def _execute_command_and_handle_error(
         raise DemistoException(f"{error_message_prefix}: {_parse_demisto_error_message(res[0])}")
 
     # Ensure res[0] is a dict before calling .get()
-    # This check is crucial now that res[0] could be {} (empty dict) and not considered an error by the 'if not res[0]' check.
     if not isinstance(res[0], dict):
         raise DemistoException(f"{error_message_prefix}: Unexpected type for command result contents: Expected dict, got {type(res[0]).__name__}.")
 
@@ -68,10 +69,10 @@ def resolve_app_object_id(app_name: str) -> str:
 
     demisto.info(f"[DEBUG] Service principal list response: {json.dumps(res, indent=2)[:1000]}")
 
-    apps = []
+    apps: list[Any] = [] # Change 2: Use lowercase 'list' instead of 'List'
     if isinstance(res, dict):
         apps = res.get("MSGraphApplication", [])
-    elif isinstance(res, list):
+    elif isinstance(res, list): # Change 3: Use lowercase 'list'
         apps = res
     else:
         demisto.info(f"[DEBUG] Unexpected service principal list structure: {res}")
@@ -135,6 +136,7 @@ def _parse_demisto_error_message(res: dict[str, Any]) -> str:
         return f"Error extracting error message: {str(ex)}"
 
 
+# Change 4: Use X | Y for type annotations (originally str | None)
 def resolve_user_object_id(identifier: str) -> str | None:
     """
     Resolves a UPN or GUID to a user object ID in Azure AD.
@@ -143,7 +145,7 @@ def resolve_user_object_id(identifier: str) -> str | None:
         identifier (str): A UPN or user object ID.
 
     Returns:
-        Optional[str]: Resolved Azure AD object ID, or None if not found/resolved.
+        str | None: Resolved Azure AD object ID, or None if not found/resolved.
     """
     guid_pattern = re.compile(r"^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$", re.I)
     if guid_pattern.match(identifier):
@@ -153,13 +155,14 @@ def resolve_user_object_id(identifier: str) -> str | None:
     return user.get("id")
 
 
+# Change 5: Use X | Y for type annotations (originally str | None)
 def get_policy_name(app_name: str, policy_name: str | None) -> str:
     """
     Returns the full policy name. Uses default format if policy_name is not provided.
 
     Args:
         app_name (str): Application name.
-        policy_name (Optional[str]): Provided policy name or None.
+        policy_name (str | None): Provided policy name or None.
 
     Returns:
         str: Final policy name.
@@ -167,6 +170,7 @@ def get_policy_name(app_name: str, policy_name: str | None) -> str:
     return policy_name or f"{DEFAULT_POLICY_NAME_PREFIX} - {app_name}"
 
 
+# Change 6: Use X | Y for type annotations (originally dict[str, Any] | None)
 def fetch_policy_by_name(policy_name: str) -> dict[str, Any] | None:
     """
     Retrieves an existing Conditional Access policy by display name.
@@ -175,7 +179,7 @@ def fetch_policy_by_name(policy_name: str) -> dict[str, Any] | None:
         policy_name (str): Policy display name to search for.
 
     Returns:
-        Optional[dict[str, Any]]: Matching policy object if found, else None.
+        dict[str, Any] | None: Matching policy object if found, else None.
     """
     res = demisto.executeCommand("msgraph-identity-ca-policies-list", {})
     if not res or not isinstance(res, list) or not res[0]:
@@ -186,7 +190,7 @@ def fetch_policy_by_name(policy_name: str) -> dict[str, Any] | None:
         raise DemistoException(f"Failed to list CA policies: {_parse_demisto_error_message(res[0])}")
 
     contents = res[0].get("Contents", {})
-    if isinstance(contents, list):
+    if isinstance(contents, list): # Change 7: Use lowercase 'list'
         policies = contents
     elif isinstance(contents, dict):
         policies = contents.get("value", [])
@@ -238,6 +242,7 @@ def update_policy(policy: dict[str, Any], user_id: str) -> str:
     if user_id in existing_users:
         return f"User is already blocked in policy '{policy.get('displayName')}'. No action taken."
 
+    # Using list() for safety, though set() conversion prevents duplicates effectively
     updated_users = list(set(existing_users + [user_id]))  # prevent duplicates
     policy_id = policy.get("id")
 
@@ -261,6 +266,7 @@ def main():
         args = demisto.args()
         username = args.get("username")
         app_name = args.get("app_name", "UnknownApp")
+        # Change 8: ensure policy_name argument is passed to get_policy_name
         policy_name = get_policy_name(app_name, args.get("policy_name"))
 
         user_id = resolve_user_object_id(username)
