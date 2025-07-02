@@ -1,10 +1,8 @@
 ## Configure Linkshadow in Cortex
 
-
 To configure the connection to your Linkshadow instance, you will provide:
 
 API Token, API Username from Linkshadow  ( Generate tokens from following url : https://Linkshadow-device-IP/settings/#general-settings ) under the "Generate API Key for LinkShadow" section)
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -15,30 +13,32 @@ API Token, API Username from Linkshadow  ( Generate tokens from following url : 
 | plugin_id | xsoar_integration_1604211382 | True |
 | Incidents Fetch Interval | 01 Minutes | Default |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### Linkshadow-fetch-entity-anomalies
+
 ***
-Linkshadow returns the full incident details referenced by timeframe (default = 60min) in an API response. Use of this command will return the JSON structure of the API response. 
+Linkshadow returns the full incident details referenced by timeframe (default = 60min) in an API response. Use of this command will return the JSON structure of the API response.
 
 #### Base Command
 
 `Linkshadow-fetch-entity-anomalies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time_frame | Time Period | Optional(default:60) | 
+| time_frame | Time Period | Optional(default:60) |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linkshadow.data.GlobalID | String | Unique ID of the Anomaly to track in Linkshadow | 
-| Linkshadow.data.action_time | Date | Time of Anomaly Send to XSOAR | 
-| Linkshadow.data.anomaly_flag | Number | Anomaly Flag Value 1 - Means Active Anomaly, 0 Means Fixed Anomaly | 
+| Linkshadow.data.GlobalID | String | Unique ID of the Anomaly to track in Linkshadow |
+| Linkshadow.data.action_time | Date | Time of Anomaly Send to XSOAR |
+| Linkshadow.data.anomaly_flag | Number | Anomaly Flag Value 1 - Means Active Anomaly, 0 Means Fixed Anomaly |
 | Linkshadow.data.anomaly_id | Number | Anomaly ID for LinkShadow |
 | Linkshadow.data.anomaly_type| String | Incident Type |
 | Linkshadow.data.bandwidth| String | Bandwidth usage of the Anomalous session |

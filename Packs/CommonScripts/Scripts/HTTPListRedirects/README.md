@@ -1,6 +1,7 @@
 List the redirects for a given URL
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ List the redirects for a given URL
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +22,7 @@ List the redirects for a given URL
 | trust_any_certificate | Trust any certificate \(not secure\) |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

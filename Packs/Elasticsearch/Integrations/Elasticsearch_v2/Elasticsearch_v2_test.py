@@ -2,11 +2,12 @@ import importlib
 import unittest
 from datetime import datetime
 from unittest import mock
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import dateparser
 import demistomock as demisto
 import Elasticsearch_v2
+import json
 import pytest
 import requests
 
@@ -63,6 +64,39 @@ ES_V7_RESPONSE = {
         ],
     },
 }
+
+ES_V8_RESPONSE = {
+    "took": 8,
+    "timed_out": False,
+    "_shards": {"total": 1, "successful": 1, "skipped": 0, "failed": 0},
+    "hits": {
+        "total": {"value": 9, "relation": "eq"},
+        "max_score": 0.8,
+        "hits": [
+            {
+                "_index": "customer",
+                "_type": "doc",
+                "_id": "888",
+                "_score": 0.8,
+                "_source": {"Date": "2024-08-27T18:00:00Z"},
+            },
+            {
+                "_index": "customer",
+                "_type": "doc",
+                "_id": "999",
+                "_score": 0.79,
+                "_source": {"Date": "2024-08-27T18:01:25.343212Z"},
+            },
+        ],
+    },
+}
+
+# ES_V9_RESPONSE = {
+#     "took": 11,
+#     "is_partial": False,
+#     "columns": [{"name": "alertDetails.alertuser", "type": "text"}],
+#     "values": [["karl@test.io"]],
+# }
 
 MOCK_ES7_SEARCH_CONTEXT = str(
     {
@@ -429,6 +463,18 @@ MOCK_PARAMS = [
     },
 ]
 
+PARAMS_V8 = {
+    "client_type": "Elasticsearch_v8",
+    "fetch_index": "customer",
+    "fetch_time_field": "Date",
+    "time_method": "Simple-Date",
+    "map_labels": True,
+    "credentials": {
+        "identifier": "mock",
+        "password": "demisto",
+    },
+}
+
 
 @pytest.mark.parametrize("params", MOCK_PARAMS)
 def test_context_creation_es7(params, mocker):
@@ -775,22 +821,34 @@ def test_search_command_with_query_dsl(mocker):
 
     Then
      - make sure that the index is being taken from the command arguments and not from integration parameters
-     - make sure that the size / page arguments are getting called when using query_dsl
+     - make sure that the size / page arguments are getting applied when using query_dsl
     """
     import Elasticsearch_v2
 
     Elasticsearch_v2.FETCH_INDEX = "index from parameter"
     index_from_arg = "index from arg"
-    mocker.patch.object(demisto, "args", return_value={"index": index_from_arg, "query_dsl": "test", "size": "5", "page": "0"})
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"index": index_from_arg, "query_dsl": '{"query": {"match": {"name": "test"}}}', "size": "5", "page": "0"},
+    )
     search_mock = mocker.patch.object(Elasticsearch_v2.Elasticsearch, "search", return_value=ES_V7_RESPONSE)
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
     Elasticsearch_v2.search_command({})
-    assert search_mock.call_args.kwargs["index"] == index_from_arg
-    assert search_mock.call_args.kwargs["size"] == 5
-    assert search_mock.call_args.kwargs["from_"] == 0
+    assert search_mock.call_args.kwargs["index"] == [index_from_arg]
+    assert search_mock.call_args.kwargs["body"] == {"query": {"match": {"name": "test"}}, "size": 5, "from": 0}
 
 
-def test_execute_raw_query(mocker):
+@pytest.mark.parametrize(
+    "raw_query_body",
+    [
+        ({"query": {"match": {"name": "test"}}, "size": 2, "from": 1}),
+        ({"query": {"match": {"name": "test"}}, "size": 2}),
+        ({"query": {"match": {"name": "test"}}, "from": 3}),
+        ({"query": {"match": {"name": "test"}}}),
+    ],
+)
+def test_execute_raw_query(mocker, raw_query_body):
     """
     Given
       - index and elastic search objects
@@ -808,7 +866,50 @@ def test_execute_raw_query(mocker):
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "search", return_value=ES_V7_RESPONSE)
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
     es = Elasticsearch_v2.elasticsearch_builder({})
-    assert Elasticsearch_v2.execute_raw_query(es, "dsadf") == ES_V7_RESPONSE
+    assert Elasticsearch_v2.execute_raw_query(es, json.dumps(raw_query_body)) == ES_V7_RESPONSE
+
+
+@patch.dict("os.environ", {"DEMISTO_PARAMS": str(PARAMS_V8)})
+@pytest.mark.parametrize(
+    "raw_query_body",
+    [
+        ({"query": {"match": {"name": "test"}}, "size": 2, "from": 1}),
+        ({"query": {"match": {"name": "test"}}, "size": 2}),
+        ({"query": {"match": {"name": "test"}}, "from": 3}),
+        ({"query": {"match": {"name": "test"}}}),
+    ],
+)
+def test_execute_raw_query_v8(mocker, raw_query_body):
+    """
+    Given
+      - index and elastic search objects
+      - instance configured to v8
+
+    When
+    - executing execute_raw_query function with query_dsl body
+
+    Then
+     - make sure that no exception was raised from the function.
+     - make sure the response came back correctly.
+     - make sure the query body can be serialized an does not throw errors.
+    """
+    import Elasticsearch_v2
+    from elastic_transport import RequestsHttpNode
+
+    Elasticsearch_v2.RequestsHttpNode = RequestsHttpNode
+
+    class CustomExecute:
+        def to_dict():  # type: ignore
+            return ES_V8_RESPONSE
+
+    mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", Elasticsearch_v2.ELASTICSEARCH_V8)
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, "search", return_value=ES_V7_RESPONSE)
+    mocker.patch.object(Elasticsearch_v2.Search, "execute", return_value=CustomExecute)
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
+    mocker.patch.object(RequestsHttpNode, "__init__", return_value=None)
+
+    es = Elasticsearch_v2.elasticsearch_builder({})
+    assert Elasticsearch_v2.execute_raw_query(es, json.dumps(raw_query_body)) == ES_V8_RESPONSE
 
 
 @pytest.mark.parametrize(
@@ -1043,3 +1144,40 @@ def test_verify_es_server_version_errors(mocker, server_details, server_version,
     with pytest.raises(ValueError) as e:
         Elasticsearch_v2.verify_es_server_version(server_details)
     assert server_version in str(e.value)
+
+
+def test_search_command_with_query_esql(mocker):
+    """
+    Given
+      - query to the search command with esql
+
+    When
+    - executing the es-esql-search command
+
+    Then
+     - Make sure that the expected message is returned.
+    """
+    MOCKER_RES = {"columns": [{"name": "col_1"}, {"name": "col_2"}], "values": [["val_1", "val_2"], ["val_1_1", "val_2_2"]]}
+    EXPECTED_HEADERS = {
+        "Content-Type": "application/vnd.elasticsearch+json; compatible-with=9",
+        "Accept": "application/vnd.elasticsearch+json; compatible-with=9",
+    }
+    magic_mock = MagicMock()
+    magic_mock.body = MOCKER_RES
+    magic_mock.__getitem__.side_effect = lambda key: magic_mock.body[key]
+
+    import Elasticsearch_v2
+
+    mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+    mocked_builder().perform_request.return_value = magic_mock
+    mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", new=Elasticsearch_v2.ELASTICSEARCH_V9)
+
+    query = """FROM alerts | WHERE alertDetails.alertuser LIKE "*karl*"| KEEP *"""
+    res = Elasticsearch_v2.search_esql_command({"query": query, "limit": 2}, {})
+
+    call_args = mocked_builder().perform_request.call_args[1]
+    assert res.outputs_prefix == "Elasticsearch.ESQLSearch"
+    assert res.outputs == [{"col_1": "val_1", "col_2": "val_2"}, {"col_1": "val_1_1", "col_2": "val_2_2"}]
+    assert res.raw_response == magic_mock.body
+    assert call_args["headers"] == EXPECTED_HEADERS
+    assert call_args["body"] == {"query": f"{query}| LIMIT 2"}

@@ -15,7 +15,7 @@ def generate_url(server_url: str, encoded_task: str, encoded_user: str) -> str:
     Returns:
         The data collection URL.
     """
-    if is_xsoar_saas():
+    if is_xsiam_or_xsoar_saas():
         try:
             otp = execute_command("generateOTP", {})
         except Exception as err:

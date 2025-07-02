@@ -8,7 +8,6 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
 
 ## Configure Expanse Expander Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Your server URL | True |
@@ -27,39 +26,42 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
 | feedTags | Tags | False |
 | tlp_color | Traffic Light Protocol Color | False |
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### feedexpanse-get-indicators
+
 ***
 Retrieve discovered IPs/IP Ranges/Domains/Certificates
-
 
 #### Base Command
 
 `feedexpanse-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| max_indicators | The maximum number of results to return per type | Optional | 
-| ip | Retrieve discovered IPs | Optional | 
-| domain | Retrieve discovered Domains | Optional | 
-| certificate | Retrieve discovered certificates | Optional | 
-| iprange | Retrieve IP Ranges | Optional | 
-
+| max_indicators | The maximum number of results to return per type | Optional |
+| ip | Retrieve discovered IPs | Optional |
+| domain | Retrieve discovered Domains | Optional |
+| certificate | Retrieve discovered certificates | Optional |
+| iprange | Retrieve IP Ranges | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!feedexpanse-get-indicators max_indicators=1 certificate=yes ip=yes domain=yes```
 
 #### Human Readable Output
 
 >### Expanse Indicators (capped at 1)
+>
 >|value|type|
 >|---|---|
 >| 198.51.100.220 | IP |

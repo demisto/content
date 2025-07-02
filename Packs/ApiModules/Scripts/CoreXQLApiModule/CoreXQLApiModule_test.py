@@ -1074,18 +1074,27 @@ def test_add_playbook_metadata_complete_data(mocker):
     demisto.debug.assert_called_once()
 
 
-def test_add_playbook_metadata_missing_context(mocker):
+@pytest.mark.parametrize(
+    "callingContext",
+    [
+        (None),
+        ({"context": {"ParentEntry": None}}),
+        ({"context": {"ParentEntry": {"entryTask": None}}}),
+        ({"context": {"Incidents": None}}),
+    ],
+)
+def test_add_playbook_metadata_missing_context(mocker, callingContext):
     """
     Given:
-    - Missing calling context
+    - context is None or sub keys are None
 
     When:
     - Calling add_playbook_metadata function
 
     Then:
-    - Ensure the playbook metadata has default values for missing fields
+    - Ensure the playbook metadata has default values for missing fields and knows how to handle None.
     """
-    mocker.patch.object(demisto, "callingContext", None)
+    mocker.patch.object(demisto, "callingContext", callingContext)
     mocker.patch.object(demisto, "debug")
 
     data = {"request_data": {}}

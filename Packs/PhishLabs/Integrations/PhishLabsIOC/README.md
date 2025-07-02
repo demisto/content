@@ -346,78 +346,78 @@
     "Domain": [
         {
             "Malicious": {
-                "Vendor": "PhishLabs", 
+                "Vendor": "PhishLabs",
                 "Description": "Domain in PhishLabs feed"
-            }, 
+            },
             "Name": "malicious1.tk/"
-        }, 
+        },
         {
             "Malicious": {
-                "Vendor": "PhishLabs", 
+                "Vendor": "PhishLabs",
                 "Description": "Domain in PhishLabs feed"
-            }, 
+            },
             "Name": "malicious2.tk/"
-        }, 
+        },
         {
             "Malicious": {
-                "Vendor": "PhishLabs", 
+                "Vendor": "PhishLabs",
                 "Description": "Domain in PhishLabs feed"
-            }, 
+            },
             "Name": "malicious3.tk/"
-        }, 
+        },
         {
             "Malicious": {
-                "Vendor": "PhishLabs", 
+                "Vendor": "PhishLabs",
                 "Description": "Domain in PhishLabs feed"
-            }, 
+            },
             "Name": "malicious4.com/"
         }
-    ], 
+    ],
     "DBotScore": [
         {
-            "type": "domain", 
-            "Indicator": "malicious1.tk/", 
-            "Score": 3, 
+            "type": "domain",
+            "Indicator": "malicious1.tk/",
+            "Score": 3,
             "Vendor": "PhishLabs"
-        }, 
+        },
         {
-            "type": "domain", 
-            "Indicator": "malicious2.tk/", 
-            "Score": 3, 
+            "type": "domain",
+            "Indicator": "malicious2.tk/",
+            "Score": 3,
             "Vendor": "PhishLabs"
-        }, 
+        },
         {
-            "type": "domain", 
-            "Indicator": "malicious3.tk/", 
-            "Score": 3, 
+            "type": "domain",
+            "Indicator": "malicious3.tk/",
+            "Score": 3,
             "Vendor": "PhishLabs"
-        }, 
+        },
         {
-            "type": "domain", 
-            "Indicator": "malicious4.com/", 
-            "Score": 3, 
+            "type": "domain",
+            "Indicator": "malicious4.com/",
+            "Score": 3,
             "Vendor": "PhishLabs"
         }
-    ], 
+    ],
     "PhishLabs.Domain": [
         {
-            "ID": "009d2062-bc79-4836-a649-80286612199e", 
-            "CreatedAt": "2019-05-17T03:29:54Z", 
+            "ID": "009d2062-bc79-4836-a649-80286612199e",
+            "CreatedAt": "2019-05-17T03:29:54Z",
             "Name": "malicious1.tk/"
-        }, 
+        },
         {
-            "ID": "80c16ebb-afe1-4898-91a6-c4b39d50a14f", 
-            "CreatedAt": "2019-05-17T03:29:54Z", 
+            "ID": "80c16ebb-afe1-4898-91a6-c4b39d50a14f",
+            "CreatedAt": "2019-05-17T03:29:54Z",
             "Name": "malicious2.tk/"
-        }, 
+        },
         {
-            "ID": "a435f1e4-1e92-4921-8a5f-12bc1a7a67ce", 
-            "CreatedAt": "2019-05-17T03:29:54Z", 
+            "ID": "a435f1e4-1e92-4921-8a5f-12bc1a7a67ce",
+            "CreatedAt": "2019-05-17T03:29:54Z",
             "Name": "malicious3.tk/"
-        }, 
+        },
         {
-            "ID": "f3923b6c-0445-40ef-998c-8cf57adb391d", 
-            "CreatedAt": "2019-05-15T19:57:43Z", 
+            "ID": "f3923b6c-0445-40ef-998c-8cf57adb391d",
+            "CreatedAt": "2019-05-15T19:57:43Z",
             "Name": "malicious4.com/"
         }
     ]
@@ -827,76 +827,76 @@
     "URL": [
         {
             "Data": "https://malicious1?email=dbot@demisto.com"
-        }, 
+        },
         {
             "Data": "http://malicious2/index.html?l=_JeHFUq_VJOXK0QWHtoGYDw1774256418&amp;fid.13InboxLight.aspxn.1774256418&amp;fid.125289964252813InboxLight99642_Product-user&amp;user=#dbot@demisto.com"
         }
-    ], 
+    ],
     "PhishLabs.Email": [
         {
-            "Body": "&lt;meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"&gt;&lt;table border=\"0\" style=\"font-family: calibri; font-size: 16px; background-color: rgb(255, 255, 255);\" width=\"100%\"&gt;\n\t      &lt;tbody&gt;&lt;tr&gt;&lt;td align=\"center\"&gt;\n\t      &lt;table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" height=\"100%\" style=\"min-width: 600px;\" width=\"100%\"&gt;\n\t      &lt;tbody&gt;&lt;tr align=\"center\"&gt;&lt;td&gt;\n\t      &lt;table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width: 600px;\"&gt;\n\t      &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;\n              &lt;tbody&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr height=\"16\"&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;\n              &lt;tbody&gt;&lt;tr&gt;&lt;td colspan=\"3\" height=\"69px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width=\"28px\"&gt;&amp;nbsp;&lt;/td&gt;\n\t      &lt;td style=\"font-family: Roboto-Regular, Helvetica, Arial, sans-serif; font-size: 57px; color: rgb(255, 255, 255); line-height: 0.25;\"&gt;\n              &lt;span style=\"color:#f95316;\"&gt;Office-365 Password&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;\n              &lt;tr&gt;&lt;td colspan=\"3\" height=\"18px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;\n              &lt;table bgcolor=\"#fff\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 600px; max-width: 900px; border-width: 0px 1px 1px; border-right-style: solid; border-left-style: solid; border-right-color: rgb(240, 240, 240); border-left-color: rgb(240, 240, 240); border-bottom-style: solid; border-bottom-color: rgb(192, 192, 192); border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;\" width=\"100%\"&gt;\n\t      \n\n\t      &lt;tbody&gt;&lt;tr height=\"16px\"&gt;&lt;td rowspan=\"3\" width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;\n\t      &lt;td rowspan=\"3\" width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 300px;\"&gt;\n\t      &lt;tbody&gt;&lt;tr&gt;&lt;td style=\"font-family: Roboto-Regular, Helvetica, Arial, sans-serif; font-size: 13px; color: rgb(32, 32, 32); line-height: 1.5;\"&gt;\n              &lt;a href=\"https://bestiankelly.com/kp/index.php?email=dbot@demisto.com\" style=\"text-decoration: none;\"&gt;\n                 &lt;span style=\"color:#f95316;\"&gt;  &lt;/span&gt; .\n&lt;br&gt; &lt;br&gt;\n\n &lt;a href=\"https://bestiankelly.com/kp/index.php?email=dbot@demisto.com\" style=\"text-decoration: none;\"&gt;\n              &lt;span style=\"color:#000000;\"&gt;\n              Dear &lt;b&gt;dbot&lt;/b&gt;&lt;div&gt;&amp;nbsp;&lt;/div&gt;\n\n\n\t      Your account password is due for expiration today\n&lt;br&gt;&lt;br&gt;\t\n&lt;body&gt; Please kindly use the below to continue with same password.\n\n&lt;body&gt; \n&lt;br&gt;\n&lt;/head&gt;\n&lt;body style=\"margin: 0.4em;\"&gt;\n&lt;p&gt;&lt;font color=\"#ffffff\" size=\"4\" style=\"background-color: rgb(38, 136, 217);\"&gt;&lt;u&gt;&lt;strong&gt;Keep &amp;nbsp; Same password &lt;/strong&gt;&lt;/u&gt;&lt;/font&gt;&lt;/p&gt;\n\n\n\n&lt;br&gt;\n \n&lt;br&gt;\n\t      &lt;p&gt;Security Team &lt;br&gt;&lt;/span&gt;&lt;/a&gt;&lt;br&gt;&amp;nbsp;&lt;/p&gt;&lt;/td&gt;\n\n              &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;\n\t      &lt;tr height=\"16\"&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=\"max-width: 900px; font-family: Roboto-Regular, Helvetica, Arial, sans-serif; font-size: 10px; color: rgb(188, 188, 188); line-height: 1.5;\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;\n              &lt;table style=\"font-family: Roboto-Regular, Helvetica, Arial, sans-serif; font-size: 10px; color: rgb(102, 102, 102); line-height: 18px; padding-bottom: 10px;\"&gt;\n\t      &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;span style=\"color:#424242;\"&gt;This notification was sent to &lt;b&gt;dbot@demisto.com&lt;/b&gt; of Microsoft.com.&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;\n\t      &lt;td width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;\n&lt;/table&gt;", 
+            "Body": "&lt;meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"&gt;&lt;table border=\"0\" style=\"font-family: calibri; font-size: 16px; background-color: rgb(255, 255, 255);\" width=\"100%\"&gt;\n\t      &lt;tbody&gt;&lt;tr&gt;&lt;td align=\"center\"&gt;\n\t      &lt;table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" height=\"100%\" style=\"min-width: 600px;\" width=\"100%\"&gt;\n\t      &lt;tbody&gt;&lt;tr align=\"center\"&gt;&lt;td&gt;\n\t      &lt;table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width: 600px;\"&gt;\n\t      &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;\n              &lt;tbody&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr height=\"16\"&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;\n              &lt;tbody&gt;&lt;tr&gt;&lt;td colspan=\"3\" height=\"69px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width=\"28px\"&gt;&amp;nbsp;&lt;/td&gt;\n\t      &lt;td style=\"font-family: Roboto-Regular, Helvetica, Arial, sans-serif; font-size: 57px; color: rgb(255, 255, 255); line-height: 0.25;\"&gt;\n              &lt;span style=\"color:#f95316;\"&gt;Office-365 Password&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;&lt;td width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;\n              &lt;tr&gt;&lt;td colspan=\"3\" height=\"18px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;\n              &lt;table bgcolor=\"#fff\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 600px; max-width: 900px; border-width: 0px 1px 1px; border-right-style: solid; border-left-style: solid; border-right-color: rgb(240, 240, 240); border-left-color: rgb(240, 240, 240); border-bottom-style: solid; border-bottom-color: rgb(192, 192, 192); border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;\" width=\"100%\"&gt;\n\t      \n\n\t      &lt;tbody&gt;&lt;tr height=\"16px\"&gt;&lt;td rowspan=\"3\" width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;\n\t      &lt;td rowspan=\"3\" width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"min-width: 300px;\"&gt;\n\t      &lt;tbody&gt;&lt;tr&gt;&lt;td style=\"font-family: Roboto-Regular, Helvetica, Arial, sans-serif; font-size: 13px; color: rgb(32, 32, 32); line-height: 1.5;\"&gt;\n              &lt;a href=\"https://bestiankelly.com/kp/index.php?email=dbot@demisto.com\" style=\"text-decoration: none;\"&gt;\n                 &lt;span style=\"color:#f95316;\"&gt;  &lt;/span&gt; .\n&lt;br&gt; &lt;br&gt;\n\n &lt;a href=\"https://bestiankelly.com/kp/index.php?email=dbot@demisto.com\" style=\"text-decoration: none;\"&gt;\n              &lt;span style=\"color:#000000;\"&gt;\n              Dear &lt;b&gt;dbot&lt;/b&gt;&lt;div&gt;&amp;nbsp;&lt;/div&gt;\n\n\n\t      Your account password is due for expiration today\n&lt;br&gt;&lt;br&gt;\t\n&lt;body&gt; Please kindly use the below to continue with same password.\n\n&lt;body&gt; \n&lt;br&gt;\n&lt;/head&gt;\n&lt;body style=\"margin: 0.4em;\"&gt;\n&lt;p&gt;&lt;font color=\"#ffffff\" size=\"4\" style=\"background-color: rgb(38, 136, 217);\"&gt;&lt;u&gt;&lt;strong&gt;Keep &amp;nbsp; Same password &lt;/strong&gt;&lt;/u&gt;&lt;/font&gt;&lt;/p&gt;\n\n\n\n&lt;br&gt;\n \n&lt;br&gt;\n\t      &lt;p&gt;Security Team &lt;br&gt;&lt;/span&gt;&lt;/a&gt;&lt;br&gt;&amp;nbsp;&lt;/p&gt;&lt;/td&gt;\n\n              &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;\n\t      &lt;tr height=\"16\"&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=\"max-width: 900px; font-family: Roboto-Regular, Helvetica, Arial, sans-serif; font-size: 10px; color: rgb(188, 188, 188); line-height: 1.5;\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;\n              &lt;table style=\"font-family: Roboto-Regular, Helvetica, Arial, sans-serif; font-size: 10px; color: rgb(102, 102, 102); line-height: 18px; padding-bottom: 10px;\"&gt;\n\t      &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;span style=\"color:#424242;\"&gt;This notification was sent to &lt;b&gt;dbot@demisto.com&lt;/b&gt; of Microsoft.com.&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;\n\t      &lt;td width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;\n&lt;/table&gt;",
             "From": [
                 "Microsoft update &lt;onme@www1079.sakura.ne.jp&gt;"
-            ], 
+            ],
             "Attribute": [
                 {
-                    "Value": "Microsoft update &lt;onme@www1079.sakura.ne.jp&gt;", 
-                    "Type": null, 
-                    "Name": "from", 
+                    "Value": "Microsoft update &lt;onme@www1079.sakura.ne.jp&gt;",
+                    "Type": null,
+                    "Name": "from",
                     "CreatedAt": "2019-05-23T16:56:59Z"
-                }, 
+                },
                 {
-                    "Value": "&lt;dbot@demisto.com&gt;", 
-                    "Type": null, 
-                    "Name": "to", 
+                    "Value": "&lt;dbot@demisto.com&gt;",
+                    "Type": null,
+                    "Name": "to",
                     "CreatedAt": "2019-05-23T16:56:59Z"
-                }, 
+                },
                 {
-                    "Value": "&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;span style=\"color:#424242;\"&gt;This notification was sent to &lt;b&gt;dbot@demisto.com&lt;/b&gt; of Microsoft.com.&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;\n\t      &lt;td width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;\n&lt;/table&gt;", 
-                    "Type": null, 
-                    "Name": "email-body", 
+                    "Value": "&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;span style=\"color:#424242;\"&gt;This notification was sent to &lt;b&gt;dbot@demisto.com&lt;/b&gt; of Microsoft.com.&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;\n\t      &lt;td width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;\n&lt;/table&gt;",
+                    "Type": null,
+                    "Name": "email-body",
                     "CreatedAt": "2019-05-23T16:56:59Z"
                 }
-            ], 
+            ],
             "To": [
                 "&lt;dbot@demisto.com&gt;"
-            ], 
-            "ID": "cdb80cf5-d012-4b8d-86a7-7956ed026835", 
-            "CreatedAt": "2019-05-23T16:56:59Z", 
+            ],
+            "ID": "cdb80cf5-d012-4b8d-86a7-7956ed026835",
+            "CreatedAt": "2019-05-23T16:56:59Z",
             "Subject": "[[ Account Password Reset]]"
         }
-    ], 
+    ],
     "DBotScore": [
         {
-            "type": "url", 
-            "Indicator": "malicious1?email=dbot@demisto.com", 
-            "Score": 2, 
+            "type": "url",
+            "Indicator": "malicious1?email=dbot@demisto.com",
+            "Score": 2,
             "Vendor": "PhishLabs"
-        }, 
+        },
         {
-            "type": "url", 
-            "Indicator": "http://malicious2/index.html?l=_JeHFUq_VJOXK0QWHtoGYDw1774256418&amp;fid.13InboxLight.aspxn.1774256418&amp;fid.125289964252813InboxLight99642_Product-user&amp;user=#dbot@demisto.com", 
-            "Score": 2, 
+            "type": "url",
+            "Indicator": "http://malicious2/index.html?l=_JeHFUq_VJOXK0QWHtoGYDw1774256418&amp;fid.13InboxLight.aspxn.1774256418&amp;fid.125289964252813InboxLight99642_Product-user&amp;user=#dbot@demisto.com",
+            "Score": 2,
             "Vendor": "PhishLabs"
         }
-    ], 
+    ],
     "Email": [
         {
-            "Body": "     &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;span style=\"color:#424242;\"&gt;This notification was sent to &lt;b&gt;dbot@demisto.com&lt;/b&gt; of Microsoft.com.&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;\n\t      &lt;td width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;\n&lt;/table&gt;", 
-            "To": "&lt;dbot@demisto.com&gt;", 
-            "From": "Microsoft update &lt;onme@www1079.sakura.ne.jp&gt;", 
+            "Body": "     &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;span style=\"color:#424242;\"&gt;This notification was sent to &lt;b&gt;dbot@demisto.com&lt;/b&gt; of Microsoft.com.&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;\n\t      &lt;td width=\"32px\"&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;\n&lt;/table&gt;",
+            "To": "&lt;dbot@demisto.com&gt;",
+            "From": "Microsoft update &lt;onme@www1079.sakura.ne.jp&gt;",
             "Subject": "[[ Account Password Reset]]"
         }
-    ], 
+    ],
     "PhishLabs.URL": [
         {
-            "Data": "https://malicious1/index.php?email=dbot@demisto.com", 
-            "ID": "04e38909-53d8-4e4a-8593-8d1fd5a10261", 
+            "Data": "https://malicious1/index.php?email=dbot@demisto.com",
+            "ID": "04e38909-53d8-4e4a-8593-8d1fd5a10261",
             "CreatedAt": "2019-05-23T16:56:59Z"
-        }, 
+        },
         {
-            "Data": "http://malicious2/index.html?l=_JeHFUq_VJOXK0QWHtoGYDw1774256418&amp;fid.13InboxLight.aspxn.1774256418&amp;fid.125289964252813InboxLight99642_Product-user&amp;user=#dbot@demisto.com", 
-            "ID": "354bbeb8-9fea-4ccd-85bb-ce68cd364113", 
+            "Data": "http://malicious2/index.html?l=_JeHFUq_VJOXK0QWHtoGYDw1774256418&amp;fid.13InboxLight.aspxn.1774256418&amp;fid.125289964252813InboxLight99642_Product-user&amp;user=#dbot@demisto.com",
+            "ID": "354bbeb8-9fea-4ccd-85bb-ce68cd364113",
             "CreatedAt": "2019-05-23T16:56:59Z"
         }
     ]
