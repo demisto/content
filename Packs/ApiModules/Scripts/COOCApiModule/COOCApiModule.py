@@ -221,42 +221,42 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int | None = 1)
     return all_accounts
 
 
-def _check_account_permissions(
-    account_id: str, connector_id: str, shared_creds: dict, permission_check_func: Callable[[dict, str, str], HealthCheckError]
+def _check_account(
+    account_id: str, connector_id: str, shared_creds: dict, health_check_func: Callable[[dict, str, str], HealthCheckError]
 ) -> HealthCheckError | None:
-    """Helper function to check permissions for a single account.
+    """Helper function to check a single account.
 
     Args:
-        account (dict): Account information.
+        account_id (str): The Account ID.
         connector_id (str): The connector ID.
         shared_creds (dict): Pre-fetched credentials to reuse across all accounts.
-        permission_check_func (callable): Function that implements the permission check.
+        health_check_func (callable): Function that implements the health check.
 
     Returns:
-        HealthCheckError | None: Result of the permission check, or None if account has no ID.
+        HealthCheckError | None: Result of the health check, or None if account has no ID.
     """
 
     try:
-        return permission_check_func(shared_creds, account_id, connector_id)
+        return health_check_func(shared_creds, account_id, connector_id)
     except Exception as e:
-        demisto.error(f"[COOC API] Error checking permissions for account {account_id}: {str(e)}")
+        demisto.error(f"[COOC API] Error checking account {account_id}: {str(e)}")
         return HealthCheckError(
             account_id=account_id,
             connector_id=connector_id,
-            message=f"Failed to check permissions: {str(e)}",
+            message=f"Failed to check account: {str(e)}",
             error_type=ErrorType.INTERNAL_ERROR,
         )
 
 
-def run_permissions_check_for_accounts(
-    connector_id: str, cloud_type: str, permission_check_func: Callable[[dict, str, str], Any]
+def run_health_check_for_accounts(
+    connector_id: str, cloud_type: str, health_check_func: Callable[[dict, str, str], Any]
 ) -> str | CommandResults:
-    """Runs a permission check function for each account associated with a connector sequentially.
+    """Runs a health check function for each account associated with a connector sequentially.
 
     Args:
         connector_id (str): The ID of the connector to fetch accounts for.
         cloud_type (str): The cloud provider type (AWS, GCP, AZURE, OCI).
-        permission_check_func (callable): Function that implements the permission check.
+        health_check_func (callable): Function that implements the health check.
                                         Should accept shared_creds, account_id and connector_id parameters
                                         and return a HealthCheckError or None.
 
@@ -290,7 +290,7 @@ def run_permissions_check_for_accounts(
         )
         return health_check_result.summarize()
 
-    result = _check_account_permissions(account_id, connector_id, shared_creds, permission_check_func)
+    result = _check_account(account_id, connector_id, shared_creds, health_check_func)
     if result is not None:
         health_check_result.error(result)
 

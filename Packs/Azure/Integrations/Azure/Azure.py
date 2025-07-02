@@ -2073,9 +2073,7 @@ def main():
     command = demisto.command()
     args = demisto.args()
     demisto.debug(f"Command being called is {command}")
-    context = demisto.callingContext.get("context", {})
-    cloud_info = context.get("CloudIntegrationInfo", {})
-    connector_id = cloud_info.get("connectorID")
+    connector_id = get_connector_id()
     demisto.debug(f"{connector_id=}")
     handle_proxy()
     try:
@@ -2103,7 +2101,7 @@ def main():
 
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
-            return_results(run_permissions_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
+            return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
         elif command == "test-module":
             return_results(test_module(client))
         elif command in commands_with_params_and_args:
