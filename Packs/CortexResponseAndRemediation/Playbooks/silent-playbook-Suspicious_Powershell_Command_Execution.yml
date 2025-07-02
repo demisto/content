@@ -1067,7 +1067,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerror: true
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1084,7 +1083,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
