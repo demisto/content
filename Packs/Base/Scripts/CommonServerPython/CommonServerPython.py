@@ -2001,12 +2001,11 @@ def arg_to_bool_or_none(value):
     """
     Converts a value to a boolean or None.
 
-    Args:
-        value: The value to convert to boolean or None.
+    :type value: ``Any``
+    :param value: The value to convert to boolean or None.
 
-    Returns:
-        bool or None: Returns None if the input is None, otherwise returns the boolean representation of the value
-        using the argToBoolean function.
+    :return: Returns None if the input is None, otherwise returns the boolean representation of the value using the argToBoolean function.
+    :rtype: ``bool`` or ``None``
     """
     if value is None:
         return None
