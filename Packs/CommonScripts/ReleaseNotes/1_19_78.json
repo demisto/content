@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The script get-endpoint-data moved to *AggregatedScripts* pack. Make sure to update the *AggregatedScripts* pack to the latest version in order to use this script."
+    "breakingChangesNotes": "Moved clear-user-session,get-endpoint-data,block-external-ip to AggregatedScripts pack."
 }
