@@ -94,7 +94,7 @@ configuration:
   - all
   required: true
   type: 16
-  section: Connect
+  section: Collect
 - additionalinfo: Remove all if you don't want to select  all risk types, and then select specifically
   defaultvalue: all
   display: Risk Level
