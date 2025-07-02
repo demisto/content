@@ -879,7 +879,11 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
-        expected_mo_outputs = {'object_id': '1234', 'object_name': 'dummy_key', 'object_url': 'https://example.com/browse/dummy_key'}
+        expected_mo_outputs = {
+            "object_id": "1234",
+            "object_name": "dummy_key",
+            "object_url": "https://example.com/browse/dummy_key",
+        }
 
         mocker.patch.object(client, "create_issue", return_value=raw_response)
         mocker.patch.object(demisto, "results")
@@ -888,7 +892,6 @@ class TestJiraCreateIssueCommand:
         )
         assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
         assert demisto.results.call_args[0][0]["ExtendedPayload"].get("MirrorObject") == expected_mo_outputs
-
 
     def test_create_issue_command_with_issue_json(self, mocker):
         """
@@ -905,7 +908,11 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
-        expected_mo_outputs = {'object_id': '1234', 'object_name': 'dummy_key', 'object_url': 'http://example.com/browse/dummy_key'}
+        expected_mo_outputs = {
+            "object_id": "1234",
+            "object_name": "dummy_key",
+            "object_url": "http://example.com/browse/dummy_key",
+        }
 
         mocker.patch.object(client, "create_issue", return_value=raw_response)
         mocker.patch.object(demisto, "results")
