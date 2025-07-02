@@ -3,7 +3,8 @@ args:
   name: target
 - description: The Instance Name of the PAN-OS Integration to use. Specify only one Instance.
   name: panos_instance_name
-- auto: PREDEFINED
+- description: The units to represent disk space.
+  auto: PREDEFINED
   name: disk_space_units
   predefined:
   - T

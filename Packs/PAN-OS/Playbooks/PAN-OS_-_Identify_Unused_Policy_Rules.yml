@@ -1,0 +1,390 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: "The playbook collects and analyzes Palo Alto Networks NGFW policy rule hitcount information and generates a summary of unused rules for potential clean-up.  Policy rules are classified into three categories:\n1. Unused Local Rules - Rules configured locally on Firewalls\n2. Unused Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have zero hits on all Firewalls.\n3. Used Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have hits on some Firewalls but not all.\n    i. These rules may be pushed to firewalls where they are not needed and  should be considered for clean-up.\n\nFor firewalls in HA pairs, rules are only considered unused if all members of the HA group have zero hits for it."
+id: PAN-OS - Identify Unused Policy Rules
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - Rulebase
+  name: General (Inputs group)
+inputs:
+- description: "The Firewall rulebase to analyze. Must be one of the following:\nsecurity, nat, decryption, application-override, authentication, dos, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect."
+  key: Rulebase
+  playbookInputQuery:
+  required: true
+  value:
+    simple: security
+name: PAN-OS - Identify Unused Policy Rules
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - PANOS.UnusedRules.TotalLocalRulesAnalyzed
+  - PANOS.UnusedRules.TotalPanoramaRulesAnalyzed
+  - PANOS.UnusedRules.UnusedLocalRules
+  - PANOS.UnusedRules.UnusedLocalRules.activeHAPeer
+  - PANOS.UnusedRules.UnusedLocalRules.hostid
+  - PANOS.UnusedRules.UnusedLocalRules.hostname
+  - PANOS.UnusedRules.UnusedLocalRules.vsys
+  - PANOS.UnusedRules.UnusedLocalRules.instanceName
+  - PANOS.UnusedRules.UnusedLocalRules.name
+  - PANOS.UnusedRules.UnusedLocalRules.position
+  - PANOS.UnusedRules.UnusedLocalRules.rulebase
+  - PANOS.UnusedRules.UnusedPanoramaRules
+  - PANOS.UnusedRules.UnusedPanoramaRules.from_dg_name
+  - PANOS.UnusedRules.UnusedPanoramaRules.instanceName
+  - PANOS.UnusedRules.UnusedPanoramaRules.name
+  - PANOS.UnusedRules.UnusedPanoramaRules.position
+  - PANOS.UnusedRules.UnusedPanoramaRules.rulebase
+  - PANOS.UnusedRules.UsedPanoramaRules
+  - PANOS.UnusedRules.UsedPanoramaRules.from_dg_name
+  - PANOS.UnusedRules.UsedPanoramaRules.hostids_with_hits
+  - PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_hits
+  - PANOS.UnusedRules.UsedPanoramaRules.hostids_with_zero_hits
+  - PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_zero_hits
+  - PANOS.UnusedRules.UsedPanoramaRules.instanceName
+  - PANOS.UnusedRules.UsedPanoramaRules.name
+  - PANOS.UnusedRules.UsedPanoramaRules.position
+  - PANOS.UnusedRules.UsedPanoramaRules.rulebase
+outputs:
+- contextPath: PANOS.UnusedRules.TotalLocalRulesAnalyzed
+  description: The total number of local rules analyzed.
+  type: Number
+- contextPath: PANOS.UnusedRules.TotalPanoramaRulesAnalyzed
+  description: The total number of rules pushed from Panorama analyzed.
+  type: Number
+- contextPath: PANOS.UnusedRules.UnusedLocalRules
+  description: List of Unused Local Rules.
+  type: unknown
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.activeHAPeer
+  description: If the firewall where this rule data comes from is in an HA pair, contains the hostid of the active device in the pair.
+  type: Unknown
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.hostid
+  description: Host ID of the firewall where the rule is configured.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.hostname
+  description: Hostname of the firewall where this rule is configured.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.vsys
+  description: The virtual system (vsys) where the rule is configured.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.instanceName
+  description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.name
+  description: The name of the rule.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.position
+  description: The position of the rule within the Panorama device-group rulebase (pre-rulebase or post-rulebase).
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.rulebase
+  description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules
+  description: List of Unused Rules Pushed from Panorama.
+  type: unknown
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.from_dg_name
+  description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.instanceName
+  description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.name
+  description: The name of the rule.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.position
+  description: The position of the rule within the Panorama device-group rulebase (pre-rulebase or post-rulebase).
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.rulebase
+  description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules
+  description: List of Rules Pushed from Panorama that are used on some firewalls but not all.
+  type: unknown
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.from_dg_name
+  description: Name of the Device Group the rule is inherited from.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.hostids_with_hits
+  description: Host IDs of firewalls where this rule has hits.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_hits
+  description: Hostnames of firewalls where this rule has hits.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.hostids_with_zero_hits
+  description: Host IDs of firewalls where this rule has zero hits.
+  type: Unknown
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_zero_hits
+  description: Hostnames of firewalls where this rule has zero hits.
+  type: Unknown
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.instanceName
+  description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.name
+  description: The name of the rule.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.position
+  description: The position of the rule within the Panorama device-group rulebase (pre-rulebase or post-rulebase).
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.rulebase
+  description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+  type: String
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0b8f2578-c7af-44ca-8327-3fcaae243241
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 0b8f2578-c7af-44ca-8327-3fcaae243241
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 188\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      rulebase:
+        complex:
+          root: inputs.Rulebase
+          transformers:
+          - operator: toLowerCase
+      unused_only:
+        simple: 'false'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets rule hit counts from the firewall.  When connected to Panorama this command can be run on any firewall managed by it.
+      id: 36b3a274-04b6-4e59-99b5-78ea09d69427
+      iscommand: true
+      name: Get Unused Rules
+      script: '|||pan-os-get-rule-hitcounts'
+      type: regular
+      version: -1
+    taskid: 36b3a274-04b6-4e59-99b5-78ea09d69427
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 890\n  }\n}"
+  '6':
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets the HA state and associated details from the given device and any other details.
+      id: 864056f2-4e83-4c15-b8a3-5836213fa736
+      iscommand: true
+      name: Get HA Info For Devices In Rule Hit Count Data
+      script: '|||pan-os-platform-get-ha-state'
+      type: regular
+      version: -1
+    taskid: 864056f2-4e83-4c15-b8a3-5836213fa736
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 1060\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '37'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Processes the context output from !pan-os-get-rulehitcounts and returns data about unused local rules, unused rules from Panorama, and rules from Panorama that have hits on some firewalls but not all.
+      id: 334493c7-1edc-4cad-b2d3-24d491519a6a
+      iscommand: false
+      name: Analyze Rule Hit Count Data
+      script: PAN-OS-AnalyzeRuleHitCounts
+      type: regular
+      version: -1
+    taskid: 334493c7-1edc-4cad-b2d3-24d491519a6a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 1230\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '48'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      id: 64511f84-2f1c-4881-8216-cbaa9b1e65bf
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 64511f84-2f1c-4881-8216-cbaa9b1e65bf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 382\n  }\n}"
+  '15':
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets information from all PAN-OS systems in the topology.
+      id: c7d685f6-ef61-4af1-8da3-da2df7f9c837
+      iscommand: true
+      name: Get System Info For Connected Integration Instances
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      version: -1
+    taskid: c7d685f6-ef61-4af1-8da3-da2df7f9c837
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 720\n  }\n}"
+  '37':
+    continueonerrortype: ''
+    id: '37'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c3304bdf-9660-480f-86b8-a5c62d05ae7e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c3304bdf-9660-480f-86b8-a5c62d05ae7e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 1424\n  }\n}"
+  '48':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.Rulebase
+          operator: inList
+          right:
+            value:
+              simple: application-override, authentication, decryption, dos, nat, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect
+      label: yes
+    continueonerrortype: ''
+    id: '48'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '49'
+      yes:
+      - '15'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks that the selected rulebase to analyze is valid.
+      id: fe1cedc5-cfa9-489f-8ca5-4f6e3c7f3785
+      iscommand: false
+      name: Is Selected Rulebase Valid?
+      type: condition
+      version: -1
+    taskid: fe1cedc5-cfa9-489f-8ca5-4f6e3c7f3785
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 531,\n    \"y\": 529\n  }\n}"
+  '49':
+    continueonerrortype: ''
+    id: '49'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: "The given Rulebase input value (\"${inputs.Rulebase}\") is not valid.  Please try again with one of these options:\n  - application-override\n  - authentication\n  - decryption\n  - dos\n  - nat\n  - network-packet-broker\n  - pbf\n  - qos\n  - sdwan\n  - security\n  - tunnel-inspect"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message.
+      id: fd49cca5-3c58-4041-a5a0-4f95597610e3
+      iscommand: false
+      name: Error - Invalid Rulebase Selected
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: fd49cca5-3c58-4041-a5a0-4f95597610e3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1296,\n      \"width\": 861,\n      \"x\": 50,\n      \"y\": 188\n    }\n  }\n}"
+fromversion: 6.10.0
+tests:
+- PAN-OS-panorama-topology-test-pb
+- PAN-OS-firewall-topology-test-pb

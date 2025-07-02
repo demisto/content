@@ -10,6 +10,8 @@ This playbook uses the PAN-OS integration to check NGFW device conditions that c
 
 Playbook output includes a register of the checks performed, a brief description, and their result.
 
+NOTE: This playbook is intended for use with a single PAN-OS Integration Instance.
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -24,11 +26,9 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* GetInstances
 * JsonToTable
 * PAN-OS-GetAvailablePANOSSoftware
 * PAN-OS-GetDeviceDiskSpace
-* PrintErrorEntry
 * Set
 
 ### Commands
@@ -44,7 +44,6 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | targetDevice | Serial Number of the firewall to check upgrade readiness for. |  | Required |
-| panosIntegrationInstance | Name of the Palo Alto Networks PAN-OS Integration Instance to execute commands \[Optional unless multiple instances are configured\]. |  | Optional |
 | targetVersion | The target PAN-OS version to check upgrade readiness for. |  | Required |
 
 ## Playbook Outputs

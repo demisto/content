@@ -6,7 +6,7 @@ import traceback
 from typing import Any
 
 
-demisto.debug('pack name = PAN-OS by Palo Alto Networks, pack version = 2.2.7')
+demisto.debug("pack name = PAN-OS by Palo Alto Networks, pack version = 2.2.7")
 
 
 def run_command(args: dict) -> dict:
@@ -22,19 +22,19 @@ def run_command(args: dict) -> dict:
         dict: A tuple of two lists: the command results list and command errors list.
     """
     # Set command args
-    allowed_args = ['device_filter_string', 'target', 'panos_instance_name']
+    allowed_args = ["device_filter_string", "target", "panos_instance_name"]
     command_args = {k: args.get(k) for k in allowed_args if k in args}
 
     # Rename 'instance_name' key to 'using' to match the command syntax, if one was provided
-    if 'panos_instance_name' in command_args:
-        command_args['using'] = command_args.pop('panos_instance_name')
+    if "panos_instance_name" in command_args:
+        command_args["using"] = command_args.pop("panos_instance_name")
 
     # Execute the command
     res = demisto.executeCommand("pan-os-platform-get-available-software", command_args)
 
     # Check if the command returned an error and raise exception if needed
     if is_error(res):
-        raise Exception(f'Error executing pan-os-platform-get-system-info: {get_error(res)}')
+        raise Exception(f"Error executing pan-os-platform-get-system-info: {get_error(res)}")
 
     # Return command results
     return res
@@ -55,19 +55,21 @@ def get_current_version_and_base_version(versions: list) -> tuple[dict, dict]:
     """
     # Identify the software image labeled as currently installed
     for item in versions:
-        if item['current']:
+        if item["current"]:
             # Calculate base version of this image
-            base_image_parts = item['version'].split('.')
-            if base_image_parts[-1] != '0':
+            base_image_parts = item["version"].split(".")
+            if base_image_parts[-1] != "0":
                 base_image_parts = base_image_parts[0:2]
-                base_image_parts.append('0')
-                base_image_version = '.'.join(base_image_parts)
+                base_image_parts.append("0")
+                base_image_version = ".".join(base_image_parts)
             else:
-                base_image_version = item['version']
-            return item, next((v for v in versions if v.get('version') == base_image_version), None)
+                base_image_version = item["version"]
+
+            base_version: dict = next((v for v in versions if v.get("version") == base_image_version), {})
+            return item, base_version
 
     # If no currently installed image was found, raise an error
-    raise Exception('Command results did not contain a version labeled as current.')
+    raise Exception("Command results did not contain a version labeled as current.")
 
 
 def parse_version(version: str) -> tuple[int, ...]:
@@ -131,7 +133,7 @@ def filter_images(command_result: dict) -> dict:
         dict: Command result object with older version entries removed
     """
     # Filter the command results to only include details of images newer than is currently installed on the device
-    current_version, base_version = get_current_version_and_base_version(command_result[0]['Contents']['Summary'])
+    current_version, base_version = get_current_version_and_base_version(command_result[0]["Contents"]["Summary"])
 
     # Initialize list of newer images, and include current and base versions for comparison
     newer_images = [current_version, base_version]
@@ -139,15 +141,15 @@ def filter_images(command_result: dict) -> dict:
     # Store initial command result to be updated with filtered results
     filtered_command_result = command_result
 
-    for version in command_result[0]['Contents']['Summary']:
-        if is_version_newer(current_version.get('version'), version.get('version')):
+    for version in command_result[0]["Contents"]["Summary"]:
+        if is_version_newer(current_version.get("version", ""), version.get("version")):
             newer_images.append(version)
 
     # Replace versions in command result with filtered list
-    filtered_command_result[0]['Contents']['Summary'] = newer_images
+    filtered_command_result[0]["Contents"]["Summary"] = newer_images
 
     # Replace versions in entry context with filtered list
-    filtered_command_result[0]['EntryContext']['PANOS.SoftwareVersions']['Summary'] = newer_images
+    filtered_command_result[0]["EntryContext"]["PANOS.SoftwareVersions"]["Summary"] = newer_images
 
     return filtered_command_result
 
@@ -162,12 +164,12 @@ def get_available_software(args: dict[str, Any]) -> dict:
         dict: Command result object
     """
     # Store newer_images_only argument value and remove from args to pass to the command
-    newer_images_only = args.pop('newer_images_only', 'no')
+    newer_images_only = args.pop("newer_images_only", "no")
 
     # Run PAN-OS command and get results
     command_result = run_command(args)
 
-    if newer_images_only == 'yes':
+    if newer_images_only == "yes":
         filtered_command_result = filter_images(command_result)
         return filtered_command_result
     else:
@@ -183,5 +185,5 @@ def main():
         return_error(str(err), error=traceback.format_exc())
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

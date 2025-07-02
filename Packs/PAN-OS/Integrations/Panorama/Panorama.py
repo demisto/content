@@ -9461,30 +9461,34 @@ class Topology:
         elif isinstance(device, Firewall):
             # Check HA state for directly connected Firewall devices
             serial_number = device.serial
-            
+
             # Only proceed to get device HA state data if this method is not called during enumeration of Panorama child devices
             if not getting_children:
                 try:
                     firewall_ha_state_result = run_op_command(device, "show high-availability state")
                     enabled = firewall_ha_state_result.find("./result/enabled")
-                    
+
                     if enabled is not None:
                         if enabled.text == "yes":
                             # HA is enabled on this firewall
                             try:
                                 state = find_text_in_element(firewall_ha_state_result, "./result/group/local-info/state")
                                 peer_serial = None
-                                
+
                                 # Try to get peer serial number
                                 try:
-                                    peer_serial = find_text_in_element(firewall_ha_state_result, "./result/group/peer-info/serial-num")
+                                    peer_serial = find_text_in_element(
+                                        firewall_ha_state_result, "./result/group/peer-info/serial-num"
+                                    )
                                 except LookupError:
                                     # If serial not available, try getting peer IP as fallback
                                     try:
-                                        peer_serial = find_text_in_element(firewall_ha_state_result, "./result/group/peer-info/mgmt-ip")
+                                        peer_serial = find_text_in_element(
+                                            firewall_ha_state_result, "./result/group/peer-info/mgmt-ip"
+                                        )
                                     except LookupError:
                                         peer_serial = None
-                                
+
                                 if "active" in state:
                                     self.ha_active_devices[serial_number] = peer_serial
                                     if peer_serial:
@@ -9496,18 +9500,18 @@ class Topology:
                                         self.ha_active_devices[peer_serial] = serial_number
                                         self.ha_pair_serials[serial_number] = peer_serial
                                         self.ha_pair_serials[peer_serial] = serial_number
-                                    
+
                             except LookupError:
                                 # Could not determine HA state, treat as standalone
                                 self.ha_active_devices[serial_number] = "STANDALONE"
                     else:
                         # HA is not enabled, treat as standalone
                         self.ha_active_devices[serial_number] = "STANDALONE"
-                        
+
                 except Exception:
                     # If we can't query HA state, treat as standalone
                     self.ha_active_devices[serial_number] = "STANDALONE"
-            
+
             self.firewall_objects[device.serial] = device
             return
 

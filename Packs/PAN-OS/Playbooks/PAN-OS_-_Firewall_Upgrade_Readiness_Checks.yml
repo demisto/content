@@ -1,21 +1,11 @@
 contentitemexportablefields:
-  contentitemfields:
-    definitionid: ''
-    fromServerVersion: 6.10.0
-    isoverridable: false
-    itemVersion: 1.0.0
-    packID: ''
-    packName: PAN-OS Software Upgrade
-    prevname: ''
-    toServerVersion: ''
-description: "This playbook uses the PAN-OS integration to check NGFW device conditions that can affect its readiness to perform a PAN-OS upgrade.  Included checks examine the following:\n1. Available disk space for the target version (base image + release image)\n2. Presence of any uncommitted configuration changes\n3. Whether device has an active Support license\n4. Whether NTP is configured and synced\n5. Whether the latest App/Threat dynamic update is installed\n6. For devices in HA groups, check that devices in the group have:\n    1. App/Threat, AntiVirus, and GlobalProtect Client are at the same level and compatible for HA failover\n    2. Running configuration synchronized among peers\n\nPlaybook output includes a register of the checks performed, a brief description, and their result."
-dirtyInputs: true
+  contentitemfields: {}
+description: "This playbook uses the PAN-OS integration to check NGFW device conditions that can affect its readiness to perform a PAN-OS upgrade.  Included checks examine the following:\n1. Available disk space for the target version (base image + release image)\n2. Presence of any uncommitted configuration changes\n3. Whether device has an active Support license\n4. Whether NTP is configured and synced\n5. Whether the latest App/Threat dynamic update is installed\n6. For devices in HA groups, check that devices in the group have:\n    1. App/Threat, AntiVirus, and GlobalProtect Client are at the same level and compatible for HA failover\n    2. Running configuration synchronized among peers\n\nPlaybook output includes a register of the checks performed, a brief description, and their result.\n\nNOTE: This playbook is intended for use with a single PAN-OS Integration Instance."
 id: PAN-OS - Firewall Upgrade Readiness Checks
 inputSections:
 - description: Generic group for inputs
   inputs:
   - targetDevice
-  - panosIntegrationInstance
   - targetVersion
   name: General (Inputs group)
 inputs:
@@ -23,11 +13,6 @@ inputs:
   key: targetDevice
   playbookInputQuery:
   required: true
-  value: {}
-- description: Name of the Palo Alto Networks PAN-OS Integration Instance to execute commands [Optional unless multiple instances are configured].
-  key: panosIntegrationInstance
-  playbookInputQuery:
-  required: false
   value: {}
 - description: The target PAN-OS version to check upgrade readiness for.
   key: targetVersion
@@ -44,7 +29,6 @@ outputs:
 - contextPath: ReadinessChecks
   description: List of upgrade readiness checks performed and their result (Passed/Failed).
   type: unknown
-sourceplaybookid: NetOps - Firewall Upgrade Readiness Checks
 starttaskid: '0'
 tasks:
   '0':
@@ -55,7 +39,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '110'
+      - '106'
     note: false
     quietmode: 0
     separatecontext: false
@@ -66,10 +50,11 @@ tasks:
       iscommand: false
       name: ''
       version: -1
+      description: ''
     taskid: 3bb6c16d-db64-492b-82bd-9da1b667703f
     timertriggers: []
     type: start
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -1504\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -954\n  }\n}"
   '1':
     continueonerrortype: ''
     id: '1'
@@ -294,6 +279,7 @@ tasks:
       name: NTP Sync Check
       type: title
       version: -1
+      description: ''
     taskid: 7cef3a04-05be-433e-8afd-b4fc29444cad
     timertriggers: []
     type: title
@@ -318,6 +304,7 @@ tasks:
       name: Active Support License Check
       type: title
       version: -1
+      description: ''
     taskid: 96822301-5eb9-4259-893f-f7f85a32bf2e
     timertriggers: []
     type: title
@@ -342,6 +329,7 @@ tasks:
       name: Uncommitted Configuration Changes Check
       type: title
       version: -1
+      description: ''
     taskid: 9415cb73-933e-4b3a-80ab-d45b7e3a1674
     timertriggers: []
     type: title
@@ -366,6 +354,7 @@ tasks:
       name: Latest App/Threat Content Check
       type: title
       version: -1
+      description: ''
     taskid: e84a213e-3495-4c90-b07f-d1a981a55857
     timertriggers: []
     type: title
@@ -390,6 +379,7 @@ tasks:
       name: Image Storage Disk Space Check
       type: title
       version: -1
+      description: ''
     taskid: e98c192d-6e74-4bd2-8a3e-776e44590ff6
     timertriggers: []
     type: title
@@ -414,6 +404,7 @@ tasks:
       name: Format & Store Results
       type: title
       version: -1
+      description: ''
     taskid: 8d7995f1-d462-41e3-864d-2762a8461529
     timertriggers: []
     type: title
@@ -621,6 +612,7 @@ tasks:
       name: Active Support License Check Done
       type: title
       version: -1
+      description: ''
     taskid: 517ac792-25f6-4889-8180-933f7d0df880
     timertriggers: []
     type: title
@@ -645,6 +637,7 @@ tasks:
       name: NTP Sync Check Done
       type: title
       version: -1
+      description: ''
     taskid: 498c48a8-fa73-49bf-8f69-a7f7e7429b24
     timertriggers: []
     type: title
@@ -968,6 +961,7 @@ tasks:
       name: HA Peers Synched Check Done
       type: title
       version: -1
+      description: ''
     taskid: e16fda54-1714-4c9c-871a-3e6a62509878
     timertriggers: []
     type: title
@@ -1620,6 +1614,7 @@ tasks:
       name: Image Storage Disk Space Check Done
       type: title
       version: -1
+      description: ''
     taskid: c75fd01e-1ead-4a1e-89fb-e809efc456bd
     timertriggers: []
     type: title
@@ -1644,6 +1639,7 @@ tasks:
       name: Uncommitted Configuration Changes Check Done
       type: title
       version: -1
+      description: ''
     taskid: dc742ded-ee4e-415f-8f6a-0794ea01559f
     timertriggers: []
     type: title
@@ -1833,6 +1829,7 @@ tasks:
       name: Content Version Check Done
       type: title
       version: -1
+      description: ''
     taskid: 15d602d7-107f-42f0-8967-db5153c21e0e
     timertriggers: []
     type: title
@@ -1862,6 +1859,7 @@ tasks:
       name: Execute Readiness Checks
       type: title
       version: -1
+      description: ''
     taskid: 819a3be4-d75d-42c1-8a40-b27a9718d555
     timertriggers: []
     type: title
@@ -1883,6 +1881,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 64133786-66c8-428a-8aaf-b31b85cd6786
     timertriggers: []
     type: title
@@ -2182,190 +2181,6 @@ tasks:
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 340\n  }\n}"
-  '109':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: Modules.brand
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: Panorama
-                root: Modules
-                transformers:
-                - operator: count
-          operator: greaterThan
-          right:
-            value:
-              simple: '1'
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.panosIntegrationInstance
-          operator: isEmpty
-      label: None Specified Multiple Configured
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.panosIntegrationInstance
-          operator: isNotEmpty
-      label: Use Provided Instance
-    continueonerrortype: ''
-    id: '109'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - '113'
-      None Specified Multiple Configured:
-      - '111'
-      Use Provided Instance:
-      - '112'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      brand:
-        simple: Panorama
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Checks how many PAN-OS (Panorama) instances are configured on the system.  If more than one and no specific one was selected using playbook inputs, return an error.
-      id: e6f5a125-8e89-4fc7-bfbd-e3f556ab6e64
-      iscommand: false
-      name: Check Panorama Integration Instances
-      type: condition
-      version: -1
-    taskid: e6f5a125-8e89-4fc7-bfbd-e3f556ab6e64
-    timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -1211\n  }\n}"
-  '110':
-    continueonerrortype: ''
-    id: '110'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '109'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      brand:
-        simple: Panorama
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Returns integration instances configured in Cortex XSOAR. You can filter by instance status and/or brand name (vendor).
-      id: 84b63c38-b6c2-407a-b9ba-103cd10bb1b1
-      iscommand: false
-      name: Get Configured 'Panorama' Integration Instances
-      script: GetInstances
-      type: regular
-      version: -1
-    taskid: 84b63c38-b6c2-407a-b9ba-103cd10bb1b1
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -1370\n  }\n}"
-  '111':
-    continueonerrortype: ''
-    id: '111'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      message:
-        simple: More than one instance of the PAN-OS (Panorama) integration is configured but none was specified in the Playbook input.  Please select an instance to use and try again.
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Prints an error entry with a given message.
-      id: fa8ed374-2202-4df3-80c3-3aa371c636b0
-      iscommand: false
-      name: Error - Need PAN-OS Integration Instance Selection
-      script: PrintErrorEntry
-      type: regular
-      version: -1
-    taskid: fa8ed374-2202-4df3-80c3-3aa371c636b0
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": -1050\n  }\n}"
-  '112':
-    continueonerrortype: ''
-    id: '112'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '106'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      key:
-        simple: PANOSIntegrationInstance
-      value:
-        simple: ${inputs.panosIntegrationInstance}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: c88c7931-95c9-4aae-80a7-b9a21c7af1a2
-      iscommand: false
-      name: Store Provided PAN-OS Instance Name
-      script: Set
-      type: regular
-      version: -1
-    taskid: c88c7931-95c9-4aae-80a7-b9a21c7af1a2
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": -1050\n  }\n}"
-  '113':
-    continueonerrortype: ''
-    id: '113'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '106'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      key:
-        simple: PANOSIntegrationInstance
-      value:
-        simple: ${Modules.name}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 6d79df2b-89eb-413f-aeb7-2531544fe574
-      iscommand: false
-      name: Use Single Configured PAN-OS Instance
-      script: Set
-      type: regular
-      version: -1
-    taskid: 6d79df2b-89eb-413f-aeb7-2531544fe574
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -965\n  }\n}"
   '114':
     continueonerrortype: ''
     id: '114'
@@ -2458,7 +2273,7 @@ tasks:
     type: condition
     view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 490\n  }\n}"
 version: -1
-view: "{\n  \"linkLabelsPosition\": {\n    \"69_66_#default#\": 0.28\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4313,\n      \"width\": 5072,\n      \"x\": -1442,\n      \"y\": -1504\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"69_66_#default#\": 0.28\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3763,\n      \"width\": 5072,\n      \"x\": -1442,\n      \"y\": -954\n    }\n  }\n}"
 fromversion: 6.10.0
 tests:
 - palo_alto_panorama_test_pb

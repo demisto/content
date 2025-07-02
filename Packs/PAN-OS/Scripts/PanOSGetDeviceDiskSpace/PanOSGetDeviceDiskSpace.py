@@ -18,21 +18,21 @@ def show_disk_space_command(args: dict) -> dict:
         dict: The output command results object from `pan-os`
     """
     # Set command args
-    allowed_args = ['target', 'panos_instance_name']
+    allowed_args = ["target", "panos_instance_name"]
     command_args = {k: args.get(k) for k in allowed_args if k in args}
-    command_args['cmd'] = '<show><system><disk-space></disk-space></system></show>'
-    command_args['type'] = 'op'
+    command_args["cmd"] = "<show><system><disk-space></disk-space></system></show>"
+    command_args["type"] = "op"
 
     # Rename 'instance_name' key to 'using' to match the command syntax, if required
-    if 'panos_instance_name' in command_args:
-        command_args['using'] = command_args.pop('panos_instance_name')
+    if "panos_instance_name" in command_args:
+        command_args["using"] = command_args.pop("panos_instance_name")
 
     # Execute the command
-    res = demisto.executeCommand('pan-os', command_args)
+    res = demisto.executeCommand("pan-os", command_args)
 
     # Check if the command returned an error and raise exception if needed
     if is_error(res):
-        raise Exception(f'Error executing pan-os: {get_error(res)}')
+        raise Exception(f"Error executing pan-os: {get_error(res)}")
 
     # Return command results
     return res
@@ -59,7 +59,7 @@ def convert_space_units(original_value: str, desired_units: str) -> float:
         float: The converted disk space, rounded to one decimal
     """
     # Extract the numerical value and the unit from the input string, as long as it's not 0
-    if original_value != '0':
+    if original_value != "0":
         value = float(original_value[:-1])
         original_unit = original_value[-1]
     else:
@@ -67,12 +67,7 @@ def convert_space_units(original_value: str, desired_units: str) -> float:
         return 0
 
     # Conversion dictionary with all units converted to kilobytes
-    conversion_to_kilobytes = {
-        'K': 1,
-        'M': 1024,
-        'G': 1024 * 1024,
-        'T': 1024 * 1024 * 1024
-    }
+    conversion_to_kilobytes = {"K": 1, "M": 1024, "G": 1024 * 1024, "T": 1024 * 1024 * 1024}
 
     # Convert original value to kilobytes first
     if original_unit in conversion_to_kilobytes:
@@ -81,12 +76,7 @@ def convert_space_units(original_value: str, desired_units: str) -> float:
         raise ValueError("Unsupported original unit")
 
     # Conversion dictionary from kilobytes to desired unit
-    conversion_from_kilobytes = {
-        'K': 1,
-        'M': 1 / 1024,
-        'G': 1 / (1024 * 1024),
-        'T': 1 / (1024 * 1024 * 1024)
-    }
+    conversion_from_kilobytes = {"K": 1, "M": 1 / 1024, "G": 1 / (1024 * 1024), "T": 1 / (1024 * 1024 * 1024)}
 
     # Convert from kilobytes to the desired unit
     if desired_units in conversion_from_kilobytes:
@@ -109,7 +99,7 @@ def parse_disk_space_output(disk_space_string: str, desired_units: str) -> list[
         list[dict]: _description_
     """
     # Split the disk space string into lines
-    lines = disk_space_string.split('\n')
+    lines = disk_space_string.split("\n")
 
     # Initialize list of file system entries
     filesystems = []
@@ -123,13 +113,13 @@ def parse_disk_space_output(disk_space_string: str, desired_units: str) -> list[
         if len(parts) >= 6:
             # Build a dictionary for the current filesystem
             filesystem_info = {
-                'FileSystem': parts[0],
-                'Size': convert_space_units(parts[1], desired_units),
-                'Used': convert_space_units(parts[2], desired_units),
-                'Avail': convert_space_units(parts[3], desired_units),
-                'Use%': parts[4],
-                'MountedOn': ' '.join(parts[5:]),  # Joining in case the mount point has spaces
-                'Units': desired_units
+                "FileSystem": parts[0],
+                "Size": convert_space_units(parts[1], desired_units),
+                "Used": convert_space_units(parts[2], desired_units),
+                "Avail": convert_space_units(parts[3], desired_units),
+                "Use%": parts[4],
+                "MountedOn": " ".join(parts[5:]),  # Joining in case the mount point has spaces
+                "Units": desired_units,
             }
 
             # Append the dictionary to our list
@@ -153,26 +143,20 @@ def get_disk_space(args: dict) -> CommandResults:
     command_result = show_disk_space_command(args)
 
     # Get the raw string returned by the PAN-OS command
-    disk_space_string = command_result[0]['Contents']['response']['result']
+    disk_space_string = command_result[0]["Contents"]["response"]["result"]
 
     # Parse the raw string into a list of dictionaries with disk space represented in the desired unit
-    parsed_disk_space = parse_disk_space_output(disk_space_string, args.get('disk_space_units'))
+    parsed_disk_space = parse_disk_space_output(disk_space_string, args.get("disk_space_units", ""))
 
     # Construct the output representing the disk space on the given device
-    device_entry = {
-        'hostid': args.get('target'),
-        'FileSystems': parsed_disk_space
-    }
+    device_entry = {"hostid": args.get("target"), "FileSystems": parsed_disk_space}
 
     # Create markdown table to display in war room
-    readable_result = tableToMarkdown(name='System Disk Space', t=parsed_disk_space)
+    readable_result = tableToMarkdown(name="System Disk Space", t=parsed_disk_space)
 
     # Construct CommandResults object
     results = CommandResults(
-        outputs_prefix='PANOS.DiskSpace',
-        outputs=device_entry,
-        outputs_key_field='hostid',
-        readable_output=readable_result
+        outputs_prefix="PANOS.DiskSpace", outputs=device_entry, outputs_key_field="hostid", readable_output=readable_result
     )
 
     return results
@@ -187,8 +171,10 @@ def main():
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
-            f'Failed to execute PAN-OS-GetDeviceDiskSpace. Error: {str(ex)}\nTraceback: {fix_traceback_line_numbers(traceback.format_exc())}')
+            f"Failed to execute PAN-OS-GetDeviceDiskSpace. Error: {str(ex)}\n"
+            f"Traceback: {fix_traceback_line_numbers(traceback.format_exc())}"
+        )
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

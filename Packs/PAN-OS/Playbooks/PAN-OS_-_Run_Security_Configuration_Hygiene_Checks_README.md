@@ -1,20 +1,22 @@
 This playbook executes hygiene check commands using the PAN-OS integration and identifies items configured in a manner that do not meet minimum security best practices.  It looks for the following:
 1. Log Forwarding Profiles
-    1. Profiles without Enhanced Logging enabled
-    2. Profiles with no match list (rules) configured
-    3. Profiles that do not include rules to forward Traffic or Threat logs
+  i. Profiles without Enhanced Logging enabled
+  ii. Profiles with no match list (rules) configured
+  iii. Profiles that do not include rules to forward Traffic or Threat logs
 2. Security Zones with no Log Forwarding Profile assigned
 3. Spyware Profiles that do not:
-    1. Block signatures of Critical and High severity
-    2. Alert on (or block) signatures of Medium and Low severity
+  i. Block signatures of Critical and High severity
+  ii. Alert on (or block) signatures of Medium and Low severity
 4. URL Filtering Profiles do not block the default URL categories blocked in the pre-defined profile
 5. Vulnerability Profiles that do not:
-    1. Block signatures of Critical and High severity
-    2. Alert on (or block) signatures of Medium and Low severity
+  i. Block signatures of Critical and High severity
+  ii. Alert on (or block) signatures of Medium and Low severity
 6. Security Rules that do not:
-    1. Log at Session End
-    2. Have a Log Forwarding Profile assigned
-    3. Have Security Profiles assigned for Anti Virus, Spyware, Vulnerability, and URL Filtering (or a group that includes each).
+  i. Log at Session End
+  ii. Have a Log Forwarding Profile assigned
+  iii. Have Security Profiles assigned for Anti Virus, Spyware, Vulnerability, and URL Filtering (or a group that includes each)
+
+NOTE: This playbook is intended for use with a single PAN-OS Integration Instance.
 
 ## Dependencies
 
@@ -30,7 +32,7 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* SetAndHandleEmpty
 
 ### Commands
 
@@ -47,8 +49,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| target_device | The serial number of a specific firewall to target \(Used when connected to Panorama\) \[Optional\] |  | Optional |
-| integration_instance_name | The name of the configured Integration Instance to run commands with. \[Optional\] |  | Optional |
+| targetDevice | The serial number of a specific firewall to target \(Used when connected to Panorama\) \[Optional\].<br/><br/>When connected to Panorama, leaving this blank will run the checks against Panorama configuration as well as all currently connected managed firewalls. |  | Optional |
 
 ## Playbook Outputs
 
@@ -56,8 +57,8 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PANOS.ConfigurationHygiene.Result | A list of hygiene check results \(constructed as dictionaries\) including a description of the issue found, the configuration location \(container name\), and the name of the object affected by the issue. | unknown |
-| PANOS.ConfigurationHygiene.Summary | A list of hygiene check summaries \(constructed as dictionaries\) describing the overall result of hygiene checks and how many issues of each type were found, if any. | unknown |
+| Summary | A list of hygiene check summaries \(constructed as dictionaries\) describing the overall result of hygiene checks and how many issues of each type were found, if any. | unknown |
+| Result | A list of hygiene check results \(constructed as dictionaries\) including a description of the issue found, the configuration location \(container name\), and the name of the object affected by the issue. | unknown |
 
 ## Playbook Image
 

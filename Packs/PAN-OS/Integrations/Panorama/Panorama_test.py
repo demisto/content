@@ -9114,8 +9114,13 @@ def test_get_rule_hitcounts(vsys, rules, no_new_hits_since, expected_cmd, expect
     [
         ("security", "false", None, 10),  # Should result in 10 returned records.
         ("security", "true", None, 6),  # Should result in 6 returned records.
-        ("security", "false", datetime.strptime("2025/06/26 00:00:00Z", "%Y/%m/%d %H:%M:%SZ"), 8)  # Should result in 8 returned records.
-    ]
+        (
+            "security",
+            "false",
+            datetime.strptime("2025/06/26 00:00:00Z", "%Y/%m/%d %H:%M:%SZ"),
+            8,
+        ),  # Should result in 8 returned records.
+    ],
 )
 def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_expected, mock_topology, mocker):
     """Test the FirewallCommand.get_hitcounts method with various filter parameters.  Verify it returns the correct
@@ -9140,6 +9145,8 @@ def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_
             load_xml_root_from_test_file(pushed_policy_data),
         ],
     )
+
+    mocker.patch("Panorama.demisto.callingContext", return_value={"context": {"IntegrationInstance": "Panorama_test_instance"}})
 
     result = FirewallCommand.get_hitcounts(mock_topology, "", rulebase_type, no_new_hits_since_dt, None, None, unused_only)
     assert result is not None
