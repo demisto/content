@@ -92,7 +92,11 @@ class Client(BaseClient):
         :return: dict containing the alert as returned from the API
         :rtype: ``Dict[str, Any]``
         """
-        return self._http_request(method="GET", url_suffix=f"/alert/{alert_id}", timeout=100)
+        # We are using retries and status_list_to_retry to get around MSISAC API rate limiting.
+        # This is necessary for fetching, or bulk alert searching operations.
+        return self._http_request(
+            method="GET", url_suffix=f"/alert/{alert_id}", timeout=100, retries=5, status_list_to_retry=[503]
+        )
 
     def retrieve_cases(self, timestamp: str) -> list[dict[str, Any]]:
         """
