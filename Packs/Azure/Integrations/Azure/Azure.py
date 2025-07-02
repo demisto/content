@@ -1996,9 +1996,7 @@ def test_module(client: AzureClient) -> str:
     return "ok"
 
 
-def health_check(
-    shared_creds: dict, subscription_id: str, connector_id: str
-) -> list[HealthCheckError] | HealthCheckError | None | str:
+def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> HealthCheckError | None:
     """
     Tests connectivity to Azure and checks for required permissions.
     This function is specifically used for COOC (Connect on our Cloud) health checks
@@ -2043,12 +2041,11 @@ def health_check(
 
 def get_azure_client(params: dict, args: dict):
     headers = {}
-    token = ""
     if not params.get("credentials", {}).get("password"):
-        credentials : dict = get_cloud_credentials(
+        credentials = get_cloud_credentials(
             CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id"), ["DEFAULT", "GRAPH"]
         )
-        token : str = credentials.get("access_token")
+        token = credentials.get("access_token")
         if not token:
             raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
