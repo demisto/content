@@ -2037,7 +2037,7 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
             message=f"Failed to connect to Azure: {str(e)}",
             error_type=ErrorType.CONNECTIVITY_ERROR,
         )
-    
+
     return None
 
 
@@ -2045,7 +2045,7 @@ def get_azure_client(params: dict, args: dict):
     headers = {}
     if not params.get("credentials", {}).get("password"):
         credentials = get_cloud_credentials(
-            CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id"), ["DEFAULT", "GRAPH"]
+            CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id")
         )
         token = credentials.get("access_token")
         if not token:

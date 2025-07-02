@@ -353,7 +353,7 @@ script:
       description: Gets the creation date and time of the storage account in UTC.
       type: Date
     - contextPath: Azure.StorageAccount.properties.primaryEndpoints
-      description: Gets the URLs that are used to perform a retrieval of a public blob, queue, or table object. 
+      description: Gets the URLs that are used to perform a retrieval of a public blob, queue, or table object.
       type: String
     - contextPath: Azure.StorageAccount.properties.primaryLocation
       description: Gets the location of the primary data center for the storage account.
@@ -577,9 +577,9 @@ script:
       required: false
       description: Configures the minimum version of TLS required for SSL requests.
       predefined:
-      - '1.0'	
-      - '1.1'	
-      - '1.2'	
+      - '1.0'
+      - '1.1'
+      - '1.2'
       - '1.3'
     name: azure-webapp-config-set
     description: Updates the configuration settings of an existing Azure Web App.
@@ -694,7 +694,7 @@ script:
       - 'false'
     name: azure-webapp-auth-update
     description: Updates the authentication and authorization settings of an existing Azure Web App.
-    outputs: 
+    outputs:
     - contextPath: Azure.WebAppAuth.id
       description: Resource ID.
       type: String
@@ -841,7 +841,7 @@ script:
       - 'false'
     name: azure-monitor-log-profile-update
     description: Updates a log profile in Azure Monitoring REST API.
-    outputs: 
+    outputs:
     - contextPath: Azure.LogProfile.id
       type: String
       description: The fully qualified Azure resource ID for the log profile.
@@ -893,28 +893,28 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - Disabled
-        - Enabled
+      - Disabled
+      - Enabled
       description: Policy for controlling export on the disk.
     - name: network_access_policy
       type: string
       required: false
       auto: PREDEFINED
       predefined:
-        - AllowAll
-        - AllowPrivate
-        - DenyAll
+      - AllowAll
+      - AllowPrivate
+      - DenyAll
       description: Policy for accessing the disk via network.
     - name: data_access_auth_mode
       type: string
       required: false
       auto: PREDEFINED
       predefined:
-        - AzureActiveDirectory
+      - AzureActiveDirectory
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
     name: azure-disk-update
     description: Updates a disk.
-    outputs: 
+    outputs:
     - contextPath: Azure.Disk.id
       description: Resource ID of the disk.
       type: String
@@ -1035,8 +1035,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - None
-        - SystemAssigned
+      - None
+      - SystemAssigned
       description: Managed service identity type.
     - name: https_only
       description: Configures the web site to accept only https requests.
@@ -1380,8 +1380,8 @@ script:
       type: String
       description: Enable ssl enforcement or not when connect to server.
       predefined:
-        - Disabled
-        - Enabled
+      - Disabled
+      - Enabled
     name: azure-postgres-server-update
     description: Updates an existing server.
     outputs: [] # No outputs are returned in the response.
@@ -1407,7 +1407,7 @@ script:
       auto: PREDEFINED
       predefined:
       - 'true'
-    description: Updates a key vault in the specified subscription. 
+    description: Updates a key vault in the specified subscription.
     name: azure-key-vault-update
     outputs:
     - contextPath: Azure.KeyVault.id
@@ -1562,7 +1562,7 @@ script:
       predefined:
       - Disabled
       - Enabled
-      required: True
+      required: true
     - description: Subscription ID.
       name: subscription_id
     - description: The name of the resource group.

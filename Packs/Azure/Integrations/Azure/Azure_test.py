@@ -920,7 +920,7 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     assert result == mock_client
 
     # Verify cloud credentials were retrieved with correct parameters
-    Azure.get_cloud_credentials.assert_called_once_with(CloudTypes.AZURE.value, "test_subscription_id", ["DEFAULT", "GRAPH"])
+    Azure.get_cloud_credentials.assert_called_once_with(CloudTypes.AZURE.value, "test_subscription_id")
 
     # Verify AzureClient was instantiated with correct parameters including headers
     expected_headers = {"Authorization": f"Bearer {mock_token}", "Content-Type": "application/json", "Accept": "application/json"}
@@ -1368,7 +1368,10 @@ def test_azure_client_get_rule(mocker, client):
     # Setup mock response
     mock_response = {
         "name": "test-rule",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+            "securityRules/test-rule"
+        ),
         "properties": {"access": "Allow", "protocol": "Tcp"},
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
@@ -1377,7 +1380,10 @@ def test_azure_client_get_rule(mocker, client):
     result = client.get_rule("test-sg", "test-rule", "sub-id", "test-rg")
 
     # Verify correct API call was made
-    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule"
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+        "securityRules/test-rule"
+    )
     client.http_request.assert_called_once_with("GET", full_url=expected_url)
     assert result == mock_response
 
@@ -1430,7 +1436,10 @@ def test_azure_client_create_rule_success(mocker, client):
     # Setup mock response
     mock_response = {
         "name": "test-rule",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+            "securityRules/test-rule"
+        ),
         "properties": {
             "protocol": "Tcp",
             "sourcePortRange": "*",
@@ -1468,7 +1477,10 @@ def test_azure_client_create_rule_success(mocker, client):
     )
 
     # Verify correct API call was made
-    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule?"
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+        "securityRules/test-rule?"
+    )
     client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
 
     # Verify response
@@ -1487,7 +1499,10 @@ def test_azure_client_create_rule_with_complex_properties(mocker, client):
     # Setup mock response
     mock_response = {
         "name": "complex-rule",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/complex-rule",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+            "securityRules/complex-rule"
+        ),
         "properties": {
             "protocol": "*",
             "sourcePortRanges": ["80", "443", "8080-8090"],
@@ -1525,7 +1540,10 @@ def test_azure_client_create_rule_with_complex_properties(mocker, client):
     )
 
     # Verify correct API call was made
-    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/complex-rule?"
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+        "securityRules/complex-rule?"
+    )
     client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
 
     # Verify response contains complex properties
