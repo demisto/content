@@ -7070,6 +7070,13 @@ script:
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
       hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the download job.
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: false
+      name: polling
     description: Downloads the latest app/threat dynamic update.
     name: pan-os-download-latest-content-update
     outputs:
@@ -7165,6 +7172,13 @@ script:
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
       hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the install job.
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: false
+      name: polling
     description: Installs the latest app/threat dynamic update.
     name: pan-os-install-latest-content-update
     outputs:

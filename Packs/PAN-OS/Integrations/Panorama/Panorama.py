@@ -6692,6 +6692,7 @@ def panorama_content_update_download_status(target: str, job_id: str):
     return result
 
 
+@logger
 def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateType, args: dict):
     """
     Download dynamic update of the given type, poll for status, and return details to war room & context
@@ -6699,6 +6700,7 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
     target = args.get("target")
     job_id = args.get("job_id")
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+    polling = argToBoolean(args.get("polling", "true"))
 
     # Map update type to command name
     command_map = {
@@ -6720,24 +6722,33 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
             # Download has been given a job ID
             job_id = result["response"]["result"]["job"]
 
-            # Schedule command to check download status
-            args["job_id"] = job_id
-            scheduled_command = ScheduledCommand(
-                command=command_to_run,
-                next_run_in_seconds=10,
-                args=args,
-                timeout_in_seconds=300,
-            )
-
             entry_context = {"JobID": job_id, "Status": "Pending"}
 
-            command_results = CommandResults(
-                scheduled_command=scheduled_command,
-                readable_output=f"Content download JobID {job_id} started on device {target}. Status will be checked shortly.",
-                outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": entry_context},
-            )
+            if not polling:
+                # Return result immediately if polling is not enabled
+                command_results = CommandResults(
+                    readable_output=f"Content download JobID {job_id} started on device {target}.",
+                    outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": entry_context},
+                )
+
+            else:
+                # Polling is enabled - schedule command to check download status
+                args["job_id"] = job_id
+                scheduled_command = ScheduledCommand(
+                    command=command_to_run,
+                    next_run_in_seconds=10,
+                    args=args,
+                    timeout_in_seconds=300,
+                )
+
+                command_results = CommandResults(
+                    scheduled_command=scheduled_command,
+                    readable_output=f"Content download JobID {job_id} started on device {target}. Status will be checked shortly.",
+                    outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": entry_context},
+                )
 
             return_results(command_results)
+
         else:
             # No download took place
             return_results(result["response"]["msg"])
@@ -6876,8 +6887,8 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
     """
     target = args.get("target")
     job_id = args.get("job_id")
-
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+    polling = argToBoolean(args.get("polling", "true"))
 
     # Map update type to command name
     command_map = {
@@ -6890,28 +6901,40 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
 
     if not job_id:
         # Initiate installation job
+        if DEVICE_GROUP and not target:
+            raise Exception("Install latest content is only supported on Firewall (not Panorama).")
+
         result = panorama_install_latest_dynamic_update(update_type, target)
 
-        if "result" in result["response"]:
+        if "result" in result["response"] and result["response"]["@status"] == "success":
             # installation has been given a jobid
             job_id = result["response"]["result"]["job"]
 
-            # Schedule command to check install status
-            args["job_id"] = job_id
-            scheduled_command = ScheduledCommand(
-                command=command_to_run,
-                next_run_in_seconds=10,
-                args=args,
-                timeout_in_seconds=300,
-            )
-
             entry_context = {"JobID": job_id, "Status": "Pending"}
 
-            command_results = CommandResults(
-                scheduled_command=scheduled_command,
-                readable_output=f"Content install JobID {job_id} started on device {target}. Status will be checked shortly.",
-                outputs={f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": entry_context},
-            )
+            if not polling:
+                # Return result immediately if polling is not enabled
+                command_results = CommandResults(
+                    readable_output=f"Content install JobID {job_id} started on device {target}.",
+                    outputs={f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": entry_context},
+                )
+
+            else:
+                # Polling is enabled - schedule command to check download status
+                # Schedule command to check install status
+                args["job_id"] = job_id
+                scheduled_command = ScheduledCommand(
+                    command=command_to_run,
+                    next_run_in_seconds=10,
+                    args=args,
+                    timeout_in_seconds=300,
+                )
+
+                command_results = CommandResults(
+                    scheduled_command=scheduled_command,
+                    readable_output=f"Content install JobID {job_id} started on device {target}. Status will be checked shortly.",
+                    outputs={f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": entry_context},
+                )
 
             return_results(command_results)
 

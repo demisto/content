@@ -4005,6 +4005,7 @@ Downloads the latest app/threat dynamic update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the download job. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -4064,6 +4065,7 @@ Installs the latest app/threat dynamic update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the install job. Possible values are: true, false. | Optional |
 
 #### Context Output
 

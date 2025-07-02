@@ -8641,7 +8641,18 @@ class TestDynamicUpdateCommands:
         "update_phase, job_id, api_response_payload",
         [
             (
-                "start",
+                "start-no-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Download job enqueued with jobid 1309"}, "job": "1309"},
+                    },
+                },
+            ),
+            (
+                "start-with-polling",
                 "",
                 {
                     "response": {
@@ -8725,7 +8736,17 @@ class TestDynamicUpdateCommands:
 
         mock_command_return = mocker.patch("Panorama.return_results")
 
-        if update_phase == "start":
+        if update_phase == "start-no-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains job info with no subsquent scheduled command.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "polling": "false"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert returned_results.scheduled_command is None
+            assert returned_results.readable_output == "Content download JobID 1309 started on device 1337."
+
+        elif update_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
             Verify that the response contains a ScheduledCommand object to poll for job status.
@@ -8827,7 +8848,18 @@ class TestDynamicUpdateCommands:
         "install_phase, job_id, api_response_payload",
         [
             (
-                "start",
+                "start-no-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Content install job enqueued with jobid 1318"}, "job": "1318"},
+                    }
+                },
+            ),
+            (
+                "start-with-polling",
                 "",
                 {
                     "response": {
@@ -8905,7 +8937,17 @@ class TestDynamicUpdateCommands:
 
         mock_command_return = mocker.patch("Panorama.return_results")
 
-        if install_phase == "start":
+        if install_phase == "start-no-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains job info with no subsequent scheduled command.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "polling": "false"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert returned_results.scheduled_command is None
+            assert returned_results.readable_output == "Content install JobID 1318 started on device 1337."
+
+        elif install_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
             Verify that the response contains a ScheduledCommand object to poll for job status.
