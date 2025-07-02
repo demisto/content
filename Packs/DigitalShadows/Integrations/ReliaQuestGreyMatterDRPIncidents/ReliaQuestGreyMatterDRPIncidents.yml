@@ -116,7 +116,7 @@ configuration:
   name: ingestClosedIncidents
   required: false
   type: 8
-  section: Connect
+  section: Collect
 - additionalinfo: The maximum number of incidents to fetch
   defaultvalue: "50"
   display: Fetch Limit
