@@ -1958,6 +1958,12 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
 
             # $demisto.results("Attempting to create new search: $search_name")
             $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "Stop")
+            # $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "SilentlyContinue")
+            # $lastError = $Error[0].ToString()
+            # $demisto.results("Last PowerShell error: $lastError")   
+            # if ($lastError -match "already exists") {
+            #     $demisto.results("not already exists")
+            # }
             # $demisto.results("NewSearch")
             $client.StartSearch($search_name)
             # $demisto.results("StartSearch")
@@ -2233,7 +2239,7 @@ function Main {
             "$script:COMMAND_PREFIX-case-hold-policy-set" {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-search-and-delete-email-office-365-quick-action" {
+            "$script:COMMAND_PREFIX-email-security-search-and-delete-email-office-365-quick-action" {
                 ($human_readable, $entry_context, $raw_response, $polling_args) = SearchAndDeleteEmailCommand $cs_client $command_arguments
             }
         }

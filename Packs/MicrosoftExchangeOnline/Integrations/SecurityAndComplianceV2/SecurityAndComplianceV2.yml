@@ -1217,8 +1217,8 @@ script:
       - 'false'
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
-  - name: o365-sc-search-and-delete-email-office-365-quick-action
-    prettyname: Search And Delete Email - Office 365
+  - name: o365-sc-email-security-search-and-delete-email-office-365-quick-action
+    prettyname: "[Email Security] Search And Delete Email - Office 365"
     # hidden: true
     # quickaction: true
     polling: true
