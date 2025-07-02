@@ -28,7 +28,9 @@ from Azure import (
     CommandResults,
     DemistoException,
     CloudTypes,
+    API_VERSION,
     SCOPE_BY_CONNECTION,
+    PREFIX_URL_AZURE,
 )
 
 
@@ -1278,3 +1280,353 @@ def test_azure_client_http_request_api_version_override(mocker, mock_params):
     call_args = mock_ms_client.http_request.call_args
     assert call_args[1]["params"]["api-version"] == "2023-01-01"
     assert call_args[1]["params"]["other-param"] == "value"
+
+
+def test_azure_client_initialization_without_refresh_token(mocker):
+    """
+    Given: An app_id without a refresh token.
+    When: AzureClient is initialized.
+    Then: The client should not modify the integration context.
+    """
+    # Mock integration context functions
+    mocker.patch("Azure.get_integration_context", return_value={})
+    mock_set_context = mocker.patch("Azure.set_integration_context")
+    mocker.patch("Azure.MicrosoftClient")
+
+    # Initialize client without refresh token
+    client = AzureClient(app_id="test_app_id")
+
+    # Verify integration context was not modified
+    mock_set_context.assert_not_called()
+
+
+def test_azure_client_http_request_with_base_client(mocker):
+    """
+    Given: An Azure client with headers configured.
+    When: The http_request method is called.
+    Then: The function should use BaseClient with proper headers and proxy settings.
+    """
+    # Setup mocks
+    headers = {"Authorization": "Bearer token", "Content-Type": "application/json"}
+    mock_base_client = mocker.Mock()
+    mock_base_client._http_request.return_value = {"result": "success"}
+    mocker.patch("Azure.BaseClient", return_value=mock_base_client)
+    mocker.patch("Azure.get_proxydome_token", return_value="proxy_token")
+
+    # Create client with headers
+    client = AzureClient(headers=headers)
+
+    # Call the function
+    result = client.http_request(method="GET", url_suffix="/test")
+
+    # Verify BaseClient was used with correct parameters
+    expected_headers = headers.copy()
+    expected_headers["x-caller-id"] = "proxy_token"
+
+    mock_base_client._http_request.assert_called_once()
+    call_args = mock_base_client._http_request.call_args
+    assert call_args[1]["headers"] == expected_headers
+    assert "proxies" in call_args[1]
+    assert result == {"result": "success"}
+
+
+def test_azure_client_http_request_with_microsoft_client(mocker):
+    """
+    Given: An Azure client without headers configured.
+    When: The http_request method is called.
+    Then: The function should use MicrosoftClient.
+    """
+    # Setup mocks
+    mock_ms_client = mocker.Mock()
+    mock_ms_client.http_request.return_value = {"result": "success"}
+    mocker.patch("Azure.MicrosoftClient", return_value=mock_ms_client)
+
+    # Create client without headers
+    client = AzureClient()
+
+    # Call the function
+    result = client.http_request(method="POST", url_suffix="/test", json_data={"key": "value"})
+
+    # Verify MicrosoftClient was used
+    mock_ms_client.http_request.assert_called_once_with(
+        method="POST",
+        url_suffix="/test",
+        full_url=None,
+        json_data={"key": "value"},
+        params={"api-version": "2022-09-01"},
+        resp_type="json",
+    )
+    assert result == {"result": "success"}
+
+
+def test_azure_client_get_rule(mocker, client):
+    """
+    Given: An Azure client and security rule parameters.
+    When: The get_rule method is called.
+    Then: The function should make the correct API call.
+    """
+    # Setup mock response
+    mock_response = {
+        "name": "test-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule",
+        "properties": {"access": "Allow", "protocol": "Tcp"},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the function
+    result = client.get_rule("test-sg", "test-rule", "sub-id", "test-rg")
+
+    # Verify correct API call was made
+    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule"
+    client.http_request.assert_called_once_with("GET", full_url=expected_url)
+    assert result == mock_response
+
+
+def test_azure_client_create_policy_assignment(mocker, client):
+    """
+    Given: An Azure client and policy assignment parameters.
+    When: The create_policy_assignment method is called.
+    Then: The function should make the correct API call with policy properties.
+    """
+    # Setup mock response
+    mock_response = {
+        "name": "test-policy",
+        "properties": {"policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/test-def"},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the function
+    result = client.create_policy_assignment(
+        name="test-policy",
+        policy_definition_id="test-def",
+        display_name="Test Policy",
+        description="Test description",
+        parameters={"param1": "value1"},
+        scope_prefix=f"{PREFIX_URL_AZURE}sub-id",
+    )
+
+    # Verify correct API call was made
+    expected_url = f"{PREFIX_URL_AZURE}sub-id/providers/Microsoft.Authorization/policyAssignments/test-policy"
+    client.http_request.assert_called_once()
+    call_args = client.http_request.call_args
+    assert call_args[1]["method"] == "PUT"
+    assert call_args[1]["full_url"] == expected_url
+
+    # Verify policy properties were included
+    json_data = call_args[1]["json_data"]
+    properties = json_data["properties"]
+    assert properties["policyDefinitionId"] == "/providers/Microsoft.Authorization/policySetDefinitions/test-def"
+    assert properties["displayName"] == "Test Policy"
+    assert properties["description"] == "Test description"
+    assert properties["parameters"] == {"param1": "value1"}
+
+
+def test_azure_client_create_rule_success(mocker, client):
+    """
+    Given: An Azure client and valid rule creation parameters.
+    When: The create_rule method is called.
+    Then: The function should make the correct API call with rule properties and return the response.
+    """
+    # Setup mock response
+    mock_response = {
+        "name": "test-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule",
+        "properties": {
+            "protocol": "Tcp",
+            "sourcePortRange": "*",
+            "destinationPortRange": "443",
+            "sourceAddressPrefix": "Internet",
+            "destinationAddressPrefix": "10.0.0.0/24",
+            "access": "Allow",
+            "priority": 100,
+            "direction": "Inbound",
+            "description": "Test rule",
+        },
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Prepare rule properties
+    properties = {
+        "protocol": "Tcp",
+        "sourcePortRange": "*",
+        "destinationPortRange": "443",
+        "sourceAddressPrefix": "Internet",
+        "destinationAddressPrefix": "10.0.0.0/24",
+        "access": "Allow",
+        "priority": 100,
+        "direction": "Inbound",
+        "description": "Test rule",
+    }
+
+    # Call the function
+    result = client.create_rule(
+        security_group="test-sg",
+        rule_name="test-rule",
+        properties=properties,
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+    )
+
+    # Verify correct API call was made
+    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule?"
+    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+
+    # Verify response
+    assert result == mock_response
+    assert result["name"] == "test-rule"
+    assert result["properties"]["protocol"] == "Tcp"
+    assert result["properties"]["access"] == "Allow"
+
+
+def test_azure_client_create_rule_with_complex_properties(mocker, client):
+    """
+    Given: An Azure client and complex rule properties with multiple ports and addresses.
+    When: The create_rule method is called.
+    Then: The function should handle complex properties correctly.
+    """
+    # Setup mock response
+    mock_response = {
+        "name": "complex-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/complex-rule",
+        "properties": {
+            "protocol": "*",
+            "sourcePortRanges": ["80", "443", "8080-8090"],
+            "destinationPortRanges": ["22", "3389"],
+            "sourceAddressPrefixes": ["10.0.0.0/24", "192.168.1.0/24"],
+            "destinationAddressPrefixes": ["172.16.0.0/16"],
+            "access": "Deny",
+            "priority": 200,
+            "direction": "Outbound",
+            "description": "Complex rule with multiple ranges",
+        },
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Prepare complex rule properties
+    properties = {
+        "protocol": "*",
+        "sourcePortRanges": ["80", "443", "8080-8090"],
+        "destinationPortRanges": ["22", "3389"],
+        "sourceAddressPrefixes": ["10.0.0.0/24", "192.168.1.0/24"],
+        "destinationAddressPrefixes": ["172.16.0.0/16"],
+        "access": "Deny",
+        "priority": 200,
+        "direction": "Outbound",
+        "description": "Complex rule with multiple ranges",
+    }
+
+    # Call the function
+    result = client.create_rule(
+        security_group="test-sg",
+        rule_name="complex-rule",
+        properties=properties,
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+    )
+
+    # Verify correct API call was made
+    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/complex-rule?"
+    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+
+    # Verify response contains complex properties
+    assert result == mock_response
+    assert result["properties"]["sourcePortRanges"] == ["80", "443", "8080-8090"]
+    assert result["properties"]["destinationPortRanges"] == ["22", "3389"]
+    assert result["properties"]["sourceAddressPrefixes"] == ["10.0.0.0/24", "192.168.1.0/24"]
+
+
+def test_azure_client_storage_account_update_request_success(mocker, client):
+    """
+    Given: An Azure client and valid storage account update parameters.
+    When: The storage_account_update_request method is called.
+    Then: The function should make the correct API call with storage account properties and return the response.
+    """
+    # Setup mock response
+    mock_response = mocker.Mock()
+    mock_response.text = '{"name": "teststorage", "properties": {"supportsHttpsTrafficOnly": true}}'
+    mock_response.json.return_value = {
+        "name": "teststorage",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage",
+        "properties": {"supportsHttpsTrafficOnly": True, "networkAcls": {"bypass": "AzureServices", "defaultAction": "Deny"}},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Prepare arguments
+    args = {
+        "account_name": "teststorage",
+        "sku": "Standard_LRS",
+        "kind": "StorageV2",
+        "location": "eastus",
+        "supports_https_traffic_only": "true",
+        "network_ruleset_bypass": "AzureServices",
+        "network_ruleset_default_action": "Deny",
+    }
+
+    # Call the function
+    result = client.storage_account_update_request(subscription_id="sub-id", resource_group_name="test-rg", args=args)
+
+    # Verify correct API call was made
+    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage"
+    client.http_request.assert_called_once()
+    call_args = client.http_request.call_args
+
+    assert call_args[1]["method"] == "PATCH"
+    assert call_args[1]["full_url"] == expected_url
+    assert call_args[1]["params"]["api-version"] == API_VERSION
+    assert call_args[1]["resp_type"] == "response"
+
+    # Verify JSON data structure
+    json_data = call_args[1]["json_data"]
+    assert json_data["sku"]["name"] == "Standard_LRS"
+    assert json_data["kind"] == "StorageV2"
+    assert json_data["location"] == "eastus"
+    assert json_data["properties"]["supportsHttpsTrafficOnly"] == "true"
+    assert json_data["properties"]["networkAcls"]["bypass"] == "AzureServices"
+    assert json_data["properties"]["networkAcls"]["defaultAction"] == "Deny"
+
+    # Verify response
+    assert result == mock_response
+
+
+def test_azure_client_storage_blob_service_properties_set_request_success(mocker, client):
+    """
+    Given: An Azure client and valid blob service properties parameters.
+    When: The storage_blob_service_properties_set_request method is called.
+    Then: The function should make the correct API call with blob properties and return the response.
+    """
+    # Setup mock response
+    mock_response = {
+        "name": "default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/default",
+        "properties": {"deleteRetentionPolicy": {"enabled": True, "days": 7}},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the function
+    result = client.storage_blob_service_properties_set_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        account_name="teststorage",
+        delete_rentention_policy_enabled="true",
+        delete_rentention_policy_days="7",
+    )
+
+    # Verify correct API call was made
+    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/default"
+    client.http_request.assert_called_once()
+    call_args = client.http_request.call_args
+
+    assert call_args[1]["method"] == "PUT"
+    assert call_args[1]["full_url"] == expected_url
+    assert call_args[1]["params"]["api-version"] == API_VERSION
+
+    # Verify JSON data structure
+    json_data = call_args[1]["json_data"]
+    assert json_data["properties"]["deleteRetentionPolicy"]["enabled"] == "true"
+    assert json_data["properties"]["deleteRetentionPolicy"]["days"] == "7"
+
+    # Verify response
+    assert result == mock_response
+    assert result["name"] == "default"
+    assert result["properties"]["deleteRetentionPolicy"]["enabled"] is True
+    assert result["properties"]["deleteRetentionPolicy"]["days"] == 7
