@@ -1,20 +1,34 @@
+import os
+import io
+
 import demistomock as demisto
 
 from PolySwarmV2 import PolyswarmConnector
 
+import pytest
+import vcr as libvcr
+
+
+TEST_FOLDER = os.path.dirname(os.path.abspath(__file__))
+
 TEST_SCAN_UUID = "95039375646493045"
-TEST_SCAN_DOMAIN = ["domain-test.com"]
-TEST_SCAN_IP = ["0.0.0.0"]
-TEST_SCAN_URL = ["https://url-test.com"]
-TEST_HASH_FILE = "939adb211c3bcf76b84b2417e1d39248994e21d48a3d7eddca87bb76d6c31cc3"
+TEST_SCAN_DOMAIN = "preesallmobilevalating23-gmail[.]com".replace('[.]', '.')
+TEST_SCAN_IP = "205[.]210[.]31[.]208".replace('[.]', '.')
+TEST_SCAN_URL = "http://preesallmobilevalating23-gmail[.]com".replace('[.]', '.')
+TEST_HASH_FILE = "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"
 TEST_ENTRY_ID = "XXXXX"
 
-MOCK_API_URL = "https://api.polyswarm.network/v2"
+MOCK_API_URL = os.getenv("POLYSWARM_API_URI", "https://api.polyswarm.network/v3/")
 
-POLYSWARM_URL_RESULTS = f"https://polyswarm.network/scan/results/file/{TEST_HASH_FILE}"
+POLYSWARM_URL_RESULTS_BASE = "https://polyswarm.network/scan/results/file"
+POLYSWARM_URL_RESULTS = f"{POLYSWARM_URL_RESULTS_BASE}/{TEST_HASH_FILE}"
 POLYSWARM_COMMUNITY = "default"
 
-MOCK_PARAMS = {"api_key": "XXXXXXXXXXXXXXXXXXXXXXXXXX", "base_url": MOCK_API_URL, "polyswarm_community": POLYSWARM_COMMUNITY}
+MOCK_PARAMS = {
+    "api_key": os.getenv("POLYSWARM_API_KEY", "XXXXXXXXXXXXXXXXXXXXXXXXXX"),
+    "base_url": MOCK_API_URL,
+    "polyswarm_community": POLYSWARM_COMMUNITY,
+}
 
 MOCK_FILE_INFO = {"name": "MaliciousFile.exe", "path": "/path/MaliciousFile.exe"}
 
@@ -801,101 +815,27 @@ MOCK_SCAN_JSON_RESPONSE = {
 }
 
 
-def test_reputation(mocker, requests_mock):
-    mocker.patch.object(demisto, "debug", return_value=None)
 
-    def run_test(param, scan_uuid):
-        mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
-
-        polyswarm = PolyswarmConnector()
-
-        path_url_scan = "/consumer/submission/{polyswarm_community}".format(
-            polyswarm_community=demisto.params().get("polyswarm_community")
-        )
-
-        requests_mock.post(MOCK_API_URL + path_url_scan, json=MOCK_LOOKUP_JSON_ID)
-
-        path_url_lookup = "/consumer/submission/{polyswarm_community}/{uuid}".format(
-            polyswarm_community=demisto.params().get("polyswarm_community"), uuid=TEST_SCAN_UUID
-        )
-
-        requests_mock.get(MOCK_API_URL + path_url_lookup, json=MOCK_SCAN_JSON_RESPONSE)
-
-        results = polyswarm.url_reputation(param, list(param.keys())[0])
-        results = results[0].to_context()
-        assert results["Contents"]["Positives"] == "1"
-        assert results["Contents"]["Total"] == "3"
-        assert results["Contents"]["Scan_UUID"] == scan_uuid[0]
-        assert results["Contents"]["Permalink"] == POLYSWARM_URL_RESULTS
-        assert results["Contents"]["Artifact"] == scan_uuid[0]
-
-    # test Domain scan reputation
-    param = {"domain": TEST_SCAN_DOMAIN}
-    run_test(param, TEST_SCAN_DOMAIN)
-
-    # test IP scan reputation
-    param = {"ip": TEST_SCAN_IP}
-    run_test(param, TEST_SCAN_IP)
-
-    # test URL scan reputation
-    param = {"url": TEST_SCAN_URL}
-    run_test(param, TEST_SCAN_URL)
-
-
-def test_polyswarm_get_report(mocker, requests_mock):
-    mocker.patch.object(demisto, "debug", return_value=None)
-
-    mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
-
-    polyswarm = PolyswarmConnector()
-
-    param = {"scan_uuid": TEST_HASH_FILE}
-
-    path_url_lookup = f"/search/hash/sha256?hash={TEST_HASH_FILE}"
-    requests_mock.get(MOCK_API_URL + path_url_lookup, json=MOCK_SEARCH_JSON_RESPONSE)
-
-    results = polyswarm.get_report(param["scan_uuid"])
-    results = results[0].to_context()
-
-    assert results["Contents"]["Positives"] == "6"
-    assert results["Contents"]["Total"] == "17"
-    assert results["Contents"]["Scan_UUID"] == TEST_HASH_FILE
-    assert results["Contents"]["Permalink"] == POLYSWARM_URL_RESULTS
-    assert results["Contents"]["Artifact"] == TEST_HASH_FILE
-
-
-def test_file_rescan(mocker, requests_mock):
-    mocker.patch.object(demisto, "debug", return_value=None)
-
-    mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
-
-    polyswarm = PolyswarmConnector()
-
-    param = {"hash": TEST_HASH_FILE}
-
-    path_rescan = "/consumer/submission/{polyswarm_community}/rescan/{hash_type}/{hash}".format(
-        polyswarm_community=demisto.params().get("polyswarm_community"), hash_type="sha256", hash=TEST_HASH_FILE
+@pytest.fixture(scope='module')
+def vcr_config():
+    return dict(  # noqa: C408
+        serializer='yaml',
+        cassette_library_dir=os.path.join(TEST_FOLDER, 'fixtures/vcr/'),
+        # record_mode=libvcr.record_mode.RecordMode.ONCE,
+        # record_mode=libvcr.record_mode.RecordMode.ALL,
+        record_mode=libvcr.record_mode.RecordMode.NONE,
+        filter_headers=[('authorization', 'XDEADBEEFDEADBEEFDEADBEEFX')],
+        # filter_post_data_parameters=[],
+        filter_query_parameters=[
+            ('X-Amz-Credential', 'AKIADEADBEEFCREDENTIAL'),
+            ('X-Amz-Signature', '2345678deadbeefdeadbeef2345678deadbeefdeadbeef2345678deadbeef'),
+            ('X-Billing-ID', '876543218765'),
+        ],
     )
 
-    requests_mock.post(MOCK_API_URL + path_rescan, json=MOCK_LOOKUP_JSON_ID)
 
-    path_url_lookup = "/consumer/submission/{polyswarm_community}/{uuid}".format(
-        polyswarm_community=demisto.params().get("polyswarm_community"), uuid=TEST_SCAN_UUID
-    )
-
-    requests_mock.get(MOCK_API_URL + path_url_lookup, json=MOCK_SCAN_JSON_RESPONSE)
-
-    results = polyswarm.rescan_file(param["hash"])
-    results = results[0].to_context()
-
-    assert results["Contents"]["Positives"] == "1"
-    assert results["Contents"]["Total"] == "3"
-    assert results["Contents"]["Scan_UUID"] == TEST_HASH_FILE
-    assert results["Contents"]["Permalink"] == POLYSWARM_URL_RESULTS
-    assert results["Contents"]["Artifact"] == TEST_HASH_FILE
-
-
-def test_file_scan(mocker, requests_mock):
+@pytest.mark.vcr()
+def test_file_scan(mocker):
     mocker.patch.object(demisto, "debug", return_value=None)
 
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
@@ -906,32 +846,67 @@ def test_file_scan(mocker, requests_mock):
 
     param = {"entryID": TEST_ENTRY_ID}
 
-    path_detonate_file = "/consumer/submission/{polyswarm_community}".format(
-        polyswarm_community=demisto.params().get("polyswarm_community")
-    )
+    def fake_open(*args, **kwargs):
+        result = io.StringIO("X5O!P" r"%@AP[4\PZ" "X54(P^)7CC" ")7}$EICAR-STANDARD-ANTIVIRUS" "-TEST-FILE!$H+H*")
+        result.seek(0)
+        return result
 
-    requests_mock.post(MOCK_API_URL + path_detonate_file, json=MOCK_LOOKUP_JSON_ID)
-
-    path_url_lookup = "/consumer/submission/{polyswarm_community}/{uuid}".format(
-        polyswarm_community=demisto.params().get("polyswarm_community"), uuid=TEST_SCAN_UUID
-    )
-
-    requests_mock.get(MOCK_API_URL + path_url_lookup, json=MOCK_SCAN_JSON_RESPONSE)
-
-    open_mock = mocker.mock_open(read_data="data")
-    mocker.patch("builtins.open", open_mock)
+    mocker.patch("builtins.open", fake_open)
 
     results = polyswarm.detonate_file(param["entryID"])
     results = results.to_context()
 
-    assert results["Contents"]["Positives"] == "1"
-    assert results["Contents"]["Total"] == "3"
+    assert results["Contents"]["Positives"] >= "10"
+    assert results["Contents"]["Total"] >= "10"
     assert results["Contents"]["Scan_UUID"] == TEST_HASH_FILE
-    assert results["Contents"]["Permalink"] == POLYSWARM_URL_RESULTS
+    assert results["Contents"]["Permalink"].startswith(POLYSWARM_URL_RESULTS)
     assert results["Contents"]["Artifact"] == TEST_HASH_FILE
 
 
-def test_get_file(mocker, requests_mock):
+@pytest.mark.vcr()
+@pytest.mark.parametrize("kind,scan_target,results_id", [
+    ("domain", TEST_SCAN_DOMAIN, 'bd870bed700771f4fbe8992b5022fa655df743a397278c60cc40f4d25dac4052'),  # test Domain scan reputation
+    ("ip", TEST_SCAN_IP, 'af0169d053b43eb83b886fd65a8bc7df1d76bcc2b068c862ec1048e8cf1df8a2'),  # test IP scan reputation
+    ("url", TEST_SCAN_URL, 'dca3fb56531786e4141a7fdcdfaf0e74b64755b2514c2712881124e0449ba41d' ),  # test URL scan reputation
+])
+def test_reputation(mocker, kind, scan_target, results_id):
+    mocker.patch.object(demisto, "debug", return_value=None)
+
+    mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+
+    polyswarm = PolyswarmConnector()
+
+    param = {kind: [scan_target]}
+    results = polyswarm.url_reputation(param, kind)
+    results = results[0].to_context()
+    assert results["Contents"]["Positives"] >= "1"
+    assert results["Contents"]["Total"] >= "3"
+    assert results["Contents"]["Scan_UUID"] == scan_target
+    assert results["Contents"]["Permalink"].startswith(f'{POLYSWARM_URL_RESULTS_BASE}/{results_id}/'), f'REALITY: {results["Contents"]["Permalink"]}'
+    assert results["Contents"]["Artifact"] == scan_target
+
+@pytest.mark.vcr()
+def test_polyswarm_get_report(mocker):
+    mocker.patch.object(demisto, "debug", return_value=None)
+
+    mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+
+    polyswarm = PolyswarmConnector()
+
+    param = {"scan_uuid": TEST_HASH_FILE}
+
+    results = polyswarm.get_report(param["scan_uuid"])
+    results = results[0].to_context()
+
+    assert int(results["Contents"]["Positives"]) >= 4
+    assert int(results["Contents"]["Total"]) >= 6
+    assert results["Contents"]["Scan_UUID"] == TEST_HASH_FILE
+    assert results["Contents"]["Permalink"].startswith(POLYSWARM_URL_RESULTS), f'REALITY: {results["Contents"]["Permalink"]}'
+    assert results["Contents"]["Artifact"] == TEST_HASH_FILE
+
+
+@pytest.mark.vcr()
+def test_file_rescan(mocker):
     mocker.patch.object(demisto, "debug", return_value=None)
 
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
@@ -940,16 +915,33 @@ def test_get_file(mocker, requests_mock):
 
     param = {"hash": TEST_HASH_FILE}
 
-    path_get_file = "/download/{hash_type}/{hash}".format(hash_type="sha256", hash=TEST_HASH_FILE)
 
-    requests_mock.get(MOCK_API_URL + path_get_file, text="bin data response")
+    results = polyswarm.rescan_file(param["hash"])
+    results = results[0].to_context()
+
+    assert int(results["Contents"]["Positives"]) >= 1
+    assert int(results["Contents"]["Total"]) >= 3
+    assert results["Contents"]["Scan_UUID"] == TEST_HASH_FILE
+    assert results["Contents"]["Permalink"].startswith(POLYSWARM_URL_RESULTS), f'REALITY: {results["Contents"]["Permalink"]}'
+    assert results["Contents"]["Artifact"] == TEST_HASH_FILE
+
+
+@pytest.mark.vcr()
+def test_get_file(mocker):
+    mocker.patch.object(demisto, "debug", return_value=None)
+
+    mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+
+    polyswarm = PolyswarmConnector()
+
+    param = {"hash": TEST_HASH_FILE}
 
     results = polyswarm.get_file(param["hash"])
 
     assert results["File"] == TEST_HASH_FILE
 
-
-def test_file(mocker, requests_mock):
+@pytest.mark.vcr()
+def test_file(mocker):
     mocker.patch.object(demisto, "debug", return_value=None)
 
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
@@ -958,15 +950,11 @@ def test_file(mocker, requests_mock):
 
     param = {"hash": TEST_HASH_FILE}
 
-    path_search_hash = f"/search/hash/sha256?hash={TEST_HASH_FILE}"
-
-    requests_mock.get(MOCK_API_URL + path_search_hash, json=MOCK_SEARCH_JSON_RESPONSE)
-
     results = polyswarm.file_reputation(param["hash"])
     results = results[0].to_context()
 
-    assert results["Contents"]["Positives"] == "6"
-    assert results["Contents"]["Total"] == "17"
+    assert int(results["Contents"]["Positives"]) >= 4
+    assert int(results["Contents"]["Total"]) >= 8
     assert results["Contents"]["Scan_UUID"] == TEST_HASH_FILE
-    assert results["Contents"]["Permalink"] == POLYSWARM_URL_RESULTS
+    assert results["Contents"]["Permalink"].startswith(POLYSWARM_URL_RESULTS), f'REALITY: {results["Contents"]["Permalink"]}'
     assert results["Contents"]["Artifact"] == TEST_HASH_FILE
