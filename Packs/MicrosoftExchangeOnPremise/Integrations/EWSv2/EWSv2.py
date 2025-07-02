@@ -490,7 +490,7 @@ def fetch_last_emails(
             tz = EWSTimeZone("UTC")
             first_fetch_datetime = dateparser.parse(fetch_time)
             if not first_fetch_datetime:
-                raise DemistoException("Failed to parse first last run time")
+                raise DemistoException("Failed to parse first last run time") #
             first_fetch_ews_datetime = first_fetch_datetime.astimezone(tz)
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
