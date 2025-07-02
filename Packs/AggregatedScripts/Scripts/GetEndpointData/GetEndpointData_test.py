@@ -284,6 +284,60 @@ class TestEndpointCommandRunner:
         mock_get_command_results.assert_called_once()
 
 
+def test_is_private_ip():
+    """
+    Given:
+        Various IPv4 addresses including private ranges, public addresses, and invalid formats.
+    When:
+        The is_private_ip function is called with these different address types.
+    Then:
+        It should correctly identify private IP addresses and return False for public or invalid addresses.
+    """
+    # Test Class A private range (10.0.0.0 - 10.255.255.255)
+    assert is_private_ip("10.0.0.0") is True
+    assert is_private_ip("10.255.255.255") is True
+    assert is_private_ip("10.123.45.67") is True
+
+    # Test Class B private range (172.16.0.0 - 172.31.255.255)
+    assert is_private_ip("172.16.0.0") is True
+    assert is_private_ip("172.31.255.255") is True
+    assert is_private_ip("172.20.10.5") is True
+
+    # Test Class C private range (192.168.0.0 - 192.168.255.255)
+    assert is_private_ip("192.168.0.0") is True
+    assert is_private_ip("192.168.255.255") is True
+    assert is_private_ip("192.168.1.100") is True
+
+    # Test loopback range (127.0.0.0 - 127.255.255.255)
+    assert is_private_ip("127.0.0.1") is True
+    assert is_private_ip("127.255.255.255") is True
+    assert is_private_ip("127.100.50.25") is True
+
+    # Test link-local range (169.254.0.0 - 169.254.255.255)
+    assert is_private_ip("169.254.0.0") is True
+    assert is_private_ip("169.254.255.255") is True
+    assert is_private_ip("169.254.100.200") is True
+
+    # Test public IP addresses
+    assert is_private_ip("8.8.8.8") is False
+    assert is_private_ip("1.1.1.1") is False
+    assert is_private_ip("172.15.255.255") is False  # Just outside Class B private
+    assert is_private_ip("172.32.0.0") is False  # Just outside Class B private
+    assert is_private_ip("192.167.255.255") is False  # Just outside Class C private
+    assert is_private_ip("9.255.255.255") is False  # Just outside Class A private
+    assert is_private_ip("11.0.0.0") is False  # Just outside Class A private
+    assert is_private_ip("203.0.113.1") is False  # Public address
+
+    # Test invalid IP formats
+    assert is_private_ip("256.1.1.1") is False  # Invalid octet > 255
+    assert is_private_ip("10.256.1.1") is False  # Invalid octet > 255
+    assert is_private_ip("10.1.1") is False  # Missing octet
+    assert is_private_ip("10.1.1.1.1") is False  # Too many octets
+    assert is_private_ip("abc.def.ghi.jkl") is False  # Non-numeric
+    assert is_private_ip("") is False  # Empty string
+    assert is_private_ip("10.1.1.1/24") is False  # CIDR notation
+
+
 @pytest.fixture
 def setup_command_runner(mocker: MockerFixture):
     command_runner = mocker.Mock(spec=EndpointCommandRunner)
