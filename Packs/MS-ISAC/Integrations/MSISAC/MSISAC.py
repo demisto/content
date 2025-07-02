@@ -38,7 +38,6 @@ class Client(BaseClient):
         :type response: ``requests.Response``
         :param response: Response from API after the request for which to check the status.
         """
-
         err_msg = f"Error in API call [{res.status_code}] - {res.reason}"
         demisto.debug(
             f"""
@@ -55,6 +54,7 @@ class Client(BaseClient):
     def get_event(self, event_id: str) -> Dict[str, Any]:
         """
         Returns the details of an MS-ISAC event
+        This is a legacy endpoint that only returns results prior to 6/30/25
 
         :type event_id: ``str``
         :param event_id: id of the event
@@ -71,6 +71,7 @@ class Client(BaseClient):
     def retrieve_events(self, days: int) -> Dict[str, Any]:
         """
         Returns a list of MS-ISAC events in a given amount of days
+        This is a legacy endpoint that only returns results prior to 6/30/25
 
         :type days: ``str``
         :param days: The number of days to search. This will be one or greater
@@ -78,8 +79,34 @@ class Client(BaseClient):
         :return: dict containing the alert as returned from the API
         :rtype: ``Dict[str, Any]``
         """
-
         return self._http_request(method="GET", url_suffix=f"/albert/{days}", timeout=100, error_handler=self.error_handler)
+
+    def get_alert(self, alert_id: str) -> Dict[str, Any]:
+        """
+        Returns the details of an MS-ISAC alert
+        This will only return results after 7/1/2025
+
+        :type alert_id: ``str``
+        :param alert_id: id of the event
+
+        :return: dict containing the alert as returned from the API
+        :rtype: ``Dict[str, Any]``
+        """
+        return self._http_request(method="GET", url_suffix=f"/alert/{alert_id}", timeout=100)
+
+    def retrieve_cases(self, timestamp: str) -> list[dict[str, Any]]:
+        """
+        Returns a list of MS-ISAC cases since the given timestamp
+        This will only return results after 7/1/2025
+
+        :type timestamp: ``str``
+        :param timestamp: Return cases since the timestamp given. API docs shows formatting as "2025-07-01T00:00:00".
+                          If this parameter is not given, will default to searching back 72 hours
+
+        :return: list containing the cases as returned from the API
+        :rtype: ``list[dict[str, any]]``
+        """
+        return self._http_request(method="GET", url_suffix=f"/cases/{timestamp}", timeout=100)
 
 
 """ HELPER FUNCTIONS """
@@ -369,13 +396,19 @@ def main():
             result = test_module(client)
             return_results(result)
 
-        elif command == "msisac-get-event":
+        elif command == "msisac-get-event":  # deprecated
             result = get_event_command(client, args)
             return_results(result)
 
-        elif command == "msisac-retrieve-events":
+        elif command == "msisac-retrieve-events":  # deprecated
             result = retrieve_events_command(client, args)
             return_results(result)
+
+        elif command == "msisac-get-alert":
+            pass
+
+        elif command == "msisac-retrieve-cases":
+            pass
 
         elif command == "fetch-incidents":
             # Since arg_to_datetime returns Optional[datetime], but we are forcing a datetime object to be returned.
