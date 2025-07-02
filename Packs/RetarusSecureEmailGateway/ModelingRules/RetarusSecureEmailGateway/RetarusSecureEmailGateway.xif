@@ -11,7 +11,7 @@ alter
         status = "DETECTED", ", Malicious File/ URL Detected", 
         status = "SUSPICIOUS",", Suspicious File/ URL Found" )
 | alter
-        xdm.email.origination_timestamp = parse_timestamp("%F %X %z",ts),
+        xdm.email.origination_timestamp = parse_timestamp("%F %X %z",to_string(ts)),
         xdm.observer.version = version,
         xdm.observer.name = host, 
         xdm.event.original_event_type = type,
