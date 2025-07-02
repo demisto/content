@@ -106,9 +106,8 @@ def get_agents_outputs(agents, column_to_display: list | None = None):
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, headers=None, block_site_ids=None):
+    def __init__(self, base_url, verify=True, proxy=False, headers=None):
         super().__init__(base_url, verify, proxy, headers=headers)
-        self.block_site_ids = block_site_ids
 
     def remove_hash_from_blocklist_request(self, hash_id) -> dict:
         body = {"data": {"ids": [hash_id]}}
@@ -3079,7 +3078,6 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     site_ids = args.get("site_ids")
     group_ids = args.get("group_ids")
     account_ids = args.get("account_ids")
-    sites = client.block_site_ids
 
     try:
         # If any scope is provided, use the scoped request
@@ -3118,19 +3116,6 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
                 status["group_ids"] = group_ids
             if account_ids:
                 status["account_ids"] = account_ids
-
-        elif sites:
-            demisto.debug(f"Adding sha1 {sha1} to sites {sites}")
-            result = client.add_hash_to_blocklists_request(
-                value=sha1,
-                description=args.get("description"),
-                os_type=args.get("os_type"),
-                site_ids=sites,
-                source=args.get("source"),
-            )
-            status = {"hash": sha1, "status": f"Added to site: {sites} blocklist"}
-            status["site_ids"] = sites
-
         else:
             result = client.add_hash_to_blocklist_request(
                 value=sha1,
@@ -3168,22 +3153,30 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) -> list[str | None]:
+def get_hash_ids_from_blocklist(
+    client: Client, sha1: str, os_type: str = None, site_ids: str = None, group_ids: str = None, account_ids: str = None
+) -> list[str | None]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
 
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
     ret: list = []
-    if client.block_site_ids:
+    if site_ids or group_ids or account_ids:
         PAGE_SIZE = 20
-        site_ids = ",".join(client.block_site_ids)
+        site_ids = site_ids
+        group_ids = group_ids
+        account_ids = account_ids
         block_list = client.get_blocklist_request(
             tenant=False,
             skip=0,
             limit=PAGE_SIZE,
             os_type=os_type,
             site_ids=site_ids,
+            group_ids=group_ids,
+            account_ids=account_ids,
+            # Sort by updatedAt to ensure the most recent entries are returned first
+            # This is important because the blocklist can have multiple entries for the same hash
             sort_by="updatedAt",
             sort_order="asc",
             value_contains=sha1,
@@ -3214,7 +3207,26 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
     if not sha1:
         raise DemistoException("You must specify a valid Sha1 hash")
     os_type = args.get("os_type", None)
-    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type)
+
+    site_ids = args.get("site_ids")
+    group_ids = args.get("group_ids")
+    account_ids = args.get("account_ids")
+
+    if site_ids or group_ids or account_ids:
+        # If any scope is provided, use the scoped request
+        scope_parts = []
+        if site_ids:
+            scope_parts.append(f"sites={site_ids}")
+        if group_ids:
+            scope_parts.append(f"groups={group_ids}")
+        if account_ids:
+            scope_parts.append(f"accounts={account_ids}")
+        scope_str = ", ".join(scope_parts)
+        demisto.debug(f"Removing sha1 {sha1} from blocklist with scopes: {scope_str}")
+    else:
+        demisto.debug(f"Removing sha1 {sha1} from blocklist with all scopes")
+
+    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type, site_ids, group_ids, account_ids)
 
     if not hash_ids:
         status = {"hash": sha1, "status": "Not on blocklist"}
@@ -4137,7 +4149,6 @@ def main():
     fetch_threat_rank = int(params.get("fetch_threat_rank", 0))
     fetch_limit = int(params.get("fetch_limit", 10))
     fetch_site_ids = params.get("fetch_site_ids", None)
-    block_site_ids = argToList(params.get("block_site_ids")) or []
     mirror_direction = params.get("mirror_direction", None)
 
     headers = {
@@ -4237,7 +4248,6 @@ def main():
             verify=use_ssl,
             headers=headers,
             proxy=proxy,
-            block_site_ids=block_site_ids,
         )
 
         if command == "test-module":
