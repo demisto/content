@@ -305,7 +305,10 @@ def get_events_command(client: Client, args: dict, log_type: str, last_run: dict
     )
     all_events.extend(logs)
 
-    return all_events, CommandResults(readable_output=hr)
+    return_results(CommandResults(readable_output=hr))
+
+    if argToBoolean(args.get("should_push_events", True)):
+        send_events_to_xsiam(all_events, vendor=VENDOR, product=PRODUCT)
 
 
 def fetch_events_command(client: Client, last_run: dict, log_types: list):
@@ -438,25 +441,13 @@ def main() -> None:  # pragma: no cover
             return_results(module_of_testing(client, log_types))
 
         elif command == "service-now-get-audit-logs":
-            audit_logs, results = get_events_command(client=client, args=args, log_type=AUDIT, last_run=last_run)
-            return_results(results)
-
-            if argToBoolean(args.get("should_push_events", True)):
-                send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+            get_events_command(client=client, args=args, log_type=AUDIT, last_run=last_run)
 
         elif command == "service-now-get-syslog-transactions":
-            audit_logs, results = get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS, last_run=last_run)
-            return_results(results)
-
-            if argToBoolean(args.get("should_push_events", True)):
-                send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+            get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS, last_run=last_run)
 
         elif command == "service-now-get-case-logs":
-            audit_logs, results = get_events_command(client=client, args=args, log_type=CASE, last_run=last_run)
-            return_results(results)
-
-            if argToBoolean(args.get("should_push_events", True)):
-                send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+            get_events_command(client=client, args=args, log_type=CASE, last_run=last_run)
 
         elif command == "fetch-events":
             demisto.debug(f"Starting new fetch with last_run as {last_run}")
@@ -470,6 +461,7 @@ def main() -> None:  # pragma: no cover
                     # saves next_run for the time fetch-events is invoked
                     demisto.debug(f"Setting new last_run to {next_run}")
                     demisto.setLastRun(next_run)
+
         elif command == "service-now-oauth-login":
             return_results(login_command(client=client, user_name=user_name, password=password))
 
