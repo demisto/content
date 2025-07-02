@@ -1067,6 +1067,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerror: true
     continueonerrortype: ""
     loop:
       iscommand: false
