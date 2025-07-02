@@ -1638,8 +1638,8 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     execution_metrics = ExecutionMetrics()
 
     for file in files:
-        raise_if_hash_not_valid(file)
         try:
+            raise_if_hash_not_valid(file)
             raw_response = client.file(file, relationships)
             if raw_response.get("error", {}).get("code") == "QuotaExceededError":
                 execution_metrics.quota_error += 1
@@ -1672,8 +1672,8 @@ def private_file_command(client: Client, args: dict) -> List[CommandResults]:
     execution_metrics = ExecutionMetrics()
 
     for file in files:
-        raise_if_hash_not_valid(file)
         try:
+            raise_if_hash_not_valid(file)
             raw_response = client.private_file(file)
             if raw_response.get("error", {}).get("code") == "QuotaExceededError":
                 execution_metrics.quota_error += 1
