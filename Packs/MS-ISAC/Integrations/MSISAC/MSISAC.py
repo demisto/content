@@ -195,7 +195,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    client.retrieve_events(days=1)
+    client.retrieve_cases(timestamp="")
     return "ok"
 
 
