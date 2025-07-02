@@ -250,8 +250,10 @@ class AzureClient:
         try:
             return self.http_request(
                 "PUT",
-                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}\
-    /providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?",
+                full_url=(
+                    f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?"
+                ),
                 json_data={"properties": properties},
             )
         except Exception as e:
@@ -451,7 +453,6 @@ class AzureClient:
             }
         }
         return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
-    
 
     def set_postgres_config(
         self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str, source: str, value: str
@@ -1125,7 +1126,7 @@ class AzureClient:
 
     def remove_member_from_group(self, group_id: str, user_id: str):
         """Currently not supported in the integration - token scope issues.
-        Remove a single member to a group by sending a DELETE request. 
+        Remove a single member to a group by sending a DELETE request.
         Args:
             group_id: the group id to add the member to.
             user_id: the user id to remove.
@@ -2044,9 +2045,10 @@ def get_azure_client(params: dict, args: dict):
     headers = {}
     token = ""
     if not params.get("credentials", {}).get("password"):
-        token = get_cloud_credentials(
+        credentials : dict = get_cloud_credentials(
             CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id"), ["DEFAULT", "GRAPH"]
-        ).get("access_token")
+        )
+        token : str = credentials.get("access_token")
         if not token:
             raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}

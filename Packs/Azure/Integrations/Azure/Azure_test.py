@@ -601,7 +601,7 @@ def test_sql_db_threat_policy_update_command_not_found(mocker, client, mock_para
     def mock_get_threat_policy(*args, **kwargs):
         # Simulate what the actual Azure API would return
         raise DemistoException("Resource not found - Database 'test-db' does not exist on server 'test-server'")
-    
+
     mocker.patch.object(client, "sql_db_threat_policy_get", side_effect=mock_get_threat_policy)
 
     # Call the function
@@ -791,7 +791,6 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     )
 
 
-
 def test_remove_member_from_role(mocker, client):
     """
     Given: An Azure client and arguments for removing a member from a role.
@@ -842,7 +841,6 @@ def test_get_azure_client_no_token(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "azure-storage-account-update"
 
     mocker.patch("Azure.get_from_args_or_params", return_value="mocked_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No token
@@ -866,7 +864,6 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "azure-storage-account-update"
     mock_client = mocker.Mock()
 
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -903,7 +900,6 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "azure-storage-account-update"
     mock_client = mocker.Mock()
     mock_token = "mock_access_token"
 
@@ -970,7 +966,6 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "azure-storage-account-update"
     mock_client = mocker.Mock()
 
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -1001,7 +996,6 @@ def test_get_azure_client_missing_optional_params(mocker):
     """
     # Setup mocks
     args = {}
-    command = "azure-storage-account-update"
     mock_client = mocker.Mock()
 
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -1023,8 +1017,8 @@ def test_get_azure_client_missing_optional_params(mocker):
     assert call_args[1]["verify"] is True  # Default for insecure=False
     assert call_args[1]["proxy"] is False  # Default
     assert call_args[1]["tenant_id"] is None
-    
-    
+
+
 def test_format_rule_dict_input(mocker):
     """
     Given: A rule JSON as dictionary and security rule name.
@@ -1034,15 +1028,18 @@ def test_format_rule_dict_input(mocker):
     # Prepare test data
     rule_json = {
         "name": "test-rule",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+            "securityRules/test-rule"
+        ),
         "properties": {
             "protocol": "Tcp",
             "sourcePortRange": "*",
             "destinationPortRange": "443",
             "access": "Allow",
             "priority": 100,
-            "direction": "Inbound"
-        }
+            "direction": "Inbound",
+        },
     }
     security_rule_name = "test-rule"
 
@@ -1075,19 +1072,25 @@ def test_format_rule_list_input(mocker):
     rule_json = [
         {
             "name": "rule1",
-            "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/rule1",
-            "properties": {"protocol": "Tcp", "access": "Allow"}
+            "id": (
+                "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+                "securityRules/rule1"
+            ),
+            "properties": {"protocol": "Tcp", "access": "Allow"},
         },
         {
             "name": "rule2",
-            "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/rule2",
-            "properties": {"protocol": "Udp", "access": "Deny"}
-        }
+            "id": (
+                "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+                "securityRules/rule2"
+            ),
+            "properties": {"protocol": "Udp", "access": "Deny"},
+        },
     ]
     security_rule_name = "test-rules"
 
     # Mock tableToMarkdown
-    mock_table = mocker.patch("Azure.tableToMarkdown", return_value="Mock Table")
+    mocker.patch("Azure.tableToMarkdown", return_value="Mock Table")
 
     # Call the function
     result = format_rule(rule_json, security_rule_name)
@@ -1212,7 +1215,7 @@ def test_azure_client_http_request_with_headers(mocker, mock_params):
     # Setup mocks
     headers = {"Authorization": "Bearer token", "Content-Type": "application/json"}
     mock_base_client = mocker.Mock()
-    mock_get_proxydome_token = mocker.patch("Azure.get_proxydome_token", return_value="proxy_token")
+    mocker.patch("Azure.get_proxydome_token", return_value="proxy_token")
     mocker.patch("Azure.BaseClient", return_value=mock_base_client)
 
     # Create client with headers
@@ -1224,7 +1227,7 @@ def test_azure_client_http_request_with_headers(mocker, mock_params):
     # Verify BaseClient was used and proxydome token was added
     expected_headers = headers.copy()
     expected_headers["x-caller-id"] = "proxy_token"
-    
+
     mock_base_client._http_request.assert_called_once()
     call_args = mock_base_client._http_request.call_args
     assert call_args[1]["headers"] == expected_headers
@@ -1249,12 +1252,7 @@ def test_azure_client_http_request_without_headers(mocker, mock_params):
 
     # Verify MicrosoftClient was used
     mock_ms_client.http_request.assert_called_once_with(
-        method="GET",
-        url_suffix="/test",
-        full_url=None,
-        json_data=None,
-        params={"api-version": "2022-09-01"},
-        resp_type="json"
+        method="GET", url_suffix="/test", full_url=None, json_data=None, params={"api-version": "2022-09-01"}, resp_type="json"
     )
 
 
@@ -1280,4 +1278,3 @@ def test_azure_client_http_request_api_version_override(mocker, mock_params):
     call_args = mock_ms_client.http_request.call_args
     assert call_args[1]["params"]["api-version"] == "2023-01-01"
     assert call_args[1]["params"]["other-param"] == "value"
-
