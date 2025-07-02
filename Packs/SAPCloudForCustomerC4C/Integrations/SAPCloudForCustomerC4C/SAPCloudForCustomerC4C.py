@@ -197,10 +197,7 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
             start_date_for_filter = dateparser.parse(FIRST_FETCH).strftime(STRFTIME_FORMAT)  # type: ignore[union-attr]
     else:
         # For the very first fetch or if last_run is empty
-        start_date_for_filter = dateparser.parse(
-            FIRST_FETCH,
-            settings={"TIMEZONE": "Asia/Jerusalem", "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "Asia/Jerusalem"},
-        ).strftime(STRFTIME_FORMAT)  # type: ignore[union-attr]
+        start_date_for_filter = dateparser.parse(FIRST_FETCH).strftime(STRFTIME_FORMAT)  # type: ignore[union-attr]
 
     demisto.debug(f"Getting events from: {start_date_for_filter}")
 

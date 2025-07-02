@@ -1,6 +1,8 @@
-import json
+from SAPCloudForCustomerC4C import Client
 
 
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
+SAP_CLOUD = "SAP CLOUD FOR CUSTOMER"
+
+
+def mock_client():
+    return Client(base_url="https://my313577.crm.ondemand.com", base64String="base64String", verify=True)
