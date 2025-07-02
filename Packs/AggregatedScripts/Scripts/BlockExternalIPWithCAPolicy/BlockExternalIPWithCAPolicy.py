@@ -1,12 +1,10 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import * # noqa: F401
 
 import json
 import ipaddress
 import time
-from typing import Dict, Any, List, Union, Optional
+from typing import Any, List, Union, Optional # Removed Dict
 
 # --- Constants ---
 GLOBAL_ADMIN_ROLE_ID = "62e90394-69f5-4237-9190-012177145e10"  # Azure Global Administrator role ID
@@ -25,7 +23,7 @@ def is_private_ip(ip: str) -> bool:
         demisto.debug(f"Invalid IP address format encountered: {ip}")
         return False
 
-def get_azure_command_error_details(res: Dict[str, Any]) -> str:
+def get_azure_command_error_details(res: dict[str, Any]) -> str: # Changed Dict to dict
     """
     Extracts a readable error message from an Azure command result.
     Tries to parse the 'Contents' field for JSON structured error info.
@@ -60,7 +58,7 @@ def get_azure_command_error_details(res: Dict[str, Any]) -> str:
         demisto.debug(f"Exception during error details extraction: {ex}")
         return f"Error extracting error message: {str(ex)}"
 
-def _execute_command_and_handle_error(command: str, args: Dict[str, Any], error_message_prefix: str) -> Dict[str, Any]:
+def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_message_prefix: str) -> dict[str, Any]: # Changed Dict to dict
     """
     Executes a Demisto command and checks for errors.
     Raises an exception if command execution fails.
@@ -74,7 +72,7 @@ def _execute_command_and_handle_error(command: str, args: Dict[str, Any], error_
     demisto.debug(f"Successfully executed {command}. Result: {res[0].get('Contents')}")
     return res[0].get('Contents', {})
 
-def get_named_ip_location(named_location_name: str) -> Optional[Dict[str, Any]]:
+def get_named_ip_location(named_location_name: str) -> Optional[dict[str, Any]]: # Changed Dict to dict
     """
     Retrieves an existing named IP location by display name.
     """
