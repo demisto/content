@@ -3368,7 +3368,7 @@ def test_send_notification_with_adaptive_card_from_TeamAsk(mocker, requests_mock
     Then:
         - The request to the endpoint is sent with the adaptive card.
     """
-    
+
     from MicrosoftTeams import send_message
 
     adaptive_card: dict = {
@@ -3408,7 +3408,7 @@ def test_send_notification_with_adaptive_card_from_TeamAsk(mocker, requests_mock
                 {
                     "type": "Action.Submit",
                     "title": "No",
-                    "data": {"entitlement": "44111dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
+                    "data": {"entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
                 },
             ],
         },
