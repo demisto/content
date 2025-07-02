@@ -371,7 +371,7 @@ def retrieve_cases_command(client: Client, args: Dict[str, Any]):
     :rtype: ``CommandResults``
     """
 
-    timestamp = args.get("timestamp", None)
+    timestamp = args.get("timestamp", "")
 
     case_list = client.retrieve_cases(timestamp=timestamp)
 
