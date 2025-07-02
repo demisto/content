@@ -25,6 +25,9 @@ from Azure import (
     remove_member_from_group_command,
     get_azure_client,
     remove_member_from_role,
+    postgres_server_update_command,
+    WEBAPP_API_VERSION,
+    FLEXIBLE_API_VERSION,
     CommandResults,
     DemistoException,
     CloudTypes,
@@ -1654,3 +1657,208 @@ def test_azure_client_storage_blob_service_properties_set_request_success(mocker
     assert result["name"] == "default"
     assert result["properties"]["deleteRetentionPolicy"]["enabled"] is True
     assert result["properties"]["deleteRetentionPolicy"]["days"] == 7
+
+
+def test_postgres_server_update_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and PostgreSQL server update parameters.
+    When: The postgres_server_update_command function is called.
+    Then: The function should call the client method and return success message.
+    """
+    # Mock the client method
+    mocker.patch.object(client, "postgres_server_update", return_value={})
+
+    # Call the function
+    args = {"server_name": "test-postgres", "ssl_enforcement": "Enabled"}
+    result = postgres_server_update_command(client, mock_params, args)
+
+    # Verify the client method was called
+    client.postgres_server_update.assert_called_once_with(
+        mock_params.get("subscription_id"), mock_params.get("resource_group_name"), "test-postgres", "Enabled"
+    )
+
+    # Verify response
+    assert isinstance(result, CommandResults)
+    assert "Updated postgreSQL server test-postgres" in result.readable_output
+
+
+def test_azure_client_handle_azure_error_404(client):
+    """
+    Given: A 404 error from Azure API.
+    When: handle_azure_error is called.
+    Then: The function should raise ValueError with appropriate message.
+    """
+    error = Exception("404 - Resource not found")
+
+    with pytest.raises(ValueError) as excinfo:
+        client.handle_azure_error(
+            e=error,
+            resource_name="test-resource",
+            resource_type="Storage Account",
+            subscription_id="sub-id",
+            resource_group_name="test-rg",
+        )
+
+    assert 'Storage Account "test-resource"' in str(excinfo.value)
+    assert 'subscription ID "sub-id"' in str(excinfo.value)
+    assert 'resource group "test-rg"' in str(excinfo.value)
+    assert "was not found" in str(excinfo.value)
+
+
+def test_azure_client_handle_azure_error_403(client):
+    """
+    Given: A 403 permission error from Azure API.
+    When: handle_azure_error is called.
+    Then: The function should raise DemistoException with permission message.
+    """
+    error = Exception("403 - Forbidden")
+
+    with pytest.raises(DemistoException) as excinfo:
+        client.handle_azure_error(
+            e=error, resource_name="test-resource", resource_type="Virtual Machine", subscription_id="sub-id"
+        )
+
+    assert 'Insufficient permissions to access Virtual Machine "test-resource"' in str(excinfo.value)
+
+
+def test_azure_client_handle_azure_error_401(client):
+    """
+    Given: A 401 authentication error from Azure API.
+    When: handle_azure_error is called.
+    Then: The function should raise DemistoException with authentication message.
+    """
+    error = Exception("401 - Unauthorized")
+
+    with pytest.raises(DemistoException) as excinfo:
+        client.handle_azure_error(e=error, resource_name="test-resource", resource_type="Key Vault")
+
+    assert 'Authentication failed when accessing Key Vault "test-resource"' in str(excinfo.value)
+    assert "Please check credentials" in str(excinfo.value)
+
+
+def test_azure_client_handle_azure_error_400(client):
+    """
+    Given: A 400 bad request error from Azure API.
+    When: handle_azure_error is called.
+    Then: The function should raise DemistoException with invalid request message.
+    """
+    error = Exception("400 - Bad Request")
+
+    with pytest.raises(DemistoException) as excinfo:
+        client.handle_azure_error(e=error, resource_name="test-resource", resource_type="Network Security Group")
+
+    assert 'Invalid request for Network Security Group "test-resource"' in str(excinfo.value)
+    assert "Please check the parameters" in str(excinfo.value)
+
+
+def test_azure_client_handle_azure_error_other(client):
+    """
+    Given: An unknown error from Azure API.
+    When: handle_azure_error is called.
+    Then: The function should raise DemistoException with generic message.
+    """
+    error = Exception("500 - Internal Server Error")
+
+    with pytest.raises(DemistoException) as excinfo:
+        client.handle_azure_error(e=error, resource_name="test-resource", resource_type="SQL Database")
+
+    assert 'Failed to access SQL Database "test-resource"' in str(excinfo.value)
+    assert "500 - Internal Server Error" in str(excinfo.value)
+
+
+def test_azure_client_get_webapp_auth_success(mocker, client):
+    """
+    Given: An Azure client and webapp authentication parameters.
+    When: The get_webapp_auth method is called.
+    Then: The function should make the correct API call and return auth settings.
+    """
+    # Setup mock response
+    mock_response = {
+        "name": "authsettings",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Web/sites/test-webapp/config/authsettings",
+        "properties": {"enabled": True, "defaultProvider": "AzureActiveDirectory"},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the function
+    result = client.get_webapp_auth(name="test-webapp", subscription_id="sub-id", resource_group_name="test-rg")
+
+    # Verify correct API call
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Web/sites/test-webapp/config/authsettings"
+    )
+    client.http_request.assert_called_once_with(method="GET", full_url=expected_url, params={"api-version": WEBAPP_API_VERSION})
+
+    # Verify response
+    assert result == mock_response
+    assert result["properties"]["enabled"] is True
+
+
+def test_azure_client_update_webapp_auth_success(mocker, client):
+    """
+    Given: An Azure client and webapp authentication update parameters.
+    When: The update_webapp_auth method is called.
+    Then: The function should make the correct API call and return updated settings.
+    """
+    # Setup mock response
+    mock_response = {"name": "authsettings", "properties": {"enabled": True}}
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Prepare current auth settings
+    current_auth = {"name": "authsettings", "properties": {"enabled": True}}
+
+    # Call the function
+    result = client.update_webapp_auth(
+        name="test-webapp", subscription_id="sub-id", resource_group_name="test-rg", current=current_auth
+    )
+
+    # Verify correct API call
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Web/sites/test-webapp/config/authsettings"
+    )
+    client.http_request.assert_called_once_with(
+        method="PUT", full_url=expected_url, json_data=current_auth, params={"api-version": WEBAPP_API_VERSION}
+    )
+
+    # Verify response
+    assert result == mock_response
+
+
+def test_azure_client_flexible_server_param_set_success(mocker, client):
+    """
+    Given: An Azure client and valid MySQL flexible server parameters.
+    When: The flexible_server_param_set method is called.
+    Then: The function should make the correct API call with proper parameters and return the response.
+    """
+    # Setup mock response
+    mock_response = {
+        "name": "require_secure_transport",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.DBforMySQL/flexibleServers/test-mysql/configurations/require_secure_transport",
+        "properties": {"value": "ON", "source": "user-override", "description": "Whether to require SSL connections"},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    # Call the function
+    result = client.flexible_server_param_set(
+        server_name="test-mysql",
+        configuration_name="require_secure_transport",
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        source="user-override",
+        value="ON",
+    )
+
+    # Verify correct API call was made
+    expected_url = f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.DBforMySQL/flexibleServers/test-mysql/configurations/require_secure_transport"
+    client.http_request.assert_called_once_with(
+        method="PUT",
+        full_url=expected_url,
+        json_data={"properties": {"source": "user-override", "value": "ON"}},
+        params={"api-version": FLEXIBLE_API_VERSION},
+    )
+
+    # Verify response
+    assert result == mock_response
+    assert result["name"] == "require_secure_transport"
+    assert result["properties"]["value"] == "ON"
+    assert result["properties"]["source"] == "user-override"
