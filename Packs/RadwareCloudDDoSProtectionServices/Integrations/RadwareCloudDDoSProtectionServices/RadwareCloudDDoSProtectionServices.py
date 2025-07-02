@@ -262,7 +262,9 @@ def main() -> None:  # pragma: no cover
             proxy=proxy
         )
         if command == 'test-module':
-            client.get_events(take=1)
+            end_time = int(time.time() * 1000)
+            start_time = end_time - 10000
+            client.get_events(start_time=start_time, end_time=end_time, take=1)
             return_results('ok')
         elif command == 'fetch-events':
             events = []
