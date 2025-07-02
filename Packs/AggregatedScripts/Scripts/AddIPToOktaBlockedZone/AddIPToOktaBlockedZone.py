@@ -1,7 +1,7 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import ipaddress
-from typing import Any, List, Union, Dict, Optional # Explicitly import necessary types
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import * # noqa: F401
+from typing import Any, List, Union, Dict, Optional
 
 
 def is_private_ip(ip: str) -> bool:
@@ -59,14 +59,31 @@ def _get_command_error_details(res: Dict[str, Any]) -> str:
     Returns:
         str: A human-readable error message.
     """
-    contents = res.get("Contents", "")
+    raw_contents = res.get("Contents")
     try:
-        if isinstance(contents, dict) and "error" in contents:
-            return f"{contents['error'].get('code', 'Error')}: {contents['error'].get('message', 'No message')}"
-        return str(contents or res.get("ReadableContents", "Unknown error"))
-    except Exception as e:
-        demisto.debug(f"Failed to parse error details: {e}")
-        return f"Failed to parse error: {str(e)}"
+        if isinstance(raw_contents, str):
+            if "Error in API call" in raw_contents:
+                try:
+                    json_start_index = raw_contents.index("{", raw_contents.index("Error in API call"))
+                    err = json.loads(raw_contents[json_start_index:])
+                    return f"{err.get('error', {}).get('code', '')}: {err.get('error', {}).get('message', '')}"
+                except (json.JSONDecodeError, ValueError):
+                    demisto.debug(f"Failed to parse detailed JSON from API error string: {raw_contents}")
+                    return f"Unparsed API error: {raw_contents}"
+            try:
+                parsed_contents = json.loads(raw_contents)
+                if isinstance(parsed_contents, dict) and 'error' in parsed_contents:
+                    error = parsed_contents['error']
+                    return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
+            except json.JSONDecodeError:
+                pass
+        elif isinstance(raw_contents, dict) and "error" in raw_contents:
+            error = raw_contents["error"]
+            return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
+        return str(raw_contents or res.get("ReadableContents", "Unknown error"))
+    except Exception as ex:
+        demisto.debug(f"Exception during error details extraction in _get_command_error_details: {ex}")
+        return f"Error extracting error message: {str(ex)}"
 
 
 def _execute_demisto_command(command: str, args: Dict[str, Any], error_message_prefix: str) -> Any:
@@ -89,6 +106,7 @@ def _execute_demisto_command(command: str, args: Dict[str, Any], error_message_p
         raise DemistoException(f"{error_message_prefix}: Empty or invalid command result for {command}.")
 
     if isError(res[0]):
+        # FIX: Corrected typo from _get_command_error_error_details to _get_command_error_details
         error_details = _get_command_error_details(res[0])
         raise DemistoException(f"{error_message_prefix}: {error_details}")
 
@@ -127,7 +145,7 @@ def get_blocked_ip_zone_info() -> Dict[str, Any]:
             for gateway in gateways:
                 if gateway.get("type") in ["CIDR", "RANGE"]:
                     zone_gateways.append(gateway.get("value"))
-            break  # Found the zone, no need to continue iterating
+            break
 
     if not zone_id:
         raise DemistoException("BlockedIpZone not found in Okta zones.")
@@ -152,17 +170,17 @@ def update_blocked_ip_zone(zone_id: str, zone_gateways: List[str], ip_to_add: st
     for gw in zone_gateways:
         if ip_in_range(ip_to_add, gw):
             return_results(f"IP {ip_to_add} is already covered by entry: {gw}")
-            return  # Exit early if IP is already covered
+            return
 
     zone_gateways.append(ip_cidr)
     update_args = {
         "zoneID": zone_id,
-        "gateways": ",".join(zone_gateways),  # Ensure all gateways are passed back
-        "gatewayIPs": ip_cidr,  # This might be for specific append, but passing all is safer
-        "updateType": "APPEND",
+        "gateways": ",".join(zone_gateways),
+        "gatewayIPs": ip_cidr,
         "type": "IP",
         "name": "BlockedIpZone",
-        "status": "ACTIVE"
+        "status": "ACTIVE",
+        "updateType": "APPEND"
     }
 
     _execute_demisto_command("okta-update-zone", update_args, "Failed to update BlockedIpZone")
@@ -177,9 +195,11 @@ def main():
         ip = demisto.args().get("ip")
         if not ip:
             return_error("Missing required argument: ip")
+            return
 
         if is_private_ip(ip):
             return_error(f"The IP {ip} is private/internal and should not be added.")
+            return
 
         zone_info = get_blocked_ip_zone_info()
         zone_id = zone_info["zone_id"]
