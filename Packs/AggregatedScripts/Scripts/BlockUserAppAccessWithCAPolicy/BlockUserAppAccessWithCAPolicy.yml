@@ -1,7 +1,6 @@
 commonfields:
   id: BlockUserAppAccessWithCAPolicy
-  version: 23
-vcShouldKeepItemLegacyProdMachine: false
+  version: -1
 name: BlockUserAppAccessWithCAPolicy
 script: |
   import json
@@ -112,8 +111,7 @@ tags:
 - Azure
 - Conditional Access
 - Access Control
-comment: Checks if a CA policy exists. If yes, adds the user if needed. If no, creates
-  a new CA policy to block access to a specific app for a user.
+comment: Checks if a CA policy exists. If yes, adds the user if needed. If no, creates a new CA policy to block access to a specific app for a user.
 enabled: true
 args:
 - name: policy_name
@@ -127,9 +125,10 @@ args:
   description: The name of the app to block access to.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

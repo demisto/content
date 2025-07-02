@@ -23,6 +23,18 @@
         "Core": {
             "mandatory": false,
             "display_name": "Core - Investigation and Response"
+        },
+        "MicrosoftGraphApplications": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Applications"
+        },
+        "MicrosoftGraphUser": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph User"
+        },
+        "MicrosoftGraphIdentityandAccess": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Identity and Access"
         }
     },
     "marketplaces": [
