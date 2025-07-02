@@ -39,8 +39,8 @@ alter
         xdm.email.attachment.file_type	= extract_mimeType,	
         xdm.alert.original_threat_name = extract_details,
         xdm.target.url = if(extract_threatType = "URL", extract_url),
-        xdm.email.attachment.sha256	= if(extract_hash = "SHA-256", extract_checksum ,null),
-        xdm.email.attachment.md5 = if(extract_hash != "SHA-256" and len(extract_hash) = 32, extract_checksum, null);
+        xdm.email.attachment.sha256	= if(extract_hash = "SHA-256" or extract_hash = "sha256", extract_checksum ,null),
+        xdm.email.attachment.md5 = if(extract_hash != "SHA-256" and extract_hash = "sha256" and len(extract_hash) = 32, extract_checksum, null);
 
 
 [RULE: mta_inbound_fields]
@@ -90,8 +90,8 @@ alter
         extract_checksum = metaData -> checksum
 
 | alter
-        xdm.email.attachment.sha256	= if(extract_hash = "SHA-256", extract_checksum ,null),
-        xdm.email.attachment.md5 = if(extract_hash != "SHA-256" and len(extract_hash) = 32, extract_checksum, null);
+        xdm.email.attachment.sha256	= if(extract_hash = "SHA-256" or extract_hash = "sha256", extract_checksum ,null),
+        xdm.email.attachment.md5 = if(extract_hash != "SHA-256" and extract_hash = "sha256" and len(extract_hash) = 32, extract_checksum, null);
 
 
 [RULE: mapping_sender_field]
