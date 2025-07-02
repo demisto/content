@@ -1,7 +1,7 @@
 import ipaddress
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from typing import Any
+from CommonServerPython import * # noqa: F401
+from typing import Any, List, Union, Dict, Optional
 
 
 def is_private_ip(ip: str) -> bool:
@@ -15,6 +15,9 @@ def is_private_ip(ip: str) -> bool:
         bool: True if the IP is private, False otherwise or if the IP is invalid.
     """
     try:
+        # Check if the IP is private, specifically handling IPv4 for common scenarios.
+        # ipaddress.ip_address will return either IPv4Address or IPv6Address.
+        # .is_private applies to both, but comparisons need to be type-consistent.
         return ipaddress.ip_address(ip).is_private
     except ValueError:
         demisto.debug(f"Invalid IP address format encountered: {ip}")
@@ -34,21 +37,44 @@ def ip_in_range(ip: str, ip_range: str) -> bool:
     """
     try:
         ip_obj = ipaddress.ip_address(ip)
-        if "-" in ip_range:
-            start_ip_str, end_ip_str = ip_range.split("-")
+
+        if '-' in ip_range:
+            start_ip_str, end_ip_str = ip_range.split('-')
             start_ip = ipaddress.ip_address(start_ip_str)
             end_ip = ipaddress.ip_address(end_ip_str)
+
+            # FIX: Ensure comparison is only between IPs of the same version.
+            # If the IP versions are different, they cannot be compared.
+            if ip_obj.version != start_ip.version or ip_obj.version != end_ip.version:
+                demisto.debug(f"IP version mismatch for comparison: IP {ip_obj} (v{ip_obj.version}) "
+                              f"vs range {ip_range} (v{start_ip.version}/{end_ip.version})")
+                return False
+
             return start_ip <= ip_obj <= end_ip
-        elif "/" in ip_range:
-            return ip_obj in ipaddress.ip_network(ip_range, strict=False)
+        elif '/' in ip_range:
+            ip_network_obj = ipaddress.ip_network(ip_range, strict=False)
+
+            # FIX: Ensure IP object and network are of the same version
+            if ip_obj.version != ip_network_obj.version:
+                demisto.debug(f"IP version mismatch for containment: IP {ip_obj} (v{ip_obj.version}) "
+                              f"vs network {ip_network_obj} (v{ip_network_obj.version})")
+                return False
+
+            return ip_obj in ip_network_obj
         else:
-            return ip_obj == ipaddress.ip_address(ip_range)
+            single_ip_obj = ipaddress.ip_address(ip_range)
+            # FIX: Ensure IP objects are of the same version for equality
+            if ip_obj.version != single_ip_obj.version:
+                demisto.debug(f"IP version mismatch for equality: IP {ip_obj} (v{ip_obj.version}) "
+                              f"vs single IP {single_ip_obj} (v{single_ip_obj.version})")
+                return False
+            return ip_obj == single_ip_obj
     except Exception as e:
         demisto.debug(f"Error checking IP '{ip}' against range '{ip_range}': {e}")
         return False
 
 
-def _get_command_error_details(res: dict[str, Any]) -> str:
+def _get_command_error_details(res: Dict[str, Any]) -> str:
     """
     Extracts a readable error message from a Demisto command result.
     This function handles specific formatting of errors returned by certain commands.
@@ -72,8 +98,8 @@ def _get_command_error_details(res: dict[str, Any]) -> str:
                     return f"Unparsed API error: {raw_contents}"
             try:
                 parsed_contents = json.loads(raw_contents)
-                if isinstance(parsed_contents, dict) and "error" in parsed_contents:
-                    error = parsed_contents["error"]
+                if isinstance(parsed_contents, dict) and 'error' in parsed_contents:
+                    error = parsed_contents['error']
                     return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
             except json.JSONDecodeError:
                 pass
@@ -86,7 +112,7 @@ def _get_command_error_details(res: dict[str, Any]) -> str:
         return f"Error extracting error message: {str(ex)}"
 
 
-def _execute_demisto_command(command: str, args: dict[str, Any], error_message_prefix: str) -> Any:
+def _execute_demisto_command(command: str, args: Dict[str, Any], error_message_prefix: str) -> Any:
     """
     Executes a Demisto command and handles potential errors.
 
@@ -114,7 +140,7 @@ def _execute_demisto_command(command: str, args: dict[str, Any], error_message_p
     return res[0].get("Contents")
 
 
-def get_blocked_ip_zone_info() -> dict[str, Any]:
+def get_blocked_ip_zone_info() -> Dict[str, Any]:
     """
     Retrieves the 'BlockedIpZone' information from Okta zones.
 
@@ -127,7 +153,7 @@ def get_blocked_ip_zone_info() -> dict[str, Any]:
     """
     res_zones = _execute_demisto_command("okta-list-zones", {}, "Failed to list Okta zones")
 
-    zones: list[dict[str, Any]] = []
+    zones: List[Dict[str, Any]] = []
     if isinstance(res_zones, dict):
         zones = res_zones.get("result", [])
     elif isinstance(res_zones, list):
@@ -153,7 +179,7 @@ def get_blocked_ip_zone_info() -> dict[str, Any]:
     return {"zone_id": zone_id, "zone_gateways": zone_gateways}
 
 
-def update_blocked_ip_zone(zone_id: str, zone_gateways: list[str], ip_to_add: str) -> None:
+def update_blocked_ip_zone(zone_id: str, zone_gateways: List[str], ip_to_add: str) -> None:
     """
     Appends a new IP CIDR to the 'BlockedIpZone' in Okta.
 
@@ -180,7 +206,7 @@ def update_blocked_ip_zone(zone_id: str, zone_gateways: list[str], ip_to_add: st
         "type": "IP",
         "name": "BlockedIpZone",
         "status": "ACTIVE",
-        "updateType": "APPEND",
+        "updateType": "APPEND"
     }
 
     _execute_demisto_command("okta-update-zone", update_args, "Failed to update BlockedIpZone")
@@ -196,6 +222,16 @@ def main():
         if not ip:
             return_error("Missing required argument: ip")
             return
+
+        # Added a check to ensure the input IP is IPv4 before proceeding
+        try:
+            if ipaddress.ip_address(ip).version != 4:
+                return_error(f"The IP {ip} is not an IPv4 address. This script currently supports only IPv4.")
+                return
+        except ValueError:
+            return_error(f"The input '{ip}' is not a valid IP address.")
+            return
+
 
         if is_private_ip(ip):
             return_error(f"The IP {ip} is private/internal and should not be added.")
