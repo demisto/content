@@ -1,0 +1,13 @@
+{
+    "id": 1197,
+    "hostname": "srv1",
+    "cve_announcements": [
+      { "cve_code": "CVE-2025-1111", "score": 8, "epss": 0.6,
+        "ignored": false, "active": true, "prioritized": true,
+        "detected_at": "2025-06-01T00:00:00Z" },
+  
+      { "cve_code": "CVE-2025-2222", "score": 8, "epss": 0.6,
+        "ignored": false, "active": true, "prioritized": false,
+        "detected_at": "2025-06-01T00:00:00Z" }
+    ]
+  }
