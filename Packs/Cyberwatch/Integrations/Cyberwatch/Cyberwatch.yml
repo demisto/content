@@ -35,6 +35,36 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Fetch incidents            
+  name: isFetch                       
+  type: 8
+  section: Collect                                                  
+- display: Incident type              
+  name: incidentType                  
+  type: 13
+  section: Collect                                                                                                  
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  section: Collect
+  additionalinfo: |
+    Formats acceptés : 3 days, 1 week, 2 months, 2025-05-20T00:00:00Z.
+- display: Fetch Limit
+  name: max_fetch
+  defaultvalue: 50
+  type: 0
+  section: Collect
+  additionalinfo: Maximum d’incidents que l’on renverra par fetch (≤ 200 recommandé).
+- display: Asset filters (JSON)
+  name: asset_filters
+  type: 12       # long text
+  section: Collect
+- display: CVE filters (JSON)
+  name: cve_filters
+  defaultvalue: '{"active": true, "ignored": false, "prioritized": true}'
+  type: 12
+  section: Collect
 description: Get Assets, CVEs, and Security Issues data from Cyberwatch Vulnerability and Compliance Manager.
 display: Cyberwatch
 name: Cyberwatch
@@ -408,11 +438,11 @@ script:
     - contextPath: Cyberwatch.SecurityIssue.editable
       description: Security Issue editability.
       type: boolean
-  isfetch: false
+  isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - No test - no instance
 fromversion: 6.10.0
