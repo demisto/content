@@ -1,5 +1,6 @@
 id: A user deleted multiple users for the first time
 version: -1
+issilent: false
 name: A user deleted multiple users for the first time
 description: "This playbook addresses the following alerts:\n\n- A user deleted multiple users for the first time\n\nPlaybook Stages:\n\nTriage:\n\n- Collect initial alert data regarding the event.\n- Check the user type of the source user.\n- Host enrichment. \n\nInvestigation:\n\n- Check if an admin user initiated the operation and whether the deleted users are disabled. \n- Correlate recent user activity with related security alerts.\n- Assess user's and host's risk level in Cortex XDR.\n- Check the type of the user target. \n\nRemediation:\n\n- Evaluate investigation findings, if TP, the playbook will display the findings to an analyst for review and suggest user/host account disablement.\n\n\nRequirements:\n\nFor response actions, you need the following integrations:\n\n- Cortex Core - Investigation and Response\n- Active Directory Query v2."
 tags:

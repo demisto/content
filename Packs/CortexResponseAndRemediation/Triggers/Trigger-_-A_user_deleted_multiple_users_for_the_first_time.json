@@ -5,6 +5,7 @@
   "description": "This trigger is responsible for handling A user deleted multiple users for the first time alert.",
   "trigger_name": "A user deleted multiple users for the first time",
   "fromVersion": "8.9.0",
+  "issilent": false,
   "alerts_filter": {
     "filter": {
       "AND": [

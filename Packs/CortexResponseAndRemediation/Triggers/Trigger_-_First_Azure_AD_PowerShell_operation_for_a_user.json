@@ -5,6 +5,7 @@
     "description": "This trigger is responsible for handling the 'First Azure AD PowerShell operation for a user' alert",
     "trigger_name": "First Azure AD PowerShell operation for a user",
     "fromVersion": "8.9.0",
+    "issilent": false,
     "alerts_filter": {
       "filter": {
           "AND": [

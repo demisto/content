@@ -1,5 +1,6 @@
 id: Authentication method added to an Azure account
 version: -1
+issilent: false
 contentitemexportablefields:
   contentitemfields: {}
 name: Authentication method added to an Azure account

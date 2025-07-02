@@ -4,6 +4,7 @@
     "suggestion_reason": "Recommended for 'Suspicious authentication method addition to Azure account' alert",
     "description": "This trigger is responsible for handling the 'Suspicious authentication method addition to Azure account' alert",
     "trigger_name": "Authentication method added to an Azure account",
+    "issilent": false,
     "fromVersion": "8.9.0",
     "alerts_filter": {
       "filter": {

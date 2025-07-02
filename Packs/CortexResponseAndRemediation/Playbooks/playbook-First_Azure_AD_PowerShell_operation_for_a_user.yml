@@ -1,5 +1,6 @@
 id: First Azure AD PowerShell operation for a user
 version: -1
+issilent: false
 contentitemexportablefields:
   contentitemfields: {}
 name: First Azure AD PowerShell operation for a user
