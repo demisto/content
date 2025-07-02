@@ -430,7 +430,7 @@ script:
       - 'false'
       - 'true'
       description: Specify whether to create list entries with no expiration date.  Cannot be used with "expiration_date".  If left false and no expiration date is set, default of 30 days will be used.
-      defaultValue: 'false'
+      defaultValue: 'true'
     outputs:
     - contextPath: EWS.NewTenantBlocks.Action
       description: List type ('Block' or 'Allow').
