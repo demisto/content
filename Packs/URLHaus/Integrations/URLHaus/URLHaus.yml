@@ -17,6 +17,7 @@ configuration:
   type: 9
   section: Connect
   required: true
+  defaultvalue: Your Auth Key Here
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
