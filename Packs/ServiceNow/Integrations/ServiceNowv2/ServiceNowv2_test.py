@@ -13,7 +13,7 @@ import requests
 import ServiceNowv2
 import jwt
 
-from CommonServerPython import CommandResults, DemistoException, EntryType, QuickActionPreview, MirrorObject
+from CommonServerPython import CommandResults, DemistoException, EntryType, QuickActionPreview
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
@@ -72,7 +72,6 @@ from ServiceNowv2 import (
     update_remote_system_command,
     update_ticket_command,
     upload_file_command,
-    QuickActionPreview,
 )
 from ServiceNowv2 import test_module as module
 from test_data.created_ticket_context import (

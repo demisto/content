@@ -3238,7 +3238,9 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
         demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
         if (parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta):
             demisto.debug("Closing incident by closure case")
-            if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta.get("state") == "3":
+            if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta.get(
+                "state"
+            ) == "3":
                 parsed_args.delta["state"] = "3"
             # These ticket types are closed by changing their state.
             if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "7":

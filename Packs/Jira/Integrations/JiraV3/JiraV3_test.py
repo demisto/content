@@ -879,16 +879,16 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
-        expected_mo_outputs = {"ticket_id": "dummy_key-1234", "object_url": "https://example.com/browse/dummy_key-1234"}
+        expected_mo_outputs = {'object_id': '1234', 'object_name': 'dummy_key', 'object_url': 'https://example.com/browse/dummy_key'}
 
         mocker.patch.object(client, "create_issue", return_value=raw_response)
+        mocker.patch.object(demisto, "results")
         command_results = create_issue_command(
             client=client, args={"summary": "test"}, is_quick_action=True, server_url="https://example.com"
         )
         assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
-        assert command_results[1].to_context().get("EntryContext") == {
-            "MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)": expected_mo_outputs
-        }
+        assert demisto.results.call_args[0][0]["ExtendedPayload"].get("MirrorObject") == expected_mo_outputs
+
 
     def test_create_issue_command_with_issue_json(self, mocker):
         """
@@ -905,9 +905,10 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
-        expected_mo_outputs = {"object_id": "dummy_key-1234", "object_url": "http://example.com/browse/dummy_key-1234"}
+        expected_mo_outputs = {'object_id': '1234', 'object_name': 'dummy_key', 'object_url': 'http://example.com/browse/dummy_key'}
 
         mocker.patch.object(client, "create_issue", return_value=raw_response)
+        mocker.patch.object(demisto, "results")
 
         command_results = create_issue_command(
             client=client,
@@ -916,9 +917,7 @@ class TestJiraCreateIssueCommand:
             server_url="http://example.com",
         )
         assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
-        assert command_results[1].to_context().get("EntryContext") == {
-            "MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)": expected_mo_outputs
-        }
+        assert demisto.results.call_args[0][0]["ExtendedPayload"].get("MirrorObject") == expected_mo_outputs
 
     def test_create_issue_command_with_issue_json_and_another_arg(self):
         """
@@ -3447,7 +3446,7 @@ class TestJiraCreateMetadataField:
 def test_get_remote_data_preview_command():
     # Given: Prepare the mock objects and inputs
     mock_client = Mock()
-    args = {"issue_id": "JIRA-123"}
+    args = {"id": "JIRA-123"}
 
     # Mock Jira issue object returned by client
     mock_issue = util_load_json("test_data/get_remote_data_preview/raw_response.json")
