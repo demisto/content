@@ -75,7 +75,7 @@ class Client(BaseClient):  # pragma: no cover
         demisto.debug("Test-IronScales: going in get_incident_ids")
         if self.all_incident:
             demisto.debug("Test-IronScales: all_incidents is marked as True. going in get_all_incident_ids")
-            return self.get_all_incident_ids(start_time, max_fetch, last_id)
+            return self.get_all_incident_ids(start_time)
         return self.get_open_incident_ids()
 
     def get_open_incident_ids(self) -> List[int]:
@@ -87,17 +87,32 @@ class Client(BaseClient):  # pragma: no cover
             or []
         )
 
-    ################## Convert Options for Debugging #####################
-
     def convert_time_iso_format(self, time):
         demisto.debug("Test-IronScales: Going in convert_time_iso_format")
         time = time.isoformat()  # convert to iso format
         demisto.debug("Test-IronScales: time format to ISO success")
         return time
 
-    ############ End Debugging Area #################
+    ######## Debugging Area ########
 
-    def get_all_incident_ids(self, start_time: datetime, max_fetch: int, last_id=None) -> List[int]:
+    def debug_function(self, response):
+        total_pages = response.get("total_pages")
+        if response.get("error_message"):
+            demisto.debug(
+                f'Test-IronScales: HTTP request failed with exit code 400, error message:\
+                    {response.get("error_message")}'
+            )
+        elif response.get("page"):
+            demisto.debug(f'Test-IronScales: HTTP request success with exit code 200. important info:\n\
+                page num = {str(response.get("page"))},\n\
+                total pages = {str(total_pages)},\n\
+                num of incidents = {str(len(response.get("incidents",[])))}')
+        else:
+            demisto.debug("Test-IronScales: HTTP request went wrong and went wrong with no exit code")
+
+    ######## End Debugging Area ########
+
+    def get_all_incident_ids(self, start_time: datetime) -> List[int]:
         """
         Summary:
             Pull all the incident IDs from the API, using pagination mechanizm with respect to max_fetch
@@ -119,6 +134,7 @@ class Client(BaseClient):  # pragma: no cover
             demisto.debug("Test-IronScales: start time converted successfully. Prepare for pulling")
 
             page = 1
+            total_pages = 1
             params = {
                 "reportType": "all",
                 "state": "all",
@@ -126,53 +142,44 @@ class Client(BaseClient):  # pragma: no cover
                 "created_end_time": curr_time,
                 "order": "asc",
             }
-            incidents: List[int] = []
+            incidents: List = []
             # handle paging
             demisto.debug("Test-IronScales: pulling loop start")
             break_condition = False
             wait_time = 5
-            while len(incidents) < max_fetch:
+            while page <= total_pages:
                 demisto.debug(f"Test-IronScales: page num is {str(page)}, starting loop")
                 params["page"] = page
                 demisto.debug(f"Test-IronScales: sending http request with params: {str(params)}")
                 response = self._http_request(method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params)
                 total_pages = response.get("total_pages")
                 ######## Debugging Area ########
-                if response.get("error_message"):
-                    demisto.debug(
-                        f'Test-IronScales: HTTP request failed with exit code 400, error message:\
-                            {response.get("error_message")}'
-                    )
-                elif response.get("page"):
-                    demisto.debug(f'Test-IronScales: HTTP request success with exit code 200. important info:\n\
-                        page num = {str(response.get("page"))},\n\
-                        total pages = {str(total_pages)},\n\
-                        num of incidents = {str(len(response.get("incidents",[])))}')
-                else:
-                    demisto.debug("Test-IronScales: HTTP request went wrong and went wrong with no exit code")
+                self.debug_function(response)
                 ################################
-                new_incidents = [incident.get("incidentID") for incident in response.get("incidents", [])]
-                demisto.debug(f"Test-IronScales: new incidents for page num {str(page)}, incidents ids: {str(new_incidents)}")
+                new_incidents = response.get("incidents", [])
+                demisto.debug(f"Test-IronScales: new incidents for page num {str(page)}, incidents ids: \
+                              {str([incident.get('incidentID') for incident in response.get('incidents', [])])}")
                 page += 1
                 if not new_incidents or page > total_pages:
                     demisto.debug("Test-IronScales: met loop condition, breaking...")
                     break_condition = True
-                demisto.debug(
-                    f"Test-IronScales: first and last incidents ids for page num {str(page-1)}:\
-                    {str(new_incidents[0])}, {str(new_incidents[-1])}"
-                )
-                if last_id and new_incidents[-1] <= last_id:
-                    # Make that there is at least 1 new incident in the fetch. WATCH OUT -
-                    # AFTER SECOND MEETING, THIS CONDITION MIGHT COUS BUGS!
-                    demisto.debug("Test-IronScales: already seen all the ids, not adding any incidents")
-                    if break_condition:
-                        break
-                    continue
-                incidents.extend(new_incidents)
+                if new_incidents:
+                    demisto.debug(
+                        f"Test-IronScales: first and last incidents ids for page num {str(page-1)}:\
+                        {str(new_incidents[0].get('incidentID'))}, {str(new_incidents[-1].get('incidentID'))}"
+                    )
+                    incidents.extend(new_incidents)
                 if break_condition:
+                    incidents_sorted_by_time = sorted(
+                        incidents,
+                        key=lambda incident: datetime.strptime(
+                            incident.get("created", "2019-08-24T14:15:22Z"), "%Y-%m-%dT%H:%M:%SZ"
+                        ),
+                    )
+                    incidents_ids_sorted_by_time = [incident.get("incidentID") for incident in incidents_sorted_by_time]
                     break
             demisto.debug(f"Test-IronScales: loop ended. fetched {str(len(incidents))} new ids")
-            return incidents
+            return incidents_ids_sorted_by_time
         except Exception as e:
             demisto.debug(f"Test-IronScales: Exception message:{e}")
             if "429" in str(e):
@@ -250,6 +257,9 @@ def get_incident_ids_to_fetch(
     if not incident_ids:
         demisto.debug("Test-IronScales: no new incident! returning empty list")
         return []
+    if client.all_incident:
+        # if we pulled all incidents we already pulled by timestamp
+        return incident_ids
     if isinstance(last_id, int):
         # We filter out only events with ID greater than the last_id
         return list(filter(lambda i: i > last_id, incident_ids))  # type: ignore
@@ -297,6 +307,7 @@ def fetch_events_command(
     first_fetch: datetime,
     max_fetch: int,
     last_id: Optional[int] = None,
+    last_timestamp_ids: Optional[List] = None,
 ) -> tuple[List[dict[str, Any]], int]:
     """Fetches IRONSCALES incidents as events to XSIAM.
     Note: each report of incident will be considered as an event.
@@ -320,24 +331,40 @@ def fetch_events_command(
     demisto.debug(f"Test-IronScales: returned from get_incident_ids_to_fetch with {str(len(incident_ids))} new incidents")
     last_id = last_id or -1
     for i in incident_ids:
+        # remove ids that already pulled
+        if last_timestamp_ids and i in last_timestamp_ids:
+            continue
         try:
             incident = client.get_incident(i)
         except Exception:
             demisto.debug(f"Test-IronScales: Error in getting incident id {i} details")
+            # todo - need to print log to the customer
             continue
         events.extend(incident_to_events(incident))
         last_id = max(i, last_id)
         if len(events) >= max_fetch:
             break
-    if not incident_ids and last_id > -1:
-        incident = client.get_incident(last_id)
-        events.extend(incident_to_events(incident))
     return events, last_id
 
 
 def test_module_command(client: Client, first_fetch: datetime) -> str:
     fetch_events_command(client, first_fetch, max_fetch=1)
     return "ok"
+
+
+def get_incidents_with_the_same_timestamps(incidents):
+    """
+    this function store all the incidents with the same timestamp as the last incident,
+    so we will be able to filter the incidents that we already seen in the next run.
+    """
+    if not incidents:
+        return None
+    last_incident = incidents[-1]
+    incidents_with_same_time = []
+    for incident in incidents[::-1]:
+        if incident.get("_time") == last_incident.get("_time"):
+            incidents_with_same_time.append(incident.get("incident_id"))
+    return incidents_with_same_time
 
 
 def main():
@@ -381,19 +408,26 @@ def main():
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
                 last_id=demisto.getLastRun().get("last_id"),
+                last_timestamp_ids=demisto.getLastRun().get("last_timestamp_ids"),
             )
             demisto.debug("Test-IronScales: returned from fetch_event")
             demisto.debug(
                 f"Test-IronScales: returned data = events:\
                     {str([event.get('incident_id') for event in events])},\
-                        last event: {str(last_id)}, num of events:\
-                            {len(events)}"
+                        last event: {str(last_id)}, num of events: {len(events)},\
+                        set last run to: 'last_id': {last_id},\
+                            'last_incident_time': {events[-1].get('first_reported_date')if events else None},\
+                                'last_timestamp_ids': {get_incidents_with_the_same_timestamps(events)}"
             )
 
             send_events_to_xsiam(events, VENDOR, PRODUCT)
 
             demisto.setLastRun(
-                {"last_id": last_id, "last_incident_time": events[-1].get("first_reported_date") if events else None}
+                {
+                    "last_id": last_id,
+                    "last_incident_time": events[-1].get("first_reported_date") if events else None,
+                    "last_timestamp_ids": get_incidents_with_the_same_timestamps(events),
+                }
             )
 
     # Log exceptions
