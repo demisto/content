@@ -1948,9 +1948,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
             return "$script:INTEGRATION_NAME - Search created & started.", $entry_context, $search, $polling_args
         }
 
-        # $lastError = $Error[0].ToString()
-        # if ($lastError) { $demisto.debug("WRONGING: $lastError") }
-
+        $demisto.debug("Search exist")
         if ($force) {
             $random_suffix = [System.Guid]::NewGuid().ToString("N").Substring(0, 6)
             $search_name = "$search_name-$random_suffix"
@@ -1969,7 +1967,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
         switch ($status) {
             "NotStarted" {
                 $client.StartSearch($search_name)
-                return "$script:INTEGRATION_NAME - Search exists but was not started. Now started.", $entry_context, $search, $polling_args
+                return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
             }
             "Starting" {
                 return "$script:INTEGRATION_NAME - Search already starting from previous run.", $entry_context, $search
@@ -1983,9 +1981,9 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 if ($null -eq $action) {
                     $demisto.debug("No action found, creating purge action")
                     $action = $client.NewSearchAction($search_name, "Purge", "SoftDelete", $kwargs.share_point_archive_format, $kwargs.format, $kwargs.include_sharepoint_document_versions, $kwargs.notify_email, $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
-                    return "$script:INTEGRATION_NAME - Purge action created.", $entry_context, $action, $polling_args
+                    return "$script:INTEGRATION_NAME - Search is Completed, Purge action created.", $entry_context, $action, $polling_args
                 }
-                $demisto.debug("Action status: $($action.Status)")
+                $demisto.debug("GetSearchAction status: $($action.Status)")
                 switch ($action.Status) {
                     "InProgress" { return "$script:INTEGRATION_NAME - Deletion in progress from previous run. Run again with force=true to retry.", $entry_context, $action }
                     "Starting"   { return "$script:INTEGRATION_NAME - Deletion starting from previous run. Run again with force=true to retry.", $entry_context, $action }
