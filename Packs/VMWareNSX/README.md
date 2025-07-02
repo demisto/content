@@ -1,10 +1,12 @@
 # VMware NSX
+
 VMware NSX is a platform for creating and managing virtual networks. It provides advanced security, automation, and precise network control (micro segmentation) for modern data centers and cloud systems.
 
 <~XSIAM>
 This pack includes Cortex XSIAM content.
 
 ## What this pack contains
+
 - Modeling rules for VMWare NSX
 - Syslog integration
   
@@ -50,4 +52,4 @@ You can configure the specific vendor and product for this instance.
    | `Vendor`      | Enter **VMware**.
    | `Product`     | Enter **NSX**.
 
-</~XSIAM> 
+</~XSIAM>
