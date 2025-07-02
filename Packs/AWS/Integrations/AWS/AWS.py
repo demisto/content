@@ -78,9 +78,7 @@ class S3:
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket")
 
-        return CommandResults(
-            entry_type=EntryType.ERROR, readable_output=f"Couldn't apply public access block to the {args.get('bucket')} bucket"
-        )
+        raise DemistoException(f"Couldn't apply public access block to the {args.get('bucket')} bucket. {json.dumps(response)}")
 
     @staticmethod
     def put_bucket_versioning_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -109,15 +107,9 @@ class S3:
                 return CommandResults(
                     readable_output=f"Successfully {status.lower()} versioning configuration for bucket `{bucket}`"
                 )
-            return CommandResults(
-                entry_type=EntryType.WARNING,
-                readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}",
-            )
+            raise DemistoException(f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}",
-            )
+            raise DemistoException(f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}")
 
     @staticmethod
     def put_bucket_logging_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -158,15 +150,11 @@ class S3:
                 else:
                     return CommandResults(readable_output=f"Successfully disabled logging for bucket '{bucket}'")
 
-            return CommandResults(
-                entry_type=EntryType.WARNING,
-                readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}",
-            )
+            raise DemistoException(f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
 
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR, readable_output=f"Failed to configure logging for bucket '{bucket}'. Error: {str(e)}"
-            )
+            raise DemistoException(f"Failed to configure logging for bucket '{bucket}'. Error: {str(e)}")
+            
 
     @staticmethod
     def put_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -186,9 +174,7 @@ class S3:
         response = client.put_bucket_acl(Bucket=bucket, ACL=acl)
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(readable_output=f"Successfully updated ACL for bucket {bucket} to '{acl}'")
-        return CommandResults(
-            readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
-        )
+        raise DemistoException(f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
 
     @staticmethod
     def put_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -215,15 +201,9 @@ class S3:
             response = client.put_bucket_policy(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Status code: {response['ResponseMetadata']['HTTPStatusCode']}, Response: {json.dumps(response)}",
-            )
+            raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Status code: {response['ResponseMetadata']['HTTPStatusCode']}.{json.dumps(response)}")
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}",
-            )
+            raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
 
 
 class IAM:
@@ -243,9 +223,7 @@ class IAM:
         """
         response = client.get_account_password_policy()
         data = json.loads(json.dumps(response["PasswordPolicy"], cls=DatetimeEncoder))
-
         human_readable = tableToMarkdown("AWS IAM Account Password Policy", data)
-
         return CommandResults(
             outputs=data, readable_output=human_readable, outputs_prefix="AWS.IAM.PasswordPolicy", outputs_key_field="AccountId"
         )
@@ -266,10 +244,7 @@ class IAM:
             response = client.get_account_password_policy()
             kwargs = response["PasswordPolicy"]
         except Exception:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Couldn't check current account password policy for account: {args.get('account_id')}",
-            )
+            raise DemistoException(f"Couldn't check current account password policy for account: {args.get('account_id')}")
 
         # ExpirePasswords is part of the response but cannot be included in the request
         if "ExpirePasswords" in kwargs:
@@ -304,9 +279,7 @@ class IAM:
                 readable_output=f"Successfully updated account password policy for account: {args.get('account_id')}"
             )
         else:
-            return CommandResults(
-                readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}"
-            )
+            raise DemistoException(f"Couldn't updated account password policy for account: {args.get('account_id')}. {json.dumps(response)}")
 
     @staticmethod
     def put_role_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -353,14 +326,9 @@ class IAM:
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 return CommandResults(readable_output=f"Successfully deleted login profile for user '{user_name}'")
             else:
-                return CommandResults(
-                    entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to delete login profile for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
-                )
+                raise DemistoException(f"Failed to delete login profile for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR, readable_output=f"Error deleting login profile for user '{user_name}': {str(e)}"
-            )
+            raise DemistoException(f"Error deleting login profile for user '{user_name}': {str(e)}")
 
     @staticmethod
     def put_user_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -391,15 +359,9 @@ class IAM:
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 return CommandResults(readable_output=f"Successfully added/updated policy '{policy_name}' for user '{user_name}'")
             else:
-                return CommandResults(
-                    entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to add/update policy '{policy_name}' for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
-                )
+                raise DemistoException(f"Failed to add/update policy '{policy_name}' for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Error adding/updating policy '{policy_name}' for user '{user_name}': {str(e)}",
-            )
+            raise DemistoException(f"Error adding/updating policy '{policy_name}' for user '{user_name}': {str(e)}")
 
     @staticmethod
     def remove_role_from_instance_profile_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -426,15 +388,9 @@ class IAM:
                     readable_output=f"Successfully removed role '{role_name}' from instance profile '{instance_profile_name}'"
                 )
             else:
-                return CommandResults(
-                    entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
-                )
+                raise DemistoException(f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Error removing role '{role_name}' from instance profile '{instance_profile_name}': {str(e)}",
-            )
+            raise DemistoException(f"Error removing role '{role_name}' from instance profile '{instance_profile_name}': {str(e)}")
 
     @staticmethod
     def update_access_key_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -469,14 +425,9 @@ class IAM:
                     readable_output=f"Successfully updated access key '{access_key_id}' status to '{status}'{user_info}"
                 )
             else:
-                return CommandResults(
-                    entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to update access key '{access_key_id}' status. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
-                )
+                raise DemistoException(f"Failed to update access key '{access_key_id}' status. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR, readable_output=f"Error updating access key '{access_key_id}' status: {str(e)}"
-            )
+            raise DemistoException(f"Error updating access key '{access_key_id}' status: {str(e)}")
 
 
 class EC2:
@@ -506,10 +457,7 @@ class EC2:
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(readable_output=f"Successfully updated EC2 instance metadata for {args.get('instance_id')}")
         else:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Couldn't updated public EC2 instance metadata for {args.get('instance_id')}",
-            )
+            raise DemistoException(f"Couldn't updated public EC2 instance metadata for {args.get('instance_id')}")
 
     @staticmethod
     def modify_instance_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -869,8 +817,7 @@ class EKS:
                 outputs_prefix="AWS.EKS.UpdateCluster",
                 outputs=response_data,
                 raw_response=response_data,
-                outputs_key_field="id",
-            )
+                outputs_key_field="id")
         except Exception as e:
             if "No changes needed" in str(e):
                 return CommandResults(readable_output="No changes needed for the required update.")
@@ -924,13 +871,10 @@ class RDS:
                     outputs_key_field="DBClusterIdentifier",
                 )
             else:
-                return CommandResults(
-                    entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to modify DB cluster. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
-                )
+                raise DemistoException(f"Failed to modify DB cluster. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
 
         except Exception as e:
-            return CommandResults(entry_type=EntryType.ERROR, readable_output=f"Error modifying DB cluster: {str(e)}")
+            raise DemistoException(f"Error modifying DB cluster: {str(e)}")
 
     @staticmethod
     def modify_db_cluster_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -977,15 +921,10 @@ class RDS:
                     outputs_key_field="DBClusterSnapshotIdentifier",
                 )
             else:
-                return CommandResults(
-                    entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to modify DB cluster snapshot attribute. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
-                )
+                raise DemistoException(f"Failed to modify DB cluster snapshot attribute. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
 
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR, readable_output=f"Error modifying DB cluster snapshot attribute: {str(e)}"
-            )
+            raise DemistoException(f"Error modifying DB cluster snapshot attribute: {str(e)}")
 
     @staticmethod
     def modify_db_instance_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1030,13 +969,11 @@ class RDS:
                     outputs_key_field="DBInstanceIdentifier",
                 )
             else:
-                return CommandResults(
-                    entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. Error {response['Error']['Message']}",
+                raise DemistoException(f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. Error {response['Error']['Message']}",
                 )
 
         except Exception as e:
-            return CommandResults(entry_type=EntryType.ERROR, readable_output=f"Error modifying DB instance: {str(e)}")
+            raise DemistoException(f"Error modifying DB instance: {str(e)}")
 
     @staticmethod
     def modify_db_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1067,10 +1004,7 @@ class RDS:
             )
 
         else:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}",
-            )
+            raise DemistoException(f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}")
 
 
 class CloudTrail:
@@ -1088,9 +1022,7 @@ class CloudTrail:
 
             return CommandResults(readable_output=f"Successfully started logging for CloudTrail: {name}", raw_response=response)
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR, readable_output=f"Error starting logging for CloudTrail {name}: {str(e)}"
-            )
+            raise DemistoException(f"Error starting logging for CloudTrail {name}: {str(e)}")
 
     @staticmethod
     def update_trail_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1139,15 +1071,10 @@ class CloudTrail:
                     raw_response=response,
                 )
             else:
-                return CommandResults(
-                    entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to update CloudTrail. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
-                )
+                raise DemistoException(f"Failed to update CloudTrail. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
 
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR, readable_output=f"Error updating CloudTrail {args.get('name')}: {str(e)}"
-            )
+            raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
