@@ -55,6 +55,26 @@
       "auditlogLink": {
         "type": "string",
         "is_array": false
+      },
+      "approvedBy": {
+        "type": "string",
+        "is_array": false
+      },
+      "approvedByEmail": {
+        "type": "string",
+        "is_array": false
+      },
+      "deniedBy": {
+        "type": "string",
+        "is_array": false
+      },
+      "deniedByEmail": {
+        "type": "string",
+        "is_array": false
+      },
+      "deniedReason": {
+        "type": "string",
+        "is_array": false
       }
     }
 }    
