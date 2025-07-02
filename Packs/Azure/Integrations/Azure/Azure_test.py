@@ -1793,7 +1793,8 @@ def test_set_webapp_config(mocker, client):
 
     # Mock response
     mock_response = {
-        "id": f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/config/web",
+        "id": (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/config/"
+        "web"),
         "name": "web",
         "properties": {"http20Enabled": True, "remoteDebuggingEnabled": False, "minTlsVersion": "1.2"},
     }
@@ -1846,7 +1847,8 @@ def test_get_webapp_auth(mocker, client):
 
     # Mock response
     mock_response = {
-        "id": f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/config/authsettings",
+        "id": (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/"
+        "config/authsettings"),
         "name": "authsettings",
         "properties": {"enabled": True, "unauthenticatedClientAction": "RedirectToLoginPage"},
     }
@@ -1916,7 +1918,8 @@ def test_update_webapp_auth(mocker, client):
 
     # Mock response
     mock_response = {
-        "id": f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/config/authsettings",
+        "id": (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/"
+        "config/authsettings"),
         "name": "authsettings",
         "properties": {"enabled": True, "unauthenticatedClientAction": "RedirectToLoginPage"},
     }
@@ -1993,7 +1996,8 @@ def test_flexible_server_param_set(mocker, client):
 
     # Mock response
     mock_response = {
-        "id": f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.DBforMySQL/flexibleServers/{server_name}/configurations/{configuration_name}",
+        "id": (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.DBforMySQL/"
+        f"flexibleServers/{server_name}/configurations/{configuration_name}"),
         "name": configuration_name,
         "properties": {"source": source, "value": value},
     }
