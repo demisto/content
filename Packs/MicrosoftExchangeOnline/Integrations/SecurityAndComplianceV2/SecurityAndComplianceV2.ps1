@@ -1941,17 +1941,15 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
 
     if ($polling_first_run) {
         $polling_args.polling_first_run = $false
-        $demisto.debug("First run: create search")
-        $demisto.debug("KQL: $kql")
+        $demisto.debug("First run: create search. KQL: $kql")
         $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "SilentlyContinue")
         if ($search) {
-            $demisto.debug("Search created")
             $client.StartSearch($search_name)
             return "$script:INTEGRATION_NAME - Search created & started.", $entry_context, $search, $polling_args
         }
 
-        $lastError = $Error[0].ToString()
-        if ($lastError) { $demisto.debug("WRONGING: $lastError") }
+        # $lastError = $Error[0].ToString()
+        # if ($lastError) { $demisto.debug("WRONGING: $lastError") }
 
         if ($force) {
             $random_suffix = [System.Guid]::NewGuid().ToString("N").Substring(0, 6)
@@ -1989,8 +1987,8 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 }
                 $demisto.debug("Action status: $($action.Status)")
                 switch ($action.Status) {
-                    "InProgress" { return "$script:INTEGRATION_NAME - Deletion in progress from previous run.", $entry_context, $action, $polling_args }
-                    "Starting"   { return "$script:INTEGRATION_NAME - Deletion starting from previous run.", $entry_context, $action, $polling_args }
+                    "InProgress" { return "$script:INTEGRATION_NAME - Deletion in progress from previous run. Run again with force=true to retry.", $entry_context, $action }
+                    "Starting"   { return "$script:INTEGRATION_NAME - Deletion starting from previous run. Run again with force=true to retry.", $entry_context, $action }
                     "Completed"  { return "$script:INTEGRATION_NAME - Already deleted. Run again with force=true to retry.", $entry_context }
                 }
             }
