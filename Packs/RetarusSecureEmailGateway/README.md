@@ -3,6 +3,7 @@
 # Retarus Secure Email Gateway
 
 Retarus Secure Email Gateway is a fully managed cloud service that provides comprehensive, multi-layered security and for organizations.
+
 It filters all inbound and outbound traffic to defend against threats like malware, ransomware, and phishing using advanced sandboxing technology.
 
 ## This pack includes
@@ -26,8 +27,9 @@ Data normalization capabilities:
 
 ### Supported Timestamp Formats
 
-YYYY-MM-DD hh:mm:ss +hhmm (time zone based on UTC)
-Example: "2018-10-16 14:58:43 +0200"
+YYYY-MM-DD hh:mm:ss +hhmm (time zone based on UTC).
+
+Example: "2018-10-16 14:58:43 +0200".
 
 ***
 
@@ -38,7 +40,9 @@ Example: "2018-10-16 14:58:43 +0200"
 Token ID is provided by Retarus for SIEM integration.
 
 Note, due to the Retarus API limitation, only one instance can be configured for each token and channel.
+
 Two instances with the same token and *different* channels are allowed.
+
 Two instances with the same token and *same* channel may result in errors and/or missing events.
 
 For more information [click here](https://docs.retarus.com/seg/api-manual-forensic-siem-integration#APIManual-ForensicSIEMIntegration-Authorization).
