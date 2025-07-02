@@ -5,8 +5,8 @@ Cloud integrations are installed from the **Data Sources** page. To configure a 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Application ID |  |  |
-| Default Subscription ID | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. |  |
-| Default Resource Group Name | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. |  |
+| Default Subscription ID | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. |  |
+| Default Resource Group Name | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. |  |
 | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -89,16 +89,16 @@ Updates a specific account storage.
 | custom_domain_name | Gets or sets the custom domain name assigned to the storage account. | Optional |
 | use_sub_domain_name | Indicates whether indirect CName validation is enabled. Possible values are: true, false. | Optional |
 | enc_key_source | The encryption keySource. Possible values are: Microsoft.Storage, Microsoft.Keyvault. | Optional |
-| enc_requireInfrastructureEncryption | Indicating whether the service applies a secondary layer of encryption with platform managed keys for data at rest. Possible values are: true, false. | Optional |
+| enc_requireInfrastructureEncryption | Indicates whether the service applies a secondary layer of encryption with platform managed keys for data at rest. Possible values are: true, false. | Optional |
 | enc_keyvault_key_name | The name of KeyVault key. | Optional |
 | enc_keyvault_key_version | The version of KeyVault key. | Optional |
 | enc_keyvault_uri | The Uri of KeyVault. | Optional |
 | access_tier | The access tier for the account. Required where kind = BlobStorage. Possible values are: Hot, Cool. | Optional |
 | supports_https_traffic_only | Allows https traffic only to storage service if sets to true. Possible values are: true, false. | Optional |
 | is_hns_enabled | Account HierarchicalNamespace enabled if sets to true. Possible values are: true, false. | Optional |
-| large_file_shares_state | Allow large file shares if sets to Enabled. Possible values are: Disabled, Enabled. | Optional |
-| allow_blob_public_access | Allow or disallow public access to all blobs or containers in the storage account. Possible values are: true, false. | Optional |
-| minimum_tls_version | Set the minimum TLS version to be permitted on requests to storage. Possible values are: TLS1_0, TLS1_1, TLS1_2. | Optional |
+| large_file_shares_state | If set to Enabled, allows large file shares. Possible values are: Disabled, Enabled. | Optional |
+| allow_blob_public_access | If set to true, allows public access to all blobs or containers in the storage account. Possible values are: true, false. | Optional |
+| minimum_tls_version | Sets the minimum TLS version to be permitted on requests to storage. Possible values are: TLS1_0, TLS1_1, TLS1_2. | Optional |
 | network_ruleset_bypass | Specifies whether traffic is bypassed for Logging/Metrics/AzureServices. Possible values are: AzureServices, Logging, Metrics, None. | Optional |
 | network_ruleset_default_action | Specifies the default action of allow or deny when no other rules match. Possible values are: Allow, Deny. | Optional |
 | network_ruleset_ipRules | Sets the IP ACL rules. | Optional |
@@ -110,29 +110,29 @@ Updates a specific account storage.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Azure.StorageAccount.id | String | Fully qualified resource ID for the resource. |
-| Azure.StorageAccount.kind | String | Gets the Kind. |
+| Azure.StorageAccount.kind | String | The kind of storage account. |
 | Azure.StorageAccount.location | String | The geo-location where the resource lives. |
 | Azure.StorageAccount.name | String | The name of the resource. |
 | Azure.StorageAccount.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
-| Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | Allow or disallow public access to all blobs or containers in the storage account. The default interpretation is true for this property. |
-| Azure.StorageAccount.properties.minimumTlsVersion | String | Set the minimum TLS version to be permitted on requests to storage. The default interpretation is TLS 1.0 for this property. |
-| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Azure Active Directory \(Azure AD\). |
-| Azure.StorageAccount.properties.creationTime | Date | Gets the creation date and time of the storage account in UTC. |
-| Azure.StorageAccount.properties.primaryEndpoints | String | Gets the URLs that are used to perform a retrieval of a public blob, queue, or table object. |
-| Azure.StorageAccount.properties.primaryLocation | String | Gets the location of the primary data center for the storage account. |
-| Azure.StorageAccount.properties.provisioningState | String | Gets the status of the storage account at the time the operation was called. |
-| Azure.StorageAccount.properties.routingPreference.routingChoice | String | Routing Choice defines the kind of network routing opted by the user. |
-| Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints | Boolean | A boolean flag which indicates whether microsoft routing storage endpoints are to be published. |
-| Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints | Boolean | A boolean flag which indicates whether internet routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
+| Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
+| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Azure Active Directory \(Azure AD\). |
+| Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
+| Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
+| Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
+| Azure.StorageAccount.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
+| Azure.StorageAccount.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
+| Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
 | Azure.StorageAccount.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
-| Azure.StorageAccount.properties.secondaryLocation | String | Gets the location of the geo-replicated secondary for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
-| Azure.StorageAccount.properties.statusOfPrimary | String | Gets the status indicating whether the primary location of the storage account is available or unavailable. |
-| Azure.StorageAccount.properties.statusOfSecondary | String | Gets the status indicating whether the secondary location of the storage account is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
-| Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | Allows https traffic only to storage service if sets to true. |
+| Azure.StorageAccount.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
+| Azure.StorageAccount.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows https traffic only to storage service. |
 | Azure.StorageAccount.sku.name | String | The SKU name. Required for account creation; optional for update. |
 | Azure.StorageAccount.sku.tier | String | The SKU tier. This is based on the SKU name. |
 | Azure.StorageAccount.tags | unknown | Resource tags. |
-| Azure.StorageAccount.type | String | The type of the resource. |
+| Azure.StorageAccount.type | String | The storage account type. |
 
 ### azure-storage-blob-service-properties-set
 
@@ -150,20 +150,20 @@ Sets properties for the blob service in a specific account storage.
 | resource_group_name | The resource group name. | Optional |
 | subscription_id | The subscription ID. | Optional |
 | account_name | The name of the storage account. | Required |
-| delete_rentention_policy_enabled | Indicates whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional |
-| delete_rentention_policy_days | Indicates the number of days that the deleted item should be retained. | Optional |
+| delete_rentention_policy_enabled | Whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional |
+| delete_rentention_policy_days | The number of days the deleted item should be retained. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.StorageAccountBlobServiceProperties.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageAccountBlobServiceProperties.id | String | The resource ID. |
 | Azure.StorageAccountBlobServiceProperties.name | String | The name of the resource. |
 | Azure.StorageAccountBlobServiceProperties.type | String | The type of the resource. |
 | Azure.StorageAccountBlobServiceProperties.properties.cors | String | Specifies CORS rules for the Blob service. |
-| Azure.StorageAccountBlobServiceProperties.properties.defaultServiceVersion | Date | Indicates the default version to use for requests to the Blob service if an incoming request\\u2019s version is not specified. Possible values include version 2008-10-27 and all more recent versions. |
+| Azure.StorageAccountBlobServiceProperties.properties.defaultServiceVersion | Date | The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions. |
 | Azure.StorageAccountBlobServiceProperties.properties.deleteRetentionPolicy | unknown | The service properties for soft delete. |
-| Azure.StorageAccountBlobServiceProperties.properties.isVersioningEnabled | Boolean | Versioning is enabled if set to true. |
+| Azure.StorageAccountBlobServiceProperties.properties.isVersioningEnabled | Boolean | If set to true, enables versioning. |
 | Azure.StorageAccountBlobServiceProperties.properties.changeFeed | unknown | The blob service properties for change feed events. |
 | Azure.StorageAccountBlobServiceProperties.sku.name | String | The SKU name. |
 | Azure.StorageAccountBlobServiceProperties.sku.tier | String | The SKU tier. |
@@ -182,12 +182,11 @@ Creates a policy assignment.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the policy assignment. | Required |
-| resource_group_name | The resource group name. | Optional |
-| subscription_id | Subscription ID. | Optional |
-| scope_level | The scope level of the assignment. Possible values are: resource group, subscription. | Optional |
+| subscription_id | Subscription ID. | Required |
+| scope | The scope of the policy assignment. | Optional |
 | policy_definition_id | The ID of the policy definition or policy set definition being assigned. | Optional |
-| display_name | Display name of the assignment. | Optional |
-| parameters | JSON object of policy properties parameters and their values. | Optional |
+| display_name | The assignment display name. | Optional |
+| parameters | The JSON object for policy properties parameters and their values. | Optional |
 | description | This message will be part of the response in case of policy violation. | Optional |
 
 #### Context Output
@@ -229,7 +228,7 @@ Updates a configuration of a server.
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Optional |
 | server_name | Name of the PostgreSQL server. | Required |
-| configuration_name | Name of the configuration setting. | Required |
+| configuration_name | The configuration setting name. | Required |
 | subscription_id | Subscription ID. | Optional |
 | source | Source of the configuration. | Optional |
 | value | Value of the configuration. | Optional |
@@ -455,7 +454,7 @@ Updates a disk.
 | Azure.Disk.properties.supportedDiskTypes | unknown | Supported disk types for the disk. |
 | Azure.Disk.properties.provisioningState | unknown | The provisioning state of the disk. |
 | Azure.Disk.properties.timeModified | unknown | The time when the disk was last modified. |
-| Azure.Disk.properties.diskAccessId | String | ARM id of the DiskAccess resource. |
+| Azure.Disk.properties.diskAccessId | String | The ARM ID of the DiskAccess resource. |
 | Azure.Disk.properties.networkProfile | unknown | The network profile of the disk. |
 | Azure.Disk.properties.creationData | unknown | Disk creation data. |
 | Azure.Disk.properties.encryption | unknown | Encryption settings for the disk. |
@@ -586,7 +585,7 @@ Updates a container registry.
 | registry_name | The name of the container registry. | Required |
 | allow_exports | Whether artifacts can be exported. Possible values are: disabled, enabled. | Optional |
 | public_network_access | Whether public network access is allowed for the container registry. Possible values are: disabled, enabled. | Optional |
-| anonymous_pull_enabled | Enables registry-wide pull from unauthenticated clients. Possible values are: true, false. | Optional |
+| anonymous_pull_enabled | Whether to enable registry-wide pulls from unauthenticated clients. Possible values are: true, false. | Optional |
 | authentication_as_arm_policy | Whether the policy is enabled or not. Possible values are: disabled, enabled. | Optional |
 
 #### Context Output
@@ -633,7 +632,7 @@ Updates an existing server.
 | resource_group_name | The resource group name. | Optional |
 | subscription_id | Subscription ID. | Optional |
 | server_name | Name of the PostgreSQL server. | Required |
-| ssl_enforcement | Enable ssl enforcement or not when connect to server. Possible values are: Disabled, Enabled. | Optional |
+| ssl_enforcement | Whether to enable SSL authentication when connecting to the server. Possible values are: Disabled, Enabled. | Optional |
 
 #### Context Output
 
@@ -655,8 +654,8 @@ Updates a key vault in the specified subscription.
 | vault_name | Key Vault name. | Required |
 | subscription_id | The subscription ID. | Optional |
 | resource_group_name | The name of the resource group. | Optional |
-| enable_purge_protection | Whether protection against purge is enabled for this vault. Enabling this functionality is irreversible - that is, the property does not accept false as its value. Possible values are: true. | Optional |
-| enable_soft_delete | Whether the 'soft delete' functionality is enabled for this key vault. Enabling this functionality is irreversible - that is, the property does not accept false as its value. Possible values are: true. | Optional |
+| enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
+| enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
 
 #### Context Output
 
@@ -674,17 +673,17 @@ Updates a key vault in the specified subscription.
 | Azure.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
 | Azure.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
 | Azure.KeyVault.properties.accessPolicies.permissions | unknown | Permissions the identity has for keys, secrets and certificates. |
-| Azure.KeyVault.properties.enabledForDeployment | Boolean | Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. |
-| Azure.KeyVault.properties.enabledForDiskEncryption | Boolean | Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys. |
-| Azure.KeyVault.properties.enabledForTemplateDeployment | Boolean | Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault. |
-| Azure.KeyVault.properties.enableSoftDelete | Boolean | Property to specify whether the 'soft delete' functionality is enabled for this key vault. |
-| Azure.KeyVault.properties.enablePurgeProtection | Boolean | Property to specify whether the 'purge protection' functionality is enabled for this key vault. |
-| Azure.KeyVault.properties.enableRbacAuthorization | Boolean | Property to specify whether Azure Key Vault uses Role Based Access Control \(RBAC\) for authorization of data actions. |
+| Azure.KeyVault.properties.enabledForDeployment | Boolean | Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault. |
+| Azure.KeyVault.properties.enabledForDiskEncryption | Boolean | Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys. |
+| Azure.KeyVault.properties.enabledForTemplateDeployment | Boolean | Whether Azure Resource Manager is allowed to retrieve secrets from the key vault. |
+| Azure.KeyVault.properties.enableSoftDelete | Boolean | Whether soft delete is enabled for this key vault. |
+| Azure.KeyVault.properties.enablePurgeProtection | Boolean | Whether purge protection is enabled for this key vault. |
+| Azure.KeyVault.properties.enableRbacAuthorization | Boolean | Whether Azure Key Vault uses Role Based Access Control \(RBAC\) for authorization of data actions. |
 | Azure.KeyVault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. |
 | Azure.KeyVault.properties.provisioningState | String | The current provisioning state. |
 | Azure.KeyVault.properties.privateEndpointConnections | unknown | List of private endpoint connections associated with the key vault. |
 | Azure.KeyVault.properties.networkAcls | unknown | Rules governing the accessibility of the key vault from specific network locations. |
-| Azure.KeyVault.properties.networkAcls.bypass | String | Tells what traffic can bypass network rules. |
+| Azure.KeyVault.properties.networkAcls.bypass | String | What traffic can bypass network rules. |
 | Azure.KeyVault.properties.networkAcls.defaultAction | String | The default action when no rules match from ipRules and virtualNetworkRules. |
 | Azure.KeyVault.properties.networkAcls.ipRules | unknown | The list of IP address rules. |
 | Azure.KeyVault.properties.networkAcls.virtualNetworkRules | unknown | The list of virtual network rules. |
@@ -766,7 +765,7 @@ Updates the properties of an existing Azure Cosmos DB database account.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_name | Cosmos DB database account name. | Required |
-| disable_key_based_metadata_write_access | Disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
+| disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
 | subscription_id | Subscription ID. | Optional |
 | resource_group_name | The name of the resource group. | Optional |
 
@@ -777,10 +776,10 @@ Updates the properties of an existing Azure Cosmos DB database account.
 | Azure.CosmosDB.id | String | The unique resource identifier of the ARM resource. |
 | Azure.CosmosDB.name | String | The name of the ARM resource. |
 | Azure.CosmosDB.location | String | The location of the resource group to which the resource belongs. |
-| Azure.CosmosDB.kind | String | Indicates the type of database account. |
+| Azure.CosmosDB.kind | String | The database account type. |
 | Azure.CosmosDB.identity.type | String | The type of identity used for the resource. |
 | Azure.CosmosDB.identity.userAssignedIdentities | Dictionary | The list of user identities associated with the resource. |
-| Azure.CosmosDB.properties.analyticalStorageConfiguration.schemaType | String | Describes the types of schema for analytical storage. |
+| Azure.CosmosDB.properties.analyticalStorageConfiguration.schemaType | String | The analytical storage schema types. |
 | Azure.CosmosDB.properties.apiProperties | Dictionary | API specific properties. |
 | Azure.CosmosDB.properties.backupPolicy | unknown | The policy for taking backups on an account. |
 | Azure.CosmosDB.properties.capabilities | List | List of Cosmos DB capabilities for the account. |
@@ -792,26 +791,26 @@ Updates the properties of an existing Azure Cosmos DB database account.
 | Azure.CosmosDB.properties.customerManagedKeyStatus | String | Status of the Customer Managed Key feature on the account. |
 | Azure.CosmosDB.properties.databaseAccountOfferType | String | The offer type for the Cosmos DB database account. |
 | Azure.CosmosDB.properties.defaultIdentity | String | The default identity for accessing key vault used in features like customer managed keys. |
-| Azure.CosmosDB.properties.disableKeyBasedMetadataWriteAccess | Boolean | Disable write operations on metadata resources via account keys. |
-| Azure.CosmosDB.properties.disableLocalAuth | Boolean | Opt-out of local authentication. |
+| Azure.CosmosDB.properties.disableKeyBasedMetadataWriteAccess | Boolean | Whether write operations on metadata resources via account keys is disabled. |
+| Azure.CosmosDB.properties.disableLocalAuth | Boolean | Whether local authentication is disabled. |
 | Azure.CosmosDB.properties.documentEndpoint | String | The connection endpoint for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.enableAnalyticalStorage | Boolean | Flag to indicate whether to enable storage analytics. |
+| Azure.CosmosDB.properties.enableAnalyticalStorage | Boolean | Whether storage analytics are enabled. |
 | Azure.CosmosDB.properties.enableAutomaticFailover | Boolean | Enables automatic failover of the write region. |
-| Azure.CosmosDB.properties.enableBurstCapacity | Boolean | Flag to indicate enabling/disabling of Burst Capacity feature. |
+| Azure.CosmosDB.properties.enableBurstCapacity | Boolean | Whether Burst Capacity is enabled. |
 | Azure.CosmosDB.properties.enableCassandraConnector | Boolean | Enables the Cassandra connector on the Cosmos DB account. |
-| Azure.CosmosDB.properties.enableFreeTier | Boolean | Flag to indicate whether Free Tier is enabled. |
+| Azure.CosmosDB.properties.enableFreeTier | Boolean | Whether Free Tier is enabled. |
 | Azure.CosmosDB.properties.enableMultipleWriteLocations | Boolean | Enables the account to write in multiple locations. |
-| Azure.CosmosDB.properties.enablePartitionMerge | Boolean | Flag to indicate enabling/disabling of Partition Merge feature. |
-| Azure.CosmosDB.properties.enablePerRegionPerPartitionAutoscale | Boolean | Flag to indicate enabling/disabling of PerRegionPerPartitionAutoscale feature. |
+| Azure.CosmosDB.properties.enablePartitionMerge | Boolean | Whether Partition Merge is enabled. |
+| Azure.CosmosDB.properties.enablePerRegionPerPartitionAutoscale | Boolean | Whether PerRegionPerPartitionAutoscale is enabled. |
 | Azure.CosmosDB.properties.failoverPolicies | List | An array that contains the regions ordered by their failover priorities. |
 | Azure.CosmosDB.properties.instanceId | String | A unique identifier assigned to the database account. |
 | Azure.CosmosDB.properties.ipRules | List | List of IP rules. |
-| Azure.CosmosDB.properties.isVirtualNetworkFilterEnabled | Boolean | Flag to indicate whether to enable/disable Virtual Network ACL rules. |
+| Azure.CosmosDB.properties.isVirtualNetworkFilterEnabled | Boolean | Whether the Virtual Network ACL rules are enabled. |
 | Azure.CosmosDB.properties.keyVaultKeyUri | String | The URI of the key vault. |
 | Azure.CosmosDB.properties.keysMetadata | Dictionary | Metadata related to each access key for the given Cosmos DB database account. |
 | Azure.CosmosDB.properties.locations | List | An array that contains all of the locations enabled for the Cosmos DB account. |
-| Azure.CosmosDB.properties.minimalTlsVersion | String | Indicates the minimum allowed TLS version. |
-| Azure.CosmosDB.properties.networkAclBypass | String | Indicates what services are allowed to bypass firewall checks. |
+| Azure.CosmosDB.properties.minimalTlsVersion | String | The minimum allowed TLS version. |
+| Azure.CosmosDB.properties.networkAclBypass | String | Which services are allowed to bypass firewall checks. |
 | Azure.CosmosDB.properties.networkAclBypassResourceIds | List | List of resource IDs that are allowed to bypass firewall checks. |
 | Azure.CosmosDB.properties.privateEndpointConnections | List | List of private endpoint connections. |
 | Azure.CosmosDB.properties.provisioningState | String | The status of the Cosmos DB account at the time the operation was called. |

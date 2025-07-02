@@ -1,4 +1,11 @@
-In order to connect to the Azure integration use the following method:
+To connect to the Azure integration, do the following.
+
+
+## Self-Deployed Azure App
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+
+To add the registration, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/defender-xdr/api-create-app-web?view=o365-worldwide) steps 1-8.
 
 ### Required permissions
 
@@ -19,10 +26,10 @@ To add a permission:
    *Note:* In the *Select members* section, assign the application you created earlier.
 
 2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
-   b. In the *Application ID* field, enter your Client/Application ID.
-   c. In the *Subscription ID* field, enter your Subscription ID.
-   d. In the *Resource Group Name* field, enter you Resource Group Name.
-   e. In the *Tenant ID* field, enter your Tenant ID .
-   f. In the *Client Secret* field, enter your Client Secret.
-   g. Click **Test** to validate the URLs, token, and connection
-   h. Save the instance.
+   a. In the *Application ID* field, enter your Client/Application ID.
+   b. In the *Subscription ID* field, enter your Subscription ID.
+   c. In the *Resource Group Name* field, enter you Resource Group Name.
+   d. In the *Tenant ID* field, enter your Tenant ID .
+   e. In the *Client Secret* field, enter your Client Secret.
+   f. Click **Test** to validate the URLs, token, and connection
+   g. Save the instance.

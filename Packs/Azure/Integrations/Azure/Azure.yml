@@ -14,12 +14,12 @@ configuration:
   name: subscription_id
   type: 0
   section: Connect
-  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
+  additionalinfo: You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting.
 - display: Default Resource Group Name
   name: resource_group_name
   type: 0
   section: Connect
-  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
+  additionalinfo: You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting.
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -248,7 +248,7 @@ script:
       predefined:
       - Microsoft.Storage
       - Microsoft.Keyvault
-    - description: Indicating whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
+    - description: Indicates whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
       name: enc_requireInfrastructureEncryption
       auto: PREDEFINED
       predefined:
@@ -279,18 +279,18 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Allow large file shares if sets to Enabled.
+      description: If set to Enabled, allows large file shares.
       name: large_file_shares_state
       predefined:
       - Disabled
       - Enabled
     - auto: PREDEFINED
-      description: Allow or disallow public access to all blobs or containers in the storage account.
+      description: If set to true, allows public access to all blobs or containers in the storage account.
       name: allow_blob_public_access
       predefined:
       - 'true'
       - 'false'
-    - description: Set the minimum TLS version to be permitted on requests to storage.
+    - description: Sets the minimum TLS version to be permitted on requests to storage.
       name: minimum_tls_version
       auto: PREDEFINED
       predefined:
@@ -329,7 +329,7 @@ script:
       description: Fully qualified resource ID for the resource.
       type: String
     - contextPath: Azure.StorageAccount.kind
-      description: Gets the Kind.
+      description: The kind of storage account.
       type: String
     - contextPath: Azure.StorageAccount.location
       description: The geo-location where the resource lives.
@@ -341,49 +341,49 @@ script:
       description: Account HierarchicalNamespace enabled if sets to true.
       type: Boolean
     - contextPath: Azure.StorageAccount.properties.allowBlobPublicAccess
-      description: Allow or disallow public access to all blobs or containers in the storage account. The default interpretation is true for this property.
+      description: If set to true (default), allows public access to all blobs or containers in the storage account.
       type: Boolean
     - contextPath: Azure.StorageAccount.properties.minimumTlsVersion
-      description: Set the minimum TLS version to be permitted on requests to storage. The default interpretation is TLS 1.0 for this property.
+      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.StorageAccount.properties.allowSharedKeyAccess
-      description: Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Azure Active Directory (Azure AD).
+      description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
       type: Boolean
     - contextPath: Azure.StorageAccount.properties.creationTime
-      description: Gets the creation date and time of the storage account in UTC.
+      description: The creation date and time of the storage account in UTC.
       type: Date
     - contextPath: Azure.StorageAccount.properties.primaryEndpoints
-      description: Gets the URLs that are used to perform a retrieval of a public blob, queue, or table object.
+      description: The URLs that are used to retrieve a public blob, queue, or table object.
       type: String
     - contextPath: Azure.StorageAccount.properties.primaryLocation
-      description: Gets the location of the primary data center for the storage account.
+      description: The storage account primary data center location.
       type: String
     - contextPath: Azure.StorageAccount.properties.provisioningState
-      description: Gets the status of the storage account at the time the operation was called.
+      description: The status of the storage account at the time the operation was called.
       type: String
     - contextPath: Azure.StorageAccount.properties.routingPreference.routingChoice
-      description: Routing Choice defines the kind of network routing opted by the user.
+      description: The kind of network routing the user chose.
       type: String
     - contextPath: Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints
-      description: A boolean flag which indicates whether microsoft routing storage endpoints are to be published.
+      description: Whether Microsoft routing storage endpoints are to be published.
       type: Boolean
     - contextPath: Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints
-      description: A boolean flag which indicates whether internet routing storage endpoints are to be published.
+      description: Whether internet routing storage endpoints are to be published.
       type: Boolean
     - contextPath: Azure.StorageAccount.properties.encryption
       description: Encryption settings to be used for server-side encryption for the storage account.
       type: String
     - contextPath: Azure.StorageAccount.properties.secondaryLocation
-      description: Gets the location of the geo-replicated secondary for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS.
+      description: The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS.
       type: String
     - contextPath: Azure.StorageAccount.properties.statusOfPrimary
-      description: Gets the status indicating whether the primary location of the storage account is available or unavailable.
+      description: Whether the storage account primary location is available or unavailable.
       type: String
     - contextPath: Azure.StorageAccount.properties.statusOfSecondary
-      description: Gets the status indicating whether the secondary location of the storage account is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS.
+      description: Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS.
       type: String
     - contextPath: Azure.StorageAccount.properties.supportsHttpsTrafficOnly
-      description: Allows https traffic only to storage service if sets to true.
+      description: If set to true, allows https traffic only to storage service.
       type: Boolean
     - contextPath: Azure.StorageAccount.sku.name
       description: The SKU name. Required for account creation; optional for update.
@@ -394,7 +394,7 @@ script:
     - contextPath: Azure.StorageAccount.tags
       description: Resource tags.
     - contextPath: Azure.StorageAccount.type
-      description: The type of the resource.
+      description: The storage account type.
       type: String
   - arguments:
     - description: The resource group name.
@@ -405,19 +405,19 @@ script:
       name: account_name
       required: true
     - auto: PREDEFINED
-      description: Indicates whether DeleteRetentionPolicy is enabled.
+      description: Whether DeleteRetentionPolicy is enabled.
       name: delete_rentention_policy_enabled
       predefined:
       - 'true'
       - 'false'
       type: bool
-    - description: Indicates the number of days that the deleted item should be retained.
+    - description: The number of days the deleted item should be retained.
       name: delete_rentention_policy_days
     description: Sets properties for the blob service in a specific account storage.
     name: azure-storage-blob-service-properties-set
     outputs:
     - contextPath: Azure.StorageAccountBlobServiceProperties.id
-      description: Fully qualified resource ID for the resource.
+      description: The resource ID.
       type: String
     - contextPath: Azure.StorageAccountBlobServiceProperties.name
       description: The name of the resource.
@@ -429,12 +429,12 @@ script:
       description: Specifies CORS rules for the Blob service.
       type: String
     - contextPath: Azure.StorageAccountBlobServiceProperties.properties.defaultServiceVersion
-      description: Indicates the default version to use for requests to the Blob service if an incoming request\u2019s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
+      description: The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions.
       type: Date
     - contextPath: Azure.StorageAccountBlobServiceProperties.properties.deleteRetentionPolicy
       description: The service properties for soft delete.
     - contextPath: Azure.StorageAccountBlobServiceProperties.properties.isVersioningEnabled
-      description: Versioning is enabled if set to true.
+      description: If set to true, enables versioning.
       type: Boolean
     - contextPath: Azure.StorageAccountBlobServiceProperties.properties.changeFeed
       description: The blob service properties for change feed events.
@@ -460,9 +460,9 @@ script:
       description: The ID of the policy definition or policy set definition being assigned.
     - name: display_name
       type: string
-      description: Display name of the assignment.
+      description: The assignment display name.
     - name: parameters
-      description: JSON object of policy properties parameters and their values.
+      description: The JSON object for policy properties parameters and their values.
     - name: description
       type: string
       description: This message will be part of the response in case of policy violation.
@@ -529,7 +529,7 @@ script:
     - name: configuration_name
       type: string
       required: true
-      description: Name of the configuration setting.
+      description: The configuration setting name.
     - name: subscription_id
       type: string
       description: Subscription ID.
@@ -983,7 +983,7 @@ script:
     - contextPath: Azure.Disk.properties.timeModified
       description: The time when the disk was last modified.
     - contextPath: Azure.Disk.properties.diskAccessId
-      description: ARM id of the DiskAccess resource.
+      description: The ARM ID of the DiskAccess resource.
       type: String
     - contextPath: Azure.Disk.properties.networkProfile
       description: The network profile of the disk.
@@ -1280,7 +1280,7 @@ script:
       - enabled
     - name: anonymous_pull_enabled
       type: Boolean
-      description: Enables registry-wide pull from unauthenticated clients.
+      description: Whether to enable registry-wide pulls from unauthenticated clients.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -1378,7 +1378,7 @@ script:
       description: Name of the PostgreSQL server.
     - name: ssl_enforcement
       type: String
-      description: Enable ssl enforcement or not when connect to server.
+      description: Whether to enable SSL authentication when connecting to the server.
       predefined:
       - Disabled
       - Enabled
@@ -1396,13 +1396,13 @@ script:
       description: The name of the resource group.
       type: String
     - name: enable_purge_protection
-      description: Whether protection against purge is enabled for this vault. Enabling this functionality is irreversible - that is, the property does not accept false as its value.
+      description: Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled.
       type: bool
       auto: PREDEFINED
       predefined:
       - 'true'
     - name: enable_soft_delete
-      description: Whether the 'soft delete' functionality is enabled for this key vault. Enabling this functionality is irreversible - that is, the property does not accept false as its value.
+      description: Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled.
       type: bool
       auto: PREDEFINED
       predefined:
@@ -1444,22 +1444,22 @@ script:
     - contextPath: Azure.KeyVault.properties.accessPolicies.permissions
       description: Permissions the identity has for keys, secrets and certificates.
     - contextPath: Azure.KeyVault.properties.enabledForDeployment
-      description: Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault.
+      description: Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault.
       type: Boolean
     - contextPath: Azure.KeyVault.properties.enabledForDiskEncryption
-      description: Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.
+      description: Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys.
       type: Boolean
     - contextPath: Azure.KeyVault.properties.enabledForTemplateDeployment
-      description: Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault.
+      description: Whether Azure Resource Manager is allowed to retrieve secrets from the key vault.
       type: Boolean
     - contextPath: Azure.KeyVault.properties.enableSoftDelete
-      description: Property to specify whether the 'soft delete' functionality is enabled for this key vault.
+      description: Whether soft delete is enabled for this key vault.
       type: Boolean
     - contextPath: Azure.KeyVault.properties.enablePurgeProtection
-      description: Property to specify whether the 'purge protection' functionality is enabled for this key vault.
+      description: Whether purge protection is enabled for this key vault.
       type: Boolean
     - contextPath: Azure.KeyVault.properties.enableRbacAuthorization
-      description: Property to specify whether Azure Key Vault uses Role Based Access Control (RBAC) for authorization of data actions.
+      description: Whether Azure Key Vault uses Role Based Access Control (RBAC) for authorization of data actions.
       type: Boolean
     - contextPath: Azure.KeyVault.properties.vaultUri
       description: The URI of the vault for performing operations on keys and secrets.
@@ -1472,7 +1472,7 @@ script:
     - contextPath: Azure.KeyVault.properties.networkAcls
       description: Rules governing the accessibility of the key vault from specific network locations.
     - contextPath: Azure.KeyVault.properties.networkAcls.bypass
-      description: Tells what traffic can bypass network rules.
+      description: What traffic can bypass network rules.
       type: String
     - contextPath: Azure.KeyVault.properties.networkAcls.defaultAction
       description: The default action when no rules match from ipRules and virtualNetworkRules.
@@ -1576,7 +1576,7 @@ script:
       name: account_name
       required: true
     - auto: PREDEFINED
-      description: Disable write operations on metadata resources via account keys.
+      description: Whether to disable write operations on metadata resources via account keys.
       name: disable_key_based_metadata_write_access
       predefined:
       - 'true'
@@ -1600,7 +1600,7 @@ script:
       description: The location of the resource group to which the resource belongs.
       type: String
     - contextPath: Azure.CosmosDB.kind
-      description: Indicates the type of database account.
+      description: The database account type.
       type: String
     - contextPath: Azure.CosmosDB.identity.type
       description: The type of identity used for the resource.
@@ -1609,7 +1609,7 @@ script:
       description: The list of user identities associated with the resource.
       type: Dictionary
     - contextPath: Azure.CosmosDB.properties.analyticalStorageConfiguration.schemaType
-      description: Describes the types of schema for analytical storage.
+      description: The analytical storage schema types.
       type: String
     - contextPath: Azure.CosmosDB.properties.apiProperties
       description: API specific properties.
@@ -1644,37 +1644,37 @@ script:
       description: The default identity for accessing key vault used in features like customer managed keys.
       type: String
     - contextPath: Azure.CosmosDB.properties.disableKeyBasedMetadataWriteAccess
-      description: Disable write operations on metadata resources via account keys.
+      description: Whether write operations on metadata resources via account keys is disabled.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.disableLocalAuth
-      description: Opt-out of local authentication.
+      description: Whether local authentication is disabled.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.documentEndpoint
       description: The connection endpoint for the Cosmos DB database account.
       type: String
     - contextPath: Azure.CosmosDB.properties.enableAnalyticalStorage
-      description: Flag to indicate whether to enable storage analytics.
+      description: Whether storage analytics are enabled.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.enableAutomaticFailover
       description: Enables automatic failover of the write region.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.enableBurstCapacity
-      description: Flag to indicate enabling/disabling of Burst Capacity feature.
+      description: Whether Burst Capacity is enabled.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.enableCassandraConnector
       description: Enables the Cassandra connector on the Cosmos DB account.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.enableFreeTier
-      description: Flag to indicate whether Free Tier is enabled.
+      description: Whether Free Tier is enabled.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.enableMultipleWriteLocations
       description: Enables the account to write in multiple locations.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.enablePartitionMerge
-      description: Flag to indicate enabling/disabling of Partition Merge feature.
+      description: Whether Partition Merge is enabled.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.enablePerRegionPerPartitionAutoscale
-      description: Flag to indicate enabling/disabling of PerRegionPerPartitionAutoscale feature.
+      description: Whether PerRegionPerPartitionAutoscale is enabled.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.failoverPolicies
       description: An array that contains the regions ordered by their failover priorities.
@@ -1686,7 +1686,7 @@ script:
       description: List of IP rules.
       type: List
     - contextPath: Azure.CosmosDB.properties.isVirtualNetworkFilterEnabled
-      description: Flag to indicate whether to enable/disable Virtual Network ACL rules.
+      description: Whether the Virtual Network ACL rules are enabled.
       type: Boolean
     - contextPath: Azure.CosmosDB.properties.keyVaultKeyUri
       description: The URI of the key vault.
@@ -1698,10 +1698,10 @@ script:
       description: An array that contains all of the locations enabled for the Cosmos DB account.
       type: List
     - contextPath: Azure.CosmosDB.properties.minimalTlsVersion
-      description: Indicates the minimum allowed TLS version.
+      description: The minimum allowed TLS version.
       type: String
     - contextPath: Azure.CosmosDB.properties.networkAclBypass
-      description: Indicates what services are allowed to bypass firewall checks.
+      description: Which services are allowed to bypass firewall checks.
       type: String
     - contextPath: Azure.CosmosDB.properties.networkAclBypassResourceIds
       description: List of resource IDs that are allowed to bypass firewall checks.
