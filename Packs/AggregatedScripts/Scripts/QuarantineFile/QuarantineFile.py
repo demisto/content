@@ -105,7 +105,7 @@ class Command:
         Executes the specified command with given arguments, handles any errors, and parses the execution results.
 
         Args:
-            command_name (str): The name of the command to execute.
+            name (str): The name of the command to execute.
             args (dict[str, Any]): A dictionary of arguments to pass to the command.
 
         Returns:
@@ -144,7 +144,17 @@ class Command:
         return entry_context, readable_command_results
 
     def execute_polling(self) -> CommandResults:
-        demisto.debug(f"Stating to execute command: {self}.")
+        """
+        Executes the specified polling command with given arguments, handles any errors, and parses the execution results.
+
+        Args:
+            name (str): The name of the command to execute.
+            args (dict[str, Any]): A dictionary of arguments to pass to the command.
+
+        Returns:
+            tuple[list[dict], list[CommandResults]]: A tuple of entry context dictionaries and human-readable CommandResults.
+        """
+        demisto.debug(f"Stating to execute polling command: {self}.")
         execution_results = execute_polling_command(self.name, self.args)
 
         if not execution_results:
@@ -153,11 +163,13 @@ class Command:
             error_result = self.prepare_human_readable(error_message, is_error=True)
             return error_result
 
+        demisto.debug(f"Execution response from command: {execution_results}")
         outputs = []
         if isinstance(execution_results, list):
             outputs = execution_results[-1].outputs
             if isinstance(outputs, dict):
                 outputs = list(outputs.values())[0]
+        demisto.debug(f"Finish execution of command: {self}.")
 
         return CommandResults(outputs_prefix="QuarantineFile", outputs=outputs)
 
@@ -190,17 +202,38 @@ class Command:
 
 
 def Microsoft_atp_stop_and_quarantine_file():
-    pass  # not polling
+    pass  # not polling?
 
 
 """ HELPER FUNCTIONS """
-def get_connected_endpoints(command_prefix: str, args: dict, readable_context: list[dict], context: list[dict],
-                               verbose_command_results: list[CommandResults]) -> list[str]:
-    # extract invalid or offline endpoints from endpoint_ids and add an error for them
+
+
+def get_connected_endpoints(
+    command_prefix: str,
+    args: dict,
+    readable_context: list[dict],
+    context: list[dict],
+    verbose_command_results: list[CommandResults],
+) -> list[str]:
+    """
+    find all connected endpoints on the device, returns them as list and
+    update readable_context and context for the endpoint that are not available.
+
+    Args:
+        command_prefix (str): the prefix for the get-endpoints command.
+        args (dict): the arguments that were given by the user [endpoint_ids, file_hash, file_path].
+        readable_context (list[dict]): list of readable_context.
+        context (list[dict]): list of context.
+        verbose_command_results (list[CommandResults]): List of CommandResults.
+
+    Returns:
+        list[str]: List of connected endpoints IDs.
+    """
+    demisto.debug("Search for connected endpoints")
     endpoint_ids: list = argToList(args.get("endpoint_ids"))
     file_hash: str = args.get("file_hash", "")
     file_path: str = args.get("file_path", "")
-    
+
     endpoints_details = Command(
         name=f"{command_prefix}-get-endpoints",
         args={
@@ -215,8 +248,10 @@ def get_connected_endpoints(command_prefix: str, args: dict, readable_context: l
     for e_detail in e_details:
         if e_detail.get("endpoint_status") == "CONNECTED":
             connected_endpoints.append(e_detail.get("endpoint_id"))
-    
+    demisto.debug(f"connected endpoints {connected_endpoints}")
+
     unrteachable_endpoints = [e_id for e_id in endpoint_ids if e_id not in connected_endpoints]
+    demisto.debug(f"update message for unreachable endpoints: {unrteachable_endpoints}")
     for e_id in unrteachable_endpoints:
         message = "Failed to quarantine file. The endpoint is offline or unreachacle"
         readable_context.append({"endpoint_id": e_id, "message": message})
@@ -233,13 +268,33 @@ def get_connected_endpoints(command_prefix: str, args: dict, readable_context: l
         )
     return connected_endpoints
 
-def quarantine_file(command_prefix: str, args: dict, readable_context: list[dict], context: list[dict],
-                    verbose_command_results: list[CommandResults]) -> None:
-    endpoint_ids: list = argToList(args.get("endpoint_ids"))
+
+def get_endpoints_to_quarantine(
+    command_prefix: str,
+    args: dict,
+    readable_context: list[dict],
+    context: list[dict],
+    verbose_command_results: list[CommandResults],
+) -> tuple[list[str], dict[str, Command]]:
+    """
+    get quarantine status for each connected endpoint.
+    for already quarantined file at endpoint update readable_context and context.
+
+    Args:
+        command_prefix (str): the prefix for the get-endpoints command.
+        args (dict): the arguments that were given by the user [endpoint_ids, file_hash, file_path].
+        readable_context (list[dict]): list of readable_context.
+        context (list[dict]): list of context.
+        verbose_command_results (list[CommandResults]): List of CommandResults.
+
+    Returns:
+        list[str]: list of endpoints that are not already quarantined
+        dict[str, Command]: for each endpoint save it's get-quarantine-status command
+    """
     file_hash: str = args.get("file_hash", "")
     file_path: str = args.get("file_path", "")
-    timeout: int = arg_to_number(args.get("timeout")) or 300
-    endpoint_ids = get_connected_endpoints(command_prefix, args , readable_context, context, verbose_command_results)
+    endpoint_ids = get_connected_endpoints(command_prefix, args, readable_context, context, verbose_command_results)
+
     status_commands = {}
     [
         status_commands.update(
@@ -257,6 +312,8 @@ def quarantine_file(command_prefix: str, args: dict, readable_context: list[dict
         )
         for endpoint_id in endpoint_ids
     ]
+
+    endpoints_to_quarantine = []
     for e_id, command in status_commands.items():
         response = command.execute()
         verbose_command_results.append(response)
@@ -264,33 +321,74 @@ def quarantine_file(command_prefix: str, args: dict, readable_context: list[dict
             quarantine_status = val.get("status")
         if quarantine_status:
             message = "already quarantined"
-        else:
-            quarantine_command = Command(
-                name="core-quarantine-files" if command_prefix==CORE_COMMAND_PREFIX else "xdr-file-quarantine",
-                args={
-                    "endpoint_id_list": endpoint_ids,
+            readable_context.append({"endpoint_id": e_id, "message": message})
+            context.append(
+                {
                     "file_hash": file_hash,
                     "file_path": file_path,
-                    "timeout_in_seconds": timeout,
-                },
-                brand=BRAND_CORE_IR,
+                    "endpoint_id": e_id,
+                    "status": quarantine_status,
+                    "result": "Success" if quarantine_status else "Failed",
+                    "message": message,
+                    "brand": BRAND_CORE_IR,
+                }
             )
-            quarantine_results = quarantine_command.execute_polling()
-            verbose_command_results.append(quarantine_results)
-            outputs = quarantine_results.outputs or []
-            for res in outputs:
-                status = res.get("status")
-                if status == "COMPLETED_SUCCESSFULLY":
-                    response = command.execute()
-                    verbose_command_results.append(response)
-                    for val in response[0][0].values():
-                        quarantine_status = val.get("status")
-                        if quarantine_status:
-                            message = "File successfully quarantined"
-                        else:
-                            message = f"Failed to quarantine file. {val.get('error_description')}"
+        else:
+            endpoints_to_quarantine.append(e_id)
+    return endpoints_to_quarantine, status_commands
+
+
+def core_or_xdr_quarantine_file(
+    command_prefix: str,
+    args: dict,
+    readable_context: list[dict],
+    context: list[dict],
+    verbose_command_results: list[CommandResults],
+) -> None:
+    """
+    quarantine file and update readable_context and context to contain the status of the file's quarantine.
+
+    Args:
+        command_prefix (str): the prefix for the get-endpoints command.
+        args (dict): the arguments that were given by the user [endpoint_ids, file_hash, file_path].
+        readable_context (list[dict]): list of readable_context.
+        context (list[dict]): list of context.
+        verbose_command_results (list[CommandResults]): List of CommandResults.
+    """
+    file_hash: str = args.get("file_hash", "")
+    file_path: str = args.get("file_path", "")
+    timeout: int = arg_to_number(args.get("timeout")) or 300
+    endpoints_to_quarantine, status_commands = get_endpoints_to_quarantine(
+        command_prefix, args, readable_context, context, verbose_command_results
+    )
+
+    quarantine_results = Command(
+        name="core-quarantine-files" if command_prefix == CORE_COMMAND_PREFIX else "xdr-file-quarantine",
+        args={
+            "endpoint_id_list": endpoints_to_quarantine,
+            "file_hash": file_hash,
+            "file_path": file_path,
+            "timeout_in_seconds": timeout,
+        },
+        brand=BRAND_CORE_IR,
+    ).execute_polling()
+    verbose_command_results.append(quarantine_results)
+    outputs = quarantine_results.outputs or []
+
+    for res in outputs:
+        e_id = res.get("endpoint_id")
+        status = res.get("status")
+        if status == "COMPLETED_SUCCESSFULLY":
+            response = status_commands.get(e_id).execute()
+            verbose_command_results.append(response)
+            for val in response[0][0].values():
+                quarantine_status = val.get("status")
+                if quarantine_status:
+                    message = "File successfully quarantined"
                 else:
-                    message = f"Failed to quarantine file. {res.get('error_description')}"
+                    message = f"Failed to quarantine file. {val.get('error_description')}"
+        else:
+            message = f"Failed to quarantine file. {res.get('error_description')}"
         readable_context.append({"endpoint_id": e_id, "message": message})
         context.append(
             {
@@ -299,93 +397,92 @@ def quarantine_file(command_prefix: str, args: dict, readable_context: list[dict
                 "endpoint_id": e_id,
                 "status": quarantine_status,
                 "result": "Success" if quarantine_status else "Failed",
-                "message": message or "",
+                "message": message,
                 "brand": BRAND_CORE_IR,
             }
         )
-
 
 
 """ SCRIPT FUNCTION """
 
 
 def quarantine_file_script(args: Dict[str, Any]) -> list[CommandResults]:
+    """
+    implements the !quarantine-file command by identify which integration to use
+    and use it's quarantine-file custom command to reflect the result of the quarantine status to the user
+
+    Args:
+        args (dict): the arguments that were given by the user.
+
+    Returns:
+        list[CommandResults]: List of CommandResults objects.
+
+    Raises:
+        ValueError: If there is missing required args or the file hash is not valid.
+        DemistoException: If none of the quarantine_brands has an enabled integration instance.
+    """
     demisto.debug(f"Parsing and validating script args: {args}.")
     endpoint_ids: list = argToList(args.get("endpoint_ids"))
     file_hash: str = args.get("file_hash", "")
     file_path: str = args.get("file_path", "")
 
     if not (endpoint_ids and file_hash and file_path):
+        demisto.error(f"Missing required fields {endpoint_ids=} {file_hash=}, {file_path=}")
         raise ValueError(f"Missing required fields {endpoint_ids=} {file_hash=}, {file_path=}")
 
     hash_type: str = get_hash_type(file_hash).casefold()
+    demisto.debug(f"hash type is {hash_type}")
 
     if not file_hash or hash_type not in SUPPORTED_HASH:
         raise ValueError("A valid file hash must be provided. Supported types are: SHA1 and SHA256")
+
     quarantine_brands: list = argToList(args.get("quarantine_brands"))
     verbose: bool = argToBoolean(args.get("verbose", False))
-
     context: list[dict] = []  # data as requested
     readable_context: list = []  # endpoint, message
     verbose_command_results: list[CommandResults] = []
-    demisto.debug("Check there is at least one relevant integration configured by hash or brands")
-    demisto.debug("Getting integration brands on tenant")
-    enabled_brands = list({module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"})
-    demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
-    demisto.debug(f"Validating overlap between quarantine brands: {quarantine_brands} and enabled integration brands.")
-    if quarantine_brands and not set(quarantine_brands).intersection(enabled_brands):
-        raise DemistoException(
-            "None of the enrichment brands has an enabled integration instance." "Ensure valid integration IDs are specified."
-        )
 
+    enabled_brands = list({module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"})
+    demisto.debug(f"Validating overlap between {quarantine_brands=} and {enabled_brands=}.")
+    if quarantine_brands and not set(quarantine_brands).intersection(enabled_brands):
+        demisto.error(f"Could not found overlap between {quarantine_brands=} and {enabled_brands=}.")
+        raise DemistoException(
+            "None of the quarantine brands has an enabled integration instance. Ensure valid integration IDs are specified."
+        )
     if hash_type == HASH_SHA1:
         # supported only by MDE
-        if quarantine_brands and BRAND_MDE not in quarantine_brands:
+        if quarantine_brands and BRAND_MDE not in quarantine_brands or BRAND_MDE not in enabled_brands:
             demisto.error(f"Hash_type {HASH_SHA1} supported only by {INTEGRATION_FOR_SHA1} integration.")
-            # TODO: return error
-        elif BRAND_MDE not in enabled_brands:
-            demisto.error(
-                f"Hash_type {HASH_SHA1} supported only by {INTEGRATION_FOR_SHA1} integration."
-                "Please enable the required integratoin"
-            )
-            # TODO: return error
+            raise DemistoException("Not found supported integration for this file hash type.")
         # TODO: define command
 
     elif hash_type == HASH_SHA256:  # noqa: SIM102
         # supported by Core or XDR
+        quarantine_brands = set({BRAND_CORE_IR, BRAND_XDR_IR}) & set(enabled_brands)
         if not quarantine_brands:
-            if BRAND_CORE_IR in enabled_brands:
-                quarantine_brands = [BRAND_CORE_IR]
-            elif BRAND_XDR_IR in enabled_brands:
-                quarantine_brands = [BRAND_XDR_IR]
-            else:
-                demisto.error(
-                    f"Hash_type {HASH_SHA256} supported by {INTEGRATION_FOR_SHA256} integrations."
-                    "Please enable the required integratoin"
-                )
-                # return error
-        if BRAND_CORE_IR in quarantine_brands and BRAND_CORE_IR in enabled_brands:
-            quarantine_file(CORE_COMMAND_PREFIX, args, readable_context, context, verbose_command_results)
-        elif BRAND_XDR_IR in quarantine_brands and BRAND_XDR_IR in enabled_brands:
-            quarantine_file(XDR_COMMAND_PREFIX, args, readable_context, context, verbose_command_results)
-        else:
-            demisto.error(f"Hash_type {HASH_SHA256} supported only by {INTEGRATION_FOR_SHA256} integration.")
+            demisto.error(
+                f"Hash_type {HASH_SHA256} supported by {INTEGRATION_FOR_SHA256} integrations."
+                "Please enable the required integratoin"
+            )
+            raise DemistoException("Not found supported integration for this file hash type.")
+
+        command_prefix = CORE_COMMAND_PREFIX if BRAND_CORE_IR in quarantine_brands else XDR_COMMAND_PREFIX
+        core_or_xdr_quarantine_file(command_prefix, args, readable_context, context, verbose_command_results)
 
     summary_command_results = CommandResults(
         outputs_prefix="QuarantineFile",
         outputs_key_field=["endpoint_id", "file_path"],
         readable_output=tableToMarkdown(
-            name=f"File Quarantine result for file {file_path}", headers=["endpoint_id", "message"], t=readable_context
+            name=f"### Result for File Quarantine {file_path}", headers=["endpoint_id", "message"], t=readable_context
         ),
         outputs=context,
     )
 
-    demisto.debug("Validate Result")
     # Create a list of CommandResults objects to return to the incident war room
     command_results = [summary_command_results]
     if verbose:
         # If `verbose` argument is True, CommandResults are returned for every executed command in the script
-        command_results.extend(verbose_command_results)  # TODO: fill this var
+        command_results.extend(verbose_command_results)
 
     return command_results
 
