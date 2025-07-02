@@ -1225,7 +1225,7 @@ class TestFormatIncidents:
             "severity": "High",
             "keyword_name": "malware_detection",
             "created_at": "2024-01-01T10:00:00Z",
-            "status": "active",
+            "status": "UNREVIEWED",
             "data": {"threat_type": "malware"},
         }
 
@@ -1248,7 +1248,7 @@ class TestFormatIncidents:
             assert incident["event_id"] == "alert-001"
             assert incident["keyword"] == "malware_detection"
             assert incident["created_at"] == "2024-01-01T10:00:00Z"
-            assert incident["status"] == "active"
+            assert incident["status"] == "Unreviewed"
             assert incident["mirrorInstance"] == "test-instance"
 
             # Verify data_message is JSON string
