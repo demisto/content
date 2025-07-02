@@ -7,7 +7,7 @@ originalEventType_REGEX = "(\d+)\s(?:DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE
 
 [MODEL: dataset=cisco_ise_raw]
 
-// CISE_Passed_Authentications, CISE_Failed_Attempts, CISE_RADIUS_Diagnostics, CISE_RADIUS_Accounting Parsing
+// CISE_Passed_Authentications, CISE_Failed_Attempts, CISE_RADIUS_Diagnostics, CISE_RADIUS_Accounting, CISE_TACACS_Accounting Parsing
 /* --------------------------------------------------------------------------------
 Key_Values
    - Acct-Input-Packets=
