@@ -94,7 +94,7 @@ configuration:
   - all
   required: true
   type: 16
-  section: Connect
+  section: Collect
 - additionalinfo: Remove all if you don't want to select  all risk types, and then select specifically
   defaultvalue: all
   display: Risk Level
@@ -109,14 +109,14 @@ configuration:
   - very-high
   required: false
   type: 16
-  section: Connect
+  section: Collect
 - additionalinfo: If you don't want to ingest rejected/resolved/closed incidents then set it to False. Otherwise incidents will ingested with auto-closed=True
   defaultvalue: "true"
   display: Ingest Closed / Auto-rejected Alerts
   name: ingestClosedIncidents
   required: false
   type: 8
-  section: Connect
+  section: Collect
 - additionalinfo: The maximum number of incidents to fetch
   defaultvalue: "50"
   display: Fetch Limit
@@ -130,11 +130,11 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-  section: Connect
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
