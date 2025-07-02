@@ -1,0 +1,17 @@
+{
+    "id": 1197,
+    "hostname": "srv1",
+    "description": "Machine Windows de démonstration",
+    "last_communication": "2019-09-13T09:14:34.000Z",
+    "reboot_required": false,
+    "category": "server",
+    "created_at": "2019-09-10T14:59:23.000Z",
+    "cve_announcements_count": 1,
+    "prioritized_cve_announcements_count": 0,
+    "cve_announcements": [
+      { "cve_code": "CVE-2025-9999", "score": 5.0, "epss": 0.4,
+        "ignored": true, "active": true, "prioritized": false,
+        "detected_at": "2025-06-01T00:00:00Z" }
+    ]
+  }
+  
