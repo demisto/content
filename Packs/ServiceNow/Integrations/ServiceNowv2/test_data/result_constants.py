@@ -182,10 +182,6 @@ EXPECTED_UPDATE_TICKET_ADDITIONAL = {
     }
 }
 EXPECTED_CREATE_TICKET = {
-    "MirrorObject": {
-        "object_id": "sys_id",
-        "object_url": "server_url/nav_to.do?uri=incident.do?sys_id=sys_id",
-     },
     "Ticket(val.ID===obj.ID)": {
         "ID": "sys_id",
         "Number": "INC0010007",

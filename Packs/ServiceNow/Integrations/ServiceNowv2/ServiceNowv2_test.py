@@ -13,7 +13,7 @@ import requests
 import ServiceNowv2
 import jwt
 
-from CommonServerPython import CommandResults, DemistoException, EntryType
+from CommonServerPython import CommandResults, DemistoException, EntryType, QuickActionPreview, MirrorObject
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
