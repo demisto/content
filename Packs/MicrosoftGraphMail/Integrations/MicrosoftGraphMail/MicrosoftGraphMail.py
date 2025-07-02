@@ -226,7 +226,7 @@ def main():  # pragma: no cover
             return_results(update_email_status_command(client, args))
         elif command == "reply-mail":
             return_results(reply_email_command(client, args))
-        elif command == "send-mail" or command == "send-email-to-recipients-office-365-quick-action":
+        elif command == "send-mail":
             return_results(send_email_command(client, args))
         elif command == "msgraph-mail-auth-reset":
             return_results(reset_auth())

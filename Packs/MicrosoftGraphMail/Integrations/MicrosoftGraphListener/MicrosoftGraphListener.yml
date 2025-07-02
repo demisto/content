@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Graph Mail Single User
+  id: Microsoft Graph Mail Single User-dev
   version: -1
 configuration:
 - name: creds_auth_id
@@ -191,8 +191,8 @@ configuration:
   advanced: true
   defaultvalue: 'false'
 description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
-display: Microsoft Graph Mail Single User
-name: Microsoft Graph Mail Single User
+display: Microsoft Graph Mail Single User-dev
+name: Microsoft Graph Mail Single User-dev
 script:
   commands:
   - arguments:
@@ -930,8 +930,6 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-
-
   - arguments:
     - description: A comma-separated list of email addresses for the 'to' field.
       isArray: true
@@ -1034,10 +1032,10 @@ script:
       description: Flag for rate limit retry.
       name: ran_once_flag
     description: Sends an email using Microsoft Graph.
-    name: email-security-send-email-to-recipients-office-365-quick-action
+    name: msgraph-email-security-send-email-to-recipients-office-365-quick-action
     prettyname: "[Email Security] Send Email to Recipients - Office 365"
-    # quickaction: true
-    # hidden: true
+    quickaction: true
+    hidden: true
     outputs:
     - contextPath: MicrosoftGraph.Email.internetMessageHeaders
       description: The email headers.
@@ -1070,8 +1068,6 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-
-
   dockerimage: demisto/crypto:1.0.0.3539024
   isfetch: true
   script: ''
