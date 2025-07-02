@@ -32,24 +32,30 @@ MOCK_PARAMS = {
 
 MOCK_FILE_INFO = {"name": "MaliciousFile.exe", "path": "/path/MaliciousFile.exe"}
 
-MOCK_SCAN_JSON_RESPONSE = {"result": TEST_SCAN_UUID}
-
 
 @pytest.fixture(scope='module')
 def vcr_config():
-    return dict(  # noqa: C408
+    redacted_data = [
+        ('authorization', 'XXXXXXXXXXXXXXXXXXXXXXXXXX'),
+        ('X-Amz-Credential', 'AKIADEADBEEFCREDENTIAL'),
+        ('X-Amz-Signature', '2345678deadbeefdeadbeef2345678deadbeefdeadbeef2345678deadbeef'),
+        ('X-Billing-ID', '876543218765'),
+    ]
+
+    def redact_response(response):
+        for name, new_value in redacted_data:
+            if name in response['headers']:
+                response['headers'][name] = new_value
+        return response
+
+    return dict(
         serializer='yaml',
         cassette_library_dir=os.path.join(TEST_FOLDER, 'fixtures/vcr/'),
-        # record_mode=libvcr.record_mode.RecordMode.ONCE,
-        # record_mode=libvcr.record_mode.RecordMode.ALL,
-        record_mode=libvcr.record_mode.RecordMode.NONE,
-        filter_headers=[('authorization', 'XDEADBEEFDEADBEEFDEADBEEFX')],
-        # filter_post_data_parameters=[],
-        filter_query_parameters=[
-            ('X-Amz-Credential', 'AKIADEADBEEFCREDENTIAL'),
-            ('X-Amz-Signature', '2345678deadbeefdeadbeef2345678deadbeefdeadbeef2345678deadbeef'),
-            ('X-Billing-ID', '876543218765'),
-        ],
+        record_mode=libvcr.record_mode.RecordMode.ONCE, # .ALL, # .NONE
+        filter_headers=redacted_data,
+        filter_post_data_parameters=redacted_data,
+        filter_query_parameters=redacted_data,
+        before_record_response=redact_response,
     )
 
 
@@ -117,8 +123,8 @@ def test_polyswarm_get_report(mocker):
     results = polyswarm.get_report(param["scan_uuid"])
     results = results[0].to_context()
 
-    assert int(results["Contents"]["Positives"]) >= 4
-    assert int(results["Contents"]["Total"]) >= 6
+    assert int(results["Contents"]["Positives"]) >= 6
+    assert int(results["Contents"]["Total"]) >= 11
     assert results["Contents"]["Scan_UUID"] == TEST_HASH_FILE
     assert results["Contents"]["Permalink"].startswith(POLYSWARM_URL_RESULTS), f'REALITY: {results["Contents"]["Permalink"]}'
     assert results["Contents"]["Artifact"] == TEST_HASH_FILE
@@ -172,8 +178,8 @@ def test_file(mocker):
     results = polyswarm.file_reputation(param["hash"])
     results = results[0].to_context()
 
-    assert int(results["Contents"]["Positives"]) >= 4
-    assert int(results["Contents"]["Total"]) >= 8
+    assert int(results["Contents"]["Positives"]) >= 6
+    assert int(results["Contents"]["Total"]) >= 9
     assert results["Contents"]["Scan_UUID"] == TEST_HASH_FILE
     assert results["Contents"]["Permalink"].startswith(POLYSWARM_URL_RESULTS), f'REALITY: {results["Contents"]["Permalink"]}'
     assert results["Contents"]["Artifact"] == TEST_HASH_FILE
