@@ -24,7 +24,7 @@ configuration:
   section: Connect
   advanced: true
 name: GCP
-display: GCP
+display: Google Cloud Platform
 category: Cloud Services
 description: Cloud integrations are installed from the Data Sources page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select GCP, then in Advanced Settings > Security Capabilities, enable "Automation".
 script:
@@ -38,27 +38,27 @@ script:
     - name: resource_name
       required: true
       description: Name of the firewall rule to update.
-    - description: An optional description of this resource. Provide this property when you create the resource.
+    - description: An optional description of this resource, which you provide when you create the resource.
       name: description
     - description: URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used.
       name: network
-    - description: Priority for this rule. This is an integer between 0 and 65535, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules having equal priority.
+    - description: Priority for this rule. This is an integer between 0 and 65535, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules.
       name: priority
-    - description: 'If source ranges are specified, the firewall will apply only to traffic that has source IP address in these ranges. These ranges must be expressed in CIDR format. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP that belongs to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Only IPv4 is supported. comma separated. '
+    - description: 'If source ranges are specified, the firewall applies only to traffic with source IP addresses in these ranges. These ranges must be expressed in CIDR format. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall applies to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Only IPv4 is supported, comma-separated.'
       name: sourceRanges
-    - description: If destination ranges are specified, the firewall will apply only to traffic that has destination IP address in these ranges. These ranges must be expressed in CIDR format. Only IPv4 is supported. comma separated.
+    - description: If destination ranges are specified, the firewall applies only to traffic with destination IP addresses in these ranges. These ranges must be expressed in CIDR format. Only IPv4 is supported. Comma-separated.
       name: destinationRanges
-    - description: If source tags are specified, the firewall rule applies only to traffic with source IPs that match the primary network interfaces of VM instances that have the tag and are in the same VPC network. Source tags cannot be used to control traffic to an instance's external IP address, it only applies to traffic between instances in the same virtual network. Because tags are associated with instances, not IP addresses. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP that belongs to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. comma separated.
+    - description: If source tags are specified, the firewall rule applies only to traffic with source IPs that match the primary network interfaces of VM instances that have the tag and are in the same VPC network. Source tags cannot be used to control traffic to an instance's external IP address. It only applies to traffic between instances in the same virtual network, because tags are associated with instances, not IP addresses. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Comma-separated.
       name: sourceTags
-    - description: A list of tags that controls which instances the firewall rule applies to. If targetTags are specified, then the firewall rule applies only to instances in the VPC network that have one of those tags. If no targetTags are specified, the firewall rule applies to all instances on the specified network. comma separated.
+    - description: A list of tags that controls which instances the firewall rule applies to. If targetTags are specified, then the firewall rule applies only to instances in the VPC network that have one of those tags. If no targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
       name: targetTags
-    - description: If source service accounts are specified, the firewall will apply only to traffic originating from an instance with a service account in this list. Source service accounts cannot be used to control traffic to an instance's external IP address because service accounts are associated with an instance, not an IP address. sourceRanges can be set at the same time as sourceServiceAccounts. If both are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP belongs to an instance with service account listed in sourceServiceAccount. The connection does not need to match both properties for the firewall to apply. sourceServiceAccounts cannot be used at the same time as sourceTags or targetTags. comma separated.
+    - description: If source service accounts are specified, the firewall applies only to traffic originating from an instance with a service account in this list. Source service accounts cannot be used to control traffic to an instance's external IP address because service accounts are associated with an instance, not an IP address. sourceRanges can be set at the same time as sourceServiceAccounts. If both are set, the firewall will apply to traffic that has a source IP address within sourceRanges OR the source IP belongs to an instance with a service account listed in sourceServiceAccount. The connection does not need to match both properties for the firewall to apply. sourceServiceAccounts cannot be used simultaneously as sourceTags or targetTags. Comma-separated.
       name: sourceServiceAccounts
-    - description: A list of service accounts indicating sets of instances located in the network that may make network connections as specified in allowed[]. targetServiceAccounts cannot be used at the same time as targetTags or sourceTags. If neither targetServiceAccounts nor targetTags are specified, the firewall rule applies to all instances on the specified network. comma separated.
+    - description: A list of service accounts indicating sets of instances located in the network that may make network connections as specified in allowed[]. targetServiceAccounts cannot be used at the same time as targetTags or sourceTags. If neither targetServiceAccounts nor targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
       name: targetServiceAccounts
-    - description: 'The list of ALLOW rules specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection. Ex: ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
+    - description: 'The ALLOW rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
       name: allowed
-    - description: 'The list of DENY rules specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a denied connection. Ex: ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
+    - description: 'The DENY rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a denied connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
       name: denied
     - description: 'Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, it is NOT supported to specify destinationRanges; For EGRESS traffic, it is NOT supported to specify sourceRanges OR sourceTags.'
       name: direction
@@ -82,7 +82,7 @@ script:
       description: Name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.zone
-      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.clientOperationId
       description: The value of requestId if you provided it in the request. Not present otherwise.
@@ -91,7 +91,7 @@ script:
       description: The type of operation, such as insert, update, or delete, and so on.
       type: string
     - contextPath: GCP.Compute.Operations.targetLink
-      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
       type: string
     - contextPath: GCP.Compute.Operations.targetId
       description: The unique target ID, which identifies a specific incarnation of the target resource.
@@ -103,7 +103,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
-      description: User who requested the operation for example EMAILADDRESS.
+      description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
@@ -133,7 +133,7 @@ script:
       description: Server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.region
-      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.description
       description: A textual description of the operation, which is set when the operation is created.
@@ -233,7 +233,7 @@ script:
       description: Name of the instance scoping this request.
     - name: metadata
       required: true
-      description: 'Metadata to be made available to the guest operating system running on the instances. Each entry is a key/value pair separated by '';'' like so: key=abc,value=123;key=abc,value=123.'
+      description: 'Metadata to be made available to the guest operating system running on the instances. Each entry is a key/value pair separated by '';''. For example, key=abc,value=123;key=abc,value=123'
     outputs:
     - contextPath: GCP.Compute.Operations.operationType
       description: The type of operation, such as insert, update, or delete.
@@ -553,7 +553,7 @@ script:
       description: Name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.zone
-      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.clientOperationId
       description: The value of requestId if you provided it in the request. Not present otherwise.
@@ -562,7 +562,7 @@ script:
       description: The type of operation, such as insert, update, or delete, and so on.
       type: string
     - contextPath: GCP.Compute.Operations.targetLink
-      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
       type: string
     - contextPath: GCP.Compute.Operations.targetId
       description: The unique target ID, which identifies a specific incarnation of the target resource.
@@ -574,7 +574,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
-      description: User who requested the operation for example EMAILADDRESS.
+      description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
@@ -604,7 +604,7 @@ script:
       description: Server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.region
-      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.description
       description: A textual description of the operation, which is set when the operation is created.
@@ -639,7 +639,7 @@ script:
       description: Name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.zone
-      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.clientOperationId
       description: The value of requestId if you provided it in the request. Not present otherwise.
@@ -648,7 +648,7 @@ script:
       description: The type of operation, such as insert, update, or delete, and so on.
       type: string
     - contextPath: GCP.Compute.Operations.targetLink
-      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
       type: string
     - contextPath: GCP.Compute.Operations.targetId
       description: The unique target ID, which identifies a specific incarnation of the target resource.
@@ -660,7 +660,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
-      description: User who requested the operation for example EMAILADDRESS.
+      description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
@@ -690,7 +690,7 @@ script:
       description: Server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.region
-      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.description
       description: A textual description of the operation, which is set when the operation is created.
@@ -753,7 +753,7 @@ script:
       description: Name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.zone
-      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.clientOperationId
       description: The value of requestId if you provided it in the request. Not present otherwise.
@@ -762,7 +762,7 @@ script:
       description: The type of operation, such as insert, update, or delete, and so on.
       type: string
     - contextPath: GCP.Compute.Operations.targetLink
-      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
       type: string
     - contextPath: GCP.Compute.Operations.targetId
       description: The unique target ID, which identifies a specific incarnation of the target resource.
@@ -774,7 +774,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
-      description: User who requested the operation for example EMAILADDRESS.
+      description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
@@ -804,7 +804,7 @@ script:
       description: Server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.region
-      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.description
       description: A textual description of the operation, which is set when the operation is created.
@@ -834,7 +834,7 @@ script:
       description: Name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.zone
-      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.clientOperationId
       description: The value of requestId if you provided it in the request. Not present otherwise.
@@ -843,7 +843,7 @@ script:
       description: The type of operation, such as insert, update, or delete, and so on.
       type: string
     - contextPath: GCP.Compute.Operations.targetLink
-      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
       type: string
     - contextPath: GCP.Compute.Operations.targetId
       description: The unique target ID, which identifies a specific incarnation of the target resource.
@@ -855,7 +855,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
-      description: User who requested the operation for example EMAILADDRESS.
+      description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
@@ -885,7 +885,7 @@ script:
       description: Server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.region
-      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.description
       description: A textual description of the operation, which is set when the operation is created.
