@@ -35,6 +35,10 @@
         "MicrosoftGraphIdentityandAccess": {
             "mandatory": false,
             "display_name": "Microsoft Graph Identity and Access"
+        },
+        "Okta": {
+            "mandatory": false,
+            "display_name": "Okta"
         }
     },
     "marketplaces": [
