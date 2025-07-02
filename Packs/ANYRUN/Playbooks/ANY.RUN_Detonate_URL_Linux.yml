@@ -1,8 +1,10 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97cy
 version: -1
-name: 04275315-7598-4042-8fdb-5f93d3ea97cy
+name: ANY.RUN Detonate Url Linux
 fromversion: 8.0.0
-description: ' Perform URL Analysis using Linux VM'
+description: This playbook submits a URL extracted from an indicator to the 
+  ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. 
+  It automates the analysis of potentially malicious URLs on Ubuntu OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -118,7 +120,7 @@ tasks:
       report_format:
         simple: html
       task_uuid:
-        simple: ${ANYRUN.TaskID}
+        simple: ${ANYRUN_DetonateUrlLinux.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -309,7 +311,7 @@ tasks:
       - "8"
     scriptarguments:
       task_uuid:
-        simple: ${ANYRUN.TaskID}
+        simple: ${ANYRUN_DetonateUrlLinux.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -348,7 +350,7 @@ tasks:
       report_format:
         simple: ioc
       task_uuid:
-        simple: ${ANYRUN.TaskID}
+        simple: ${ANYRUN_DetonateUrlLinux.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-

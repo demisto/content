@@ -1,4 +1,4 @@
-Perform URL Analysis using Windows VM
+This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It automates the analysis of potentially malicious URLs on Windows OS.
 
 ## Dependencies
 

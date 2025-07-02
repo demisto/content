@@ -3,11 +3,10 @@ commonfields:
   id: ANY.RUN TI Lookup
   version: -1
 configuration:
-- display: ANY.RUN TI Lookup API-KEY
-  additionalinfo: Inline your API-KEY without the prefix
-  name: anyrun_api_key
+- display: Username
+  name: credentials
   required: true
-  type: 4
+  type: 9
   section: Connect
 description: TI Lookup is a searchable database of IOCs, IOAs, IOBs, and events for threat hunting and a service for browsing malicious files by their content.
 display: ANY.RUN TI Lookup
@@ -344,16 +343,16 @@ script:
       description: 'Indicates if the process memory dump can be extracted.'
       type: Boolean
     - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.registry
-      description: 'Number or registry events.'
+      description: 'Number of registry events.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.files
-      description: 'Number or files.'
+      description: 'Number of files.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.modules
-      description: 'Number or modules.'
+      description: 'Number of modules.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.objects
-      description: 'Number or objects.'
+      description: 'Number of objects.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedIncidents.process.threatLevel
       description: 'Threat level.'
@@ -467,16 +466,16 @@ script:
       description: 'Indicates if malware config was extracted from submitted file.'
       type: Boolean
     - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.registry
-      description: 'Number or registry events.'
+      description: 'Number of registry events.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.files
-      description: 'Number or files.'
+      description: 'Number of files.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.modules
-      description: 'Number or modules.'
+      description: 'Number of modules.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.objects
-      description: 'Number or objects.'
+      description: 'Number of objects.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedFiles.process.threatLevel
       description: 'Threat level.'
@@ -647,16 +646,16 @@ script:
       description: 'Indicates if malware config was extracted from submitted file.'
       type: Boolean
     - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.registry
-      description: 'Number or registry events.'
+      description: 'Number of registry events.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.files
-      description: 'Number or files.'
+      description: 'Number of files.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.modules
-      description: 'Number or modules.'
+      description: 'Number of modules.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.objects
-      description: 'Number or objects.'
+      description: 'Number of objects.'
       type: Number
     - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.threatLevel
       description: 'Threat level.'

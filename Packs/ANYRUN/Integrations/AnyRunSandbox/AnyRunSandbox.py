@@ -1,3 +1,4 @@
+import json
 import time
 
 import demistomock as demisto
@@ -9,14 +10,31 @@ from anyrun.connectors import SandboxConnector
 from anyrun.connectors.sandbox.base_connector import BaseSandboxConnector
 from anyrun.connectors.sandbox.operation_systems import WindowsConnector, LinuxConnector, AndroidConnector
 
+
 VERSION = 'PA-XSOAR:2.0.0'
+
+SCORE_TO_VERDICT = {
+    0: 'Unknown',
+    1: 'Suspicious',
+    2: 'Malicious'
+}
+
+ANYRUN_TO_SOAR_INDICATOR = {
+    'ip': 'IP',
+    'url': 'URL',
+    'domain': 'Domain',
+    'sha256': 'File SHA-256'
+}
 
 
 def test_module(params: dict) -> str:
     """ Performs ANY.RUN API call to verify integration is operational """
-    with BaseSandboxConnector(get_authentication(params)) as connector:
-        connector.check_authorization()
-        return 'ok'
+    try:
+        with BaseSandboxConnector(get_authentication(params)) as connector:
+            connector.check_authorization()
+            return 'ok'
+    except RunTimeException as exception:
+        return str(exception)
 
 
 def get_authentication(params: dict) -> str:
@@ -26,7 +44,7 @@ def get_authentication(params: dict) -> str:
     :param params: Demisto params
     :return: API-KEY verification string
     """
-    return f"API-KEY {params.get('anyrun_api_key')}"
+    return f"API-KEY {params.get('credentials', {}).get('password')}"
 
 
 def get_file_content(args: dict) -> dict:
@@ -67,6 +85,22 @@ def make_api_call(
 
     requests.request(method, url, headers=headers, json=payload)
 
+def build_context_path(analysis_type: str, connector: WindowsConnector | LinuxConnector | AndroidConnector) -> str:
+    if analysis_type == 'file':
+        if isinstance(connector, WindowsConnector):
+            return 'ANYRUN_DetonateFileWindows.TaskID'
+        elif isinstance(connector, LinuxConnector):
+            return 'ANYRUN_DetonateFileLinux.TaskID'
+        elif isinstance(connector, AndroidConnector):
+            return 'ANYRUN_DetonateFileAndroid.TaskID'
+    elif analysis_type == 'url':
+        if isinstance(connector, WindowsConnector):
+            return 'ANYRUN_DetonateUrlWindows.TaskID'
+        elif isinstance(connector, LinuxConnector):
+            return 'ANYRUN_DetonateUrlLinux.TaskID'
+        elif isinstance(connector, AndroidConnector):
+            return 'ANYRUN_DetonateUrlAndroid.TaskID'
+
 
 def wait_for_the_task_to_complete(
     args: dict,
@@ -93,7 +127,7 @@ def wait_for_the_task_to_complete(
 
     return_results(
         CommandResults(
-            outputs_prefix='ANYRUN.TaskID',
+            outputs_prefix=build_context_path(analysis_type, connector),
             outputs=task_uuid,
             ignore_auto_extract=True
         )
@@ -222,14 +256,6 @@ def get_analysis_history(params: dict, args: dict) -> None:
     )
 
 
-def get_indicator_type(indicator: dict) -> str:
-    return {'ip': 'IP', 'url': 'URL', 'domain': 'Domain', 'sha256': 'File SHA-256'}.get(indicator.get('type'))
-
-
-def convert_indicator_score(reputation: int) -> str:
-    return {0: 'Unknown', 1: 'Suspicious', 2: 'Malicious'}.get(reputation)
-
-
 def process_indicators(
     params: dict,
     report: dict,
@@ -255,8 +281,7 @@ def process_indicators(
         else:
             continue
 
-        indicator_type = get_indicator_type(indicator)
-        indicator_score = convert_indicator_score(reputation)
+        indicator_type = ANYRUN_TO_SOAR_INDICATOR.get(indicator.get('type'))
 
         payload = {
             "indicator": {
@@ -274,7 +299,7 @@ def process_indicators(
         }
 
         make_api_call(params, 'POST', 'indicator/create', payload)
-        indicators.append({'type': indicator_type, 'value': indicator.get('ioc'), 'verdict': indicator_score})
+        indicators.append({'type': indicator_type, 'value': indicator.get('ioc'), 'verdict': SCORE_TO_VERDICT.get(reputation)})
 
     return_results(
         CommandResults(
@@ -293,7 +318,13 @@ def process_indicators(
 def get_analysis_report(params: dict, args: dict) -> None:
     task_uuid = args.get('task_uuid')
     report_format = args.get('report_format')
-    incident_id = args.get('incident_info').get('id')
+    incident_info = args.get('incident_info')
+
+    if isinstance(incident_info, str):
+        incident_info = json.loads(incident_info)
+
+    incident_id = incident_info.get('id')
+    return_results(f'incident id: {incident_id}')
 
     with SandboxConnector.windows(
         get_authentication(params),
@@ -358,7 +389,7 @@ def main():
             result = test_module(params)
             return_results(result)
         else:
-            return_results(f'Command {demisto.command()} is not implemented in ANY.RUN')
+            raise NotImplementedError(f"Command {demisto.command()} is not implemented")
     except RunTimeException as exception:
         return_error(exception.description, error=str(exception.json))
     

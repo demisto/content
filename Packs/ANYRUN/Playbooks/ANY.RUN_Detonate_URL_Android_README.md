@@ -1,5 +1,4 @@
- Perform URL Analysis using Android VM
-
+This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It automates the analysis of potentially malicious URLs on Android OS.
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.

@@ -1,7 +1,7 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97co
 version: -1
 fromversion: 8.0.0
-name: 04275315-7598-4042-8fdb-5f93d3ea97co
+name: ANY.RUN Detonate File Windows
 description: This playbook submits a file extracted from an incident attachment to
   the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It helps
   to automate malware detonation and behavior observation on Windows OS.
@@ -128,7 +128,7 @@ tasks:
       report_format:
         simple: html
       task_uuid:
-        simple: ${ANYRUN.TaskID}
+        simple: ${ANYRUN_DetonateFileWindows.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -237,7 +237,7 @@ tasks:
       - "6"
     scriptarguments:
       brandname:
-        simple: ANY.RUN Sandbox
+        simple: ANY.RUN Cloud Sandbox
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -318,7 +318,7 @@ tasks:
       - "8"
     scriptarguments:
       task_uuid:
-        simple: ${ANYRUN.TaskID}
+        simple: ${ANYRUN_DetonateFileWindows.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -357,7 +357,7 @@ tasks:
       report_format:
         simple: ioc
       task_uuid:
-        simple: ${ANYRUN.TaskID}
+        simple: ${ANYRUN_DetonateFileWindows.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-

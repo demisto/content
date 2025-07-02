@@ -13,9 +13,12 @@ VERSION = 'PA-XSOAR:2.0.0'
 
 def test_module(params: dict) -> str:
     """ Performs ANY.RUN API call to verify integration is operational """
-    with FeedsConnector(params.get('anyrun_auth_token')) as connector:
-        connector.check_authorization()
-        return 'ok'
+    try:
+        with FeedsConnector(params.get('anyrun_auth_token', {}).get('password')) as connector:
+            connector.check_authorization()
+            return 'ok'
+    except RunTimeException as exception:
+        return str(exception)
 
 
 def extract_indicator_data(indicator: dict) -> tuple[str, str]:
@@ -99,7 +102,7 @@ def fetch_indicators_command(params: dict) -> None:
     modified_after = get_timestamp(params)
 
     with FeedsConnector(
-        params.get('anyrun_auth_token'),
+        params.get('anyrun_auth_token', {}).get('password'),
         integration=VERSION
     ) as connector:
         connector._taxii_delta_timestamp = None
@@ -128,7 +131,7 @@ def main():
             result = test_module(params)
             return_results(result)
         else:
-            return_results(f'Command {demisto.command()} is not implemented in ANY.RUN')
+            raise NotImplementedError(f"Command {demisto.command()} is not implemented")
     except RunTimeException as exception:
         return_error(exception.description, error=str(exception.json))
 

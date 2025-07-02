@@ -9,9 +9,12 @@ VERSION = 'PA-XSOAR:2.0.0'
 
 def test_module(params: dict) -> str:
     """ Performs ANY.RUN API call to verify integration is operational """
-    with LookupConnector(get_authentication(params)) as connector:
-        connector.check_authorization()
-        return 'ok'
+    try:
+        with LookupConnector(get_authentication(params)) as connector:
+            connector.check_authorization()
+            return 'ok'
+    except RunTimeException as exception:
+        return str(exception)
 
 
 def get_authentication(params: dict) -> str:
@@ -21,7 +24,7 @@ def get_authentication(params: dict) -> str:
     :param params: Demisto params
     :return: API-KEY verification string
     """
-    return f"API-KEY {params.get('anyrun_api_key')}"
+    return f"API-KEY {params.get('credentials', {}).get('password')}"
 
 
 def get_intelligence(params: dict, args: dict) -> None:
@@ -31,6 +34,13 @@ def get_intelligence(params: dict, args: dict) -> None:
     :param params: Demisto params
     :param args: Demisto args
     """
+    try:
+        if args['lookup_depth']:
+            args['lookup_depth'] = int(args['lookup_depth'])
+    except ValueError:
+        raise ValueError('The value of the lookup_depth parameter must be an integer-like')
+
+
     with LookupConnector(
         get_authentication(params),
         integration=VERSION
@@ -38,9 +48,11 @@ def get_intelligence(params: dict, args: dict) -> None:
         intelligence = connector.get_intelligence(**args)
 
     command_results = CommandResults(
+        outputs_key_field='destinationIP',
         outputs_prefix='ANYRUN.Lookup',
         outputs=intelligence,
-        ignore_auto_extract=True
+        ignore_auto_extract=True,
+
     )
 
     return_results(command_results)
@@ -59,7 +71,7 @@ def main():
             result = test_module(params)
             return_results(result)
         else:
-            return_results(f'Command {demisto.command()} is not implemented in ANY.RUN')
+            raise NotImplementedError(f"Command {demisto.command()} is not implemented")
     except RunTimeException as exception:
         return_error(exception.description, error=str(exception.json))
 

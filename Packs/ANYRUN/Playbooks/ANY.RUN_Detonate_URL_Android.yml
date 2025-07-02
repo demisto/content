@@ -1,8 +1,10 @@
 id: ce53a5d0-8f43-49b0-8467-ed091bcd0be6
 version: -1
-name: ce53a5d0-8f43-49b0-8467-ed091bcd0be6
+name: ANY.RUN Detonate Url Android
 fromversion: 8.0.0
-description: ' Perform URL Analysis using Android VM'
+description: This playbook submits a URL extracted from an indicator to the 
+  ANY.RUN cloud sandbox for dynamic analysis in an Android environment. 
+  It automates the analysis of potentially malicious URLs on Android OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -114,7 +116,7 @@ tasks:
       report_format:
         simple: html
       task_uuid:
-        simple: ${ANYRUN.TaskID}
+        simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -224,7 +226,7 @@ tasks:
       - "6"
     scriptarguments:
       brandname:
-        simple: ANY.RUN Sandbox
+        simple: ANY.RUN Cloud Sandbox
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -305,7 +307,7 @@ tasks:
       - "8"
     scriptarguments:
       task_uuid:
-        simple: ${ANYRUN.TaskID}
+        simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -344,7 +346,7 @@ tasks:
       report_format:
         simple: ioc
       task_uuid:
-        simple: ${ANYRUN.TaskID}
+        simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
