@@ -174,7 +174,7 @@ Searches IP related objects by a given IP.
 
 * * *
 
-Lists all response policy rules that belong to the.g.,ven response policy zone.
+Lists all response policy rules that belong to the given response policy zone.
 
 ##### Base Command
 
