@@ -306,6 +306,86 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]):
     )
 
 
+def get_event_alert(client: Client, args: Dict[str, Any]):
+    """msisac-get-event command: Returns an MS-ISAC event with detailed stream information
+
+    :type client: ``Client``
+    :param Client: Client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['event_id']`` alert ID to return
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``
+
+    :rtype: ``CommandResults``
+    """
+
+    event_id = args.get("event_id", None)
+    if not event_id:
+        raise ValueError("event_id not specified")
+
+    # event is our raw-response
+    event = client.get_event(event_id=event_id)
+    output = {"EventID": event_id, "Stream": None}
+
+    # If there is no event ID found the API returns a 404 error
+    # Have 404 as on 'ok' response in the base class, and use this JSON path to provide output
+    if "error" in event and event["error"]["message"] == "Event does not exist":
+        # If there are ever more errors to parse we can expand this conditional
+        return CommandResults(
+            readable_output=f"There was no MS-ISAC event retrieved with Event ID {event_id}.\n",
+            raw_response=event,
+            outputs_prefix="MSISAC.Event",
+            outputs_key_field="event_id",
+            outputs=output,
+        )
+
+    output["Stream"] = format_stream_data(event)
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", output["Stream"]),
+        raw_response=event,
+        outputs_prefix="MSISAC.Event",
+        outputs_key_field="event_id",
+        outputs=output,
+    )
+
+
+def retrieve_cases_command(client: Client, args: Dict[str, Any]):
+    """msisac-retrieve-events command: Returns a list of MS-ISAC events in a give span of days
+
+    :type client: ``Client``
+    :param Client: Client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['days']`` The number of days to return alerts
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``
+
+    :rtype: ``CommandResults``
+    """
+
+    timestamp = args.get("timestamp", None)
+
+    case_list = client.retrieve_cases(timestamp=timestamp)
+
+    readable_output = tableToMarkdown(f"MS-ISAC Event List Fetched since timestamp: {timestamp}", case_list)
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=case_list,
+        outputs_prefix="MSISAC.RetrievedCases",
+        outputs_key_field="case_Id",
+        outputs=case_list,
+    )
+
+
 @logger
 def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tuple[List[dict[str, Any]], Dict]:
     """Uses to fetch events into XSIAM
@@ -405,10 +485,12 @@ def main():
             return_results(result)
 
         elif command == "msisac-get-alert":
-            pass
+            result = get_event_alert(client, args)
+            return_results(result)
 
         elif command == "msisac-retrieve-cases":
-            pass
+            result = retrieve_cases_command(client, args)
+            return_results(result)
 
         elif command == "fetch-incidents":
             # Since arg_to_datetime returns Optional[datetime], but we are forcing a datetime object to be returned.
