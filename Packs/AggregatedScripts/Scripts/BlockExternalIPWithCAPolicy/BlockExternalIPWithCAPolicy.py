@@ -6,7 +6,7 @@ import ipaddress
 import time
 # Removed List and Union from typing import, as we'll use built-in list and X | Y syntax.
 # Optional is still needed for Python < 3.10 if not using from __future__ import annotations
-from typing import Any, Optional
+from typing import Any
 
 # --- Constants ---
 GLOBAL_ADMIN_ROLE_ID = "62e90394-69f5-4237-9190-012177145e10"  # Azure Global Administrator role ID
