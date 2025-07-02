@@ -166,7 +166,7 @@ def test_get_command_error_details_malformed_api_call_json(mocker):
 # --- _execute_command tests (Renamed from _execute_demisto_command) ---
 
 
-def test_execute_command_success(mocker): # Renamed test function
+def test_execute_command_success(mocker):  # Renamed test function
     """
     Given: A successful command execution.
     When: Calling _execute_command.
@@ -182,7 +182,7 @@ def test_execute_command_success(mocker): # Renamed test function
     AddIPToOktaBlockedZone.demisto.executeCommand.assert_called_once_with("test-command", {})
 
 
-def test_execute_command_empty_response(mocker): # Renamed test function
+def test_execute_command_empty_response(mocker):  # Renamed test function
     """
     Given: Command returns an empty list or None.
     When: Calling _execute_command.
@@ -190,14 +190,14 @@ def test_execute_command_empty_response(mocker): # Renamed test function
     """
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "executeCommand", return_value=[])
     with pytest.raises(DemistoException, match="Prefix: Empty or invalid command result for test-command."):
-        AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix") # Call the renamed function
+        AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix")  # Call the renamed function
 
     mocker.patch.object(AddIPToOktaBlockedZone.demisto, "executeCommand", return_value=None)
     with pytest.raises(DemistoException, match="Prefix: Empty or invalid command result for test-command."):
-        AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix") # Call the renamed function
+        AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix")  # Call the renamed function
 
 
-def test_execute_command_error(mocker): # Renamed test function
+def test_execute_command_error(mocker):  # Renamed test function
     """
     Given: Command returns an error result.
     When: Calling _execute_command.
@@ -212,7 +212,7 @@ def test_execute_command_error(mocker): # Renamed test function
     mocker.patch("AddIPToOktaBlockedZone._get_command_error_details", return_value="Simulated error")
 
     with pytest.raises(DemistoException, match="Prefix: Simulated error"):
-        AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix") # Call the renamed function
+        AddIPToOktaBlockedZone._execute_command("test-command", {}, "Prefix")  # Call the renamed function
 
 
 # --- get_blocked_ip_zone_info tests ---
