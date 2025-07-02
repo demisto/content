@@ -785,7 +785,10 @@ def add_data_to_actions(card_json, data_value):
         # Check if this dictionary is an Action.Submit or Action.Execute
         if card_json.get("type") in ["Action.Submit", "Action.Execute"]:
             # Add the 'data' key with the provided value
-            card_json["data"] = data_value
+            if "data" in card_json:
+                card_json["data"].update(data_value)
+            else:
+                card_json["data"] = data_value
 
         # Only check nested elements within 'actions'
         if "actions" in card_json:
@@ -2359,6 +2362,7 @@ def send_message():
         entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
         if entitlement_match_ac:
             adaptive_card_processed = process_adaptive_card(adaptive_card)
+            demisto.debug(f"The following Adaptive Card will be used:\n{json.dumps(adaptive_card_processed)}")
             conversation = {"type": "message", "attachments": [adaptive_card_processed]}
         else:
             conversation = {"type": "message", "attachments": [adaptive_card]}
