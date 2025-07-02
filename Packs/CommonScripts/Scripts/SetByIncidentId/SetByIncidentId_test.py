@@ -17,21 +17,25 @@ def test_set_by_incident_id(mocker):
     Then:
         - Ensure executeCommand is called with expected args
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'id': '1',
-        'key': 'Key',
-        'value': 'Value',
-        'append': 'false',
-        'errorUnfinished': 'false',
-    })
-    mocker.patch.object(demisto, 'results')
-    mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "id": "1",
+            "key": "Key",
+            "value": "Value",
+            "append": "false",
+            "errorUnfinished": "false",
+        },
+    )
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "executeCommand")
     main()
     demisto.executeCommand.assert_called_with(
-        'executeCommandAt',
+        "executeCommandAt",
         {
-            'arguments': {'append': 'false', 'key': 'Key', 'value': 'Value'},
-            'command': 'Set',
-            'incidents': '1',
-        }
+            "arguments": {"append": "false", "key": "Key", "value": "Value"},
+            "command": "Set",
+            "incidents": "1",
+        },
     )

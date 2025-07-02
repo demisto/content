@@ -1,9 +1,10 @@
 import json
+
 from JizoM import (
     Client,
-    get_query_records_command,
-    get_protocols_command,
     get_peers_command,
+    get_protocols_command,
+    get_query_records_command,
 )
 
 MOCK_URL = "http://123-fake-api.com"
@@ -42,8 +43,9 @@ def test_test_module(requests_mock):
     """
 
     from JizoM import test_module
+
     requests_mock.get(f"{MOCK_URL}/ping", status_code=200)
-    assert test_module(client) == 'ok'
+    assert test_module(client) == "ok"
 
 
 def test_get_token(requests_mock):
@@ -57,14 +59,14 @@ def test_get_token(requests_mock):
     """
 
     from JizoM import get_token
+
     requests_mock.post(f"{MOCK_URL}/login", json=load_mock_response("connect.json"), status_code=200)
     result = get_token(client)
     assert "token" in result
-    assert type(result['token']) is str
+    assert type(result["token"]) is str
 
 
 def test_get_protocols_command(requests_mock):
-
     requests_mock.get(
         f"{MOCK_URL}/jizo_get_protocols",
         json=load_mock_response("protocols.json"),
@@ -76,7 +78,6 @@ def test_get_protocols_command(requests_mock):
 
 
 def test_get_peers_command(requests_mock):
-
     requests_mock.get(
         f"{MOCK_URL}/jizo_get_peers",
         json=load_mock_response("peers.json"),
@@ -89,17 +90,13 @@ def test_get_peers_command(requests_mock):
 
 
 def test_get_query_records_command(requests_mock):
-
     requests_mock.get(
         f"{MOCK_URL}/jizo_query_records",
         json=load_mock_response("query_records.json"),
     )
 
     response = get_query_records_command(client, {})
-    assert (
-        len(response[0].outputs["data"])
-        == response[0].outputs["count"]
-    )
+    assert len(response[0].outputs["data"]) == response[0].outputs["count"]
     assert response[0].outputs_prefix == "JizoM.QueryRecords.alerts_flows"
     assert "data" in response[0].outputs
 
@@ -113,7 +110,8 @@ def test_fetch_incidents(requests_mock):
         - Ensure fetch_incidents returns the valid response
     """
 
-    from JizoM import fetch_incidents, formatting_date, convert_to_demisto_severity
+    from JizoM import convert_to_demisto_severity, fetch_incidents, formatting_date
+
     requests_mock.get(f"{MOCK_URL}/jizo_query_records", json=load_mock_response("fetch_incidents.json"))
     next_run, incidents = fetch_incidents(client, max_results=2, last_run={}, first_fetch_time="2024-01-01")
 

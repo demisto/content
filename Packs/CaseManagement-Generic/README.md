@@ -77,7 +77,7 @@ To set this up:
 
 You can also use the **CaseMgmtIncidentTypesByRole** automaton to further breack this down by the users Roles!
 
-# What Next?
+## What Next?
 
 Want to take it to the next level?  The next steps after implementing this pack might include the following:
 

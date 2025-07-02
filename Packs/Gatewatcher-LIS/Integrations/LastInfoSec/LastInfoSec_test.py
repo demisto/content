@@ -5,7 +5,7 @@ from LastInfoSec import (
     lis_is_email_leaked,
     lis_get_leaked_email_by_domain,
     GwClient,
-    GwAPIException
+    GwAPIException,
 )
 
 import inspect
@@ -85,20 +85,16 @@ def client():
     return client
 
 
-@pytest.mark.parametrize("index,cmd_type,val,rel", [
-    (0, "file", "DRAFT_BL_114172022.pdf.vbs", "C - Fairly reliable"),
-    (1, "domain", "pttpostu.xyz", "C - Fairly reliable"),
-    (2, "url", "http://103.38.236.46/ntpvip.exe", "C - Fairly reliable"),
-])
+@pytest.mark.parametrize(
+    "index,cmd_type,val,rel",
+    [
+        (0, "file", "DRAFT_BL_114172022.pdf.vbs", "C - Fairly reliable"),
+        (1, "domain", "pttpostu.xyz", "C - Fairly reliable"),
+        (2, "url", "http://103.38.236.46/ntpvip.exe", "C - Fairly reliable"),
+    ],
+)
 def test_lis_generic_reputation_command(
-    client,
-    requests_mock,
-    cmd_type,
-    index,
-    val,
-    rel,
-    get_generic_reputation_command,
-    get_generic_reputation_command_result
+    client, requests_mock, cmd_type, index, val, rel, get_generic_reputation_command, get_generic_reputation_command_result
 ):
     output_prefixes = {
         "file": "LIS.File",
@@ -111,69 +107,53 @@ def test_lis_generic_reputation_command(
     requests_mock.post(
         f"https://api.client.lastinfosec.com/v2/lis/search?api_key={client.token}&headers=false",
         json=get_generic_reputation_command,
-        status_code=200
+        status_code=200,
     )
     response = generic_reputation_command(client, args, cmd_type, rel)
     assert response[0].outputs == get_generic_reputation_command_result[index]
     assert response[0].outputs_prefix == output_prefixes[cmd_type]
-    requests_mock.post(
-        f"https://api.client.lastinfosec.com/v2/lis/search?api_key={client.token}&headers=false",
-        status_code=500
-    )
+    requests_mock.post(f"https://api.client.lastinfosec.com/v2/lis/search?api_key={client.token}&headers=false", status_code=500)
     with pytest.raises(GwAPIException):
         generic_reputation_command(client, args, cmd_type, rel)
 
 
-@pytest.mark.parametrize("error", [{"Minute": "error"}, {"Minute": "2", "Type": "Filename"},
-                                   {"Minute": "2", "Risk": "Informational"}])
+@pytest.mark.parametrize(
+    "error", [{"Minute": "error"}, {"Minute": "2", "Type": "Filename"}, {"Minute": "2", "Risk": "Informational"}]
+)
 def test_lis_get_by_minute_with_error(client, prefix_mapping, error, get_by_minute, get_by_minute_result):
     with pytest.raises(ValueError):
         lis_get_by_minute(client, error)
 
 
 def test_lis_get_by_minute_with_filter(client, requests_mock, prefix_mapping, get_by_minute, get_by_minute_result):
-    args = {
-        "Minute": "2",
-        "Type": "SHA1",
-        "Risk": "Suspicious",
-        "TLP": "white",
-        "Categories": "malware"
-    }
+    args = {"Minute": "2", "Type": "SHA1", "Risk": "Suspicious", "TLP": "white", "Categories": "malware"}
     requests_mock.get(
         f"https://api.client.lastinfosec.com/v2/lis/getbyminutes/2?api_key={client.token}&headers=false",
         json=get_by_minute,
-        status_code=200
+        status_code=200,
     )
     response = lis_get_by_minute(client, args)
     assert response.outputs == [get_by_minute_result[0]]
-    assert response.outputs_prefix == prefix_mapping[
-        inspect.stack()[0][3].replace("test_", "")
-    ]
+    assert response.outputs_prefix == prefix_mapping[inspect.stack()[0][3].replace("test_", "")]
     requests_mock.get(
-        f"https://api.client.lastinfosec.com/v2/lis/getbyminutes/2?api_key={client.token}&headers=false",
-        status_code=500
+        f"https://api.client.lastinfosec.com/v2/lis/getbyminutes/2?api_key={client.token}&headers=false", status_code=500
     )
     with pytest.raises(GwAPIException):
         lis_get_by_minute(client, args)
 
 
 def test_lis_get_by_minute(client, requests_mock, prefix_mapping, get_by_minute, get_by_minute_result):
-    args = {
-        "Minute": "2"
-    }
+    args = {"Minute": "2"}
     requests_mock.get(
         f"https://api.client.lastinfosec.com/v2/lis/getbyminutes/2?api_key={client.token}&headers=false",
         json=get_by_minute,
-        status_code=200
+        status_code=200,
     )
     response = lis_get_by_minute(client, args)
     assert response.outputs == get_by_minute_result
-    assert response.outputs_prefix == prefix_mapping[
-        inspect.stack()[0][3].replace("test_", "")
-    ]
+    assert response.outputs_prefix == prefix_mapping[inspect.stack()[0][3].replace("test_", "")]
     requests_mock.get(
-        f"https://api.client.lastinfosec.com/v2/lis/getbyminutes/2?api_key={client.token}&headers=false",
-        status_code=500
+        f"https://api.client.lastinfosec.com/v2/lis/getbyminutes/2?api_key={client.token}&headers=false", status_code=500
     )
     with pytest.raises(GwAPIException):
         lis_get_by_minute(client, args)
@@ -184,36 +164,27 @@ def test_lis_get_by_value(client, requests_mock, prefix_mapping, get_by_value, g
     requests_mock.post(
         f"https://api.client.lastinfosec.com/v2/lis/search?api_key={client.token}&headers=false",
         json=get_by_value,
-        status_code=200
+        status_code=200,
     )
     response = lis_get_by_value(client, args)
     assert response.outputs == get_by_value_result
-    assert response.outputs_prefix == prefix_mapping[
-        inspect.stack()[0][3].replace("test_", "")
-    ]
-    requests_mock.post(
-        f"https://api.client.lastinfosec.com/v2/lis/search?api_key={client.token}&headers=false",
-        status_code=500
-    )
+    assert response.outputs_prefix == prefix_mapping[inspect.stack()[0][3].replace("test_", "")]
+    requests_mock.post(f"https://api.client.lastinfosec.com/v2/lis/search?api_key={client.token}&headers=false", status_code=500)
     with pytest.raises(GwAPIException):
         lis_get_by_value(client, args)
 
 
-@pytest.mark.parametrize("index,args,code", [
-    (0, {"Domain": "baz.test"}, 200),
-    (1, {"Domain": "baz.test"}, 200),
-    (2, {"Domain": "baz.test", "After": "2021-08-01T00:00:00"}, 200),
-    (3, {"Domain": "baz.test", "After": "]"}, 422),
-])
+@pytest.mark.parametrize(
+    "index,args,code",
+    [
+        (0, {"Domain": "baz.test"}, 200),
+        (1, {"Domain": "baz.test"}, 200),
+        (2, {"Domain": "baz.test", "After": "2021-08-01T00:00:00"}, 200),
+        (3, {"Domain": "baz.test", "After": "]"}, 422),
+    ],
+)
 def test_lis_get_leaked_email_by_domain(
-    client,
-    requests_mock,
-    index,
-    args,
-    code,
-    get_leaked_email_by_domain,
-    get_leaked_email_by_domain_result,
-    prefix_mapping
+    client, requests_mock, index, args, code, get_leaked_email_by_domain, get_leaked_email_by_domain_result, prefix_mapping
 ):
     domain = args.get("Domain", None)
     after = args.get("After", None)
@@ -234,27 +205,19 @@ def test_lis_get_leaked_email_by_domain(
 
     response = lis_get_leaked_email_by_domain(client, args)
     assert response.outputs == get_leaked_email_by_domain_result[index]
-    assert response.outputs_prefix == prefix_mapping[
-        inspect.stack()[0][3].replace("test_", "")
-    ]
+    assert response.outputs_prefix == prefix_mapping[inspect.stack()[0][3].replace("test_", "")]
 
 
-@pytest.mark.parametrize("index,args,code", [
-    (0, {"Email": "foo.bar@baz.test"}, 200),
-    (1, {"Email": "foo.bar@baz.test"}, 200),
-    (2, {"Email": "foo.bar@baz.test", "After": "2021-08-01T00:00:00"}, 200),
-    (3, {"Email": "foo.bar@baz.test", "After": "]"}, 422),
-])
-def test_lis_is_email_leaked(
-    client,
-    requests_mock,
-    index,
-    args,
-    code,
-    is_email_leaked,
-    is_email_leaked_result,
-    prefix_mapping
-):
+@pytest.mark.parametrize(
+    "index,args,code",
+    [
+        (0, {"Email": "foo.bar@baz.test"}, 200),
+        (1, {"Email": "foo.bar@baz.test"}, 200),
+        (2, {"Email": "foo.bar@baz.test", "After": "2021-08-01T00:00:00"}, 200),
+        (3, {"Email": "foo.bar@baz.test", "After": "]"}, 422),
+    ],
+)
+def test_lis_is_email_leaked(client, requests_mock, index, args, code, is_email_leaked, is_email_leaked_result, prefix_mapping):
     email = args.get("Email", None)
     after = args.get("After", None)
 
@@ -274,6 +237,4 @@ def test_lis_is_email_leaked(
 
     response = lis_is_email_leaked(client, args)
     assert response.outputs == is_email_leaked_result[index]
-    assert response.outputs_prefix == prefix_mapping[
-        inspect.stack()[0][3].replace("test_", "")
-    ]
+    assert response.outputs_prefix == prefix_mapping[inspect.stack()[0][3].replace("test_", "")]

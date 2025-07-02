@@ -8,9 +8,8 @@ xlrd.xlsx.Element_has_iter = True
 
 
 def parse_excel(file_entry_id):
-
     res = demisto.getFilePath(file_entry_id)
-    file_path = res['path']
+    file_path = res["path"]
 
     workbook = xlrd.open_workbook(file_path, on_demand=True)
     sheet_names = workbook.sheet_names()
@@ -30,17 +29,19 @@ def parse_excel(file_entry_id):
             data.append(elm)
         sheets.append(data)
         context["ParseExcel"] = sheets
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': data,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': tableToMarkdown(sheet_names[sheetnum], data, first_row),
-            'EntryContext': context
-        })
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "Contents": data,
+                "ContentsFormat": formats["json"],
+                "HumanReadable": tableToMarkdown(sheet_names[sheetnum], data, first_row),
+                "EntryContext": context,
+            }
+        )
 
 
 def main():
-    file_entry_id = demisto.args()['entryId']
+    file_entry_id = demisto.args()["entryId"]
     parse_excel(file_entry_id)
 
 

@@ -1,5 +1,5 @@
 {
-    "contextPath": "AttackPattern(val.Value \u0026\u0026 val.value === obj.Value)",
+    "contextPath": "AttackPattern(val.Value \u0026\u0026 val.Value === obj.Value)",
     "contextValue": "Value",
     "details": "Attack Pattern",
     "legacyNames": [

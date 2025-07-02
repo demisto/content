@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """
 This automation should be run in dev environments. It will consume 100% CPU for 10 - 20 minutes or more -
 depending on the amount of playbook and automation content.
@@ -16,26 +17,23 @@ import ast
 
 
 def GetAutomation(scriptid: str):
-    results = demisto.executeCommand("core-api-post", {
-        "uri": f"/automation/load/{scriptid}"
-    })
+    results = demisto.executeCommand("core-api-post", {"uri": f"/automation/load/{scriptid}"})
     if is_error(results):
         return f"MISSING_SCRIPT_FOR_ID_{scriptid}", "", ""
-    response = results[0]['Contents']['response']
-    return response['name'], response['script'], response['type']
+    response = results[0]["Contents"]["response"]
+    return response["name"], response["script"], response["type"]
 
 
 def GetAutomationName(scriptid: str) -> str:
-    octets = scriptid.split('-')
-    if len(octets) == 5:
-        if len(octets[0]) == 8 and len(octets[1]) == 4 and len(octets[2]) == 4 and len(octets[3]) == 4 and len(octets[4]) == 12:
-            results = demisto.executeCommand("core-api-post", {
-                "uri": f"/automation/load/{scriptid}"
-            })
-            if is_error(results):
-                return f"MISSING_SCRIPT_FOR_ID_{scriptid}"
-            return results[0]['Contents']['response']['name']
-    octets = scriptid.split('|')
+    octets = scriptid.split("-")
+    if len(octets) == 5 and (
+        len(octets[0]) == 8 and len(octets[1]) == 4 and len(octets[2]) == 4 and len(octets[3]) == 4 and len(octets[4]) == 12
+    ):
+        results = demisto.executeCommand("core-api-post", {"uri": f"/automation/load/{scriptid}"})
+        if is_error(results):
+            return f"MISSING_SCRIPT_FOR_ID_{scriptid}"
+        return results[0]["Contents"]["response"]["name"]
+    octets = scriptid.split("|")
     if len(octets) == 4:
         return ""
 
@@ -48,7 +46,7 @@ def CalledAutomation(scrname: str, script: str) -> list:
     try:
         lines = ast.dump(ast.parse(script), indent="").splitlines()  # type: ignore
     except Exception as ex:
-        return_results(f"CalledAutomation: Error parsing script {scrname} - Error: {str(ex)}")
+        return_results(f"CalledAutomation: Error parsing script {scrname} - Error: {ex!s}")
         return []
 
     watchname = False
@@ -62,15 +60,15 @@ def CalledAutomation(scrname: str, script: str) -> list:
             watchname = True
             continue
         if watchname:
-            if 'func=Name' in lin:
+            if "func=Name" in lin:
                 name = lin.split("'")[1]
                 if name == "execute_command":
                     watcharg = True
                     continue
-            if 'func=Attribute' in lin:
+            if "func=Attribute" in lin:
                 watchatt = True
                 continue
-            if watchatt and 'attr=' in lin:
+            if watchatt and "attr=" in lin:
                 name = lin.split("'")[1]
                 watchatt = False
                 if name == "executeCommand":
@@ -99,10 +97,9 @@ def CalledAutomation(scrname: str, script: str) -> list:
 def GetPlaybooks(query: str) -> list:
     if query != "":
         query = " AND " + query
-    playbooks = demisto.executeCommand("core-api-post", {
-        "uri": "/playbook/search",
-        "body": {"query": f"hidden:F AND deprecated:F {query}"}
-    })[0]['Contents']['response']['playbooks']
+    playbooks = demisto.executeCommand(
+        "core-api-post", {"uri": "/playbook/search", "body": {"query": f"hidden:F AND deprecated:F {query}"}}
+    )[0]["Contents"]["response"]["playbooks"]
     return playbooks
 
 
@@ -110,125 +107,125 @@ def GetEntities(playbooks: list) -> dict:
     entities = {}
 
     for p in playbooks:
-        pbname = p['name']
-        entities[pbname] = {'etype': "playbook", 'pcalled': [], 'pcalls': [], 'scalled': [], 'scalls': []}
-        for _key, t in p['tasks'].items():
-            if t['type'] == "playbook":
-                spbname = t['task'].get('name', "notaskname")
+        pbname = p["name"]
+        entities[pbname] = {"etype": "playbook", "pcalled": [], "pcalls": [], "scalled": [], "scalls": []}
+        for _key, t in p["tasks"].items():
+            if t["type"] == "playbook":
+                spbname = t["task"].get("name", "notaskname")
                 if spbname not in entities:
-                    entities[spbname] = {'etype': "playbook", 'pcalled': [], 'pcalls': [], 'scalled': [], 'scalls': []}
-                entities[pbname]['pcalls'].append(spbname)  # type: ignore
-                entities[spbname]['pcalled'].append(pbname)  # type: ignore
-            elif "scriptId" in t['task']:
-                scrname = GetAutomationName(t['task']['scriptId'])
+                    entities[spbname] = {"etype": "playbook", "pcalled": [], "pcalls": [], "scalled": [], "scalls": []}
+                entities[pbname]["pcalls"].append(spbname)  # type: ignore
+                entities[spbname]["pcalled"].append(pbname)  # type: ignore
+            elif "scriptId" in t["task"]:
+                scrname = GetAutomationName(t["task"]["scriptId"])
                 if scrname != "":
                     scrname, script, stype = GetAutomation(scrname)
                 else:
-                    scrname = t['task']['scriptId']
+                    scrname = t["task"]["scriptId"]
                     script = ""
                     stype = ""
                 if scrname not in entities:
-                    entities[scrname] = {'etype': "script", 'pcalled': [], 'pcalls': [], 'scalled': [], 'scalls': []}
-                entities[pbname]['scalls'].append(scrname)  # type: ignore
-                entities[scrname]['pcalled'].append(pbname)  # type: ignore
+                    entities[scrname] = {"etype": "script", "pcalled": [], "pcalls": [], "scalled": [], "scalls": []}
+                entities[pbname]["scalls"].append(scrname)  # type: ignore
+                entities[scrname]["pcalled"].append(pbname)  # type: ignore
                 if stype == "python":
                     calls = CalledAutomation(scrname, script)
                 else:
                     calls = []
                 if len(calls) > 0:
-                    entities[scrname]['scalls'].extend(calls)  # type: ignore
+                    entities[scrname]["scalls"].extend(calls)  # type: ignore
                     for s in calls:
                         if s not in entities:
-                            entities[s] = {'etype': "script", 'pcalled': [], 'pcalls': [], 'scalled': [], 'scalls': []}
-                        entities[s]['scalled'].append(scrname)  # type: ignore
+                            entities[s] = {"etype": "script", "pcalled": [], "pcalls": [], "scalled": [], "scalls": []}
+                        entities[s]["scalled"].append(scrname)  # type: ignore
 
     return entities
 
 
 def PlaybookCsv(key: str, ent: dict) -> str:
     output = ""
-    calls = list(set(ent['pcalls']))
+    calls = list(set(ent["pcalls"]))
     if len(calls) > 0:
         for val in calls:
             output += f"Playbook, {key}, Calls, Playbook, {val}\n"
 
-    calls = list(set(ent['scalls']))
+    calls = list(set(ent["scalls"]))
     if len(calls) > 0:
         for val in calls:
             output += f"Playbook, {key}, Calls, Automation, {val}\n"
 
-    calls = list(set(ent['pcalled']))
+    calls = list(set(ent["pcalled"]))
     if len(calls) > 0:
         for val in calls:
             output += f"Playbook, {key}, Calledby, Playbook, {val}\n"
 
-    return (output)
+    return output
 
 
 def ScriptCsv(key: str, ent: dict) -> str:
     output = ""
-    calls = list(set(ent['scalls']))
+    calls = list(set(ent["scalls"]))
     if len(calls) > 0:
         for val in calls:
             output += f"Automation, {key}, Calls, Automation, {val}\n"
 
-    calls = list(set(ent['scalled']))
+    calls = list(set(ent["scalled"]))
     if len(calls) > 0:
         for val in calls:
             output += f"Automation, {key}, Calledby, Automation, {val}\n"
 
-    calls = list(set(ent['pcalled']))
+    calls = list(set(ent["pcalled"]))
     if len(calls) > 0:
         for val in calls:
             output += f"Automation, {key}, Calledby, Playbook, {val}\n"
 
-    return (output)
+    return output
 
 
 def PlaybookMarkdown(key: str, ent: dict) -> str:
     output = f"{key}\n\n"
-    calls = list(set(ent['pcalls']))
+    calls = list(set(ent["pcalls"]))
     if len(calls) > 0:
         for val in calls:
             output += f"    Calls: Playbook: {val}\n"
 
-    calls = list(set(ent['scalls']))
+    calls = list(set(ent["scalls"]))
     if len(calls) > 0:
         for val in calls:
             output += f"    Calls: Automation: {val}\n"
 
-    calls = list(set(ent['pcalled']))
+    calls = list(set(ent["pcalled"]))
     if len(calls) > 0:
         for val in calls:
             output += f"    Called by: Playbook: {val}\n"
 
-    return (output)
+    return output
 
 
 def ScriptMarkdown(key: str, ent: dict) -> str:
     output = f"{key}\n\n"
-    calls = list(set(ent['scalls']))
+    calls = list(set(ent["scalls"]))
     if len(calls) > 0:
         for val in calls:
             output += f"    Calls: Automation: {val}\n"
 
-    calls = list(set(ent['scalled']))
+    calls = list(set(ent["scalled"]))
     if len(calls) > 0:
         for val in calls:
             output += f"    Called by: Automation: {val}\n"
 
-    calls = list(set(ent['pcalled']))
+    calls = list(set(ent["pcalled"]))
     if len(calls) > 0:
         for val in calls:
             output += f"    Called by: Playbook: {val}\n"
 
-    return (output)
+    return output
 
 
 def main():
     try:
         args = demisto.args()
-        outfmt = args['format']
+        outfmt = args["format"]
         filename = args.get("filename", "dependencies.txt")
         pbquery = args.get("query", "")
         playbooks = GetPlaybooks(pbquery)
@@ -238,7 +235,7 @@ def main():
         if outfmt == "markdown" or outfmt == "":
             output += "### Playbooks\n"
         for key, ent in entities.items():
-            if ent['etype'] == "playbook":
+            if ent["etype"] == "playbook":
                 if outfmt == "csv":
                     output += PlaybookCsv(key, ent)
                 else:
@@ -247,7 +244,7 @@ def main():
         if outfmt == "markdown" or outfmt == "":
             output += "### Automations\n"
         for key, ent in entities.items():
-            if ent['etype'] == "script":
+            if ent["etype"] == "script":
                 if outfmt == "csv":
                     output += ScriptCsv(key, ent)
                 else:
@@ -258,16 +255,13 @@ def main():
         else:
             field = args.get("fieldname", "").strip()
             if field != "":
-                demisto.executeCommand("setIncident", {'customFields': json.dumps({field: output})})
+                demisto.executeCommand("setIncident", {"customFields": json.dumps({field: output})})
             else:
-                demisto.results({
-                    "ContentsFormat": formats["markdown"],
-                    "Contents": output
-                })
+                demisto.results({"ContentsFormat": formats["markdown"], "Contents": output})
 
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f"ContentDependencies: Exception failed to execute. Error: {str(ex)}")
+        return_error(f"ContentDependencies: Exception failed to execute. Error: {ex!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

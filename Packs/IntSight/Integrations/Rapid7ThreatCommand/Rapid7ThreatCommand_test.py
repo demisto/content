@@ -1,18 +1,18 @@
 import json
 import os
-from http import HTTPStatus
 from collections.abc import Callable
+from http import HTTPStatus
 from urllib.parse import urljoin
 
 import pytest
 from CommonServerPython import *
 from Rapid7ThreatCommand import (
-    Client,
-    ReadableOutputs,
-    ReadableErrors,
     ArgumentValues,
-    file_reputation_handler,
+    Client,
+    ReadableErrors,
+    ReadableOutputs,
     domain_reputation_handler,
+    file_reputation_handler,
     ip_reputation_handler,
     url_reputation_handler,
 )
@@ -135,11 +135,7 @@ def test_list_cyber_term_ioc_command(
             b"GeneralError",
             f"Status Code: {HTTPStatus.INTERNAL_SERVER_ERROR}, {ReadableErrors.GENERAL.value}",
         ),
-        (
-            HTTPStatus.NOT_FOUND,
-            None,
-            f"Status Code: {HTTPStatus.NOT_FOUND}, {ReadableErrors.NOT_FOUND.value}"
-        ),
+        (HTTPStatus.NOT_FOUND, None, f"Status Code: {HTTPStatus.NOT_FOUND}, {ReadableErrors.NOT_FOUND.value}"),
     ),
 )
 def test_fail_list_cyber_term_ioc_command(
@@ -201,9 +197,7 @@ def test_fail_list_cyber_term_ioc_command(
         ),
     ),
 )
-def test_list_cyber_term_command(
-    requests_mock, mock_client: Client, args: dict[str, Any], params: List[tuple]
-):
+def test_list_cyber_term_command(requests_mock, mock_client: Client, args: dict[str, Any], params: List[tuple]):
     """
     Scenario: List cyber terms.
     Given:
@@ -374,9 +368,7 @@ def test_create_source_document_command(
         ),
     ),
 )
-def test_fail_create_source_document_command(
-    requests_mock, mock_client: Client, args: dict[str, Any], error: str
-):
+def test_fail_create_source_document_command(requests_mock, mock_client: Client, args: dict[str, Any], error: str):
     """
     Scenario: Create source document.
     Given:
@@ -445,9 +437,7 @@ def test_delete_source_document_command(
     url = urljoin(mock_client._base_url, "/v1/iocs/delete-source/test")
     requests_mock.delete(url=url, status_code=HTTPStatus.OK)
     result = delete_source_document_command(mock_client, {"source_id": "test"})
-    assert result.readable_output == ReadableOutputs.DOCUMENT_DELETE.value.format(
-        "test"
-    )
+    assert result.readable_output == ReadableOutputs.DOCUMENT_DELETE.value.format("test")
 
 
 def test_fail_delete_source_document_command(
@@ -466,9 +456,7 @@ def test_fail_delete_source_document_command(
     from Rapid7ThreatCommand import delete_source_document_command
 
     url = urljoin(mock_client._base_url, "/v1/iocs/delete-source/test")
-    requests_mock.delete(
-        url=url, content=b"SourceDoesNotExist", status_code=HTTPStatus.NOT_FOUND
-    )
+    requests_mock.delete(url=url, content=b"SourceDoesNotExist", status_code=HTTPStatus.NOT_FOUND)
     with pytest.raises(DemistoException) as error_info:
         delete_source_document_command(mock_client, {"source_id": "test"})
     assert ReadableErrors.SOURCE_NOT_EXIST.value == str(error_info.value)
@@ -483,9 +471,7 @@ def test_fail_delete_source_document_command(
         ),
         (
             {"source_id": "test", "domains": ["test.com"], "emails": ["test@test.com"]},
-            ReadableOutputs.CREATE_IOC.value.format(
-                ["test.com", "test@test.com"], "test"
-            ),
+            ReadableOutputs.CREATE_IOC.value.format(["test.com", "test@test.com"], "test"),
         ),
     ),
 )
@@ -552,9 +538,7 @@ def test_add_asset_command(
 
     url = urljoin(mock_client._base_url, "/v1/data/assets/add-asset")
     requests_mock.put(url=url, status_code=HTTPStatus.OK)
-    result = add_asset_command(
-        mock_client, {"asset_type": "test", "asset_value": "test"}
-    )
+    result = add_asset_command(mock_client, {"asset_type": "test", "asset_value": "test"})
     assert result.outputs_prefix == "ThreatCommand.Asset"
 
 
@@ -630,12 +614,8 @@ def test_delete_asset_command(
 
     url = urljoin(mock_client._base_url, "/v1/data/assets/delete-asset")
     requests_mock.delete(url=url, status_code=HTTPStatus.OK)
-    result = delete_asset_command(
-        mock_client, {"asset_type": "test", "asset_value": "test"}
-    )
-    assert result.readable_output == ReadableOutputs.DELETE_ASSET.value.format(
-        "test", "test"
-    )
+    result = delete_asset_command(mock_client, {"asset_type": "test", "asset_value": "test"})
+    assert result.readable_output == ReadableOutputs.DELETE_ASSET.value.format("test", "test")
 
 
 @pytest.mark.parametrize(
@@ -782,15 +762,11 @@ def test_list_cve_command(
     (
         (
             {"severity_list": "test"},
-            ReadableErrors.ARGUMENT.value.format(
-                "severity_list", ArgumentValues.CVE_SEVERITY.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("severity_list", ArgumentValues.CVE_SEVERITY.value),
         ),
         (
             {"severity_list": "High,test"},
-            ReadableErrors.ARGUMENT.value.format(
-                "severity_list", ArgumentValues.CVE_SEVERITY.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("severity_list", ArgumentValues.CVE_SEVERITY.value),
         ),
     ),
 )
@@ -834,12 +810,8 @@ def test_add_cve_command(
     url = urljoin(mock_client._base_url, "/v1/cves/add-cves")
     requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = add_cve_command(mock_client, {"cve_ids": "CVE-5555-0001,CVE-5555-0003"})
-    assert result[0].readable_output == ReadableOutputs.ADD_CVE_SUCCESS.value.format(
-        "CVE-5555-0001"
-    )
-    assert result[1].readable_output == ReadableOutputs.ADD_CVE_FAIL.value.format(
-        "CVE-5555-0003 (Unsupported CVE by Intsights)"
-    )
+    assert result[0].readable_output == ReadableOutputs.ADD_CVE_SUCCESS.value.format("CVE-5555-0001")
+    assert result[1].readable_output == ReadableOutputs.ADD_CVE_FAIL.value.format("CVE-5555-0003 (Unsupported CVE by Intsights)")
 
 
 def test_delete_cve_command(
@@ -861,9 +833,7 @@ def test_delete_cve_command(
     url = urljoin(mock_client._base_url, "/v1/cves/delete-cves")
     requests_mock.delete(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = delete_cve_command(mock_client, {"cve_ids": "CVE-1999-0003,CVE-5555-0003"})
-    assert result[0].readable_output == ReadableOutputs.DELETE_CVE_SUCCESS.value.format(
-        "CVE-5555-0003"
-    )
+    assert result[0].readable_output == ReadableOutputs.DELETE_CVE_SUCCESS.value.format("CVE-5555-0003")
     assert result[1].readable_output == ReadableOutputs.DELETE_CVE_FAIL.value.format(
         "CVE-1999-0003 (CVEs are not associated to account)"
     )
@@ -1003,9 +973,7 @@ def test_create_alert_command(
     from Rapid7ThreatCommand import create_alert_command
 
     url = urljoin(mock_client._base_url, "/v1/data/alerts/add-alert")
-    requests_mock.put(
-        url=url, content=b"59490dabe57c281391e11ceb", status_code=HTTPStatus.OK
-    )
+    requests_mock.put(url=url, content=b"59490dabe57c281391e11ceb", status_code=HTTPStatus.OK)
 
     result = create_alert_command(mock_client, args)
     assert result.outputs_prefix == "ThreatCommand.Alert"
@@ -1069,9 +1037,7 @@ def test_create_alert_command(
                 "type": "test",
                 "sub_type": "test",
             },
-            ReadableErrors.ARGUMENT.value.format(
-                "type", ArgumentValues.ALERT_TYPE.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("type", ArgumentValues.ALERT_TYPE.value),
         ),
         (
             {
@@ -1083,9 +1049,7 @@ def test_create_alert_command(
                 "type": "Phishing",
                 "sub_type": "test",
             },
-            ReadableErrors.ARGUMENT.value.format(
-                "severity", ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("severity", ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value),
         ),
         (
             {
@@ -1097,9 +1061,7 @@ def test_create_alert_command(
                 "type": "Phishing",
                 "sub_type": "test",
             },
-            ReadableErrors.ARGUMENT.value.format(
-                "source_network_type", ArgumentValues.ALERT_SOURCE_NETWORK.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("source_network_type", ArgumentValues.ALERT_SOURCE_NETWORK.value),
         ),
         (
             {
@@ -1117,9 +1079,7 @@ def test_create_alert_command(
         # {"all_results": True},
     ),
 )
-def test_fail_create_alert_command(
-    requests_mock, mock_client: Client, args: dict[str, Any], error: str
-):
+def test_fail_create_alert_command(requests_mock, mock_client: Client, args: dict[str, Any], error: str):
     """
     Scenario: Create alert.
     Given:
@@ -1132,9 +1092,7 @@ def test_fail_create_alert_command(
     from Rapid7ThreatCommand import create_alert_command
 
     url = urljoin(mock_client._base_url, "/v1/data/alerts/add-alert")
-    requests_mock.put(
-        url=url, content=b"59490dabe57c281391e11ceb", status_code=HTTPStatus.OK
-    )
+    requests_mock.put(url=url, content=b"59490dabe57c281391e11ceb", status_code=HTTPStatus.OK)
 
     with pytest.raises(ValueError) as error_info:
         create_alert_command(mock_client, args)
@@ -1199,9 +1157,7 @@ def test_close_alert_command(
         ),
         (
             {"alert_id": "test", "rate": 3, "reason": "test", "is_hidden": "false"},
-            ReadableErrors.ARGUMENT.value.format(
-                "reason", ArgumentValues.ALERT_CLOSE_REASON.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("reason", ArgumentValues.ALERT_CLOSE_REASON.value),
         ),
         (
             {
@@ -1210,9 +1166,7 @@ def test_close_alert_command(
                 "reason": "Problem Solved",
                 "is_hidden": "test",
             },
-            ReadableErrors.ARGUMENT.value.format(
-                "is_hidden", ArgumentValues.BOOLEAN.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("is_hidden", ArgumentValues.BOOLEAN.value),
         ),
     ),
 )
@@ -1255,9 +1209,7 @@ def test_update_alert_severity_command(
     url = urljoin(mock_client._base_url, "/v1/data/alerts/change-severity/123")
     requests_mock.patch(url=url, content=b"", status_code=HTTPStatus.OK)
 
-    result = update_alert_severity_command(
-        mock_client, {"alert_id": "123", "severity": "High"}
-    )
+    result = update_alert_severity_command(mock_client, {"alert_id": "123", "severity": "High"})
     assert result.outputs_prefix == "ThreatCommand.Alert"
 
 
@@ -1266,9 +1218,7 @@ def test_update_alert_severity_command(
     (
         (
             {"alert_id": "test", "severity": "test"},
-            ReadableErrors.ARGUMENT.value.format(
-                "severity", ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("severity", ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value),
         ),
     ),
 )
@@ -1311,9 +1261,7 @@ def test_assign_alert_command(
     url = urljoin(mock_client._base_url, "/v1/data/alerts/assign-alert/123")
     requests_mock.patch(url=url, content=b"", status_code=HTTPStatus.OK)
 
-    result = assign_alert_command(
-        mock_client, {"alert_id": "123", "user_id": "123456789", "is_mssp": "false"}
-    )
+    result = assign_alert_command(mock_client, {"alert_id": "123", "user_id": "123456789", "is_mssp": "false"})
     assert result.outputs_prefix == "ThreatCommand.Alert"
 
 
@@ -1322,9 +1270,7 @@ def test_assign_alert_command(
     (
         (
             {"is_mssp": "test"},
-            ReadableErrors.ARGUMENT.value.format(
-                "is_mssp", ArgumentValues.BOOLEAN.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("is_mssp", ArgumentValues.BOOLEAN.value),
         ),
     ),
 )
@@ -1413,9 +1359,7 @@ def test_add_tag_alert_command(
     requests_mock.patch(url=url, content=b"", status_code=HTTPStatus.OK)
 
     result = tag_alert_command(mock_client, {"alert_id": "123", "tag_name": "test"})
-    assert result.readable_output == ReadableOutputs.ALERT_TAG_ADD.value.format(
-        "123", "test"
-    )
+    assert result.readable_output == ReadableOutputs.ALERT_TAG_ADD.value.format("123", "test")
 
 
 def test_remove_tag_alert_command(
@@ -1437,9 +1381,7 @@ def test_remove_tag_alert_command(
     requests_mock.patch(url=url, content=b"", status_code=HTTPStatus.OK)
 
     result = untag_alert_command(mock_client, {"alert_id": "123", "tag_id": "123123"})
-    assert result.readable_output == ReadableOutputs.ALERT_TAG_REMOVE.value.format(
-        "123", "123123"
-    )
+    assert result.readable_output == ReadableOutputs.ALERT_TAG_REMOVE.value.format("123", "123123")
 
 
 def test_send_mail_alert_command(
@@ -1464,9 +1406,7 @@ def test_send_mail_alert_command(
         mock_client,
         {"alert_id": "123", "email_addresses": "test@test.com", "content": "example"},
     )
-    assert result.readable_output == ReadableOutputs.ALERT_MAIL.value.format(
-        "123", "['test@test.com']"
-    )
+    assert result.readable_output == ReadableOutputs.ALERT_MAIL.value.format("123", "['test@test.com']")
 
 
 def test_ask_analyst_alert_command(
@@ -1487,9 +1427,7 @@ def test_ask_analyst_alert_command(
     url = urljoin(mock_client._base_url, "/v1/data/alerts/ask-the-analyst/123")
     requests_mock.post(url=url, content=b"", status_code=HTTPStatus.OK)
 
-    result = analyst_ask_alert_command(
-        mock_client, {"alert_id": "123", "question": "example"}
-    )
+    result = analyst_ask_alert_command(mock_client, {"alert_id": "123", "question": "example"})
     assert result.readable_output == ReadableOutputs.ALERT_ANALYST.value.format("123")
 
 
@@ -1509,14 +1447,10 @@ def test_list_alert_conversation_command(
     from Rapid7ThreatCommand import list_alert_conversation_command
 
     json_response = load_mock_response("alert/conversation.json")
-    url = urljoin(
-        mock_client._base_url, "/v1/data/alerts/ask-the-analyst-conversation/123"
-    )
+    url = urljoin(mock_client._base_url, "/v1/data/alerts/ask-the-analyst-conversation/123")
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
 
-    result = list_alert_conversation_command(
-        mock_client, {"alert_id": "123", "question": "example"}
-    )
+    result = list_alert_conversation_command(mock_client, {"alert_id": "123", "question": "example"})
     assert result.outputs_prefix == "ThreatCommand.Alert"
     assert result.outputs_key_field == "id"
 
@@ -1537,14 +1471,10 @@ def test_list_alert_activity_command(
     from Rapid7ThreatCommand import list_alert_activity_command
 
     json_response = load_mock_response("alert/activity_log.json")
-    url = urljoin(
-        mock_client._base_url, "/v1/data/alerts/activity-log/59490da8e57c281391e11ce9"
-    )
+    url = urljoin(mock_client._base_url, "/v1/data/alerts/activity-log/59490da8e57c281391e11ce9")
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
 
-    result = list_alert_activity_command(
-        mock_client, {"alert_id": "59490da8e57c281391e11ce9"}
-    )
+    result = list_alert_activity_command(mock_client, {"alert_id": "59490da8e57c281391e11ce9"})
     assert result.outputs_prefix == "ThreatCommand.Alert"
     assert result.outputs_key_field == "id"
 
@@ -1613,19 +1543,14 @@ def test_update_alert_blocklist_command(
     from Rapid7ThreatCommand import update_alert_blocklist_command
 
     json_response = load_mock_response("alert/conversation.json")
-    url = urljoin(
-        mock_client._base_url, "/v1/data/alerts/change-iocs-blocklist-status/123"
-    )
+    url = urljoin(mock_client._base_url, "/v1/data/alerts/change-iocs-blocklist-status/123")
     requests_mock.patch(url=url, json=json_response, status_code=HTTPStatus.OK)
 
     result = update_alert_blocklist_command(
         mock_client,
         {"alert_id": "123", "blocklist_status": "Sent", "domains": "test.com"},
     )
-    assert (
-        result.readable_output
-        == ReadableOutputs.ALERT_BLOCKLIST_UPDATE.value.format("Sent")
-    )
+    assert result.readable_output == ReadableOutputs.ALERT_BLOCKLIST_UPDATE.value.format("Sent")
 
 
 @pytest.mark.parametrize(
@@ -1633,9 +1558,7 @@ def test_update_alert_blocklist_command(
     (
         (
             {"alert_id": "test", "blocklist_status": "test", "domains": "test.com"},
-            ReadableErrors.ARGUMENT.value.format(
-                "blocklist_status", ArgumentValues.ALERT_BLOCKLIST.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("blocklist_status", ArgumentValues.ALERT_BLOCKLIST.value),
         ),
     ),
 )
@@ -1689,14 +1612,10 @@ def test_list_alert_image_command(
         )
         requests_mock.get(url=url, content=img1.read(), status_code=HTTPStatus.OK)
 
-    result = list_alert_image_command(
-        mock_client, {"alert_id": "59490dabe57c281391e11ceb"}
-    )
+    result = list_alert_image_command(mock_client, {"alert_id": "59490dabe57c281391e11ceb"})
     assert isinstance(result, list)
     assert isinstance(result[0], CommandResults)
-    assert result[0].readable_output == ReadableOutputs.ALERT_IMAGES.value.format(
-        "59490dabe57c281391e11ceb"
-    )
+    assert result[0].readable_output == ReadableOutputs.ALERT_IMAGES.value.format("59490dabe57c281391e11ceb")
     assert isinstance(result[1], list)
 
 
@@ -1720,9 +1639,7 @@ def test_takedown_alert_command(
     requests_mock.patch(url=url, json=json_response, status_code=HTTPStatus.OK)
     args = {"alert_id": "123", "target": "Domain", "close_alert_after_success": "true"}
     result = takedown_alert_command(mock_client, args)
-    assert result.readable_output == ReadableOutputs.ALERT_TAKEDOWN.value.format(
-        args["alert_id"]
-    )
+    assert result.readable_output == ReadableOutputs.ALERT_TAKEDOWN.value.format(args["alert_id"])
 
 
 def test_get_takedown_alert_command(
@@ -1872,9 +1789,7 @@ def test_list_account_user_command(
     (
         (
             {"user_type": "test"},
-            ReadableErrors.ARGUMENT.value.format(
-                "user_type", ArgumentValues.USER_TYPE.value
-            ),
+            ReadableErrors.ARGUMENT.value.format("user_type", ArgumentValues.USER_TYPE.value),
         ),
     ),
 )
@@ -1966,12 +1881,8 @@ def test_add_tags_ioc_command(
     url = urljoin(mock_client._base_url, "/v1/iocs/tags")
     requests_mock.post(url=url, json={"success": True}, status_code=HTTPStatus.OK)
 
-    result = add_tags_ioc_command(
-        mock_client, {"ioc_value": "test.com", "tag_values": "test"}
-    )
-    assert result.readable_output == ReadableOutputs.IOC_TAG_ADD.value.format(
-        "test.com", "['test']"
-    )
+    result = add_tags_ioc_command(mock_client, {"ioc_value": "test.com", "tag_values": "test"})
+    assert result.readable_output == ReadableOutputs.IOC_TAG_ADD.value.format("test.com", "['test']")
 
 
 def test_fail_add_tags_ioc_command(
@@ -1991,16 +1902,11 @@ def test_fail_add_tags_ioc_command(
 
     json_response = load_mock_response("ioc/tag_fail.json")
     url = urljoin(mock_client._base_url, "/v1/iocs/tags")
-    requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.UNPROCESSABLE_ENTITY
-    )
+    requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.UNPROCESSABLE_ENTITY)
 
     with pytest.raises(DemistoException) as error_info:
-        add_tags_ioc_command(
-            mock_client, {"ioc_value": "test.com", "tag_values": "test"}
-        )
-    assert f"Status Code: {HTTPStatus.UNPROCESSABLE_ENTITY}, {ReadableErrors.WRONG_PARAMETERS.value}" == str(
-        error_info.value)
+        add_tags_ioc_command(mock_client, {"ioc_value": "test.com", "tag_values": "test"})
+    assert f"Status Code: {HTTPStatus.UNPROCESSABLE_ENTITY}, {ReadableErrors.WRONG_PARAMETERS.value}" == str(error_info.value)
 
 
 def test_update_ioc_severity_command(
@@ -2021,12 +1927,8 @@ def test_update_ioc_severity_command(
     json_response = load_mock_response("ioc/severity_update.json")
     url = urljoin(mock_client._base_url, "/v2/iocs/severity")
     requests_mock.patch(url=url, json=json_response, status_code=HTTPStatus.OK)
-    result = update_ioc_severity_command(
-        mock_client, {"domains": "test.com", "severity": "High"}
-    )
-    assert result.readable_output == ReadableOutputs.UPDATE_IOC_SEVERITY.value.format(
-        "['test.com']", "High"
-    )
+    result = update_ioc_severity_command(mock_client, {"domains": "test.com", "severity": "High"})
+    assert result.readable_output == ReadableOutputs.UPDATE_IOC_SEVERITY.value.format("['test.com']", "High")
 
 
 def test_fail_update_ioc_severity_command(
@@ -2048,9 +1950,7 @@ def test_fail_update_ioc_severity_command(
     url = urljoin(mock_client._base_url, "/v2/iocs/severity")
     requests_mock.patch(url=url, json=json_response, status_code=HTTPStatus.OK)
     with pytest.raises(DemistoException):
-        update_ioc_severity_command(
-            mock_client, {"domains": "test.com", "severity": "High"}
-        )
+        update_ioc_severity_command(mock_client, {"domains": "test.com", "severity": "High"})
 
 
 def test_add_ioc_comment_command(
@@ -2070,12 +1970,8 @@ def test_add_ioc_comment_command(
 
     url = urljoin(mock_client._base_url, "/v1/iocs/comments")
     requests_mock.post(url=url, json={"success": True}, status_code=HTTPStatus.OK)
-    result = add_ioc_comment_command(
-        mock_client, {"domains": "test.com", "comment": "test"}
-    )
-    assert result.readable_output == ReadableOutputs.ADD_IOC_COMMENT.value.format(
-        "['test.com']", "test"
-    )
+    result = add_ioc_comment_command(mock_client, {"domains": "test.com", "comment": "test"})
+    assert result.readable_output == ReadableOutputs.ADD_IOC_COMMENT.value.format("['test.com']", "test")
 
 
 def test_fail_add_ioc_comment_command(
@@ -2095,14 +1991,11 @@ def test_fail_add_ioc_comment_command(
 
     json_response = load_mock_response("ioc/tag_fail.json")
     url = urljoin(mock_client._base_url, "/v1/iocs/comments")
-    requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.UNPROCESSABLE_ENTITY
-    )
+    requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.UNPROCESSABLE_ENTITY)
 
     with pytest.raises(DemistoException) as error_info:
         add_ioc_comment_command(mock_client, {"domains": "test.com", "comment": "test"})
-    assert f"Status Code: {HTTPStatus.UNPROCESSABLE_ENTITY}, {ReadableErrors.WRONG_PARAMETERS.value}" == str(
-        error_info.value)
+    assert f"Status Code: {HTTPStatus.UNPROCESSABLE_ENTITY}, {ReadableErrors.WRONG_PARAMETERS.value}" == str(error_info.value)
 
 
 @pytest.mark.parametrize(
@@ -2131,11 +2024,8 @@ def test_update_account_whitelist_command(
     url = urljoin(mock_client._base_url, "/v2/iocs/user-whitelist")
     requests_mock.post(url=url, json={"success": True}, status_code=HTTPStatus.OK)
     result = update_account_whitelist_command(mock_client, args)
-    assert (
-        result.readable_output
-        == ReadableOutputs.UPDATE_ACCOUNT_WHITELIST.value.format(
-            argToList(args["domains"]), args["is_whitelisted"]
-        )
+    assert result.readable_output == ReadableOutputs.UPDATE_ACCOUNT_WHITELIST.value.format(
+        argToList(args["domains"]), args["is_whitelisted"]
     )
 
 
@@ -2159,9 +2049,7 @@ def test_fail_update_account_whitelist_command(
     requests_mock.post(url=url, json={"success": True}, status_code=HTTPStatus.OK)
     with pytest.raises(ValueError) as error_info:
         update_account_whitelist_command(mock_client, args)
-    assert ReadableErrors.ARGUMENT.value.format(
-        "is_whitelisted", ArgumentValues.WHITELIST_STATUS.value
-    ) == str(error_info.value)
+    assert ReadableErrors.ARGUMENT.value.format("is_whitelisted", ArgumentValues.WHITELIST_STATUS.value) == str(error_info.value)
 
 
 def test_remove_account_whitelist_command(
@@ -2183,12 +2071,7 @@ def test_remove_account_whitelist_command(
     requests_mock.delete(url=url, json={"success": True}, status_code=HTTPStatus.OK)
     args = {"domains": "test.com"}
     result = remove_account_whitelist_command(mock_client, args)
-    assert (
-        result.readable_output
-        == ReadableOutputs.REMOVE_ACCOUNT_WHITELIST.value.format(
-            argToList(args["domains"])
-        )
-    )
+    assert result.readable_output == ReadableOutputs.REMOVE_ACCOUNT_WHITELIST.value.format(argToList(args["domains"]))
 
 
 def test_add_ioc_blocklist_command(
@@ -2209,9 +2092,7 @@ def test_add_ioc_blocklist_command(
     url = urljoin(mock_client._base_url, "/v1/iocs/blocklist")
     requests_mock.post(url=url, json={"success": True}, status_code=HTTPStatus.OK)
     result = add_ioc_blocklist_command(mock_client, {"domains": "test.com"})
-    assert result.readable_output == ReadableOutputs.ADD_IOC_BLOCKLIST.value.format(
-        "['test.com']"
-    )
+    assert result.readable_output == ReadableOutputs.ADD_IOC_BLOCKLIST.value.format("['test.com']")
 
 
 def test_fail_add_ioc_blocklist_command(
@@ -2254,9 +2135,7 @@ def test_remove_ioc_blocklist_command(
     url = urljoin(mock_client._base_url, "/v1/iocs/blocklist")
     requests_mock.delete(url=url, json={"success": True}, status_code=HTTPStatus.OK)
     result = remove_ioc_blocklist_command(mock_client, {"domains": "test.com"})
-    assert result.readable_output == ReadableOutputs.REMOVE_IOC_BLOCKLIST.value.format(
-        "['test.com']"
-    )
+    assert result.readable_output == ReadableOutputs.REMOVE_IOC_BLOCKLIST.value.format("['test.com']")
 
 
 def test_search_mention_command(
@@ -2359,8 +2238,8 @@ def test_list_mssp_customer_command(
 
 
 def test_get_alert_csv_command_with_comma_separated_content(
-        requests_mock,
-        mock_client: Client,
+    requests_mock,
+    mock_client: Client,
 ):
     """
     Scenario: Get alert CSV file with comma separated content.
@@ -2380,21 +2259,17 @@ def test_get_alert_csv_command_with_comma_separated_content(
         )
         requests_mock.get(url=url, content=csv.read())
 
-    result = get_alert_csv_command(
-        mock_client, {"alert_id": "59490dabe57c281391e11ceb"}
-    )
+    result = get_alert_csv_command(mock_client, {"alert_id": "59490dabe57c281391e11ceb"})
     assert isinstance(result, list)
     assert isinstance(result[0], CommandResults)
     assert result[0].raw_response == load_mock_response("alert/alert_csv_response.json")
-    assert result[0].readable_output == ReadableOutputs.ALERT_CSV.value.format(
-        "59490dabe57c281391e11ceb"
-    )
+    assert result[0].readable_output == ReadableOutputs.ALERT_CSV.value.format("59490dabe57c281391e11ceb")
     assert isinstance(result[1], dict)
 
 
 def test_get_alert_csv_command_with_tab_separated_content(
-        requests_mock,
-        mock_client: Client,
+    requests_mock,
+    mock_client: Client,
 ):
     """
     Scenario: Get alert CSV file with tab separated content.
@@ -2414,15 +2289,11 @@ def test_get_alert_csv_command_with_tab_separated_content(
         )
         requests_mock.get(url=url, content=csv.read())
 
-    result = get_alert_csv_command(
-        mock_client, {"alert_id": "59490dabe57c281391e11ceb"}
-    )
+    result = get_alert_csv_command(mock_client, {"alert_id": "59490dabe57c281391e11ceb"})
     assert isinstance(result, list)
     assert isinstance(result[0], CommandResults)
     assert result[0].raw_response == load_mock_response("alert/alert_csv_response_2.json")
-    assert result[0].readable_output == ReadableOutputs.ALERT_CSV.value.format(
-        "59490dabe57c281391e11ceb"
-    )
+    assert result[0].readable_output == ReadableOutputs.ALERT_CSV.value.format("59490dabe57c281391e11ceb")
     assert isinstance(result[1], dict)
 
 
@@ -2480,16 +2351,17 @@ def test_finish_reputation_handler(
      - Ensure that the command finished.
     """
     from Rapid7ThreatCommand import reputation_handler
+
     execution_metrics = ExecutionMetrics()
     json_response = load_mock_response(response_path)
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json=json_response)
     result = reputation_handler(
-        args={key: "test", 'unfinished_enriches': -1},
+        args={key: "test", "unfinished_enriches": -1},
         client=mock_client,
         handler_command=handler_command,
         key=key,
-        execution_metrics=execution_metrics
+        execution_metrics=execution_metrics,
     )
     assert not result.continue_to_poll
 
@@ -2519,16 +2391,17 @@ def test_continue_reputation_handler(
      - Ensure that the command called again.
     """
     from Rapid7ThreatCommand import reputation_handler
+
     execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json={"OriginalValue": "test", "Status": status})
 
     result = reputation_handler(
-        args={key: "test", 'unfinished_enriches': -1},
+        args={key: "test", "unfinished_enriches": -1},
         client=mock_client,
         handler_command=handler_command,
         key=key,
-        execution_metrics=execution_metrics
+        execution_metrics=execution_metrics,
     )
     if status == "QuotaExceeded":
         assert not result.continue_to_poll
@@ -2604,6 +2477,7 @@ def test_enrich_ioc_handler(
      - Ensure that the command stop from running.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
+
     execution_metrics = ExecutionMetrics()
     json_response = load_mock_response(response_path)
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
@@ -2634,6 +2508,7 @@ def test_fail_enrich_ioc_handler(
      - Ensure relevant error raised.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
+
     execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json={"Status": status})
@@ -2663,6 +2538,7 @@ def test_continue_enrich_ioc_handler(
      - Ensure that polling command called again.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
+
     execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json={"Status": status})
@@ -2685,7 +2561,7 @@ def test_test_module_with_fetch_success(requests_mock, mock_client: Client):
     json_response = load_mock_response("system_modules.json")
     url = urljoin(mock_client._base_url, "/v1/account/system-modules")
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
-    result = test_module(mock_client, {'isFetch': True, 'max_fetch': '200', 'first_fetch': '1 day'})
+    result = test_module(mock_client, {"isFetch": True, "max_fetch": "200", "first_fetch": "1 day"})
     assert result == "ok"
 
 
@@ -2694,7 +2570,7 @@ def test_test_module_with_fetch_success(requests_mock, mock_client: Client):
     (
         ({"isFetch": True, "first_fetch": "1 day", "max_fetch": "201.5"}, ReadableErrors.MAX_FETCH_INVALID.value),
         ({"isFetch": True, "first_fetch": "1 day", "max_fetch": "0"}, ReadableErrors.MAX_FETCH_INVALID.value),
-        ({"isFetch": True, "first_fetch": "1 day", "max_fetch": "-1"}, ReadableErrors.MAX_FETCH_INVALID.value)
+        ({"isFetch": True, "first_fetch": "1 day", "max_fetch": "-1"}, ReadableErrors.MAX_FETCH_INVALID.value),
     ),
 )
 def test_test_module_with_fetch_invalid_args(mock_client, args, error_msg):
@@ -2763,8 +2639,8 @@ def test_fetch_incidents(
 
 
 def test_fetch_incidents_with_invalid_offset_time(
-        requests_mock,
-        mock_client: Client,
+    requests_mock,
+    mock_client: Client,
 ):
     """
     Scenario: Fetch 2 incidents with invalid last run time.
@@ -2812,8 +2688,8 @@ def test_fetch_incidents_with_invalid_offset_time(
 
 
 def test_fetch_incidents_with_empty_alert_list_response(
-        requests_mock,
-        mock_client: Client,
+    requests_mock,
+    mock_client: Client,
 ):
     """
     Scenario: Fetch 2 incidents when alert list response is empty list.

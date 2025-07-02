@@ -56,7 +56,7 @@ def main():  # pragma: no cover
             parent_incident_id=parent_incident_id,
         )
     except Exception as ex:
-        return_error(f"Failed to execute PrintToParentIncident. Error: {str(ex)}")
+        return_error(f"Failed to execute PrintToParentIncident. Error: {ex!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

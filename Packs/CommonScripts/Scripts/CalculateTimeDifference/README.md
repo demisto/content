@@ -1,5 +1,7 @@
 Calculate the time difference, in minutes
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,12 +10,15 @@ Calculate the time difference, in minutes
 | Tags | Utilities |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Impossible Traveler
 * Wait Until Datetime
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +27,7 @@ This script is used in the following playbooks and scripts.
 | end_time | The time at which travel ended. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

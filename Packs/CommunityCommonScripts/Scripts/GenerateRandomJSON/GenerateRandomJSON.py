@@ -7,26 +7,27 @@ import random
 
 
 categories = {
-    'IT': ['domain_name', 'email', 'ipv4', 'ipv6', 'url', 'user_name'],
-    'Company': ['company', 'company_suffix', 'job', 'catch_phrase'],
-    'Address': ['address', 'city', 'state', 'country', 'postalcode', 'street_address'],
-    'Person': ['name', 'first_name', 'last_name', 'email', 'phone_number'],
-    'Finance': ['credit_card_number', 'credit_card_provider', 'iban', 'bban'],
-    'DateTime': ['date', 'time', 'year', 'month', 'date_of_birth'],
-    'Profile': ['simple_profile'],
-    'Color': ['color_name', 'hex_color', 'rgb_color', 'safe_color_name'],
-    'Job': ['job', 'company', 'company_suffix', 'catch_phrase'],
-    'Other': []
+    "IT": ["domain_name", "email", "ipv4", "ipv6", "url", "user_name"],
+    "Company": ["company", "company_suffix", "job", "catch_phrase"],
+    "Address": ["address", "city", "state", "country", "postalcode", "street_address"],
+    "Person": ["name", "first_name", "last_name", "email", "phone_number"],
+    "Finance": ["credit_card_number", "credit_card_provider", "iban", "bban"],
+    "DateTime": ["date", "time", "year", "month", "date_of_birth"],
+    "Profile": ["simple_profile"],
+    "Color": ["color_name", "hex_color", "rgb_color", "safe_color_name"],
+    "Job": ["job", "company", "company_suffix", "catch_phrase"],
+    "Other": [],
 }
 
-excluded_providers = ['get_providers', 'binary', 'zip', 'tar', 'json_bytes', 'get_words_list']
+excluded_providers = ["get_providers", "binary", "zip", "tar", "json_bytes", "get_words_list"]
+
 
 def serialize_value(value):
-    if isinstance(value, (datetime, date)):
+    if isinstance(value, datetime | date):
         return value.isoformat()
     elif isinstance(value, Decimal):
         return float(value)
-    elif isinstance(value, (tuple, list)):
+    elif isinstance(value, tuple | list):
         return [serialize_value(v) for v in value]
     elif isinstance(value, dict):
         return {k: serialize_value(v) for k, v in value.items()}
@@ -61,9 +62,9 @@ def generate_fake_data(category: str, providers: List[str], num_entries: int, ra
     if not isinstance(all_valid_providers, list):
         raise TypeError(f"Expected a list from getAllValidProviders, but got {type(all_valid_providers).__name__}")
 
-    if category == 'Random':
+    if category == "Random":
         providers = random.sample(all_valid_providers, k=min(randomSize, len(all_valid_providers)))
-    elif category != 'Other':
+    elif category != "Other":
         if category not in list(categories.keys()):
             raise ValueError(f"Category '{category}' is not available. Choose from {list(categories.keys())}.")
         else:
@@ -89,24 +90,26 @@ def generate_fake_data(category: str, providers: List[str], num_entries: int, ra
 def main():
     try:
         args = demisto.args()
-        num_entries = int(args.get('list_size', 1))
-        providers = argToList(args.get('faker_providers'))
-        category = args.get('category', 'Random')
-        random_size = int(args.get('dict_size', 10))
+        num_entries = int(args.get("list_size", 1))
+        providers = argToList(args.get("faker_providers"))
+        category = args.get("category", "Random")
+        random_size = int(args.get("dict_size", 10))
 
-        if category == 'Other' and not providers:
+        if category == "Other" and not providers:
             raise ValueError("When category is 'Other', a list of faker providers must be provided.")
-
 
         fake_data_list = generate_fake_data(category, providers, num_entries, random_size)
 
-        return_results(CommandResults(
-            readable_output=tableToMarkdown(f"Random JSON of category `{category}`", fake_data_list,
-                                            headers=list(fake_data_list[0].keys())),
-                                            outputs_prefix=f'RandomJSON.{category}',
-                                            outputs=fake_data_list,
-                                            raw_response=fake_data_list
-                                            ))
+        return_results(
+            CommandResults(
+                readable_output=tableToMarkdown(
+                    f"Random JSON of category `{category}`", fake_data_list, headers=list(fake_data_list[0].keys())
+                ),
+                outputs_prefix=f"RandomJSON.{category}",
+                outputs=fake_data_list,
+                raw_response=fake_data_list,
+            )
+        )
 
     except Exception as ex:
         return_error(f"Failed to generate a Random JSON object.\nError: {ex}")

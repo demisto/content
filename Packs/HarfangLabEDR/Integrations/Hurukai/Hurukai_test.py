@@ -1,18 +1,15 @@
+import inspect
 import unittest.mock
 from pathlib import Path
 from typing import TypeAlias
-import inspect
+
+import Hurukai
 import pytest
 import requests_mock
 import requests_mock.adapter
-
-import Hurukai
 from CommonServerPython import *
 
-
-SERVER_URL = (
-    "http://server-url.test"  # ".test" is a reserved tld and should not be registered
-)
+SERVER_URL = "http://server-url.test"  # ".test" is a reserved tld and should not be registered
 
 JSON_REPONSES_DIRECTORY = Path("test_data")
 
@@ -173,7 +170,6 @@ def test_fetch_incidents(
     requests_mock: RequestsMock,
     fetch_types: list[str],
 ) -> None:
-
     args = _generic_valid_fetch_incidents_argument()
     args["fetch_types"] = fetch_types
 
@@ -235,7 +231,6 @@ def test_fetch_incidents(
 def test_fetch_incidents_empty_fetch_types(
     client: Client,
 ) -> None:
-
     args = _generic_valid_fetch_incidents_argument()
     args["fetch_types"] = []
 
@@ -259,7 +254,6 @@ def test_fetch_incidents_invalid_fetch_types(
     client: Client,
     fetch_types: list[str],
 ) -> None:
-
     args = _generic_valid_fetch_incidents_argument()
     args["fetch_types"] = fetch_types
 
@@ -281,7 +275,6 @@ def test_fetch_incidents_invalid_min_severity(
     client: Client,
     min_severity: str,
 ) -> None:
-
     args = _generic_valid_fetch_incidents_argument()
     args["min_severity"] = min_severity
 
@@ -303,7 +296,6 @@ def test_fetch_incidents_invalid_mirror_direction(
     client: Client,
     mirror_direction: str,
 ) -> None:
-
     args = _generic_valid_fetch_incidents_argument()
     args["mirror_direction"] = mirror_direction
 
@@ -325,7 +317,6 @@ def test_fetch_incidents_invalid_alert_status(
     client: Client,
     alert_status: str,
 ) -> None:
-
     args = _generic_valid_fetch_incidents_argument()
     args["alert_status"] = alert_status
 
@@ -347,7 +338,6 @@ def test_fetch_incidents_invalid_max_fetch(
     client: Client,
     max_fetch: int,
 ) -> None:
-
     args = _generic_valid_fetch_incidents_argument()
     args["max_fetch"] = max_fetch
 
@@ -362,7 +352,6 @@ def test_get_modified_remote_data(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "lastUpdate": "1970-01-01T00:00:00Z",
     }
@@ -414,7 +403,6 @@ def test_get_modified_remote_data(
 
 
 def test_get_function_from_command_name() -> None:
-
     for fn_name, expected_fn in inspect.getmembers(Hurukai, inspect.isfunction):
         command = f"harfanglab-{fn_name}".replace("_", "-")
 
@@ -465,7 +453,6 @@ def test_hunt_search_hash_single_digest(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "hash": "0" * 64,
     }
@@ -497,7 +484,6 @@ def test_hunt_search_hash_multiple_digests(
     requests_mock: RequestsMock,
     hashes: list[str],
 ) -> None:
-
     args = {
         "hash": hashes,
     }
@@ -521,7 +507,6 @@ def test_hunt_search_hash_no_result(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "hash": "0" * 64,
     }
@@ -545,7 +530,6 @@ def test_job_ioc(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "agent_id": "---unused---",
         "search_in_path": "---unused---",
@@ -578,7 +562,6 @@ def test_job_ioc_no_valid_args(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {}
 
     requests_mock.post(
@@ -606,7 +589,6 @@ def test_update_remote_system(
     requests_mock: RequestsMock,
     remote_id: str,
 ) -> None:
-
     args = {
         "incidentChanged": True,
         "remoteId": remote_id,
@@ -656,7 +638,6 @@ def test_update_remote_system_without_delta(
     requests_mock: RequestsMock,
     remote_id: str,
 ) -> None:
-
     args = {
         "incidentChanged": True,
         "remoteId": remote_id,
@@ -682,7 +663,6 @@ def test_update_remote_system_no_change(
     requests_mock: RequestsMock,
     remote_id: str,
 ) -> None:
-
     args = {
         "incidentChanged": False,
         "remoteId": remote_id,
@@ -698,7 +678,6 @@ def test_global_result_artifact(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -741,7 +720,6 @@ def test_get_frequent_users(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {}
 
     mocks = [
@@ -781,7 +759,6 @@ def test_result_networkconnectionlist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -814,7 +791,6 @@ def test_get_remote_data(
     requests_mock: RequestsMock,
     remote_id: str,
 ) -> None:
-
     args = {
         "id": remote_id,
         "lastUpdate": "1970-01-01T00:00:00Z",
@@ -857,7 +833,6 @@ def test_hunt_search_running_process_hash_single_digest(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "hash": "0" * 64,
     }
@@ -888,7 +863,6 @@ def test_hunt_search_running_process_hash_multiple_digests(
     requests_mock: RequestsMock,
     hashes: list[str],
 ) -> None:
-
     args = {
         "hash": hashes,
     }
@@ -911,7 +885,6 @@ def test_hunt_search_runned_process_hash_single_digest(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "hash": "0" * 64,
     }
@@ -943,7 +916,6 @@ def test_hunt_search_runned_process_hash_multiple_digests(
     requests_mock: RequestsMock,
     hashes: list[str],
 ) -> None:
-
     args = {
         "hash": hashes,
     }
@@ -967,7 +939,6 @@ def test_result_processlist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -992,7 +963,6 @@ def test_add_whitelist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {}
 
     requests_mock.post(
@@ -1011,7 +981,6 @@ def test_add_whitelist_invalid_target(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "target": "---invalid---",
     }
@@ -1024,7 +993,6 @@ def test_add_whitelist_invalid_operator(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "operator": "---invalid---",
     }
@@ -1039,7 +1007,6 @@ def test_add_criterion_to_whitelist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "id": "1",
     }
@@ -1071,7 +1038,6 @@ def test_add_criterion_to_whitelist_invalid_operator(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "id": "1",
         "operator": "---invalid---",
@@ -1087,7 +1053,6 @@ def test_delete_whitelist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "id": "1",
     }
@@ -1108,7 +1073,6 @@ def test_result_ioc(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1132,7 +1096,6 @@ def test_result_networksharelist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1156,7 +1119,6 @@ def test_result_artifact_downloadfile(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1190,7 +1152,6 @@ def test_result_artifact_ramdump(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1224,7 +1185,6 @@ def test_result_sessionlist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1248,7 +1208,6 @@ def test_result_wmilist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1272,7 +1231,6 @@ def test_add_ioc_to_source(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     source_id = "id"
     source_name = "name"
     ioc_value = "ioc_value"
@@ -1319,7 +1277,6 @@ def test_add_ioc_to_source_already_exist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     source_id = "id"
     source_name = "name"
     ioc_value = "ioc_value"
@@ -1359,7 +1316,6 @@ def test_enrich_threat(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "id": "1",
     }
@@ -1368,10 +1324,7 @@ def test_enrich_threat(
         requests_mock.get(
             _full_url(
                 path="data/endpoint/Agent/",
-                query="offset=0"
-                "&threat_id=1"
-                "&fields=id,hostname,domainname,osproducttype,ostype"
-                "&limit=10000",
+                query="offset=0&threat_id=1&fields=id,hostname,domainname,osproducttype,ostype&limit=10000",
             ),
             status_code=200,
             json=load_json("data_endpoint_Agent"),
@@ -1404,7 +1357,6 @@ def test_search_whitelist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "keyword": "foobar",
     }
@@ -1412,11 +1364,7 @@ def test_search_whitelist(
     requests_mock.get(
         _full_url(
             path="data/threat_intelligence/WhitelistRule/",
-            query="offset=0"
-            "&limit=100"
-            f"&search={args['keyword']}"
-            "&ordering=-last_update"
-            "&provided_by_hlab=False",
+            query=f"offset=0&limit=100&search={args['keyword']}&ordering=-last_update&provided_by_hlab=False",
         ),
         status_code=200,
         json=load_json("data_threat_intelligence_WhitelistRule"),
@@ -1430,7 +1378,6 @@ def test_result_startuplist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1454,7 +1401,6 @@ def test_result_servicelist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1478,7 +1424,6 @@ def test_result_scheduledtasklist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1502,7 +1447,6 @@ def test_result_runkeylist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1526,7 +1470,6 @@ def test_result_pipelist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1550,7 +1493,6 @@ def test_result_prefetchlist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1574,7 +1516,6 @@ def test_result_linux_persistence_list(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1598,7 +1539,6 @@ def test_result_driverlist(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     args = {
         "job_id": "1",
     }
@@ -1622,7 +1562,6 @@ def test_delete_ioc_from_source(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     source_id = "id"
     source_name = "name"
     ioc_value = "ioc_value"
@@ -1667,7 +1606,6 @@ def test_api_call(
     client: Client,
     requests_mock: RequestsMock,
 ) -> None:
-
     api_endpoint = "non-existent-endpoint"
 
     args = {

@@ -5,7 +5,7 @@
   "Last_address": "2002::1234:abcd:ffff:c0a8:101",
   "Max_prefix_len": 128,
   "Num_addresses": 2,
-  "Private": false,
+  "Private": true,
   "Version": 6
 }
 

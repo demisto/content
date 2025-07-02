@@ -1,48 +1,44 @@
-import demistomock as demisto
-from CommonServerUserPython import *  # noqa
-from CommonServerPython import *
-
 import time
-import urllib3
 import traceback
 from abc import ABC
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
 from typing import Any
+
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 DEFAULT_HOST_LIMIT = 200
-DEFAULT_MIN_SEVERITY = 'Moderate'
-CRITICALITY_TITLES = {
-    'informational': 'Informational',
-    'moderate': 'Moderate',
-    'high': 'Critical'
-}
+DEFAULT_MIN_SEVERITY = "Moderate"
+CRITICALITY_TITLES = {"informational": "Informational", "moderate": "Moderate", "high": "Critical"}
 SEVERITY_MAPPINGS = {
-    'informational': IncidentSeverity.LOW,
-    'moderate': IncidentSeverity.MEDIUM,
-    'high': IncidentSeverity.CRITICAL
+    "informational": IncidentSeverity.LOW,
+    "moderate": IncidentSeverity.MEDIUM,
+    "high": IncidentSeverity.CRITICAL,
 }
-MIN_SEVERITY_MAPPING = {
-    'Informational': 'high,moderate,informational',
-    'Moderate': 'high,moderate',
-    'Critical': 'high'
-}
+MIN_SEVERITY_MAPPING = {"Informational": "high,moderate,informational", "Moderate": "high,moderate", "Critical": "high"}
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    def __init__(self, *args,
-                 project_id: str = None,
-                 min_severity: str = DEFAULT_MIN_SEVERITY,
-                 host_incident_limit: int = DEFAULT_HOST_LIMIT,
-                 **kwargs):
+    def __init__(
+        self,
+        *args,
+        project_id: str = None,
+        min_severity: str = DEFAULT_MIN_SEVERITY,
+        host_incident_limit: int = DEFAULT_HOST_LIMIT,
+        **kwargs,
+    ):
         """
         Client subclass to handle API calls to the ASI API
 
@@ -64,10 +60,7 @@ class Client(BaseClient):
         :param snapshot: date string formatted in DATE_FORMAT
         :return: Dict with a data key that is an array of issues
         """
-        return self._http_request(
-            method='GET',
-            url_suffix=f'/rules/{self.project_id}/{snapshot}/issues'
-        )
+        return self._http_request(method="GET", url_suffix=f"/rules/{self.project_id}/{snapshot}/issues")
 
     def get_recent_issues(self, last_run: str | int) -> dict:
         """
@@ -77,11 +70,11 @@ class Client(BaseClient):
         :return: Dict with a data key that is an array of diffs between snapshots
         """
         return self._http_request(
-            method='GET',
-            url_suffix=f'/rules/history/{self.project_id}/activity?'
-                       f'rule_action=added&'
-                       f'start={last_run}&'
-                       f'classification={MIN_SEVERITY_MAPPING[self.min_severity]}'
+            method="GET",
+            url_suffix=f"/rules/history/{self.project_id}/activity?"
+            f"rule_action=added&"
+            f"start={last_run}&"
+            f"classification={MIN_SEVERITY_MAPPING[self.min_severity]}",
         )
 
     def get_recent_issues_by_host(self, last_run: str | int) -> dict:
@@ -92,16 +85,16 @@ class Client(BaseClient):
         :return: Dict with a data key that is an array of diffs between snapshots
         """
         return self._http_request(
-            method='GET',
-            url_suffix=f'/rules/history/{self.project_id}/activity/by_host/compare?'
-                       f'rule_action=added&'
-                       f'last_checked={last_run}&'
-                       f'classification={MIN_SEVERITY_MAPPING[self.min_severity]}&'
-                       f'limit={self.host_incident_limit}'
+            method="GET",
+            url_suffix=f"/rules/history/{self.project_id}/activity/by_host/compare?"
+            f"rule_action=added&"
+            f"last_checked={last_run}&"
+            f"classification={MIN_SEVERITY_MAPPING[self.min_severity]}&"
+            f"limit={self.host_incident_limit}",
         )
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 class IncidentBuilder:
@@ -147,7 +140,7 @@ class IncidentBuilder:
                 continue
 
             # NOTE :: Some endpoints don't support filtering and will need to do it in function
-            if parsed_rule['classification'] not in MIN_SEVERITY_MAPPING[self.min_severity]:
+            if parsed_rule["classification"] not in MIN_SEVERITY_MAPPING[self.min_severity]:
                 continue
 
             transformed.append(parsed_rule)
@@ -179,7 +172,7 @@ class IncidentBuilder:
         :param refs: list of reference links
         :return: bulleted list
         """
-        return '\n\n'.join([f'◦ {r}' for r in refs])
+        return "\n\n".join([f"◦ {r}" for r in refs])
 
     @staticmethod
     def _use_severity_titles(rules: list[dict]) -> list[dict]:
@@ -190,13 +183,21 @@ class IncidentBuilder:
         :return: mutated rules
         """
         for r in rules:
-            r['classification'] = CRITICALITY_TITLES[r['classification']]
+            r["classification"] = CRITICALITY_TITLES[r["classification"]]
         return rules
 
 
 class ByHostIncidentBuilder(IncidentBuilder, ABC):
-    def __init__(self, host: str, risk_score: int, previous_score: int, previous_snapshot: Optional[str],
-                 min_severity: str, snapshot: Optional[str], last_checked: int = 0):
+    def __init__(
+        self,
+        host: str,
+        risk_score: int,
+        previous_score: int,
+        previous_snapshot: Optional[str],
+        min_severity: str,
+        snapshot: Optional[str],
+        last_checked: int = 0,
+    ):
         """
         Incident type where issues are grouped by hosts
 
@@ -216,51 +217,54 @@ class ByHostIncidentBuilder(IncidentBuilder, ABC):
 
     def parse_rule(self, rule: dict) -> Optional[dict]:
         return {
-            'name': rule['name'],
-            'details': rule['description'],
-            'classification': rule['classification'],
-            'references': self._format_references(rule.get('rule_metadata', {}).get('references', [])),
-            'metadata': rule.get('rule_metadata', {}).get('target', rule.get('rule_metadata', {}).get('additional'))
+            "name": rule["name"],
+            "details": rule["description"],
+            "classification": rule["classification"],
+            "references": self._format_references(rule.get("rule_metadata", {}).get("references", [])),
+            "metadata": rule.get("rule_metadata", {}).get("target", rule.get("rule_metadata", {}).get("additional")),
         }
 
 
 class ByIssueIncident(IncidentBuilder):
     def parse_rule(self, rule: dict) -> Optional[dict]:
-        hosts = self._build_examples(rule['example_entities'].get('domains', [])) + \
-            self._build_examples(rule['example_entities'].get('ips', []))
+        hosts = self._build_examples(rule["example_entities"].get("domains", [])) + self._build_examples(
+            rule["example_entities"].get("ips", [])
+        )
         return {
-            'name': rule['name'],
-            'details': rule['description'],
-            'classification': rule['classification'],
-            'entity_counts': rule.get('rule_metadata', {}).get('entity_counts', {}),
-            'references': self._format_references(rule.get('rule_metadata', {}).get('references', [])),
-            'hosts': hosts
+            "name": rule["name"],
+            "details": rule["description"],
+            "classification": rule["classification"],
+            "entity_counts": rule.get("rule_metadata", {}).get("entity_counts", {}),
+            "references": self._format_references(rule.get("rule_metadata", {}).get("references", [])),
+            "hosts": hosts,
         }
 
     def build_incident(self, parsed_rule: dict) -> dict:
-        count_copy = '\n\nThis rule triggered for '
-        entity_counts = parsed_rule.pop('entity_counts')
-        examples = parsed_rule.pop('hosts', [])
-        domain_count = entity_counts.get('domains')
-        ip_count = entity_counts.get('ips')
+        count_copy = "\n\nThis rule triggered for "
+        entity_counts = parsed_rule.pop("entity_counts")
+        examples = parsed_rule.pop("hosts", [])
+        domain_count = entity_counts.get("domains")
+        ip_count = entity_counts.get("ips")
         if domain_count and ip_count:
-            count_copy += f'{domain_count} domains and {ip_count} IPs.'
+            count_copy += f"{domain_count} domains and {ip_count} IPs."
         elif domain_count:
-            count_copy += f'{domain_count} domains.'
+            count_copy += f"{domain_count} domains."
         else:
-            count_copy += f'{ip_count} IPs.'
+            count_copy += f"{ip_count} IPs."
 
         return {
-            'severity': SEVERITY_MAPPINGS[parsed_rule['classification']],
-            'name': parsed_rule['name'],
-            'rawJSON': json.dumps({
-                'triggered_rule': parsed_rule['name'],
-                'rules': self._use_severity_titles([parsed_rule]),
-                'affected_hosts': examples,
-                '_incident_type': 'by_issue'
-            }),
-            'details': parsed_rule['details'] + count_copy,
-            'occurred': timestamp_to_datestring(self.incident_created_time_ms)
+            "severity": SEVERITY_MAPPINGS[parsed_rule["classification"]],
+            "name": parsed_rule["name"],
+            "rawJSON": json.dumps(
+                {
+                    "triggered_rule": parsed_rule["name"],
+                    "rules": self._use_severity_titles([parsed_rule]),
+                    "affected_hosts": examples,
+                    "_incident_type": "by_issue",
+                }
+            ),
+            "details": parsed_rule["details"] + count_copy,
+            "occurred": timestamp_to_datestring(self.incident_created_time_ms),
         }
 
     @staticmethod
@@ -271,12 +275,12 @@ class ByIssueIncident(IncidentBuilder):
         :param examples: list of entity
         :return: list of parsed fields
         """
-        return [{'id': e['example'], 'metadata': e.get('target') or e.get('additional')} for e in examples]
+        return [{"id": e["example"], "metadata": e.get("target") or e.get("additional")} for e in examples]
 
 
 class ByHostIncident(ByHostIncidentBuilder):
     def build_incident(self, parsed_rule: dict) -> dict:
-        raise NotImplementedError('Cannot use this method for this type of issue. Use build_grouped_incident instead')
+        raise NotImplementedError("Cannot use this method for this type of issue. Use build_grouped_incident instead")
 
     def build_grouped_incident(self, parsed_rules: list[dict]) -> dict:
         """
@@ -290,18 +294,20 @@ class ByHostIncident(ByHostIncidentBuilder):
         details = self._incident_description(by_classification, len(parsed_rules))
 
         return {
-            'name': title,
-            'host': self.host,
-            'details': details,
-            'occurred': timestamp_to_datestring(self.incident_created_time_ms),
-            'rawJSON': json.dumps({
-                '_incident_type': 'by_host',
-                'affected_hosts': [{'id': self.host, 'metadata': ''}],
-                'rules': self._use_severity_titles(sorted(parsed_rules,
-                                                          key=lambda r: SEVERITY_MAPPINGS[r['classification']],
-                                                          reverse=True))
-            }),
-            'severity': severity
+            "name": title,
+            "host": self.host,
+            "details": details,
+            "occurred": timestamp_to_datestring(self.incident_created_time_ms),
+            "rawJSON": json.dumps(
+                {
+                    "_incident_type": "by_host",
+                    "affected_hosts": [{"id": self.host, "metadata": ""}],
+                    "rules": self._use_severity_titles(
+                        sorted(parsed_rules, key=lambda r: SEVERITY_MAPPINGS[r["classification"]], reverse=True)
+                    ),
+                }
+            ),
+            "severity": severity,
         }
 
     def build_incidents(self, parsed_rules: list[dict]) -> list[dict]:
@@ -323,7 +329,7 @@ class ByHostIncident(ByHostIncidentBuilder):
         """
         by_classification = defaultdict(list)
         for rule in rules:
-            by_classification[rule['classification']].append(rule)
+            by_classification[rule["classification"]].append(rule)
         return by_classification
 
     def _incident_title_and_severity(self, by_classification: dict[str, list[dict]]) -> tuple[str, int]:
@@ -333,14 +339,13 @@ class ByHostIncident(ByHostIncidentBuilder):
         :param by_classification: rules grouped by classification
         :return: title, severity
         """
-        if by_classification['high']:
-            severity = SEVERITY_MAPPINGS['high']
-        elif by_classification['moderate']:
-            severity = SEVERITY_MAPPINGS['moderate']
+        if by_classification["high"]:
+            severity = SEVERITY_MAPPINGS["high"]
+        elif by_classification["moderate"]:
+            severity = SEVERITY_MAPPINGS["moderate"]
         else:
-            severity = SEVERITY_MAPPINGS['informational']
-        title = f'Attack Surface Risk Increase: {self.host} ' \
-                f'({self.previous_score} --> {self.risk_score})'
+            severity = SEVERITY_MAPPINGS["informational"]
+        title = f"Attack Surface Risk Increase: {self.host} ({self.previous_score} --> {self.risk_score})"
         return title, severity
 
     def _incident_description(self, by_classification: dict[str, list[dict]], added_rule_count: int) -> str:
@@ -353,38 +358,43 @@ class ByHostIncident(ByHostIncidentBuilder):
         """
         summary = f'Summary for host "{self.host}":\n----------------------------\n'
         risk_score_diff = self.risk_score - self.previous_score
-        change_symbol = '+' if risk_score_diff > 0 else '-'
-        change_statement = f'{change_symbol}{abs(risk_score_diff)} from last Risk Score at {self.previous_snapshot}'
-        summary += f'    {self.risk_score} Risk Score ' + (
-            '(first score)' if not self.previous_score else f'({change_statement})') + '\n'
-        summary += f'    {added_rule_count} New Risks ('
+        change_symbol = "+" if risk_score_diff > 0 else "-"
+        change_statement = f"{change_symbol}{abs(risk_score_diff)} from last Risk Score at {self.previous_snapshot}"
+        summary += (
+            f"    {self.risk_score} Risk Score "
+            + ("(first score)" if not self.previous_score else f"({change_statement})")
+            + "\n"
+        )
+        summary += f"    {added_rule_count} New Risks ("
         rule_counts = []
         for criticality, rules in by_classification.items():
             if rules:
-                rule_counts.append(f'{len(rules)} {CRITICALITY_TITLES[criticality]}')
-        summary += ', '.join(rule_counts)
-        summary += ')'
+                rule_counts.append(f"{len(rules)} {CRITICALITY_TITLES[criticality]}")
+        summary += ", ".join(rule_counts)
+        summary += ")"
         return summary
 
 
 class ByHostByIssueIncident(ByHostIncidentBuilder):
     def build_incident(self, parsed_rule: dict) -> dict:
         return {
-            'severity': SEVERITY_MAPPINGS[parsed_rule['classification']],
-            'name': f'{parsed_rule["name"]} [{self.host}]',
-            'rawJSON': json.dumps({
-                'host': self.host,
-                'triggered_rule': parsed_rule['name'],
-                'rules': self._use_severity_titles([parsed_rule]),
-                'affected_hosts': [{'id': self.host, 'metadata': parsed_rule['metadata']}],
-                '_incident_type': 'by_host_by_issue'
-            }),
-            'details': parsed_rule['details'],
-            'occurred': timestamp_to_datestring(self.incident_created_time_ms)
+            "severity": SEVERITY_MAPPINGS[parsed_rule["classification"]],
+            "name": f'{parsed_rule["name"]} [{self.host}]',
+            "rawJSON": json.dumps(
+                {
+                    "host": self.host,
+                    "triggered_rule": parsed_rule["name"],
+                    "rules": self._use_severity_titles([parsed_rule]),
+                    "affected_hosts": [{"id": self.host, "metadata": parsed_rule["metadata"]}],
+                    "_incident_type": "by_host_by_issue",
+                }
+            ),
+            "details": parsed_rule["details"],
+            "occurred": timestamp_to_datestring(self.incident_created_time_ms),
         }
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -395,13 +405,13 @@ def test_module(client: Client) -> str:
     :return: 'ok' if everything works otherwise raise an Exception
     """
     try:
-        client.get_project_issues('recent')
+        client.get_project_issues("recent")
     except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e):
+            return "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
-    return 'ok'
+    return "ok"
 
 
 def _fetch_project_incidents(client: Client) -> tuple[list[dict], int]:
@@ -411,19 +421,18 @@ def _fetch_project_incidents(client: Client) -> tuple[list[dict], int]:
     :param client: Client
     :return: list of incidents, total possible incidents
     """
-    issues_resp = client.get_project_issues(snapshot='recent')
-    recent_snapshot = issues_resp.get('meta', {}).get('snapshot')
+    issues_resp = client.get_project_issues(snapshot="recent")
+    recent_snapshot = issues_resp.get("meta", {}).get("snapshot")
     incident_builder = ByIssueIncident(client.min_severity, recent_snapshot)
 
-    parsed_rules = incident_builder.parse_rules(issues_resp.get('data', []))
+    parsed_rules = incident_builder.parse_rules(issues_resp.get("data", []))
     if not parsed_rules:
         return [], 0
 
     return incident_builder.build_incidents(parsed_rules), len(parsed_rules)
 
 
-def _fetch_recent_incidents_by_host(client: Client, start_timestamp: int,
-                                    expand_incidents: bool) -> tuple[list[dict], int]:
+def _fetch_recent_incidents_by_host(client: Client, start_timestamp: int, expand_incidents: bool) -> tuple[list[dict], int]:
     """
     Fetch recent incidents after a certain timestamp grouped by hosts that changed
 
@@ -438,18 +447,24 @@ def _fetch_recent_incidents_by_host(client: Client, start_timestamp: int,
     # Each incident is a dict with a string as a key
     incidents: list[dict[str, Any]] = []
 
-    for diff in issues_resp.get('data', []):
-        diff_snapshot = diff.get('snapshot')
+    for diff in issues_resp.get("data", []):
+        diff_snapshot = diff.get("snapshot")
         build_cls = ByHostByIssueIncident if expand_incidents else ByHostIncident
         incident_builder = build_cls(
-            diff['id'], diff['risk_score'], diff['previous_risk_score'], diff['previous_snapshot'],
-            client.min_severity, diff_snapshot, last_checked=start_timestamp)
-        parsed_rules = incident_builder.parse_rules(diff.get('added_rules', []))
+            diff["id"],
+            diff["risk_score"],
+            diff["previous_risk_score"],
+            diff["previous_snapshot"],
+            client.min_severity,
+            diff_snapshot,
+            last_checked=start_timestamp,
+        )
+        parsed_rules = incident_builder.parse_rules(diff.get("added_rules", []))
         if not parsed_rules:
             continue
         incidents.extend(incident_builder.build_incidents(parsed_rules))
 
-    return incidents, issues_resp.get('meta', {}).get('counts', {}).get('hosts', {}).get('total', 0)
+    return incidents, issues_resp.get("meta", {}).get("counts", {}).get("hosts", {}).get("total", 0)
 
 
 def _fetch_recent_incidents(client: Client, start_timestamp: int) -> tuple[list[dict], int]:
@@ -466,10 +481,10 @@ def _fetch_recent_incidents(client: Client, start_timestamp: int) -> tuple[list[
     # Each incident is a dict with a string as a key
     incidents: list[dict[str, Any]] = []
 
-    for diff in issues_resp.get('data', []):
-        diff_snapshot = diff.get('snapshot')
+    for diff in issues_resp.get("data", []):
+        diff_snapshot = diff.get("snapshot")
         incident_builder = ByIssueIncident(client.min_severity, diff_snapshot, last_checked=start_timestamp)
-        parsed_rules = incident_builder.parse_rules(diff.get('added_rules', []))
+        parsed_rules = incident_builder.parse_rules(diff.get("added_rules", []))
         if not parsed_rules:
             continue
         incidents.extend(incident_builder.build_incidents(parsed_rules))
@@ -477,8 +492,9 @@ def _fetch_recent_incidents(client: Client, start_timestamp: int) -> tuple[list[
     return incidents, len(incidents)
 
 
-def fetch_incidents(client: Client, last_run: dict[str, int], is_by_host: bool,
-                    expand_issues: bool) -> tuple[dict[str, int], list[dict]]:
+def fetch_incidents(
+    client: Client, last_run: dict[str, int], is_by_host: bool, expand_issues: bool
+) -> tuple[dict[str, int], list[dict]]:
     """
     This function retrieves new alerts every interval (default is 24 hours).
 
@@ -491,7 +507,7 @@ def fetch_incidents(client: Client, last_run: dict[str, int], is_by_host: bool,
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get("last_fetch", None)
 
     if not is_by_host:
         if last_fetch is None:
@@ -507,73 +523,71 @@ def fetch_incidents(client: Client, last_run: dict[str, int], is_by_host: bool,
     max_count = max(len(incidents), total)
     if max_count > incident_limit:
         # NOTE :: Make sure the highest severity incidents aren't trimmed
-        incidents = sorted(incidents, key=lambda i: i['severity'], reverse=True)
+        incidents = sorted(incidents, key=lambda i: i["severity"], reverse=True)
         if len(incidents) >= incident_limit:
             # NOTE :: Need to add an incident warning of the limit being hit so trimming incidents to limit (minus 1)
             trim = max(incident_limit - 1, 0)
             incidents = incidents[:trim]
-        incidents.append({
-            'name': f'❗Attack Surface Intelligence: {max_count}+ Changes',
-            'details': f'This Incident was created because Recorded Future Attack Surface Intelligence found '
-                       f'additional incidents beyond the configured XSOAR limit of {incident_limit} or beyond the'
-                       f' maximum allowed by the Risk Rules API.\n'
-                       f'Please review additional changes within the ASI Portal.',
-            'occurred': timestamp_to_datestring(int(time.time()) * 1000),
-            'severity': IncidentSeverity.LOW
-        })
+        incidents.append(
+            {
+                "name": f"❗Attack Surface Intelligence: {max_count}+ Changes",
+                "details": f"This Incident was created because Recorded Future Attack Surface Intelligence found "
+                f"additional incidents beyond the configured XSOAR limit of {incident_limit} or beyond the"
+                f" maximum allowed by the Risk Rules API.\n"
+                f"Please review additional changes within the ASI Portal.",
+                "occurred": timestamp_to_datestring(int(time.time()) * 1000),
+                "severity": IncidentSeverity.LOW,
+            }
+        )
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': int(time.time())}
+    next_run = {"last_fetch": int(time.time())}
     return next_run, incidents
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
     params = demisto.params()
     api_key = params.get("credentials", {}).get("password") or params.get("apikey")
     if not api_key:
-        return_error('Please provide a valid API token')
+        return_error("Please provide a valid API token")
     project_id = params.get("project_id")
-    is_by_host = params.get('issue_grouping') == 'By Host'
-    expand_issues = params.get('expand_issues', False)
-    incident_limit = int(params.get('max_fetch', DEFAULT_HOST_LIMIT))
-    min_severity = params.get('min_severity', DEFAULT_MIN_SEVERITY)
+    is_by_host = params.get("issue_grouping") == "By Host"
+    expand_issues = params.get("expand_issues", False)
+    incident_limit = int(params.get("max_fetch", DEFAULT_HOST_LIMIT))
+    min_severity = params.get("min_severity", DEFAULT_MIN_SEVERITY)
 
     # get the service API url
-    base_url = 'https://api.securitytrails.com/v1/asi'
+    base_url = "https://api.securitytrails.com/v1/asi"
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        headers = {
-            'APIKEY': api_key
-        }
+        headers = {"APIKEY": api_key}
         client = Client(
             base_url=base_url,
             project_id=project_id,
             min_severity=min_severity,
             host_incident_limit=incident_limit,
             verify=True,
-            headers=headers)
+            headers=headers,
+        )
 
         command_args = demisto.args()
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
-        elif command == 'asi-project-issues-fetch':
+        elif command == "asi-project-issues-fetch":
             next_run, incidents = fetch_incidents(
                 client=client,
-                last_run={'last_fetch': int(command_args.get('issues_start', 0))},
-                is_by_host=command_args.get('group_by_host', 'false') == 'true',
-                expand_issues=command_args.get('expand_issues', 'false') == 'true'
+                last_run={"last_fetch": int(command_args.get("issues_start", 0))},
+                is_by_host=command_args.get("group_by_host", "false") == "true",
+                expand_issues=command_args.get("expand_issues", "false") == "true",
             )
             demisto.incidents(incidents)
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             next_run, incidents = fetch_incidents(
-                client=client,
-                last_run=demisto.getLastRun(),
-                is_by_host=is_by_host,
-                expand_issues=expand_issues
+                client=client, last_run=demisto.getLastRun(), is_by_host=is_by_host, expand_issues=expand_issues
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -581,10 +595,10 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -5,11 +5,11 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         args = demisto.args()
-        query = args.get('indicator_query', None)
-        indicator_vals = argToList(args.get('indicator_values', None))
-        indicator_ids = argToList(args.get('indicator_ids', None))
-        do_not_whitelist = not argToBoolean(args.get('exclude', False))
-        reason = args.get('exclusion_reason', '')
+        query = args.get("indicator_query", None)
+        indicator_vals = argToList(args.get("indicator_values", None))
+        indicator_ids = argToList(args.get("indicator_ids", None))
+        do_not_whitelist = not argToBoolean(args.get("exclude", False))
+        reason = args.get("exclusion_reason", "")
 
         # Ensure only one argument is supplied for the list of indicators to delete
         args = [query, indicator_vals, indicator_ids]
@@ -29,11 +29,7 @@ def main():
             search_query = ""
             demisto.debug(f"didn't match any condition. Initializing {search_query=}")
 
-        res = execute_command("deleteIndicators", {
-            "query": search_query,
-            "doNotWhitelist": do_not_whitelist,
-            "reason": reason
-        })
+        res = execute_command("deleteIndicators", {"query": search_query, "doNotWhitelist": do_not_whitelist, "reason": reason})
         if is_error(res):
             raise Exception(res)
         else:
@@ -41,8 +37,8 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute DeleteIndicators. Error: {str(ex)}')
+        return_error(f"Failed to execute DeleteIndicators. Error: {str(ex)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

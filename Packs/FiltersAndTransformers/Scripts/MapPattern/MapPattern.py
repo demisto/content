@@ -1,35 +1,37 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import fnmatch
 import json
 import re
-from typing import Any, Dict, Generator, List, Optional, Tuple, Union, Callable
+from collections.abc import Callable, Generator
+from typing import Any
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-DEFAULT_ALGORITHM = 'literal'
-DEFAULT_PRIORITY = 'first_match'
+DEFAULT_ALGORITHM = "literal"
+DEFAULT_PRIORITY = "first_match"
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
     """
     demisto.get(), this supports a syntax of path escaped with backslash.
     """
-    def split_context_path(path: str) -> List[str]:
+
+    def split_context_path(path: str) -> list[str]:
         nodes = []
         node = []
         itr = iter(path)
         for c in itr:
-            if c == '\\':
+            if c == "\\":
                 try:
                     node.append(next(itr))
                 except StopIteration:
-                    node.append('\\')
-            elif c == '.':
-                nodes.append(''.join(node))
+                    node.append("\\")
+            elif c == ".":
+                nodes.append("".join(node))
                 node = []
             else:
                 node.append(c)
-        nodes.append(''.join(node))
+        nodes.append("".join(node))
         return nodes
 
     if not isinstance(obj, dict):
@@ -44,30 +46,30 @@ def demisto_get(obj: Any, path: Any) -> Any:
 
 
 def make_regex(pattern: str, algorithm: str) -> str:
-    """ Transform a pattern to a regex pattern.
+    """Transform a pattern to a regex pattern.
 
-      Supported algorithms;
-        - literal
-        - wildcard
-        - regex
-        - regmatch
+    Supported algorithms;
+      - literal
+      - wildcard
+      - regex
+      - regmatch
 
-      :param pattern: The pattern to be transformed.
-      :param algorithm: The algorithm for `pattern`.
-      :return: An regex pattern created.
+    :param pattern: The pattern to be transformed.
+    :param algorithm: The algorithm for `pattern`.
+    :return: An regex pattern created.
     """
-    if algorithm == 'literal':
+    if algorithm == "literal":
         return re.escape(pattern)
-    elif algorithm == 'wildcard':
+    elif algorithm == "wildcard":
         return fnmatch.translate(pattern)
-    elif algorithm in ('regex', 'regmatch'):
+    elif algorithm in ("regex", "regmatch"):
         return pattern
     else:
-        raise ValueError(f'Invalid algorithm: {algorithm}')
+        raise ValueError(f"Invalid algorithm: {algorithm}")
 
 
 def expand_match(match: re.Match, value: Any) -> Any:
-    """ Return the value obtained by doing backslash substitution on the template string template
+    """Return the value obtained by doing backslash substitution on the template string template
 
     :param match: The match object.
     :param value: The template value.
@@ -78,30 +80,30 @@ def expand_match(match: re.Match, value: Any) -> Any:
     elif isinstance(value, list):
         return [expand_match(match, v) for v in value]
     elif isinstance(value, str):
-        return match.expand(value.replace(r'\0', r'\g<0>'))
+        return match.expand(value.replace(r"\0", r"\g<0>"))
     else:
         return value
 
 
 class Mapping:
-    def __init__(self, pattern: str, repl: Union[str, Dict[str, Any]]):
+    def __init__(self, pattern: str, repl: str | dict[str, Any]):
         """
         :param pattern: The pattern to compare to the value.
         :param repl: The parameters for pattern matching or making outputs.
         """
-        repl = repl if isinstance(repl, dict) else {'output': repl}
-        exclude = repl.get('exclude') or []
+        repl = repl if isinstance(repl, dict) else {"output": repl}
+        exclude = repl.get("exclude") or []
 
         self.pattern: str = pattern
-        self.exclude: List[str] = exclude if isinstance(exclude, list) else [exclude]
-        self.output: Any = repl.get('output')
-        self.algorithm: Optional[str] = repl.get('algorithm')
-        self.next: Any = repl.get('next')
-        self.ignore_syntax = bool(repl.get('ignore_syntax') or False)
+        self.exclude: list[str] = exclude if isinstance(exclude, list) else [exclude]
+        self.output: Any = repl.get("output")
+        self.algorithm: str | None = repl.get("algorithm")
+        self.next: Any = repl.get("next")
+        self.ignore_syntax = bool(repl.get("ignore_syntax") or False)
 
 
-def iterate_pattern_mapping(pattern_mapping: Union[List[Dict[str, Any]], Dict[str, Any]]) -> Generator[Mapping, None, None]:
-    """ Iterate mapping entry.
+def iterate_pattern_mapping(pattern_mapping: list[dict[str, Any]] | dict[str, Any]) -> Generator[Mapping, None, None]:
+    """Iterate mapping entry.
 
     :param pattern_mapping: The pattern mapping table.
     :return: Each mapping entry. {pattern:, exclude:, algorithm:, output:, next:}
@@ -113,11 +115,11 @@ def iterate_pattern_mapping(pattern_mapping: Union[List[Dict[str, Any]], Dict[st
         for pattern, repl in pattern_mapping.items():
             yield Mapping(pattern, repl)
     else:
-        raise ValueError(f'pattern-mapping must be an array or an object: {pattern_mapping}')
+        raise ValueError(f"pattern-mapping must be an array or an object: {pattern_mapping}")
 
 
 class ContextData:
-    def __init__(self, context: Any = None, arg_value: Optional[Dict[str, Any]] = None):
+    def __init__(self, context: Any = None, arg_value: dict[str, Any] | None = None):
         """
         :param context: The demisto context.
         :param arg_value: The data of the `value` given in the argument parameters.
@@ -125,8 +127,8 @@ class ContextData:
         self.__demisto = context
         self.__value = arg_value
 
-    def get(self, key: Optional[str], node: Optional[Any] = None, ignore_errors: bool = False) -> Any:
-        """ Get the context value given the key
+    def get(self, key: str | None, node: Any | None = None, ignore_errors: bool = False) -> Any:
+        """Get the context value given the key
 
         :param key: The dt expressions (string within ${}).
         :param node: The current node.
@@ -135,14 +137,14 @@ class ContextData:
         """
         if key is not None:
             dx = self.__demisto
-            if key != '..' and not key.startswith('..=') and key.startswith('..'):
+            if key != ".." and not key.startswith("..=") and key.startswith(".."):
                 dx = node
                 key = key[2:]
-            elif key != '.' and not key.startswith('.=') and key.startswith('.'):
+            elif key != "." and not key.startswith(".=") and key.startswith("."):
                 dx = self.__value
                 key = key[1:]
 
-            if not key or key == '.':
+            if not key or key == ".":
                 return dx
             try:
                 return demisto.dt(dx, key)
@@ -155,7 +157,7 @@ class ContextData:
 class Formatter:
     def __init__(self, start_marker: str, end_marker: str, keep_symbol_to_null: bool):
         if not start_marker:
-            raise ValueError('start-marker is required.')
+            raise ValueError("start-marker is required.")
 
         self.__start_marker = start_marker
         self.__end_marker = end_marker
@@ -164,27 +166,26 @@ class Formatter:
     @staticmethod
     def __is_end_mark(source: str, ci: int, end_marker: str) -> bool:
         if end_marker:
-            return source[ci:ci + len(end_marker)] == end_marker
+            return source[ci : ci + len(end_marker)] == end_marker
         else:
             c = source[ci]
             if c.isspace():
                 return True
             elif c.isascii():
-                return c != '_' and not c.isalnum()
+                return c != "_" and not c.isalnum()
             else:
                 return False
 
-    def __extract(self,
-                  source: str,
-                  extractor: Optional[Callable[[str,
-                                                Optional[ContextData],
-                                                Optional[Dict[str, Any]]],
-                                               Any]],
-                  dx: Optional[ContextData],
-                  node: Optional[Dict[str, Any]],
-                  si: int,
-                  markers: Optional[Tuple[str, str]]) -> Tuple[Any, Optional[int]]:
-        """ Extract a template text, or an enclosed value within starting and ending marks
+    def __extract(
+        self,
+        source: str,
+        extractor: Callable[[str, ContextData | None, dict[str, Any] | None], Any] | None,
+        dx: ContextData | None,
+        node: dict[str, Any] | None,
+        si: int,
+        markers: tuple[str, str] | None,
+    ) -> tuple[Any, int | None]:
+        """Extract a template text, or an enclosed value within starting and ending marks
 
         :param source: The template text, or the enclosed value starts with the next charactor of a start marker
         :param extractor: The function to extract an enclosed value as DT
@@ -207,10 +208,10 @@ class Formatter:
                 else:
                     xval = key
                 return xval, ci + len(markers[1])
-            elif extractor and source[ci:ci + len(self.__start_marker)] == self.__start_marker:
-                xval, ei = self.__extract(source, extractor, dx, node,
-                                          ci + len(self.__start_marker),
-                                          (self.__start_marker, self.__end_marker))
+            elif extractor and source[ci : ci + len(self.__start_marker)] == self.__start_marker:
+                xval, ei = self.__extract(
+                    source, extractor, dx, node, ci + len(self.__start_marker), (self.__start_marker, self.__end_marker)
+                )
                 if si != ci:
                     out = source[si:ci] if out is None else str(out) + source[si:ci]
 
@@ -225,10 +226,10 @@ class Formatter:
                 si = ci = ei
             elif markers is None:
                 ci += 1
-            elif endc := {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'"}.get(source[ci]):
+            elif endc := {"(": ")", "{": "}", "[": "]", '"': '"', "'": "'"}.get(source[ci]):
                 _, ei = self.__extract(source, None, dx, node, ci + 1, (source[ci], endc))
                 ci = ci + 1 if ei is None else ei
-            elif source[ci] == '\\':
+            elif source[ci] == "\\":
                 ci += 2
             else:
                 ci += 1
@@ -245,15 +246,14 @@ class Formatter:
         else:
             return str(out) + source[si:], ci
 
-    def build(self,
-              template: Any,
-              extractor: Optional[Callable[[str,
-                                            Optional[ContextData],
-                                            Optional[Dict[str, Any]]],
-                                           Any]],
-              dx: Optional[ContextData],
-              node: Optional[Dict[str, Any]]) -> Any:
-        """ Format a text from a template including DT expressions
+    def build(
+        self,
+        template: Any,
+        extractor: Callable[[str, ContextData | None, dict[str, Any] | None], Any] | None,
+        dx: ContextData | None,
+        node: dict[str, Any] | None,
+    ) -> Any:
+        """Format a text from a template including DT expressions
 
         :param template: The template.
         :param extractor: The extractor to get real value within ${dt}.
@@ -262,46 +262,36 @@ class Formatter:
         :return: The text built from the template.
         """
         if isinstance(template, dict):
-            return {
-                self.build(k, extractor, dx, node): self.build(v, extractor, dx, node)
-                for k, v in template.items()}
+            return {self.build(k, extractor, dx, node): self.build(v, extractor, dx, node) for k, v in template.items()}
         elif isinstance(template, list):
             return [self.build(v, extractor, dx, node) for v in template]
         elif isinstance(template, str):
-            return self.__extract(template, extractor, dx, node, 0, None)[0] if template else ''
+            return self.__extract(template, extractor, dx, node, 0, None)[0] if template else ""
         else:
             return template
 
 
-def extract_value(source: Any,
-                  dx: Optional[ContextData],
-                  node: Optional[Dict[str, Any]] = None) -> Any:
-    """ Extract value including dt expression
+def extract_value(source: Any, dx: ContextData | None, node: dict[str, Any] | None = None) -> Any:
+    """Extract value including dt expression
 
     :param source: The value to be extracted that may include dt expressions.
     :param dx: The demisto context.
     :param node: The current node.
     :return: The value extracted.
     """
-    def __extract_dt(dtstr: str,
-                     dx: Optional[ContextData],
-                     node: Optional[Dict[str, Any]] = None) -> Any:
+
+    def __extract_dt(dtstr: str, dx: ContextData | None, node: dict[str, Any] | None = None) -> Any:
         try:
             return dx.get(dtstr, node) if dx else dtstr
         except Exception as err:
             demisto.debug(f'failed to extract dt from "{dtstr=}". Error: {err}')
             return None
 
-    return Formatter('${', '}', False).build(source, __extract_dt, dx, node)
+    return Formatter("${", "}", False).build(source, __extract_dt, dx, node)
 
 
 class Translator:
-    def __init__(self,
-                 context: Any,
-                 arg_value: Any,
-                 fields_comp_mode: bool,
-                 wildcards: List[str],
-                 regex_flags: int):
+    def __init__(self, context: Any, arg_value: Any, fields_comp_mode: bool, wildcards: list[str], regex_flags: int):
         """
         :param context: The demisto context.
         :param arg_value: The data of the `value` given in the argument parameters.
@@ -316,13 +306,10 @@ class Translator:
         self.__regex_flags = regex_flags
         self.__context = ContextData(context=context, arg_value=arg_value)
 
-    def __match(self,
-                algorithm: str,
-                pattern: str,
-                value: Any,
-                exclusions: List[str],
-                ignore_syntax: bool = False) -> Union[bool, re.Match]:
-        """ Perform the pattern matching.
+    def __match(
+        self, algorithm: str, pattern: str, value: Any, exclusions: list[str], ignore_syntax: bool = False
+    ) -> bool | re.Match:
+        """Perform the pattern matching.
 
           Supported algorithms:
             - literal
@@ -341,11 +328,11 @@ class Translator:
                  Return re.Match for matched mattern pattern when regex is given to it.
                  Note: Returns True if the value matched to any of special wildcard patterns even in regex.
         """
-        if algorithm == 'literal':
-            if isinstance(value, (dict, list)):
+        if algorithm == "literal":
+            if isinstance(value, dict | list):
                 return False
 
-            value = '' if value is None else str(value)
+            value = "" if value is None else str(value)
             if pattern not in self.__wildcards:
                 if (self.__regex_flags & re.IGNORECASE) != 0:
                     if pattern.lower() != value.lower():
@@ -356,11 +343,11 @@ class Translator:
 
             if any(x == value for x in exclusions):
                 return False
-        elif algorithm in ('wildcard', 'regex', 'regmatch'):
-            if isinstance(value, (dict, list)):
+        elif algorithm in ("wildcard", "regex", "regmatch"):
+            if isinstance(value, dict | list):
                 return False
 
-            value = '' if value is None else str(value)
+            value = "" if value is None else str(value)
             regex_match = None
             if pattern not in self.__wildcards:
                 try:
@@ -377,27 +364,24 @@ class Translator:
             if any(re.fullmatch(make_regex(x, algorithm), value, flags=self.__regex_flags) for x in exclusions):
                 return False
 
-            if algorithm == 'regex' and isinstance(regex_match, re.Match):
+            if algorithm == "regex" and isinstance(regex_match, re.Match):
                 return regex_match
 
-        elif algorithm == 'dt':
-            if pattern not in self.__wildcards:
-                if not self.__context.get(pattern, value, ignore_errors=ignore_syntax):
-                    return False
+        elif algorithm == "dt":
+            if pattern not in self.__wildcards and not self.__context.get(pattern, value, ignore_errors=ignore_syntax):
+                return False
 
             if any(self.__context.get(x, value, ignore_errors=ignore_syntax) for x in exclusions):
                 return False
         else:
-            raise ValueError(f'This function only supports literal, wildcard and dt: {algorithm}')
+            raise ValueError(f"This function only supports literal, wildcard and dt: {algorithm}")
 
         return True
 
-    def translate(self,
-                  source: Any,
-                  pattern_mapping: Union[List[Dict[str, Any]], Dict[str, Any]],
-                  priority: str,
-                  algorithm: str) -> Tuple[Any, bool]:
-        """ Replace the string given with the patterns.
+    def translate(
+        self, source: Any, pattern_mapping: list[dict[str, Any]] | dict[str, Any], priority: str, algorithm: str
+    ) -> tuple[Any, bool]:
+        """Replace the string given with the patterns.
 
         :param source: The string to be replaced.
         :param pattern_mapping: The mapping table to translate.
@@ -411,11 +395,13 @@ class Translator:
             algorithm = mapping.algorithm or algorithm
 
             # Check if the source matches a pattern
-            source_match = self.__match(algorithm=algorithm,
-                                        pattern=mapping.pattern,
-                                        value=source,
-                                        exclusions=mapping.exclude,
-                                        ignore_syntax=mapping.ignore_syntax)
+            source_match = self.__match(
+                algorithm=algorithm,
+                pattern=mapping.pattern,
+                value=source,
+                exclusions=mapping.exclude,
+                ignore_syntax=mapping.ignore_syntax,
+            )
             if not source_match:
                 continue
 
@@ -427,7 +413,7 @@ class Translator:
                 if mapping.next and isinstance(output, dict):
                     fields_comp_mode = self.__fields_comp_mode
 
-            elif algorithm == 'regex' and isinstance(source_match, re.Match):
+            elif algorithm == "regex" and isinstance(source_match, re.Match):
                 output = expand_match(source_match, output)
 
             if self.__demisto is not None:
@@ -437,35 +423,29 @@ class Translator:
             if mapping.next:
                 if fields_comp_mode:
                     output, matched = self.translate_fields(
-                        obj_value=output,
-                        field_mapping=mapping.next,
-                        priority=priority,
-                        algorithm=algorithm)
+                        obj_value=output, field_mapping=mapping.next, priority=priority, algorithm=algorithm
+                    )
                 else:
                     output, matched = self.translate(
-                        source=output,
-                        pattern_mapping=mapping.next,
-                        priority=priority,
-                        algorithm=algorithm)
+                        source=output, pattern_mapping=mapping.next, priority=priority, algorithm=algorithm
+                    )
                 if not matched:
                     continue
 
-            if priority in ('first_match', 'last_match'):
+            if priority in ("first_match", "last_match"):
                 matched = True
                 matched_output = output
-                if priority == 'first_match':
+                if priority == "first_match":
                     break
             else:
-                raise ValueError(f'Invalid priority: {priority}')
+                raise ValueError(f"Invalid priority: {priority}")
 
         return matched_output, matched
 
-    def translate_fields(self,
-                         obj_value: Dict[str, Any],
-                         field_mapping: Dict[str, Any],
-                         priority: str,
-                         algorithm: str) -> Tuple[Any, bool]:
-        """ Replace the string given with the field mapping.
+    def translate_fields(
+        self, obj_value: dict[str, Any], field_mapping: dict[str, Any], priority: str, algorithm: str
+    ) -> tuple[Any, bool]:
+        """Replace the string given with the field mapping.
 
         :param obj_value: The object whose values to be replaced.
         :param field_mapping: The mapping table to translate.
@@ -474,16 +454,15 @@ class Translator:
         :return: The new value replaced by a mapping, and a flag if a pattern has matched or not.
         """
         if not isinstance(field_mapping, dict):
-            raise ValueError(f'field-mapping must be an array or an object in JSON: type={type(field_mapping)}')
+            raise ValueError(f"field-mapping must be an array or an object in JSON: type={type(field_mapping)}")
 
         for path, mapping in field_mapping.items():
-            if not isinstance(mapping, (dict, list)):
-                raise ValueError(f'pattern-mapping must be an array or an object in JSON: type={type(mapping)}')
+            if not isinstance(mapping, dict | list):
+                raise ValueError(f"pattern-mapping must be an array or an object in JSON: type={type(mapping)}")
 
             # Get a value for pattern matching
             comparison_value = demisto_get(obj_value, path)
-            matched_output, matched = self.translate(
-                comparison_value, mapping, priority, algorithm)
+            matched_output, matched = self.translate(comparison_value, mapping, priority, algorithm)
             if matched:
                 return matched_output, matched
         return obj_value, False
@@ -491,55 +470,47 @@ class Translator:
 
 def main():
     args = demisto.args()
-    value = args.get('value')
+    value = args.get("value")
     try:
-        mappings = args.get('mappings') or {}
-        algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
-        priority = args.get('priority') or DEFAULT_PRIORITY
-        context = args.get('context')
-        fields_comp_mode = argToBoolean(args.get('compare_fields') or 'false')
-        wildcards = argToList(args.get('wildcards'))
-        default_value = args.get('default_value')
-        regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
-        for flag in argToList(args.get('flags', '')):
-            if flag in ('dotall', 's'):
+        mappings = args.get("mappings") or {}
+        algorithm = args.get("algorithm") or DEFAULT_ALGORITHM
+        priority = args.get("priority") or DEFAULT_PRIORITY
+        context = args.get("context")
+        fields_comp_mode = argToBoolean(args.get("compare_fields") or "false")
+        wildcards = argToList(args.get("wildcards"))
+        default_value = args.get("default_value")
+        regex_flags = re.IGNORECASE if argToBoolean(args.get("caseless") or "true") else 0
+        for flag in argToList(args.get("flags", "")):
+            if flag in ("dotall", "s"):
                 regex_flags |= re.DOTALL
-            elif flag in ('multiline', 'm'):
+            elif flag in ("multiline", "m"):
                 regex_flags |= re.MULTILINE
-            elif flag in ('ignorecase', 'i'):
+            elif flag in ("ignorecase", "i"):
                 regex_flags |= re.IGNORECASE
-            elif flag in ('unicode', 'u'):
+            elif flag in ("unicode", "u"):
                 regex_flags |= re.UNICODE
             else:
-                raise ValueError(f'Unknown flag: {flag}')
+                raise ValueError(f"Unknown flag: {flag}")
 
         if isinstance(mappings, str):
             try:
                 mappings = json.loads(mappings)
             except ValueError:
-                raise ValueError(f'Unable to decode mappings in JSON: {mappings}')
+                raise ValueError(f"Unable to decode mappings in JSON: {mappings}")
 
-        tr = Translator(context=context,
-                        arg_value=value,
-                        fields_comp_mode=fields_comp_mode,
-                        wildcards=wildcards,
-                        regex_flags=regex_flags)
+        tr = Translator(
+            context=context, arg_value=value, fields_comp_mode=fields_comp_mode, wildcards=wildcards, regex_flags=regex_flags
+        )
 
         matched = False
         if fields_comp_mode:
             if isinstance(value, dict):
                 value, matched = tr.translate_fields(
-                    obj_value=value,
-                    field_mapping=mappings,
-                    priority=priority,
-                    algorithm=algorithm)
+                    obj_value=value, field_mapping=mappings, priority=priority, algorithm=algorithm
+                )
         else:
-            if not isinstance(value, (dict, list)):
-                value, matched = tr.translate(
-                    source=value,
-                    pattern_mapping=mappings,
-                    priority=priority,
-                    algorithm=algorithm)
+            if not isinstance(value, dict | list):
+                value, matched = tr.translate(source=value, pattern_mapping=mappings, priority=priority, algorithm=algorithm)
         if default_value and not matched:
             value = default_value
     except Exception as err:
@@ -549,5 +520,5 @@ def main():
     return_results(value)
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

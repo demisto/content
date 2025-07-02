@@ -7,8 +7,9 @@ import dateparser
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
-from CommonServerUserPython import *
 from requests import Response
+
+from CommonServerUserPython import *
 
 API_V1 = "V1"
 
@@ -34,6 +35,7 @@ class ConstantsV1(Constants):
     """
     This class contains constants for the API version 1.
     """
+
     VERSION = API_V1
     IS_V1 = True
     IS_V2 = False
@@ -178,11 +180,7 @@ class Client(BaseClient):
             else {}
         )
         endpoint = f"idr/{api_version.lower()}/investigations"
-        url = (
-            urljoin(endpoint, investigation_id)
-            if investigation_id and api_version == API_V2
-            else endpoint
-        )
+        url = urljoin(endpoint, investigation_id) if investigation_id and api_version == API_V2 else endpoint
         return self._http_request(
             method="GET",
             url_suffix=url,
@@ -233,9 +231,7 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def assign_user(
-        self, investigation_id: str, api_version: str, user_email_address: str
-    ) -> dict[str, Any]:
+    def assign_user(self, investigation_id: str, api_version: str, user_email_address: str) -> dict[str, Any]:
         """
         Assign a user by email to an investigation.
 
@@ -247,9 +243,7 @@ class Client(BaseClient):
         Returns:
             dict: API response from Insight IDR API.
         """
-        params = remove_empty_elements(
-            {"multi-customer": self.is_multi_customer if api_version == "V2" else None}
-        )
+        params = remove_empty_elements({"multi-customer": self.is_multi_customer if api_version == "V2" else None})
         return self._http_request(
             method="PUT",
             url_suffix=f"idr/{api_version.lower()}/investigations/{investigation_id}/assignee",
@@ -288,9 +282,7 @@ class Client(BaseClient):
                 "threat_command_free_text": threat_command_free_text,
             }
         )
-        params = remove_empty_elements(
-            {"multi-customer": self.is_multi_customer if api_version == API_V2 else None}
-        )
+        params = remove_empty_elements({"multi-customer": self.is_multi_customer if api_version == API_V2 else None})
         return self._http_request(
             method="PUT",
             url_suffix=f"idr/{api_version.lower()}/investigations/{investigation_id}/status/{status}",
@@ -318,14 +310,10 @@ class Client(BaseClient):
         )
 
     def list_logs(self) -> dict:
-        return self._http_request(
-            method="GET", url_suffix="log_search/management/logs", headers=self._headers
-        )
+        return self._http_request(method="GET", url_suffix="log_search/management/logs", headers=self._headers)
 
     def list_log_sets(self) -> dict:
-        return self._http_request(
-            method="GET", url_suffix="log_search/management/logsets", headers=self._headers
-        )
+        return self._http_request(method="GET", url_suffix="log_search/management/logsets", headers=self._headers)
 
     def download_logs(self, log_ids: str, params: dict) -> Response:
         headers = self._headers.copy()
@@ -589,9 +577,7 @@ class Client(BaseClient):
             response(Response): API response from InsightIDR
         """
         params = {"size": 1}
-        return self._http_request(
-            method="GET", url_suffix="idr/v1/investigations", params=params, resp_type="response"
-        )
+        return self._http_request(method="GET", url_suffix="idr/v1/investigations", params=params, resp_type="response")
 
 
 @logger
@@ -679,7 +665,6 @@ def insight_idr_get_investigation_command(
         demisto.debug("Find the investigation ID in list response (V1)")
         data = results.get("data", [])
         for investigation in data:
-
             if investigation.get("id") == investigation_id:
                 investigation_data = investigation
                 break
@@ -764,7 +749,6 @@ def insight_idr_assign_user_command(
     investigation_ids = args["investigation_id"]
     user_email_address = args["user_email_address"]
     for investigation in argToList(investigation_ids):
-
         result = client.assign_user(
             investigation,
             api_version=constants.VERSION,
@@ -969,9 +953,7 @@ def insight_idr_list_logs_command(client: Client) -> CommandResults:
     for log in logs:
         data_for_readable_output.append(log)
 
-    readable_output = tableToMarkdown(
-        "List Logs", data_for_readable_output, headers=LOGS_FIELDS, removeNull=True
-    )
+    readable_output = tableToMarkdown("List Logs", data_for_readable_output, headers=LOGS_FIELDS, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix="Rapid7InsightIDR.Log",
@@ -1002,9 +984,7 @@ def insight_idr_list_log_sets_command(client: Client) -> CommandResults:
     for log in logs:
         data_for_readable_output.append(log)
 
-    readable_output = tableToMarkdown(
-        "List Log Sets", data_for_readable_output, headers=LOGS_FIELDS, removeNull=True
-    )
+    readable_output = tableToMarkdown("List Log Sets", data_for_readable_output, headers=LOGS_FIELDS, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix="Rapid7InsightIDR.LogSet",
@@ -1106,9 +1086,7 @@ def insight_idr_query_log_command(
 
     data_for_readable_output, raw_response = handle_query_log_results(client, results)
 
-    readable_output = tableToMarkdown(
-        "Query Results", data_for_readable_output, headers=EVENTS_FIELDS, removeNull=True
-    )
+    readable_output = tableToMarkdown("Query Results", data_for_readable_output, headers=EVENTS_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix="Rapid7InsightIDR.Event",
         outputs_key_field="message",
@@ -1163,9 +1141,7 @@ def insight_idr_query_log_set_command(
 
     data_for_readable_output, raw_response = handle_query_log_results(client, results)
 
-    readable_output = tableToMarkdown(
-        "Query Results", data_for_readable_output, headers=EVENTS_FIELDS, removeNull=True
-    )
+    readable_output = tableToMarkdown("Query Results", data_for_readable_output, headers=EVENTS_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix="Rapid7InsightIDR.Event",
         outputs_key_field="message",
@@ -1305,9 +1281,7 @@ def insight_idr_list_investigation_alerts_command(
     data = results.get("data", [])
     data_for_output = {
         "rrn": investigation_id,
-        "alert": (
-            data if argToBoolean(args["all_results"]) else data[: arg_to_number(args["limit"])]
-        ),
+        "alert": (data if argToBoolean(args["all_results"]) else data[: arg_to_number(args["limit"])]),
     }
     return generate_command_results(
         title=f'Investigation "{investigation_id}" alerts:',
@@ -1342,9 +1316,7 @@ def insight_idr_list_investigation_product_alerts_command(
     data = generate_product_alerts_readable(results)
     data_for_output = {
         "rrn": investigation_id,
-        "ProductAlert": (
-            data if argToBoolean(args["all_results"]) else data[: arg_to_number(args["limit"])]
-        ),
+        "ProductAlert": (data if argToBoolean(args["all_results"]) else data[: arg_to_number(args["limit"])]),
     }
     return generate_command_results(
         title=f'Investigation "{investigation_id}" product alerts',
@@ -1492,9 +1464,7 @@ def test_module(client: Client) -> str:
 
 
 @logger
-def fetch_incidents(
-    client: Client, last_run: dict, first_fetch_time: str, max_fetch: str
-) -> tuple[dict[str, int], list[dict]]:
+def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: str) -> tuple[dict[str, int], list[dict]]:
     """
     Fetch incidents (investigations) each minute (by default).
 
@@ -1519,14 +1489,10 @@ def fetch_incidents(
 
     size = max_fetch or "50"
 
-    investigations = client.list_investigations(
-        start_time=last_fetch.strftime(DATE_FORMAT), size=size
-    )
+    investigations = client.list_investigations(start_time=last_fetch.strftime(DATE_FORMAT), size=size)
     for investigation in investigations.get("data", []):
         investigation_created_time = investigation.get("created_time")
-        created_time = dateparser.parse(
-            investigation_created_time, settings={"RETURN_AS_TIMEZONE_AWARE": False}
-        )
+        created_time = dateparser.parse(investigation_created_time, settings={"RETURN_AS_TIMEZONE_AWARE": False})
         assert created_time is not None, f"could not parse {investigation_created_time}"
         incident = {
             "name": investigation.get("title"),
@@ -1544,9 +1510,7 @@ def fetch_incidents(
     return {"last_fetch": next_run_timestamp}, incidents
 
 
-def handle_investigation_search(
-    args: dict[str, Any], filter: list[tuple[str, str]]
-) -> list[dict[str, Any]]:
+def handle_investigation_search(args: dict[str, Any], filter: list[tuple[str, str]]) -> list[dict[str, Any]]:
     """
     Handle search for investigations - from user input to API input.
 
@@ -1909,7 +1873,7 @@ def main():
 
     # Log exceptions
     except Exception as error:
-        return_error(f"Failed to execute {command} command. Error: {str(error)}")
+        return_error(f"Failed to execute {command} command. Error: {error!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

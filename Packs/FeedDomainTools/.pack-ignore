@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104
+
+[file:FeedDomainTools.yml]
+ignore=BA108,BA109,IN144,IN153,BA124

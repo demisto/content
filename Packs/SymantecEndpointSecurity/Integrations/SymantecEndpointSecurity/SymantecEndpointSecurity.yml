@@ -50,14 +50,25 @@ configuration:
   type: 8
   section: Connect
 script:
+  commands:
+  - name: symantec-ses-reset-integration-context
+    description: Reset Integration context. By default, resetting the integration context only resets the `next_fetch` field in the integration context.
+    arguments:
+    - name: delete_all
+      description: Whether delete all integration context, default, false.
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
   script: ""
   type: python
-  commands: []
   dockerimage: demisto/python3:3.12.8.1983910
   longRunning: true
   subtype: python3
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
 tests:
 - No tests

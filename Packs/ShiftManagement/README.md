@@ -1,5 +1,5 @@
 Shift management and shift handover are crucial processes of SOC team management.
-This pack's purpose is provide a single interface for all those essential elements in one place in order to prevent loss of data in the shift handover process. 
+This pack's purpose is provide a single interface for all those essential elements in one place in order to prevent loss of data in the shift handover process.
 
 ### What does this pack do?
 

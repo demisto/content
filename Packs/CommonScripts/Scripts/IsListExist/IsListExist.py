@@ -3,14 +3,14 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    list_name = demisto.args()['listName']
+    list_name = demisto.args()["listName"]
     res = demisto.executeCommand("getList", {"listName": list_name})
     res = res[0]
-    if res['Type'] == entryTypes['error'] and "Item not found" in res['Contents']:
-        demisto.results('no')
+    if res["Type"] == entryTypes["error"] and "Item not found" in res["Contents"]:
+        demisto.results("no")
     else:
-        demisto.results('yes')
+        demisto.results("yes")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

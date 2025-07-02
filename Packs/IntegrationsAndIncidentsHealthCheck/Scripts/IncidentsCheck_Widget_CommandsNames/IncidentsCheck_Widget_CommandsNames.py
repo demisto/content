@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import collections
 import random
-from typing import Counter
+from collections import Counter
 
 
 def parse_data(list_content):
@@ -17,15 +17,9 @@ def parse_data(list_content):
         for list_element in top_lists:
             random_number = random.randint(0, 16777215)
             hex_number = str(hex(random_number))  # convert to hexadecimal
-            color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
+            color = f"#{hex_number[2:].zfill(6)}"  # remove 0x and prepend '#'
 
-            list_widget_data = {
-                "data": [
-                    list_element[1]
-                ],
-                "name": str(list_element[0]),
-                "color": color
-            }
+            list_widget_data = {"data": [list_element[1]], "name": str(list_element[0]), "color": color}
 
             lists_data.append(list_widget_data)
             list_number += 1
@@ -35,19 +29,12 @@ def parse_data(list_content):
 
 def main():
     list_data = demisto.executeCommand("getList", {"listName": "XSOAR Health - Failed Incident Commands"})
-    list_content = list_data[0].get('Contents', '').split(",")
+    list_content = list_data[0].get("Contents", "").split(",")
 
-    if list_content != ['']:
+    if list_content != [""]:
         data = parse_data(list_content)
     else:
-        data = [{
-
-            "data": [
-                0
-            ],
-            "name": "N/A",
-            "color": "#00CD33"
-        }]
+        data = [{"data": [0], "name": "N/A", "color": "#00CD33"}]
 
     demisto.results(json.dumps(data))
 

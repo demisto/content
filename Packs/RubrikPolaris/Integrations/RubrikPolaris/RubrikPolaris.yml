@@ -32,6 +32,16 @@ configuration:
   type: 13
   required: false
   section: Collect
+- defaultvalue: ANOMALY,THREAT_MONITORING
+  display: Event types to fetch as incidents
+  additionalinfo: "Event types to fetch as incidents.\nNote: Supports the listed options only. If not provided, it will fetch events for all listed options."
+  name: event_types
+  options:
+  - ANOMALY
+  - THREAT_MONITORING
+  type: 16
+  required: false
+  section: Collect
 - additionalinfo: The time interval for the first fetch (retroactive). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
   defaultvalue: 3 days
   display: First fetch time
@@ -46,9 +56,9 @@ configuration:
   type: 0
   required: false
   section: Collect
-- additionalinfo: When a Anomaly event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
+- additionalinfo: When an event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR HIGH
-  display: Anomaly Event Critical Severity Level Mapping
+  display: Event Critical Severity Level Mapping
   name: radar_critical_severity_mapping
   options:
   - XSOAR CRITICAL
@@ -58,9 +68,9 @@ configuration:
   type: 15
   required: false
   section: Collect
-- additionalinfo: When a Anomaly event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
+- additionalinfo: When an event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR LOW
-  display: Anomaly Event Warning Severity Level Mapping
+  display: Event Warning Severity Level Mapping
   name: radar_warning_severity_mapping
   options:
   - XSOAR CRITICAL
@@ -69,6 +79,7 @@ configuration:
   - XSOAR LOW
   type: 15
   required: false
+  hidden: true
   section: Collect
 - name: integration_reliability
   display: Source Reliability
@@ -3087,6 +3098,12 @@ script:
     - contextPath: RubrikPolaris.SuspiciousFile.encryption
       description: 'The encryption standard of the anomaly.'
       type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.resolutionStatus
+      description: 'The resolution status of the anomaly.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyType
+      description: 'The type of the anomaly.'
+      type: String
     - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.strainId
       description: 'The ID of the Ransomware Strain.'
       type: String
@@ -3720,7 +3737,58 @@ script:
     - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.redirectLink
       description: 'The link to the threat monitoring information in the Rubrik UI.'
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.117242
+  - name: rubrik-radar-anomaly-status-update
+    description: "Updates the status of the Anomaly detection.\n\nNote: Run the \"rubrik-radar-suspicious-file-list\" command first to check the resolution status of the Anomaly Detection snapshot before executing this command."
+    arguments:
+    - name: anomaly_type
+      description: "The type of the anomaly.\n\nNote: For Anomaly Type, users can execute the \"rubrik-radar-suspicious-file-list\" command."
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'FILESYSTEM'
+      - 'HYPERVISOR'
+    - name: anomaly_id
+      description: "The ID of the Anomaly or Activity Series ID.\n\nNote: For Activity Series ID, users can execute the \"rubrik-event-list\" command with the \"activity_type\" argument set to \"ANOMALY\"."
+      required: true
+    - name: workload_id
+      description: "The workload ID (Snappable ID).\n\nNote: Users can execute the \"rubrik-event-list\" command with the \"activity_type\" argument set to \"ANOMALY\" and get the value of \"fid\" from the context."
+      required: true
+    - name: false_positive_type
+      description: The type for marking the anomaly as a false positive.
+      auto: PREDEFINED
+      predefined:
+      - 'FP_TYPE_UNSPECIFIED'
+      - 'OS_UPDATE'
+      - 'APPLICATION_UPDATE'
+      - 'LOG_ROTATION'
+      - 'OTHER'
+      - 'NFA_SCHEDULED_MAINTENANCE'
+      - 'NFA_UNSCHEDULED_MAINTENANCE'
+    - name: false_positive_reason
+      description: "The reason for marking the anomaly as a false positive when the \"false_positive_type\" argument is set to OTHER."
+    outputs:
+    - contextPath: RubrikPolaris.AnomalyStatus.command_name
+      description: The name of the command.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.anomaly_type
+      description: The type of the Anomaly.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.anomaly_id
+      description: The ID of the Anomaly.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.workload_id
+      description: The workload ID.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.is_resloved
+      description: Whether the Anomaly is resolved.
+      type: Boolean
+    - contextPath: RubrikPolaris.AnomalyStatus.false_positive_type
+      description: The type of the false positive.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.false_positive_reason
+      description: The reason for marking the Anomaly detection snapshot as a false positive.
+      type: String
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.2072916
   isfetch: true
   runonce: false
   script: '-'

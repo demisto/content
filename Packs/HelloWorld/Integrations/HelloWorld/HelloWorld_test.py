@@ -54,51 +54,38 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 
 import json
 from CommonServerPython import DemistoException
-from HelloWorld import (Client, ip_reputation_command, alert_list_command, validate_api_key,
-                        dedup_by_ids, alert_note_create_command, fetch_incidents)
+from HelloWorld import (
+    Client,
+    ip_reputation_command,
+    alert_list_command,
+    validate_api_key,
+    dedup_by_ids,
+    alert_note_create_command,
+    fetch_incidents,
+)
 import pytest
 
 
-EXAMPLE_RES_LIST = [{
-    "id": 1,
-    "alert_id": 1000,
-    "kind": "Realtime",
-    "date": "2021-05-20T12:40:55.662949Z",
-},
+EXAMPLE_RES_LIST = [
     {
-    "id": 2,
-    "alert_id": 2000,
-    "kind": "Realtime",
-    "date": "2021-05-20T12:40:56.662949Z"
-},
-    {
-    "id": 3,
-    "alert_id": 3000,
-    "kind": "Realtime",
-    "date": "2021-05-20T12:40:57.662949Z"
-},
-    {
-    "id": 4,
-    "alert_id": 4000,
-    "kind": "Realtime",
-    "date": "2021-05-20T12:40:58.662949Z"
-},
+        "id": 1,
+        "alert_id": 1000,
+        "kind": "Realtime",
+        "date": "2021-05-20T12:40:55.662949Z",
+    },
+    {"id": 2, "alert_id": 2000, "kind": "Realtime", "date": "2021-05-20T12:40:56.662949Z"},
+    {"id": 3, "alert_id": 3000, "kind": "Realtime", "date": "2021-05-20T12:40:57.662949Z"},
+    {"id": 4, "alert_id": 4000, "kind": "Realtime", "date": "2021-05-20T12:40:58.662949Z"},
 ]
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 def create_mock_client():
-    return Client(
-        base_url='https://api.example.com',
-        verify=False,
-        headers={
-            'Authentication': 'Token some_api_key'
-        }
-    )
+    return Client(base_url="https://api.example.com", verify=False, headers={"Authentication": "Token some_api_key"})
 
 
 def test_say_hello():
@@ -117,28 +104,26 @@ def test_say_hello():
     """
     from HelloWorld import Client, say_hello_command
 
-    client = Client(base_url='https://test.com/api/v1', verify=False, auth=('test', 'test'))
-    args = {
-        'name': 'Dbot'
-    }
+    client = Client(base_url="https://test.com/api/v1", verify=False, auth=("test", "test"))
+    args = {"name": "Dbot"}
     response = say_hello_command(client, args)
 
-    assert response.outputs == 'Hello Dbot'
+    assert response.outputs == "Hello Dbot"
 
 
-@pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
-    ('low', 1), ('medium', 2), ('high', 3), ('critical', 4), ('unknown', 0)
-])
+@pytest.mark.parametrize(
+    "hello_world_severity, expected_xsoar_severity", [("low", 1), ("medium", 2), ("high", 3), ("critical", 4), ("unknown", 0)]
+)
 def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severity):
     """
-        Given:
-            - A string represents a HelloWorld severity.
+    Given:
+        - A string represents a HelloWorld severity.
 
-        When:
-            - Running the 'convert_to_demisto_severity' function.
+    When:
+        - Running the 'convert_to_demisto_severity' function.
 
-        Then:
-            - Verify that the severity was correctly translated to a Cortex XSOAR severity.
+    Then:
+        - Verify that the severity was correctly translated to a Cortex XSOAR severity.
     """
     from HelloWorld import convert_to_demisto_severity
 
@@ -160,11 +145,14 @@ def test_api_key():
         validate_api_key(api_key)
 
 
-@pytest.mark.parametrize("alerts, ids_to_compare, expected", [
-    ([{"id": 1}, {"id": 2}], [2, 3], ([{"id": 1}], 1)),
-    ([{"id": 2}, {"id": 3}], [2, 3], ([], 2)),
-    ([{"id": 4}, {"id": 5}], [2, 3], ([{"id": 4}, {"id": 5}], 0))
-])
+@pytest.mark.parametrize(
+    "alerts, ids_to_compare, expected",
+    [
+        ([{"id": 1}, {"id": 2}], [2, 3], ([{"id": 1}], 1)),
+        ([{"id": 2}, {"id": 3}], [2, 3], ([], 2)),
+        ([{"id": 4}, {"id": 5}], [2, 3], ([{"id": 4}, {"id": 5}], 0)),
+    ],
+)
 def test_dedup_by_ids(alerts, ids_to_compare, expected):
     """
     Given:
@@ -184,7 +172,6 @@ def test_dedup_by_ids(alerts, ids_to_compare, expected):
 
 
 class TestIPCommand:
-
     @pytest.fixture(autouse=True)
     def setup(self):
         self.mocked_client = create_mock_client()
@@ -203,21 +190,22 @@ class TestIPCommand:
             - Validate IP address in outputs
             - Validate DBotScore outputs as expected
         """
-        args = {'ip': '8.8.8.8'}
-        mocker.patch.object(self.mocked_client, 'get_ip_reputation', return_value={'attributes': {'reputation': 80}})
+        args = {"ip": "8.8.8.8"}
+        mocker.patch.object(self.mocked_client, "get_ip_reputation", return_value={"attributes": {"reputation": 80}})
 
-        result = ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability='A - Completely reliable')
+        result = ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability="A - Completely reliable")
 
         assert len(result) == 1
         assert len(result[0].outputs) == 1  # type: ignore
-        ip_output = result[0].to_context()['EntryContext']['IP(val.Address && val.Address == obj.Address)']
+        ip_output = result[0].to_context()["EntryContext"]["IP(val.Address && val.Address == obj.Address)"]
         assert ip_output
-        assert ip_output[0]['Address'] == '8.8.8.8'
+        assert ip_output[0]["Address"] == "8.8.8.8"
 
-        dbot_output = result[0].to_context()['EntryContext'][
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)']
-        assert dbot_output[0]['Indicator'] == '8.8.8.8'
-        assert dbot_output[0]['Score'] == 1
+        dbot_output = result[0].to_context()["EntryContext"][
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
+        ]
+        assert dbot_output[0]["Indicator"] == "8.8.8.8"
+        assert dbot_output[0]["Score"] == 1
 
     def test_ip_reputation_command_multiple_ips(self, mocker):
         """
@@ -232,23 +220,27 @@ class TestIPCommand:
             - Ensure correct number of results returned
             - Validate indicator and score for each result
         """
-        args = {'ip': ['8.8.8.8', '1.1.1.1']}
-        mocker.patch.object(self.mocked_client, 'get_ip_reputation', side_effect=[
-            {'attributes': {'reputation': 80}},
-            {'attributes': {'reputation': 20}}])
+        args = {"ip": ["8.8.8.8", "1.1.1.1"]}
+        mocker.patch.object(
+            self.mocked_client,
+            "get_ip_reputation",
+            side_effect=[{"attributes": {"reputation": 80}}, {"attributes": {"reputation": 20}}],
+        )
 
-        result = ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability='A - Completely reliable')
+        result = ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability="A - Completely reliable")
 
         assert len(result) == 2
-        dbot_output_1 = result[0].to_context()['EntryContext'][
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)']
-        assert dbot_output_1[0]['Score'] == 1
-        assert dbot_output_1[0]['Indicator'] == '8.8.8.8'
+        dbot_output_1 = result[0].to_context()["EntryContext"][
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
+        ]
+        assert dbot_output_1[0]["Score"] == 1
+        assert dbot_output_1[0]["Indicator"] == "8.8.8.8"
 
-        dbot_output_2 = result[1].to_context()['EntryContext'][
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)']
-        assert dbot_output_2[0]['Indicator'] == '1.1.1.1'
-        assert dbot_output_2[0]['Score'] == 3
+        dbot_output_2 = result[1].to_context()["EntryContext"][
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
+        ]
+        assert dbot_output_2[0]["Indicator"] == "1.1.1.1"
+        assert dbot_output_2[0]["Score"] == 3
 
     def test_ip_reputation_command_invalid_ip(self):
         """
@@ -261,14 +253,13 @@ class TestIPCommand:
         Then:
             - Should raise ValueError
         """
-        args = {'ip': 'invalid'}
+        args = {"ip": "invalid"}
 
         with pytest.raises(ValueError):
-            ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability='A - Completely reliable')
+            ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability="A - Completely reliable")
 
 
 class TestAlertListCommand:
-
     @pytest.fixture(autouse=True)
     def setup(self):
         self.mocked_client = create_mock_client()
@@ -280,18 +271,17 @@ class TestAlertListCommand:
     # When using parametrize it's optional to add an ID, which will make test failure easier to debug.
 
     @pytest.mark.parametrize(
-        'args, expected_limit, expected_severity',
+        "args, expected_limit, expected_severity",
         (
+            pytest.param({"alert_id": 1}, 1, "low", id="given id"),  # expecting one record
             pytest.param(
-                {"alert_id": 1}, 1, 'low',
-                id="given id"),  # expecting one record
+                {"alert_id": 2, "severity": "high"}, 1, "high", id="given id and wrong severity"
+            ),  # expecting one record ignoring severity
             pytest.param(
-                {"alert_id": 2, "severity": 'high'}, 1, 'high',
-                id="given id and wrong severity"),  # expecting one record ignoring severity
-            pytest.param(
-                {"alert_id": 3, "limit": 5}, 1, 'low',
-                id="given id, no severity and limit")  # expecting one record ignoring limit
-        ))
+                {"alert_id": 3, "limit": 5}, 1, "low", id="given id, no severity and limit"
+            ),  # expecting one record ignoring limit
+        ),
+    )
     def test_alert_list_given_id(self, mocker, args, expected_limit, expected_severity):
         """
         Given:
@@ -301,23 +291,19 @@ class TestAlertListCommand:
         Then:
             - The correct function is being called (single alert) correctly
         """
-        single_id_call_mock = mocker.patch.object(self.mocked_client, 'get_alert',
-                                                  return_value={'id': 1, 'title': 'alert 1'})
+        single_id_call_mock = mocker.patch.object(self.mocked_client, "get_alert", return_value={"id": 1, "title": "alert 1"})
 
         result = alert_list_command(self.mocked_client, args)
 
-        assert result.readable_output.startswith('### Items List (Sample Data)')
+        assert result.readable_output.startswith("### Items List (Sample Data)")
         assert len(result.outputs) == expected_limit
         single_id_call_mock.assert_called()
-        single_id_call_mock.assert_called_once_with(args['alert_id'])
+        single_id_call_mock.assert_called_once_with(args["alert_id"])
 
     @pytest.mark.parametrize(
-        'args, expected_limit, expected_severity',
-        (
-            pytest.param(
-                {"severity": 'high', "limit": 3}, 3, 'high',
-                id="given limit and severity"),
-        ))
+        "args, expected_limit, expected_severity",
+        (pytest.param({"severity": "high", "limit": 3}, 3, "high", id="given limit and severity"),),
+    )
     def test_alert_list(self, mocker, args, expected_limit, expected_severity):
         """
         Given:
@@ -330,27 +316,25 @@ class TestAlertListCommand:
             - Ensure mocked client method called correctly
             - Validate returned command results contain data
         """
-        mocked_list_call = mocker.patch.object(self.mocked_client, 'get_alert_list',
-                                               return_value=[{'id': 1, 'title': 'alert 1'},
-                                                             {'id': 2, 'title': 'alert 2'},
-                                                             {'id': 3, 'title': 'alert 3'}])
+        mocked_list_call = mocker.patch.object(
+            self.mocked_client,
+            "get_alert_list",
+            return_value=[{"id": 1, "title": "alert 1"}, {"id": 2, "title": "alert 2"}, {"id": 3, "title": "alert 3"}],
+        )
 
         result = alert_list_command(self.mocked_client, args)
 
         mocked_list_call.assert_called()
         mocked_list_call.assert_called_once_with(limit=expected_limit, severity=expected_severity)
-        assert result.readable_output.startswith('### Items List (Sample Data)')  # type: ignore
+        assert result.readable_output.startswith("### Items List (Sample Data)")  # type: ignore
 
     @pytest.mark.parametrize(
-        'args',
+        "args",
         (
-            pytest.param(
-                {"limit": 3},
-                id="given only limit"),
-            pytest.param(
-                {},
-                id="given empty args"),
-        ))
+            pytest.param({"limit": 3}, id="given only limit"),
+            pytest.param({}, id="given empty args"),
+        ),
+    )
     def test_alert_list_fail(self, mocker, args):
         """
         Given:
@@ -360,36 +344,33 @@ class TestAlertListCommand:
         Then:
             - Should raise DemistoException as severity is required
         """
-        mocker.patch.object(self.mocked_client, 'get_alert_list',
-                            return_value=[{'id': 1, 'title': 'alert 1'},
-                                          {'id': 2, 'title': 'alert 2'},
-                                          {'id': 3, 'title': 'alert 3'}])
+        mocker.patch.object(
+            self.mocked_client,
+            "get_alert_list",
+            return_value=[{"id": 1, "title": "alert 1"}, {"id": 2, "title": "alert 2"}, {"id": 3, "title": "alert 3"}],
+        )
 
         with pytest.raises(DemistoException):
             alert_list_command(self.mocked_client, args)
 
 
 class TestAlertNoteCreate:
-
     @pytest.fixture(autouse=True)
     def init(self):
         self.client = create_mock_client()
 
     def test_success(self, mocker):
-        args = {'alert_id': 123, 'note_text': 'Test note'}
-        mocker.patch.object(self.client, 'create_note', return_value={'status': 'success'})
+        args = {"alert_id": 123, "note_text": "Test note"}
+        mocker.patch.object(self.client, "create_note", return_value={"status": "success"})
 
         result = alert_note_create_command(self.client, args)
 
-        assert result.readable_output == 'Note was created successfully.'
-        assert result.outputs['status'] == 'success'
+        assert result.readable_output == "Note was created successfully."
+        assert result.outputs["status"] == "success"
 
 
 class TestFetchAlerts:
-
-    EXAMPLE_ALERTS = [{'id': 1, 'name': 'Incident 1'},
-                      {'id': 2, 'name': 'Incident 2'},
-                      {'id': 3}]
+    EXAMPLE_ALERTS = [{"id": 1, "name": "Incident 1"}, {"id": 2, "name": "Incident 2"}, {"id": 3}]
 
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -408,22 +389,17 @@ class TestFetchAlerts:
             - Next run should have the last alert IDs
         """
         last_run: dict = {}
-        first_fetch = '2021-01-01T00:00:00Z'
-        mocker.patch.object(self.client, 'get_alert_list', return_value=self.EXAMPLE_ALERTS)
+        first_fetch = "2021-01-01T00:00:00Z"
+        mocker.patch.object(self.client, "get_alert_list", return_value=self.EXAMPLE_ALERTS)
 
-        next_run, incidents = fetch_incidents(
-            self.client,
-            max_results=3,
-            last_run=last_run,
-            first_fetch_time=first_fetch
-        )
+        next_run, incidents = fetch_incidents(self.client, max_results=3, last_run=last_run, first_fetch_time=first_fetch)
 
         # Assertions
-        assert incidents[0]['name'] == 'Incident 1'
-        assert incidents[1]['name'] == 'Incident 2'
-        assert incidents[2]['name'] == 'Hello World Alert'
+        assert incidents[0]["name"] == "Incident 1"
+        assert incidents[1]["name"] == "Incident 2"
+        assert incidents[2]["name"] == "Hello World Alert"
 
-        assert next_run['last_ids'] == [1, 2, 3]
+        assert next_run["last_ids"] == [1, 2, 3]
 
     def test_subsequent_run(self):
         """
@@ -437,12 +413,11 @@ class TestFetchAlerts:
             - Number of returned incidents should match max results
             - Next run should have new updated last incident IDs
         """
-        last_run = {'last_fetch': '2021-02-01T00:00:00Z', 'last_ids': [1, 2, 3]}
-        first_fetch = '2021-01-01T00:00:00Z'
+        last_run = {"last_fetch": "2021-02-01T00:00:00Z", "last_ids": [1, 2, 3]}
+        first_fetch = "2021-01-01T00:00:00Z"
 
-        next_run, incidents = fetch_incidents(self.client,
-                                              max_results=3, last_run=last_run, first_fetch_time=first_fetch)
+        next_run, incidents = fetch_incidents(self.client, max_results=3, last_run=last_run, first_fetch_time=first_fetch)
 
-        assert incidents[0]['occurred'] > last_run['last_fetch']
+        assert incidents[0]["occurred"] > last_run["last_fetch"]
         assert len(incidents) == 3
-        assert next_run['last_ids'] == [4, 5, 6]
+        assert next_run["last_ids"] == [4, 5, 6]

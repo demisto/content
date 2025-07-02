@@ -24,15 +24,18 @@ class MandiantClient(BaseClient):
         self.minimum_threat_score = int(config.get("feedMinimumThreatScore", 80))
         self.exclude_osint = config.get("feedExcludeOSIntel", True)
         self.first_fetch = 90 if int(config.get("first_fetch", 30)) > 90 else int(config.get("first_fetch", 30))
-        self.headers = {
-            "X-App-Name": "content.xsoar.cortex.mandiant.feed.v1.1",
-            "Accept": "application/json"
-        }
+        self.headers = {"X-App-Name": "content.xsoar.cortex.mandiant.feed.v1.1", "Accept": "application/json"}
 
     def _get(self, path: str, params: Dict = {}) -> Dict[str, Any]:
         try:
-            response = self._http_request(method="GET", url_suffix=path, auth=(self.api_key, self.secret_key),
-                                          headers=self.headers, params=params, timeout=self.timeout)
+            response = self._http_request(
+                method="GET",
+                url_suffix=path,
+                auth=(self.api_key, self.secret_key),
+                headers=self.headers,
+                params=params,
+                timeout=self.timeout,
+            )
             return response
         except DemistoException as e:
             raise DemistoException(e)
@@ -51,7 +54,7 @@ class MandiantClient(BaseClient):
             "include_misp": False,
             "include_category": True,
             "gte_threatscore": min_threat_score,
-            "sort_by": "last_updated:asc"
+            "sort_by": "last_updated:asc",
         }
 
         while True:
@@ -74,7 +77,7 @@ class MandiantClient(BaseClient):
                 "include_reports": True,
                 "include_threat_rating": True,
                 "include_misp": False,
-                "include_category": True
+                "include_category": True,
             }
 
 
@@ -106,10 +109,7 @@ def include_in_feed(indicator: Dict, exclude_osint: bool, min_threat_score: int)
     if exclude_osint and is_osint(indicator):
         return False
 
-    if get_threat_score(indicator) < min_threat_score:
-        return False
-
-    return True
+    return not get_threat_score(indicator) < min_threat_score
 
 
 def get_hash_value(indicator: dict, hash_type: str) -> str:
@@ -140,21 +140,42 @@ def build_indicator_relationships(value_: str, indicator: Dict) -> List:
         entity_b = association.get("name", "")
 
         if association_type == "threat-actor":
-            relationships.append(EntityRelationship(name="uses", reverse_name="used-by", entity_a=entity_a,
-                                                    entity_a_type=entity_a_type, entity_b=entity_b,
-                                                    entity_b_type="Threat Actor").to_indicator())
+            relationships.append(
+                EntityRelationship(
+                    name="uses",
+                    reverse_name="used-by",
+                    entity_a=entity_a,
+                    entity_a_type=entity_a_type,
+                    entity_b=entity_b,
+                    entity_b_type="Threat Actor",
+                ).to_indicator()
+            )
         elif association_type == "malware":
-            relationships.append(EntityRelationship(name="indicates", reverse_name="indicated-by", entity_a=entity_a,
-                                                    entity_a_type=entity_a_type, entity_b=entity_b,
-                                                    entity_b_type="Malware").to_indicator())
+            relationships.append(
+                EntityRelationship(
+                    name="indicates",
+                    reverse_name="indicated-by",
+                    entity_a=entity_a,
+                    entity_a_type=entity_a_type,
+                    entity_b=entity_b,
+                    entity_b_type="Malware",
+                ).to_indicator()
+            )
 
     for campaign in indicator.get("campaigns", []):
         title = campaign.get("title")
         campaign_id = campaign.get("name")
         entity_b = f"{title} ({campaign_id})"
-        relationships.append(EntityRelationship(name="indicates", reverse_name="indicated-by", entity_a=entity_a,
-                                                entity_a_type=entity_a_type, entity_b=entity_b,
-                                                entity_b_type="Campaign").to_indicator())
+        relationships.append(
+            EntityRelationship(
+                name="indicates",
+                reverse_name="indicated-by",
+                entity_a=entity_a,
+                entity_a_type=entity_a_type,
+                entity_b=entity_b,
+                entity_b_type="Campaign",
+            ).to_indicator()
+        )
 
     return relationships
 

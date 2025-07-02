@@ -1,4 +1,7 @@
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect
 category: Analytics & SIEM
 commonfields:
   id: Uptycs
@@ -8,39 +11,48 @@ configuration:
   name: key
   required: true
   type: 4
+  section: Connect
 - display: API secret
   name: secret
   required: true
   type: 4
+  section: Connect
 - display: API domain (e.g. teststack.uptycs.io)
   name: domain
   required: true
   type: 0
+  section: Connect
 - display: API Customer ID
   name: customer_id
   required: true
   type: 4
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: 1 day
   display: First fetch since (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   required: false
+  section: Collect
 description: Fetches data from the Uptycs database.
 display: Uptycs
 name: Uptycs
@@ -1518,7 +1530,7 @@ script:
     - name: filename
       required: true
       description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
-  dockerimage: demisto/auth-utils:1.0.0.1839651
+  dockerimage: demisto/auth-utils:1.0.0.2025089
   isfetch: true
   runonce: true
   script: '-'

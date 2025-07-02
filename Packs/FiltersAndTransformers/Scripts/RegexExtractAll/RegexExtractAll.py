@@ -1,37 +1,37 @@
 import demistomock as demisto  # noqa: F401
 import regex
 from CommonServerPython import *  # noqa: F401
+
 # pylint: disable=no-member
 
 
 def main():
-    match_target = demisto.args()['value']
+    match_target = demisto.args()["value"]
 
     re_flags = regex.V1
     error_if_no_match = False
     unpack_matches = False
 
     try:
-
-        if demisto.args()['multi_line'].lower() == 'true':
+        if demisto.args()["multi_line"].lower() == "true":
             re_flags |= regex.MULTILINE
 
-        if demisto.args()['ignore_case'].lower() == 'true':
+        if demisto.args()["ignore_case"].lower() == "true":
             re_flags |= regex.IGNORECASE
 
-        if demisto.args()['period_matches_newline'].lower() == 'true':
+        if demisto.args()["period_matches_newline"].lower() == "true":
             re_flags |= regex.DOTALL
 
-        if demisto.args()['error_if_no_match'].lower() == 'true':
+        if demisto.args()["error_if_no_match"].lower() == "true":
             error_if_no_match = True
 
-        if demisto.args()['unpack_matches'].lower() == 'true':
+        if demisto.args()["unpack_matches"].lower() == "true":
             unpack_matches = True
 
     except KeyError:
         pass
 
-    regex_pattern = regex.compile(r'{}'.format(demisto.args()['regex']), flags=re_flags)
+    regex_pattern = regex.compile(r"{}".format(demisto.args()["regex"]), flags=re_flags)
 
     try:
         matches = regex.findall(regex_pattern, match_target)
@@ -46,7 +46,7 @@ def main():
 
             demisto.results(results)
         else:
-            return_error('No results found')
+            return_error("No results found")
 
     except Exception:
         raise

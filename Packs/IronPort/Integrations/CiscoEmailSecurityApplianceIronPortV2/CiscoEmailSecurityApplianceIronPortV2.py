@@ -1,9 +1,9 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import ast
+import uuid
 from collections.abc import Callable
 
-import uuid
-import ast
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 DEFAULT_FETCH = 50
 TIMESTAMP_FORMAT = "%d %b %Y %H:%M:%S (%Z +00:00)"
@@ -25,7 +25,7 @@ RELEASE_ACTION = "release"
 ADD_ACTION = "add"
 APPEND_ACTION = "append"
 EDIT_ACTION = "edit"
-DEFAULT_MODE_DICTIONARIES = 'cluster'
+DEFAULT_MODE_DICTIONARIES = "cluster"
 
 
 class Client(BaseClient):
@@ -53,14 +53,11 @@ class Client(BaseClient):
         jwt_token_issued_time = integration_context.get("jwt_token_issued_time", 0.0)
         current_time = datetime.now().timestamp()
         next_refresh = (
-            datetime.fromtimestamp(jwt_token_issued_time)
-            + timedelta(minutes=self.jwt_token_expiration_period - 0.2)
+            datetime.fromtimestamp(jwt_token_issued_time) + timedelta(minutes=self.jwt_token_expiration_period - 0.2)
         ).timestamp()
         if force_retrieve_jwt or not jwt_token or current_time > next_refresh:
             jwt_token = self.retrieve_jwt_token()
-            set_integration_context(
-                {"jwt_token": jwt_token, "jwt_token_issued_time": current_time}
-            )
+            set_integration_context({"jwt_token": jwt_token, "jwt_token_issued_time": current_time})
         self._headers["jwtToken"] = jwt_token
 
     def retrieve_jwt_token(self) -> str:
@@ -82,9 +79,7 @@ class Client(BaseClient):
 
         except DemistoException as e:
             if e.res.status_code == 401:
-                raise Exception(
-                    "Authorization Error: make sure username and password are set correctly."
-                ) from e
+                raise Exception("Authorization Error: make sure username and password are set correctly.") from e
             raise e
 
     def _http_request(self, *args, **kwargs):
@@ -156,9 +151,7 @@ class Client(BaseClient):
 
         return self._http_request("GET", "quarantine/messages", params=params)
 
-    def spam_quarantine_message_get_request(
-        self, quarantine_type: str, message_id: str
-    ) -> Dict[str, Any]:
+    def spam_quarantine_message_get_request(self, quarantine_type: str, message_id: str) -> Dict[str, Any]:
         """
         Get spam quarantine message.
 
@@ -187,15 +180,11 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ESA.
         """
-        data = assign_params(
-            action=action, mids=message_ids, quarantineType=quarantine_type
-        )
+        data = assign_params(action=action, mids=message_ids, quarantineType=quarantine_type)
 
         return self._http_request("POST", "quarantine/messages", json_data=data)
 
-    def spam_quarantine_message_delete_request(
-        self, quarantine_type: str, message_ids: List[int]
-    ) -> Dict[str, Any]:
+    def spam_quarantine_message_delete_request(self, quarantine_type: str, message_ids: List[int]) -> Dict[str, Any]:
         """
         Delete spam quarantine message.
 
@@ -503,9 +492,7 @@ class Client(BaseClient):
 
         return self._http_request("GET", "message-tracking/details", params=params)
 
-    def message_amp_details_get_request(
-        self, serial_number: str, message_ids: List[int]
-    ) -> Dict[str, Any]:
+    def message_amp_details_get_request(self, serial_number: str, message_ids: List[int]) -> Dict[str, Any]:
         """
         Get message AMP report details.
 
@@ -523,9 +510,7 @@ class Client(BaseClient):
 
         return self._http_request("GET", "message-tracking/amp-details", params=params)
 
-    def message_dlp_details_get_request(
-        self, serial_number: str, message_ids: List[int]
-    ) -> Dict[str, Any]:
+    def message_dlp_details_get_request(self, serial_number: str, message_ids: List[int]) -> Dict[str, Any]:
         """
         Get message DLP report details.
 
@@ -543,9 +528,7 @@ class Client(BaseClient):
 
         return self._http_request("GET", "message-tracking/dlp-details", params=params)
 
-    def message_url_details_get_request(
-        self, serial_number: str, message_ids: List[int]
-    ) -> Dict[str, Any]:
+    def message_url_details_get_request(self, serial_number: str, message_ids: List[int]) -> Dict[str, Any]:
         """
         Get message URL report details.
 
@@ -609,13 +592,8 @@ class Client(BaseClient):
         return self._http_request("GET", f"reporting/{report_type}", params=params)
 
     def dictionary_list_request(
-        self,
-        dictionary_name: Optional[str],
-        mode: str,
-        host_name: Optional[str],
-        group_name: Optional[str]
+        self, dictionary_name: Optional[str], mode: str, host_name: Optional[str], group_name: Optional[str]
     ) -> Dict[str, Any]:
-
         endpoint = "config/dictionaries"
         if dictionary_name:
             endpoint += f"/{dictionary_name}"
@@ -642,7 +620,6 @@ class Client(BaseClient):
         words: list,
         ignore_case_sensitive: int,
     ) -> Dict[str, Any]:
-
         params = assign_params(
             device_type="esa",
             mode=mode,
@@ -651,7 +628,7 @@ class Client(BaseClient):
         )
 
         json_data = {
-            'data': {
+            "data": {
                 "ignorecase": ignore_case_sensitive,
                 "wholewords": whole_words,
                 "words": words,
@@ -659,12 +636,7 @@ class Client(BaseClient):
             }
         }
 
-        return self._http_request(
-            "POST",
-            f"config/dictionaries/{dictionary_name}",
-            params=params,
-            json_data=json_data
-        )
+        return self._http_request("POST", f"config/dictionaries/{dictionary_name}", params=params, json_data=json_data)
 
     def dictionary_edit_request(
         self,
@@ -675,9 +647,8 @@ class Client(BaseClient):
         whole_words: int,
         words: list,
         ignore_case_sensitive: int,
-        updated_name: Optional[str]
+        updated_name: Optional[str],
     ) -> Dict[str, Any]:
-
         params = assign_params(
             device_type="esa",
             mode=mode,
@@ -686,7 +657,7 @@ class Client(BaseClient):
         )
 
         json_data = {
-            'data': {
+            "data": {
                 "ignorecase": ignore_case_sensitive,
                 "wholewords": whole_words,
                 "words": words,
@@ -694,23 +665,13 @@ class Client(BaseClient):
             }
         }
         if updated_name:
-            json_data['data']['name'] = updated_name
+            json_data["data"]["name"] = updated_name
 
-        return self._http_request(
-            "PUT",
-            f"config/dictionaries/{dictionary_name}",
-            params=params,
-            json_data=json_data
-        )
+        return self._http_request("PUT", f"config/dictionaries/{dictionary_name}", params=params, json_data=json_data)
 
     def dictionary_delete_request(
-        self,
-        dictionary_name: str,
-        mode: str,
-        host_name: Optional[str],
-        group_name: Optional[str]
+        self, dictionary_name: str, mode: str, host_name: Optional[str], group_name: Optional[str]
     ) -> Dict[str, Any]:
-
         params = assign_params(
             device_type="esa",
             mode=mode,
@@ -724,14 +685,8 @@ class Client(BaseClient):
         )
 
     def dictionary_words_add_request(
-        self,
-        dictionary_name: str,
-        mode: str,
-        host_name: Optional[str],
-        group_name: Optional[str],
-        words: list
+        self, dictionary_name: str, mode: str, host_name: Optional[str], group_name: Optional[str], words: list
     ) -> Dict[str, Any]:
-
         params = assign_params(
             device_type="esa",
             mode=mode,
@@ -740,27 +695,16 @@ class Client(BaseClient):
         )
 
         json_data = {
-            'data': {
+            "data": {
                 "words": words,
             }
         }
 
-        return self._http_request(
-            "POST",
-            f"config/dictionaries/{dictionary_name}/words",
-            params=params,
-            json_data=json_data
-        )
+        return self._http_request("POST", f"config/dictionaries/{dictionary_name}/words", params=params, json_data=json_data)
 
     def dictionary_words_delete_request(
-        self,
-        dictionary_name: str,
-        mode: str,
-        host_name: Optional[str],
-        group_name: Optional[str],
-        words: list
+        self, dictionary_name: str, mode: str, host_name: Optional[str], group_name: Optional[str], words: list
     ) -> Dict[str, Any]:
-
         params = assign_params(
             device_type="esa",
             mode=mode,
@@ -769,17 +713,12 @@ class Client(BaseClient):
         )
 
         json_data = {
-            'data': {
+            "data": {
                 "words": words,
             }
         }
 
-        return self._http_request(
-            "DELETE",
-            f"config/dictionaries/{dictionary_name}/words",
-            params=params,
-            json_data=json_data
-        )
+        return self._http_request("DELETE", f"config/dictionaries/{dictionary_name}/words", params=params, json_data=json_data)
 
 
 def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
@@ -798,10 +737,7 @@ def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
         else:
             return {}
     except ValueError:
-        raise ValueError(
-            'Please validate the format of argument "custom_query". '
-            'For example: "key1=value1;key2=value2".'
-        )
+        raise ValueError('Please validate the format of argument "custom_query". For example: "key1=value1;key2=value2".')
 
 
 def format_datetime(time_expression: str) -> str:
@@ -885,19 +821,13 @@ def validate_pagination_arguments(
             )
 
         if page < MIN_PAGE_NUMBER:
-            raise ValueError(
-                f"page argument must be equal or greater than {MIN_PAGE_NUMBER}."
-            )
+            raise ValueError(f"page argument must be equal or greater than {MIN_PAGE_NUMBER}.")
     else:
         if limit and limit < MIN_LIMIT:
-            raise ValueError(
-                f"limit argument must be equal or greater than {MIN_LIMIT}."
-            )
+            raise ValueError(f"limit argument must be equal or greater than {MIN_LIMIT}.")
 
 
-def validate_related_arguments(
-    args: Dict[str, Any], related_arguments_list: List[List[str]]
-):
+def validate_related_arguments(args: Dict[str, Any], related_arguments_list: List[List[str]]):
     """
     Validate correct usage of arguments that are related to each other.
 
@@ -909,9 +839,7 @@ def validate_related_arguments(
     for related_arguments in related_arguments_list:
         exist_list = [argument in args for argument in related_arguments]
         if not all(exist_list) and any(exist_list):
-            raise ValueError(
-                f"{', '.join(related_arguments)} arguments should be used together but one or more are empty."
-            )
+            raise ValueError(f"{', '.join(related_arguments)} arguments should be used together but one or more are empty.")
 
 
 def format_list_entry_arguments(view_by: str, args: Dict[str, Any]) -> Dict[str, Any]:
@@ -930,21 +858,15 @@ def format_list_entry_arguments(view_by: str, args: Dict[str, Any]) -> Dict[str,
             args["sender_addresses"] = None
             args["recipient_list"] = None
         else:
-            raise DemistoException(
-                "Please specify recipient_addresses and sender_list arguments when using view_by recipient."
-            )
+            raise DemistoException("Please specify recipient_addresses and sender_list arguments when using view_by recipient.")
     elif view_by == "sender":
         if args.get("sender_addresses") and args.get("recipient_list"):
             args["recipient_addresses"] = None
             args["sender_list"] = None
         else:
-            raise DemistoException(
-                "Please specify sender_addresses and recipient_list arguments when using view_by sender."
-            )
+            raise DemistoException("Please specify sender_addresses and recipient_list arguments when using view_by sender.")
     else:
-        raise DemistoException(
-            f'Please check the value of argument "view_by". Valid values are recipient/sender, got {view_by}.'
-        )
+        raise DemistoException(f'Please check the value of argument "view_by". Valid values are recipient/sender, got {view_by}.')
 
     return args
 
@@ -975,10 +897,8 @@ def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> tup
         output = []
         offset = 0
         while limit > 0:
-            page_size = limit if limit <= REQUEST_MAX_PULL else REQUEST_MAX_PULL
-            output.extend(
-                request_command(offset=offset, limit=page_size, **kwargs).get("data")
-            )
+            page_size = min(limit, REQUEST_MAX_PULL)
+            output.extend(request_command(offset=offset, limit=page_size, **kwargs).get("data"))
             limit -= REQUEST_MAX_PULL
             offset += REQUEST_MAX_PULL
         pagination_message = f"Showing {len(output)} rows." if len(output) > 0 else None  # type: ignore
@@ -1041,9 +961,7 @@ def convert_words_to_list(words: str) -> List[list]:
         raise DemistoException("Words list is not defined correctly. Please use the following pattern: ['word1',3],['word2'].")
 
 
-def spam_quarantine_message_search_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def spam_quarantine_message_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Search spam quarantine messages.
 
@@ -1089,10 +1007,7 @@ def spam_quarantine_message_search_command(
         order_dir=order_dir,
     )
 
-    spam_quarantine_message_lists = [
-        dict(message.get("attributes", {}), **{"mid": message.get("mid")})
-        for message in output
-    ]
+    spam_quarantine_message_lists = [dict(message.get("attributes", {}), mid=message.get("mid")) for message in output]
 
     readable_output = tableToMarkdown(
         name="Spam Quarantine Messages List",
@@ -1111,9 +1026,7 @@ def spam_quarantine_message_search_command(
     )
 
 
-def spam_quarantine_message_get_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def spam_quarantine_message_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get spam quarantine message details.
 
@@ -1127,14 +1040,10 @@ def spam_quarantine_message_get_command(
     quarantine_type = QUARANTINE_TYPE
     message_id = args["message_id"]
 
-    response: Dict[str, Any] = client.spam_quarantine_message_get_request(
-        quarantine_type, message_id
-    ).get("data", {})
+    response: Dict[str, Any] = client.spam_quarantine_message_get_request(quarantine_type, message_id).get("data", {})
 
-    new_message = dict(response.get("attributes", {}), **{"mid": response.get("mid")})
-    readable_message = (
-        f'Found spam quarantine message with ID: {new_message.get("mid")}'
-    )
+    new_message = dict(response.get("attributes", {}), mid=response.get("mid"))
+    readable_message = f'Found spam quarantine message with ID: {new_message.get("mid")}'
 
     readable_output = tableToMarkdown(
         name="Spam Quarantine Message",
@@ -1154,9 +1063,7 @@ def spam_quarantine_message_get_command(
     )
 
 
-def spam_quarantine_message_release_command(
-    client: Client, args: Dict[str, Any]
-) -> List[CommandResults]:
+def spam_quarantine_message_release_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     Release spam quarantine message.
 
@@ -1174,9 +1081,7 @@ def spam_quarantine_message_release_command(
     command_results_list = []
 
     for message_id in message_ids:
-        response = client.spam_quarantine_message_release_request(
-            action, quarantine_type, [message_id]
-        )
+        response = client.spam_quarantine_message_release_request(action, quarantine_type, [message_id])
 
         if dict_safe_get(response, ["data", "totalCount"]) == 1:
             readable_output = f"Quarantined message {message_id} successfully released."
@@ -1188,9 +1093,7 @@ def spam_quarantine_message_release_command(
     return command_results_list
 
 
-def spam_quarantine_message_delete_command(
-    client: Client, args: Dict[str, Any]
-) -> List[CommandResults]:
+def spam_quarantine_message_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     Delete spam quarantine message details.
 
@@ -1207,9 +1110,7 @@ def spam_quarantine_message_delete_command(
     command_results_list = []
 
     for message_id in message_ids:
-        response = client.spam_quarantine_message_delete_request(
-            quarantine_type, [message_id]
-        )
+        response = client.spam_quarantine_message_delete_request(quarantine_type, [message_id])
 
         if dict_safe_get(response, ["data", "totalCount"]) == 1:
             readable_output = f"Quarantined message {message_id} successfully deleted."
@@ -1240,9 +1141,7 @@ def list_entry_get_command(client: Client, args: Dict[str, Any]) -> CommandResul
     view_by = args.get("view_by")
     search = args.get("search")
 
-    validate_related_arguments(
-        args=args, related_arguments_list=[["order_by", "order_dir"]]
-    )
+    validate_related_arguments(args=args, related_arguments_list=[["order_by", "order_dir"]])
 
     output, pagination_message = pagination(
         client.list_entry_get_request,
@@ -1260,18 +1159,14 @@ def list_entry_get_command(client: Client, args: Dict[str, Any]) -> CommandResul
         name=f"{entry_type.title()} Entries",
         metadata=pagination_message,
         t=output,
-        headers=["recipientAddress", "senderList"]
-        if view_by == "recipient"
-        else ["senderAddress", "recipientList"],
+        headers=["recipientAddress", "senderList"] if view_by == "recipient" else ["senderAddress", "recipientList"],
         headerTransform=pascalToSpace,
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"CiscoESA.ListEntry.{entry_type.title()}",
-        outputs_key_field="recipientAddress"
-        if view_by == "recipient"
-        else "senderAddress",
+        outputs_key_field="recipientAddress" if view_by == "recipient" else "senderAddress",
         outputs=output,
         raw_response=output,
     )
@@ -1442,16 +1337,12 @@ def list_entry_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
         if recipient_list:
             sender_list = None
         else:
-            raise DemistoException(
-                "Please specify recipient_list argument when using view_by recipient."
-            )
+            raise DemistoException("Please specify recipient_list argument when using view_by recipient.")
     else:
         if sender_list:
             recipient_list = None
         else:
-            raise DemistoException(
-                "Please specify sender_list argument when using view_by sender."
-            )
+            raise DemistoException("Please specify sender_list argument when using view_by sender.")
 
     response = client.list_entry_delete_request(
         entry_type=entry_type,
@@ -1461,9 +1352,7 @@ def list_entry_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
         sender_list=sender_list,
     )
 
-    deleted_entries = ", ".join(
-        recipient_list if view_by == "recipient" else sender_list
-    )
+    deleted_entries = ", ".join(recipient_list if view_by == "recipient" else sender_list)
 
     return CommandResults(
         readable_output=f"Successfully deleted {deleted_entries} {view_by}s from {entry_type}.",
@@ -1530,14 +1419,8 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
     messages_lists = [
         dict(
             message.get("attributes", {}),
-            **{
-                "timestamp": format_timestamp(
-                    dict_safe_get(message, ["attributes", "timestamp"])
-                ),
-                "unique_message_id": "".join(
-                    map(str, dict_safe_get(message, ["attributes", "mid"]))
-                ),
-            },
+            timestamp=format_timestamp(dict_safe_get(message, ["attributes", "timestamp"])),
+            unique_message_id="".join(map(str, dict_safe_get(message, ["attributes", "mid"]))),
         )
         for message in output
     ]
@@ -1599,8 +1482,7 @@ def message_details_get_command(client: Client, args: Dict[str, Any]) -> Command
     mid = response.get("mid")
     if not mid or "N/A" in mid:
         raise DemistoException(
-            f'Message ID {", ".join(map(str, message_ids))} was not found.\n'
-            f"Please check message IDs or Serial Number."
+            f'Message ID {", ".join(map(str, message_ids))} was not found.\nPlease check message IDs or Serial Number.'
         )
 
     response["timestamp"] = format_timestamp(response.get("timestamp"))
@@ -1650,9 +1532,7 @@ def message_details_get_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def message_amp_details_get_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def message_amp_details_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get message AMP report details.
 
@@ -1667,9 +1547,7 @@ def message_amp_details_get_command(
     message_ids = format_number_list_argument(args["message_ids"])
 
     response = (
-        client.message_amp_details_get_request(
-            serial_number=serial_number, message_ids=message_ids
-        )
+        client.message_amp_details_get_request(serial_number=serial_number, message_ids=message_ids)
         .get("data", {})
         .get("messages", {})
     )
@@ -1677,8 +1555,7 @@ def message_amp_details_get_command(
     mid = response.get("mid")
     if not mid or "N/A" in mid:
         raise DemistoException(
-            f'Message ID {", ".join(map(str, message_ids))} was not found.\n'
-            f"Please check message IDs or Serial Number."
+            f'Message ID {", ".join(map(str, message_ids))} was not found.\nPlease check message IDs or Serial Number.'
         )
 
     response["timestamp"] = format_timestamp(response.get("timestamp"))
@@ -1727,9 +1604,7 @@ def message_amp_details_get_command(
     )
 
 
-def message_dlp_details_get_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def message_dlp_details_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get message DLP report details.
 
@@ -1744,9 +1619,7 @@ def message_dlp_details_get_command(
     message_ids = format_number_list_argument(args["message_ids"])
 
     response = (
-        client.message_dlp_details_get_request(
-            serial_number=serial_number, message_ids=message_ids
-        )
+        client.message_dlp_details_get_request(serial_number=serial_number, message_ids=message_ids)
         .get("data", {})
         .get("messages", {})
     )
@@ -1754,8 +1627,7 @@ def message_dlp_details_get_command(
     mid = response.get("mid")
     if not mid or "N/A" in mid:
         raise DemistoException(
-            f'Message ID {", ".join(map(str, message_ids))} was not found.\n'
-            f"Please check message IDs or Serial Number."
+            f'Message ID {", ".join(map(str, message_ids))} was not found.\nPlease check message IDs or Serial Number.'
         )
 
     response["timestamp"] = format_timestamp(response.get("timestamp"))
@@ -1799,9 +1671,7 @@ def message_dlp_details_get_command(
     )
 
 
-def message_url_details_get_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def message_url_details_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get message URL report details.
 
@@ -1816,9 +1686,7 @@ def message_url_details_get_command(
     message_ids = format_number_list_argument(args["message_ids"])
 
     response = (
-        client.message_url_details_get_request(
-            serial_number=serial_number, message_ids=message_ids
-        )
+        client.message_url_details_get_request(serial_number=serial_number, message_ids=message_ids)
         .get("data", {})
         .get("messages", {})
     )
@@ -1826,8 +1694,7 @@ def message_url_details_get_command(
     mid = response.get("mid")
     if not mid or "N/A" in mid:
         raise DemistoException(
-            f'Message ID {", ".join(map(str, message_ids))} was not found.\n'
-            f"Please check message IDs or Serial Number."
+            f'Message ID {", ".join(map(str, message_ids))} was not found.\nPlease check message IDs or Serial Number.'
         )
 
     response["timestamp"] = format_timestamp(response.get("timestamp"))
@@ -1914,11 +1781,7 @@ def report_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response["uuid"] = str(uuid.uuid4())
 
     try:
-        table = {
-            k: v
-            for results in response.get("resultSet", [{}])
-            for k, v in results.items()
-        }
+        table = {k: v for results in response.get("resultSet", [{}]) for k, v in results.items()}
     except Exception:
         table = response.get("resultSet", response)
 
@@ -1956,29 +1819,24 @@ def dictionary_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     dictionary_name = args.get("dictionary_name", "")
 
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
-    response = client.dictionary_list_request(dictionary_name=dictionary_name,
-                                              mode=mode,
-                                              host_name=host_name,
-                                              group_name=group_name
-                                              )
+    response = client.dictionary_list_request(
+        dictionary_name=dictionary_name, mode=mode, host_name=host_name, group_name=group_name
+    )
 
     if dictionary_name:
-        name = f'Information for Dictionary: {dictionary_name}'
+        name = f"Information for Dictionary: {dictionary_name}"
     else:
-        name = f'Information for All Configured Dictionaries in mode: {mode}'
+        name = f"Information for All Configured Dictionaries in mode: {mode}"
 
     readable_output = tableToMarkdown(
         name=name,
-        t=response.get('data'),
+        t=response.get("data"),
         removeNull=True,
-        headers=["name", "words", "ignorecase", "wholewords", "words_count", "encoding"]
+        headers=["name", "words", "ignorecase", "wholewords", "words_count", "encoding"],
     )
 
     return CommandResults(
-        outputs_prefix="CiscoESA.Dictionary",
-        outputs=response.get('data'),
-        raw_response=response,
-        readable_output=readable_output
+        outputs_prefix="CiscoESA.Dictionary", outputs=response.get("data"), raw_response=response, readable_output=readable_output
     )
 
 
@@ -2006,14 +1864,15 @@ def dictionary_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
     whole_words = int(argToBoolean(whole_words))  # will be sent to the api as 0 or 1
     words = convert_words_to_list(words)
 
-    response = client.dictionary_add_request(dictionary_name=dictionary_name,
-                                             mode=mode,
-                                             host_name=host_name,
-                                             group_name=group_name,
-                                             whole_words=whole_words,
-                                             words=words,
-                                             ignore_case_sensitive=ignore_case_sensitive,
-                                             )
+    response = client.dictionary_add_request(
+        dictionary_name=dictionary_name,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+        whole_words=whole_words,
+        words=words,
+        ignore_case_sensitive=ignore_case_sensitive,
+    )
     return CommandResults(
         readable_output=f"{dictionary_name} was added successfully.",
         raw_response=response,
@@ -2045,15 +1904,16 @@ def dictionary_edit_command(client: Client, args: Dict[str, Any]) -> CommandResu
     whole_words = int(argToBoolean(whole_words))  # will be sent to the api as 0 or 1
     words = convert_words_to_list(words)
 
-    response = client.dictionary_edit_request(dictionary_name=dictionary_name,
-                                              mode=mode,
-                                              host_name=host_name,
-                                              group_name=group_name,
-                                              whole_words=whole_words,
-                                              words=words,
-                                              ignore_case_sensitive=ignore_case_sensitive,
-                                              updated_name=updated_name
-                                              )
+    response = client.dictionary_edit_request(
+        dictionary_name=dictionary_name,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+        whole_words=whole_words,
+        words=words,
+        ignore_case_sensitive=ignore_case_sensitive,
+        updated_name=updated_name,
+    )
     return CommandResults(
         readable_output=f"{dictionary_name} has been successfully updated.",
         raw_response=response,
@@ -2078,11 +1938,9 @@ def dictionary_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
 
-    response = client.dictionary_delete_request(dictionary_name=dictionary_name,
-                                                mode=mode,
-                                                host_name=host_name,
-                                                group_name=group_name
-                                                )
+    response = client.dictionary_delete_request(
+        dictionary_name=dictionary_name, mode=mode, host_name=host_name, group_name=group_name
+    )
 
     return CommandResults(
         readable_output=f"{dictionary_name} deleted successfully.",
@@ -2110,12 +1968,9 @@ def dictionary_words_add_command(client: Client, args: Dict[str, Any]) -> Comman
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
     words = convert_words_to_list(words)
 
-    response = client.dictionary_words_add_request(dictionary_name=dictionary_name,
-                                                   mode=mode,
-                                                   host_name=host_name,
-                                                   group_name=group_name,
-                                                   words=words
-                                                   )
+    response = client.dictionary_words_add_request(
+        dictionary_name=dictionary_name, mode=mode, host_name=host_name, group_name=group_name, words=words
+    )
 
     return CommandResults(
         readable_output=f"Added successfully to {dictionary_name}.",
@@ -2142,11 +1997,9 @@ def dictionary_words_delete_command(client: Client, args: Dict[str, Any]) -> Com
 
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
 
-    response = client.dictionary_words_delete_request(dictionary_name=dictionary_name,
-                                                      mode=mode,
-                                                      host_name=host_name,
-                                                      group_name=group_name,
-                                                      words=words)
+    response = client.dictionary_words_delete_request(
+        dictionary_name=dictionary_name, mode=mode, host_name=host_name, group_name=group_name, words=words
+    )
 
     return CommandResults(
         readable_output=f"Words deleted successfully from {dictionary_name}.",
@@ -2183,20 +2036,14 @@ def fetch_incidents(
         tuple: Incidents and last run info.
     """
     start_time = last_run.get("start_time")
-    start_date = (
-        format_timestamp(start_time, output_format=CISCO_TIME_FORMAT)
-        if start_time
-        else format_datetime(first_fetch)
-    )
+    start_date = format_timestamp(start_time, output_format=CISCO_TIME_FORMAT) if start_time else format_datetime(first_fetch)
     end_date = format_datetime("now")
     quarantine_type = QUARANTINE_TYPE
     offset = last_run.pop("offset", 0) or 0
     order_by = "date"
     order_dir = "asc"
 
-    quarantine_messages: List[
-        Dict[str, Any]
-    ] = client.spam_quarantine_message_search_request(
+    quarantine_messages: List[Dict[str, Any]] = client.spam_quarantine_message_search_request(
         quarantine_type=quarantine_type,
         start_date=start_date,
         end_date=end_date,
@@ -2209,34 +2056,22 @@ def fetch_incidents(
         recipient_filter_value=recipient_filter_value,
         order_by=order_by,
         order_dir=order_dir,
-    ).get(
-        "data", []
-    )
+    ).get("data", [])
 
     data_length = len(quarantine_messages)
     incidents: List[Dict[str, Any]] = []
     last_minute_incident_ids = last_run.get("last_minute_incident_ids", [])
     for incident in quarantine_messages:
-        incident_datetime = format_timestamp(
-            dict_safe_get(incident, ["attributes", "date"])
-        )
+        incident_datetime = format_timestamp(dict_safe_get(incident, ["attributes", "date"]))
         message_id = incident.get("mid")
-        if (
-            message_id
-            and message_id not in last_minute_incident_ids
-            and start_date < incident_datetime
-        ):
-            quarantine_message: Dict[
-                str, Any
-            ] = client.spam_quarantine_message_get_request(
+        if message_id and message_id not in last_minute_incident_ids and start_date < incident_datetime:
+            quarantine_message: Dict[str, Any] = client.spam_quarantine_message_get_request(
                 quarantine_type=quarantine_type, message_id=message_id
-            ).get(
-                "data", {}
-            )
+            ).get("data", {})
 
             incident_details = dict(
                 quarantine_message.get("attributes", {}),
-                **{"mid": quarantine_message.get("mid")},
+                mid=quarantine_message.get("mid"),
             )
             incidents.append(
                 {
@@ -2250,9 +2085,7 @@ def fetch_incidents(
         start_time = incidents[-1].get("occurred")
         last_run["start_time"] = start_time
         new_fetched_tickets = [
-            json.loads(incident.get("rawJSON", {})).get("mid")
-            for incident in incidents
-            if incident.get("occurred") == start_time
+            json.loads(incident.get("rawJSON", {})).get("mid") for incident in incidents if incident.get("occurred") == start_time
         ]
         if offset == 0:
             last_run["last_minute_incident_ids"] = new_fetched_tickets

@@ -1,23 +1,22 @@
+from http import HTTPStatus
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests import Response
-from http import HTTPStatus
 
 JWT_TOKEN_EXPIRATION_PERIOD = 30
 V2_PREFIX = "v2.0"
 V3_PREFIX = "v3.0"
 HTTPS_PROTOCOLS = ["http", "https", "ftp"]
 SOCKS_PROTOCOL = ["socks"]
-ISO8601_CONFIG = '%Y-%m-%dT%H:%M:%SZ'
-API_DATE_CONFIG = '%m/%d/%Y %H:%M'
+ISO8601_CONFIG = "%Y-%m-%dT%H:%M:%SZ"
+API_DATE_CONFIG = "%m/%d/%Y %H:%M"
 
 
 class Client(BaseClient):
     """Client class to interact with Cisco WSA API."""
 
-    def __init__(
-        self, server_url: str, username: str, password: str, verify: bool, proxy: bool
-    ):
+    def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool):
         super().__init__(base_url=server_url, headers={}, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
@@ -34,9 +33,7 @@ class Client(BaseClient):
             self._headers["jwtToken"] = jwt_token
         else:
             jwt_token = self.retrieve_jwt_token()
-            set_integration_context(
-                {"jwt_token": jwt_token, "jwt_token_issued_time": time.time()}
-            )
+            set_integration_context({"jwt_token": jwt_token, "jwt_token_issued_time": time.time()})
             self._headers["jwtToken"] = jwt_token
 
     def retrieve_jwt_token(self) -> str:
@@ -58,9 +55,7 @@ class Client(BaseClient):
 
         except DemistoException as error:
             if error.res is not None and error.res.status_code == HTTPStatus.UNAUTHORIZED:
-                raise DemistoException(
-                    "Authorization Error: make sure username and password are set correctly."
-                )
+                raise DemistoException("Authorization Error: make sure username and password are set correctly.")
             raise error
 
     def _http_request(self, *args, **kwargs):
@@ -88,10 +83,7 @@ class Client(BaseClient):
         """
         params = assign_params(policy_names=policy_names)
 
-        return self._http_request("GET",
-                                  f"{V3_PREFIX}/web_security/access_policies",
-                                  params=params,
-                                  ok_codes=[HTTPStatus.OK])
+        return self._http_request("GET", f"{V3_PREFIX}/web_security/access_policies", params=params, ok_codes=[HTTPStatus.OK])
 
     def access_policy_create(
         self,
@@ -279,13 +271,9 @@ class Client(BaseClient):
                     {
                         "policy_name": policy_name,
                         "url_filtering": {
-                            "predefined_cats": {
-                                predefined_categories_action: predefined_categories
-                            },
+                            "predefined_cats": {predefined_categories_action: predefined_categories},
                             "yt_cats": {youtube_categories_action: youtube_categories},
-                            "custom_cats": {
-                                custom_categories_action: custom_categories
-                            },
+                            "custom_cats": {custom_categories_action: custom_categories},
                             "uncategorized_url": uncategorized_url,
                             "update_cats_action": update_categories_action,
                             "content_rating": {
@@ -336,9 +324,7 @@ class Client(BaseClient):
                     "policy_name": policy_name,
                     "avc": {
                         "applications": {
-                            application: {action: values}
-                            if action == "block"
-                            else {action: {value: {} for value in values}},
+                            application: {action: values} if action == "block" else {action: {value: {} for value in values}},
                         },
                         "state": settings_status,
                     },
@@ -395,11 +381,7 @@ class Client(BaseClient):
             ftp_max_object_size_mb=ftp_max_object_size_mb,
         )
 
-        data = {
-            "access_policies": [
-                {"policy_name": policy_name, "objects": objects}
-            ]
-        }
+        data = {"access_policies": [{"policy_name": policy_name, "objects": objects}]}
         return self._http_request(
             "PUT",
             f"{V3_PREFIX}/web_security/access_policies",
@@ -445,22 +427,20 @@ class Client(BaseClient):
                             "web_reputation": {"filtering": web_reputation_status},
                             "adv_malware_protection": {
                                 "file_reputation_filtering": file_reputation_filtering_status,
-                                "file_reputation": {
-                                    file_reputation_action: [
-                                        "Known Malicious and High-Risk Files"
-                                    ]
-                                } if file_reputation_action else {},
+                                "file_reputation": {file_reputation_action: ["Known Malicious and High-Risk Files"]}
+                                if file_reputation_action
+                                else {},
                             },
                             "cisco_dvs_amw": {
-                                "amw_scanning": {
-                                    "amw_scan_status": anti_malware_scanning_status
-                                },
+                                "amw_scanning": {"amw_scan_status": anti_malware_scanning_status},
                                 "suspect_user_agent_scanning": suspect_user_agent_scanning,
                                 "block_malware_categories": block_malware_categories,
                                 "block_other_categories": block_other_categories,
                             },
-                            "state": settings_status
-                        } if settings_status == "custom" else {"state": settings_status},
+                            "state": settings_status,
+                        }
+                        if settings_status == "custom"
+                        else {"state": settings_status},
                     }
                 ]
             }
@@ -499,13 +479,9 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Cisco WSA.
         """
-        return self._http_request("GET",
-                                  f"{V2_PREFIX}/configure/web_security/domain_map",
-                                  ok_codes=[HTTPStatus.OK])
+        return self._http_request("GET", f"{V2_PREFIX}/configure/web_security/domain_map", ok_codes=[HTTPStatus.OK])
 
-    def domain_map_create(
-        self, domain_name: str, ip_addresses: List[str], order: int
-    ) -> dict[str, Any]:
+    def domain_map_create(self, domain_name: str, ip_addresses: List[str], order: int) -> dict[str, Any]:
         """
         Create domain mapping.
 
@@ -517,9 +493,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Cisco WSA.
         """
-        data = [
-            {"IP_addresses": ip_addresses, "domain_name": domain_name, "order": order}
-        ]
+        data = [{"IP_addresses": ip_addresses, "domain_name": domain_name, "order": order}]
 
         return self._http_request(
             "POST", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data, ok_codes=[HTTPStatus.OK]
@@ -574,7 +548,8 @@ class Client(BaseClient):
         return self._http_request(
             "DELETE",
             f"{V2_PREFIX}/configure/web_security/domain_map",
-            json_data=data, ok_codes=[HTTPStatus.OK, HTTPStatus.PARTIAL_CONTENT]
+            json_data=data,
+            ok_codes=[HTTPStatus.OK, HTTPStatus.PARTIAL_CONTENT],
         )
 
     def identification_profiles_list(
@@ -590,9 +565,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Cisco WSA.
         """
-        params = assign_params(
-            profile_names=",".join(profile_names) if profile_names else None
-        )
+        params = assign_params(profile_names=",".join(profile_names) if profile_names else None)
 
         return self._http_request(
             "GET", f"{V3_PREFIX}/web_security/identification_profiles", params=params, ok_codes=[HTTPStatus.OK]
@@ -748,9 +721,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Cisco WSA.
         """
-        return self._http_request(
-            "GET", f"{V3_PREFIX}/generic_resources/url_categories"
-        )
+        return self._http_request("GET", f"{V3_PREFIX}/generic_resources/url_categories")
 
 
 def list_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -765,9 +736,7 @@ def list_access_policy_command(client: Client, args: dict[str, Any]) -> CommandR
         CommandResults: readable outputs for XSOAR.
     """
     policy_names = args.get("policy_names")
-    response = client.access_policy_list(policy_names=policy_names).get(
-        "access_policies", []
-    )
+    response = client.access_policy_list(policy_names=policy_names).get("access_policies", [])
 
     paginated_response = pagination(response=response, args=args)
     outputs = access_policy_output_handler(response=paginated_response)
@@ -795,9 +764,7 @@ def list_access_policy_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
 
-def create_access_policy_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def create_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Create an access policy.
 
@@ -826,14 +793,10 @@ def create_access_policy_command(
         policy_expiry=policy_expiry,
     )
 
-    return CommandResults(
-        readable_output=f'Created "{policy_name}" access policy successfully.'
-    )
+    return CommandResults(readable_output=f'Created "{policy_name}" access policy successfully.')
 
 
-def update_access_policy_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def update_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update an access policy.
 
@@ -866,9 +829,7 @@ def update_access_policy_command(
     )
 
 
-def update_access_policy_protocols_user_agents_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def update_access_policy_protocols_user_agents_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update access policy's protocols and user agents settings.
 
@@ -883,7 +844,7 @@ def update_access_policy_protocols_user_agents_command(
     block_custom_user_agents = argToList(args.get("block_custom_user_agents"))
     allow_connect_ports = argToList(args.get("allow_connect_ports"))
     block_protocols = argToList(args.get("block_protocols"))
-    settings_status = args['settings_status']
+    settings_status = args["settings_status"]
     client.access_policy_protocols_user_agents_update(
         policy_name=policy_name,
         block_custom_user_agents=block_custom_user_agents,
@@ -897,9 +858,7 @@ def update_access_policy_protocols_user_agents_command(
     )
 
 
-def update_access_policy_url_filtering_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def update_access_policy_url_filtering_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update access policy's URL filtering settings.
 
@@ -945,9 +904,7 @@ def update_access_policy_url_filtering_command(
     )
 
 
-def update_access_policy_applications_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def update_access_policy_applications_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update access policy's applications settings.
 
@@ -962,7 +919,7 @@ def update_access_policy_applications_command(
     application = args["application"]
     action = args["action"]
     values = argToList(args["values"])
-    settings_status = args['settings_status']
+    settings_status = args["settings_status"]
 
     client.access_policy_applications_update(
         policy_name=policy_name,
@@ -977,9 +934,7 @@ def update_access_policy_applications_command(
     )
 
 
-def update_access_policy_objects_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def update_access_policy_objects_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update access policy's objects settings.
 
@@ -995,13 +950,10 @@ def update_access_policy_objects_command(
     object_action = args.get("object_action")
     object_values = argToList(args.get("object_values"))
     block_custom_mime_types = argToList(args.get("block_custom_mime_types"))
-    http_or_https_max_object_size_mb = arg_to_number(
-        args.get("http_or_https_max_object_size_mb")
-    )
+    http_or_https_max_object_size_mb = arg_to_number(args.get("http_or_https_max_object_size_mb"))
     ftp_max_object_size_mb = arg_to_number(args.get("ftp_max_object_size_mb"))
 
-    objects = access_policy_objects_get(client=client,
-                                        policy_name=policy_name)
+    objects = access_policy_objects_get(client=client, policy_name=policy_name)
 
     client.access_policy_objects_update(
         policy_name=policy_name,
@@ -1019,9 +971,7 @@ def update_access_policy_objects_command(
     )
 
 
-def update_access_policy_anti_malware_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def update_access_policy_anti_malware_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update access policy's anti-malware and reputation settings.
 
@@ -1040,7 +990,7 @@ def update_access_policy_anti_malware_command(
     suspect_user_agent_scanning = args.get("suspect_user_agent_scanning")
     block_malware_categories = argToList(args.get("block_malware_categories"))
     block_other_categories = argToList(args.get("block_other_categories"))
-    settings_status = args['settings_status']
+    settings_status = args["settings_status"]
     client.access_policy_anti_malware_update(
         policy_name=policy_name,
         web_reputation_status=web_reputation_status,
@@ -1058,9 +1008,7 @@ def update_access_policy_anti_malware_command(
     )
 
 
-def delete_access_policy_command(
-    client: Client, args: dict[str, Any]
-) -> Union[List[CommandResults], CommandResults]:
+def delete_access_policy_command(client: Client, args: dict[str, Any]) -> Union[List[CommandResults], CommandResults]:
     """
     Delete access policy.
 
@@ -1075,10 +1023,12 @@ def delete_access_policy_command(
 
     response = client.access_policy_delete(policy_names)
 
-    return delete_handler(response=response,
-                          obj_key="policy_name",
-                          readable_obj_name="Access Policy",
-                          success_readable_output="Deleted Access policy profiles successfully.")
+    return delete_handler(
+        response=response,
+        obj_key="policy_name",
+        readable_obj_name="Access Policy",
+        success_readable_output="Deleted Access policy profiles successfully.",
+    )
 
 
 def list_domain_map_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1101,8 +1051,7 @@ def list_domain_map_command(client: Client, args: dict[str, Any]) -> CommandResu
         response = [
             domain
             for domain in response
-            if domain.get("domain_name") in domain_names
-            or any(address in domain.get("IP_addresses") for address in ip_addresses)
+            if domain.get("domain_name") in domain_names or any(address in domain.get("IP_addresses") for address in ip_addresses)
         ]
 
     paginated_response = pagination(response=response, args=args)
@@ -1139,7 +1088,7 @@ def create_domain_map_command(client: Client, args: dict[str, Any]) -> CommandRe
     ip_addresses = argToList(args["ip_addresses"])
     order = arg_to_number(args["order"])
     if not order:
-        raise DemistoException('Please enter correct number to order argument.')
+        raise DemistoException("Please enter correct number to order argument.")
     response = client.domain_map_create(
         domain_name=domain_name,
         ip_addresses=ip_addresses,
@@ -1179,9 +1128,7 @@ def update_domain_map_command(client: Client, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=readable_output, raw_response=response)
 
 
-def delete_domain_map_command(
-    client: Client, args: dict[str, Any]
-) -> Union[List[CommandResults], CommandResults]:
+def delete_domain_map_command(client: Client, args: dict[str, Any]) -> Union[List[CommandResults], CommandResults]:
     """
     Delete domain mappings.
 
@@ -1199,33 +1146,22 @@ def delete_domain_map_command(
 
     response = client.domain_map_delete(domain_name=domain_name)
     if response.get("res_code") == HTTPStatus.OK:
-        readable_output = (
-            f'Domain{"s" if len(domain_name) > 1 else ""} "{", ".join(domain_name)}" '
-            "deleted successfully."
-        )
+        readable_output = f'Domain{"s" if len(domain_name) > 1 else ""} "{", ".join(domain_name)}" ' "deleted successfully."  # noqa: ISC001
         return CommandResults(readable_output=readable_output, raw_response=response)
     elif response.get("res_code") == HTTPStatus.PARTIAL_CONTENT:
         command_results_list = []
         for domain_map in dict_safe_get(response, ["res_data", "delete_success"]):
             readable_output = f'Domain "{domain_map}" mapping deleted successfully.'
-            command_results_list.append(
-                CommandResults(readable_output=readable_output, raw_response=response)
-            )
+            command_results_list.append(CommandResults(readable_output=readable_output, raw_response=response))
 
-        readable_output = dict_safe_get(
-            response, ["res_data", "delete_failure", "error_msg"]
-        )
+        readable_output = dict_safe_get(response, ["res_data", "delete_failure", "error_msg"])
         if readable_output:
-            command_results_list.append(
-                CommandResults(readable_output=readable_output, raw_response=response)
-            )
+            command_results_list.append(CommandResults(readable_output=readable_output, raw_response=response))
         return command_results_list
     raise DemistoException(message=response)
 
 
-def list_identification_profiles_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def list_identification_profiles_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get identification profiles.
 
@@ -1238,9 +1174,7 @@ def list_identification_profiles_command(
     """
     profile_names = argToList(args.get("profile_names"))
 
-    response = client.identification_profiles_list(
-        profile_names=profile_names
-    ).get("identification_profiles", [])
+    response = client.identification_profiles_list(profile_names=profile_names).get("identification_profiles", [])
 
     paginated_response = pagination(response, args)
 
@@ -1268,9 +1202,7 @@ def list_identification_profiles_command(
     )
 
 
-def create_identification_profiles_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def create_identification_profiles_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Create identification profiles.
 
@@ -1295,14 +1227,10 @@ def create_identification_profiles_command(
         custom_url_categories=argToList(args.get("custom_url_categories")),
     )
 
-    return CommandResults(
-        readable_output=f'Created identification profile "{profile_name}" successfully.'
-    )
+    return CommandResults(readable_output=f'Created identification profile "{profile_name}" successfully.')
 
 
-def update_identification_profiles_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def update_identification_profiles_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update identification profiles.
 
@@ -1327,14 +1255,10 @@ def update_identification_profiles_command(
         custom_url_categories=argToList(args.get("custom_url_categories")),
     )
 
-    return CommandResults(
-        readable_output=f'Updated identification profile "{profile_name}" successfully.'
-    )
+    return CommandResults(readable_output=f'Updated identification profile "{profile_name}" successfully.')
 
 
-def delete_identification_profiles_command(
-    client: Client, args: dict[str, Any]
-) -> Union[List[CommandResults], CommandResults]:
+def delete_identification_profiles_command(client: Client, args: dict[str, Any]) -> Union[List[CommandResults], CommandResults]:
     """
     Delete identification profiles.
 
@@ -1349,10 +1273,12 @@ def delete_identification_profiles_command(
 
     response = client.identification_profiles_delete(profile_names)
 
-    return delete_handler(response=response,
-                          obj_key="profile_name",
-                          readable_obj_name="Identification profile",
-                          success_readable_output="Deleted identification profiles successfully.")
+    return delete_handler(
+        response=response,
+        obj_key="profile_name",
+        readable_obj_name="Identification profile",
+        success_readable_output="Deleted identification profiles successfully.",
+    )
 
 
 def list_url_categories_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1368,9 +1294,7 @@ def list_url_categories_command(client: Client, args: dict[str, Any]) -> Command
     """
     response = client.url_categories_list()
 
-    outputs = categories_output_filter(response=response,
-                                       contain=args.get('contain'),
-                                       type_=args.get('type'))
+    outputs = categories_output_filter(response=response, contain=args.get("contain"), type_=args.get("type"))
 
     readable_output = tableToMarkdown(
         name="URL categories",
@@ -1444,16 +1368,10 @@ def multi_status_delete_handler(response: Response, obj_key: str, readable_obj_n
     output_data = response.json()
     command_results_list = []
     for profile in output_data.get("success_list"):
-        readable_output = (
-            f'{readable_obj_name} "{profile.get(obj_key)}" '
-            f"was successfully deleted."
-        )
+        readable_output = f'{readable_obj_name} "{profile.get(obj_key)}" was successfully deleted.'
         command_results_list.append(CommandResults(readable_output=readable_output))
     for profile in output_data.get("failure_list"):
-        readable_output = (
-            f'{readable_obj_name} "{profile.get(obj_key)}" '
-            f'deletion failed, message: "{profile.get("message")}".'
-        )
+        readable_output = f'{readable_obj_name} "{profile.get(obj_key)}" deletion failed, message: "{profile.get("message")}".'
         command_results_list.append(CommandResults(readable_output=readable_output))
 
     return command_results_list
@@ -1470,24 +1388,26 @@ def identification_profile_mapper(data: List[dict[str, Any]]) -> List[dict[str, 
     """
     filtered_data = []
     for profile in data:
-        filtered_data.append({
-            "status": profile['status'],
-            "profile_name": profile['profile_name'],
-            "description": profile['description'],
-            "protocols": dict_safe_get(profile, ['members', 'protocols']),
-            "order": profile['order'],
-            "UrlCategories": {
-                "predefined": dict_safe_get(profile, ['members', 'url_categories', 'predefined']),
-                "custom": dict_safe_get(profile, ['members', 'url_categories', 'custom']),
-                "uncategorized": dict_safe_get(profile, ['members', 'url_categories', 'uncategorized']),
-            },
-            "ip": dict_safe_get(profile, ['members', 'ip']),
-            "proxy_port": dict_safe_get(profile, ['members', 'proxy_port']),
-            "UserAgents": {
-                "predefined": dict_safe_get(profile, ['members', 'user_agents', 'predefined']),
-                "custom": dict_safe_get(profile, ['members', 'user_agents', 'custom']),
-            },
-        })
+        filtered_data.append(
+            {
+                "status": profile["status"],
+                "profile_name": profile["profile_name"],
+                "description": profile["description"],
+                "protocols": dict_safe_get(profile, ["members", "protocols"]),
+                "order": profile["order"],
+                "UrlCategories": {
+                    "predefined": dict_safe_get(profile, ["members", "url_categories", "predefined"]),
+                    "custom": dict_safe_get(profile, ["members", "url_categories", "custom"]),
+                    "uncategorized": dict_safe_get(profile, ["members", "url_categories", "uncategorized"]),
+                },
+                "ip": dict_safe_get(profile, ["members", "ip"]),
+                "proxy_port": dict_safe_get(profile, ["members", "proxy_port"]),
+                "UserAgents": {
+                    "predefined": dict_safe_get(profile, ["members", "user_agents", "predefined"]),
+                    "custom": dict_safe_get(profile, ["members", "user_agents", "custom"]),
+                },
+            }
+        )
     return remove_empty_elements(filtered_data)
 
 
@@ -1502,17 +1422,14 @@ def access_policy_output_handler(response: List[dict[str, Any]]) -> List[dict[st
     """
     outputs = []
     for policy in response:
-        if policy_expiry := policy.get('policy_expiry'):
-            if policy_datetime := arg_to_datetime(policy_expiry):
-                policy['policy_expiry'] = policy_datetime.strftime(ISO8601_CONFIG)
+        if (policy_expiry := policy.get("policy_expiry")) and (policy_datetime := arg_to_datetime(policy_expiry)):
+            policy["policy_expiry"] = policy_datetime.strftime(ISO8601_CONFIG)
 
         outputs.append(policy)
     return outputs
 
 
-def pagination(
-    response: List[dict[str, Any]], args: dict[str, Any]
-) -> List[dict[str, Any]]:
+def pagination(response: List[dict[str, Any]], args: dict[str, Any]) -> List[dict[str, Any]]:
     """
     Executing Manual paginate_results (using the page and page size arguments)
 
@@ -1536,7 +1453,7 @@ def pagination(
         raise ValueError("Please insert page and page_size.")
     if page and page_size:
         offset = (page - 1) * page_size
-        return response[offset: offset + page_size]
+        return response[offset : offset + page_size]
     else:
         return response[:limit]
 
@@ -1563,27 +1480,20 @@ def organize_policy_object_data(
         ftp_max_object_size_mb (int | None): FTP max object size MB.
     """
     if object_type and object_action and object_values:
-
         original_obj_actions = dict_safe_get(objects, ["object_type", object_type])
         if original_obj_actions:
             for original_obj_action in original_obj_actions:
                 if original_obj_action == object_action:
-                    object_values.extend(
-                        dict_safe_get(objects, ["object_type", object_type, object_action])
-                    )
+                    object_values.extend(dict_safe_get(objects, ["object_type", object_type, object_action]))
                 else:
                     original_obj_actions[original_obj_action] = [
-                        value
-                        for value in original_obj_actions[original_obj_action]
-                        if value not in object_values
+                        value for value in original_obj_actions[original_obj_action] if value not in object_values
                     ]
 
             objects["object_type"][object_type].update({object_action: object_values})
 
     elif any([object_type, object_action, object_values]):
-        raise ValueError(
-            "object_type, object_action, object_values should be used in conjunction."
-        )
+        raise ValueError("object_type, object_action, object_values should be used in conjunction.")
     if block_custom_mime_types:
         objects["block_custom_mime_types"] = block_custom_mime_types
 
@@ -1609,9 +1519,7 @@ def access_policy_objects_get(client: Client, policy_name: str) -> dict[str, Any
     Returns:
         dict[str, Any]: Objects data.
     """
-    access_policies = client.access_policy_list(policy_name).get(
-        "access_policies", []
-    )
+    access_policies = client.access_policy_list(policy_name).get("access_policies", [])
     if not access_policies:
         raise DemistoException("Policy was not found.")
 
@@ -1638,10 +1546,9 @@ def protocols_handler(protocols: List[str]) -> List[str]:
     return organized_protocols
 
 
-def delete_handler(response: Response,
-                   obj_key: str,
-                   readable_obj_name: str,
-                   success_readable_output: str) -> CommandResults | List[CommandResults]:
+def delete_handler(
+    response: Response, obj_key: str, readable_obj_name: str, success_readable_output: str
+) -> CommandResults | List[CommandResults]:
     """Handling with delete response.
 
     Args:
@@ -1654,13 +1561,9 @@ def delete_handler(response: Response,
         CommandResults | List[CommandResults]: Readable outputs for XSOAR.
     """
     if response.status_code == HTTPStatus.MULTI_STATUS:
-        return multi_status_delete_handler(response=response,
-                                           obj_key=obj_key,
-                                           readable_obj_name=readable_obj_name)
+        return multi_status_delete_handler(response=response, obj_key=obj_key, readable_obj_name=readable_obj_name)
 
-    return CommandResults(
-        readable_output=success_readable_output
-    )
+    return CommandResults(readable_output=success_readable_output)
 
 
 def main() -> None:

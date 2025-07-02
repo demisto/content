@@ -1,15 +1,12 @@
 [Arcanna.ai](https://www.arcanna.ai/)  Handle threats with decision assistance. Enhance your team's capability, streamlines threat handling and mitigates risk associated with alert fatigue.
 
-
-
 ### What does this pack do?
 
 Communicates with Arcanna.AI Instances ( On-prem, Cloud, SaaS)
 
 Pack is providing one playbook for alert triage, an integration and one script which helps prepare incident data for Arcanna usage
 
-### About Arcanna.AI:
-
+### About Arcanna.AI
 
 Challenges faced by cybersecurity experts in the area of alert triage include improving response time to incidents, coping with alert fatigue and making sure that the team's knowledge is preserved despite human resource dynamics.
 

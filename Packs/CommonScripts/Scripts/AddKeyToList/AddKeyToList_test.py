@@ -1,7 +1,8 @@
-from AddKeyToList import add_key_to_list_command
-import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from typing import Any
 import json
+from typing import Any
+
+import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+from AddKeyToList import add_key_to_list_command
 
 MOCK_LIST_NAME = "TestList"
 MOCK_KEY_NAME = "TestKey"
@@ -20,32 +21,26 @@ def test_add_new_key_in_empty_list(mocker):
         - success message is returned
     """
     MOCKED_START_LIST: dict = {}
-    MOCKED_END_LIST: dict = {
-        MOCK_KEY_NAME: MOCK_VALUE
-    }
+    MOCKED_END_LIST: dict = {MOCK_KEY_NAME: MOCK_VALUE}
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getList':
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = add_key_to_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-        'value': MOCK_VALUE,
-        'append': 'false',
-        'allowDups': 'false'
-    })
+    result = add_key_to_list_command(
+        {"listName": MOCK_LIST_NAME, "keyName": MOCK_KEY_NAME, "value": MOCK_VALUE, "append": "false", "allowDups": "false"}
+    )
 
-    assert result.readable_output == f'Successfully updated list {MOCK_LIST_NAME}.'
+    assert result.readable_output == f"Successfully updated list {MOCK_LIST_NAME}."
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'setList'
-    assert json.loads(mocked_ec.call_args_list[1][0][1]['listData']) == MOCKED_END_LIST
+    assert mocked_ec.call_args_list[1][0][0] == "setList"
+    assert json.loads(mocked_ec.call_args_list[1][0][1]["listData"]) == MOCKED_END_LIST
 
 
 def test_add_new_key_in_nonempty_list(mocker):
@@ -59,36 +54,27 @@ def test_add_new_key_in_nonempty_list(mocker):
         - key/value successfully added (list contains both old and new key/value pairs)
         - success message is returned
     """
-    MOCKED_START_LIST: dict = {
-        "ExistingKey": "ExistingValue"
-    }
-    MOCKED_END_LIST: dict = {
-        "ExistingKey": "ExistingValue",
-        MOCK_KEY_NAME: MOCK_VALUE
-    }
+    MOCKED_START_LIST: dict = {"ExistingKey": "ExistingValue"}
+    MOCKED_END_LIST: dict = {"ExistingKey": "ExistingValue", MOCK_KEY_NAME: MOCK_VALUE}
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getList':
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = add_key_to_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-        'value': MOCK_VALUE,
-        'append': 'false',
-        'allowDups': 'false'
-    })
+    result = add_key_to_list_command(
+        {"listName": MOCK_LIST_NAME, "keyName": MOCK_KEY_NAME, "value": MOCK_VALUE, "append": "false", "allowDups": "false"}
+    )
 
-    assert result.readable_output == f'Successfully updated list {MOCK_LIST_NAME}.'
+    assert result.readable_output == f"Successfully updated list {MOCK_LIST_NAME}."
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'setList'
-    assert json.loads(mocked_ec.call_args_list[1][0][1]['listData']) == MOCKED_END_LIST
+    assert mocked_ec.call_args_list[1][0][0] == "setList"
+    assert json.loads(mocked_ec.call_args_list[1][0][1]["listData"]) == MOCKED_END_LIST
 
 
 def test_replace_key_in_existing_list(mocker):
@@ -104,35 +90,27 @@ def test_replace_key_in_existing_list(mocker):
         - value for key successfully replaced (list contains only new key/value pair)
         - success message is returned
     """
-    MOCKED_START_LIST: dict = {
-        MOCK_KEY_NAME: "OldValue"
-    }
-    MOCKED_END_LIST: dict = {
-        MOCK_KEY_NAME: MOCK_VALUE
-    }
+    MOCKED_START_LIST: dict = {MOCK_KEY_NAME: "OldValue"}
+    MOCKED_END_LIST: dict = {MOCK_KEY_NAME: MOCK_VALUE}
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getList':
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = add_key_to_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-        'value': MOCK_VALUE,
-        'append': 'false',
-        'allowDups': 'false'
-    })
+    result = add_key_to_list_command(
+        {"listName": MOCK_LIST_NAME, "keyName": MOCK_KEY_NAME, "value": MOCK_VALUE, "append": "false", "allowDups": "false"}
+    )
 
-    assert result.readable_output == f'Successfully updated list {MOCK_LIST_NAME}.'
+    assert result.readable_output == f"Successfully updated list {MOCK_LIST_NAME}."
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'setList'
-    assert json.loads(mocked_ec.call_args_list[1][0][1]['listData']) == MOCKED_END_LIST
+    assert mocked_ec.call_args_list[1][0][0] == "setList"
+    assert json.loads(mocked_ec.call_args_list[1][0][1]["listData"]) == MOCKED_END_LIST
 
 
 def test_no_change_same_value_same_key_no_dup_in_existing_list(mocker):
@@ -148,29 +126,23 @@ def test_no_change_same_value_same_key_no_dup_in_existing_list(mocker):
         - list is not changed
         - return message says that list wasn't changed as value already exists for key
     """
-    MOCKED_START_LIST: dict = {
-        MOCK_KEY_NAME: MOCK_VALUE
-    }
+    MOCKED_START_LIST: dict = {MOCK_KEY_NAME: MOCK_VALUE}
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getList':
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = add_key_to_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-        'value': MOCK_VALUE,
-        'append': 'true',
-        'allowDups': 'false'
-    })
+    result = add_key_to_list_command(
+        {"listName": MOCK_LIST_NAME, "keyName": MOCK_KEY_NAME, "value": MOCK_VALUE, "append": "true", "allowDups": "false"}
+    )
 
-    assert result.readable_output == f'Value already present in key {MOCK_KEY_NAME} of list {MOCK_LIST_NAME}: not appending.'
+    assert result.readable_output == f"Value already present in key {MOCK_KEY_NAME} of list {MOCK_LIST_NAME}: not appending."
     assert len(mocked_ec.call_args_list) == 1
 
 
@@ -187,35 +159,27 @@ def test_append_value_to_existing_key_in_existing_list(mocker):
         - value for the key is transformed into a list containing both old and new value
         - success message is returned
     """
-    MOCKED_START_LIST: dict = {
-        MOCK_KEY_NAME: "OldValue"
-    }
-    MOCKED_END_LIST: dict = {
-        MOCK_KEY_NAME: ["OldValue", MOCK_VALUE]
-    }
+    MOCKED_START_LIST: dict = {MOCK_KEY_NAME: "OldValue"}
+    MOCKED_END_LIST: dict = {MOCK_KEY_NAME: ["OldValue", MOCK_VALUE]}
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getList':
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = add_key_to_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-        'value': MOCK_VALUE,
-        'append': 'true',
-        'allowDups': 'false'
-    })
+    result = add_key_to_list_command(
+        {"listName": MOCK_LIST_NAME, "keyName": MOCK_KEY_NAME, "value": MOCK_VALUE, "append": "true", "allowDups": "false"}
+    )
 
-    assert result.readable_output == f'Successfully updated list {MOCK_LIST_NAME}.'
+    assert result.readable_output == f"Successfully updated list {MOCK_LIST_NAME}."
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'setList'
-    assert json.loads(mocked_ec.call_args_list[1][0][1]['listData']) == MOCKED_END_LIST
+    assert mocked_ec.call_args_list[1][0][0] == "setList"
+    assert json.loads(mocked_ec.call_args_list[1][0][1]["listData"]) == MOCKED_END_LIST
 
 
 def test_append_value_to_existing_list_key_in_existing_list(mocker):
@@ -231,35 +195,27 @@ def test_append_value_to_existing_list_key_in_existing_list(mocker):
         - new value for the key is appended to the existing list for that key
         - success message is returned
     """
-    MOCKED_START_LIST: dict = {
-        MOCK_KEY_NAME: ["OldValue1", "OldValue2"]
-    }
-    MOCKED_END_LIST: dict = {
-        MOCK_KEY_NAME: ["OldValue1", "OldValue2", MOCK_VALUE]
-    }
+    MOCKED_START_LIST: dict = {MOCK_KEY_NAME: ["OldValue1", "OldValue2"]}
+    MOCKED_END_LIST: dict = {MOCK_KEY_NAME: ["OldValue1", "OldValue2", MOCK_VALUE]}
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getList':
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = add_key_to_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-        'value': MOCK_VALUE,
-        'append': 'true',
-        'allowDups': 'false'
-    })
+    result = add_key_to_list_command(
+        {"listName": MOCK_LIST_NAME, "keyName": MOCK_KEY_NAME, "value": MOCK_VALUE, "append": "true", "allowDups": "false"}
+    )
 
-    assert result.readable_output == f'Successfully updated list {MOCK_LIST_NAME}.'
+    assert result.readable_output == f"Successfully updated list {MOCK_LIST_NAME}."
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'setList'
-    assert json.loads(mocked_ec.call_args_list[1][0][1]['listData']) == MOCKED_END_LIST
+    assert mocked_ec.call_args_list[1][0][0] == "setList"
+    assert json.loads(mocked_ec.call_args_list[1][0][1]["listData"]) == MOCKED_END_LIST
 
 
 def test_no_append_existing_value_same_list_key_no_dup_in_existing_list(mocker):
@@ -275,29 +231,23 @@ def test_no_append_existing_value_same_list_key_no_dup_in_existing_list(mocker):
         - list is not changed
         - return message says that list wasn't changed as value already exists for key
     """
-    MOCKED_START_LIST: dict = {
-        MOCK_KEY_NAME: ["OldValue", MOCK_VALUE]
-    }
+    MOCKED_START_LIST: dict = {MOCK_KEY_NAME: ["OldValue", MOCK_VALUE]}
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getList':
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = add_key_to_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-        'value': MOCK_VALUE,
-        'append': 'true',
-        'allowDups': 'false'
-    })
+    result = add_key_to_list_command(
+        {"listName": MOCK_LIST_NAME, "keyName": MOCK_KEY_NAME, "value": MOCK_VALUE, "append": "true", "allowDups": "false"}
+    )
 
-    assert result.readable_output == f'Value already present in key {MOCK_KEY_NAME} of list {MOCK_LIST_NAME}: not appending.'
+    assert result.readable_output == f"Value already present in key {MOCK_KEY_NAME} of list {MOCK_LIST_NAME}: not appending."
     assert len(mocked_ec.call_args_list) == 1
 
 
@@ -314,32 +264,24 @@ def test_append_duplicate_value_to_existing_key_in_existing_list(mocker):
         - value for the key is changed in a list that contains the same value twice
         - return success message
     """
-    MOCKED_START_LIST: dict = {
-        MOCK_KEY_NAME: MOCK_VALUE
-    }
-    MOCKED_END_LIST: dict = {
-        MOCK_KEY_NAME: [MOCK_VALUE, MOCK_VALUE]
-    }
+    MOCKED_START_LIST: dict = {MOCK_KEY_NAME: MOCK_VALUE}
+    MOCKED_END_LIST: dict = {MOCK_KEY_NAME: [MOCK_VALUE, MOCK_VALUE]}
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
-        if name == 'getList':
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = add_key_to_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-        'value': MOCK_VALUE,
-        'append': 'true',
-        'allowDups': 'true'
-    })
+    result = add_key_to_list_command(
+        {"listName": MOCK_LIST_NAME, "keyName": MOCK_KEY_NAME, "value": MOCK_VALUE, "append": "true", "allowDups": "true"}
+    )
 
-    assert result.readable_output == f'Successfully updated list {MOCK_LIST_NAME}.'
+    assert result.readable_output == f"Successfully updated list {MOCK_LIST_NAME}."
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'setList'
-    assert json.loads(mocked_ec.call_args_list[1][0][1]['listData']) == MOCKED_END_LIST
+    assert mocked_ec.call_args_list[1][0][0] == "setList"
+    assert json.loads(mocked_ec.call_args_list[1][0][1]["listData"]) == MOCKED_END_LIST

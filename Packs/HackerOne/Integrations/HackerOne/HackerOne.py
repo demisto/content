@@ -1,23 +1,23 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
 import traceback
-from typing import Callable, Dict, Tuple, Any
+from collections.abc import Callable
+from typing import Any
+
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-URL_SUFFIX = {
-    "REPORTS": "reports",
-    "PROGRAMS": "me/programs"
-}
-API_VERSION = 'v1'
-BASE_URL = 'https://api.hackerone.com'
+URL_SUFFIX = {"REPORTS": "reports", "PROGRAMS": "me/programs"}
+API_VERSION = "v1"
+BASE_URL = "https://api.hackerone.com"
 DEFAULT_MAX_FETCH = "15"
 DEFAULT_FIRST_FETCH = "3 days"
 INT32 = 2147483647
@@ -29,8 +29,8 @@ HTTP_ERROR = {
     401: "Unauthenticated. Check the configured Username and API Key.",
     403: "Forbidden. Verify the URL.",
     404: "Please verify the value of Program Handle as well as the value of the URL. "
-         "\n Or the URL is not reachable. Please try again later.",
-    500: "The server encountered an internal error for HackerOne and was unable to complete your request."
+    "\n Or the URL is not reachable. Please try again later.",
+    500: "The server encountered an internal error for HackerOne and was unable to complete your request.",
 }
 
 MESSAGES = {
@@ -39,27 +39,35 @@ MESSAGES = {
     "PAGE_NUMBER": "{} is an invalid value for page number. Page number must be between 1 and int32.",
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
     "PROGRAM_HANDLE": "Program Handle is invalid. It should not be empty.",
-    "INVALID_MAX_FETCH": "{} is an invalid value for Maximum number of incidents per fetch. "
-                         "It must be between 1 and 100.",
+    "INVALID_MAX_FETCH": "{} is an invalid value for Maximum number of incidents per fetch. It must be between 1 and 100.",
     "INVALID_FIRST_FETCH": "{} is an invalid value for 'First fetch time interval'. "
-                           "It should be a valid date or relative timestamp. "
-                           "For example: '2 days', '2 months' or of the format 'yyyy-mm-dd', 'yyyy-mm-ddTHH:MM:SSZ'",
-    "FILTER": 'Please provide filter in a valid JSON format. Format accepted- \' '
-              '{"attribute1" : "value1, value2" , "attribute2" : "value3, value4"} \'.',
+    "It should be a valid date or relative timestamp. "
+    "For example: '2 days', '2 months' or of the format 'yyyy-mm-dd', 'yyyy-mm-ddTHH:MM:SSZ'",
+    "FILTER": "Please provide filter in a valid JSON format. Format accepted- ' "
+    '{"attribute1" : "value1, value2" , "attribute2" : "value3, value4"} \'.',
     "INVALID_POSITIVE_INT": "{} is an invalid value for {}. It must be between {} and {}.",
-    "INVALID_ARGUMENT": "Limit argument cannot be given with 'page_size' or 'page_number' argument."
+    "INVALID_ARGUMENT": "Limit argument cannot be given with 'page_size' or 'page_number' argument.",
 }
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API.
-    """
+    """Client class to interact with the service API."""
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool, auth: tuple, max_fetch: Optional[int],
-                 first_fetch: str,
-                 program_handle: List, severity: str, state: str, filters: str):
+    def __init__(
+        self,
+        base_url: str,
+        verify: bool,
+        proxy: bool,
+        auth: tuple,
+        max_fetch: Optional[int],
+        first_fetch: str,
+        program_handle: List,
+        severity: str,
+        state: str,
+        filters: str,
+    ):
         self.max_fetch = max_fetch
         self.first_fetch = first_fetch
         self.program_handle = program_handle
@@ -68,7 +76,7 @@ class Client(BaseClient):
         self.filters = filters
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
 
-    def report_list(self, params: Dict) -> Dict:
+    def report_list(self, params: dict) -> dict:
         """
         Returns response
         :type params: ``Dict``
@@ -78,10 +86,11 @@ class Client(BaseClient):
         :rtype: ``Dict``
         """
 
-        return self._http_request(method="GET", url_suffix=URL_SUFFIX["REPORTS"],
-                                  params=params, error_handler=self.exception_handler)
+        return self._http_request(
+            method="GET", url_suffix=URL_SUFFIX["REPORTS"], params=params, error_handler=self.exception_handler
+        )
 
-    def program_list(self, params: Dict) -> Dict:
+    def program_list(self, params: dict) -> dict:
         """
         Returns response
         :type params: ``Dict``
@@ -91,8 +100,9 @@ class Client(BaseClient):
         :rtype: ``Dict``
         """
 
-        return self._http_request(method="GET", url_suffix=URL_SUFFIX["PROGRAMS"], params=params,
-                                  error_handler=self.exception_handler)
+        return self._http_request(
+            method="GET", url_suffix=URL_SUFFIX["PROGRAMS"], params=params, error_handler=self.exception_handler
+        )
 
     @staticmethod
     def exception_handler(response: requests.models.Response):
@@ -106,7 +116,7 @@ class Client(BaseClient):
         """
 
         if response.headers.get("Content-Type") and ("text/html" in response.headers["Content-Type"]):
-            raise DemistoException(MESSAGES['COMMON_ERROR_MESSAGE'])
+            raise DemistoException(MESSAGES["COMMON_ERROR_MESSAGE"])
 
         err_msg = None
         if response.status_code == 401:
@@ -122,14 +132,13 @@ class Client(BaseClient):
             err_msg = HTTP_ERROR[403]
 
         else:
-
             # Parse json error response
             errors = response.json().get("errors", [])
             if not errors:
-                raise DemistoException(MESSAGES['COMMON_ERROR_MESSAGE'])
+                raise DemistoException(MESSAGES["COMMON_ERROR_MESSAGE"])
 
             for error in errors:
-                msg = error.get("detail", error.get("title", MESSAGES['COMMON_ERROR_MESSAGE']))
+                msg = error.get("detail", error.get("title", MESSAGES["COMMON_ERROR_MESSAGE"]))
 
                 if err_msg:
                     err_msg = f"{err_msg}\n{msg}"
@@ -139,7 +148,7 @@ class Client(BaseClient):
         raise DemistoException(err_msg)
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def remove_duplicates(data) -> List:
@@ -160,7 +169,7 @@ def remove_duplicates(data) -> List:
     return cleaned_list
 
 
-def prepare_filter_by_arguments(program_handle, severity, state, filters) -> Dict[str, Any]:
+def prepare_filter_by_arguments(program_handle, severity, state, filters) -> dict[str, Any]:
     """
     Prepares params for the filters provided by user
 
@@ -179,8 +188,7 @@ def prepare_filter_by_arguments(program_handle, severity, state, filters) -> Dic
     :return: Parameters related to the filters.
     :rtype: ``Dict[str, Any]``
     """
-    params = {"filter[program][]": program_handle, 'filter[severity][]': severity,
-              'filter[state][]': state}
+    params = {"filter[program][]": program_handle, "filter[severity][]": severity, "filter[state][]": state}
 
     if not filters:
         return params
@@ -217,7 +225,7 @@ def validate_fetch_incidents_parameters(max_fetch: Optional[int], program_handle
         raise ValueError(MESSAGES["INVALID_MAX_FETCH"].format(max_fetch))
 
     if not program_handle:
-        raise ValueError(MESSAGES['PROGRAM_HANDLE'])
+        raise ValueError(MESSAGES["PROGRAM_HANDLE"])
 
     if filters:
         try:
@@ -226,8 +234,9 @@ def validate_fetch_incidents_parameters(max_fetch: Optional[int], program_handle
             raise ValueError(MESSAGES["FILTER"])
 
 
-def prepare_fetch_incidents_parameters(max_fetch, time_to_fetch, program_handle, severity, state, filters, page) -> \
-        Dict[str, Any]:
+def prepare_fetch_incidents_parameters(
+    max_fetch, time_to_fetch, program_handle, severity, state, filters, page
+) -> dict[str, Any]:
     """
     Prepare fetch incidents params
     :type max_fetch: ``int``
@@ -253,11 +262,9 @@ def prepare_fetch_incidents_parameters(max_fetch, time_to_fetch, program_handle,
 
     """
 
-    fetch_params: Dict[str, Any] = {"page[size]": max_fetch, "sort": "reports.created_at",
-                                    "page[number]": page}
+    fetch_params: dict[str, Any] = {"page[size]": max_fetch, "sort": "reports.created_at", "page[number]": page}
 
-    fetch_params.update(
-        prepare_filter_by_arguments(program_handle, severity, state, filters))
+    fetch_params.update(prepare_filter_by_arguments(program_handle, severity, state, filters))
 
     fetch_params["filter[created_at__gt]"] = arg_to_datetime(time_to_fetch).isoformat()[:-6]  # type:ignore
 
@@ -280,7 +287,7 @@ def validate_report_list_args(args):
             raise ValueError(MESSAGES["FILTER"])
 
 
-def prepare_report_list_args(args: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_report_list_args(args: dict[str, Any]) -> dict[str, Any]:
     """
     Preapare params for hackerone-report-list command.
 
@@ -291,28 +298,25 @@ def prepare_report_list_args(args: Dict[str, Any]) -> Dict[str, Any]:
     :rtype: ``Dict[str, Any]``
     """
 
-    params: Dict[str, Any] = {
-
-        "filter[keyword]": args.get("filter_by_keyword")
-    }
+    params: dict[str, Any] = {"filter[keyword]": args.get("filter_by_keyword")}
 
     sort_by = argToList(args.get("sort_by", ""))
     if sort_by:
-        params["sort"] = ["reports." + sort_value[1:] if sort_value.startswith("-") else "-reports." + sort_value
-                          for sort_value in sort_by]
+        params["sort"] = [
+            "reports." + sort_value[1:] if sort_value.startswith("-") else "-reports." + sort_value for sort_value in sort_by
+        ]
 
     program_handle = argToList(args.get("program_handle", ""))
     state = argToList(args.get("state", ""))
     severity = argToList(args.get("severity", ""))
     filters = args.get("advanced_filter", "")
 
-    params.update(
-        prepare_filter_by_arguments(program_handle, severity, state, filters))
+    params.update(prepare_filter_by_arguments(program_handle, severity, state, filters))
 
     return assign_params(**params)
 
 
-def prepare_hr_for_programs(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_programs(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert the programs in response into human-readable markdown string.
 
@@ -330,11 +334,12 @@ def prepare_hr_for_programs(results: List[Dict[str, Any]]) -> str:
         hr["Created At"] = attributes.get("created_at")
         hr["Updated At"] = attributes.get("updated_at")
         programs_hr.append(hr)
-    return tableToMarkdown("Program(s)", programs_hr,
-                           headers=["Program ID", "Handle", "Created At", "Updated At"], removeNull=True)
+    return tableToMarkdown(
+        "Program(s)", programs_hr, headers=["Program ID", "Handle", "Created At", "Updated At"], removeNull=True
+    )
 
 
-def prepare_hr_for_reports(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_reports(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert the reports in response into human-readable markdown string.
 
@@ -361,13 +366,17 @@ def prepare_hr_for_reports(results: List[Dict[str, Any]]) -> str:
         hr["Reporter Username"] = inner_attributes.get("username")
 
         reports_hr.append(hr)
-    return tableToMarkdown("Report(s)", reports_hr,
-                           headers=["Report ID", "Reporter Username", "Title", "State", "Severity", "Created At",
-                                    "Vulnerability Information"], removeNull=True)
+    return tableToMarkdown(
+        "Report(s)",
+        reports_hr,
+        headers=["Report ID", "Reporter Username", "Title", "State", "Severity", "Created At", "Vulnerability Information"],
+        removeNull=True,
+    )
 
 
-def get_and_validate_positive_int_argument(args: Dict, argument_name: str, lower_bound: int = 1,
-                                           upper_bound: Optional[int] = None) -> Optional[int]:
+def get_and_validate_positive_int_argument(
+    args: dict, argument_name: str, lower_bound: int = 1, upper_bound: Optional[int] = None
+) -> Optional[int]:
     """
     Extracts int argument from Demisto arguments.
     If argument exists, validates that:
@@ -388,30 +397,28 @@ def get_and_validate_positive_int_argument(args: Dict, argument_name: str, lower
     if argument_value is None:
         return None
     if not lower_bound <= argument_value <= upper_bound:  # type:ignore
-        raise ValueError(
-            MESSAGES["INVALID_POSITIVE_INT"].format(argument_value, argument_name, lower_bound, upper_bound))
+        raise ValueError(MESSAGES["INVALID_POSITIVE_INT"].format(argument_value, argument_name, lower_bound, upper_bound))
     return argument_value
 
 
-def get_page_and_limit_args(args: Dict):
+def get_page_and_limit_args(args: dict):
     """
-       Receives demisto argument, and extract the relevant arguments for limits and paging:
-       'page_number', 'page_size', 'limit'.
-       Follows the logic:
-       - 'limit' argument cannot be specified with 'page' or 'page_size' argument.
-       - 'page_size' argument is within its expected lower/upper bounds.
-       - If 'limit' is not given, and 'page_size' is, sets 'limit' value to 'page_size' value.
-       - If 'limit' is not given, and 'page_size' is not given, sets 'limit' value to 'DEFAULT_PAGE_SIZE' value.
-       Args:
-           args (Dict): Demisto argument.
-       Returns:
-           - (int, int): 'page', 'limit' extracted, or their default values used.
-           - (DemistoException): If arguments don't follow the expected logic mentioned.
-       """
-    page = get_and_validate_positive_int_argument(args, 'page_number', lower_bound=LOWER_BOUND, upper_bound=INT32)
-    page_size = get_and_validate_positive_int_argument(args, 'page_size', lower_bound=LOWER_BOUND,
-                                                       upper_bound=MAXIMUM_PAGE_SIZE)
-    limit = get_and_validate_positive_int_argument(args, 'limit', lower_bound=LOWER_BOUND, upper_bound=MAXIMUM_LIMIT)
+    Receives demisto argument, and extract the relevant arguments for limits and paging:
+    'page_number', 'page_size', 'limit'.
+    Follows the logic:
+    - 'limit' argument cannot be specified with 'page' or 'page_size' argument.
+    - 'page_size' argument is within its expected lower/upper bounds.
+    - If 'limit' is not given, and 'page_size' is, sets 'limit' value to 'page_size' value.
+    - If 'limit' is not given, and 'page_size' is not given, sets 'limit' value to 'DEFAULT_PAGE_SIZE' value.
+    Args:
+        args (Dict): Demisto argument.
+    Returns:
+        - (int, int): 'page', 'limit' extracted, or their default values used.
+        - (DemistoException): If arguments don't follow the expected logic mentioned.
+    """
+    page = get_and_validate_positive_int_argument(args, "page_number", lower_bound=LOWER_BOUND, upper_bound=INT32)
+    page_size = get_and_validate_positive_int_argument(args, "page_size", lower_bound=LOWER_BOUND, upper_bound=MAXIMUM_PAGE_SIZE)
+    limit = get_and_validate_positive_int_argument(args, "limit", lower_bound=LOWER_BOUND, upper_bound=MAXIMUM_LIMIT)
     if limit and (page_size or page):
         raise ValueError(MESSAGES["INVALID_ARGUMENT"])
     if not limit and page_size:
@@ -424,7 +431,7 @@ def get_page_and_limit_args(args: Dict):
     return page, limit
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -442,15 +449,18 @@ def test_module(client: Client) -> str:
         'ok' if test passed, anything else will fail the test.
     """
 
-    if demisto.params().get('isFetch'):
+    if demisto.params().get("isFetch"):
         fetch_incidents(client, {})
     else:
         client.program_list(params={"page[size]": 1})
 
-    return 'ok'
+    return "ok"
 
 
-def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
+def fetch_incidents(
+    client: Client,
+    last_run: dict,
+) -> tuple[dict, list]:
     """Fetches incidents from HackerOne.
 
     :type client: ``Client``
@@ -471,12 +481,13 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
     # After one run we get a duplicate of the first incident, add one to reach the limit
     if last_run.get("next_created_at") and max_fetch < 100:
         max_fetch += 1
-    fetch_params = prepare_fetch_incidents_parameters(max_fetch, time_to_fetch, client.program_handle,
-                                                      client.severity, client.state, client.filters, 1)
+    fetch_params = prepare_fetch_incidents_parameters(
+        max_fetch, time_to_fetch, client.program_handle, client.severity, client.state, client.filters, 1
+    )
 
     response = client.report_list(params=fetch_params)
 
-    results = response.get('data', [])
+    results = response.get("data", [])
     next_run = last_run
     if not results:
         return next_run, []
@@ -487,11 +498,13 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
     for result in results:
         if result.get("id") not in previous_report_ids:
             new_report_ids.append(result.get("id"))
-            incidents.append({
-                'name': result.get('attributes', {}).get('title', ''),
-                'occurred': result.get('attributes', {}).get('created_at'),
-                'rawJSON': json.dumps(result)
-            })
+            incidents.append(
+                {
+                    "name": result.get("attributes", {}).get("title", ""),
+                    "occurred": result.get("attributes", {}).get("created_at"),
+                    "rawJSON": json.dumps(result),
+                }
+            )
 
     next_report_ids = new_report_ids
     created_at_last_report = results[-1].get("attributes", {}).get("created_at")
@@ -499,15 +512,12 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
     if created_at_last_report == time_to_fetch:
         next_report_ids = previous_report_ids + new_report_ids
 
-    next_run = {
-        "next_created_at": created_at_last_report,
-        "report_ids": next_report_ids
-    }
+    next_run = {"next_created_at": created_at_last_report, "report_ids": next_report_ids}
 
     return next_run, incidents
 
 
-def hackerone_program_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def hackerone_program_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves detailed information of all the programs that the user is a member of.
 
@@ -525,10 +535,10 @@ def hackerone_program_list_command(client: Client, args: Dict[str, str]) -> Comm
     outputs = []
     count = limit
     while limit > 0:
-        page_size = 100 if limit > 100 else limit
-        params: Dict[str, Any] = {"page[size]": page_size, "page[number]": page}
+        page_size = min(limit, 100)
+        params: dict[str, Any] = {"page[size]": page_size, "page[number]": page}
         raw_response = client.program_list(params=params)
-        program_list = raw_response.get('data', [])
+        program_list = raw_response.get("data", [])
         if not program_list:
             break
         raw_responses.append(raw_response)
@@ -549,15 +559,16 @@ def hackerone_program_list_command(client: Client, args: Dict[str, str]) -> Comm
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix="HackerOne.Program",
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix="HackerOne.Program",
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
-def hackerone_report_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def hackerone_report_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves list with detailed information of all the reports.
 
@@ -577,11 +588,11 @@ def hackerone_report_list_command(client: Client, args: Dict[str, str]) -> Comma
     outputs = []
     count = limit
     while limit > 0:
-        page_size = 100 if limit > 100 else limit
-        params["page[size]"] = page_size,
+        page_size = min(limit, 100)
+        params["page[size]"] = (page_size,)
         params["page[number]"] = page
         raw_response = client.report_list(params=params)
-        report_list = raw_response.get('data', [])
+        report_list = raw_response.get("data", [])
         if not report_list:
             break
         raw_responses.append(raw_response)
@@ -601,41 +612,41 @@ def hackerone_report_list_command(client: Client, args: Dict[str, str]) -> Comma
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix="HackerOne.Report",
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix="HackerOne.Report",
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
 def main():
     """main function, parses params and runs command functions"""
 
     # Commands dictionary
-    commands: Dict[str, Callable] = {
-        'hackerone-report-list': hackerone_report_list_command,
-        'hackerone-program-list': hackerone_program_list_command
+    commands: dict[str, Callable] = {
+        "hackerone-report-list": hackerone_report_list_command,
+        "hackerone-program-list": hackerone_program_list_command,
     }
 
     params = demisto.params()
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    url = urljoin(params.get('url', BASE_URL), API_VERSION)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    url = urljoin(params.get("url", BASE_URL), API_VERSION)
     credentials = params.get("username", {})
-    username = credentials.get('identifier').strip()
-    password = credentials.get('password')
+    username = credentials.get("identifier").strip()
+    password = credentials.get("password")
 
     command = demisto.command()
 
-    demisto.debug(f'[HackerOne] Command being called is {command}')
+    demisto.debug(f"[HackerOne] Command being called is {command}")
 
-    max_fetch = arg_to_number(
-        params.get("max_fetch") if params.get('max_fetch').strip() else DEFAULT_MAX_FETCH)  # type:ignore
-    first_fetch = params.get('first_fetch') if params.get('first_fetch').strip() else DEFAULT_FIRST_FETCH
+    max_fetch = arg_to_number(params.get("max_fetch") if params.get("max_fetch").strip() else DEFAULT_MAX_FETCH)  # type:ignore
+    first_fetch = params.get("first_fetch") if params.get("first_fetch").strip() else DEFAULT_FIRST_FETCH
     program_handle = argToList(params.get("program_handle", ""))
-    severity = params.get('severity', "")
-    state = params.get('state', "")
+    severity = params.get("severity", "")
+    state = params.get("state", "")
     filters = params.get("filter_by", "").strip()
 
     try:
@@ -649,14 +660,14 @@ def main():
             program_handle=program_handle,
             severity=severity,
             state=state,
-            filters=filters
+            filters=filters,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents(client, last_run)
             demisto.incidents(incidents)
@@ -668,8 +679,8 @@ def main():
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

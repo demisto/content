@@ -18,13 +18,12 @@ This playbook does not use any integrations.
 ### Scripts
 
 * Set
-* PrintErrorEntry
 
 ### Commands
 
 * core-get-quarantine-status
-* setParentIncidentContext
 * core-quarantine-files
+* setParentIncidentContext
 
 ## Playbook Inputs
 

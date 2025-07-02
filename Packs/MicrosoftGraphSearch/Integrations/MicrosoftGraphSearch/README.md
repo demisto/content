@@ -1,6 +1,6 @@
 Use the Microsoft Search API in Microsoft Graph to search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites.
-## Configure Microsoft Graph Search in Cortex
 
+## Configure Microsoft Graph Search in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,7 +13,6 @@ Use the Microsoft Search API in Microsoft Graph to search content stored in OneD
 | Application redirect URI |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -42,14 +41,14 @@ Use the Microsoft Search API in Microsoft Graph to search content stored in OneD
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_string | Represents a (text string) search query that contains search terms and optional filters. | Required | 
-| entity_type | One or more types of resources expected in the response. . Possible values are: list, site, listItem, message, event, drive, driveItem, externalItem. | Required | 
+| query_string | Represents a (text string) search query that contains search terms and optional filters. | Required |
+| entity_type | One or more types of resources expected in the response. . Possible values are: list, site, listItem, message, event, drive, driveItem, externalItem. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SearchContent | unknown | OneDrive or SharePoint content returned from the search | 
+| SearchContent | unknown | OneDrive or SharePoint content returned from the search |
 
 ### msgraph-search-generate-login-url
 

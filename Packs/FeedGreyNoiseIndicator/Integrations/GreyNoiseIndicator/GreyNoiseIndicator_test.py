@@ -1,12 +1,16 @@
-import pytest
 import json
+
 import GreyNoiseIndicator
+import pytest
 
 TEST_MODULE_DATA = [
     ("true_key", {"message": "pong", "expiration": "2025-12-31", "offering": "enterprise"}, 200, "ok"),
-    ("false_key", {"message": "pong", "expiration": "2020-12-31", "offering": "community"}, 200, "Invalid API Offering ("
-                                                                                                 "community)or Expiration Date "
-                                                                                                 "(2020-12-31 00:00:00)"),
+    (
+        "false_key",
+        {"message": "pong", "expiration": "2020-12-31", "offering": "community"},
+        200,
+        "Invalid API Offering (community)or Expiration Date (2020-12-31 00:00:00)",
+    ),
     ("dummy_key", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
     ("dummy_key", "", 429, "API Rate limit hit. Try after sometime."),
     (
@@ -31,35 +35,79 @@ GET_IP_REPUTATION_SCORE_DATA = [
     ("dummy", 0),
 ]
 
-FORMAT_TIMESTAMP_DATA = [
-    ("2023-11-23", "2023-11-23T00:00:00Z")
-]
+FORMAT_TIMESTAMP_DATA = [("2023-11-23", "2023-11-23T00:00:00Z")]
 
 FORMAT_INDICATOR_DATA = [
-    ({"ip": "1.2.3.4", "last_seen": "2000-01-01", "first_seen": "1911-12-12", "tags": [], "classification": "benign",
-      "metadata": {"country_code": "US"}},
-     "GREEN",
-     {'Type': 'IP', 'Value': '1.2.3.4',
-      'fields': {'firstseenbysource': '1911-12-12T00:00:00Z', 'geocountry': 'US', 'lastseenbysource': '2000-01-01T00:00:00Z',
-                 'tags': 'INTERNET SCANNER', 'trafficlightprotocol': 'GREEN'},
-      'rawJSON': {'classification': 'benign', 'first_seen': '1911-12-12', 'ip': '1.2.3.4', 'last_seen': '2000-01-01',
-                  'metadata': {'country_code': 'US'}, 'tags': []}, 'score': 1}),
-    ({"ip": "1.2.3.4", "last_seen": "2000-01-01", "first_seen": "1911-12-12", "tags": ['Mirai'], "classification": "benign",
-      "metadata": {"country_code": "US"}},
-     "GREEN",
-     {'Type': 'IP', 'Value': '1.2.3.4',
-      'fields': {'firstseenbysource': '1911-12-12T00:00:00Z', 'geocountry': 'US', 'lastseenbysource': '2000-01-01T00:00:00Z',
-                 'tags': 'INTERNET SCANNER,Mirai', 'trafficlightprotocol': 'GREEN'},
-      'rawJSON': {'classification': 'benign', 'first_seen': '1911-12-12', 'ip': '1.2.3.4', 'last_seen': '2000-01-01',
-                  'metadata': {'country_code': 'US'}, 'tags': ['Mirai']}, 'score': 1})
+    (
+        {
+            "ip": "1.2.3.4",
+            "last_seen": "2000-01-01",
+            "first_seen": "1911-12-12",
+            "tags": [],
+            "classification": "benign",
+            "metadata": {"country_code": "US"},
+        },
+        "GREEN",
+        {
+            "Type": "IP",
+            "Value": "1.2.3.4",
+            "fields": {
+                "firstseenbysource": "1911-12-12T00:00:00Z",
+                "geocountry": "US",
+                "lastseenbysource": "2000-01-01T00:00:00Z",
+                "tags": "INTERNET SCANNER",
+                "trafficlightprotocol": "GREEN",
+            },
+            "rawJSON": {
+                "classification": "benign",
+                "first_seen": "1911-12-12",
+                "ip": "1.2.3.4",
+                "last_seen": "2000-01-01",
+                "metadata": {"country_code": "US"},
+                "tags": [],
+            },
+            "score": 1,
+        },
+    ),
+    (
+        {
+            "ip": "1.2.3.4",
+            "last_seen": "2000-01-01",
+            "first_seen": "1911-12-12",
+            "tags": ["Mirai"],
+            "classification": "benign",
+            "metadata": {"country_code": "US"},
+        },
+        "GREEN",
+        {
+            "Type": "IP",
+            "Value": "1.2.3.4",
+            "fields": {
+                "firstseenbysource": "1911-12-12T00:00:00Z",
+                "geocountry": "US",
+                "lastseenbysource": "2000-01-01T00:00:00Z",
+                "tags": "INTERNET SCANNER,Mirai",
+                "trafficlightprotocol": "GREEN",
+            },
+            "rawJSON": {
+                "classification": "benign",
+                "first_seen": "1911-12-12",
+                "ip": "1.2.3.4",
+                "last_seen": "2000-01-01",
+                "metadata": {"country_code": "US"},
+                "tags": ["Mirai"],
+            },
+            "score": 1,
+        },
+    ),
 ]
 
 BUILD_FEED_QUERY_DATA = [
-    ('Malicious', 'last_seen:1d classification:malicious'),
-    ('Benign', 'last_seen:1d classification:benign'),
-    ('Benign + Malicious', 'last_seen:1d (classification:benign OR classification:malicious)'),
-    ('All', 'last_seen:1d'),
-    ('', '')
+    ("Malicious", "last_seen:1d classification:malicious"),
+    ("Benign", "last_seen:1d classification:benign"),
+    ("Benign + Malicious", "last_seen:1d (classification:benign OR classification:malicious)"),
+    ("All", "last_seen:1d"),
+    ("", ""),
 ]
 
 VALID_QUERY = {
@@ -79,57 +127,48 @@ VALID_QUERY = {
             "tags": [],
             "actor": "unknown",
             "classification": "unknown",
-            "cve": []
+            "cve": [],
         }
     ],
     "message": "ok",
     "query": "last_seen:1d",
-    "scroll": "scroll_token"
+    "scroll": "scroll_token",
 }
 
 COMMAND_OUTPUT = [
     {
-        'Type': 'IP',
-        'Value': '1.1.1.1',
-        'fields':
-            {
-                'firstseenbysource': '2024-01-28T00:00:00Z',
-                'geocountry': '',
-                'lastseenbysource': '2024-01-30T00:00:00Z',
-                'tags': 'INTERNET SCANNER',
-                'trafficlightprotocol': None
-            },
-        'rawJSON':
-            {
-                'actor': 'unknown',
-                'bot': False,
-                'classification': 'unknown',
-                'cve': [],
-                'first_seen': '2024-01-28',
-                'ip': '1.1.1.1',
-                'last_seen': '2024-01-30',
-                'seen': True,
-                'spoofable': False,
-                'tags': [],
-                'vpn': False,
-                'vpn_service': 'N/A'
-            },
-        'score': 2
+        "Type": "IP",
+        "Value": "1.1.1.1",
+        "fields": {
+            "firstseenbysource": "2024-01-28T00:00:00Z",
+            "geocountry": "",
+            "lastseenbysource": "2024-01-30T00:00:00Z",
+            "tags": "INTERNET SCANNER",
+            "trafficlightprotocol": None,
+        },
+        "rawJSON": {
+            "actor": "unknown",
+            "bot": False,
+            "classification": "unknown",
+            "cve": [],
+            "first_seen": "2024-01-28",
+            "ip": "1.1.1.1",
+            "last_seen": "2024-01-30",
+            "seen": True,
+            "spoofable": False,
+            "tags": [],
+            "vpn": False,
+            "vpn_service": "N/A",
+        },
+        "score": 2,
     }
 ]
 
-GET_INDICATORS_COMMAND_DATA = [
-    ({}, VALID_QUERY, 200, COMMAND_OUTPUT)
-]
+GET_INDICATORS_COMMAND_DATA = [({}, VALID_QUERY, 200, COMMAND_OUTPUT)]
 
-FETCH_INDICATORS_DATA = [
-    ('success', VALID_QUERY, 200, COMMAND_OUTPUT),
-    ('failure', {}, 400, '(400, {})')
-]
+FETCH_INDICATORS_DATA = [("success", VALID_QUERY, 200, COMMAND_OUTPUT), ("failure", {}, 400, "(400, {})")]
 
-FETCH_INDICATORS_COMMAND_DATA = [
-    ({}, VALID_QUERY, 200, COMMAND_OUTPUT)
-]
+FETCH_INDICATORS_COMMAND_DATA = [({}, VALID_QUERY, 200, COMMAND_OUTPUT)]
 
 
 class DummyResponse:
@@ -154,9 +193,7 @@ def test_test_module(api_key, api_response, status_code, expected_output, mocker
     """
     Tests test_module for GreyNoise integration.
     """
-    client = GreyNoiseIndicator.Client(
-        api_key, "dummy_server", 10, "proxy", False, "dummy_integration"
-    )
+    client = GreyNoiseIndicator.Client(api_key, "dummy_server", 10, "proxy", False, "dummy_integration")
     if isinstance(api_key, str) and api_key == "true_key":
         mocker.patch("greynoise.GreyNoise._request", return_value=api_response)
         response = GreyNoiseIndicator.test_module(client)

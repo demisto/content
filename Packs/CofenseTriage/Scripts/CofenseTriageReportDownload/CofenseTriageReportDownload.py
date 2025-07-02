@@ -1,7 +1,6 @@
 from CommonServerPython import *
 
-
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def get_report_list(args: Dict[str, Any]) -> list:
@@ -15,8 +14,8 @@ def get_report_list(args: Dict[str, Any]) -> list:
     """
 
     # Fetch reports based on from_address
-    filter_by = "{\"from_address\":\"" + args.get('email', '') + "\"}"
-    reports = execute_command('cofense-report-list', {'filter_by': filter_by}, extract_contents=False)
+    filter_by = '{"from_address":"' + args.get("email", "") + '"}'
+    reports = execute_command("cofense-report-list", {"filter_by": filter_by}, extract_contents=False)
 
     # Populate response
     return reports
@@ -40,13 +39,13 @@ def download_reports(reports: list) -> list:
         reports = reports[0]["Contents"]["data"]
         for report in reports:
             report_id = report.get("id")
-            result = execute_command('cofense-report-download', {'id': report_id}, extract_contents=False)
+            result = execute_command("cofense-report-download", {"id": report_id}, extract_contents=False)
             results.append(result[0])
 
         return results
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -56,11 +55,11 @@ def main():
         return_results(results)
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute CofenseTriageReportDownload. Error: {str(e)}')
+        return_error(f"Failed to execute CofenseTriageReportDownload. Error: {e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

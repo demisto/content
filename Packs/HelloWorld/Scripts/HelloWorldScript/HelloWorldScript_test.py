@@ -55,32 +55,26 @@ def test_say_hello():
         Then:
             - Verify that the output is as expected (an 'Hello' prefix was added to the input string).
     """
-    result = say_hello('Dbot')
+    result = say_hello("Dbot")
 
-    assert result == 'Hello Dbot'
+    assert result == "Hello Dbot"
 
 
 def test_say_hello_command():
     """
-    Tests the 'say_hello_command'.
+        Tests the 'say_hello_command'.
 
-        Given:
-            - Demisto args object with a name argument..
+            Given:
+                - Demisto args object with a name argument..
 
-        When:
-            - Running the 'say_hello_command'.
-˚
-        Then:
-            - Verify that the output is as expected (an 'Hello' prefix was added to the name).
+            When:
+                - Running the 'say_hello_command'.
+    ˚
+            Then:
+                - Verify that the output is as expected (an 'Hello' prefix was added to the name).
     """
-    args = {
-        'name': 'Dbot'
-    }
+    args = {"name": "Dbot"}
 
     response = say_hello_command(args)
 
-    assert response.outputs == {
-        'HelloWorld': {
-            'hello': 'Hello Dbot'
-        }
-    }
+    assert response.outputs == {"HelloWorld": {"hello": "Hello Dbot"}}

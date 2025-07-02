@@ -1,16 +1,16 @@
-import pytest
 import re
 
 import demistomock as demisto
+import pytest
 from IsIncidentPartOfCampaign import main
 
 INCIDENTS: list[dict] = [
-    {'id': '1', 'type': 'Phishing Campaign'},
-    {'id': '2', 'type': 'Phishing Campaign'},
-    {'id': '3', 'type': 'Phishing'},
-    {'id': '4', 'type': 'Phishing', 'partofcampaign': '1'},
-    {'id': '5', 'type': 'Phishing', 'partofcampaign': '2'},
-    {'id': '6', 'type': 'Phishing'},
+    {"id": "1", "type": "Phishing Campaign"},
+    {"id": "2", "type": "Phishing Campaign"},
+    {"id": "3", "type": "Phishing"},
+    {"id": "4", "type": "Phishing", "partofcampaign": "1"},
+    {"id": "5", "type": "Phishing", "partofcampaign": "2"},
+    {"id": "6", "type": "Phishing"},
 ]
 
 

@@ -15,7 +15,7 @@ def main():
     try:
         # Get Args
         args = demisto.args()
-        str_utc_time = args['value']  # direct access, since this argument is required
+        str_utc_time = args["value"]  # direct access, since this argument is required
 
         # Convert UTC time string to a datetime type
         utc_time = dateparser.parse(str_utc_time)
@@ -24,8 +24,8 @@ def main():
         return_results(convert_time(time_to_convert=utc_time))
 
     except Exception as e:
-        return_error(f'Convert DateTimeToLDAPTime to LDAP Time command failed. Error: {str(e)}')
+        return_error(f"Convert DateTimeToLDAPTime to LDAP Time command failed. Error: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -1,15 +1,16 @@
+import traceback
+from typing import Any
+
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Dict, Any
-import traceback
 
 
-def wait_for_key(args: Dict[str, Any]):
-    context_key = args.get('context_key', 'None')
+def wait_for_key(args: dict[str, Any]):
+    context_key = args.get("context_key", "None")
 
     max_iterations = 10
     try:
-        max_iterations = int(args.get('iterations', 10))
+        max_iterations = int(args.get("iterations", 10))
     except (ValueError, TypeError):
         return_error('Please provide an integer value for "iterations"')
 
@@ -23,13 +24,11 @@ def wait_for_key(args: Dict[str, Any]):
         itr = itr + 1
 
     if done is False:
-        readable_output = f'Could not find "{context_key}" after "{str(itr)}" iterations'
+        readable_output = f'Could not find "{context_key}" after "{itr!s}" iterations'
     else:
-        readable_output = f'Found "{context_key}" after "{str(itr)}" iterations'
+        readable_output = f'Found "{context_key}" after "{itr!s}" iterations'
 
-    return CommandResults(
-        readable_output=readable_output
-    )
+    return CommandResults(readable_output=readable_output)
 
 
 def main():
@@ -39,10 +38,10 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute wait_for_key. Error: {str(ex)}')
+        return_error(f"Failed to execute wait_for_key. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

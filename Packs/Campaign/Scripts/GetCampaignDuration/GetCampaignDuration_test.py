@@ -1,11 +1,9 @@
 from unittest.mock import patch
-from freezegun import freeze_time
-
-from GetCampaignDuration import get_duration_html
-
-import pytest
 
 import demistomock as demisto
+import pytest
+from freezegun import freeze_time
+from GetCampaignDuration import get_duration_html
 
 CAMPAIGN_WITH_DURATION_RESULT = """
                 <table style="margin-left:auto;margin-right:auto;">
@@ -32,8 +30,9 @@ CAMPAIGN_WITH_DURATION_RESULT = """
 CURRENT_TIME_MOCK = "05-08-2021 14:40:22"
 
 
-@pytest.mark.parametrize('EmailCampaign_context, result',
-                         [({"firstIncidentDate": "2021-04-07T16:00:52.602353+00:00"}, CAMPAIGN_WITH_DURATION_RESULT)])
+@pytest.mark.parametrize(
+    "EmailCampaign_context, result", [({"firstIncidentDate": "2021-04-07T16:00:52.602353+00:00"}, CAMPAIGN_WITH_DURATION_RESULT)]
+)
 @freeze_time(CURRENT_TIME_MOCK)
 def test_campaign_with_duration(mocker, EmailCampaign_context, result):
     """
@@ -48,18 +47,17 @@ def test_campaign_with_duration(mocker, EmailCampaign_context, result):
 
     """
     # prepare
-    mocker.patch.object(demisto, "incident", return_value={'id': "100"})
-    mocker.patch.object(demisto, "executeCommand",
-                        return_value=[
-                            {'Contents': {
-                                'context': {"EmailCampaign": EmailCampaign_context}}}])
+    mocker.patch.object(demisto, "incident", return_value={"id": "100"})
+    mocker.patch.object(
+        demisto, "executeCommand", return_value=[{"Contents": {"context": {"EmailCampaign": EmailCampaign_context}}}]
+    )
 
     # run
     res = get_duration_html()
     assert "".join(res.split()) == "".join(result.split())
 
 
-@patch('GetCampaignDuration.return_error')
+@patch("GetCampaignDuration.return_error")
 @freeze_time(CURRENT_TIME_MOCK)
 def test_campaign_without_duration(mock_return_error, mocker):
     """
@@ -74,11 +72,8 @@ def test_campaign_without_duration(mock_return_error, mocker):
 
     """
     # prepare
-    mocker.patch.object(demisto, "incident", return_value={'id': "100"})
-    mocker.patch.object(demisto, "executeCommand",
-                        return_value=[
-                            {'Contents': {
-                                'context': {"EmailCampaign": {}}}}])
+    mocker.patch.object(demisto, "incident", return_value={"id": "100"})
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": {"context": {"EmailCampaign": {}}}}])
 
     # run
     res = get_duration_html()

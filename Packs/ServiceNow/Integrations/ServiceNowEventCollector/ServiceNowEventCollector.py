@@ -1,7 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-
 import urllib3
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -19,8 +18,19 @@ PREVIOUS_RUN_IDS = {AUDIT: "previous_run_ids", SYSLOG_TRANSACTIONS: "previous_ru
 
 
 class Client:
-    def __init__(self, use_oauth, credentials, client_id, client_secret, url, verify, proxy, api_server_url, fetch_limit_audit,
-                 fetch_limit_syslog):
+    def __init__(
+        self,
+        use_oauth,
+        credentials,
+        client_id,
+        client_secret,
+        url,
+        verify,
+        proxy,
+        api_server_url,
+        fetch_limit_audit,
+        fetch_limit_syslog,
+    ):
         self.sn_client = ServiceNowClient(
             credentials=credentials,
             use_oauth=use_oauth,
@@ -52,6 +62,7 @@ class Client:
             url_suffix=None,
             params=remove_empty_elements(params),
         )
+
         return res.get("result")
 
 
@@ -72,14 +83,15 @@ def handle_log_types(event_types_to_fetch: list) -> list:
               If an event type title is not found, an exception is raised.
     """
     log_types = []
-    VALID_EVENT_TITLES = ['Audit', 'Syslog Transactions']
-    titles_to_types = {'Audit': AUDIT, 'Syslog Transactions': SYSLOG_TRANSACTIONS}
+    VALID_EVENT_TITLES = ["Audit", "Syslog Transactions"]
+    titles_to_types = {"Audit": AUDIT, "Syslog Transactions": SYSLOG_TRANSACTIONS}
     for type_title in event_types_to_fetch:
         if log_type := titles_to_types.get(type_title):
             log_types.append(log_type)
         else:
             raise DemistoException(
-                f"'{type_title}' is not valid event type, please select from the following list: {VALID_EVENT_TITLES}")
+                f"'{type_title}' is not valid event type, please select from the following list: {VALID_EVENT_TITLES}"
+            )
     return log_types
 
 
@@ -207,7 +219,7 @@ def get_events_command(client: Client, args: dict, log_type: str, last_run: dict
     Returns:
         Sign on logs from Workday.
     """
-    types_to_titles = {AUDIT: 'Audit', SYSLOG_TRANSACTIONS: 'Syslog Transactions'}
+    types_to_titles = {AUDIT: "Audit", SYSLOG_TRANSACTIONS: "Syslog Transactions"}
     all_events = []
     if arg_from := args.get("from_date"):
         from_date = arg_from
@@ -219,8 +231,12 @@ def get_events_command(client: Client, args: dict, log_type: str, last_run: dict
     logs = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)
     add_time_field(logs, log_type)
     demisto.debug(f"Got a total of {len(logs)} {log_type} events created after {from_date}")
-    hr = tableToMarkdown(name=f'{types_to_titles[log_type]} Events', t=logs, removeNull=True,
-                         headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)))
+    hr = tableToMarkdown(
+        name=f"{types_to_titles[log_type]} Events",
+        t=logs,
+        removeNull=True,
+        headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)),
+    )
     all_events.extend(logs)
 
     return all_events, CommandResults(readable_output=hr)
@@ -257,6 +273,38 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
             collected_events.extend(events)
 
     return collected_events, last_run
+
+
+def login_command(client: Client, user_name: str, password: str):
+    """
+    Login the user using OAuth authorization
+    Args:
+        client: Client object with request.
+        user_name: Username.
+        password: Password.
+    Returns:
+        Demisto Outputs.
+    """
+    # Verify that the user selected the `Use OAuth Login` checkbox:
+    if not client.sn_client.use_oauth:
+        return_error(
+            "!service-now-oauth-login command can be used only when using OAuth 2.0 authorization.\n "
+            "Please select the `Use OAuth Login` checkbox in the instance configuration before running this "
+            "command."
+        )
+
+    try:
+        client.sn_client.login(user_name, password)
+        return (
+            "Logged in successfully.\n A refresh token was saved to the integration context and will be "
+            "used to generate a new access token once the current one expires."
+        )
+    except Exception as e:
+        return_error(
+            f"Failed to login. Please verify that the provided username and password are correct, and that you"
+            f" entered the correct client id and client secret in the instance configuration (see ? for"
+            f"correct usage when using OAuth).\n\n{e}"
+        )
 
 
 def module_of_testing(client: Client, log_types: list) -> str:  # pragma: no cover
@@ -296,7 +344,7 @@ def main() -> None:  # pragma: no cover
     password = credentials.get("password")
     max_fetch_audit = arg_to_number(params.get("max_fetch")) or 10000
     max_fetch_syslog = arg_to_number(params.get("max_fetch_syslog_transactions")) or 10000
-    event_types_to_fetch = argToList(params.get('event_types_to_fetch', ['Audit']))
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Audit"]))
     log_types = handle_log_types(event_types_to_fetch)
 
     version = params.get("api_version")
@@ -320,7 +368,7 @@ def main() -> None:  # pragma: no cover
             proxy=proxy,
             api_server_url=api_server_url,
             fetch_limit_audit=max_fetch_audit,
-            fetch_limit_syslog=max_fetch_syslog
+            fetch_limit_syslog=max_fetch_syslog,
         )
         last_run = demisto.getLastRun()
         if client.sn_client.use_oauth and not get_integration_context().get("refresh_token", None):
@@ -349,13 +397,16 @@ def main() -> None:  # pragma: no cover
                     # saves next_run for the time fetch-events is invoked
                     demisto.debug(f"Setting new last_run to {next_run}")
                     demisto.setLastRun(next_run)
+        elif command == "service-now-oauth-login":
+            return_results(login_command(client=client, user_name=user_name, password=password))
+
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.info(f"here {str(e)}")
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        demisto.info(f"here {e!s}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 from ServiceNowApiModule import *  # noqa: E402

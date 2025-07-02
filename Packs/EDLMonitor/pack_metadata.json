@@ -2,7 +2,7 @@
     "name": "EDL Monitor",
     "description": "This content pack can monitor EDL contents a by emailing the content of an EDL as a zipped file to a specified user at an interval (simply configure a job to run the playbook included), and/or simply monitor the EDL for availability and email the user if the EDL is not available",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Andrew Murret",
     "url": "",
     "email": "",
@@ -15,9 +15,16 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "amurret"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

@@ -1,12 +1,13 @@
-import demistomock as demisto
 import json
+
+import demistomock as demisto
 
 
 def executeCommand(name, args=None):
-    if name == 'core-api-get' and args and 'uri' in args and args['uri'] == "/incidentfields":
-        file_name = 'TestData/integration_incidentfields.json'
+    if name == "core-api-get" and args and "uri" in args and args["uri"] == "/incidentfields":
+        file_name = "TestData/integration_incidentfields.json"
     else:
-        raise ValueError(f'Unimplemented command called: {name}')
+        raise ValueError(f"Unimplemented command called: {name}")
 
     with open(file_name) as f:
         raw_data = f.read()
@@ -24,40 +25,31 @@ def parseJsonFile(file_name):
 def test_main(mocker):
     from IncidentFields import main
 
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
     # test custom fields with short names
-    mocker.patch.object(demisto, 'args', return_value={
-        'exclude_system_fields': 'true',
-        'short_names': 'true'
-    })
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "args", return_value={"exclude_system_fields": "true", "short_names": "true"})
+    mocker.patch.object(demisto, "results")
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert results == parseJsonFile('./TestData/output_exclude_system_fields_true_shortnames.json')
-    assert 'dbotcreated' not in results
+    assert results == parseJsonFile("./TestData/output_exclude_system_fields_true_shortnames.json")
+    assert "dbotcreated" not in results
 
     # test custom fields with long names
-    mocker.patch.object(demisto, 'args', return_value={
-        'exclude_system_fields': 'true',
-        'short_names': 'false'
-    })
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "args", return_value={"exclude_system_fields": "true", "short_names": "false"})
+    mocker.patch.object(demisto, "results")
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert results == parseJsonFile('./TestData/output_exclude_system_fields_true_longnames.json')
-    assert 'dbotClosed' not in results
+    assert results == parseJsonFile("./TestData/output_exclude_system_fields_true_longnames.json")
+    assert "dbotClosed" not in results
 
     # test system fields with short names
-    mocker.patch.object(demisto, 'args', return_value={
-        'exclude_system_fields': 'false',
-        'short_names': 'true'
-    })
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "args", return_value={"exclude_system_fields": "false", "short_names": "true"})
+    mocker.patch.object(demisto, "results")
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert results == parseJsonFile('./TestData/output_exclude_system_fields_false_shortnames.json')
-    assert 'labels' in results
+    assert results == parseJsonFile("./TestData/output_exclude_system_fields_false_shortnames.json")
+    assert "labels" in results

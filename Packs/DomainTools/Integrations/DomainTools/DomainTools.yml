@@ -4,9 +4,9 @@ commonfields:
   version: -1
 name: DomainTools
 fromversion: 5.0.0
-display: DomainTools
+display: DomainTools (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Domain name, DNS and Internet OSINT-based cyber threat intelligence and cybercrime forensics products and data.
+description: Deprecated. Use DomainTools Iris Pack instead.
 configuration:
 - display: DomainTools API URL
   name: server
@@ -76,6 +76,7 @@ script:
     - name: domain
       required: true
       description: Domain name to check reputation.
+      default: true
     - name: long
       description: Should we return full response with detected URLs.
     - name: sampleSize
@@ -102,6 +103,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
     description: Retrieve domain information.
+    deprecated: true
   - name: domainSearch
     arguments:
     - name: query
@@ -160,6 +162,7 @@ script:
     - contextPath: Domain.Name
       description: Domain found by command.
     description: Search for domain based on the given parameters.
+    deprecated: true
   - name: reverseIP
     arguments:
     - name: ip
@@ -175,6 +178,7 @@ script:
     - contextPath: Domain.DNS.Address
       description: IP address.
     description: Reverse loopkup of an IP address.
+    deprecated: true
   - name: reverseNameServer
     arguments:
     - name: nameServer
@@ -187,6 +191,7 @@ script:
     - contextPath: Domain.Name
       description: Name of domain.
     description: Reverse nameserver lookup.
+    deprecated: true
   - name: reverseWhois
     arguments:
     - name: terms
@@ -209,6 +214,7 @@ script:
     - contextPath: Domain.Name
       description: Name of domain.
     description: Reverse lookup of whois information.
+    deprecated: true
   - name: whois
     arguments:
     - name: query
@@ -228,6 +234,7 @@ script:
     - contextPath: Domain.Whois
       description: Whois data.
     description: Provides registration details about a domain.
+    deprecated: true
   - name: whoisHistory
     arguments:
     - name: domain
@@ -240,8 +247,13 @@ script:
     - contextPath: Domain.WhoisHistory
       description: Domain Whois history data.
     description: Display a history of whois for a given domain.
+    deprecated: true
   - name: domainProfile
     description: Display profile for a given domain.
     arguments:
     - name: domain
       description: Specify domain e.g. mycompany.com.
+    deprecated: true
+deprecated: true
+tests:
+- No tests (deprecated)

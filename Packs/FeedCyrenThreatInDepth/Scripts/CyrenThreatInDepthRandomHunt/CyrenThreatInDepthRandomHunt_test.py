@@ -1,38 +1,31 @@
-import pytest
 import demistomock as demisto
-from CommonServerPython import entryTypes, DemistoException
-
+import pytest
+from CommonServerPython import DemistoException, entryTypes
 
 FIND_INDICATORS_NORMAL = [
     {
         "Type": entryTypes["note"],
-        "Contents": [{
-            "value": "http://google.de",
-            "indicator_type": "URL",
-        }]
+        "Contents": [
+            {
+                "value": "http://google.de",
+                "indicator_type": "URL",
+            }
+        ],
     }
 ]
 
-ERROR = [
-    {
-        "Type": entryTypes["error"],
-        "Contents": [{}]
-    }
-]
+ERROR = [{"Type": entryTypes["error"], "Contents": [{}]}]
 
-FIND_INDICATORS_EMPTY = [
-    {
-        "Type": entryTypes["note"],
-        "Contents": []
-    }
-]
+FIND_INDICATORS_EMPTY = [{"Type": entryTypes["note"], "Contents": []}]
 
 
-def executeCommand(find_indicators_result=FIND_INDICATORS_NORMAL,
-                   find_indicators_error=False,
-                   get_users_error=False,
-                   create_new_incident_error=False,
-                   investigate_error=False):
+def executeCommand(
+    find_indicators_result=FIND_INDICATORS_NORMAL,
+    find_indicators_error=False,
+    get_users_error=False,
+    create_new_incident_error=False,
+    investigate_error=False,
+):
     def inner(command, args=None):
         if command == "findIndicators":
             if find_indicators_error:
@@ -44,9 +37,11 @@ def executeCommand(find_indicators_result=FIND_INDICATORS_NORMAL,
             return [
                 {
                     "Type": entryTypes["note"],
-                    "Contents": [{
-                        "id": "admin",
-                    }]
+                    "Contents": [
+                        {
+                            "id": "admin",
+                        }
+                    ],
                 }
             ]
         elif command == "createNewIncident":
@@ -58,7 +53,7 @@ def executeCommand(find_indicators_result=FIND_INDICATORS_NORMAL,
                     "Contents": [{}],
                     "EntryContext": {
                         "CreatedIncidentID": "1234",
-                    }
+                    },
                 }
             ]
         elif command == "investigate":
@@ -75,38 +70,65 @@ def executeCommand(find_indicators_result=FIND_INDICATORS_NORMAL,
     return inner
 
 
-@pytest.mark.parametrize("args, expected_incident", [
-    (
-        {},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "Hunt",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
-    ),
-    (
-        {"assignee": "other.user"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "Hunt",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "other.user"}
-    ),
-    (
-        {"assignee": "other.user", "incident_type": "My Type"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "My Type",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "other.user"}
-    ),
-    (
-        {"indicator_type": "ip_reputation"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "Hunt",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
-    ),
-    (
-        {"incident_type": "My Type"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "My Type",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
-    ),
-    (
-        {"indicator_type": "ip_reputation", "incident_type": "My Type"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "My Type",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
-    ),
-])
+@pytest.mark.parametrize(
+    "args, expected_incident",
+    [
+        (
+            {},
+            {
+                "name": "Cyren Threat InDepth Threat Hunt",
+                "type": "Hunt",
+                "details": "indicator_type: URL\nvalue: http://google.de\n",
+                "owner": "admin",
+            },
+        ),
+        (
+            {"assignee": "other.user"},
+            {
+                "name": "Cyren Threat InDepth Threat Hunt",
+                "type": "Hunt",
+                "details": "indicator_type: URL\nvalue: http://google.de\n",
+                "owner": "other.user",
+            },
+        ),
+        (
+            {"assignee": "other.user", "incident_type": "My Type"},
+            {
+                "name": "Cyren Threat InDepth Threat Hunt",
+                "type": "My Type",
+                "details": "indicator_type: URL\nvalue: http://google.de\n",
+                "owner": "other.user",
+            },
+        ),
+        (
+            {"indicator_type": "ip_reputation"},
+            {
+                "name": "Cyren Threat InDepth Threat Hunt",
+                "type": "Hunt",
+                "details": "indicator_type: URL\nvalue: http://google.de\n",
+                "owner": "admin",
+            },
+        ),
+        (
+            {"incident_type": "My Type"},
+            {
+                "name": "Cyren Threat InDepth Threat Hunt",
+                "type": "My Type",
+                "details": "indicator_type: URL\nvalue: http://google.de\n",
+                "owner": "admin",
+            },
+        ),
+        (
+            {"indicator_type": "ip_reputation", "incident_type": "My Type"},
+            {
+                "name": "Cyren Threat InDepth Threat Hunt",
+                "type": "My Type",
+                "details": "indicator_type: URL\nvalue: http://google.de\n",
+                "owner": "admin",
+            },
+        ),
+    ],
+)
 def test_create_random_hunt_incident(mocker, args, expected_incident):
     """
     Given: Different arg input
@@ -119,8 +141,9 @@ def test_create_random_hunt_incident(mocker, args, expected_incident):
     result = create_random_hunt_incident(args)
 
     demisto.executeCommand.assert_any_call("createNewIncident", expected_incident)
-    assert result.readable_output == ("Successfully created incident Cyren Threat InDepth Threat Hunt.\n"
-                                      "Click here to investigate: [1234](#/incident/1234).")
+    assert result.readable_output == (
+        "Successfully created incident Cyren Threat InDepth Threat Hunt.\nClick here to investigate: [1234](#/incident/1234)."
+    )
 
 
 def test_create_random_hunt_incident_find_indicators_error(mocker):
@@ -161,8 +184,9 @@ def test_create_random_hunt_incident_get_current_user_error(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(get_users_error=True))
     result = create_random_hunt_incident({})
 
-    assert result.readable_output == ("Successfully created incident Cyren Threat InDepth Threat Hunt.\n"
-                                      "Click here to investigate: [1234](#/incident/1234).")
+    assert result.readable_output == (
+        "Successfully created incident Cyren Threat InDepth Threat Hunt.\nClick here to investigate: [1234](#/incident/1234)."
+    )
 
 
 def test_create_random_hunt_incident_create_new_incident_error(mocker):
@@ -190,6 +214,8 @@ def test_create_random_hunt_incident_investigate_error(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(investigate_error=True))
     result = create_random_hunt_incident({})
 
-    assert result.readable_output == ("Successfully created incident Cyren Threat InDepth Threat Hunt.\n"
-                                      "Click here to investigate: [1234](#/incident/1234).\n"
-                                      "(An investigation has not been started.)")
+    assert result.readable_output == (
+        "Successfully created incident Cyren Threat InDepth Threat Hunt.\n"
+        "Click here to investigate: [1234](#/incident/1234).\n"
+        "(An investigation has not been started.)"
+    )

@@ -1,6 +1,6 @@
 Use the Snort IP Block List feed integration to fetch IP indicators from [Snort](https://snort.org/).
-## Configure Snort IP Blocklist in Cortex
 
+## Configure Snort IP Blocklist in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,22 +16,24 @@ Use the Snort IP Block List feed integration to fetch IP indicators from [Snort]
 | Tags | Supports CSV values. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### snort-get-ip-blocklist-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `snort-get-ip-blocklist-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 10. | Optional | 
-
+| limit | The maximum number of results to return. Default is 10. | Optional |
 
 #### Context Output
 

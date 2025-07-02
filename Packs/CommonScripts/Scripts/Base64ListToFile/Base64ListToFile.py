@@ -1,25 +1,26 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import base64
 import zlib
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def base64_list_to_file(args):
     # Output file name
-    if 'filename' in args:
-        outfilename = args['filename']
+    if "filename" in args:
+        outfilename = args["filename"]
     else:
-        outfilename = args['listname']
+        outfilename = args["listname"]
 
     # get the list
-    res = demisto.executeCommand('getList', {'listName': args['listname']})
+    res = demisto.executeCommand("getList", {"listName": args["listname"]})
     res = res[0]
     if is_error(res):
-        raise DemistoException("error reading list %s from demisto" % args['listname'])
+        raise DemistoException(f"error reading list {args['listname']} from demisto")
 
     # convert base64 file to binary file
-    bin_file = base64.decodebytes(bytes(res['Contents'], 'utf-8'))
-    if args.get('isZipFile', 'no') == 'yes':
+    bin_file = base64.decodebytes(bytes(res["Contents"], "utf-8"))
+    if args.get("isZipFile", "no") == "yes":
         bin_file = zlib.decompress(bin_file)
 
     # output file to warroom

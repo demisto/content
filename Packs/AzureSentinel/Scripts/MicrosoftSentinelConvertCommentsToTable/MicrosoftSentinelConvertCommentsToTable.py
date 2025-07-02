@@ -30,35 +30,30 @@ def convert_to_table(context_results: str) -> CommandResults:
     context_results = json.loads(context_results)
 
     context_formatted = [
-        format_comment(comment) for comment in context_results  # type: ignore
+        format_comment(comment)
+        for comment in context_results  # type: ignore
     ]
 
     md = tableToMarkdown(
-        '',
+        "",
         context_formatted,
         headers=["message", "createdTime", "name"],
         removeNull=True,
         sort_headers=False,
-        headerTransform=pascalToSpace
+        headerTransform=pascalToSpace,
     )
 
-    return CommandResults(
-        readable_output=md
-    )
+    return CommandResults(readable_output=md)
 
 
 def main():  # pragma: no cover
-    context = dict_safe_get(
-        demisto.callingContext,
-        ['context', 'Incidents', 0, 'CustomFields', 'microsoftsentinelcomments'],
-        {}
-    )
+    context = dict_safe_get(demisto.callingContext, ["context", "Incidents", 0, "CustomFields", "microsoftsentinelcomments"], {})
 
     if not context:
-        return_error('No data to present')
+        return_error("No data to present")
 
     return_results(convert_to_table(str(context)))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

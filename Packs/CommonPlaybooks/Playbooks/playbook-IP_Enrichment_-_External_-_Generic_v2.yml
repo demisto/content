@@ -850,7 +850,7 @@ inputs:
   description: |-
     Whether to execute common logic, like the classification of IP addresses to ranges and resolving, in the the main (IP Enrichment - Generic v2) enrichment playbook, instead of in the sub-playbooks.
     Possible values are: True, False.
-    
+
     Setting this to True and using the parent playbook will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks, improving the performance of the playbook and reducing the overfall size of the incident.
   playbookInputQuery:
 outputs:
@@ -940,3 +940,8 @@ tests:
 contentitemexportablefields:
   contentitemfields: {}
 system: true
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

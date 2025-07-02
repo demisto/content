@@ -81,12 +81,8 @@ def test_get_comments_no_comments(mocker):
 
 
 def test_main(mocker):
-    mocker.patch.object(
-        demisto, "incident", return_value={"CustomFields": {"alertid": "alert_id"}}
-    )
-    mocker.patch(
-        "SekoiaXDRPrintComments.get_comments", return_value="Comments: testcomment"
-    )
+    mocker.patch.object(demisto, "incident", return_value={"CustomFields": {"alertid": "alert_id"}})
+    mocker.patch("SekoiaXDRPrintComments.get_comments", return_value="Comments: testcomment")
     mocker.patch.object(demisto, "results")
 
     main()

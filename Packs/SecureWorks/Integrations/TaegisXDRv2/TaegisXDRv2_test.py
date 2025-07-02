@@ -31,7 +31,7 @@ from TaegisXDRv2 import (
 from test_data.data import *  # nopycln: import
 
 
-''' UTILITY FUNCTIONS '''
+""" UTILITY FUNCTIONS """
 
 
 def mock_client(requests_mock, mock_response):
@@ -47,18 +47,17 @@ def mock_client(requests_mock, mock_response):
     return client
 
 
-''' TESTS '''
+""" TESTS """
 
 
 def test_execute_playbook(requests_mock):
-    """Tests taegis-execute-playbook command function
-    """
+    """Tests taegis-execute-playbook command function"""
     client = mock_client(requests_mock, EXECUTE_PLAYBOOK_RESPONSE)
     args = {
         "id": TAEGIS_PLAYBOOK_INSTANCE_ID,
         "inputs": {
             "MyInput": "MyValue",
-        }
+        },
     }
 
     response = execute_playbook_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
@@ -87,30 +86,24 @@ def test_fetch_alerts(requests_mock):
 
 
 def test_fetch_alerts_by_id(requests_mock):
-    """Tests taegis-fetch-alert command function
-    """
+    """Tests taegis-fetch-alert command function"""
     client = mock_client(requests_mock, FETCH_ALERTS_BY_ID_RESPONSE)
 
     # Test with IDs set (list)
-    args = {
-        "ids": ["alert://priv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6"]
-    }
+    args = {"ids": ["alert://priv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6"]}
     response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
 
     # Test with IDs set (comma separated list)
-    args = {
-        "ids": "alert://priv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6"
-    }
+    args = {"ids": "alert://priv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6"}
     response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
 
 
 def test_fetch_assets(requests_mock):
-    """Tests taegis-fetch-assets command function
-    """
+    """Tests taegis-fetch-assets command function"""
 
     client = mock_client(requests_mock, FETCH_ASSETS_RESPONSE)
     args = {
@@ -122,9 +115,7 @@ def test_fetch_assets(requests_mock):
     assert response.outputs == [TAEGIS_ASSET]
 
     # Test allowed search fields
-    args = {
-        "host_id": TAEGIS_ASSET["hostId"]
-    }
+    args = {"host_id": TAEGIS_ASSET["hostId"]}
     response = fetch_assets_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs[0] == TAEGIS_ASSET
     assert len(response.outputs) == len([TAEGIS_ASSET])
@@ -136,8 +127,7 @@ def test_fetch_assets(requests_mock):
 
 
 def test_create_comment(requests_mock):
-    """Tests taegis-create-comment command function
-    """
+    """Tests taegis-create-comment command function"""
     client = mock_client(requests_mock, CREATE_COMMENT_RESPONSE)
 
     # comment not set
@@ -165,8 +155,7 @@ def test_create_comment(requests_mock):
 
 
 def test_fetch_comment_by_id(requests_mock):
-    """Tests taegis-fetch-comment command function
-    """
+    """Tests taegis-fetch-comment command function"""
     client = mock_client(requests_mock, FETCH_COMMENT_RESPONSE)
 
     # comment_id not set
@@ -186,8 +175,7 @@ def test_fetch_comment_by_id(requests_mock):
 
 
 def test_fetch_comments(requests_mock):
-    """Tests taegis-fetch-comments command function
-    """
+    """Tests taegis-fetch-comments command function"""
     client = mock_client(requests_mock, FETCH_COMMENTS_RESPONSE)
 
     # comment_id not set
@@ -209,8 +197,7 @@ def test_fetch_comments(requests_mock):
 
 
 def test_update_comment(requests_mock):
-    """Tests taegis-update-comment command function
-    """
+    """Tests taegis-update-comment command function"""
     client = mock_client(requests_mock, UPDATE_COMMENT_RESPONSE)
 
     # comment not set
@@ -237,8 +224,7 @@ def test_update_comment(requests_mock):
 
 
 def test_fetch_endpoint(requests_mock):
-    """Tests taegis-fetch-endpoint command function
-    """
+    """Tests taegis-fetch-endpoint command function"""
     client = mock_client(requests_mock, FETCH_ENDPOINT_RESPONSE)
 
     # comment_id not set
@@ -264,19 +250,17 @@ def test_connectivity(requests_mock):
 
 
 def test_fetch_incidents_alerts(requests_mock):
-    """Tests taegis-fetch-incidents (alerts) command function
-    """
+    """Tests taegis-fetch-incidents (alerts) command function"""
     client = mock_client(requests_mock, FETCH_ALERTS_RESPONSE)
     response = fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, fetch_type="alerts")
     assert response[0]["name"] == FETCH_ALERTS_RESPONSE["data"]["alertsServiceSearch"]["alerts"]["list"][0]["metadata"]["title"]
 
 
 def test_fetch_incidents_investigations(requests_mock):
-    """Tests taegis-fetch-incidents (investigations) command function
-    """
+    """Tests taegis-fetch-incidents (investigations) command function"""
     client = mock_client(requests_mock, FETCH_INCIDENTS_RESPONSE)
     response = fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT)
-    assert response[0]['name'] == FETCH_INCIDENTS_RESPONSE["data"]["investigationsSearch"]["investigations"][0]['description']
+    assert response[0]["name"] == FETCH_INCIDENTS_RESPONSE["data"]["investigationsSearch"]["investigations"][0]["description"]
 
     # Invalid max_fetch
     with pytest.raises(ValueError, match="Max Fetch must be between 1 and 200"):
@@ -323,10 +307,7 @@ def test_fetch_investigation(requests_mock):
     assert response.outputs[0]["url"] == f"{TAEGIS_URL}/investigations/{args['id']}"
 
     # Investigation not found
-    mock_result = {
-        "errors": [{"message": "record not found"}],
-        "data": {"investigationV2": None}
-    }
+    mock_result = {"errors": [{"message": "record not found"}], "data": {"investigationV2": None}}
     client = mock_client(requests_mock, mock_result)
     response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert len(response.outputs) == 0
@@ -354,8 +335,7 @@ def test_fetch_investigations(requests_mock):
 
 
 def test_fetch_investigation_alerts(requests_mock):
-    """Tests taegis-fetch-investigation-alerts command function
-    """
+    """Tests taegis-fetch-investigation-alerts command function"""
     client = mock_client(requests_mock, FETCH_INVESTIGATION_ALERTS_RESPONSE)
     args = {
         "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
@@ -376,8 +356,7 @@ def test_fetch_investigation_alerts(requests_mock):
 
 
 def test_fetch_playbook_execution(requests_mock):
-    """Tests taegis-fetch-playbook-execution command function
-    """
+    """Tests taegis-fetch-playbook-execution command function"""
     client = mock_client(requests_mock, FETCH_PLAYBOOK_EXECUTION_RESPONSE)
     args = {
         "id": TAEGIS_PLAYBOOK_EXECUTION_ID,
@@ -396,8 +375,7 @@ def test_fetch_playbook_execution(requests_mock):
 
 
 def test_create_investigation(requests_mock):
-    """Tests taegis-create-investigation command function
-    """
+    """Tests taegis-create-investigation command function"""
     client = mock_client(requests_mock, CREATE_INVESTIGATION_RESPONSE)
 
     # Invalid assignee_id
@@ -431,8 +409,7 @@ def test_create_investigation(requests_mock):
 
 
 def test_update_investigation(requests_mock):
-    """Tests taegis-update-investigation command function
-    """
+    """Tests taegis-update-investigation command function"""
     client = mock_client(requests_mock, UPDATE_INVESTIGATION_RESPONSE)
     args = {}
 
@@ -496,8 +473,7 @@ def test_update_investigation(requests_mock):
 
 
 def test_archive_investigation(requests_mock):
-    """Tests taegis-archive-investigation command function
-    """
+    """Tests taegis-archive-investigation command function"""
     client = mock_client(requests_mock, INVESTIGATION_ARCHIVE_RESPONSE)
 
     # Test Archiving
@@ -517,8 +493,7 @@ def test_archive_investigation(requests_mock):
 
 
 def test_unarchive_investigation(requests_mock):
-    """Tests taegis-unarchive-investigation command function
-    """
+    """Tests taegis-unarchive-investigation command function"""
     client = mock_client(requests_mock, INVESTIGATION_UNARCHIVE_RESPONSE)
 
     # Test Unarchiving
@@ -545,8 +520,7 @@ def test_unarchive_investigation(requests_mock):
 
 
 def test_isolate_asset(requests_mock):
-    """Tests taegis-isolate-asset command function
-    """
+    """Tests taegis-isolate-asset command function"""
     client = mock_client(requests_mock, ISOLATE_ASSET_RESPONSE)
 
     # asset id not set
@@ -607,11 +581,10 @@ def test_fetch_users(requests_mock):
 
 
 def test_update_alert_status(requests_mock):
-    """Tests taegis-update-alert-status command function
-    """
+    """Tests taegis-update-alert-status command function"""
     client = mock_client(requests_mock, UPDATE_ALERT_STATUS_RESPONSE)
 
-    args = {"ids": TAEGIS_ALERT['id']}
+    args = {"ids": TAEGIS_ALERT["id"]}
 
     # alert ids not set
     with pytest.raises(ValueError, match="Alert IDs must be defined"):
@@ -637,8 +610,7 @@ def test_update_alert_status(requests_mock):
 
 
 def test_add_evidence_to_investigation(requests_mock):
-    """Tests taegis-add-evidence-to-investigation command function
-    """
+    """Tests taegis-add-evidence-to-investigation command function"""
     alerts = ["alert://priv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6"]
 
     client = mock_client(requests_mock, TAEGIS_ADD_EVIDENCE_TO_INVESTIGATION_RESPONSE)
@@ -671,8 +643,7 @@ def test_add_evidence_to_investigation(requests_mock):
 
 
 def test_create_sharelink(requests_mock):
-    """Tests taegis-create-sharelink function
-    """
+    """Tests taegis-create-sharelink function"""
 
     client = mock_client(requests_mock, CREATE_SHARELINK_RESPONSE)
 

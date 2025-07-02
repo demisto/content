@@ -3,7 +3,6 @@ This integration was integrated and tested with version v2 of decyfir
 
 ## Configure DeCYFIR in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident type |  | False |
@@ -14,7 +13,6 @@ This integration was integrated and tested with version v2 of decyfir
 | Use system proxy settings |  | False |
 | How much time before the first fetch to retrieve incidents |  | False |
 | Maximum number of incidents per fetch | The maximum number of incidents to fetch per sub-category. | False |
-
 
 ## Commands
 

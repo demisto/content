@@ -1,8 +1,8 @@
+import json
+from typing import Any
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-
-import json
-from typing import Dict, Any
 
 DEFAULT_ARGS = [
     "category_id",
@@ -12,24 +12,24 @@ DEFAULT_ARGS = [
     "status_id",
     "urgency_id",
     "service_request_definition_id",
-    "service_request_definition_params"
+    "service_request_definition_params",
 ]
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-GET_COMMANDS: Dict[str, str] = {
-    'category_id': 'bmc-remedy-category-details-get',
-    'client_id': 'bmc-remedy-user-details-get',
-    'queue_id': 'bmc-remedy-queue-details-get',
-    'staff_id': 'bmc-remedy-user-details-get',
-    'status_id': 'bmc-remedy-status-details-get',
-    'urgency_id': 'bmc-remedy-urgency-details-get',
-    'service_request_definition_id': 'bmc-remedy-service-request-definition-get',
-    'impact_id': 'bmc-remedy-impact-details-get',
-    'account_id': 'bmc-remedy-account-details-get'
+GET_COMMANDS: dict[str, str] = {
+    "category_id": "bmc-remedy-category-details-get",
+    "client_id": "bmc-remedy-user-details-get",
+    "queue_id": "bmc-remedy-queue-details-get",
+    "staff_id": "bmc-remedy-user-details-get",
+    "status_id": "bmc-remedy-status-details-get",
+    "urgency_id": "bmc-remedy-urgency-details-get",
+    "service_request_definition_id": "bmc-remedy-service-request-definition-get",
+    "impact_id": "bmc-remedy-impact-details-get",
+    "account_id": "bmc-remedy-account-details-get",
 }
 
-ERROR_MESSAGES = 'Could not get the contents from the command result: '
+ERROR_MESSAGES = "Could not get the contents from the command result: "
 
 
 def remove_null_fields_and_convert_additional_fields_in_string(additional_fields):
@@ -44,9 +44,9 @@ def remove_null_fields_and_convert_additional_fields_in_string(additional_fields
     """
 
     additional_fields = remove_empty_elements(additional_fields)
-    field_list = list()
+    field_list = []
     for each_field in additional_fields:
-        field_list.append("{}={}".format(each_field, additional_fields[each_field]))
+        field_list.append(f"{each_field}={additional_fields[each_field]}")
     return ";".join(field_list)
 
 
@@ -60,15 +60,14 @@ def generate_command_args_with_additional_fields(additional_fields):
     :return: JSON of command arguments.
     :rtype: ``dict``
     """
-    command_args: Dict[str, str] = {}
-    actual_additional_fields: Dict[str, str] = {}
+    command_args: dict[str, str] = {}
+    actual_additional_fields: dict[str, str] = {}
     for each_field in additional_fields:
         if each_field in DEFAULT_ARGS:
             command_args[each_field] = additional_fields[each_field]
         else:
             actual_additional_fields[each_field] = additional_fields[each_field]
-    command_args["additional_fields"] = remove_null_fields_and_convert_additional_fields_in_string(
-        actual_additional_fields)
+    command_args["additional_fields"] = remove_null_fields_and_convert_additional_fields_in_string(actual_additional_fields)
     return command_args
 
 
@@ -84,9 +83,13 @@ def remove_extra_space_from_args(args):
     return {key: value.strip() for (key, value) in args.items() if value and len(value.strip()) > 0}
 
 
-def get_service_request_definition_id(service_request_definition_id, service_request_definition,
-                                      service_request_definition_command, service_request_definition_command_args,
-                                      using_argument):
+def get_service_request_definition_id(
+    service_request_definition_id,
+    service_request_definition,
+    service_request_definition_command,
+    service_request_definition_command_args,
+    using_argument,
+):
     """
     To get service_request_definition_id from given service_request_definition by executing command
     'bmc-remedy-service-request-definition-get' and
@@ -110,28 +113,27 @@ def get_service_request_definition_id(service_request_definition_id, service_req
     :return: service_request_definition_id
     :rtype: ``str``
     """
-    if service_request_definition_id:
+    if service_request_definition_id:  # noqa: RET503
         return service_request_definition_id
     elif service_request_definition:
         if using_argument:
             service_request_definition_command_args["using"] = using_argument
         service_request_definition_results = demisto.executeCommand(
-            service_request_definition_command, args=service_request_definition_command_args)
-        service_request_definition_data = demisto.get(service_request_definition_results[0], 'Contents')
-        message_type = find_entry_type(demisto.get(service_request_definition_results[0], 'Type'))
+            service_request_definition_command, args=service_request_definition_command_args
+        )
+        service_request_definition_data = demisto.get(service_request_definition_results[0], "Contents")
+        message_type = find_entry_type(demisto.get(service_request_definition_results[0], "Type"))
         if not service_request_definition_data:
-            human_readable_from_get_service_request_command = demisto.get(
-                service_request_definition_results[0], "HumanReadable")
+            human_readable_from_get_service_request_command = demisto.get(service_request_definition_results[0], "HumanReadable")
             if human_readable_from_get_service_request_command:
                 show_service_request_result(message_type, human_readable_from_get_service_request_command)
-            show_service_request_result("error", ERROR_MESSAGES + json.dumps(
-                service_request_definition_results))
+            show_service_request_result("error", ERROR_MESSAGES + json.dumps(service_request_definition_results))
         if isinstance(service_request_definition_data, dict):
             service_request_definitions = demisto.get(service_request_definition_data, "Result")
-            if service_request_definitions:
+            if service_request_definitions:  # noqa: RET503
                 return demisto.get(service_request_definitions, "Id")
         else:
-            show_service_request_result(message_type, service_request_definition_data)
+            show_service_request_result(message_type, service_request_definition_data)  # noqa: RET503
 
 
 def show_service_request_result(message_type, message):
@@ -144,9 +146,9 @@ def show_service_request_result(message_type, message):
     :type message: ``str``
     :param message: Message which will be sent to war room.
     """
-    if message_type == 'error':
+    if message_type == "error":
         return_error(message)
-    elif message_type == 'warning':
+    elif message_type == "warning":
         return_warning(message=message, exit=True)
     else:
         return_results(message)
@@ -167,8 +169,8 @@ def process_field_id(command, command_args):
     :rtype: ``str``
     """
     field_results = demisto.executeCommand(command, args=command_args)
-    field_data = demisto.get(field_results[0], 'Contents')
-    message_type = find_entry_type(demisto.get(field_results[0], 'Type'))
+    field_data = demisto.get(field_results[0], "Contents")
+    message_type = find_entry_type(demisto.get(field_results[0], "Type"))
     if not field_data:
         human_readable_from_get_command = demisto.get(field_results[0], "HumanReadable")
         if human_readable_from_get_command:
@@ -176,14 +178,14 @@ def process_field_id(command, command_args):
         show_service_request_result("error", ERROR_MESSAGES + json.dumps(field_results))
     if isinstance(field_data, dict):
         all_fields = demisto.get(field_data, "records")
-        if all_fields:
+        if all_fields:  # noqa: RET503
             return demisto.get(all_fields[0], "Id")
     elif isinstance(field_data, list):
         final_field = demisto.get(field_data[0], "Id")
-        if final_field:
+        if final_field:  # noqa: RET503
             return final_field
     else:
-        show_service_request_result(message_type, field_data)
+        show_service_request_result(message_type, field_data)  # noqa: RET503
 
 
 def get_field_id(field_id, field, command, command_args, using_argument):
@@ -209,7 +211,7 @@ def get_field_id(field_id, field, command, command_args, using_argument):
     :return: field_id
     :rtype: ``str``
     """
-    if field_id:
+    if field_id:  # noqa: RET503
         return field_id
     elif field:
         if using_argument:
@@ -231,7 +233,7 @@ def find_entry_type(entry_type):
     for each_type in entryTypes:
         if entry_type == entryTypes[each_type]:
             return each_type
-    return 'note'
+    return "note"
 
 
 def main():
@@ -240,77 +242,73 @@ def main():
     """
     args = remove_extra_space_from_args(demisto.args())
     using_argument = args.get("using")
-    additional_fields: Dict[str, Any] = {
-        'client_id': get_field_id(
-            args.get('client_id'),
-            args.get('client_user_name'),
+    additional_fields: dict[str, Any] = {
+        "client_id": get_field_id(
+            args.get("client_id"),
+            args.get("client_user_name"),
             GET_COMMANDS["client_id"],
-            {"username": args.get('client_user_name')},
-            using_argument
+            {"username": args.get("client_user_name")},
+            using_argument,
         ),
-        'category_id': get_field_id(
-            args.get('category_id'),
-            args.get('category'),
+        "category_id": get_field_id(
+            args.get("category_id"),
+            args.get("category"),
             GET_COMMANDS["category_id"],
-            {"category_name": args.get('category')},
-            using_argument
+            {"category_name": args.get("category")},
+            using_argument,
         ),
-        'queue_id': get_field_id(
-            args.get('queue_id'),
-            args.get('queue'),
-            GET_COMMANDS["queue_id"],
-            {"queue_name": args.get('queue')},
-            using_argument
+        "queue_id": get_field_id(
+            args.get("queue_id"), args.get("queue"), GET_COMMANDS["queue_id"], {"queue_name": args.get("queue")}, using_argument
         ),
-        'staff_id': get_field_id(
-            args.get('staff_id'),
-            args.get('staff_user_name'),
+        "staff_id": get_field_id(
+            args.get("staff_id"),
+            args.get("staff_user_name"),
             GET_COMMANDS["staff_id"],
-            {"username": args.get('staff_user_name'), "is_staff": True},
-            using_argument
+            {"username": args.get("staff_user_name"), "is_staff": True},
+            using_argument,
         ),
-        'status_id': get_field_id(
-            args.get('status_id'),
-            args.get('status'),
+        "status_id": get_field_id(
+            args.get("status_id"),
+            args.get("status"),
             GET_COMMANDS["status_id"],
-            {"status_name": args.get('status')},
-            using_argument
+            {"status_name": args.get("status")},
+            using_argument,
         ),
-        'urgency_id': get_field_id(
-            args.get('urgency_id'),
-            args.get('urgency'),
+        "urgency_id": get_field_id(
+            args.get("urgency_id"),
+            args.get("urgency"),
             GET_COMMANDS["urgency_id"],
-            {"urgency_name": args.get('urgency')},
-            using_argument
+            {"urgency_name": args.get("urgency")},
+            using_argument,
         ),
-        'impact_id': get_field_id(
+        "impact_id": get_field_id(
             args.get("impact_id"),
             args.get("impact"),
             GET_COMMANDS["impact_id"],
             {"impact_name": args.get("impact")},
-            using_argument
+            using_argument,
         ),
-        'account_id': get_field_id(
+        "account_id": get_field_id(
             args.get("account_id"),
             args.get("account"),
             GET_COMMANDS["account_id"],
             {"account_name": args.get("account")},
-            using_argument
+            using_argument,
         ),
-        'service_request_definition_id': get_service_request_definition_id(
+        "service_request_definition_id": get_service_request_definition_id(
             args.get("service_request_definition_id"),
             args.get("service_request_definition"),
             GET_COMMANDS["service_request_definition_id"],
             {"service_request_definition_name": args.get("service_request_definition")},
-            using_argument
+            using_argument,
         ),
-        'service_request_definition_params': args.get("service_request_definition_params")
+        "service_request_definition_params": args.get("service_request_definition_params"),
     }
     command_args = generate_command_args_with_additional_fields(additional_fields)
     command_args = remove_empty_elements(command_args)
     if using_argument:
         command_args["using"] = using_argument
-    command_res = demisto.executeCommand('bmc-remedy-service-request-create', command_args)
+    command_res = demisto.executeCommand("bmc-remedy-service-request-create", command_args)
     result = {}
     try:
         entry = command_res[0]
@@ -319,24 +317,23 @@ def main():
         human_readable = demisto.get(entry, "HumanReadable")
         contents_format = demisto.get(entry, "ContentsFormat")
         if isError(entry):
-            return_error(entry['Contents'])
+            return_error(entry["Contents"])
         else:
-            record_data = demisto.get(entry, 'Contents')
+            record_data = demisto.get(entry, "Contents")
             if not record_data:
                 return_error(ERROR_MESSAGES + json.dumps(entry))
             else:
                 if demisto.get(record_data, "ErrorMessage"):
-                    result = record_data['ErrorMessage']
+                    result = record_data["ErrorMessage"]
                 else:
-
                     # Output entry
                     result = {
-                        'Type': entryTypes[context_output_type],
-                        'Contents': record_data,
-                        'ContentsFormat': contents_format,
-                        'ReadableContentsFormat': formats['markdown'],
-                        'HumanReadable': human_readable,
-                        'EntryContext': context_outputs
+                        "Type": entryTypes[context_output_type],
+                        "Contents": record_data,
+                        "ContentsFormat": contents_format,
+                        "ReadableContentsFormat": formats["markdown"],
+                        "HumanReadable": human_readable,
+                        "EntryContext": context_outputs,
                     }
     except Exception as ex:
         return_error(str(ex))
@@ -344,5 +341,5 @@ def main():
     demisto.results(result)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

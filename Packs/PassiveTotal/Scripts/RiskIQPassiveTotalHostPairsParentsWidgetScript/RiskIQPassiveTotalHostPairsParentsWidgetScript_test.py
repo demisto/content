@@ -5,13 +5,7 @@ def test_for_host_pairs_parents_widget_set_arguments_when_indicator_type_riskiqa
     # Configure
 
     # set argument for command
-    indicator_data = {
-        'indicator_type': 'RiskIQAsset',
-        'value': 'dummy domain',
-        'CustomFields': {
-            'riskiqassettype': ''
-        }
-    }
+    indicator_data = {"indicator_type": "RiskIQAsset", "value": "dummy domain", "CustomFields": {"riskiqassettype": ""}}
     # set expected output
     expected_output = 'Please provide value in the "RiskIQAsset Type" field to fetch detailed information of the asset.'
     # Execute
@@ -24,18 +18,9 @@ def test_for_host_pairs_parents_widget_set_arguments_when_indicator_type_riskiqa
     # Configure
 
     # set argument for command
-    indicator_data = {
-        'indicator_type': 'RiskIQAsset',
-        'value': 'dummy domain',
-        'CustomFields': {
-            'riskiqassettype': 'Domain'
-        }
-    }
+    indicator_data = {"indicator_type": "RiskIQAsset", "value": "dummy domain", "CustomFields": {"riskiqassettype": "Domain"}}
     # set expected output
-    expected_arguments = {
-        'direction': 'parents',
-        'query': 'dummy domain'
-    }
+    expected_arguments = {"direction": "parents", "query": "dummy domain"}
     # Execute
     arguments = set_arguments_for_widget_view(indicator_data)
     # Assert
@@ -47,17 +32,12 @@ def test_for_host_pairs_parents_widget_set_arguments_when_indicator_type_riskiqa
 
     # set argument for command
     indicator_data = {
-        'indicator_type': 'RiskIQAsset',
-        'value': 'dummy ip address',
-        'CustomFields': {
-            'riskiqassettype': 'IP Address'
-        }
+        "indicator_type": "RiskIQAsset",
+        "value": "dummy ip address",
+        "CustomFields": {"riskiqassettype": "IP Address"},
     }
     # set expected output
-    expected_arguments = {
-        'direction': 'parents',
-        'query': 'dummy ip address'
-    }
+    expected_arguments = {"direction": "parents", "query": "dummy ip address"}
     # Execute
     arguments = set_arguments_for_widget_view(indicator_data)
     # Assert
@@ -68,15 +48,9 @@ def test_for_host_pairs_parents_widget_set_arguments_when_indicator_type_riskiqa
     # Configure
 
     # set argument for command
-    indicator_data = {
-        'indicator_type': 'RiskIQAsset',
-        'value': 'dummy email',
-        'CustomFields': {
-            'riskiqassettype': 'Contact'
-        }
-    }
+    indicator_data = {"indicator_type": "RiskIQAsset", "value": "dummy email", "CustomFields": {"riskiqassettype": "Contact"}}
     # set expected output
-    expected_output = 'No host pair(s) were found for the given argument(s).'
+    expected_output = "No host pair(s) were found for the given argument(s)."
     # Execute
     arguments = set_arguments_for_widget_view(indicator_data)
     # Assert
@@ -87,15 +61,9 @@ def test_for_host_pairs_parents_widget_set_arguments_when_indicator_type_domain(
     # Configure
 
     # set argument for command
-    indicator_data = {
-        'indicator_type': 'Domain',
-        'value': 'dummy domain'
-    }
+    indicator_data = {"indicator_type": "Domain", "value": "dummy domain"}
     # set expected output
-    expected_arguments = {
-        'direction': 'parents',
-        'query': 'dummy domain'
-    }
+    expected_arguments = {"direction": "parents", "query": "dummy domain"}
     # Execute
     arguments = set_arguments_for_widget_view(indicator_data)
     # Assert

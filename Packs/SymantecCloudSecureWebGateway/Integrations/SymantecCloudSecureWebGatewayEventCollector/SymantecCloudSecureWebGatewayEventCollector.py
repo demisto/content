@@ -1,17 +1,19 @@
-from typing import NamedTuple
-from collections.abc import Generator
-import demistomock as demisto
-from urllib3 import disable_warnings
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-from zipfile import ZipFile, BadZipFile
-from gzip import GzipFile
 import gzip
-import pytz
-from pathlib import Path
-import tempfile
 import os
+import tempfile
+from collections.abc import Generator
+from gzip import GzipFile
+from pathlib import Path
 from time import time as get_current_time_in_seconds
+from typing import NamedTuple
+from zipfile import BadZipFile, ZipFile
+
+import demistomock as demisto
+import pytz
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from urllib3 import disable_warnings
+
+from CommonServerUserPython import *  # noqa
 
 disable_warnings()
 
@@ -65,9 +67,7 @@ class HandlingDuplicates(NamedTuple):
 
         # The time of the event is equal to the late time of the last fetch,
         # checks if its id is there is in the list of events that have already been fetched
-        return not (
-            cur_time == self.max_time and id_ not in self.events_suspected_duplicates
-        )
+        return not (cur_time == self.max_time and id_ not in self.events_suspected_duplicates)
 
 
 class Client(BaseClient):
@@ -81,9 +81,7 @@ class Client(BaseClient):
         fetch_interval: str | None,
     ) -> None:
         headers: dict[str, str] = {"X-APIUsername": username, "X-APIPassword": password}
-        super().__init__(
-            base_url=base_url, verify=verify, proxy=proxy, headers=headers, timeout=180
-        )
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, timeout=180)
 
         self.fetch_interval = get_fetch_interval(fetch_interval)
 
@@ -109,9 +107,7 @@ def get_fetch_interval(fetch_interval: str | None) -> int:
     if not fetch_sleep:
         return DEFAULT_FETCH_SLEEP
     if fetch_sleep < DEFAULT_FETCH_SLEEP:
-        demisto.debug(
-            f"Fetch interval is too low, setting it to minimum of {DEFAULT_FETCH_SLEEP} seconds"
-        )
+        demisto.debug(f"Fetch interval is too low, setting it to minimum of {DEFAULT_FETCH_SLEEP} seconds")
         return DEFAULT_FETCH_SLEEP
     return fetch_sleep
 
@@ -125,9 +121,7 @@ def get_events_and_write_to_file_system(
     Return:
         Path: the file path
     """
-    with client.get_logs(params) as res, tempfile.NamedTemporaryFile(
-        mode="wb", delete=False
-    ) as tmp_file:
+    with client.get_logs(params) as res, tempfile.NamedTemporaryFile(mode="wb", delete=False) as tmp_file:
         # Write the chunks from the response to the tmp file
         for chunk in res.iter_content(chunk_size=MAX_CHUNK_SIZE_TO_WRITE):
             tmp_file.write(chunk)
@@ -226,9 +220,7 @@ def extract_logs_from_zip_file(file_path: Path) -> Generator[list[bytes], None, 
                 # check if the file is gzip
                 if file.filename.lower().endswith(".gz"):
                     try:
-                        with outer_zip.open(file) as nested_zip_file, gzip.open(
-                            nested_zip_file, "rb"
-                        ) as f:
+                        with outer_zip.open(file) as nested_zip_file, gzip.open(nested_zip_file, "rb") as f:
                             file_size = get_size_gzip_file(f)
                             remaining_last_line_part: bytes = b""
                             while file_size > 0:
@@ -243,32 +235,24 @@ def extract_logs_from_zip_file(file_path: Path) -> Generator[list[bytes], None, 
                                 try:
                                     raw_event_parts = f.read(chunk).splitlines()
                                 except Exception as e:
-                                    demisto.debug(
-                                        f"Error occurred while reading file: {e}"
-                                    )
+                                    demisto.debug(f"Error occurred while reading file: {e}")
                                     break
 
                                 # Concatenates any remaining last line from previous batch
                                 # to the first line of current batch to handle log lines split across batches
                                 if remaining_last_line_part:
-                                    raw_event_parts[0] = (
-                                        remaining_last_line_part + raw_event_parts[0]
-                                    )
+                                    raw_event_parts[0] = remaining_last_line_part + raw_event_parts[0]
 
                                 # Checks if the last line is incomplete and saves it for concatenating
                                 # with the next batch. Yields the current batch without the incomplete line.
                                 # If no incomplete line, resets the remaining line part and yields the batch.
-                                if remaining_last_line_part := get_the_last_row_that_incomplete(
-                                    raw_event_parts, file_size
-                                ):
+                                if remaining_last_line_part := get_the_last_row_that_incomplete(raw_event_parts, file_size):
                                     yield raw_event_parts[:-1]
                                 else:
                                     remaining_last_line_part = b""
                                     yield raw_event_parts
                     except Exception as e:
-                        demisto.debug(
-                            f"Crashed at the open the internal file {file.filename} file, Error: {e}"
-                        )
+                        demisto.debug(f"Crashed at the open the internal file {file.filename} file, Error: {e}")
                 else:  # the file is not gzip
                     demisto.debug(f"The {file.filename} file is not of gzip type")
     except BadZipFile as e:
@@ -358,9 +342,7 @@ def parse_events(
     return events, max_time
 
 
-def get_start_date_for_next_fetch(
-    start_date: int, time_of_last_fetched_event: str
-) -> int:
+def get_start_date_for_next_fetch(start_date: int, time_of_last_fetched_event: str) -> int:
     """
     Calculates the start date for the next fetch based on the last fetched event time.
     If last fetched event time is valid datetime, converts to timestamp.
@@ -401,9 +383,7 @@ def calculate_next_fetch(
     Returns a LastRun object containing the data for the next run.
     """
 
-    start_date_for_next_fetch = get_start_date_for_next_fetch(
-        start_date, time_of_last_fetched_event
-    )
+    start_date_for_next_fetch = get_start_date_for_next_fetch(start_date, time_of_last_fetched_event)
 
     if time_of_last_fetched_event > handling_duplicates.max_time:
         # A newer event time was seen, reset duplicate tracking
@@ -421,8 +401,7 @@ def calculate_next_fetch(
             start_date=str(start_date_for_next_fetch),
             token=str(new_token),
             time_of_last_fetched_event=handling_duplicates.max_time,
-            events_suspected_duplicates=handling_duplicates.events_suspected_duplicates
-            + new_events_suspected_duplicates,
+            events_suspected_duplicates=handling_duplicates.events_suspected_duplicates + new_events_suspected_duplicates,
             token_expired=token_expired,
         )
 
@@ -522,9 +501,7 @@ def get_events_command(
         # Set the fetch times, where the `end_time` is consistently set to the current time.
         # The `start_time` is determined by the `last_run`,
         # and if it does not exist, it is set to one minute prior.
-        start_date, end_date = get_start_and_end_date(
-            start_date=last_run_model.start_date
-        )
+        start_date, end_date = get_start_and_end_date(start_date=last_run_model.start_date)
 
         # Set the parameters for the API call
         params: dict[str, Union[str, int]] = {
@@ -647,9 +624,7 @@ def perform_long_running_loop(client: Client):
             integration_context = get_integration_context()
             demisto.debug(f"Starting new fetch with {integration_context=}")
             integration_context = integration_context.get("last_run")
-            last_run_obj = (
-                LastRun(**integration_context) if integration_context else LastRun()
-            )
+            last_run_obj = LastRun(**integration_context) if integration_context else LastRun()
 
             get_events_command(client, last_run_obj)
 

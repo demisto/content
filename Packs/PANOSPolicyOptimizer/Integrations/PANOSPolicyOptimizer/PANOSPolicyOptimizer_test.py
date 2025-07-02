@@ -1,49 +1,58 @@
 import pytest
 from CommonServerPython import *
-from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position, \
-    get_policy_optimizer_statistics_command, policy_optimizer_no_apps_command, policy_optimizer_get_unused_apps_command, \
-    is_cms_selected
+from PANOSPolicyOptimizer import (
+    Client,
+    define_position,
+    get_policy_optimizer_statistics_command,
+    is_cms_selected,
+    policy_optimizer_get_dag_command,
+    policy_optimizer_get_rules_command,
+    policy_optimizer_get_unused_apps_command,
+    policy_optimizer_no_apps_command,
+)
 
-BASE_URL = 'https://test.com'
+BASE_URL = "https://test.com"
 
 
 def get_firewall_instance_client():
-    return Client(url=BASE_URL, username='test', password='test', vsys='test', device_group='', verify=False, tid=0, version='8')
+    return Client(url=BASE_URL, username="test", password="test", vsys="test", device_group="", verify=False, tid=0, version="8")
 
 
 def get_panorama_instance_client():
-    return Client(url=BASE_URL, username='test', password='test', vsys='', device_group='test', verify=False, tid=0, version='8')
+    return Client(url=BASE_URL, username="test", password="test", vsys="", device_group="test", verify=False, tid=0, version="8")
 
 
 def read_json_file(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 QUERYING_RULES_PARAMS = [
     (
         get_firewall_instance_client(),
-        'main',
+        "main",
     ),
     (
         get_panorama_instance_client(),
-        'pre',
+        "pre",
     ),
     (
         get_panorama_instance_client(),
-        'post',
-    )
+        "post",
+    ),
 ]
 
 QUERYING_RULES_PARAMS_WITH_VERSION = [
-    (get_firewall_instance_client(), 'pre', '9.0.0', 'main'),
-    (get_panorama_instance_client(), 'pre', '10.2.0', 'pre'),
-    (get_panorama_instance_client(), 'post', '9.0.0', 'main')]
+    (get_firewall_instance_client(), "pre", "9.0.0", "main"),
+    (get_panorama_instance_client(), "pre", "10.2.0", "pre"),
+    (get_panorama_instance_client(), "post", "9.0.0", "main"),
+]
 
 QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG = [
-    (get_firewall_instance_client(), 'pre', '9.0.0', 'main', False, False),
-    (get_panorama_instance_client(), 'pre', '10.2.0', 'pre', True, True),
-    (get_panorama_instance_client(), 'post', '9.0.0', 'main', True, False)]
+    (get_firewall_instance_client(), "pre", "9.0.0", "main", False, False),
+    (get_panorama_instance_client(), "pre", "10.2.0", "pre", True, True),
+    (get_panorama_instance_client(), "post", "9.0.0", "main", True, False),
+]
 
 
 @pytest.mark.parametrize("client, position", QUERYING_RULES_PARAMS)
@@ -58,45 +67,40 @@ def test_body_request_is_valid_when_querying_rules(mocker, client, position):
     Then
         - Verify that the body request that was sent is correct for each type of instance.
     """
-    mocker.patch.object(client, 'token_generator', return_value='123')
+    mocker.patch.object(client, "token_generator", return_value="123")
     response = requests.Response()
-    response._content = b'{}'
+    response._content = b"{}"
 
-    response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
+    response_mocker = mocker.patch.object(client.session, "post", return_value=response)
 
-    client.session_metadata["headers"] = 'test'
+    client.session_metadata["headers"] = "test"
     policy_optimizer_get_rules_command(
-        client=client, args={
-            'timeframe': '30', 'usage': 'Unused', 'exclude': 'false', 'rule_type': 'security', 'position': position
-        }
+        client=client,
+        args={"timeframe": "30", "usage": "Unused", "exclude": "false", "rule_type": "security", "position": position},
     )
-    assert response_mocker.call_args.kwargs['json'] == {
-        'action': 'PanDirect',
-        'method': 'run',
-        'data': [
-            '123',
-            'PoliciesDirect.getPoliciesByUsage',
+    assert response_mocker.call_args.kwargs["json"] == {
+        "action": "PanDirect",
+        "method": "run",
+        "data": [
+            "123",
+            "PoliciesDirect.getPoliciesByUsage",
             [
                 {
-                    'type': 'security',
-                    'position': position,
-                    'vsysName': 'test',
-                    'isCmsSelected': client.is_cms_selected,
-                    'isMultiVsys': False, 'showGrouped': False,
-                    'usageAttributes': {
-                        'timeframe': '30',
-                        'usage': 'Unused',
-                        'exclude': False,
-                        'exclude-reset-text': '90'
-                    },
-                    'start': 0,
-                    'limit': 200,
-                    'pageContext': 'rule_usage'
+                    "type": "security",
+                    "position": position,
+                    "vsysName": "test",
+                    "isCmsSelected": client.is_cms_selected,
+                    "isMultiVsys": False,
+                    "showGrouped": False,
+                    "usageAttributes": {"timeframe": "30", "usage": "Unused", "exclude": False, "exclude-reset-text": "90"},
+                    "start": 0,
+                    "limit": 200,
+                    "pageContext": "rule_usage",
                 }
-            ]
+            ],
         ],
-        'type': 'rpc',
-        'tid': 1
+        "type": "rpc",
+        "tid": 1,
     }
 
 
@@ -115,28 +119,33 @@ def test_body_request_is_valid_when_querying_policy_optimizer_statistics(mocker,
         case3: Panorama 9.0.0 should always return main.
     """
     client.version = version
-    mocker.patch.object(client, 'token_generator', return_value='123')
+    mocker.patch.object(client, "token_generator", return_value="123")
     response = requests.Response()
     response._content = b'{"result":{"result":{"entry":[{"@name":"test","text":"test"}]}}}'
 
-    response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
+    response_mocker = mocker.patch.object(client.session, "post", return_value=response)
 
-    client.session_metadata["headers"] = 'test'
-    get_policy_optimizer_statistics_command(
-        client=client, args={
-            'position': position
-        }
-    )
-    assert response_mocker.call_args.kwargs['json'] == {'action': 'PanDirect', 'method': 'run', 'data': [
-        '123', 'PoliciesDirect.getRuleCountInRuleUsage', [{'type': 'security',
-                                                           'position': excepted_position, 'vsysName': 'test'}]],
-                                                        'type': 'rpc', 'tid': 1}
+    client.session_metadata["headers"] = "test"
+    get_policy_optimizer_statistics_command(client=client, args={"position": position})
+    assert response_mocker.call_args.kwargs["json"] == {
+        "action": "PanDirect",
+        "method": "run",
+        "data": [
+            "123",
+            "PoliciesDirect.getRuleCountInRuleUsage",
+            [{"type": "security", "position": excepted_position, "vsysName": "test"}],
+        ],
+        "type": "rpc",
+        "tid": 1,
+    }
 
 
-@pytest.mark.parametrize("client, position, version, excepted_position, flag, expected_flag",
-                         QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG)
-def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(mocker, client, position,
-                                                                      version, excepted_position, flag, expected_flag):
+@pytest.mark.parametrize(
+    "client, position, version, excepted_position, flag, expected_flag", QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG
+)
+def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(
+    mocker, client, position, version, excepted_position, flag, expected_flag
+):
     """
     Given
         - a client.
@@ -150,35 +159,51 @@ def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(mocker, cl
         case3: Panorama 9.0.0 should always return main, and the isCmsSelected flag should be False due to the given vresion.
     """
     client.version = version
-    mocker.patch.object(client, 'token_generator', return_value='123')
+    mocker.patch.object(client, "token_generator", return_value="123")
     response = requests.Response()
     response._content = b'{"result":{"result":{"entry":[{"@name":"test","text":"test"}]}}}'
 
-    response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
+    response_mocker = mocker.patch.object(client.session, "post", return_value=response)
 
-    client.session_metadata["headers"] = 'test'
-    policy_optimizer_no_apps_command(
-        client=client, args={
-            'position': position
-        }
-    )
-    assert response_mocker.call_args.kwargs['json'] == {'action': 'PanDirect', 'method': 'run',
-                                                        'data': ['123', 'PoliciesDirect.getPoliciesByUsage',
-                                                                 [{'type': 'security', 'position': excepted_position,
-                                                                   'vsysName': 'test', 'isCmsSelected': expected_flag,
-                                                                   'isMultiVsys': False, 'showGrouped': False,
-                                                                   'usageAttributes': {'timeframeTag': '30',
-                                                                                       'application/member': 'any',
-                                                                                       'apps-seen-count': "geq '1'",
-                                                                                       'action': 'allow'},
-                                                                   'pageContext': 'app_usage', 'field': '$.bytes',
-                                                                   'direction': 'DESC'}]], 'type': 'rpc', 'tid': 1}
+    client.session_metadata["headers"] = "test"
+    policy_optimizer_no_apps_command(client=client, args={"position": position})
+    assert response_mocker.call_args.kwargs["json"] == {
+        "action": "PanDirect",
+        "method": "run",
+        "data": [
+            "123",
+            "PoliciesDirect.getPoliciesByUsage",
+            [
+                {
+                    "type": "security",
+                    "position": excepted_position,
+                    "vsysName": "test",
+                    "isCmsSelected": expected_flag,
+                    "isMultiVsys": False,
+                    "showGrouped": False,
+                    "usageAttributes": {
+                        "timeframeTag": "30",
+                        "application/member": "any",
+                        "apps-seen-count": "geq '1'",
+                        "action": "allow",
+                    },
+                    "pageContext": "app_usage",
+                    "field": "$.bytes",
+                    "direction": "DESC",
+                }
+            ],
+        ],
+        "type": "rpc",
+        "tid": 1,
+    }
 
 
-@pytest.mark.parametrize("client, position, version, excepted_position, flag, expected_flag",
-                         QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG)
-def test_body_request_is_valid_when_querying_policy_optimizer_unused_apps(mocker, client, position,
-                                                                          version, excepted_position, flag, expected_flag):
+@pytest.mark.parametrize(
+    "client, position, version, excepted_position, flag, expected_flag", QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG
+)
+def test_body_request_is_valid_when_querying_policy_optimizer_unused_apps(
+    mocker, client, position, version, excepted_position, flag, expected_flag
+):
     """
     Given
         - a client.
@@ -192,35 +217,42 @@ def test_body_request_is_valid_when_querying_policy_optimizer_unused_apps(mocker
         case3: Panorama 9.0.0 should always return main, and the isCmsSelected flag should be False due to the given vresion.
     """
     client.version = version
-    mocker.patch.object(client, 'token_generator', return_value='123')
+    mocker.patch.object(client, "token_generator", return_value="123")
     response = requests.Response()
     response._content = b'{"result":{"result":{"entry":[{"@name":"test","text":"test"}]}}}'
-    response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
+    response_mocker = mocker.patch.object(client.session, "post", return_value=response)
 
-    client.session_metadata["headers"] = 'test'
+    client.session_metadata["headers"] = "test"
     client.session_metadata["dit"] = 0
-    policy_optimizer_get_unused_apps_command(
-        client=client, args={
-            'position': position
-        }
-    )
-    assert response_mocker.call_args.kwargs['json'] == {'action': 'PanDirect', 'method': 'run',
-                                                        'data': ['123', 'PoliciesDirect.getPoliciesByUsage',
-                                                                 [{'type': 'security', 'position': excepted_position,
-                                                                   'vsysName': 'test', 'serialNumber': '',
-                                                                   'isCmsSelected': expected_flag,
-                                                                   'isMultiVsys': False, 'showGrouped': False,
-                                                                   'usageAttributes': {'timeframeTag': '30',
-                                                                                       'application/member': 'unused',
-                                                                                       'action': 'allow'},
-                                                                   'pageContext': 'app_usage', 'field': '$.bytes',
-                                                                   'direction': 'DESC'}]], 'type': 'rpc', 'tid': 2}
+    policy_optimizer_get_unused_apps_command(client=client, args={"position": position})
+    assert response_mocker.call_args.kwargs["json"] == {
+        "action": "PanDirect",
+        "method": "run",
+        "data": [
+            "123",
+            "PoliciesDirect.getPoliciesByUsage",
+            [
+                {
+                    "type": "security",
+                    "position": excepted_position,
+                    "vsysName": "test",
+                    "serialNumber": "",
+                    "isCmsSelected": expected_flag,
+                    "isMultiVsys": False,
+                    "showGrouped": False,
+                    "usageAttributes": {"timeframeTag": "30", "application/member": "unused", "action": "allow"},
+                    "pageContext": "app_usage",
+                    "field": "$.bytes",
+                    "direction": "DESC",
+                }
+            ],
+        ],
+        "type": "rpc",
+        "tid": 2,
+    }
 
 
-CLIENTS = [
-    get_firewall_instance_client(),
-    get_panorama_instance_client()
-]
+CLIENTS = [get_firewall_instance_client(), get_panorama_instance_client()]
 
 
 @pytest.mark.parametrize("client", CLIENTS)
@@ -235,19 +267,17 @@ def test_querying_rules_is_valid(mocker, client):
     Then
         - Verify that the output for both cases returns expected responses.
     """
-    mocker.patch.object(client, 'token_generator', return_value='123')
-    mocker.patch.object(client.session, 'post')
-    mocker.patch.object(json, 'loads', return_value=read_json_file(path='test_data/valid_security_rules_response.json'))
+    mocker.patch.object(client, "token_generator", return_value="123")
+    mocker.patch.object(client.session, "post")
+    mocker.patch.object(json, "loads", return_value=read_json_file(path="test_data/valid_security_rules_response.json"))
 
-    client.session_metadata["headers"] = 'test'
+    client.session_metadata["headers"] = "test"
     client.is_cms_selected = False
-    rules = policy_optimizer_get_rules_command(
-        client=client, args={'timeframe': '30', 'usage': 'Unused', 'exclude': 'false'}
-    )
+    rules = policy_optimizer_get_rules_command(client=client, args={"timeframe": "30", "usage": "Unused", "exclude": "false"})
 
     assert isinstance(rules.outputs, list)
     assert len(rules.outputs) > 0
-    assert 'PolicyOptimizer Unused Security Rules' in rules.readable_output
+    assert "PolicyOptimizer Unused Security Rules" in rules.readable_output
 
 
 @pytest.mark.parametrize("client", CLIENTS)
@@ -262,20 +292,22 @@ def test_querying_invalid_dynamic_address_group_response(mocker, client):
     Then
         - an entry indicating that no dynamic address group was found.
     """
-    mocker.patch.object(client, 'token_generator', return_value='123')
-    mocker.patch.object(client.session, 'post')
-    mocker.patch.object(
-        json, 'loads', return_value=read_json_file(path='test_data/invalid_dynamic_group_response.json')
-    )
+    mocker.patch.object(client, "token_generator", return_value="123")
+    mocker.patch.object(client.session, "post")
+    mocker.patch.object(json, "loads", return_value=read_json_file(path="test_data/invalid_dynamic_group_response.json"))
 
-    client.session_metadata["headers"] = 'test'
-    dag = policy_optimizer_get_dag_command(client=client, args={'dag': 'dag_test_ag'})
-    assert dag.readable_output == 'Dynamic Address Group dag_test_ag was not found.'
+    client.session_metadata["headers"] = "test"
+    dag = policy_optimizer_get_dag_command(client=client, args={"dag": "dag_test_ag"})
+    assert dag.readable_output == "Dynamic Address Group dag_test_ag was not found."
 
 
-@pytest.mark.parametrize('version , output',
-                         [('9.0.0', 'f6f4061a1bddc1c04d8109b39f581270'),
-                          ('10.2.1', '590c9f8430c7435807df8ba9a476e3f1295d46ef210f6efae2043a4c085a569e')])
+@pytest.mark.parametrize(
+    "version , output",
+    [
+        ("9.0.0", "f6f4061a1bddc1c04d8109b39f581270"),
+        ("10.2.1", "590c9f8430c7435807df8ba9a476e3f1295d46ef210f6efae2043a4c085a569e"),
+    ],
+)
 def test_token_generator(mocker, version, output):
     """
     Given:
@@ -289,18 +321,19 @@ def test_token_generator(mocker, version, output):
     """
     client = get_firewall_instance_client()
     client.version = version
-    client.session_metadata['cookie_key'] = 'test'
+    client.session_metadata["cookie_key"] = "test"
     assert client.token_generator() == output
 
 
 def test_extract_csrf():
     client = get_firewall_instance_client()
-    assert client.extract_csrf(
-        '<input type="hidden" name="_csrf" value="422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T" />') == \
-           '422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T'  # noqa
+    assert (
+        client.extract_csrf('<input type="hidden" name="_csrf" value="422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T" />')
+        == "422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T"
+    )  # noqa
 
 
-@pytest.mark.parametrize("position_value, num_of_rules", [('both', 3), ('pre', 2), ('post', 1)])
+@pytest.mark.parametrize("position_value, num_of_rules", [("both", 3), ("pre", 2), ("post", 1)])
 def test_get_unused_rules(mocker, position_value, num_of_rules):
     """
 
@@ -313,28 +346,25 @@ def test_get_unused_rules(mocker, position_value, num_of_rules):
     """
 
     def mock_policy_optimizer_get_rules(position: str, **kwargs):
-        pre = {'result': {'result': {'entry': ['test1', 'test2']}}}
-        post = {'result': {'result': {'entry': ['test3']}}}
-        if position == 'pre':
+        pre = {"result": {"result": {"entry": ["test1", "test2"]}}}
+        post = {"result": {"result": {"entry": ["test3"]}}}
+        if position == "pre":
             return pre
         else:
             return post
 
     client = get_panorama_instance_client()
-    mocker.patch.object(client, 'policy_optimizer_get_rules', side_effect=mock_policy_optimizer_get_rules)
-    args = {'timeframe': '',
-            'usage': 'test',
-            'exclude': 'false',
-            'position': position_value,
-            'rule_type': 'unused'
-            }
+    mocker.patch.object(client, "policy_optimizer_get_rules", side_effect=mock_policy_optimizer_get_rules)
+    args = {"timeframe": "", "usage": "test", "exclude": "false", "position": position_value, "rule_type": "unused"}
     rules = policy_optimizer_get_rules_command(client, args).outputs
 
     assert len(rules) == num_of_rules
 
 
-@pytest.mark.parametrize("version, position , is_panorama, res",
-                         [('8', "post", True, "main"), ('9', "post", False, "main"), ('10.3', "post", True, "post")])
+@pytest.mark.parametrize(
+    "version, position , is_panorama, res",
+    [("8", "post", True, "main"), ("9", "post", False, "main"), ("10.3", "post", True, "post")],
+)
 def test_define_position(mocker, version, position, is_panorama, res):
     """
     Given:
@@ -352,8 +382,7 @@ def test_define_position(mocker, version, position, is_panorama, res):
     assert define_position(version=version, args={"position": position}, is_panorama=is_panorama) == res
 
 
-@pytest.mark.parametrize("version, is_panorama, res",
-                         [('8', True, False), ('9', False, False), ('10.3', True, True)])
+@pytest.mark.parametrize("version, is_panorama, res", [("8", True, False), ("9", False, False), ("10.3", True, True)])
 def test_isCmsSelected(version, is_panorama, res):
     """
     Given:
@@ -377,31 +406,36 @@ def test_policy_optimizer_get_rules_pagination(mocker):
     Then: Ensure the request is sent with the correct parameters.
     """
     client = get_firewall_instance_client()
-    mocker.patch.object(client, 'token_generator', return_value='123')
-    kwargs = {'timeframe': 'all', 'usage': 'Unused', 'exclude': False, 'position': 'both', 'rule_type': 'security'}
+    mocker.patch.object(client, "token_generator", return_value="123")
+    kwargs = {"timeframe": "all", "usage": "Unused", "exclude": False, "position": "both", "rule_type": "security"}
 
-    session_post_mock = mocker.patch.object(client, 'session_post')
+    session_post_mock = mocker.patch.object(client, "session_post")
     client.policy_optimizer_get_rules(limit=50, page_size=200, **kwargs)
-    assert session_post_mock.call_args.kwargs['json_cmd']['data'][2][0]['start'] == 0
-    assert session_post_mock.call_args.kwargs['json_cmd']['data'][2][0]['limit'] == 50
+    assert session_post_mock.call_args.kwargs["json_cmd"]["data"][2][0]["start"] == 0
+    assert session_post_mock.call_args.kwargs["json_cmd"]["data"][2][0]["limit"] == 50
 
-    session_post_mock = mocker.patch.object(client, 'session_post',
-                                            side_effect=[{'result': {'result': {'@count': 30, '@total-count': 100, 'entry': []}}},
-                                                         {'result': {'result': {'@count': 30, '@total-count': 100, 'entry': []}}},
-                                                         {'result': {'result': {'@count': 20, '@total-count': 100, 'entry': []}}}]
-                                            )
+    session_post_mock = mocker.patch.object(
+        client,
+        "session_post",
+        side_effect=[
+            {"result": {"result": {"@count": 30, "@total-count": 100, "entry": []}}},
+            {"result": {"result": {"@count": 30, "@total-count": 100, "entry": []}}},
+            {"result": {"result": {"@count": 20, "@total-count": 100, "entry": []}}},
+        ],
+    )
     client.policy_optimizer_get_rules(limit=80, page_size=30, **kwargs)
     assert session_post_mock.call_count == 3
-    assert session_post_mock.call_args_list[0].kwargs['json_cmd']['data'][2][0]['start'] == 0
-    assert session_post_mock.call_args_list[0].kwargs['json_cmd']['data'][2][0]['limit'] == 30
-    assert session_post_mock.call_args_list[1].kwargs['json_cmd']['data'][2][0]['start'] == 30
-    assert session_post_mock.call_args_list[1].kwargs['json_cmd']['data'][2][0]['limit'] == 30
-    assert session_post_mock.call_args_list[2].kwargs['json_cmd']['data'][2][0]['start'] == 60
-    assert session_post_mock.call_args_list[2].kwargs['json_cmd']['data'][2][0]['limit'] == 20
+    assert session_post_mock.call_args_list[0].kwargs["json_cmd"]["data"][2][0]["start"] == 0
+    assert session_post_mock.call_args_list[0].kwargs["json_cmd"]["data"][2][0]["limit"] == 30
+    assert session_post_mock.call_args_list[1].kwargs["json_cmd"]["data"][2][0]["start"] == 30
+    assert session_post_mock.call_args_list[1].kwargs["json_cmd"]["data"][2][0]["limit"] == 30
+    assert session_post_mock.call_args_list[2].kwargs["json_cmd"]["data"][2][0]["start"] == 60
+    assert session_post_mock.call_args_list[2].kwargs["json_cmd"]["data"][2][0]["limit"] == 20
 
-    session_post_mock = mocker.patch.object(client, 'session_post',
-                                            return_value={'result': {'result': {'@count': 10, '@total-count': 100, 'entry': []}}})
+    session_post_mock = mocker.patch.object(
+        client, "session_post", return_value={"result": {"result": {"@count": 10, "@total-count": 100, "entry": []}}}
+    )
     client.policy_optimizer_get_rules(limit=50, page_size=10, page=3, **kwargs)
     assert session_post_mock.call_count == 1
-    assert session_post_mock.call_args.kwargs['json_cmd']['data'][2][0]['start'] == 20
-    assert session_post_mock.call_args.kwargs['json_cmd']['data'][2][0]['limit'] == 10
+    assert session_post_mock.call_args.kwargs["json_cmd"]["data"][2][0]["start"] == 20
+    assert session_post_mock.call_args.kwargs["json_cmd"]["data"][2][0]["limit"] == 10

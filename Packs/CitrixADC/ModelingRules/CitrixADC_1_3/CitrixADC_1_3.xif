@@ -18,7 +18,6 @@ alter
                                    arrayindex(regextract(_raw_log,"Context\s[\w\d]+\@(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s"),0),
                                    arrayindex(regextract(_raw_log,"client=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\:"),0),
                                    arrayindex(regextract(_raw_log,"ClientIP\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
-                                   arrayindex(regextract(_raw_log,"client\spcb\_fip\s\=\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
                                    arrayindex(regextract(_raw_log,"Remote.ip\s[\=\s]*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
                                    ),
         xdm.source.ipv6 = coalesce(arrayindex(regextract(_raw_log,"Source\s([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
@@ -31,13 +30,13 @@ alter
         xdm.source.port = to_integer(coalesce(arrayindex(regextract(_raw_log,"Source\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)\s"),0),
                                               arrayindex(regextract(_raw_log,"client=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
                                               arrayindex(regextract(_raw_log,"ClientPort\s(\d+)"),0),
-                                              arrayindex(regextract(_raw_log,"pcb_fport\s\=\s(\d+)"),0),
                                               arrayindex(regextract(_raw_log,"Remote.ip\s[\=\s]*\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+).+\sto"),0)
                                               )),
         xdm.target.port = to_integer(coalesce(arrayindex(regextract(_raw_log,"Destination\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)\s"),0),
                                               arrayindex(regextract(_raw_log,"VserverServicePort\s(\d+)\s"),0),
                                               arrayindex(regextract(_raw_log,"Sending\srequest\sto.+?\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
                                               arrayindex(regextract(_raw_log,"Vserver\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
+                                              arrayindex(regextract(_raw_log,"pcb_fport\s\=\s(\d+)"),0),                                              
                                               arrayindex(regextract(_raw_log,"sta-server\=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
                                               arrayindex(regextract(_raw_log,"vda\=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
                                               arrayindex(regextract(_raw_log,"received\sin\sSTA\sresponse\:\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0)
@@ -47,6 +46,7 @@ alter
                                    arrayindex(regextract(_raw_log,"Sending\srequest\sto.+?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
                                    arrayindex(regextract(_raw_log,"ADldap\-(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
                                    arrayindex(regextract(_raw_log,"sta-server\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+                                   arrayindex(regextract(_raw_log,"client\spcb\_fip\s\=\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),                                   
                                    arrayindex(regextract(_raw_log,"vda\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
                                    arrayindex(regextract(_raw_log,"received\sin\sSTA\sresponse\:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
                                    ),

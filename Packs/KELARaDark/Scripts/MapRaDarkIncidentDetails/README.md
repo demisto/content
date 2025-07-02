@@ -1,6 +1,7 @@
 Map details to an RaDark incident.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Map details to an RaDark incident.
 | Tags | Enrichment |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +18,7 @@ Map details to an RaDark incident.
 | itemDetails | Detailed items as a dictionary. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

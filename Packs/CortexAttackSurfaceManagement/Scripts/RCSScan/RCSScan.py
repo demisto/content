@@ -18,14 +18,14 @@ def rcs_scan_set_context(scan_id: str, demisto: Any):
     context_get = demisto.context()
 
     # If the context was not previously set
-    if "RCSScanId" not in context_get.keys():
+    if "RCSScanId" not in context_get:
         args_set_scan = {"key": "RCSScanId", "value": scan_id}
         demisto.executeCommand("Set", args_set_scan)
         return "RCSScanId Key Value set"
 
     # If the context was previously set, then check if it is same as new value.
     # If its the same value, dont do anything, otherwise, delete old value and set new value
-    elif "RCSScanId" in context_get.keys() and scan_id != context_get["RCSScanId"]:
+    elif "RCSScanId" in context_get and scan_id != context_get["RCSScanId"]:
         # Delete Old Scan ID
         delete_args = {"key": "RCSScanId"}
         demisto.executeCommand("DeleteContext", delete_args)
@@ -36,9 +36,7 @@ def rcs_scan_set_context(scan_id: str, demisto: Any):
     return "RCSScanId remains unchanged"
 
 
-def rcs_scan_start(
-    service_id: str, attack_surface_rule_id: str, alert_internal_id: str, demisto: Any
-):
+def rcs_scan_start(service_id: str, attack_surface_rule_id: str, alert_internal_id: str, demisto: Any):
     """
     Main command that kicks off a RCS confirmation scan and gets the status of the scan.
 
@@ -54,19 +52,15 @@ def rcs_scan_start(
         "attack_surface_rule_id": attack_surface_rule_id,
         "alert_internal_id": alert_internal_id,
     }
-    output_scan_start = demisto.executeCommand(
-        "asm-start-remediation-confirmation-scan", args_scan_start
-    )
+    output_scan_start = demisto.executeCommand("asm-start-remediation-confirmation-scan", args_scan_start)
 
     # Raise error if the command execution failed
-    if output_scan_start[0].get("Type") and "Failed to execute" in output_scan_start[
-        0
-    ].get("Contents"):
+    if output_scan_start[0].get("Type") and "Failed to execute" in output_scan_start[0].get("Contents"):
         raise ValueError("Failed to execute RCSScanStatus. Check input values.")
 
     scan_id = output_scan_start[0].get("Contents").get("reply").get("scanId")
 
-    if scan_id:
+    if scan_id:  # noqa: RET503
         return rcs_scan_set_context(scan_id, demisto)
 
 
@@ -88,11 +82,7 @@ def main():
         raise ValueError("alert_internal_id argument needs to be specified")
 
     try:
-        return_results(
-            rcs_scan_start(
-                service_id, attack_surface_rule_id, alert_internal_id, demisto
-            )
-        )
+        return_results(rcs_scan_start(service_id, attack_surface_rule_id, alert_internal_id, demisto))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute RCSScanStatus. Error: {str(ex)}")

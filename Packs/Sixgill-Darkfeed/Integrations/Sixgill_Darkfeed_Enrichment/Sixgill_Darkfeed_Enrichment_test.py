@@ -1,29 +1,28 @@
-import requests
-import pytest
 import json
-import io
 
 import demistomock as demisto
+import pytest
+import requests
 
 mock_response = ""
 mocked_get_token_response = """{"access_token": "fababfafbh"}"""
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return f.read()
 
 
-class MockedResponse(object):
+class MockedResponse:
     def __init__(self, status_code, text, reason=None, url=None, method=None, headers=None):
         self.status_code = status_code
         self.text = text
         self.reason = reason
         self.url = url
         self.request = requests.Request("GET")
-        self.ok = True if self.status_code == 200 else False
+        self.ok = self.status_code == 200
         self.method = method
-        self.headers = {} if not headers else headers
+        self.headers = headers if headers else {}
 
     def json(self):
         return json.loads(self.text)
@@ -43,18 +42,15 @@ def mocked_request(*args, **kwargs):
     method = request.method
     body = request.body
 
-    if end_point == '/ioc/enrich':
+    if end_point == "/ioc/enrich":
         result = json.loads(body)
-        if 'ioc_type' in result:
+        if "ioc_type" in result:
             mock_response = util_load_json(f"test_data/{result.get('ioc_type')}.json")
-        elif 'sixgill_field' in result:
+        elif "sixgill_field" in result:
             mock_response = util_load_json(f"test_data/{result.get('sixgill_field')}.json")
 
     response_dict = {
-        "POST": {
-            "/auth/token": MockedResponse(200, mocked_get_token_response),
-            "/ioc/enrich": MockedResponse(200, mock_response)
-        }
+        "POST": {"/auth/token": MockedResponse(200, mocked_get_token_response), "/ioc/enrich": MockedResponse(200, mock_response)}
     }
 
     response_dict = response_dict.get(method)
@@ -98,8 +94,8 @@ def test_ip_reputation_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Sixgill_Darkfeed_Enrichment import ip_reputation_command
     from sixgill.sixgill_enrich_client import SixgillEnrichClient
+    from Sixgill_Darkfeed_Enrichment import ip_reputation_command
 
     client = SixgillEnrichClient("client_id", "client_secret", "some_channel")
 
@@ -124,8 +120,8 @@ def test_domain_reputation_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Sixgill_Darkfeed_Enrichment import domain_reputation_command
     from sixgill.sixgill_enrich_client import SixgillEnrichClient
+    from Sixgill_Darkfeed_Enrichment import domain_reputation_command
 
     client = SixgillEnrichClient("client_id", "client_secret", "some_channel")
 
@@ -150,8 +146,8 @@ def test_url_reputation_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Sixgill_Darkfeed_Enrichment import url_reputation_command
     from sixgill.sixgill_enrich_client import SixgillEnrichClient
+    from Sixgill_Darkfeed_Enrichment import url_reputation_command
 
     client = SixgillEnrichClient("client_id", "client_secret", "some_channel")
 
@@ -176,8 +172,8 @@ def test_file_reputation_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Sixgill_Darkfeed_Enrichment import file_reputation_command
     from sixgill.sixgill_enrich_client import SixgillEnrichClient
+    from Sixgill_Darkfeed_Enrichment import file_reputation_command
 
     client = SixgillEnrichClient("client_id", "client_secret", "some_channel")
 
@@ -202,8 +198,8 @@ def test_actor_reputation_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Sixgill_Darkfeed_Enrichment import actor_reputation_command
     from sixgill.sixgill_enrich_client import SixgillEnrichClient
+    from Sixgill_Darkfeed_Enrichment import actor_reputation_command
 
     client = SixgillEnrichClient("client_id", "client_secret", "some_channel")
 
@@ -228,8 +224,8 @@ def test_postid_reputation_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Sixgill_Darkfeed_Enrichment import postid_reputation_command
     from sixgill.sixgill_enrich_client import SixgillEnrichClient
+    from Sixgill_Darkfeed_Enrichment import postid_reputation_command
 
     client = SixgillEnrichClient("client_id", "client_secret", "some_channel")
 

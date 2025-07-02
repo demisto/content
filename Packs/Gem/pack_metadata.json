@@ -2,7 +2,7 @@
     "name": "Gem",
     "description": "Integrate with Gem to use alerts as a trigger for Cortex XSOAR’s custom playbooks, and automate response to specific TTPs and scenarios.",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Gem Security",
     "url": "https://gem.security/",
     "email": "support@gem.security",
@@ -75,7 +75,8 @@
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "support@gem.security"
@@ -83,5 +84,11 @@
     "githubUser": [
         "dorkauf",
         "liormgem"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

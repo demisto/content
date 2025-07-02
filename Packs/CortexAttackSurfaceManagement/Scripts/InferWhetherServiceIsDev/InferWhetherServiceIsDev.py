@@ -10,10 +10,34 @@ from collections.abc import Callable
 
 DEV_ENV_CLASSIFICATION = "DevelopmentEnvironment"
 EXACT_DEV_MATCH = ["dv", "noprod", "np", "ppe"]
-PARTIAL_DEV_MATCH = ["stg", "stag", "qa", "quality", "test", "tst", "exp", "non_prod",
-                     "non-prod", "nonprod", "nprd", "n-prd", "npe", "npd", "pre_prod",
-                     "pre-prod", "preprod", "pprd", "pov", "proof of value", "poc",
-                     "sbx", "sandbox", "internal", "validation", "lab"]
+PARTIAL_DEV_MATCH = [
+    "stg",
+    "stag",
+    "qa",
+    "quality",
+    "test",
+    "tst",
+    "exp",
+    "non_prod",
+    "non-prod",
+    "nonprod",
+    "nprd",
+    "n-prd",
+    "npe",
+    "npd",
+    "pre_prod",
+    "pre-prod",
+    "preprod",
+    "pprd",
+    "pov",
+    "proof of value",
+    "poc",
+    "sbx",
+    "sandbox",
+    "internal",
+    "validation",
+    "lab",
+]
 EXACT_PROD_MATCH = ["pr"]
 PARTIAL_PROD_MATCH = ["prod", "prd", "release", "live"]
 
@@ -25,7 +49,7 @@ def _canonicalize_string(in_str: str) -> str:
     * stripping whitespace (space and tab)
     * stripping quotation marks (" and ')
     """
-    return in_str.lower().strip(' \t"\'')
+    return in_str.lower().strip(" \t\"'")
 
 
 def get_indicators_from_list(observed_list: list, is_indicator_match: Callable, comparison_type: str) -> list:
@@ -52,8 +76,9 @@ def get_indicators_from_list(observed_list: list, is_indicator_match: Callable, 
                     key = _canonicalize_string(list_entry.get("key", ""))
                     value = _canonicalize_string(list_entry.get("value", ""))
 
-                    if (("env" in key) or (key in ("stage", "function", "lifecycle", "usage", "tier"))) and \
-                       is_indicator_match(value):
+                    if (("env" in key) or (key in ("stage", "function", "lifecycle", "usage", "tier"))) and is_indicator_match(
+                        value
+                    ):
                         indicators.append(list_entry)
         elif comparison_type == "string":
             value = _canonicalize_string(list_entry)
@@ -66,18 +91,20 @@ def get_indicators_from_list(observed_list: list, is_indicator_match: Callable, 
 
 def is_dev_indicator(value: str) -> bool:
     """
-     Returns boolean based on match on exact/partial dev criteria.
+    Returns boolean based on match on exact/partial dev criteria.
 
-     Args:
-         value (str): value of the kv pair of tag.
+    Args:
+        value (str): value of the kv pair of tag.
 
-     Returns:
-         bool: whether there was a match based on exact/partial dev criteria.
-     """
-    return (("dev" in value and "devops" not in value)
-            or ("uat" in value and "prod" not in value)
-            or any(m == value for m in EXACT_DEV_MATCH)
-            or any(m in value for m in PARTIAL_DEV_MATCH))
+    Returns:
+        bool: whether there was a match based on exact/partial dev criteria.
+    """
+    return (
+        ("dev" in value and "devops" not in value)
+        or ("uat" in value and "prod" not in value)
+        or any(m == value for m in EXACT_DEV_MATCH)
+        or any(m in value for m in PARTIAL_DEV_MATCH)
+    )
 
 
 def is_prod_indicator(value: str) -> bool:
@@ -94,8 +121,7 @@ def is_prod_indicator(value: str) -> bool:
     if is_dev_indicator(value):
         return False
     else:
-        return (any(m == value for m in EXACT_PROD_MATCH)
-                or any(m in value for m in PARTIAL_PROD_MATCH))
+        return any(m == value for m in EXACT_PROD_MATCH) or any(m in value for m in PARTIAL_PROD_MATCH)
 
 
 def get_indicators_from_external_classification(classifications: list[str]) -> list:
@@ -138,7 +164,7 @@ def determine_reason(external_indicators: list, tags: list, hierarchy: list, pro
     if len(external_indicators) == 1:
         reason_parts.append("external classification of " + DEV_ENV_CLASSIFICATION)
     for tag in tags:
-        reason_parts.append("tag {" + f"{tag.get('key')}: {tag.get('value')}" + "} from " + tag.get('source'))
+        reason_parts.append("tag {" + f"{tag.get('key')}: {tag.get('value')}" + "} from " + tag.get("source"))
     for match in hierarchy:
         if provider:
             reason_parts.append("infrastructure hierarchy information `" + f"{match}" + "` from " + provider)
@@ -154,8 +180,9 @@ def determine_reason(external_indicators: list, tags: list, hierarchy: list, pro
     return reason_final
 
 
-def final_decision(external_indicators: list, dev_tags: list, prod_tags: list, dev_hierarchy: list,
-                   prod_hierarchy: list, provider: str) -> dict:
+def final_decision(
+    external_indicators: list, dev_tags: list, prod_tags: list, dev_hierarchy: list, prod_hierarchy: list, provider: str
+) -> dict:
     """
     Final decision to be set in gridfield.
 
@@ -255,11 +282,17 @@ def main():
         external_indicators = get_indicators_from_external_classification(external_active_classifications)
 
         provider: str = args.get("provider", None)
-        decision_dict = final_decision(external_indicators, dev_kv_indicators, prod_kv_indicators,
-                                       dev_hierarchy_indicators, prod_hierarchy_indicators, provider)
+        decision_dict = final_decision(
+            external_indicators,
+            dev_kv_indicators,
+            prod_kv_indicators,
+            dev_hierarchy_indicators,
+            prod_hierarchy_indicators,
+            provider,
+        )
         demisto.executeCommand("setAlert", {"asmdevcheckdetails": [decision_dict]})
 
-        output = tableToMarkdown("Dev Check Results", decision_dict, ['result_readable', 'confidence', 'reason'])
+        output = tableToMarkdown("Dev Check Results", decision_dict, ["result_readable", "confidence", "reason"])
         return_results(CommandResults(readable_output=output))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

@@ -1,24 +1,22 @@
+import json
+from copy import deepcopy
+from datetime import datetime, timedelta
+from random import choice, randint, randrange
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-from datetime import datetime, timedelta
-from random import randrange, choice, randint
-from copy import deepcopy
-import json
-
-
-''' SAMPLE EVENTS '''
+""" SAMPLE EVENTS """
 
 SAMPLE_EVENT = {
     "type": "url allowed",
     "eventID": "007",
     "urlCategory": "MALWARE",
     "sourceIP": "10.8.8.8",
-                "occurred": "2023-01-01T00:00:01.000Z",
-                "sourceUser": "james.bond@xsoar.local",
-                "url": "https://xsoar.pan.dev/login.zip",
-                "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0"
+    "occurred": "2023-01-01T00:00:01.000Z",
+    "sourceUser": "james.bond@xsoar.local",
+    "url": "https://xsoar.pan.dev/login.zip",
+    "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0",
 }
 
 TYPES = ["url allowed", "url blocked"]
@@ -26,7 +24,7 @@ CATEGORIES = ["PHISH", "MALWARE", "SPAM"]
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-''' ACTIVE DIRECTORY QUERY V2 INTEGRATION '''
+""" ACTIVE DIRECTORY QUERY V2 INTEGRATION """
 
 USERS = [
     {
@@ -35,7 +33,7 @@ USERS = [
         "samaccountname": "XSOAR007",
         "dn": "CN=James Bond,CN=Users,DC=xsoar,DC=local",
         "group": "CN=Agents,CN=Users,DC=xsoar,DC=local",
-        "manager": "CN=M,CN=Users,DC=xsoar,DC=local"
+        "manager": "CN=M,CN=Users,DC=xsoar,DC=local",
     },
     {
         "email": "eve.moneypenny@xsoar.local",
@@ -43,7 +41,7 @@ USERS = [
         "samaccountname": "XSOAR002",
         "dn": "CN=Eve Moneypenny,CN=Users,DC=xsoar,DC=local",
         "group": "CN=Administration,CN=Users,DC=xsoar,DC=local",
-        "manager": "CN=M,CN=Users,DC=xsoar,DC=local"
+        "manager": "CN=M,CN=Users,DC=xsoar,DC=local",
     },
     {
         "email": "m@xsoar.local",
@@ -51,7 +49,7 @@ USERS = [
         "samaccountname": "XSOAR001",
         "dn": "CN=M,CN=Users,DC=xsoar,DC=local",
         "group": "CN=Managers,CN=Users,DC=xsoar,DC=local",
-        "manager": "CN=James Bond,CN=Users,DC=xsoar,DC=local"
+        "manager": "CN=James Bond,CN=Users,DC=xsoar,DC=local",
     },
     {
         "email": "q@xsoar.local",
@@ -59,8 +57,8 @@ USERS = [
         "samaccountname": "XSOAR003",
         "dn": "CN=Q,CN=Users,DC=xsoar,DC=local",
         "group": "CN=Gadgets,CN=Users,DC=xsoar,DC=local",
-        "manager": "CN=James Bond,CN=Users,DC=xsoar,DC=local"
-    }
+        "manager": "CN=James Bond,CN=Users,DC=xsoar,DC=local",
+    },
 ]
 
 
@@ -86,18 +84,18 @@ def mock_data(total):
     data = []
     count = 0
 
-    users = [x['email'] for x in USERS]
+    users = [x["email"] for x in USERS]
     while count < total:
         item = deepcopy(SAMPLE_EVENT)
-        item['occurred'] = (now - timedelta(minutes=randrange(6, 60))).strftime('%Y-%m-%dT%H:%M:%SZ')
-        item['eventID'] = str(randrange(100, 10000))
-        item['type'] = choice(TYPES)
-        if item['type'] == 'url blocked':
-            item['urlCategory'] = choice(CATEGORIES)
+        item["occurred"] = (now - timedelta(minutes=randrange(6, 60))).strftime("%Y-%m-%dT%H:%M:%SZ")
+        item["eventID"] = str(randrange(100, 10000))
+        item["type"] = choice(TYPES)
+        if item["type"] == "url blocked":
+            item["urlCategory"] = choice(CATEGORIES)
         else:
-            item['urlCategory'] = choice(CATEGORIES)
-        item['sourceUser'] = choice(users)
-        item['sourceIP'] = f"10.8.8.{randrange(2,250)}"
+            item["urlCategory"] = choice(CATEGORIES)
+        item["sourceUser"] = choice(users)
+        item["sourceIP"] = f"10.8.8.{randrange(2,250)}"
 
         if item["urlCategory"] == "MALWARE":
             item["url"] = f"https://xsoar.pan.dev/{randrange(1,88)}/download.zip"
@@ -133,48 +131,24 @@ def create_ad_user_output(user):
     """
     user_template = {
         "attributes": {
-            "displayName": [
-                f"{user['displayname']}"
-            ],
-            "mail": [
-                f"{user['email']}"
-            ],
-            "manager": [
-                f"{user['manager']}"
-            ],
-            "memberOf": [
-                f"{user['group']}"
-            ],
-            "name": [
-                f"{user['displayname']}"
-            ],
-            "sAMAccountName": [
-                f"{user['samaccountname']}"
-            ],
-            "userAccountControl": [
-                512
-            ],
-            "dn": f"{user['dn']}"
+            "displayName": [f"{user['displayname']}"],
+            "mail": [f"{user['email']}"],
+            "manager": [f"{user['manager']}"],
+            "memberOf": [f"{user['group']}"],
+            "name": [f"{user['displayname']}"],
+            "sAMAccountName": [f"{user['samaccountname']}"],
+            "userAccountControl": [512],
+            "dn": f"{user['dn']}",
         },
         "account": {
-            "DisplayName": [
-                f"{user['displayname']}"
-            ],
-            "Email": [
-                f"{user['email']}"
-            ],
-            "Manager": [
-                f"{user['manager']}"
-            ],
-            "Groups": [
-                f"{user['group']}"
-            ],
+            "DisplayName": [f"{user['displayname']}"],
+            "Email": [f"{user['email']}"],
+            "Manager": [f"{user['manager']}"],
+            "Groups": [f"{user['group']}"],
             "Type": "AD",
-            "Username": [
-                f"{user['samaccountname']}"
-            ],
-            "ID": f"{user['dn']}"
-        }
+            "Username": [f"{user['samaccountname']}"],
+            "ID": f"{user['dn']}",
+        },
     }
 
     return user_template
@@ -200,9 +174,9 @@ def simple_response_command(command):
     returns a text response for the Active Directory and send mail Commands
     """
     command_map = {
-        'xet-ad-expire-password': 'Expired password successfully',  # guardrails-disable-line
-        'xet-ad-set-new-password': 'User password successfully set',    # guardrails-disable-line
-        'xet-send-mail': 'XSOAR Engineer Training: fake email notification not sent'
+        "xet-ad-expire-password": "Expired password successfully",  # guardrails-disable-line
+        "xet-ad-set-new-password": "User password successfully set",  # guardrails-disable-line
+        "xet-send-mail": "XSOAR Engineer Training: fake email notification not sent",
     }
     return CommandResults(readable_output=command_map[command], ignore_auto_extract=True)
 
@@ -215,19 +189,19 @@ def ad_get_user_command(args):
     demisto.debug(f"Initializing {user=}")
 
     # error handing if one of username, email or dn is not passed to the command
-    if not args.get('username') and not args.get('email') and not args.get('dn'):
+    if not args.get("username") and not args.get("email") and not args.get("dn"):
         return_error("Need either a username, email, or dn")
 
     # lookup the user
-    if args.get('email'):
-        username = args.get('email')
-        user = lookup_ad_user(username, 'email')
-    if args.get('username'):
-        username = args.get('username')
-        user = lookup_ad_user(username, 'samaccountname')
-    if args.get('dn'):
-        username = args.get('dn')
-        user = lookup_ad_user(username, 'dn')
+    if args.get("email"):
+        username = args.get("email")
+        user = lookup_ad_user(username, "email")
+    if args.get("username"):
+        username = args.get("username")
+        user = lookup_ad_user(username, "samaccountname")
+    if args.get("dn"):
+        username = args.get("dn")
+        user = lookup_ad_user(username, "dn")
 
     # create the user response
     if user:
@@ -235,15 +209,15 @@ def ad_get_user_command(args):
 
         # return results like AD query would.
         demisto_entry = {
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': user_output,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Active Directory - Get Users", user_output.get('attributes')),
-            'EntryContext': {
-                'ActiveDirectory.Users(obj.dn == val.dn)': user_output.get('attributes'),
-                'Account(obj.ID == val.ID)': user_output.get('account')
-            }
+            "ContentsFormat": formats["json"],
+            "Type": entryTypes["note"],
+            "Contents": user_output,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": tableToMarkdown("Active Directory - Get Users", user_output.get("attributes")),
+            "EntryContext": {
+                "ActiveDirectory.Users(obj.dn == val.dn)": user_output.get("attributes"),
+                "Account(obj.ID == val.ID)": user_output.get("account"),
+            },
         }
 
         return demisto_entry
@@ -255,49 +229,27 @@ def siem_search_command(args):
     """
     Returns the results from the siem-search command
     """
-    query = args.get('query')
-    result_type = args.get('result_type')
+    query = args.get("query")
+    result_type = args.get("result_type")
     number = randint(1, 10)
 
     # return results for demo of siem search in example playbook.
     if result_type == "email" or query.startswith("email"):
-        result = [
-            {
-                "Username": "XSOAR007",
-                "Email": "james.bond@xsoar.local"
-            },
-            {
-                "Username": "XSOAR001",
-                "Email": "m@xsoar.local"
-            }
-        ]
+        result = [{"Username": "XSOAR007", "Email": "james.bond@xsoar.local"}, {"Username": "XSOAR001", "Email": "m@xsoar.local"}]
     # return some data if the number is right.
     elif number >= 7 or result_type == "hosts" or query.startswith("username"):
-        result = [
-            {
-                "Host": "crossiscoming01",
-                "Online": "Yes"
-            },
-            {
-                "Host": "crossiscoming02",
-                "Online": "No"
-            }
-        ]
+        result = [{"Host": "crossiscoming01", "Online": "Yes"}, {"Host": "crossiscoming02", "Online": "No"}]
     # return some data if the number is right.
     elif query.startswith("ip"):
-        result = [
-            {
-                "Host": "crossiscoming01",
-                "Online": "Yes"
-            }
-        ]
+        result = [{"Host": "crossiscoming01", "Online": "Yes"}]
     else:
         result = []
 
     results = CommandResults(
         readable_output=tableToMarkdown(f"SIEM Search results for query: {query}", result),
         outputs_prefix="SIEM.Result",
-        outputs=result)
+        outputs=result,
+    )
 
     return results
 
@@ -317,18 +269,14 @@ def fetch_incidents(limit):
         else:
             event_type = "URL Blocked"
         event_user = event.get("sourceUser", "")
-        incident = {
-            "name": f"Alert - {event_type}- {event_user}",
-            "rawJSON": json.dumps(event),
-            "occurred": event["occurred"]
-        }
+        incident = {"name": f"Alert - {event_type}- {event_user}", "rawJSON": json.dumps(event), "occurred": event["occurred"]}
         incidents.append(incident)
 
     # return our list of Incidents
     return incidents[:limit]
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
 
 def main():
@@ -338,24 +286,24 @@ def main():
     fetch_limit = 20
 
     command = demisto.command()
-    LOG(f'Command being called is {command}')
+    LOG(f"Command being called is {command}")
 
     try:
         commands = {
-            'xet-get-events': get_events_command,
-            'xet-ad-expire-password': simple_response_command,
-            'xet-ad-set-new-password': simple_response_command,
-            'xet-send-mail': simple_response_command
+            "xet-get-events": get_events_command,
+            "xet-ad-expire-password": simple_response_command,
+            "xet-ad-set-new-password": simple_response_command,
+            "xet-send-mail": simple_response_command,
         }
-        if command == 'test-module':
-            demisto.results('ok')
-        elif demisto.command() == 'fetch-incidents':
+        if command == "test-module":
+            demisto.results("ok")
+        elif demisto.command() == "fetch-incidents":
             demisto.incidents(fetch_incidents(limit=fetch_limit))
-        elif demisto.command() == 'xet-get-events':
+        elif demisto.command() == "xet-get-events":
             return_results(get_events_command(demisto.args()))
-        elif demisto.command() == 'xet-ad-get-user':
+        elif demisto.command() == "xet-ad-get-user":
             demisto.results(ad_get_user_command(demisto.args()))
-        elif demisto.command() == 'xet-siem-search':
+        elif demisto.command() == "xet-siem-search":
             return_results(siem_search_command(demisto.args()))
         elif command in commands:
             return_results(commands[command](command))
@@ -364,5 +312,5 @@ def main():
         return_error(str(e))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

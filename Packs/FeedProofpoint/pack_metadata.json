@@ -2,7 +2,7 @@
     "name": "Proofpoint Feed",
     "description": "Detailed feed of domains and ips classified in different categories. You need a valid authorization code from Proofpoint ET to access this feed",
     "support": "xsoar",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

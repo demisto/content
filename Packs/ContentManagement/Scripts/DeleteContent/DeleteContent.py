@@ -1,14 +1,14 @@
 """Delete Content script, used to keep instances tidy."""
-from CommonServerPython import *
 
+import json
 from abc import ABC, abstractmethod
 
 import requests
-import json
+from CommonServerPython import *
 
-SCRIPT_NAME = 'DeleteContent'
+SCRIPT_NAME = "DeleteContent"
 CORE_PACKS_LIST_URL = "https://raw.githubusercontent.com/demisto/content/master/Config/core_packs_list.json"
-INSTANCE_NAME = demisto.args().get('using')
+INSTANCE_NAME = demisto.args().get("using")
 
 
 def verify_search_response_in_list(response: Any, id: str) -> str:
@@ -16,8 +16,8 @@ def verify_search_response_in_list(response: Any, id: str) -> str:
     Return:
         The id if it is in the response, else return empty string
     """
-    ids = [entity.get('id', '') for entity in response] if isinstance(response, list) else []
-    return '' if id not in ids else id
+    ids = [entity.get("id", "") for entity in response] if isinstance(response, list) else []
+    return "" if id not in ids else id
 
 
 def verify_search_response_in_dict(response: dict | str | list) -> str:
@@ -27,7 +27,7 @@ def verify_search_response_in_dict(response: dict | str | list) -> str:
     """
     if isinstance(response, dict) and response.get("id"):
         return response.get("id", "")
-    return ''
+    return ""
 
 
 def get_the_name_of_specific_id(response: dict | str | list, id: str) -> str:
@@ -42,7 +42,8 @@ def get_the_name_of_specific_id(response: dict | str | list, id: str) -> str:
 
 class EntityAPI(ABC):
     """Abstract class for APIs of different content entities."""
-    name = ''
+
+    name = ""
 
     @abstractmethod
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
@@ -65,31 +66,26 @@ class EntityAPI(ABC):
         pass
 
     def parse_all_entities_response(self, response) -> list:
-        return [entity.get('id', '') for entity in response] if isinstance(response, list) else []
+        return [entity.get("id", "") for entity in response] if isinstance(response, list) else []
 
 
 class PlaybookAPI(EntityAPI):
-    name = 'playbook'
+    name = "playbook"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': f'/playbook/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": f"/playbook/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/playbook/search',
-                                'body': {'page': 0, 'size': 100},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/playbook/search", "body": {"page": 0, "size": 100}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/playbook/delete',
-                                'body': {'id': specific_id},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post", {"uri": "/playbook/delete", "body": {"id": specific_id}, "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_dict(response)
@@ -98,103 +94,100 @@ class PlaybookAPI(EntityAPI):
         return get_the_name_of_specific_id(response, id)
 
     def parse_all_entities_response(self, response: dict | str | list) -> list:
-        return [entity.get('id', '') for entity in response.get('playbooks', [])] if type(response) is dict else []
+        return [entity.get("id", "") for entity in response.get("playbooks", [])] if type(response) is dict else []
 
 
 class IntegrationAPI(EntityAPI):
-    name = 'integration'
+    name = "integration"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/settings/integration/search',
-                                'body': {'page': 0, 'size': 100, 'query': f'name:"{specific_id}"'},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {
+                "uri": "/settings/integration/search",
+                "body": {"page": 0, "size": 100, "query": f'name:"{specific_id}"'},
+                "using": INSTANCE_NAME,
+            },
+            fail_on_error=False,
+        )
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/settings/integration/search',
-                                'body': {'page': 0, 'size': 100},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/settings/integration/search", "body": {"page": 0, "size": 100}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/settings/integration-conf/delete',
-                                'body': {'id': specific_id},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/settings/integration-conf/delete", "body": {"id": specific_id}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
-        integrations = response.get('configurations', []) if isinstance(response, dict) else response
+        integrations = response.get("configurations", []) if isinstance(response, dict) else response
         return verify_search_response_in_list(integrations, id)
 
     def get_name_by_id(self, response: dict | str | list, id: str) -> str:
-        integrations = response.get('configurations', []) if isinstance(response, dict) else response
+        integrations = response.get("configurations", []) if isinstance(response, dict) else response
         return get_the_name_of_specific_id(integrations, id)
 
     def parse_all_entities_response(self, response: dict | str | list) -> list:
-        integrations = response.get('configurations', []) if isinstance(response, dict) else response
-        return [entity.get('id') for entity in integrations] if type(integrations) is list else []
+        integrations = response.get("configurations", []) if isinstance(response, dict) else response
+        return [entity.get("id") for entity in integrations] if type(integrations) is list else []
 
 
 class ScriptAPI(EntityAPI):
-    name = 'script'
-    always_excluded = ['CommonServerUserPowerShell', 'CommonServerUserPython', 'CommonUserServer', SCRIPT_NAME]
+    name = "script"
+    always_excluded = ["CommonServerUserPowerShell", "CommonServerUserPython", "CommonUserServer", SCRIPT_NAME]
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/automation/search',
-                                'body': {'page': 0, 'size': 1, 'query': f'id:"{specific_id}"'},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/automation/search", "body": {"page": 0, "size": 1, "query": f'id:"{specific_id}"'}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/automation/search',
-                                'body': {'page': 0, 'size': 100},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/automation/search", "body": {"page": 0, "size": 100}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/automation/delete',
-                                'body': {'script': {'id': specific_id}},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/automation/delete", "body": {"script": {"id": specific_id}}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
-        scripts = response.get('scripts') if isinstance(response, dict) else response
+        scripts = response.get("scripts") if isinstance(response, dict) else response
         return verify_search_response_in_list(scripts, id)
 
     def get_name_by_id(self, response: dict | str | list, id: str) -> str:
-        scripts = response.get('scripts', []) if isinstance(response, dict) else response
+        scripts = response.get("scripts", []) if isinstance(response, dict) else response
         return get_the_name_of_specific_id(scripts, id)
 
     def parse_all_entities_response(self, response: dict | str | list) -> list:
-        return [entity.get('id', '') for entity in response.get('scripts', [])] if type(response) is dict else []
+        return [entity.get("id", "") for entity in response.get("scripts", [])] if type(response) is dict else []
 
 
 class IncidentFieldAPI(EntityAPI):
-    name = 'incidentfield'
+    name = "incidentfield"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/incidentfields',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/incidentfields", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/incidentfields',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/incidentfields", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-delete',
-                               {'uri': f'/incidentfield/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-delete", {"uri": f"/incidentfield/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_list(response, id)
@@ -204,25 +197,18 @@ class IncidentFieldAPI(EntityAPI):
 
 
 class PreProcessingRuleAPI(EntityAPI):
-    name = 'pre-process-rule'
+    name = "pre-process-rule"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/preprocess/rules',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/preprocess/rules", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/preprocess/rules',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/preprocess/rules", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-delete',
-                               {'uri': f'/preprocess/rule/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-delete", {"uri": f"/preprocess/rule/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_list(response, id)
@@ -232,25 +218,16 @@ class PreProcessingRuleAPI(EntityAPI):
 
 
 class WidgetAPI(EntityAPI):
-    name = 'widget'
+    name = "widget"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': f'/widgets/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": f"/widgets/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/widgets',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/widgets", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-delete',
-                               {'uri': f'/widgets/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-delete", {"uri": f"/widgets/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_dict(response)
@@ -261,29 +238,22 @@ class WidgetAPI(EntityAPI):
     def parse_all_entities_response(self, response: dict | str | list) -> list:
         if type(response) is dict:
             return list(response.keys())
-        return [entity.get('id', '') for entity in response] if type(response) is list else []
+        return [entity.get("id", "") for entity in response] if type(response) is list else []
 
 
 class DashboardAPI(EntityAPI):
-    name = 'dashboard'
+    name = "dashboard"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': f'/dashboards/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": f"/dashboards/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/dashboards',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/dashboards", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-delete',
-                               {'uri': f'/dashboards/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-delete", {"uri": f"/dashboards/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_dict(response)
@@ -294,29 +264,20 @@ class DashboardAPI(EntityAPI):
     def parse_all_entities_response(self, response: dict | str | list) -> list:
         if type(response) is dict:
             return list(response.keys())
-        return [entity.get('id', '') for entity in response] if type(response) is list else []
+        return [entity.get("id", "") for entity in response] if type(response) is list else []
 
 
 class ReportAPI(EntityAPI):
-    name = 'report'
+    name = "report"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': f'/reports/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": f"/reports/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/reports',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/reports", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-delete',
-                               {'uri': f'/report/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-delete", {"uri": f"/report/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_dict(response)
@@ -326,26 +287,20 @@ class ReportAPI(EntityAPI):
 
 
 class IncidentTypeAPI(EntityAPI):
-    name = 'incidenttype'
+    name = "incidenttype"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/incidenttypes/export',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/incidenttypes/export", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/incidenttypes/export',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/incidenttypes/export", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/incidenttype/delete',
-                                'body': {'id': specific_id},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/incidenttype/delete", "body": {"id": specific_id}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_list(response, id)
@@ -355,26 +310,22 @@ class IncidentTypeAPI(EntityAPI):
 
 
 class ClassifierAPI(EntityAPI):
-    name = 'classifier'
+    name = "classifier"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': f'/classifier/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": f"/classifier/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/classifier/search',
-                                'body': {'page': 0, 'size': 100},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/classifier/search", "body": {"page": 0, "size": 100}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-delete',
-                               {'uri': f'/classifier/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-delete", {"uri": f"/classifier/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_dict(response)
@@ -383,34 +334,27 @@ class ClassifierAPI(EntityAPI):
         return get_the_name_of_specific_id(response, id)
 
     def parse_all_entities_response(self, response: dict | str | list) -> list:
-        classifiers = response.get('classifiers', []) if type(response) is dict else []
-        return [entity.get('id', '') for entity in classifiers] if type(classifiers) is list else []
+        classifiers = response.get("classifiers", []) if type(response) is dict else []
+        return [entity.get("id", "") for entity in classifiers] if type(classifiers) is list else []
 
 
 class MapperAPI(ClassifierAPI):
-    name = 'mapper'
+    name = "mapper"
 
 
 class ReputationAPI(EntityAPI):
-    name = 'reputation'
+    name = "reputation"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/reputation/export',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/reputation/export", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/reputation/export',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/reputation/export", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-delete',
-                               {'uri': f'/reputation/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-delete", {"uri": f"/reputation/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_list(response, id)
@@ -420,26 +364,18 @@ class ReputationAPI(EntityAPI):
 
 
 class LayoutAPI(EntityAPI):
-    name = 'layoutscontainer'
+    name = "layoutscontainer"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': f'/layout/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": f"/layout/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/layouts',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/layouts", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': f'/layout/{specific_id}/remove',
-                                'body': {},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post", {"uri": f"/layout/{specific_id}/remove", "body": {}, "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_dict(response)
@@ -449,69 +385,60 @@ class LayoutAPI(EntityAPI):
 
 
 class JobAPI(EntityAPI):
-    name = 'job'
+    name = "job"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/jobs/search',
-                                'body': {'page': 0, 'size': 1, 'query': f'name:"{specific_id}"'},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/jobs/search", "body": {"page": 0, "size": 1, "query": f'name:"{specific_id}"'}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/jobs/search',
-                                'body': {'page': 0, 'size': 100},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post",
+            {"uri": "/jobs/search", "body": {"page": 0, "size": 100}, "using": INSTANCE_NAME},
+            fail_on_error=False,
+        )
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-delete',
-                               {'uri': f'jobs/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-delete", {"uri": f"jobs/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         job_params = {}
-        if isinstance(response, dict) and (search_results := response.get('data')):
+        if isinstance(response, dict) and (search_results := response.get("data")):
             job_params = search_results[0]
 
-        return job_params.get("id", '') if job_params and job_params.get("id") else ''
+        return job_params.get("id", "") if job_params and job_params.get("id") else ""
 
     def get_name_by_id(self, response: dict | str, id: str) -> str:
         job_params = {}
-        if isinstance(response, dict) and (search_results := response.get('data')):
+        if isinstance(response, dict) and (search_results := response.get("data")):
             job_params = search_results[0]
         return get_the_name_of_specific_id(job_params, id)
 
     def parse_all_entities_response(self, response: dict | str | list) -> list:
-        return [entity.get('name', '') for entity in response.get('data', [])] if type(response) is dict else []
+        return [entity.get("name", "") for entity in response.get("data", [])] if type(response) is dict else []
 
 
 class ListAPI(EntityAPI):
-    name = 'list'
+    name = "list"
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': f'/lists/download/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-get", {"uri": f"/lists/download/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/lists/names',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command("core-api-get", {"uri": "/lists/names", "using": INSTANCE_NAME}, fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-post',
-                               {'uri': '/lists/delete',
-                                'body': {'id': specific_id},
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-post", {"uri": "/lists/delete", "body": {"id": specific_id}, "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def verify_specific_search_response(self, response: Union[dict, str], id: str) -> str:
-        return id if response else ''
+        return id if response else ""
 
     def get_name_by_id(self, response: dict | str, id: str) -> str:
         return id
@@ -521,8 +448,8 @@ class ListAPI(EntityAPI):
 
 
 class InstalledPackAPI(EntityAPI):
-    name = 'pack'
-    always_excluded = ['ContentManagement', 'CleanUpContent']
+    name = "pack"
+    always_excluded = ["ContentManagement", "CleanUpContent"]
 
     def __init__(self, proxy_skip=True, verify=True):
         if proxy_skip:
@@ -531,22 +458,19 @@ class InstalledPackAPI(EntityAPI):
         self.always_excluded = json.loads(core_packs_response.text).get("core_packs_list") + self.always_excluded
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': f'/contentpacks/installed/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-get", {"uri": f"/contentpacks/installed/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('core-api-get',
-                               {'uri': '/contentpacks/installed-expired',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-get", {"uri": "/contentpacks/installed-expired", "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('core-api-delete',
-                               {'uri': f'/contentpacks/installed/{specific_id}',
-                                'using': INSTANCE_NAME},
-                               fail_on_error=False)
+        return execute_command(
+            "core-api-delete", {"uri": f"/contentpacks/installed/{specific_id}", "using": INSTANCE_NAME}, fail_on_error=False
+        )
 
     def verify_specific_search_response(self, response: Union[dict, str], id: str) -> str:
         return verify_search_response_in_dict(response)
@@ -569,11 +493,11 @@ def search_and_delete_existing_entity(id: str, entity_api: EntityAPI, dry_run: b
     status, res = entity_api.search_specific_id(specific_id=id)
 
     if not status:
-        demisto.debug(f'Could not find {entity_api.name} with id {id} - Response:\n{res}')
+        demisto.debug(f"Could not find {entity_api.name} with id {id} - Response:\n{res}")
         return False, id
 
-    specific_id = entity_api.verify_specific_search_response(res.get('response', {}), id)  # type: ignore[union-attr]
-    specific_name = entity_api.get_name_by_id(res.get('response', {}), id)  # type: ignore[union-attr]
+    specific_id = entity_api.verify_specific_search_response(res.get("response", {}), id)  # type: ignore[union-attr]
+    specific_name = entity_api.get_name_by_id(res.get("response", {}), id)  # type: ignore[union-attr]
 
     if not specific_id:
         return False, id
@@ -603,15 +527,16 @@ def search_for_all_entities(entity_api: EntityAPI) -> list:
     status, res = entity_api.search_all()
 
     if not status:
-        error_message = f'Search All {entity_api.name}s - {res}'
+        error_message = f"Search All {entity_api.name}s - {res}"
         demisto.debug(error_message)
         raise Exception(error_message)
 
-    return entity_api.parse_all_entities_response(res.get('response', {}))  # type: ignore[union-attr]
+    return entity_api.parse_all_entities_response(res.get("response", {}))  # type: ignore[union-attr]
 
 
-def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], included_ids: list = [], dry_run: bool = True
-                            ) -> tuple[list[dict], list[dict], list]:
+def get_and_delete_entities(
+    entity_api: EntityAPI, excluded_ids: list = [], included_ids: list = [], dry_run: bool = True
+) -> tuple[list[dict], list[dict], list]:
     """Search and delete entities with provided EntityAPI.
 
     Args:
@@ -623,7 +548,7 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
     Returns:
         (list) successfully deleted ids, (list) not deleted ids, (list) extended excluded ids.
     """
-    demisto.debug(f'Starting handling {entity_api.name} entities.')
+    demisto.debug(f"Starting handling {entity_api.name} entities.")
     successfully_deleted: list[dict] = []
     not_deleted: list[dict] = []
     extended_excluded_ids = excluded_ids.copy()
@@ -631,23 +556,23 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
     if not included_ids and not excluded_ids:
         return [], [], extended_excluded_ids
 
-    if hasattr(entity_api, 'always_excluded'):
+    if hasattr(entity_api, "always_excluded"):
         extended_excluded_ids += entity_api.always_excluded  # type: ignore
 
     new_included_ids = [item for item in included_ids if item not in extended_excluded_ids]
-    demisto.debug(f'Included ids for {entity_api.name} after excluding excluded are {new_included_ids}')
+    demisto.debug(f"Included ids for {entity_api.name} after excluding excluded are {new_included_ids}")
 
     if included_ids:
         for included_id in included_ids:
             if included_id in new_included_ids:
                 status, name = search_and_delete_existing_entity(included_id, entity_api=entity_api, dry_run=dry_run)
-                id_and_name = {'id': included_id, 'name': name}
+                id_and_name = {"id": included_id, "name": name}
                 if status:
                     successfully_deleted.append(id_and_name)
                 else:
                     not_deleted.append(id_and_name)
             else:
-                not_deleted.append({'id': included_id, 'name': included_id})
+                not_deleted.append({"id": included_id, "name": included_id})
 
     else:
         all_entities = search_for_all_entities(entity_api=entity_api)
@@ -657,22 +582,21 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
         for entity_id in all_entities:
             if entity_id not in extended_excluded_ids:
                 status, name = search_and_delete_existing_entity(entity_id, entity_api=entity_api, dry_run=dry_run)
-                id_and_name = {'id': entity_id, 'name': name}
+                id_and_name = {"id": entity_id, "name": name}
                 if status:
                     successfully_deleted.append(id_and_name)
                 else:
-                    demisto.debug(f'Did not find or could not delete {entity_api.name} with '
-                                  f'id {entity_id} in xsoar.')
+                    demisto.debug(f"Did not find or could not delete {entity_api.name} with id {entity_id} in xsoar.")
                     not_deleted.append(id_and_name)
             else:
-                not_deleted.append({'id': entity_id, 'name': entity_id})
+                not_deleted.append({"id": entity_id, "name": entity_id})
 
     return successfully_deleted, not_deleted, extended_excluded_ids
 
 
 def get_deletion_status(excluded: list, included: list, deleted: list, undeleted: list) -> bool:
-    deleted_ids = [entity.get('id') for entity in deleted]
-    undeleted_ids = [entity.get('id') for entity in undeleted]
+    deleted_ids = [entity.get("id") for entity in deleted]
+    undeleted_ids = [entity.get("id") for entity in undeleted]
     if excluded:
         if undeleted_ids == excluded:
             return True
@@ -688,21 +612,19 @@ def get_deletion_status(excluded: list, included: list, deleted: list, undeleted
     return False
 
 
-def handle_content_entity(entity_api: EntityAPI,
-                          included_ids_dict: Optional[dict],
-                          excluded_ids_dict: Optional[dict],
-                          dry_run: bool) -> tuple[bool, dict, dict]:
-
+def handle_content_entity(
+    entity_api: EntityAPI, included_ids_dict: Optional[dict], excluded_ids_dict: Optional[dict], dry_run: bool
+) -> tuple[bool, dict, dict]:
     excluded_ids = excluded_ids_dict.get(entity_api.name, []) if excluded_ids_dict else []
     included_ids = included_ids_dict.get(entity_api.name, []) if included_ids_dict else []
 
-    deleted_ids, undeleted_ids, new_excluded_ids = get_and_delete_entities(entity_api=entity_api,
-                                                                           excluded_ids=excluded_ids,
-                                                                           included_ids=included_ids,
-                                                                           dry_run=dry_run)
+    deleted_ids, undeleted_ids, new_excluded_ids = get_and_delete_entities(
+        entity_api=entity_api, excluded_ids=excluded_ids, included_ids=included_ids, dry_run=dry_run
+    )
 
-    deletion_status = get_deletion_status(excluded=new_excluded_ids, included=included_ids,
-                                          deleted=deleted_ids, undeleted=undeleted_ids)
+    deletion_status = get_deletion_status(
+        excluded=new_excluded_ids, included=included_ids, deleted=deleted_ids, undeleted=undeleted_ids
+    )
 
     return deletion_status, {entity_api.name: deleted_ids}, {entity_api.name: undeleted_ids}
 
@@ -732,16 +654,30 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
             not_deleted: list of content ids gathered not to delete.
             status: Deletion status (Failed/Completed/Dry run, nothing really deleted.)
     """
-    dry_run = argToBoolean(args.get('dry_run', 'true'))
-    include_ids = handle_input_json(args.get('include_ids_dict'))
-    exclude_ids = handle_input_json(args.get('exclude_ids_dict'))
-    skip_proxy = argToBoolean(args.get('skip_proxy', 'false'))
-    verify_cert = argToBoolean(args.get('verify_cert', 'true'))
+    dry_run = argToBoolean(args.get("dry_run", "true"))
+    include_ids = handle_input_json(args.get("include_ids_dict"))
+    exclude_ids = handle_input_json(args.get("exclude_ids_dict"))
+    skip_proxy = argToBoolean(args.get("skip_proxy", "false"))
+    verify_cert = argToBoolean(args.get("verify_cert", "true"))
 
-    entities_to_delete = [InstalledPackAPI(proxy_skip=skip_proxy, verify=verify_cert), IntegrationAPI(), ScriptAPI(),
-                          IncidentTypeAPI(), PlaybookAPI(), IncidentFieldAPI(),
-                          PreProcessingRuleAPI(), WidgetAPI(), DashboardAPI(), ReportAPI(), JobAPI(), ListAPI(),
-                          ClassifierAPI(), MapperAPI(), ReputationAPI(), LayoutAPI()]
+    entities_to_delete = [
+        InstalledPackAPI(proxy_skip=skip_proxy, verify=verify_cert),
+        IntegrationAPI(),
+        ScriptAPI(),
+        IncidentTypeAPI(),
+        PlaybookAPI(),
+        IncidentFieldAPI(),
+        PreProcessingRuleAPI(),
+        WidgetAPI(),
+        DashboardAPI(),
+        ReportAPI(),
+        JobAPI(),
+        ListAPI(),
+        ClassifierAPI(),
+        MapperAPI(),
+        ReputationAPI(),
+        LayoutAPI(),
+    ]
 
     all_deleted: dict = {}
     all_not_deleted: dict = {}
@@ -752,27 +688,28 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
         all_not_deleted |= undeleted
         all_deletion_statuses.append(entity_deletion_status)
 
-    deletion_status = 'Failed'
+    deletion_status = "Failed"
     if dry_run:
-        deletion_status = 'Dry run, nothing really deleted.'
+        deletion_status = "Dry run, nothing really deleted."
     elif all(all_deletion_statuses):
-        deletion_status = 'Completed'
+        deletion_status = "Completed"
 
-    successfully_deleted_ids = {key: [value['id'] for value in lst] for key, lst in all_deleted.items() if lst}
-    successfully_deleted_names = {key: [value['name'] for value in lst] for key, lst in all_deleted.items() if lst}
-    not_deleted_ids = {key: [value['id'] for value in lst] for key, lst in all_not_deleted.items() if lst}
-    not_deleted_names = {key: [value['name'] for value in lst] for key, lst in all_not_deleted.items() if lst}
+    successfully_deleted_ids = {key: [value["id"] for value in lst] for key, lst in all_deleted.items() if lst}
+    successfully_deleted_names = {key: [value["name"] for value in lst] for key, lst in all_deleted.items() if lst}
+    not_deleted_ids = {key: [value["id"] for value in lst] for key, lst in all_not_deleted.items() if lst}
+    not_deleted_names = {key: [value["name"] for value in lst] for key, lst in all_not_deleted.items() if lst}
     return CommandResults(
-        outputs_prefix='ConfigurationSetup.Deletion',
-        outputs_key_field='name',
+        outputs_prefix="ConfigurationSetup.Deletion",
+        outputs_key_field="name",
         outputs={
             # Only show keys with values.
-            'successfully_deleted': successfully_deleted_ids,
-            'not_deleted': not_deleted_ids,
-            'status': deletion_status,
+            "successfully_deleted": successfully_deleted_ids,
+            "not_deleted": not_deleted_ids,
+            "status": deletion_status,
         },
-        readable_output=f'### Deletion status: {deletion_status}\n' + tableToMarkdown(
-            'Successfully deleted', successfully_deleted_names) + tableToMarkdown('Not deleted', not_deleted_names)
+        readable_output=f"### Deletion status: {deletion_status}\n"
+        + tableToMarkdown("Successfully deleted", successfully_deleted_names)
+        + tableToMarkdown("Not deleted", not_deleted_names),
     )
 
 
@@ -781,9 +718,8 @@ def main():  # pragma: no cover
         return_results(get_and_delete_needed_ids(demisto.args()))
 
     except Exception as e:
-        return_error(f'Error occurred while deleting contents.\n{e}'
-                     f'\n{traceback.format_exc()}')
+        return_error(f"Error occurred while deleting contents.\n{e}\n{traceback.format_exc()}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

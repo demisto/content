@@ -43,17 +43,20 @@ configuration:
   type: 8
   required: false
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   section: Connect
+  advanced: true
 - display: Use tenant
   additionalinfo: Whether API calls should be made to the current tenant instead of the main tenant.
   name: use_tenant
   type: 8
   required: false
   section: Connect
+  advanced: true
 script:
   script: ''
   type: javascript
@@ -262,7 +265,7 @@ script:
     - name: entry_id
       description: "The War Room entry ID of the file."
       required: true
-    description: Delete a file from Cortex XSOAR by entry_id.
+    description: Delete a war room (investigation) file entry.
   - name: core-api-file-attachment-delete
     arguments:
     - name: incident_id
@@ -274,7 +277,7 @@ script:
     - name: field_name
       defaultValue: 'attachment'
       description: "Name of the field (type attachment) from which to remove the attachment."
-    description: Delete the attachment from the incident and from the Cortex XSOAR server.
+    description: Delete a file attachment from an incident — specifically from the incident’s file attachments.
   - name: core-api-file-check
     arguments:
     - name: entry_id

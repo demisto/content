@@ -1,9 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """Implementation file for Cofense Vision Integration."""
 
 import traceback
-from typing import Any, Dict, Optional, Callable
+from collections.abc import Callable
+from typing import Any
 
 import urllib3
 from requests import Response
@@ -16,7 +18,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-HR_DATE_FORMAT = '%m/%d/%Y, %I:%M %p %Z'
+HR_DATE_FORMAT = "%m/%d/%Y, %I:%M %p %Z"
 API_SUFFIX = "/api/v4"
 API_ENDPOINTS = {
     "AUTHENTICATION": "/uaa/oauth/token",
@@ -36,44 +38,77 @@ API_ENDPOINTS = {
     "CREATE_MESSAGE_SEARCH": API_SUFFIX + "/searches",
     "GET_LAST_IOC": "/iocrepository/v1/iocs/last",
     "GET_IOCS": "/iocrepository/v1/iocs",
-    "GET_SEARCHABLE_HEADERS": API_SUFFIX + "/config/searchableHeaders"
+    "GET_SEARCHABLE_HEADERS": API_SUFFIX + "/config/searchableHeaders",
 }
 ERROR_MESSAGE = {
-    'INVALID_FORMAT': "{} is an invalid format for {}. Supported format is: {}",
-    'INVALID_PAGE_VALUE': 'Page number must be a non-zero and positive numeric value.',
-    'INVALID_PAGE_SIZE_RANGE': 'Page size should be in the range from 1 to 2000.',
-    'UNSUPPORTED_FIELD': "{} is not a supported value for {}. Supported values for {} are: {}.",
-    'UNSUPPORTED_FIELD_FOR_IOCS_LIST': "{} is not a supported value for {}. Supported value for {} is: {}.",
-    'INVALID_REQUIRED_PARAMETER_HASH': 'At least one of the hash values (md5 or sha256) is required.',
-    'INVALID_ARGUMENT': '{} is an invalid value for {}.',
-    'MISSING_REQUIRED_PARAM': "{} is a required parameter. Please provide correct value.",
-    'INVALID_QUARANTINE_JOB_PARAM': "{} must be a non-zero positive integer number.",
-    'INVALID_SEARCH_ID': 'ID must be a non-zero positive integer number.',
+    "INVALID_FORMAT": "{} is an invalid format for {}. Supported format is: {}",
+    "INVALID_PAGE_VALUE": "Page number must be a non-zero and positive numeric value.",
+    "INVALID_PAGE_SIZE_RANGE": "Page size should be in the range from 1 to 2000.",
+    "UNSUPPORTED_FIELD": "{} is not a supported value for {}. Supported values for {} are: {}.",
+    "UNSUPPORTED_FIELD_FOR_IOCS_LIST": "{} is not a supported value for {}. Supported value for {} is: {}.",
+    "INVALID_REQUIRED_PARAMETER_HASH": "At least one of the hash values (md5 or sha256) is required.",
+    "INVALID_ARGUMENT": "{} is an invalid value for {}.",
+    "MISSING_REQUIRED_PARAM": "{} is a required parameter. Please provide correct value.",
+    "INVALID_QUARANTINE_JOB_PARAM": "{} must be a non-zero positive integer number.",
+    "INVALID_SEARCH_ID": "ID must be a non-zero positive integer number.",
     "INVALID_QUARANTINE_JOB_ID": "Quarantine Job ID must be a non-zero positive integer number.",
-    'INVALID_SEARCH_LENGTH': "Maximum 3 values are allowed to create a search for {} parameter."
+    "INVALID_SEARCH_LENGTH": "Maximum 3 values are allowed to create a search for {} parameter.",
 }
-IOC_TYPES = {'domain': DBotScoreType.DOMAIN, 'md5': DBotScoreType.FILE, 'sender': DBotScoreType.EMAIL,
-             'sha256': DBotScoreType.FILE, 'subject': DBotScoreType.CUSTOM, 'url': DBotScoreType.URL}
-SUPPORTED_HASH = ['MD5', 'SHA256']
-SUPPORTED_CRITERIA = ['ANY', 'ALL']
-SUPPORTED_HASH_VALUE_FORMAT = 'hashtype1:hashvalue1,hashtype2:hashvalue2'
+IOC_TYPES = {
+    "domain": DBotScoreType.DOMAIN,
+    "md5": DBotScoreType.FILE,
+    "sender": DBotScoreType.EMAIL,
+    "sha256": DBotScoreType.FILE,
+    "subject": DBotScoreType.CUSTOM,
+    "url": DBotScoreType.URL,
+}
+SUPPORTED_HASH = ["MD5", "SHA256"]
+SUPPORTED_CRITERIA = ["ANY", "ALL"]
+SUPPORTED_HASH_VALUE_FORMAT = "hashtype1:hashvalue1,hashtype2:hashvalue2"
 SUPPORTED_QUARANTINE_EMAILS_FORMAT = "internetMessageID1:recipientAddress1,internetMessageID2:recipientAddress2"
-SUPPORTED_HEADERS_FORMAT = 'key1:value1,key2:value1:value2:value3'
-SUPPORTED_SORT_FORMAT = 'propertyName1:sortOrder1,propertyName2:sortOrder2'
+SUPPORTED_HEADERS_FORMAT = "key1:value1,key2:value1:value2:value3"
+SUPPORTED_SORT_FORMAT = "propertyName1:sortOrder1,propertyName2:sortOrder2"
 SUPPORTED_SORT_FORMAT_FOR_IOCS_LIST = "propertyName:sortOrder"
-STATUS = ['NEW', 'PENDING_APPROVAL', 'QUEUED', 'RUNNING', 'COMPLETED', 'FAILED']
-THREAT_TYPES = ['domain', 'md5', 'sender', 'sha256', 'subject', 'url']
+STATUS = ["NEW", "PENDING_APPROVAL", "QUEUED", "RUNNING", "COMPLETED", "FAILED"]
+THREAT_TYPES = ["domain", "md5", "sender", "sha256", "subject", "url"]
 SUPPORTED_SORT = {
-    'order_by': ['asc', 'desc'],
-    'quarantine_jobs_list': ['id', 'createdBy', 'createdDate', 'modifiedBy', 'modifiedDate', 'stopRequested'],
-    'message_searches_list': ['id', 'createdBy', 'createdDate', 'modifiedBy', 'modifiedDate', 'receivedAfterDate',
-                              'receivedBeforeDate'],
-    'message_search_result_get': ['id', 'subject', 'createdOn', 'sentOn', 'htmlBody', 'md5', 'sha1', 'sha256'],
+    "order_by": ["asc", "desc"],
+    "quarantine_jobs_list": ["id", "createdBy", "createdDate", "modifiedBy", "modifiedDate", "stopRequested"],
+    "message_searches_list": [
+        "id",
+        "createdBy",
+        "createdDate",
+        "modifiedBy",
+        "modifiedDate",
+        "receivedAfterDate",
+        "receivedBeforeDate",
+    ],
+    "message_search_result_get": ["id", "subject", "createdOn", "sentOn", "htmlBody", "md5", "sha1", "sha256"],
     "iocs_list": ["updatedAt"],
 }
 MAX_PAGE_SIZE = 2000
-SPECIAL_CHARACTERS_MARKDOWN = ['#', '*', '`', '<', '>', '_', '-', '(', ')', '[', ']', '!', '+', '.', '{', '}', '~', '=',
-                               '|', '\\']
+SPECIAL_CHARACTERS_MARKDOWN = [
+    "#",
+    "*",
+    "`",
+    "<",
+    ">",
+    "_",
+    "-",
+    "(",
+    ")",
+    "[",
+    "]",
+    "!",
+    "+",
+    ".",
+    "{",
+    "}",
+    "~",
+    "=",
+    "|",
+    "\\",
+]
 DEFAULT_SORT_VALUE = "id:asc"
 RECEIVED_ON = "Received On"
 SENT_ON = "Sent On"
@@ -117,8 +152,17 @@ APPLICATION_JSON = "application/json"
 class VisionClient(BaseClient):
     """Client class to interact with the service API."""
 
-    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool,
-                 threat_levels_good: list, threat_levels_suspicious: list, threat_levels_bad: list) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        client_id: str,
+        client_secret: str,
+        verify: bool,
+        proxy: bool,
+        threat_levels_good: list,
+        threat_levels_suspicious: list,
+        threat_levels_bad: list,
+    ) -> None:
         """
         Prepare constructor for Client class.
 
@@ -138,15 +182,16 @@ class VisionClient(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
         # Setting up access token in headers.
-        self._headers: Dict[str, Any] = {
+        self._headers: dict[str, Any] = {
             "Authorization": f"Bearer {self.get_access_token(client_id=client_id, client_secret=client_secret)}"
         }
-        self.threat_levels_good = [level.lower() for level in threat_levels_good] + ['low']
-        self.threat_levels_suspicious = [level.lower() for level in threat_levels_suspicious] + ['suspicious',
-                                                                                                 'moderate',
-                                                                                                 'substantial']
-        self.threat_levels_bad = [level.lower() for level in threat_levels_bad] + ['malicious', 'severe', 'critical',
-                                                                                   'high']
+        self.threat_levels_good = [level.lower() for level in threat_levels_good] + ["low"]
+        self.threat_levels_suspicious = [level.lower() for level in threat_levels_suspicious] + [
+            "suspicious",
+            "moderate",
+            "substantial",
+        ]
+        self.threat_levels_bad = [level.lower() for level in threat_levels_bad] + ["malicious", "severe", "critical", "high"]
 
     def authenticate(self, client_id: str, client_secret: str) -> tuple[str, int]:
         """
@@ -175,7 +220,7 @@ class VisionClient(BaseClient):
             url_suffix=API_ENDPOINTS["AUTHENTICATION"],
             data=req_body,
             headers=req_headers,
-            error_handler=error_handler
+            error_handler=error_handler,
         )
         token = response.get("access_token")
         expires_in = response.get("expires_in")
@@ -216,7 +261,7 @@ class VisionClient(BaseClient):
 
         return token
 
-    def get_attachment(self, md5: Optional[str] = None, sha256: Optional[str] = None) -> Response:
+    def get_attachment(self, md5: str | None = None, sha256: str | None = None) -> Response:
         """Get an attachment of an email from API.
 
         Args:
@@ -227,8 +272,13 @@ class VisionClient(BaseClient):
             Response: Response from API.
         """
         params = assign_params(md5=md5, sha256=sha256)
-        return self._http_request(method='GET', url_suffix=API_ENDPOINTS["GET_ATTACHMENT"], resp_type='Response',
-                                  params=params, error_handler=error_handler)
+        return self._http_request(
+            method="GET",
+            url_suffix=API_ENDPOINTS["GET_ATTACHMENT"],
+            resp_type="Response",
+            params=params,
+            error_handler=error_handler,
+        )
 
     def get_message(self, token: str) -> Response:
         """Get the message zip file, which contains the email's content.
@@ -239,10 +289,15 @@ class VisionClient(BaseClient):
         Returns:
             Response: Response from API.
         """
-        return self._http_request(method='GET', url_suffix=API_ENDPOINTS["GET_MESSAGE"], resp_type='response',
-                                  params={"token": token}, error_handler=error_handler)
+        return self._http_request(
+            method="GET",
+            url_suffix=API_ENDPOINTS["GET_MESSAGE"],
+            resp_type="response",
+            params={"token": token},
+            error_handler=error_handler,
+        )
 
-    def get_message_metadata(self, internet_message_id: str, recipient_address: str) -> Dict[str, Any]:
+    def get_message_metadata(self, internet_message_id: str, recipient_address: str) -> dict[str, Any]:
         """Get content of message that matches specified ID and Recipient Address.
 
         Args:
@@ -253,8 +308,9 @@ class VisionClient(BaseClient):
             Dict[str, Any]: Response from API.
         """
         params = assign_params(internetMessageId=internet_message_id, recipientAddress=recipient_address)
-        return self._http_request(method='GET', url_suffix=API_ENDPOINTS["GET_MESSAGE_METADATA"], params=params,
-                                  error_handler=error_handler)
+        return self._http_request(
+            method="GET", url_suffix=API_ENDPOINTS["GET_MESSAGE_METADATA"], params=params, error_handler=error_handler
+        )
 
     def get_message_token(self, internet_message_id: str, recipient_address: str, password: str = None) -> str:
         """Retrieve the one time message token from the Cofense Vision API.
@@ -267,15 +323,19 @@ class VisionClient(BaseClient):
         Returns:
             str: One time token
         """
-        req_data = assign_params(internetMessageId=internet_message_id, recipientAddress=recipient_address,
-                                 password=password)
+        req_data = assign_params(internetMessageId=internet_message_id, recipientAddress=recipient_address, password=password)
 
-        return self._http_request(method="POST", url_suffix=API_ENDPOINTS["GET_MESSAGE_TOKEN"], json_data=req_data,
-                                  resp_type="text", error_handler=error_handler)
+        return self._http_request(
+            method="POST",
+            url_suffix=API_ENDPOINTS["GET_MESSAGE_TOKEN"],
+            json_data=req_data,
+            resp_type="text",
+            error_handler=error_handler,
+        )
 
-    def quarantine_jobs_list(self, page: Optional[int], size: Optional[int], sort: str,
-                             exclude_quarantine_emails: bool,
-                             body: dict) -> Dict[str, Any]:
+    def quarantine_jobs_list(
+        self, page: int | None, size: int | None, sort: str, exclude_quarantine_emails: bool, body: dict
+    ) -> dict[str, Any]:
         """Get quarantine jobs.
 
         Args:
@@ -289,9 +349,10 @@ class VisionClient(BaseClient):
             Dict: Response from API.
 
         """
-        query = f'?page={page}&size={size}&excludeQuarantineEmails={exclude_quarantine_emails}&{sort}'
-        return self._http_request(method="POST", url_suffix=API_ENDPOINTS["GET_QUARANTINE_JOBS"] + query,
-                                  json_data=body, error_handler=error_handler)
+        query = f"?page={page}&size={size}&excludeQuarantineEmails={exclude_quarantine_emails}&{sort}"
+        return self._http_request(
+            method="POST", url_suffix=API_ENDPOINTS["GET_QUARANTINE_JOBS"] + query, json_data=body, error_handler=error_handler
+        )
 
     def delete_quarantine_job(self, job_id: str):
         """Delete the quarantine job specified by the user.
@@ -299,11 +360,15 @@ class VisionClient(BaseClient):
         Args:
             job_id: ID of the quarantine job to delete.
         """
-        self._http_request(method="DELETE",
-                           url_suffix=API_ENDPOINTS["QUARANTINE_JOB"] + "/" + str(job_id),
-                           empty_valid_codes=[200], return_empty_response=True, error_handler=error_handler)
+        self._http_request(
+            method="DELETE",
+            url_suffix=API_ENDPOINTS["QUARANTINE_JOB"] + "/" + str(job_id),
+            empty_valid_codes=[200],
+            return_empty_response=True,
+            error_handler=error_handler,
+        )
 
-    def create_quarantine_job(self, requests_body: Dict[str, Any]) -> Dict[str, Any]:
+    def create_quarantine_job(self, requests_body: dict[str, Any]) -> dict[str, Any]:
         """Create a quarantine job using internet message id and recipient's address of emails.
 
         Args:
@@ -313,10 +378,15 @@ class VisionClient(BaseClient):
             Dict[str, Any]: Response from API.
         """
         headers = {"Content-Type": APPLICATION_JSON, **self._headers}
-        return self._http_request(method="POST", url_suffix=API_ENDPOINTS["QUARANTINE_JOB"], headers=headers,
-                                  json_data=requests_body, error_handler=error_handler)
+        return self._http_request(
+            method="POST",
+            url_suffix=API_ENDPOINTS["QUARANTINE_JOB"],
+            headers=headers,
+            json_data=requests_body,
+            error_handler=error_handler,
+        )
 
-    def create_search(self, requests_body: Dict[str, Any]) -> Dict[str, Any]:
+    def create_search(self, requests_body: dict[str, Any]) -> dict[str, Any]:
         """Create a new search based on user specified arguments.
 
         Args:
@@ -325,10 +395,11 @@ class VisionClient(BaseClient):
         Returns:
             Dict[str, Any]: Response from API.
         """
-        return self._http_request(method="POST", url_suffix=API_ENDPOINTS["CREATE_MESSAGE_SEARCH"],
-                                  json_data=requests_body, error_handler=error_handler)
+        return self._http_request(
+            method="POST", url_suffix=API_ENDPOINTS["CREATE_MESSAGE_SEARCH"], json_data=requests_body, error_handler=error_handler
+        )
 
-    def get_search(self, search_id: int) -> Dict[str, Any]:
+    def get_search(self, search_id: int) -> dict[str, Any]:
         """Get Search using search id provided by cofense vision.
 
         Args:
@@ -337,8 +408,9 @@ class VisionClient(BaseClient):
         Returns:
             Dict[str, Any]: Response from API.
         """
-        return self._http_request(method="GET", url_suffix=API_ENDPOINTS["GET_MESSAGE_SEARCH"].format(search_id),
-                                  error_handler=error_handler)
+        return self._http_request(
+            method="GET", url_suffix=API_ENDPOINTS["GET_MESSAGE_SEARCH"].format(search_id), error_handler=error_handler
+        )
 
     def restore_quarantine_job(self, id: str) -> None:
         """Restore the emails quarantined by the job identified by id.
@@ -346,10 +418,15 @@ class VisionClient(BaseClient):
         Args:
             id (str): The id of the quarantine job.
         """
-        self._http_request(method="PUT", url_suffix=API_ENDPOINTS["RESTORE_QUARANTINE_JOB"].format(id),
-                           return_empty_response=True, empty_valid_codes=(200,), error_handler=error_handler)
+        self._http_request(
+            method="PUT",
+            url_suffix=API_ENDPOINTS["RESTORE_QUARANTINE_JOB"].format(id),
+            return_empty_response=True,
+            empty_valid_codes=(200,),
+            error_handler=error_handler,
+        )
 
-    def list_searches(self, page: int = None, size: int = None, sort: str = None) -> Dict[str, Any]:
+    def list_searches(self, page: int = None, size: int = None, sort: str = None) -> dict[str, Any]:
         """List message searches.
 
         Args:
@@ -360,11 +437,10 @@ class VisionClient(BaseClient):
         Returns:
             Dict[str, Any]: Response from API.
         """
-        query = f'?page={page}&size={size}&{sort}'
-        return self._http_request(method="GET", url_suffix=API_ENDPOINTS["GET_ALL_SEARCHES"] + query,
-                                  error_handler=error_handler)
+        query = f"?page={page}&size={size}&{sort}"
+        return self._http_request(method="GET", url_suffix=API_ENDPOINTS["GET_ALL_SEARCHES"] + query, error_handler=error_handler)
 
-    def get_quarantine_job(self, job_id: str) -> Dict[str, Any]:
+    def get_quarantine_job(self, job_id: str) -> dict[str, Any]:
         """Get the quarantine job with specified ID.
 
         Args:
@@ -373,8 +449,9 @@ class VisionClient(BaseClient):
         Returns:
             Dict: Response from API.
         """
-        return self._http_request(method="GET", url_suffix=API_ENDPOINTS["QUARANTINE_JOB"] + "/" + str(job_id),
-                                  error_handler=error_handler)
+        return self._http_request(
+            method="GET", url_suffix=API_ENDPOINTS["QUARANTINE_JOB"] + "/" + str(job_id), error_handler=error_handler
+        )
 
     def approve_quarantine_job(self, id: str, message_count: int = None) -> None:
         """Approve the quarantine job identified by its unique ID.
@@ -384,12 +461,16 @@ class VisionClient(BaseClient):
             message_count (int): The number of messages to approve.
         """
         params = assign_params(messageCount=message_count)
-        self._http_request(method="PUT", url_suffix=API_ENDPOINTS["APPROVE_QUARANTINE_JOB"].format(id),
-                           params=params, return_empty_response=True, empty_valid_codes=[200],
-                           error_handler=error_handler)
+        self._http_request(
+            method="PUT",
+            url_suffix=API_ENDPOINTS["APPROVE_QUARANTINE_JOB"].format(id),
+            params=params,
+            return_empty_response=True,
+            empty_valid_codes=[200],
+            error_handler=error_handler,
+        )
 
-    def get_search_results(self, search_id: int, page: int = None, size: int = None, sort: str = None) -> \
-            Dict[str, Any]:
+    def get_search_results(self, search_id: int, page: int = None, size: int = None, sort: str = None) -> dict[str, Any]:
         """List message searches.
 
         Args:
@@ -401,10 +482,10 @@ class VisionClient(BaseClient):
         Returns:
             Dict[str, Any]: Response from API.
         """
-        query = f'?page={page}&size={size}&{sort}'
-        return self._http_request(method="GET",
-                                  url_suffix=API_ENDPOINTS["GET_SEARCH_RESULTS"].format(search_id) + query,
-                                  error_handler=error_handler)
+        query = f"?page={page}&size={size}&{sort}"
+        return self._http_request(
+            method="GET", url_suffix=API_ENDPOINTS["GET_SEARCH_RESULTS"].format(search_id) + query, error_handler=error_handler
+        )
 
     def delete_ioc(self, source, ioc_id):
         """Delete an IOC identified by hash value and specified source.
@@ -417,8 +498,12 @@ class VisionClient(BaseClient):
             Dict[str, Any]: Response from API.
         """
         headers = {"X-Cofense-IOC-Source": source, **self._headers}
-        return self._http_request(method="DELETE", url_suffix=API_ENDPOINTS["IOC_REPOSITORY"] + "/" + str(ioc_id),
-                                  headers=headers, error_handler=error_handler)
+        return self._http_request(
+            method="DELETE",
+            url_suffix=API_ENDPOINTS["IOC_REPOSITORY"] + "/" + str(ioc_id),
+            headers=headers,
+            error_handler=error_handler,
+        )
 
     def stop_quarantine_job(self, id: str) -> dict[str, Any]:
         """Stop the quarantine job identified by the given id.
@@ -429,10 +514,11 @@ class VisionClient(BaseClient):
         Returns:
             dict[str, Any]: Response from API.
         """
-        return self._http_request(method="PUT", url_suffix=API_ENDPOINTS["STOP_QUARANTINE_JOB"].format(id),
-                                  error_handler=error_handler)
+        return self._http_request(
+            method="PUT", url_suffix=API_ENDPOINTS["STOP_QUARANTINE_JOB"].format(id), error_handler=error_handler
+        )
 
-    def get_last_ioc(self, source: str) -> Dict[str, Any]:
+    def get_last_ioc(self, source: str) -> dict[str, Any]:
         """Get the last updated IOC from ioc-source.
 
         Args:
@@ -442,10 +528,11 @@ class VisionClient(BaseClient):
             Dict[str, Any]: Response from API.
         """
         headers = {"X-Cofense-IOC-Source": source, **self._headers}
-        return self._http_request(method="GET", url_suffix=API_ENDPOINTS["GET_LAST_IOC"], headers=headers,
-                                  error_handler=error_handler)
+        return self._http_request(
+            method="GET", url_suffix=API_ENDPOINTS["GET_LAST_IOC"], headers=headers, error_handler=error_handler
+        )
 
-    def update_iocs(self, source, body) -> Dict[str, Any]:
+    def update_iocs(self, source, body) -> dict[str, Any]:
         """Update the IOC with specified source and ID.
 
         Args:
@@ -456,10 +543,11 @@ class VisionClient(BaseClient):
             Dict: Response from API.
         """
         headers = {"Content-Type": APPLICATION_JSON, "X-Cofense-IOC-Source": source, **self._headers}
-        return self._http_request(method="PUT", url_suffix=API_ENDPOINTS["IOC_REPOSITORY"], headers=headers,
-                                  json_data=body, error_handler=error_handler)
+        return self._http_request(
+            method="PUT", url_suffix=API_ENDPOINTS["IOC_REPOSITORY"], headers=headers, json_data=body, error_handler=error_handler
+        )
 
-    def update_ioc(self, md5_id, body) -> Dict[str, Any]:
+    def update_ioc(self, md5_id, body) -> dict[str, Any]:
         """Update the IOC with specified ID.
 
         Args:
@@ -470,11 +558,17 @@ class VisionClient(BaseClient):
             Dict: Response from API.
         """
         headers = {"Content-Type": APPLICATION_JSON, **self._headers}
-        return self._http_request(method="PUT", url_suffix=API_ENDPOINTS["IOC_REPOSITORY"] + "/" + str(md5_id),
-                                  headers=headers, json_data=body, error_handler=error_handler)
+        return self._http_request(
+            method="PUT",
+            url_suffix=API_ENDPOINTS["IOC_REPOSITORY"] + "/" + str(md5_id),
+            headers=headers,
+            json_data=body,
+            error_handler=error_handler,
+        )
 
-    def list_iocs(self, source: str, page: int, size: int, include_expired: bool, since: Optional[str],
-                  sort_string: Optional[str]) -> dict[str, Any]:
+    def list_iocs(
+        self, source: str, page: int, size: int, include_expired: bool, since: str | None, sort_string: str | None
+    ) -> dict[str, Any]:
         """List the IOCs from the source given by the user.
 
         Args:
@@ -494,8 +588,9 @@ class VisionClient(BaseClient):
             query += f"&since={since}"
         if sort_string:
             query += f"&{sort_string}"
-        return self._http_request(method="GET", url_suffix=API_ENDPOINTS["GET_IOCS"] + query, headers=headers,
-                                  error_handler=error_handler)
+        return self._http_request(
+            method="GET", url_suffix=API_ENDPOINTS["GET_IOCS"] + query, headers=headers, error_handler=error_handler
+        )
 
     def get_ioc(self, source, ioc_id):
         """Get an IOC identified by hash value.
@@ -508,23 +603,26 @@ class VisionClient(BaseClient):
             Dict[str, Any]: Response from API.
         """
         headers = {"X-Cofense-IOC-Source": source, **self._headers}
-        return self._http_request(method="GET", url_suffix=API_ENDPOINTS["IOC_REPOSITORY"] + "/" + str(ioc_id),
-                                  headers=headers, error_handler=error_handler)
+        return self._http_request(
+            method="GET",
+            url_suffix=API_ENDPOINTS["IOC_REPOSITORY"] + "/" + str(ioc_id),
+            headers=headers,
+            error_handler=error_handler,
+        )
 
-    def list_searchable_headers(self) -> Dict[str, Any]:
+    def list_searchable_headers(self) -> dict[str, Any]:
         """Get list of searchable header keys.
 
         Returns:
             Dict[str, Any]: Response from API.
         """
-        return self._http_request(method="GET", url_suffix=API_ENDPOINTS["GET_SEARCHABLE_HEADERS"],
-                                  error_handler=error_handler)
+        return self._http_request(method="GET", url_suffix=API_ENDPOINTS["GET_SEARCHABLE_HEADERS"], error_handler=error_handler)
 
 
 """ HELPER FUNCTIONS """
 
 
-def trim_spaces_from_args(args: Dict) -> Dict:
+def trim_spaces_from_args(args: dict) -> dict:
     """Trim spaces from values of the args dict.
 
     Args:
@@ -546,20 +644,20 @@ def error_handler(response: Response):
     Args:
          response(Response): Response object from API.
     """
-    err_msg = 'Error in API call [{}].'.format(response.status_code)
+    err_msg = f"Error in API call [{response.status_code}]."
     try:
         error_entry = response.json()
         if response.status_code == 401:
-            err_msg += '\n{} : {}.'.format(error_entry.get('error'), error_entry.get('error_description'))
+            err_msg += "\n{} : {}.".format(error_entry.get("error"), error_entry.get("error_description"))
         else:
-            err_msg += '\n{} : {}.'.format(error_entry.get('status'), ". ".join(error_entry.get('details', [])))
+            err_msg += "\n{} : {}.".format(error_entry.get("status"), ". ".join(error_entry.get("details", [])))
         raise DemistoException(err_msg, res=response)
     except ValueError:
-        err_msg += '\n{}'.format(response.text)
+        err_msg += f"\n{response.text}"
         raise DemistoException(err_msg, res=response)
 
 
-def arg_to_list_with_filter_null_values(argument: Optional[Any]) -> List:
+def arg_to_list_with_filter_null_values(argument: Any | None) -> List:
     """Filter Null values from and convert string of args to python list.
 
     Args:
@@ -572,7 +670,7 @@ def arg_to_list_with_filter_null_values(argument: Optional[Any]) -> List:
     return list(filter(None, arg_to_list(list_of_args)))
 
 
-def arg_to_list(argument: Optional[Any]) -> List:
+def arg_to_list(argument: Any | None) -> List:
     """Convert a string representation of args to a python list.
 
     Args:
@@ -587,11 +685,11 @@ def arg_to_list(argument: Optional[Any]) -> List:
 
     for argument in list_of_args:
         if argument and isinstance(argument, str):
-            if argument[-1] != '\\':
+            if argument[-1] != "\\":
                 arguments.append(arg + argument)
                 arg = ""
             else:
-                arg += argument.replace('\\', ',')
+                arg += argument.replace("\\", ",")
         else:
             arguments.append(argument)
     if arg:
@@ -635,7 +733,7 @@ def validate_quarantine_job_id(id: str):
         raise ValueError(ERROR_MESSAGE["INVALID_QUARANTINE_JOB_PARAM"].format("id"))
 
 
-def validate_params_for_attachment_get(md5: Optional[str] = None, sha256: Optional[str] = None):
+def validate_params_for_attachment_get(md5: str | None = None, sha256: str | None = None):
     """Validate arguments for cofense-message-attachment-get command.
 
     Args:
@@ -643,14 +741,14 @@ def validate_params_for_attachment_get(md5: Optional[str] = None, sha256: Option
         sha256(Optional[str]): SHA256 hash of an attachment.
     """
     if not md5 and not sha256:
-        raise ValueError(ERROR_MESSAGE['INVALID_REQUIRED_PARAMETER_HASH'])
-    if md5 and get_hash_type(md5) != 'md5':
-        raise ValueError(ERROR_MESSAGE['INVALID_ARGUMENT'].format(md5, 'md5 hash'))
-    if sha256 and get_hash_type(sha256) != 'sha256':
-        raise ValueError(ERROR_MESSAGE['INVALID_ARGUMENT'].format(sha256, 'sha256 hash'))
+        raise ValueError(ERROR_MESSAGE["INVALID_REQUIRED_PARAMETER_HASH"])
+    if md5 and get_hash_type(md5) != "md5":
+        raise ValueError(ERROR_MESSAGE["INVALID_ARGUMENT"].format(md5, "md5 hash"))
+    if sha256 and get_hash_type(sha256) != "sha256":
+        raise ValueError(ERROR_MESSAGE["INVALID_ARGUMENT"].format(sha256, "sha256 hash"))
 
 
-def escape_special_characters(hr_dict: Dict) -> Dict:
+def escape_special_characters(hr_dict: dict) -> dict:
     """Escape special characters to show in hr output.
 
     Args:
@@ -662,19 +760,21 @@ def escape_special_characters(hr_dict: Dict) -> Dict:
     hr_output = {}
     for key, value in hr_dict.items():
         if isinstance(value, str):
-            hr_output[key] = "".join(
-                ["\\" + str(char) if char in SPECIAL_CHARACTERS_MARKDOWN else str(char) for char in value])
+            hr_output[key] = "".join(["\\" + str(char) if char in SPECIAL_CHARACTERS_MARKDOWN else str(char) for char in value])
         elif isinstance(value, list):
             hr_output[key] = []  # type: ignore
             for element in value:
-                hr_output[key].append("".join(  # type: ignore
-                    ["\\" + str(char) if char in SPECIAL_CHARACTERS_MARKDOWN else str(char) for char in element]))
+                hr_output[key].append(  # type: ignore[attr-defined]
+                    "".join(  # type: ignore
+                        ["\\" + str(char) if char in SPECIAL_CHARACTERS_MARKDOWN else str(char) for char in element]
+                    )
+                )
         else:
             hr_output[key] = value
     return hr_output
 
 
-def prepare_hr_for_message_metadata_get(message: Dict[str, Any]) -> str:
+def prepare_hr_for_message_metadata_get(message: dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-message-metadata-get command.
 
     Args:
@@ -683,34 +783,52 @@ def prepare_hr_for_message_metadata_get(message: Dict[str, Any]) -> str:
     Returns:
         str: Human readable output.
     """
-    hr_outputs = escape_special_characters({
-        "ID": message.get('id'),
-        "Subject": message.get('subject'),
-        RECEIVED_ON: None if not message.get('receivedOn') else arg_to_datetime(
-            message.get('receivedOn')).strftime(HR_DATE_FORMAT),  # type: ignore
-        SENT_ON: None if not message.get('sentOn') else arg_to_datetime(
-            message.get('sentOn')).strftime(HR_DATE_FORMAT),  # type: ignore
-        "Delivered On": None if not message.get('deliveredOn') else arg_to_datetime(
-            message.get('deliveredOn')).strftime(HR_DATE_FORMAT),  # type: ignore
-        "Processed On": None if not message.get('processedOn') else arg_to_datetime(
-            message.get('processedOn')).strftime(HR_DATE_FORMAT),  # type: ignore
-        "Sender": [sender.get('address') for sender in message.get('from', [])],
-        "Recipients": [recipient.get('address') for recipient in message.get('recipients', [])],
-        "MD5": message.get('md5'),
-        "SHA1": message.get('sha1'),
-        "SHA256": message.get('sha256'),
-        INTERNET_MESSAGE_ID: message.get('internetMessageId'),
-        MATCHING_IOCS: message.get('matchingIOCs'),
-        MATCHING_SOURCES: message.get('matchingSources')
-    })
+    hr_outputs = escape_special_characters(
+        {
+            "ID": message.get("id"),
+            "Subject": message.get("subject"),
+            RECEIVED_ON: None
+            if not message.get("receivedOn")
+            else arg_to_datetime(message.get("receivedOn")).strftime(HR_DATE_FORMAT),  # type: ignore
+            SENT_ON: None if not message.get("sentOn") else arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),  # type: ignore
+            "Delivered On": None
+            if not message.get("deliveredOn")
+            else arg_to_datetime(message.get("deliveredOn")).strftime(HR_DATE_FORMAT),  # type: ignore
+            "Processed On": None
+            if not message.get("processedOn")
+            else arg_to_datetime(message.get("processedOn")).strftime(HR_DATE_FORMAT),  # type: ignore
+            "Sender": [sender.get("address") for sender in message.get("from", [])],
+            "Recipients": [recipient.get("address") for recipient in message.get("recipients", [])],
+            "MD5": message.get("md5"),
+            "SHA1": message.get("sha1"),
+            "SHA256": message.get("sha256"),
+            INTERNET_MESSAGE_ID: message.get("internetMessageId"),
+            MATCHING_IOCS: message.get("matchingIOCs"),
+            MATCHING_SOURCES: message.get("matchingSources"),
+        }
+    )
 
-    headers = ["ID", "Subject", RECEIVED_ON, SENT_ON, "Delivered On", "Processed On", "Sender", "Recipients",
-               "MD5", "SHA1", "SHA256", INTERNET_MESSAGE_ID, MATCHING_IOCS, MATCHING_SOURCES]
+    headers = [
+        "ID",
+        "Subject",
+        RECEIVED_ON,
+        SENT_ON,
+        "Delivered On",
+        "Processed On",
+        "Sender",
+        "Recipients",
+        "MD5",
+        "SHA1",
+        "SHA256",
+        INTERNET_MESSAGE_ID,
+        MATCHING_IOCS,
+        MATCHING_SOURCES,
+    ]
 
     return tableToMarkdown("Message Metadata:", hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_message_token_get(response: Dict[str, Any]) -> str:
+def prepare_hr_for_message_token_get(response: dict[str, Any]) -> str:
     """Prepare human-readable string for cofense-message-token-get command.
 
     Args:
@@ -719,11 +837,13 @@ def prepare_hr_for_message_token_get(response: Dict[str, Any]) -> str:
     Returns:
       str: Human readable string.
     """
-    hr_outputs = escape_special_characters({
-        INTERNET_MESSAGE_ID: response.get("internetMessageId"),
-        "Recipient's Address": response.get("recipient", {}).get("address"),
-        "Token": response.get("token"),
-    })
+    hr_outputs = escape_special_characters(
+        {
+            INTERNET_MESSAGE_ID: response.get("internetMessageId"),
+            "Recipient's Address": response.get("recipient", {}).get("address"),
+            "Token": response.get("token"),
+        }
+    )
 
     headers = [INTERNET_MESSAGE_ID, "Recipient's Address", "Token"]
 
@@ -739,30 +859,33 @@ def validate_sort(sort_list: list, command: str):
     """
     for sort_by in sort_list:
         # Checking whether the format is correct or not.
-        if len(list(filter(None, sort_by.split(':')))) != 2:
+        if len(list(filter(None, sort_by.split(":")))) != 2:
             sort_by = sort_by if sort_by else "None"
-            raise ValueError(ERROR_MESSAGE['INVALID_FORMAT'].format(sort_by, 'sort',
-                                                                    SUPPORTED_SORT_FORMAT_FOR_IOCS_LIST
-                                                                    if command == "iocs_list"
-                                                                    else SUPPORTED_SORT_FORMAT))
+            raise ValueError(
+                ERROR_MESSAGE["INVALID_FORMAT"].format(
+                    sort_by, "sort", SUPPORTED_SORT_FORMAT_FOR_IOCS_LIST if command == "iocs_list" else SUPPORTED_SORT_FORMAT
+                )
+            )
 
-        property_name, sort_order = sort_by.split(':')
+        property_name, sort_order = sort_by.split(":")
 
         # Checking whether the property name and sort order values are correct or not.
         if (property_name[0].lower() + property_name[1:]) not in SUPPORTED_SORT[command]:
-            message = ERROR_MESSAGE["UNSUPPORTED_FIELD_FOR_IOCS_LIST"] if command == "iocs_list" else ERROR_MESSAGE[
-                "UNSUPPORTED_FIELD"]
+            message = (
+                ERROR_MESSAGE["UNSUPPORTED_FIELD_FOR_IOCS_LIST"] if command == "iocs_list" else ERROR_MESSAGE["UNSUPPORTED_FIELD"]
+            )
 
+            raise ValueError(message.format(property_name, "property name", "property name", ", ".join(SUPPORTED_SORT[command])))
+
+        if sort_order.lower() not in SUPPORTED_SORT["order_by"]:
             raise ValueError(
-                message.format(property_name, 'property name', 'property name', ', '.join(SUPPORTED_SORT[command])))
-
-        if sort_order.lower() not in SUPPORTED_SORT['order_by']:
-            raise ValueError(
-                ERROR_MESSAGE['UNSUPPORTED_FIELD'].format(sort_order, 'sort order', 'sort order',
-                                                          ', '.join(SUPPORTED_SORT['order_by'])))
+                ERROR_MESSAGE["UNSUPPORTED_FIELD"].format(
+                    sort_order, "sort order", "sort order", ", ".join(SUPPORTED_SORT["order_by"])
+                )
+            )
 
 
-def validate_page_size(page_size: Optional[int]):
+def validate_page_size(page_size: int | None):
     """Validate that page size parameter is in numeric format or not.
 
     Args:
@@ -783,16 +906,16 @@ def prepare_sort_query(sort_list: list, command: str) -> str:
         str: sort query to append in url.
     """
     validate_sort(sort_list, command)
-    sort_by = ''
+    sort_by = ""
     for sort_property_order in sort_list:
-        sort_by += 'sort=' + sort_property_order + '&'
+        sort_by += "sort=" + sort_property_order + "&"
 
     sort_by = sort_by[:-1]
-    sort_by = sort_by.replace(':', ',')
+    sort_by = sort_by.replace(":", ",")
     return sort_by
 
 
-def prepare_hr_for_message_searches_list(response: Dict[str, Any]) -> str:
+def prepare_hr_for_message_searches_list(response: dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-message-searches-list command.
 
     Args:
@@ -803,11 +926,17 @@ def prepare_hr_for_message_searches_list(response: Dict[str, Any]) -> str:
     """
     hr_output = []
 
-    for search in response.get('searches', []):
-        received_before_date = None if not response.get('receivedBeforeDate') else arg_to_datetime(
-            response.get('receivedBeforeDate')).strftime(HR_DATE_FORMAT)  # type: ignore
-        received_after_date = None if not response.get('receivedAfterDate') else arg_to_datetime(
-            response.get('receivedAfterDate')).strftime(HR_DATE_FORMAT)  # type: ignore
+    for search in response.get("searches", []):
+        received_before_date = (
+            None
+            if not response.get("receivedBeforeDate")
+            else arg_to_datetime(response.get("receivedBeforeDate")).strftime(HR_DATE_FORMAT)  # type: ignore
+        )
+        received_after_date = (
+            None
+            if not response.get("receivedAfterDate")
+            else arg_to_datetime(response.get("receivedAfterDate")).strftime(HR_DATE_FORMAT)  # type: ignore
+        )
 
         date_range = ""
         if received_after_date:
@@ -815,42 +944,65 @@ def prepare_hr_for_message_searches_list(response: Dict[str, Any]) -> str:
         if received_before_date:
             date_range = date_range + f"To: {received_before_date}"
 
-        hr_output.append(escape_special_characters({
-            "ID": search.get('id'),
-            CREATED_BY: search.get('createdBy'),
-            CREATED_DATE: None if not search.get('createdDate') else arg_to_datetime(
-                search.get('createdDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-            MODIFIED_BY: search.get('modifiedBy'),
-            MODIFIED_DATE: None if not search.get('modifiedDate') else arg_to_datetime(
-                search.get('modifiedDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-            "Senders": search.get('senders'),
-            "Recipient": search.get('recipient'),
-            "Subjects": search.get('subjects'),
-            ATTACHMENT_FILE_NAMES: search.get('attachmentNames'),
-            INCLUDED_MIME_TYPES: search.get('attachmentMimeTypes'),
-            EXCLUDED_MIME_TYPES: search.get('attachmentExcludeMimeTypes'),
-            HASH_TYPE: [f"{attachmentHashes.get('hashType')}-{attachmentHashes.get('hashString')}" for
-                        attachmentHashes
-                        in search.get('attachmentHashCriteria', {}).get('attachmentHashes', [])],
-            "Domains": search.get('domainCriteria', {}).get('domains'),
-            WHITELIST_URLS: search.get('domainCriteria', {}).get('whiteListUrls'),
-            DATE_RANGE: date_range,
-            "URL": search.get('url'),
-            HEADERS: [f"{header.get('key')}: {header.get('values')}" for header in
-                      search.get('headers', [])],
-            INTERNET_MESSAGE_ID: search.get('internetMessageId'),
-            PARTIAL_INGEST: search.get('partialIngest')
-        }))
+        hr_output.append(
+            escape_special_characters(
+                {
+                    "ID": search.get("id"),
+                    CREATED_BY: search.get("createdBy"),
+                    CREATED_DATE: None
+                    if not search.get("createdDate")
+                    else arg_to_datetime(search.get("createdDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+                    MODIFIED_BY: search.get("modifiedBy"),
+                    MODIFIED_DATE: None
+                    if not search.get("modifiedDate")
+                    else arg_to_datetime(search.get("modifiedDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+                    "Senders": search.get("senders"),
+                    "Recipient": search.get("recipient"),
+                    "Subjects": search.get("subjects"),
+                    ATTACHMENT_FILE_NAMES: search.get("attachmentNames"),
+                    INCLUDED_MIME_TYPES: search.get("attachmentMimeTypes"),
+                    EXCLUDED_MIME_TYPES: search.get("attachmentExcludeMimeTypes"),
+                    HASH_TYPE: [
+                        f"{attachmentHashes.get('hashType')}-{attachmentHashes.get('hashString')}"
+                        for attachmentHashes in search.get("attachmentHashCriteria", {}).get("attachmentHashes", [])
+                    ],
+                    "Domains": search.get("domainCriteria", {}).get("domains"),
+                    WHITELIST_URLS: search.get("domainCriteria", {}).get("whiteListUrls"),
+                    DATE_RANGE: date_range,
+                    "URL": search.get("url"),
+                    HEADERS: [f"{header.get('key')}: {header.get('values')}" for header in search.get("headers", [])],
+                    INTERNET_MESSAGE_ID: search.get("internetMessageId"),
+                    PARTIAL_INGEST: search.get("partialIngest"),
+                }
+            )
+        )
 
-    headers = ["ID", CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE, "Senders", "Recipient",
-               "Subjects", ATTACHMENT_FILE_NAMES, INCLUDED_MIME_TYPES, EXCLUDED_MIME_TYPES, HASH_TYPE,
-               "Domains", WHITELIST_URLS, DATE_RANGE, "URL", HEADERS, INTERNET_MESSAGE_ID,
-               PARTIAL_INGEST]
+    headers = [
+        "ID",
+        CREATED_BY,
+        CREATED_DATE,
+        MODIFIED_BY,
+        MODIFIED_DATE,
+        "Senders",
+        "Recipient",
+        "Subjects",
+        ATTACHMENT_FILE_NAMES,
+        INCLUDED_MIME_TYPES,
+        EXCLUDED_MIME_TYPES,
+        HASH_TYPE,
+        "Domains",
+        WHITELIST_URLS,
+        DATE_RANGE,
+        "URL",
+        HEADERS,
+        INTERNET_MESSAGE_ID,
+        PARTIAL_INGEST,
+    ]
 
     return tableToMarkdown("Message Searches:", hr_output, headers, removeNull=True)
 
 
-def prepare_body_for_qurantine_jobs_list_command(args: Dict[str, Any]) -> Dict:
+def prepare_body_for_qurantine_jobs_list_command(args: dict[str, Any]) -> dict:
     """Prepare body to be passed in API request for cofense_quarantine_jobs_list_command.
 
     Args:
@@ -861,38 +1013,35 @@ def prepare_body_for_qurantine_jobs_list_command(args: Dict[str, Any]) -> Dict:
 
     """
     filter_options = {}
-    if args.get('auto_quarantine'):
-        filter_options["autoQuarantine"] = argToBoolean(args.get('auto_quarantine'))
+    if args.get("auto_quarantine"):
+        filter_options["autoQuarantine"] = argToBoolean(args.get("auto_quarantine"))
 
-    if args.get('include_status'):
-        filter_options["includeStatus"] = arg_to_list(args.get('include_status'))
+    if args.get("include_status"):
+        filter_options["includeStatus"] = arg_to_list(args.get("include_status"))
         for status in filter_options["includeStatus"]:
             if status not in STATUS:
-                raise ValueError(
-                    ERROR_MESSAGE['UNSUPPORTED_FIELD'].format(status, 'status', 'status', ', '.join(STATUS)))
+                raise ValueError(ERROR_MESSAGE["UNSUPPORTED_FIELD"].format(status, "status", "status", ", ".join(STATUS)))
 
-    if args.get('exclude_status'):
-        filter_options["excludeStatus"] = arg_to_list(args.get('exclude_status'))
+    if args.get("exclude_status"):
+        filter_options["excludeStatus"] = arg_to_list(args.get("exclude_status"))
         for status in filter_options["excludeStatus"]:
             if status not in STATUS:
-                raise ValueError(
-                    ERROR_MESSAGE['UNSUPPORTED_FIELD'].format(status, 'status', 'status', ', '.join(STATUS)))
+                raise ValueError(ERROR_MESSAGE["UNSUPPORTED_FIELD"].format(status, "status", "status", ", ".join(STATUS)))
 
-    if args.get('iocs'):
-        filter_options["iocs"] = arg_to_list(args.get('iocs'))
+    if args.get("iocs"):
+        filter_options["iocs"] = arg_to_list(args.get("iocs"))
 
-    if args.get('modified_date_after'):
-        filter_options["modifiedDateAfter"] = arg_to_datetime(args.get('modified_date_after'),
-                                                              arg_name='modified_date_after')
+    if args.get("modified_date_after"):
+        filter_options["modifiedDateAfter"] = arg_to_datetime(args.get("modified_date_after"), arg_name="modified_date_after")
         filter_options["modifiedDateAfter"] = filter_options["modifiedDateAfter"].strftime(DATE_FORMAT)  # type: ignore
 
-    if args.get('sources'):
-        filter_options["sources"] = arg_to_list(args.get('sources'))
+    if args.get("sources"):
+        filter_options["sources"] = arg_to_list(args.get("sources"))
 
-    return {'filterOptions': filter_options}
+    return {"filterOptions": filter_options}
 
 
-def prepare_hr_for_quarantine_jobs_list(response: Dict[str, Any]) -> str:
+def prepare_hr_for_quarantine_jobs_list(response: dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-quarantine_jobs_list command.
 
     Args:
@@ -902,39 +1051,53 @@ def prepare_hr_for_quarantine_jobs_list(response: Dict[str, Any]) -> str:
         str: Human readable output.
     """
     hr_outputs = []
-    for quarantine_job in response.get('quarantineJobs', []):
-        hr_outputs.append(escape_special_characters({
-            "ID": quarantine_job.get('id'),
-            SEARCH_ID: quarantine_job.get('searchId'),
-            CREATED_BY: quarantine_job.get('createdBy'),
+    for quarantine_job in response.get("quarantineJobs", []):
+        hr_outputs.append(
+            escape_special_characters(
+                {
+                    "ID": quarantine_job.get("id"),
+                    SEARCH_ID: quarantine_job.get("searchId"),
+                    CREATED_BY: quarantine_job.get("createdBy"),
+                    CREATED_DATE: None
+                    if not quarantine_job.get("createdDate")
+                    else arg_to_datetime(quarantine_job.get("createdDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+                    LAST_MODIFIED_BY: quarantine_job.get("modifiedBy"),
+                    LAST_MODIFIED_DATE: None
+                    if not quarantine_job.get("modifiedDate")
+                    else arg_to_datetime(quarantine_job.get("modifiedDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+                    LAST_ACTION: quarantine_job.get("quarantineJobRuns", [])[-1].get("jobRunType"),
+                    "Status": quarantine_job.get("quarantineJobRuns", [])[-1].get("status"),
+                    COMPLETED_DATE: None
+                    if not quarantine_job.get("quarantineJobRuns", [])[-1].get("completedDate")
+                    else arg_to_datetime(quarantine_job.get("quarantineJobRuns", [])[-1].get("completedDate")).strftime(  # type: ignore
+                        HR_DATE_FORMAT
+                    ),
+                    "Messages": quarantine_job.get("emailCount"),
+                    MATCHING_IOCS: quarantine_job.get("matchingIOCs"),
+                    MATCHING_SOURCES: quarantine_job.get("matchingSources"),
+                }
+            )
+        )
 
-            CREATED_DATE: None if not quarantine_job.get('createdDate') else arg_to_datetime(
-                quarantine_job.get('createdDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-            LAST_MODIFIED_BY: quarantine_job.get('modifiedBy'),
-
-            LAST_MODIFIED_DATE: None if not quarantine_job.get('modifiedDate') else arg_to_datetime(
-                quarantine_job.get('modifiedDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-            LAST_ACTION: quarantine_job.get('quarantineJobRuns', [])[-1].get('jobRunType'),
-            "Status": quarantine_job.get('quarantineJobRuns', [])[-1].get('status'),
-
-            COMPLETED_DATE: None if not quarantine_job.get('quarantineJobRuns', [])[-1].get('completedDate')
-            else arg_to_datetime(quarantine_job.get('quarantineJobRuns', [])[-1]
-                                 .get('completedDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-            "Messages": quarantine_job.get('emailCount'),
-            MATCHING_IOCS: quarantine_job.get('matchingIOCs'),
-            MATCHING_SOURCES: quarantine_job.get('matchingSources')
-        }))
-
-    headers = ["ID", SEARCH_ID, CREATED_BY, CREATED_DATE, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, LAST_ACTION,
-               "Status", COMPLETED_DATE, "Messages", MATCHING_IOCS, MATCHING_SOURCES]
+    headers = [
+        "ID",
+        SEARCH_ID,
+        CREATED_BY,
+        CREATED_DATE,
+        LAST_MODIFIED_BY,
+        LAST_MODIFIED_DATE,
+        LAST_ACTION,
+        "Status",
+        COMPLETED_DATE,
+        "Messages",
+        MATCHING_IOCS,
+        MATCHING_SOURCES,
+    ]
 
     return tableToMarkdown("Quarantine Job:", hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_requests_body_for_quarantine_job_create(quarantine_emails: List) -> Dict[str, Any]:
+def prepare_requests_body_for_quarantine_job_create(quarantine_emails: List) -> dict[str, Any]:
     """Prepare requests body for cofence-quarantine-job-create command.
 
     Args:
@@ -947,18 +1110,15 @@ def prepare_requests_body_for_quarantine_job_create(quarantine_emails: List) -> 
 
     for email in quarantine_emails:
         if len(list(filter(None, email.split(":")))) != 2:
-            raise ValueError(ERROR_MESSAGE['INVALID_FORMAT'].format(
-                email, "quarantine_emails", SUPPORTED_QUARANTINE_EMAILS_FORMAT
-            ))
-        data.append({
-            "recipientAddress": email.split(":")[1].strip(),
-            "internetMessageId": email.split(":")[0].strip()
-        })
+            raise ValueError(
+                ERROR_MESSAGE["INVALID_FORMAT"].format(email, "quarantine_emails", SUPPORTED_QUARANTINE_EMAILS_FORMAT)
+            )
+        data.append({"recipientAddress": email.split(":")[1].strip(), "internetMessageId": email.split(":")[0].strip()})
 
     return {"quarantineEmails": data}
 
 
-def prepare_hr_for_quarantine_job_create(response: Dict[str, Any]) -> str:
+def prepare_hr_for_quarantine_job_create(response: dict[str, Any]) -> str:
     """Prepare Human Readable for cofence-quarantine-job-create command.
 
     Args:
@@ -967,29 +1127,42 @@ def prepare_hr_for_quarantine_job_create(response: Dict[str, Any]) -> str:
     Returns:
         str: Human readable output.
     """
-    hr_outputs = escape_special_characters({
-        "ID": response.get('id'),
-        CREATED_BY: response.get('createdBy'),
-        CREATED_DATE: None if not response.get('createdDate') else arg_to_datetime(
-            response.get('createdDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-        LAST_MODIFIED_BY: response.get('modifiedBy'),
-        LAST_MODIFIED_DATE: None if not response.get('modifiedDate') else arg_to_datetime(
-            response.get('modifiedDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-        "Messages": response.get('emailCount'),
-        MATCHING_IOCS: response.get('matchingIOCs'),
-        MATCHING_SOURCES: response.get('matchingSources'),
-        SEARCH_ID: response.get('searchId')
-    })
+    hr_outputs = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            CREATED_BY: response.get("createdBy"),
+            CREATED_DATE: None
+            if not response.get("createdDate")
+            else arg_to_datetime(response.get("createdDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+            LAST_MODIFIED_BY: response.get("modifiedBy"),
+            LAST_MODIFIED_DATE: None
+            if not response.get("modifiedDate")
+            else arg_to_datetime(response.get("modifiedDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+            "Messages": response.get("emailCount"),
+            MATCHING_IOCS: response.get("matchingIOCs"),
+            MATCHING_SOURCES: response.get("matchingSources"),
+            SEARCH_ID: response.get("searchId"),
+        }
+    )
 
-    headers = ["ID", SEARCH_ID, CREATED_BY, CREATED_DATE, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, "Messages",
-               MATCHING_IOCS, MATCHING_SOURCES]
+    headers = [
+        "ID",
+        SEARCH_ID,
+        CREATED_BY,
+        CREATED_DATE,
+        LAST_MODIFIED_BY,
+        LAST_MODIFIED_DATE,
+        "Messages",
+        MATCHING_IOCS,
+        MATCHING_SOURCES,
+    ]
 
     heading = "Quarantine job create:\n#### Quarantine job has been created successfully."
 
     return tableToMarkdown(heading, hr_outputs, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_ioc_delete(response: Dict[str, Any]) -> str:
+def prepare_hr_for_ioc_delete(response: dict[str, Any]) -> str:
     """Prepare Human Readable for cofence-ioc-delete command.
 
     Args:
@@ -998,20 +1171,22 @@ def prepare_hr_for_ioc_delete(response: Dict[str, Any]) -> str:
     Returns:
         str: Human readable output.
     """
-    hr_outputs = escape_special_characters({
-        "ID": response.get('id'),
-        THREAT_TYPE: response.get('attributes', {}).get('threat_type'),
-        THREAT_VALUE: response.get('attributes', {}).get('threat_value'),
-        "Action Status": "Success"
-    })
+    hr_outputs = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            THREAT_TYPE: response.get("attributes", {}).get("threat_type"),
+            THREAT_VALUE: response.get("attributes", {}).get("threat_value"),
+            "Action Status": "Success",
+        }
+    )
 
-    headers = ['ID', THREAT_TYPE, THREAT_VALUE, 'Action Status']
+    headers = ["ID", THREAT_TYPE, THREAT_VALUE, "Action Status"]
     heading = ' IOC with value "{}" has been deleted successfully.'.format(hr_outputs["ID"])
 
     return tableToMarkdown(heading, hr_outputs, headers=headers, removeNull=True)
 
 
-def validate_search_id(search_id: Optional[int]):
+def validate_search_id(search_id: int | None):
     """Validate Cofense Search ID.
 
     Args:
@@ -1019,10 +1194,10 @@ def validate_search_id(search_id: Optional[int]):
     """
     validate_required_parameters(id=search_id)
     if arg_to_number(search_id, arg_name="id") <= 0:  # type: ignore
-        raise ValueError(ERROR_MESSAGE['INVALID_SEARCH_ID'])
+        raise ValueError(ERROR_MESSAGE["INVALID_SEARCH_ID"])
 
 
-def prepare_hr_for_message_search_get(response: Dict[str, Any]) -> str:
+def prepare_hr_for_message_search_get(response: dict[str, Any]) -> str:
     """Prepare Human Readable output for cofense-message-search-get commnad.
 
     Args:
@@ -1031,10 +1206,16 @@ def prepare_hr_for_message_search_get(response: Dict[str, Any]) -> str:
     Returns:
         str: Human readable output.
     """
-    received_before_date = None if not response.get('receivedBeforeDate') else arg_to_datetime(
-        response.get('receivedBeforeDate')).strftime(HR_DATE_FORMAT)  # type: ignore
-    received_after_date = None if not response.get('receivedAfterDate') else arg_to_datetime(
-        response.get('receivedAfterDate')).strftime(HR_DATE_FORMAT)  # type: ignore
+    received_before_date = (
+        None
+        if not response.get("receivedBeforeDate")
+        else arg_to_datetime(response.get("receivedBeforeDate")).strftime(HR_DATE_FORMAT)  # type: ignore
+    )
+    received_after_date = (
+        None
+        if not response.get("receivedAfterDate")
+        else arg_to_datetime(response.get("receivedAfterDate")).strftime(HR_DATE_FORMAT)  # type: ignore
+    )
 
     date_range = ""
     if received_after_date:
@@ -1042,40 +1223,63 @@ def prepare_hr_for_message_search_get(response: Dict[str, Any]) -> str:
     if received_before_date:
         date_range = date_range + f"To: {received_before_date}"
 
-    hr_outputs = escape_special_characters({
-        "ID": response.get('id'),
-        CREATED_BY: response.get('createdBy'),
-        CREATED_DATE: None if not response.get('createdDate') else arg_to_datetime(
-            response.get('createdDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-        MODIFIED_BY: response.get('modifiedBy'),
-        MODIFIED_DATE: None if not response.get('modifiedDate') else arg_to_datetime(
-            response.get('modifiedDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-        "Senders": response.get('senders'),
-        "Recipient": response.get('recipient'),
-        "Subjects": response.get('subjects'),
-        ATTACHMENT_FILE_NAMES: response.get('attachmentNames'),
-        INCLUDED_MIME_TYPES: response.get('attachmentMimeTypes'),
-        EXCLUDED_MIME_TYPES: response.get('attachmentExcludeMimeTypes'),
-        HASH_TYPE: [f"{attachmentHashes.get('hashType')}-{attachmentHashes.get('hashString')}" for attachmentHashes
-                    in response.get('attachmentHashCriteria', {}).get('attachmentHashes', [])],
-        "Domains": response.get('domainCriteria', {}).get('domains'),
-        WHITELIST_URLS: response.get('domainCriteria', {}).get('whiteListUrls'),
-        DATE_RANGE: date_range,
-        "URL": response.get('url'),
-        HEADERS: [f"{header.get('key')}: {header.get('values')}" for header in response.get('headers', [])],
-        INTERNET_MESSAGE_ID: response.get('internetMessageId'),
-        PARTIAL_INGEST: response.get('partialIngest')
-    })
+    hr_outputs = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            CREATED_BY: response.get("createdBy"),
+            CREATED_DATE: None
+            if not response.get("createdDate")
+            else arg_to_datetime(response.get("createdDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+            MODIFIED_BY: response.get("modifiedBy"),
+            MODIFIED_DATE: None
+            if not response.get("modifiedDate")
+            else arg_to_datetime(response.get("modifiedDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+            "Senders": response.get("senders"),
+            "Recipient": response.get("recipient"),
+            "Subjects": response.get("subjects"),
+            ATTACHMENT_FILE_NAMES: response.get("attachmentNames"),
+            INCLUDED_MIME_TYPES: response.get("attachmentMimeTypes"),
+            EXCLUDED_MIME_TYPES: response.get("attachmentExcludeMimeTypes"),
+            HASH_TYPE: [
+                f"{attachmentHashes.get('hashType')}-{attachmentHashes.get('hashString')}"
+                for attachmentHashes in response.get("attachmentHashCriteria", {}).get("attachmentHashes", [])
+            ],
+            "Domains": response.get("domainCriteria", {}).get("domains"),
+            WHITELIST_URLS: response.get("domainCriteria", {}).get("whiteListUrls"),
+            DATE_RANGE: date_range,
+            "URL": response.get("url"),
+            HEADERS: [f"{header.get('key')}: {header.get('values')}" for header in response.get("headers", [])],
+            INTERNET_MESSAGE_ID: response.get("internetMessageId"),
+            PARTIAL_INGEST: response.get("partialIngest"),
+        }
+    )
 
-    headers = ["ID", CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE, "Senders", "Recipient",
-               "Subjects", ATTACHMENT_FILE_NAMES, INCLUDED_MIME_TYPES, EXCLUDED_MIME_TYPES, HASH_TYPE,
-               "Domains", WHITELIST_URLS, DATE_RANGE, "URL", HEADERS, INTERNET_MESSAGE_ID,
-               PARTIAL_INGEST]
+    headers = [
+        "ID",
+        CREATED_BY,
+        CREATED_DATE,
+        MODIFIED_BY,
+        MODIFIED_DATE,
+        "Senders",
+        "Recipient",
+        "Subjects",
+        ATTACHMENT_FILE_NAMES,
+        INCLUDED_MIME_TYPES,
+        EXCLUDED_MIME_TYPES,
+        HASH_TYPE,
+        "Domains",
+        WHITELIST_URLS,
+        DATE_RANGE,
+        "URL",
+        HEADERS,
+        INTERNET_MESSAGE_ID,
+        PARTIAL_INGEST,
+    ]
 
     return tableToMarkdown("Message Search:", hr_outputs, headers, removeNull=True)
 
 
-def prepare_hr_for_quarantine_job_get(response: Dict[str, Any]) -> str:
+def prepare_hr_for_quarantine_job_get(response: dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-quarantine_jobs_get command.
 
     Args:
@@ -1084,33 +1288,45 @@ def prepare_hr_for_quarantine_job_get(response: Dict[str, Any]) -> str:
     Returns:
         str: Human readable output.
     """
-    hr_outputs = escape_special_characters({
-        "ID": response.get('id'),
-        SEARCH_ID: response.get('searchId'),
-        CREATED_BY: response.get('createdBy'),
+    hr_outputs = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            SEARCH_ID: response.get("searchId"),
+            CREATED_BY: response.get("createdBy"),
+            CREATED_DATE: None
+            if not response.get("createdDate")
+            else arg_to_datetime(response.get("createdDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+            LAST_MODIFIED_BY: response.get("modifiedBy"),
+            LAST_MODIFIED_DATE: None
+            if not response.get("modifiedDate")
+            else arg_to_datetime(response.get("modifiedDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+            LAST_ACTION: response.get("quarantineJobRuns", [])[-1].get("jobRunType"),
+            "Status": response.get("quarantineJobRuns", [])[-1].get("status"),
+            COMPLETED_DATE: None
+            if not response.get("quarantineJobRuns", [])[-1].get("completedDate")
+            else arg_to_datetime(  # type: ignore
+                response.get("quarantineJobRuns", [])[-1].get("completedDate")  # type: ignore
+            ).strftime(HR_DATE_FORMAT),  # type: ignore
+            "Messages": response.get("emailCount"),
+            MATCHING_IOCS: response.get("matchingIOCs"),
+            MATCHING_SOURCES: response.get("matchingSources"),
+        }
+    )
 
-        CREATED_DATE: None if not response.get('createdDate') else arg_to_datetime(
-            response.get('createdDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-        LAST_MODIFIED_BY: response.get('modifiedBy'),
-
-        LAST_MODIFIED_DATE: None if not response.get('modifiedDate') else arg_to_datetime(
-            response.get('modifiedDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-        LAST_ACTION: response.get('quarantineJobRuns', [])[-1].get('jobRunType'),
-        "Status": response.get('quarantineJobRuns', [])[-1].get('status'),
-
-        COMPLETED_DATE: None if not response.get('quarantineJobRuns', [])[-1].get(
-            'completedDate') else arg_to_datetime(
-            response.get('quarantineJobRuns', [])[-1].get('completedDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-        "Messages": response.get('emailCount'),
-        MATCHING_IOCS: response.get('matchingIOCs'),
-        MATCHING_SOURCES: response.get('matchingSources')
-    })
-
-    headers = ["ID", SEARCH_ID, CREATED_BY, CREATED_DATE, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, LAST_ACTION,
-               "Status", COMPLETED_DATE, "Messages", MATCHING_IOCS, MATCHING_SOURCES]
+    headers = [
+        "ID",
+        SEARCH_ID,
+        CREATED_BY,
+        CREATED_DATE,
+        LAST_MODIFIED_BY,
+        LAST_MODIFIED_DATE,
+        LAST_ACTION,
+        "Status",
+        COMPLETED_DATE,
+        "Messages",
+        MATCHING_IOCS,
+        MATCHING_SOURCES,
+    ]
 
     return tableToMarkdown("Quarantine Job:", hr_outputs, headers=headers, removeNull=True)
 
@@ -1124,10 +1340,10 @@ def prepare_hr_for_quarantine_job_delete(job_id: str) -> str:
     Returns:
         str: Human readable output.
     """
-    return "## Quarantine Job with ID {} is successfully deleted.".format(job_id)
+    return f"## Quarantine Job with ID {job_id} is successfully deleted."
 
 
-def prepare_context_for_message_search_results_get_command(response: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_context_for_message_search_results_get_command(response: dict[str, Any]) -> dict[str, Any]:
     """Prepare context data for cofense-message-search-results-get command.
 
     Args:
@@ -1136,14 +1352,11 @@ def prepare_context_for_message_search_results_get_command(response: Dict[str, A
     Returns:
         Dict[str, Any]: Context data.
     """
-    context_data = {
-        "Message": response.get('messages', []),
-        **response.get('search', {})
-    }
+    context_data = {"Message": response.get("messages", []), **response.get("search", {})}
     return remove_empty_elements(context_data)
 
 
-def prepare_hr_for_message_search_results_get_command(response: Dict[str, Any]) -> str:
+def prepare_hr_for_message_search_results_get_command(response: dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-message-search-results-get command.
 
     Args:
@@ -1152,35 +1365,48 @@ def prepare_hr_for_message_search_results_get_command(response: Dict[str, Any]) 
     Returns:
         str: Human readable output.
     """
-    search = response.get('search', {})
+    search = response.get("search", {})
     hr_outputs_results = []
 
-    for message in response.get('messages', []):
+    for message in response.get("messages", []):
         attachments = []
-        for attachment in message.get('attachments', []):
-            attachments.append(f"File Name: {attachment.get('filename')}\n"
-                               f"MD5: {attachment.get('md5')}\nSHA256: {attachment.get('sha256')}")
-        hr_output_results = (escape_special_characters({
-            "Database ID": message.get('id'),
-            INTERNET_MESSAGE_ID: message.get('internetMessageId'),
-            "Subject": message.get('subject'),
-            SENT_ON: None if not message.get('sentOn') else arg_to_datetime(
-                message.get('sentOn')).strftime(HR_DATE_FORMAT),  # type: ignore
-            RECEIVED_ON: None if not message.get('receivedOn') else arg_to_datetime(
-                message.get('receivedOn')).strftime(HR_DATE_FORMAT),  # type: ignore
-            "Sender": [sender.get('address') for sender in message.get('from', [])],
-            "Recipient": [recipient.get('address') for recipient in message.get('recipients', [])]
-        }))
+        for attachment in message.get("attachments", []):
+            attachments.append(
+                f"File Name: {attachment.get('filename')}\nMD5: {attachment.get('md5')}\nSHA256: {attachment.get('sha256')}"
+            )
+        hr_output_results = escape_special_characters(
+            {
+                "Database ID": message.get("id"),
+                INTERNET_MESSAGE_ID: message.get("internetMessageId"),
+                "Subject": message.get("subject"),
+                SENT_ON: None if not message.get("sentOn") else arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),  # type: ignore
+                RECEIVED_ON: None
+                if not message.get("receivedOn")
+                else arg_to_datetime(message.get("receivedOn")).strftime(HR_DATE_FORMAT),  # type: ignore
+                "Sender": [sender.get("address") for sender in message.get("from", [])],
+                "Recipient": [recipient.get("address") for recipient in message.get("recipients", [])],
+            }
+        )
 
         hr_output_results["Attachments"] = "\n\n\n".join(attachments)
         hr_outputs_results.append(hr_output_results)
 
-    headers_for_results = ["Database ID", INTERNET_MESSAGE_ID, "Subject", SENT_ON, RECEIVED_ON, "Sender", "Recipient",
-                           "Attachments"]
+    headers_for_results = [
+        "Database ID",
+        INTERNET_MESSAGE_ID,
+        "Subject",
+        SENT_ON,
+        RECEIVED_ON,
+        "Sender",
+        "Recipient",
+        "Attachments",
+    ]
 
-    return prepare_hr_for_message_search_get(search) + '\n' + tableToMarkdown("Message Search Results:",
-                                                                              hr_outputs_results, headers_for_results,
-                                                                              removeNull=True)
+    return (
+        prepare_hr_for_message_search_get(search)
+        + "\n"
+        + tableToMarkdown("Message Search Results:", hr_outputs_results, headers_for_results, removeNull=True)
+    )
 
 
 def prepare_hr_for_quarantine_job_stop(response: dict[str, Any]) -> str:
@@ -1192,9 +1418,9 @@ def prepare_hr_for_quarantine_job_stop(response: dict[str, Any]) -> str:
     Returns:
         str: Human-readable markdown string.
     """
-    created_date = response.get('createdDate')
-    modified_date = response.get('modifiedDate')
-    completed_date = response.get('quarantineJobRuns', [])[-1].get('completedDate')
+    created_date = response.get("createdDate")
+    modified_date = response.get("modifiedDate")
+    completed_date = response.get("quarantineJobRuns", [])[-1].get("completedDate")
 
     if created_date:
         created_date = arg_to_datetime(created_date).strftime(HR_DATE_FORMAT)  # type: ignore
@@ -1205,29 +1431,43 @@ def prepare_hr_for_quarantine_job_stop(response: dict[str, Any]) -> str:
     if completed_date:
         completed_date = arg_to_datetime(completed_date).strftime(HR_DATE_FORMAT)  # type: ignore
 
-    hr_output = escape_special_characters({
-        "ID": response.get('id'),
-        CREATED_BY: response.get('createdBy'),
-        CREATED_DATE: created_date,
-        LAST_MODIFIED_BY: response.get('modifiedBy'),
-        LAST_MODIFIED_DATE: modified_date,
-        LAST_ACTION: response.get('quarantineJobRuns', [])[-1].get('jobRunType'),
-        "Status": response.get('quarantineJobRuns', [])[-1].get('status'),
-        COMPLETED_DATE: completed_date,
-        "Messages": response.get('emailCount'),
-        MATCHING_IOCS: response.get('matchingIOCs'),
-        MATCHING_SOURCES: response.get('matchingSources'),
-        "Stopped Quarantine": response.get('stopRequested')
-    })
-    headers = ["ID", CREATED_BY, CREATED_DATE, LAST_MODIFIED_BY, LAST_MODIFIED_DATE, LAST_ACTION,
-               "Status", COMPLETED_DATE, "Messages", MATCHING_IOCS, MATCHING_SOURCES, "Stopped Quarantine"]
+    hr_output = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            CREATED_BY: response.get("createdBy"),
+            CREATED_DATE: created_date,
+            LAST_MODIFIED_BY: response.get("modifiedBy"),
+            LAST_MODIFIED_DATE: modified_date,
+            LAST_ACTION: response.get("quarantineJobRuns", [])[-1].get("jobRunType"),
+            "Status": response.get("quarantineJobRuns", [])[-1].get("status"),
+            COMPLETED_DATE: completed_date,
+            "Messages": response.get("emailCount"),
+            MATCHING_IOCS: response.get("matchingIOCs"),
+            MATCHING_SOURCES: response.get("matchingSources"),
+            "Stopped Quarantine": response.get("stopRequested"),
+        }
+    )
+    headers = [
+        "ID",
+        CREATED_BY,
+        CREATED_DATE,
+        LAST_MODIFIED_BY,
+        LAST_MODIFIED_DATE,
+        LAST_ACTION,
+        "Status",
+        COMPLETED_DATE,
+        "Messages",
+        MATCHING_IOCS,
+        MATCHING_SOURCES,
+        "Stopped Quarantine",
+    ]
 
     title = f"Quarantine job with ID {response.get('id')} has been successfully stopped."
 
     return tableToMarkdown(title, hr_output, headers=headers, removeNull=True)
 
 
-def validate_create_search_parameter_allowed_search_length(**kwargs: Optional[List]):
+def validate_create_search_parameter_allowed_search_length(**kwargs: List | None):
     """Validate search values length should not be greater than three.
 
     Args:
@@ -1235,7 +1475,7 @@ def validate_create_search_parameter_allowed_search_length(**kwargs: Optional[Li
     """
     for key, value in kwargs.items():
         if len(value) > 3:  # type: ignore
-            raise ValueError(ERROR_MESSAGE['INVALID_SEARCH_LENGTH'].format(key))
+            raise ValueError(ERROR_MESSAGE["INVALID_SEARCH_LENGTH"].format(key))
 
 
 def validate_arguments_for_message_search_create(**kwargs):
@@ -1244,54 +1484,59 @@ def validate_arguments_for_message_search_create(**kwargs):
     Args:
         kwargs: Dictionary of arguments for validation.
     """
-    validate_create_search_parameter_allowed_search_length(subjects=kwargs.get("subjects"),
-                                                           senders=kwargs.get("senders"),
-                                                           attachment_names=kwargs.get("attachment_names"),
-                                                           attachment_hashes=kwargs.get("attachment_hashes"),
-                                                           attachment_mime_types=kwargs.get("attachment_mime_types"),
-                                                           attachment_exclude_mime_types=kwargs.get(
-                                                               "attachment_exclude_mime_types"),
-                                                           domains=kwargs.get("domains"),
-                                                           whitelist_urls=kwargs.get("whitelist_urls"),
-                                                           headers=kwargs.get("headers"))
+    validate_create_search_parameter_allowed_search_length(
+        subjects=kwargs.get("subjects"),
+        senders=kwargs.get("senders"),
+        attachment_names=kwargs.get("attachment_names"),
+        attachment_hashes=kwargs.get("attachment_hashes"),
+        attachment_mime_types=kwargs.get("attachment_mime_types"),
+        attachment_exclude_mime_types=kwargs.get("attachment_exclude_mime_types"),
+        domains=kwargs.get("domains"),
+        whitelist_urls=kwargs.get("whitelist_urls"),
+        headers=kwargs.get("headers"),
+    )
 
     # validate supported options for attachment_hash_criteria
-    attachment_hash_criteria = kwargs.get('attachment_hash_criteria', 'ANY')
+    attachment_hash_criteria = kwargs.get("attachment_hash_criteria", "ANY")
     if attachment_hash_criteria.upper() not in SUPPORTED_CRITERIA:
         raise ValueError(
-            ERROR_MESSAGE['UNSUPPORTED_FIELD'].format(attachment_hash_criteria, 'attachment_hash_match_criteria',
-                                                      'attachment_hash_match_criteria', SUPPORTED_CRITERIA))
+            ERROR_MESSAGE["UNSUPPORTED_FIELD"].format(
+                attachment_hash_criteria, "attachment_hash_match_criteria", "attachment_hash_match_criteria", SUPPORTED_CRITERIA
+            )
+        )
 
     # validate supported options for domain_match_criteria
-    domain_match_criteria = kwargs.get('domain_match_criteria', 'ANY')
+    domain_match_criteria = kwargs.get("domain_match_criteria", "ANY")
     if domain_match_criteria.upper() not in SUPPORTED_CRITERIA:
         raise ValueError(
-            ERROR_MESSAGE['UNSUPPORTED_FIELD'].format(domain_match_criteria, 'domain_match_criteria',
-                                                      'domain_match_criteria', SUPPORTED_CRITERIA))
+            ERROR_MESSAGE["UNSUPPORTED_FIELD"].format(
+                domain_match_criteria, "domain_match_criteria", "domain_match_criteria", SUPPORTED_CRITERIA
+            )
+        )
 
     # validate attachment_hashes format
-    attachment_hashes = kwargs.get('attachment_hashes', [])
+    attachment_hashes = kwargs.get("attachment_hashes", [])
     for attachment_hash in attachment_hashes:
-        if len(list(filter(None, attachment_hash.split(':')))) != 2:
+        if len(list(filter(None, attachment_hash.split(":")))) != 2:
             raise ValueError(
-                ERROR_MESSAGE['INVALID_FORMAT'].format(attachment_hash, 'attachment_hashes',
-                                                       SUPPORTED_HASH_VALUE_FORMAT))
+                ERROR_MESSAGE["INVALID_FORMAT"].format(attachment_hash, "attachment_hashes", SUPPORTED_HASH_VALUE_FORMAT)
+            )
 
-        hash_type = attachment_hash.split(':')[0]
-        hash_value = attachment_hash.split(':')[1]
+        hash_type = attachment_hash.split(":")[0]
+        hash_value = attachment_hash.split(":")[1]
         if hash_type.upper() not in SUPPORTED_HASH:
-            raise ValueError(ERROR_MESSAGE['UNSUPPORTED_FIELD'].format(hash_type, 'hash', 'hash', SUPPORTED_HASH))
+            raise ValueError(ERROR_MESSAGE["UNSUPPORTED_FIELD"].format(hash_type, "hash", "hash", SUPPORTED_HASH))
         if hash_type.lower() != get_hash_type(hash_value):
-            raise ValueError(ERROR_MESSAGE['INVALID_ARGUMENT'].format(hash_value, hash_type))
+            raise ValueError(ERROR_MESSAGE["INVALID_ARGUMENT"].format(hash_value, hash_type))
 
     # validate headers format
-    headers = kwargs.get('headers', [])
+    headers = kwargs.get("headers", [])
     for header in headers:
         if len(list(filter(None, header.split(":")))) < 2:
-            raise ValueError(ERROR_MESSAGE['INVALID_FORMAT'].format(header, 'headers', SUPPORTED_HEADERS_FORMAT))
+            raise ValueError(ERROR_MESSAGE["INVALID_FORMAT"].format(header, "headers", SUPPORTED_HEADERS_FORMAT))
 
 
-def prepare_requests_body_for_message_search_create(**kwargs) -> Dict[str, Any]:
+def prepare_requests_body_for_message_search_create(**kwargs) -> dict[str, Any]:
     """Prepare required body parameter for cofense-message-search-create command.
 
     Args:
@@ -1301,44 +1546,45 @@ def prepare_requests_body_for_message_search_create(**kwargs) -> Dict[str, Any]:
         Dict[str, Any]: Required body parameter.
     """
     attachment_hashes = []
-    for attachment_hash in kwargs.get('attachment_hashes', []):
-        attachment_hashes.append({
-            "hashType": attachment_hash.split(":", 1)[0].upper(),
-            "hashString": attachment_hash.split(":", 1)[1]
-        })
+    for attachment_hash in kwargs.get("attachment_hashes", []):
+        attachment_hashes.append(
+            {"hashType": attachment_hash.split(":", 1)[0].upper(), "hashString": attachment_hash.split(":", 1)[1]}
+        )
 
     attachment_hash_criteria = {
-        "type": kwargs.get('attachment_hash_match_criteria', 'ANY').upper(),
-        "attachmentHashes": attachment_hashes
+        "type": kwargs.get("attachment_hash_match_criteria", "ANY").upper(),
+        "attachmentHashes": attachment_hashes,
     }
 
     domain_criteria = {
-        "type": kwargs.get('domain_match_criteria', 'ANY').upper(),
-        "domains": kwargs.get('domains'),
-        "whiteListUrls": kwargs.get('whitelist_urls')
+        "type": kwargs.get("domain_match_criteria", "ANY").upper(),
+        "domains": kwargs.get("domains"),
+        "whiteListUrls": kwargs.get("whitelist_urls"),
     }
 
     headers = []
-    for header in kwargs.get('headers', []):
-        headers.append({
-            "key": header.split(':', 1)[0],
-            "values": argToList(header.split(':', 1)[1], ':')
-        })
+    for header in kwargs.get("headers", []):
+        headers.append({"key": header.split(":", 1)[0], "values": argToList(header.split(":", 1)[1], ":")})
 
-    return assign_params(subjects=kwargs.get('subjects'), senders=kwargs.get('senders'),
-                         attachmentNames=kwargs.get('attachment_names'),
-                         attachmentHashCriteria=attachment_hash_criteria,
-                         attachmentMimeTypes=kwargs.get('attachment_mime_types'),
-                         attachmentExcludeMimeTypes=kwargs.get('attachment_exclude_mime_types'),
-                         domainCriteria=domain_criteria, headers=headers,
-                         internetMessageId=kwargs.get('internet_message_id'),
-                         partialIngest=kwargs.get('partial_ingest'),
-                         receivedAfterDate=kwargs.get('received_after_date'),
-                         receivedBeforeDate=kwargs.get('received_before_date'),
-                         recipient=kwargs.get('recipient'), url=kwargs.get('url'))
+    return assign_params(
+        subjects=kwargs.get("subjects"),
+        senders=kwargs.get("senders"),
+        attachmentNames=kwargs.get("attachment_names"),
+        attachmentHashCriteria=attachment_hash_criteria,
+        attachmentMimeTypes=kwargs.get("attachment_mime_types"),
+        attachmentExcludeMimeTypes=kwargs.get("attachment_exclude_mime_types"),
+        domainCriteria=domain_criteria,
+        headers=headers,
+        internetMessageId=kwargs.get("internet_message_id"),
+        partialIngest=kwargs.get("partial_ingest"),
+        receivedAfterDate=kwargs.get("received_after_date"),
+        receivedBeforeDate=kwargs.get("received_before_date"),
+        recipient=kwargs.get("recipient"),
+        url=kwargs.get("url"),
+    )
 
 
-def prepare_hr_for_message_search_create_command(response: Dict[str, Any]) -> str:
+def prepare_hr_for_message_search_create_command(response: dict[str, Any]) -> str:
     """Prepare Human Readable output for cofense-message-search-create command.
 
     Args:
@@ -1347,10 +1593,16 @@ def prepare_hr_for_message_search_create_command(response: Dict[str, Any]) -> st
     Returns:
         str: Human readable output.
     """
-    received_before_date = None if not response.get('receivedBeforeDate') else arg_to_datetime(
-        response.get('receivedBeforeDate')).strftime(HR_DATE_FORMAT)  # type: ignore
-    received_after_date = None if not response.get('receivedAfterDate') else arg_to_datetime(
-        response.get('receivedAfterDate')).strftime(HR_DATE_FORMAT)  # type: ignore
+    received_before_date = (
+        None
+        if not response.get("receivedBeforeDate")
+        else arg_to_datetime(response.get("receivedBeforeDate")).strftime(HR_DATE_FORMAT)  # type: ignore
+    )
+    received_after_date = (
+        None
+        if not response.get("receivedAfterDate")
+        else arg_to_datetime(response.get("receivedAfterDate")).strftime(HR_DATE_FORMAT)  # type: ignore
+    )
 
     date_range = ""
     if received_after_date:
@@ -1358,42 +1610,65 @@ def prepare_hr_for_message_search_create_command(response: Dict[str, Any]) -> st
     if received_before_date:
         date_range = date_range + f"To: {received_before_date}"
 
-    hr_outputs = escape_special_characters({
-        "ID": response.get('id'),
-        CREATED_BY: response.get('createdBy'),
-        CREATED_DATE: None if not response.get('createdDate') else arg_to_datetime(
-            response.get('createdDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-        MODIFIED_BY: response.get('modifiedBy'),
-        MODIFIED_DATE: None if not response.get('modifiedDate') else arg_to_datetime(
-            response.get('modifiedDate')).strftime(HR_DATE_FORMAT),  # type: ignore
-        "Senders": response.get('senders'),
-        "Recipient": response.get('recipient'),
-        "Subjects": response.get('subjects'),
-        ATTACHMENT_FILE_NAMES: response.get('attachmentNames'),
-        INCLUDED_MIME_TYPES: response.get('attachmentMimeTypes'),
-        EXCLUDED_MIME_TYPES: response.get('attachmentExcludeMimeTypes'),
-        HASH_TYPE: [f"{attachmentHashes.get('hashType')}-{attachmentHashes.get('hashString')}" for attachmentHashes
-                    in response.get('attachmentHashCriteria', {}).get('attachmentHashes', [])],
-        "Domains": response.get('domainCriteria', {}).get('domains'),
-        WHITELIST_URLS: response.get('domainCriteria', {}).get('whiteListUrls'),
-        DATE_RANGE: date_range,
-        "URL": response.get('url'),
-        HEADERS: [f"{header.get('key')}: {header.get('values')}" for header in response.get('headers', [])],
-        INTERNET_MESSAGE_ID: response.get('internetMessageId'),
-        PARTIAL_INGEST: response.get('partialIngest')
-    })
+    hr_outputs = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            CREATED_BY: response.get("createdBy"),
+            CREATED_DATE: None
+            if not response.get("createdDate")
+            else arg_to_datetime(response.get("createdDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+            MODIFIED_BY: response.get("modifiedBy"),
+            MODIFIED_DATE: None
+            if not response.get("modifiedDate")
+            else arg_to_datetime(response.get("modifiedDate")).strftime(HR_DATE_FORMAT),  # type: ignore
+            "Senders": response.get("senders"),
+            "Recipient": response.get("recipient"),
+            "Subjects": response.get("subjects"),
+            ATTACHMENT_FILE_NAMES: response.get("attachmentNames"),
+            INCLUDED_MIME_TYPES: response.get("attachmentMimeTypes"),
+            EXCLUDED_MIME_TYPES: response.get("attachmentExcludeMimeTypes"),
+            HASH_TYPE: [
+                f"{attachmentHashes.get('hashType')}-{attachmentHashes.get('hashString')}"
+                for attachmentHashes in response.get("attachmentHashCriteria", {}).get("attachmentHashes", [])
+            ],
+            "Domains": response.get("domainCriteria", {}).get("domains"),
+            WHITELIST_URLS: response.get("domainCriteria", {}).get("whiteListUrls"),
+            DATE_RANGE: date_range,
+            "URL": response.get("url"),
+            HEADERS: [f"{header.get('key')}: {header.get('values')}" for header in response.get("headers", [])],
+            INTERNET_MESSAGE_ID: response.get("internetMessageId"),
+            PARTIAL_INGEST: response.get("partialIngest"),
+        }
+    )
 
-    headers = ["ID", CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE, "Senders", "Recipient",
-               "Subjects", ATTACHMENT_FILE_NAMES, INCLUDED_MIME_TYPES, EXCLUDED_MIME_TYPES, HASH_TYPE,
-               "Domains", WHITELIST_URLS, DATE_RANGE, "URL", HEADERS, INTERNET_MESSAGE_ID,
-               PARTIAL_INGEST]
+    headers = [
+        "ID",
+        CREATED_BY,
+        CREATED_DATE,
+        MODIFIED_BY,
+        MODIFIED_DATE,
+        "Senders",
+        "Recipient",
+        "Subjects",
+        ATTACHMENT_FILE_NAMES,
+        INCLUDED_MIME_TYPES,
+        EXCLUDED_MIME_TYPES,
+        HASH_TYPE,
+        "Domains",
+        WHITELIST_URLS,
+        DATE_RANGE,
+        "URL",
+        HEADERS,
+        INTERNET_MESSAGE_ID,
+        PARTIAL_INGEST,
+    ]
 
     heading = f"Message search with ID {response.get('id')} has been created successfully."
 
     return tableToMarkdown(heading, hr_outputs, headers, removeNull=True)
 
 
-def prepare_hr_for_last_ioc_get_command(response: Dict[str, Any]) -> str:
+def prepare_hr_for_last_ioc_get_command(response: dict[str, Any]) -> str:
     """Prepare Human Readable for cofence-last-updated-ioc-get command.
 
     Args:
@@ -1402,32 +1677,47 @@ def prepare_hr_for_last_ioc_get_command(response: Dict[str, Any]) -> str:
     Returns:
         str: Human readable output.
     """
-    data = response.get('data', {})
-    metadata = data.get('metadata', {}).get('quarantine', {})
+    data = response.get("data", {})
+    metadata = data.get("metadata", {}).get("quarantine", {})
 
-    hr_outputs = escape_special_characters({
-        "ID": data.get('id'),
-        THREAT_TYPE: data.get('attributes', {}).get('threat_type'),
-        THREAT_VALUE: data.get('attributes', {}).get('threat_value'),
-        CREATED_AT: None if not metadata.get('created_at') else arg_to_datetime(
-            metadata.get('created_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-        EXPIRES_AT: None if not metadata.get('expires_at') else arg_to_datetime(
-            metadata.get('expires_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-        MATCH_COUNT: metadata.get('match_count'),
-        QUARANTINE_COUNT: metadata.get('quarantine_count'),
-        FIRST_QUARANTINED_AT: None if not metadata.get('first_quarantined_at') else arg_to_datetime(
-            metadata.get('first_quarantined_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-        LAST_QUARANTINE_AT: None if not metadata.get('last_quarantined_at') else arg_to_datetime(
-            metadata.get('last_quarantined_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-    })
+    hr_outputs = escape_special_characters(
+        {
+            "ID": data.get("id"),
+            THREAT_TYPE: data.get("attributes", {}).get("threat_type"),
+            THREAT_VALUE: data.get("attributes", {}).get("threat_value"),
+            CREATED_AT: None
+            if not metadata.get("created_at")
+            else arg_to_datetime(metadata.get("created_at")).strftime(HR_DATE_FORMAT),  # type: ignore
+            EXPIRES_AT: None
+            if not metadata.get("expires_at")
+            else arg_to_datetime(metadata.get("expires_at")).strftime(HR_DATE_FORMAT),  # type: ignore
+            MATCH_COUNT: metadata.get("match_count"),
+            QUARANTINE_COUNT: metadata.get("quarantine_count"),
+            FIRST_QUARANTINED_AT: None
+            if not metadata.get("first_quarantined_at")
+            else arg_to_datetime(metadata.get("first_quarantined_at")).strftime(HR_DATE_FORMAT),  # type: ignore
+            LAST_QUARANTINE_AT: None
+            if not metadata.get("last_quarantined_at")
+            else arg_to_datetime(metadata.get("last_quarantined_at")).strftime(HR_DATE_FORMAT),  # type: ignore
+        }
+    )
 
-    headers = ["ID", THREAT_TYPE, THREAT_VALUE, CREATED_AT, EXPIRES_AT, MATCH_COUNT, QUARANTINE_COUNT,
-               FIRST_QUARANTINED_AT, LAST_QUARANTINE_AT]
+    headers = [
+        "ID",
+        THREAT_TYPE,
+        THREAT_VALUE,
+        CREATED_AT,
+        EXPIRES_AT,
+        MATCH_COUNT,
+        QUARANTINE_COUNT,
+        FIRST_QUARANTINED_AT,
+        LAST_QUARANTINE_AT,
+    ]
 
     return tableToMarkdown("Last IOC:", hr_outputs, headers, removeNull=True)
 
 
-def prepare_and_validate_body_for_iocs_update(request_body: List) -> Dict[str, Any]:
+def prepare_and_validate_body_for_iocs_update(request_body: List) -> dict[str, Any]:
     """Prepare and validate body parameters to be passed in API request for cofense_iocs_update_command.
 
     Args:
@@ -1438,57 +1728,58 @@ def prepare_and_validate_body_for_iocs_update(request_body: List) -> Dict[str, A
     """
     data = []
     for body in request_body:
-        threat_type = body.get('threat_type')
+        threat_type = body.get("threat_type")
         if threat_type and threat_type.lower() not in THREAT_TYPES:
-            raise ValueError(
-                ERROR_MESSAGE['UNSUPPORTED_FIELD'].format(threat_type, 'threat type', 'threat type', THREAT_TYPES))
+            raise ValueError(ERROR_MESSAGE["UNSUPPORTED_FIELD"].format(threat_type, "threat type", "threat type", THREAT_TYPES))
 
-        threat_value = body.get('threat_value')
-        threat_level = body.get('threat_level')
-        source_id = body.get('source_id')
+        threat_value = body.get("threat_value")
+        threat_level = body.get("threat_level")
+        source_id = body.get("source_id")
 
-        created_at = body.get('created_at')
+        created_at = body.get("created_at")
         if created_at:
-            created_at = arg_to_datetime(created_at, arg_name='created_at').strftime(DATE_FORMAT)  # type: ignore
+            created_at = arg_to_datetime(created_at, arg_name="created_at").strftime(DATE_FORMAT)  # type: ignore
 
-        updated_at = body.get('updated_at')
+        updated_at = body.get("updated_at")
         if updated_at:
-            updated_at = arg_to_datetime(updated_at, arg_name='updated_at').strftime(DATE_FORMAT)  # type: ignore
+            updated_at = arg_to_datetime(updated_at, arg_name="updated_at").strftime(DATE_FORMAT)  # type: ignore
         else:
             updated_at = datetime.now().strftime(DATE_FORMAT)
 
-        requested_expiration = body.get('requested_expiration')
+        requested_expiration = body.get("requested_expiration")
         if requested_expiration:
-            requested_expiration = arg_to_datetime(requested_expiration,
-                                                   arg_name='requested_expiration').strftime(  # type: ignore
-                DATE_FORMAT)
+            requested_expiration = arg_to_datetime(requested_expiration, arg_name="requested_expiration").strftime(  # type: ignore
+                DATE_FORMAT
+            )
 
-        validate_required_parameters(threat_type=threat_type, threat_value=threat_value,
-                                     threat_level=threat_level, source_id=source_id, created_at=created_at,
-                                     updated_at=updated_at)
+        validate_required_parameters(
+            threat_type=threat_type,
+            threat_value=threat_value,
+            threat_level=threat_level,
+            source_id=source_id,
+            created_at=created_at,
+            updated_at=updated_at,
+        )
 
         updated_ioc = {
             "type": "ioc",
-            "attributes": {
-                "threat_type": threat_type,
-                "threat_value": threat_value
-            },
+            "attributes": {"threat_type": threat_type, "threat_value": threat_value},
             "metadata": {
                 "source": {
                     "threat_level": threat_level,
                     "id": source_id,
                     "requested_expiration": requested_expiration,
                     "created_at": created_at,
-                    "updated_at": updated_at
+                    "updated_at": updated_at,
                 },
-            }
+            },
         }
         data.append(remove_empty_elements(updated_ioc))
 
     return {"data": data}
 
 
-def prepare_body_for_ioc_update(expires_at: str) -> Dict[str, Any]:
+def prepare_body_for_ioc_update(expires_at: str) -> dict[str, Any]:
     """Prepare body to be passed in API request for cofense_ioc_update_command.
 
     Args:
@@ -1500,15 +1791,13 @@ def prepare_body_for_ioc_update(expires_at: str) -> Dict[str, Any]:
     updated_iocs = {
         "type": "ioc",
         "metadata": {
-            "quarantine": {
-                "expires_at": expires_at
-            },
-        }
+            "quarantine": {"expires_at": expires_at},
+        },
     }
     return {"data": updated_iocs}
 
 
-def prepare_hr_for_update_iocs(response: Dict) -> str:
+def prepare_hr_for_update_iocs(response: dict) -> str:
     """Prepare Human Readable for cofense-iocs-update command.
 
     Args:
@@ -1517,34 +1806,42 @@ def prepare_hr_for_update_iocs(response: Dict) -> str:
     Returns:
         str: Human readable output.
     """
-    threat_value = response.get('attributes', {}).get('threat_value')
-    threat_level = response.get('metadata', {}).get('source', {}).get('threat_level')
-    hr_outputs = escape_special_characters({
-        "ID": response.get('id'),
-        THREAT_TYPE: response.get('attributes', {}).get('threat_type'),
-        THREAT_VALUE: threat_value,
-        THREAT_LEVEL: threat_level,
-
-        CREATED_AT: None if not response.get('metadata', {}).get('source', {}).get(
-            'created_at') else arg_to_datetime(response.get('metadata', {}).get(
-                'source', {}).get('created_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-        UPDATED_AT: None if not response.get('metadata', {}).get('source', {}).get(
-            'updated_at') else arg_to_datetime(response.get('metadata', {}).get(
-                'source', {}).get('updated_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-        "Requested Expiration": arg_to_datetime(
-            response.get('metadata', {}).get('source', {}).get(
-                'requested_expiration')).strftime(HR_DATE_FORMAT)  # type: ignore
-    })
+    threat_value = response.get("attributes", {}).get("threat_value")
+    threat_level = response.get("metadata", {}).get("source", {}).get("threat_level")
+    hr_outputs = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            THREAT_TYPE: response.get("attributes", {}).get("threat_type"),
+            THREAT_VALUE: threat_value,
+            THREAT_LEVEL: threat_level,
+            CREATED_AT: None
+            if not response.get("metadata", {}).get("source", {}).get("created_at")
+            else arg_to_datetime(  # type: ignore
+                response.get("metadata", {}).get("source", {}).get("created_at")  # type: ignore
+            ).strftime(HR_DATE_FORMAT),  # type: ignore
+            UPDATED_AT: None
+            if not response.get("metadata", {}).get("source", {}).get("updated_at")
+            else arg_to_datetime(
+                response.get("metadata", {})
+                .get(  # type: ignore
+                    "source", {}
+                )
+                .get("updated_at")
+            ).strftime(HR_DATE_FORMAT),
+            "Requested Expiration": arg_to_datetime(  # type: ignore
+                response.get("metadata", {}).get("source", {}).get("requested_expiration")
+            ).strftime(HR_DATE_FORMAT),  # type: ignore
+        }
+    )
 
     headers = ["ID", THREAT_TYPE, THREAT_VALUE, THREAT_LEVEL, CREATED_AT, UPDATED_AT, "Requested Expiration"]
 
-    return tableToMarkdown("IOC {} updated successfully.".format(response.get('id')), hr_outputs, headers=headers,
-                           removeNull=True)
+    return tableToMarkdown(
+        "IOC {} updated successfully.".format(response.get("id")), hr_outputs, headers=headers, removeNull=True
+    )
 
 
-def prepare_hr_for_update_ioc(response: Dict[str, Any]) -> str:
+def prepare_hr_for_update_ioc(response: dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-ioc-update command.
 
     Args:
@@ -1553,29 +1850,36 @@ def prepare_hr_for_update_ioc(response: Dict[str, Any]) -> str:
     Returns:
         str: Human readable output.
     """
-    ioc_id = response.get('id')
-    threat_value = response.get('attributes', {}).get('threat_value')
-    hr_output = (escape_special_characters({
-        "ID": response.get('id'),
-        THREAT_TYPE: response.get('attributes', {}).get('threat_type'),
-        THREAT_VALUE: threat_value,
-
-        CREATED_AT: None if not response.get('metadata', {}).get('quarantine', {}).get(
-            'created_at') else arg_to_datetime(response.get('metadata', {}).get(
-                'quarantine', {}).get('created_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-        EXPIRES_AT: None if not response.get('metadata', {}).get('quarantine', {}).get(
-            'expires_at') else arg_to_datetime(response.get('metadata', {}).get(
-                'quarantine', {}).get('expires_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-    }))
+    ioc_id = response.get("id")
+    threat_value = response.get("attributes", {}).get("threat_value")
+    hr_output = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            THREAT_TYPE: response.get("attributes", {}).get("threat_type"),
+            THREAT_VALUE: threat_value,
+            CREATED_AT: None
+            if not response.get("metadata", {}).get("quarantine", {}).get("created_at")
+            else arg_to_datetime(
+                response.get("metadata", {})
+                .get(  # type: ignore
+                    "quarantine", {}
+                )
+                .get("created_at")
+            ).strftime(HR_DATE_FORMAT),  # type: ignore
+            EXPIRES_AT: None
+            if not response.get("metadata", {}).get("quarantine", {}).get("expires_at")
+            else arg_to_datetime(  # type: ignore
+                response.get("metadata", {}).get("quarantine", {}).get("expires_at")  # type: ignore
+            ).strftime(HR_DATE_FORMAT),  # type: ignore
+        }
+    )
 
     headers = ["ID", THREAT_TYPE, THREAT_VALUE, CREATED_AT, EXPIRES_AT]
 
-    return tableToMarkdown(f"IOC with value {ioc_id} has been updated successfully.", hr_output,
-                           headers=headers, removeNull=True)
+    return tableToMarkdown(f"IOC with value {ioc_id} has been updated successfully.", hr_output, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_get_ioc(response: Dict[str, Any]) -> str:
+def prepare_hr_for_get_ioc(response: dict[str, Any]) -> str:
     """Prepare Human Readable for cofense-ioc-get command.
 
     Args:
@@ -1584,27 +1888,31 @@ def prepare_hr_for_get_ioc(response: Dict[str, Any]) -> str:
     Returns:
         str: Human readable output.
     """
-    threat_value = response.get('attributes', {}).get('threat_value')
-    hr_output = (escape_special_characters({
-        "ID": response.get('id'),
-        THREAT_TYPE: response.get('attributes', {}).get('threat_type'),
-        THREAT_VALUE: threat_value,
-
-        CREATED_AT: None if not response.get('metadata', {}).get('quarantine', {}).get(
-            'created_at') else arg_to_datetime(response.get('metadata', {}).get(
-                'quarantine', {}).get('created_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-
-        EXPIRES_AT: None if not response.get('metadata', {}).get('quarantine', {}).get(
-            'expires_at') else arg_to_datetime(response.get('metadata', {}).get(
-                'quarantine', {}).get('expires_at')).strftime(HR_DATE_FORMAT),  # type: ignore
-    }))
+    threat_value = response.get("attributes", {}).get("threat_value")
+    hr_output = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            THREAT_TYPE: response.get("attributes", {}).get("threat_type"),
+            THREAT_VALUE: threat_value,
+            CREATED_AT: None
+            if not response.get("metadata", {}).get("quarantine", {}).get("created_at")
+            else arg_to_datetime(  # type: ignore
+                response.get("metadata", {}).get("quarantine", {}).get("created_at")  # type: ignore
+            ).strftime(HR_DATE_FORMAT),  # type: ignore
+            EXPIRES_AT: None
+            if not response.get("metadata", {}).get("quarantine", {}).get("expires_at")
+            else arg_to_datetime(  # type: ignore
+                response.get("metadata", {}).get("quarantine", {}).get("expires_at")  # type: ignore
+            ).strftime(HR_DATE_FORMAT),  # type: ignore
+        }
+    )
 
     headers = ["ID", THREAT_TYPE, THREAT_VALUE, CREATED_AT, EXPIRES_AT]
 
     return tableToMarkdown("IOC:", hr_output, headers=headers, removeNull=True)
 
 
-def validate_arguments_for_iocs_list(source: str, page: Optional[int], size: Optional[int]) -> None:
+def validate_arguments_for_iocs_list(source: str, page: int | None, size: int | None) -> None:
     """Validate arguments for cofense-iocs-list command.
 
     Args:
@@ -1649,27 +1957,40 @@ def prepare_hr_for_iocs_list(response: dict[str, Any]) -> str:
     if last_quarantined_at:
         last_quarantined_at = arg_to_datetime(last_quarantined_at).strftime(HR_DATE_FORMAT)  # type: ignore
 
-    hr_outputs = escape_special_characters({
-        "ID": response.get("id"),
-        THREAT_TYPE: response.get("attributes", {}).get("threat_type"),
-        THREAT_VALUE: response.get('attributes', {}).get('threat_value'),
-        THREAT_LEVEL: response.get("metadata", {}).get("source", {}).get("threat_level"),
-        UPDATED_AT: updated_at,
-        CREATED_AT: created_at,
-        EXPIRES_AT: expires_at,
-        MATCH_COUNT: response.get("metadata", {}).get("quarantine", {}).get("match_count"),
-        QUARANTINE_COUNT: response.get("metadata", {}).get("quarantine", {}).get("quarantine_count"),
-        FIRST_QUARANTINED_AT: first_quarantined_at,
-        LAST_QUARANTINE_AT: last_quarantined_at
-    })
+    hr_outputs = escape_special_characters(
+        {
+            "ID": response.get("id"),
+            THREAT_TYPE: response.get("attributes", {}).get("threat_type"),
+            THREAT_VALUE: response.get("attributes", {}).get("threat_value"),
+            THREAT_LEVEL: response.get("metadata", {}).get("source", {}).get("threat_level"),
+            UPDATED_AT: updated_at,
+            CREATED_AT: created_at,
+            EXPIRES_AT: expires_at,
+            MATCH_COUNT: response.get("metadata", {}).get("quarantine", {}).get("match_count"),
+            QUARANTINE_COUNT: response.get("metadata", {}).get("quarantine", {}).get("quarantine_count"),
+            FIRST_QUARANTINED_AT: first_quarantined_at,
+            LAST_QUARANTINE_AT: last_quarantined_at,
+        }
+    )
 
-    headers = ["ID", THREAT_TYPE, THREAT_VALUE, THREAT_LEVEL, UPDATED_AT, CREATED_AT, EXPIRES_AT,
-               MATCH_COUNT, QUARANTINE_COUNT, FIRST_QUARANTINED_AT, LAST_QUARANTINE_AT]
+    headers = [
+        "ID",
+        THREAT_TYPE,
+        THREAT_VALUE,
+        THREAT_LEVEL,
+        UPDATED_AT,
+        CREATED_AT,
+        EXPIRES_AT,
+        MATCH_COUNT,
+        QUARANTINE_COUNT,
+        FIRST_QUARANTINED_AT,
+        LAST_QUARANTINE_AT,
+    ]
 
     return tableToMarkdown("IOC:", hr_outputs, headers, removeNull=True)
 
 
-def get_standard_context(client: VisionClient, ioc: Dict) -> Optional[Common.Indicator]:
+def get_standard_context(client: VisionClient, ioc: dict) -> Common.Indicator | None:
     """Get the standard context for IOC.
 
     Args:
@@ -1679,13 +2000,13 @@ def get_standard_context(client: VisionClient, ioc: Dict) -> Optional[Common.Ind
     Returns:
         Optional[Common.Indicator]: Standard context.
     """
-    if not ioc or not ioc.get('id'):
+    if not ioc or not ioc.get("id"):
         return None
 
     ioc = remove_empty_elements(ioc)
 
-    threat_type = ioc.get('attributes', {}).get('threat_type', '').lower()
-    threat_value = ioc.get('attributes', {}).get('threat_value', '')
+    threat_type = ioc.get("attributes", {}).get("threat_type", "").lower()
+    threat_value = ioc.get("attributes", {}).get("threat_value", "")
 
     threat_level = ioc.get("metadata", {}).get("source", {}).get("threat_level")
     score = 0
@@ -1698,36 +2019,18 @@ def get_standard_context(client: VisionClient, ioc: Dict) -> Optional[Common.Ind
             score = 1
 
     dbot_score = Common.DBotScore(
-        indicator=ioc['id'],
-        indicator_type=IOC_TYPES[threat_type],
-        integration_name='Cofense Vision',
-        score=score
+        indicator=ioc["id"], indicator_type=IOC_TYPES[threat_type], integration_name="Cofense Vision", score=score
     )
     if threat_type == "url":
-        return Common.URL(
-            url=threat_value,
-            dbot_score=dbot_score
-        )
+        return Common.URL(url=threat_value, dbot_score=dbot_score)
     elif threat_type == "domain":
-        return Common.Domain(
-            domain=threat_value,
-            dbot_score=dbot_score
-        )
+        return Common.Domain(domain=threat_value, dbot_score=dbot_score)
     elif threat_type == "sender":
-        return Common.EMAIL(
-            address=threat_value,
-            dbot_score=dbot_score
-        )
+        return Common.EMAIL(address=threat_value, dbot_score=dbot_score)
     elif threat_type == "md5":
-        return Common.File(
-            md5=threat_value,
-            dbot_score=dbot_score
-        )
+        return Common.File(md5=threat_value, dbot_score=dbot_score)
     elif threat_type == "sha256":
-        return Common.File(
-            sha256=threat_value,
-            dbot_score=dbot_score
-        )
+        return Common.File(sha256=threat_value, dbot_score=dbot_score)
     return None
 
 
@@ -1753,7 +2056,7 @@ def test_module(client: VisionClient) -> str:
     return "ok"
 
 
-def cofense_message_metadata_get_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_message_metadata_get_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Retrieve the full content of a message.
 
     Args:
@@ -1763,8 +2066,8 @@ def cofense_message_metadata_get_command(client: VisionClient, args: Dict[str, A
     Returns:
         CommandResults: Standard Command Result.
     """
-    internet_message_id = args.get('internet_message_id', '')
-    recipient_address = args.get('recipient_address', '')
+    internet_message_id = args.get("internet_message_id", "")
+    recipient_address = args.get("recipient_address", "")
 
     response = client.get_message_metadata(internet_message_id, recipient_address)
     hr_output = prepare_hr_for_message_metadata_get(remove_empty_elements(response))
@@ -1778,7 +2081,7 @@ def cofense_message_metadata_get_command(client: VisionClient, args: Dict[str, A
     )
 
 
-def cofense_message_get_command(client: VisionClient, args: Dict[str, Any]) -> Dict:
+def cofense_message_get_command(client: VisionClient, args: dict[str, Any]) -> dict:
     """Fetch full content of an email and returns a zip file of an email using a token.
 
     Args:
@@ -1788,13 +2091,13 @@ def cofense_message_get_command(client: VisionClient, args: Dict[str, Any]) -> D
     Returns:
         Dict: A Demisto war room entry.
     """
-    token = args.get('token', '')
+    token = args.get("token", "")
 
     response = client.get_message(token)
-    return fileResult(filename='message.zip', data=response.content)
+    return fileResult(filename="message.zip", data=response.content)
 
 
-def cofense_message_attachment_get_command(client: VisionClient, args: Dict[str, Any]) -> Dict:
+def cofense_message_attachment_get_command(client: VisionClient, args: dict[str, Any]) -> dict:
     """Fetch an attachment by using its MD5 or SHA256 hash and returns the attachment.
 
     Args:
@@ -1804,9 +2107,9 @@ def cofense_message_attachment_get_command(client: VisionClient, args: Dict[str,
     Returns:
         Dict: A Demisto war room entry.
     """
-    file_name = args.get('file_name')
-    md5 = args.get('md5')
-    sha256 = args.get('sha256')
+    file_name = args.get("file_name")
+    md5 = args.get("md5")
+    sha256 = args.get("sha256")
 
     validate_required_parameters(file_name=file_name, md5=md5)
 
@@ -1843,9 +2146,7 @@ def cofense_message_token_get_command(client: VisionClient, args: dict[str, str]
     context_data = {
         "token": token,
         "internetMessageId": internet_message_id,
-        "recipient": {
-            "address": recipient_address
-        },
+        "recipient": {"address": recipient_address},
     }
 
     hr_output = prepare_hr_for_message_token_get(response=context_data)
@@ -1869,7 +2170,7 @@ def cofense_quarantine_job_get_command(client: VisionClient, args: dict[str, Any
     Returns:
         CommandResults: Standard CommandResults object.
     """
-    job_id = args.get('id', '')
+    job_id = args.get("id", "")
     validate_quarantine_job_id(id=job_id)
 
     response = client.get_quarantine_job(job_id=job_id)
@@ -1885,7 +2186,7 @@ def cofense_quarantine_job_get_command(client: VisionClient, args: dict[str, Any
     )
 
 
-def cofense_quarantine_jobs_list_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_quarantine_jobs_list_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Filter and return a paginated list of matching quarantine jobs.
 
     Args:
@@ -1895,34 +2196,35 @@ def cofense_quarantine_jobs_list_command(client: VisionClient, args: Dict[str, A
     Returns:
         CommandResults: Standard Command Result.
     """
-    exclude_quarantine_emails = argToBoolean(args.get('exclude_quarantine_emails', False))
+    exclude_quarantine_emails = argToBoolean(args.get("exclude_quarantine_emails", False))
 
-    page = arg_to_number(args.get('page', 0))
+    page = arg_to_number(args.get("page", 0))
     if int(page) < 0:  # type: ignore
-        raise ValueError(ERROR_MESSAGE['INVALID_PAGE_VALUE'])
+        raise ValueError(ERROR_MESSAGE["INVALID_PAGE_VALUE"])
 
-    size = arg_to_number(args.get('size', 50))
+    size = arg_to_number(args.get("size", 50))
     validate_page_size(size)
 
-    sort = prepare_sort_query(arg_to_list(args.get('sort', DEFAULT_SORT_VALUE)), 'quarantine_jobs_list')
+    sort = prepare_sort_query(arg_to_list(args.get("sort", DEFAULT_SORT_VALUE)), "quarantine_jobs_list")
 
     body = prepare_body_for_qurantine_jobs_list_command(args)
 
     response = client.quarantine_jobs_list(
-        page=page, size=size, sort=sort, exclude_quarantine_emails=exclude_quarantine_emails, body=body)
+        page=page, size=size, sort=sort, exclude_quarantine_emails=exclude_quarantine_emails, body=body
+    )
 
     hr_output = prepare_hr_for_quarantine_jobs_list(response)
 
     return CommandResults(
         outputs_prefix=QUARANTINE_JOB_OUTPUT_PREFIX,
         outputs_key_field="id",
-        outputs=remove_empty_elements(response.get('quarantineJobs')),
+        outputs=remove_empty_elements(response.get("quarantineJobs")),
         readable_output=hr_output,
         raw_response=response,
     )
 
 
-def cofense_quarantine_job_create_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_quarantine_job_create_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Create a new quarantine job using internet message id and recipient's address.
 
     Args:
@@ -1932,7 +2234,7 @@ def cofense_quarantine_job_create_command(client: VisionClient, args: Dict[str, 
     Returns:
         CommandResults: Standard command result.
     """
-    quarantine_emails: List = arg_to_list_with_filter_null_values(args.get('quarantine_emails'))
+    quarantine_emails: List = arg_to_list_with_filter_null_values(args.get("quarantine_emails"))
     validate_required_parameters(quarantine_emails=quarantine_emails)
     requests_body = prepare_requests_body_for_quarantine_job_create(quarantine_emails)
 
@@ -1949,7 +2251,7 @@ def cofense_quarantine_job_create_command(client: VisionClient, args: Dict[str, 
     )
 
 
-def cofense_message_search_results_get_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_message_search_results_get_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Retrieve list of paginated search results.
 
     Args:
@@ -1959,17 +2261,17 @@ def cofense_message_search_results_get_command(client: VisionClient, args: Dict[
     Returns:
         CommandResults: Standard CommandResults object.
     """
-    search_id = args.get('id', '')
+    search_id = args.get("id", "")
     validate_search_id(search_id)
 
-    page = arg_to_number(args.get('page', 0), arg_name='page')
-    size = arg_to_number(args.get('size', 50), arg_name='size')
+    page = arg_to_number(args.get("page", 0), arg_name="page")
+    size = arg_to_number(args.get("size", 50), arg_name="size")
 
     if int(page) < 0:  # type: ignore
-        raise ValueError(ERROR_MESSAGE['INVALID_PAGE_VALUE'])
+        raise ValueError(ERROR_MESSAGE["INVALID_PAGE_VALUE"])
     validate_page_size(size)
 
-    sort = prepare_sort_query(arg_to_list(args.get('sort', DEFAULT_SORT_VALUE)), "message_search_result_get")
+    sort = prepare_sort_query(arg_to_list(args.get("sort", DEFAULT_SORT_VALUE)), "message_search_result_get")
 
     response = client.get_search_results(search_id=search_id, page=page, size=size, sort=sort)
     context_data = prepare_context_for_message_search_results_get_command(response)
@@ -1984,7 +2286,7 @@ def cofense_message_search_results_get_command(client: VisionClient, args: Dict[
     )
 
 
-def cofense_message_searches_list_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_message_searches_list_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Retrieve list of paginated search results.
 
     Args:
@@ -1994,14 +2296,14 @@ def cofense_message_searches_list_command(client: VisionClient, args: Dict[str, 
     Returns:
         CommandResults: Standard CommandResults object.
     """
-    page = arg_to_number(args.get('page', 0), arg_name='page')
-    size = arg_to_number(args.get('size', 50), arg_name='size')
+    page = arg_to_number(args.get("page", 0), arg_name="page")
+    size = arg_to_number(args.get("size", 50), arg_name="size")
 
     if int(page) < 0:  # type: ignore
-        raise ValueError(ERROR_MESSAGE['INVALID_PAGE_VALUE'])
+        raise ValueError(ERROR_MESSAGE["INVALID_PAGE_VALUE"])
     validate_page_size(size)
 
-    sort = prepare_sort_query(arg_to_list(args.get('sort', DEFAULT_SORT_VALUE)), "message_searches_list")
+    sort = prepare_sort_query(arg_to_list(args.get("sort", DEFAULT_SORT_VALUE)), "message_searches_list")
 
     response = client.list_searches(page=page, size=size, sort=sort)
     hr_output = prepare_hr_for_message_searches_list(remove_empty_elements(response))
@@ -2009,13 +2311,13 @@ def cofense_message_searches_list_command(client: VisionClient, args: Dict[str, 
     return CommandResults(
         outputs_prefix=SEARCH_OUTPUT_PREFIX,
         outputs_key_field="id",
-        outputs=remove_empty_elements(response.get('searches')),
+        outputs=remove_empty_elements(response.get("searches")),
         readable_output=hr_output,
         raw_response=response,
     )
 
 
-def cofense_quarantine_job_restore_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_quarantine_job_restore_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Restore emails quarantined by the job identified by its ID.
 
     Args:
@@ -2030,10 +2332,7 @@ def cofense_quarantine_job_restore_command(client: VisionClient, args: Dict[str,
 
     client.restore_quarantine_job(id=job_id)
 
-    context_data = {
-        "id": job_id,
-        "isRestored": True
-    }
+    context_data = {"id": job_id, "isRestored": True}
 
     hr_output = f"## Emails quarantined by the quarantine job ID {job_id} have been successfully restored."
 
@@ -2041,11 +2340,11 @@ def cofense_quarantine_job_restore_command(client: VisionClient, args: Dict[str,
         outputs_prefix=QUARANTINE_JOB_OUTPUT_PREFIX,
         outputs=remove_empty_elements(context_data),
         outputs_key_field="id",
-        readable_output=hr_output
+        readable_output=hr_output,
     )
 
 
-def cofense_message_search_get_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_message_search_get_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Retrieve the search identified by id.
 
     Args:
@@ -2090,10 +2389,7 @@ def cofense_quarantine_job_approve_command(client: VisionClient, args: dict[str,
 
     client.approve_quarantine_job(id=job_id, message_count=message_count)
 
-    context_data = {
-        "id": job_id,
-        "isApproved": True
-    }
+    context_data = {"id": job_id, "isApproved": True}
 
     hr_output = f"## Quarantine Job with ID {job_id} has been approved successfully."
 
@@ -2105,7 +2401,7 @@ def cofense_quarantine_job_approve_command(client: VisionClient, args: dict[str,
     )
 
 
-def cofense_quarantine_job_delete_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_quarantine_job_delete_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Delete the quarantine job identified by its unique ID.
 
     Args:
@@ -2115,15 +2411,12 @@ def cofense_quarantine_job_delete_command(client: VisionClient, args: Dict[str, 
     Returns:
         CommandResults: Standard Command Result.
     """
-    job_id = args.get('id', '')
+    job_id = args.get("id", "")
     validate_quarantine_job_id(id=job_id)
 
     client.delete_quarantine_job(job_id)
 
-    response = {
-        "id": job_id,
-        "isDeleted": True
-    }
+    response = {"id": job_id, "isDeleted": True}
 
     hr_output = prepare_hr_for_quarantine_job_delete(job_id)
 
@@ -2132,11 +2425,11 @@ def cofense_quarantine_job_delete_command(client: VisionClient, args: Dict[str, 
         outputs_key_field="id",
         outputs=response,
         readable_output=hr_output,
-        raw_response=''
+        raw_response="",
     )
 
 
-def cofense_ioc_delete_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_ioc_delete_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Delete a single active or expired IOC from the local IOC Repository.
 
     Args:
@@ -2146,17 +2439,14 @@ def cofense_ioc_delete_command(client: VisionClient, args: Dict[str, Any]) -> Co
     Returns:
         CommandResults: Standard command result.
     """
-    source = args.get('source')
-    ioc_id = args.get('id')
+    source = args.get("source")
+    ioc_id = args.get("id")
     validate_required_parameters(source=source, id=ioc_id)
 
     response = client.delete_ioc(source, ioc_id)
 
     if response:
-        response = {
-            'deleted': True,
-            **response.get('data', {})
-        }
+        response = {"deleted": True, **response.get("data", {})}
 
     hr_output = prepare_hr_for_ioc_delete(response)
 
@@ -2166,7 +2456,7 @@ def cofense_ioc_delete_command(client: VisionClient, args: Dict[str, Any]) -> Co
         readable_output=hr_output,
         raw_response=response,
         outputs_key_field="id",
-        indicator=get_standard_context(client, response)
+        indicator=get_standard_context(client, response),
     )
 
 
@@ -2193,11 +2483,11 @@ def cofense_quarantine_job_stop_command(client: VisionClient, args: dict[str, An
         outputs_key_field="id",
         outputs=remove_empty_elements(response),
         raw_response=response,
-        readable_output=hr_output
+        readable_output=hr_output,
     )
 
 
-def cofense_message_search_create_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_message_search_create_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Create a search based on user specified arguments.
 
     Args:
@@ -2207,55 +2497,65 @@ def cofense_message_search_create_command(client: VisionClient, args: Dict[str, 
     Returns:
         CommandResults: Standard command result.
     """
-    subjects: List = arg_to_list_with_filter_null_values(args.get('subjects'))
-    senders: List = arg_to_list_with_filter_null_values(args.get('senders'))
-    attachment_names: List = arg_to_list_with_filter_null_values(args.get('attachment_names'))
-    attachment_hash_criteria: str = args.get('attachment_hash_match_criteria', 'ANY')
-    attachment_hashes: List = arg_to_list_with_filter_null_values(args.get('attachment_hashes'))
-    attachment_mime_types: List = arg_to_list_with_filter_null_values(args.get('attachment_mime_types'))
-    attachment_exclude_mime_types: List = arg_to_list_with_filter_null_values(args.get('attachment_exclude_mime_types'))
-    domain_match_criteria: str = args.get('domain_match_criteria', 'ANY')
-    domains: List = arg_to_list_with_filter_null_values(args.get('domains'))
-    whitelist_urls: List = arg_to_list_with_filter_null_values(args.get('whitelist_urls'))
-    headers: List = arg_to_list_with_filter_null_values(args.get('headers'))
-    internet_message_id = args.get('internet_message_id')
-    partial_ingest: bool = argToBoolean(args.get('partial_ingest', False))
-    received_after_date = args.get('received_after_date')
-    received_before_date = args.get('received_before_date')
-    recipient = args.get('recipient')
-    url = args.get('url')
+    subjects: List = arg_to_list_with_filter_null_values(args.get("subjects"))
+    senders: List = arg_to_list_with_filter_null_values(args.get("senders"))
+    attachment_names: List = arg_to_list_with_filter_null_values(args.get("attachment_names"))
+    attachment_hash_criteria: str = args.get("attachment_hash_match_criteria", "ANY")
+    attachment_hashes: List = arg_to_list_with_filter_null_values(args.get("attachment_hashes"))
+    attachment_mime_types: List = arg_to_list_with_filter_null_values(args.get("attachment_mime_types"))
+    attachment_exclude_mime_types: List = arg_to_list_with_filter_null_values(args.get("attachment_exclude_mime_types"))
+    domain_match_criteria: str = args.get("domain_match_criteria", "ANY")
+    domains: List = arg_to_list_with_filter_null_values(args.get("domains"))
+    whitelist_urls: List = arg_to_list_with_filter_null_values(args.get("whitelist_urls"))
+    headers: List = arg_to_list_with_filter_null_values(args.get("headers"))
+    internet_message_id = args.get("internet_message_id")
+    partial_ingest: bool = argToBoolean(args.get("partial_ingest", False))
+    received_after_date = args.get("received_after_date")
+    received_before_date = args.get("received_before_date")
+    recipient = args.get("recipient")
+    url = args.get("url")
 
     if received_after_date:
-        received_after_date = arg_to_datetime(received_after_date, arg_name='received_after_date')
+        received_after_date = arg_to_datetime(received_after_date, arg_name="received_after_date")
         received_after_date = received_after_date.strftime(DATE_FORMAT)  # type: ignore
 
     if received_before_date:
-        received_before_date = arg_to_datetime(received_before_date, arg_name='received_before_date')
+        received_before_date = arg_to_datetime(received_before_date, arg_name="received_before_date")
         received_before_date = received_before_date.strftime(DATE_FORMAT)  # type: ignore
 
-    validate_arguments_for_message_search_create(subjects=subjects, senders=senders,
-                                                 attachment_names=attachment_names,
-                                                 attachment_hashes=attachment_hashes,
-                                                 attachment_hash_criteria=attachment_hash_criteria,
-                                                 domain_match_criteria=domain_match_criteria,
-                                                 attachment_mime_types=attachment_mime_types,
-                                                 attachment_exclude_mime_types=attachment_exclude_mime_types,
-                                                 domains=domains, whitelist_urls=whitelist_urls,
-                                                 headers=headers)
+    validate_arguments_for_message_search_create(
+        subjects=subjects,
+        senders=senders,
+        attachment_names=attachment_names,
+        attachment_hashes=attachment_hashes,
+        attachment_hash_criteria=attachment_hash_criteria,
+        domain_match_criteria=domain_match_criteria,
+        attachment_mime_types=attachment_mime_types,
+        attachment_exclude_mime_types=attachment_exclude_mime_types,
+        domains=domains,
+        whitelist_urls=whitelist_urls,
+        headers=headers,
+    )
 
-    body = prepare_requests_body_for_message_search_create(subjects=subjects, senders=senders,
-                                                           attachment_names=attachment_names,
-                                                           attachment_hash_match_criteria=attachment_hash_criteria,
-                                                           attachment_hashes=attachment_hashes,
-                                                           attachment_mime_types=attachment_mime_types,
-                                                           attachment_exclude_mime_types=attachment_exclude_mime_types,
-                                                           domain_match_criteria=domain_match_criteria,
-                                                           domains=domains, whitelist_urls=whitelist_urls,
-                                                           headers=headers, internet_message_id=internet_message_id,
-                                                           partial_ingest=partial_ingest,
-                                                           received_after_date=received_after_date,
-                                                           received_before_date=received_before_date,
-                                                           recipient=recipient, url=url)
+    body = prepare_requests_body_for_message_search_create(
+        subjects=subjects,
+        senders=senders,
+        attachment_names=attachment_names,
+        attachment_hash_match_criteria=attachment_hash_criteria,
+        attachment_hashes=attachment_hashes,
+        attachment_mime_types=attachment_mime_types,
+        attachment_exclude_mime_types=attachment_exclude_mime_types,
+        domain_match_criteria=domain_match_criteria,
+        domains=domains,
+        whitelist_urls=whitelist_urls,
+        headers=headers,
+        internet_message_id=internet_message_id,
+        partial_ingest=partial_ingest,
+        received_after_date=received_after_date,
+        received_before_date=received_before_date,
+        recipient=recipient,
+        url=url,
+    )
 
     response = client.create_search(body)
     hr_output = prepare_hr_for_message_search_create_command(remove_empty_elements(response))
@@ -2269,7 +2569,7 @@ def cofense_message_search_create_command(client: VisionClient, args: Dict[str, 
     )
 
 
-def cofense_last_ioc_get_command(client: VisionClient, args: Dict[str, Any]) -> CommandResults:
+def cofense_last_ioc_get_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
     """Synchronize the ioc source and returns last updated IOCs.
 
     Args:
@@ -2279,7 +2579,7 @@ def cofense_last_ioc_get_command(client: VisionClient, args: Dict[str, Any]) -> 
     Returns:
         CommandResults: Standard command result.
     """
-    ioc_source = args.get('source', '')
+    ioc_source = args.get("source", "")
     validate_required_parameters(source=ioc_source)
 
     response = client.get_last_ioc(ioc_source)
@@ -2289,10 +2589,10 @@ def cofense_last_ioc_get_command(client: VisionClient, args: Dict[str, Any]) -> 
     return CommandResults(
         outputs_prefix=IOC_OUTPUT_PREFIX,
         outputs_key_field="id",
-        outputs=remove_empty_elements(response.get('data')),
+        outputs=remove_empty_elements(response.get("data")),
         readable_output=hr_output,
         raw_response=response,
-        indicator=get_standard_context(client, response.get('data', {}))
+        indicator=get_standard_context(client, response.get("data", {})),
     )
 
 
@@ -2306,18 +2606,22 @@ def cofense_iocs_update_command(client: VisionClient, args: dict[str, Any]) -> L
     Returns:
        List[CommandResults]: Standard command results object
     """
-    source = args.get('source')
-    iocs_json = args.get('iocs_json')
+    source = args.get("source")
+    iocs_json = args.get("iocs_json")
     if not iocs_json:
-        iocs_json = json.dumps([{
-            "threat_type": args.get("threat_type"),
-            "threat_value": args.get("threat_value"),
-            "threat_level": args.get("threat_level"),
-            "source_id": args.get("source_id"),
-            "created_at": args.get("created_at"),
-            "updated_at": args.get("updated_at"),
-            "requested_expiration": args.get("requested_expiration")
-        }])
+        iocs_json = json.dumps(
+            [
+                {
+                    "threat_type": args.get("threat_type"),
+                    "threat_value": args.get("threat_value"),
+                    "threat_level": args.get("threat_level"),
+                    "source_id": args.get("source_id"),
+                    "created_at": args.get("created_at"),
+                    "updated_at": args.get("updated_at"),
+                    "requested_expiration": args.get("requested_expiration"),
+                }
+            ]
+        )
     validate_required_parameters(iocs_json=iocs_json, source=source)
 
     try:
@@ -2325,25 +2629,31 @@ def cofense_iocs_update_command(client: VisionClient, args: dict[str, Any]) -> L
         if isinstance(iocs_json, dict):
             iocs_json = [iocs_json]
     except json.JSONDecodeError:
-        raise ValueError('{} is an invalid JSON format'.format(iocs_json))
+        raise ValueError(f"{iocs_json} is an invalid JSON format")
 
     body = prepare_and_validate_body_for_iocs_update(iocs_json)
 
     response = client.update_iocs(source, body)
 
     command_results = []
-    for ioc in response.get('data', []):
-        command_results.append(CommandResults(
-            outputs_prefix=IOC_OUTPUT_PREFIX,
-            outputs_key_field="id",
-            outputs=remove_empty_elements(ioc),
-            readable_output=prepare_hr_for_update_iocs(ioc),
-            raw_response=ioc,
-            indicator=get_standard_context(client, ioc)
-        ))
+    for ioc in response.get("data", []):
+        command_results.append(
+            CommandResults(
+                outputs_prefix=IOC_OUTPUT_PREFIX,
+                outputs_key_field="id",
+                outputs=remove_empty_elements(ioc),
+                readable_output=prepare_hr_for_update_iocs(ioc),
+                raw_response=ioc,
+                indicator=get_standard_context(client, ioc),
+            )
+        )
 
-    return command_results if command_results else CommandResults(  # type: ignore
-        readable_output=tableToMarkdown("IOC:", [])
+    return (
+        command_results
+        if command_results
+        else CommandResults(  # type: ignore
+            readable_output=tableToMarkdown("IOC:", [])
+        )
     )
 
 
@@ -2357,11 +2667,11 @@ def cofense_ioc_update_command(client: VisionClient, args: dict[str, Any]) -> Co
     Returns:
        CommandResults: Standard command results object
     """
-    md5_id = args.get('id')
+    md5_id = args.get("id")
 
-    expires_at = args.get('expires_at')
+    expires_at = args.get("expires_at")
     if expires_at:
-        expires_at = arg_to_datetime(expires_at, arg_name='expires_at').strftime(DATE_FORMAT)  # type: ignore
+        expires_at = arg_to_datetime(expires_at, arg_name="expires_at").strftime(DATE_FORMAT)  # type: ignore
 
     validate_required_parameters(id=md5_id, expires_at=expires_at)
 
@@ -2369,7 +2679,7 @@ def cofense_ioc_update_command(client: VisionClient, args: dict[str, Any]) -> Co
 
     response = client.update_ioc(md5_id, body)
 
-    response = response.get('data', {})
+    response = response.get("data", {})
 
     hr_output = prepare_hr_for_update_ioc(response)  # type: ignore
 
@@ -2379,7 +2689,7 @@ def cofense_ioc_update_command(client: VisionClient, args: dict[str, Any]) -> Co
         outputs=remove_empty_elements(response),
         readable_output=hr_output,
         raw_response=response,
-        indicator=get_standard_context(client, response)
+        indicator=get_standard_context(client, response),
     )
 
 
@@ -2403,24 +2713,37 @@ def cofense_iocs_list_command(client: VisionClient, args: dict[str, Any]) -> Lis
     sort = prepare_sort_query(arg_to_list(args.get("sort", "")), command="iocs_list")
 
     if since:
-        since = arg_to_datetime(since, arg_name='since')
+        since = arg_to_datetime(since, arg_name="since")
         since = since.strftime(DATE_FORMAT)  # type: ignore
 
-    response = client.list_iocs(source=source, page=page, size=size, since=since,  # type: ignore
-                                include_expired=include_expired, sort_string=sort)
+    response = client.list_iocs(
+        source=source,
+        page=page,  # type: ignore
+        size=size,  # type: ignore
+        since=since,  # type: ignore
+        include_expired=include_expired,
+        sort_string=sort,
+    )
 
     command_results = []
-    for ioc in response.get('data', []):
-        command_results.append(CommandResults(
-            outputs_prefix=IOC_OUTPUT_PREFIX,
-            outputs_key_field="id",
-            outputs=remove_empty_elements(ioc),
-            readable_output=prepare_hr_for_iocs_list(ioc),
-            raw_response=ioc,
-            indicator=get_standard_context(client, ioc)))
+    for ioc in response.get("data", []):
+        command_results.append(
+            CommandResults(
+                outputs_prefix=IOC_OUTPUT_PREFIX,
+                outputs_key_field="id",
+                outputs=remove_empty_elements(ioc),
+                readable_output=prepare_hr_for_iocs_list(ioc),
+                raw_response=ioc,
+                indicator=get_standard_context(client, ioc),
+            )
+        )
 
-    return command_results if command_results else CommandResults(  # type: ignore
-        readable_output=tableToMarkdown("IOC:", [])
+    return (
+        command_results
+        if command_results
+        else CommandResults(  # type: ignore
+            readable_output=tableToMarkdown("IOC:", [])
+        )
     )
 
 
@@ -2434,14 +2757,14 @@ def cofense_ioc_get_command(client: VisionClient, args: dict[str, Any]) -> Comma
     Returns:
        CommandResults: Standard command results object
     """
-    md5_id = args.get('id')
-    source = args.get('source')
+    md5_id = args.get("id")
+    source = args.get("source")
 
     validate_required_parameters(id=md5_id)
 
     response = client.get_ioc(source, md5_id)
 
-    response = response.get('data', {})
+    response = response.get("data", {})
 
     hr_output = prepare_hr_for_get_ioc(response)  # type: ignore
 
@@ -2451,7 +2774,7 @@ def cofense_ioc_get_command(client: VisionClient, args: dict[str, Any]) -> Comma
         outputs=remove_empty_elements(response),
         readable_output=hr_output,
         raw_response=response,
-        indicator=get_standard_context(client, response)
+        indicator=get_standard_context(client, response),
     )
 
 
@@ -2466,20 +2789,18 @@ def cofense_searchable_headers_list_command(client: VisionClient):
     """
     response = client.list_searchable_headers()
 
-    hr_output = tableToMarkdown("Available headers to create a search:", {"Headers": response.get("headers")},
-                                ["Headers"], removeNull=True)
+    hr_output = tableToMarkdown(
+        "Available headers to create a search:", {"Headers": response.get("headers")}, ["Headers"], removeNull=True
+    )
 
-    context_data = {
-        "name": "searchableHeaders",
-        "value": response.get('headers', [])
-    }
+    context_data = {"name": "searchableHeaders", "value": response.get("headers", [])}
 
     return CommandResults(
         outputs_prefix="Cofense.Config",
         outputs_key_field="name",
         outputs=context_data,
         readable_output=hr_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2492,32 +2813,32 @@ def main():
     client_secret = params.get("credentials", {}).get("password")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    threat_levels_good = argToList(params.get('threat_levels_good', []))
-    threat_levels_suspicious = argToList(params.get('threat_levels_suspicious', []))
-    threat_levels_bad = argToList(params.get('threat_levels_bad', []))
+    threat_levels_good = argToList(params.get("threat_levels_good", []))
+    threat_levels_suspicious = argToList(params.get("threat_levels_suspicious", []))
+    threat_levels_bad = argToList(params.get("threat_levels_bad", []))
 
-    COFENSE_COMMANDS: Dict[str, Callable] = {
-        'cofense-message-metadata-get': cofense_message_metadata_get_command,
-        'cofense-message-get': cofense_message_get_command,
-        'cofense-message-attachment-get': cofense_message_attachment_get_command,
-        'cofense-message-token-get': cofense_message_token_get_command,
-        'cofense-quarantine-jobs-list': cofense_quarantine_jobs_list_command,
-        'cofense-quarantine-job-create': cofense_quarantine_job_create_command,
-        'cofense-quarantine-job-restore': cofense_quarantine_job_restore_command,
-        'cofense-message-searches-list': cofense_message_searches_list_command,
-        'cofense-message-search-get': cofense_message_search_get_command,
-        'cofense-quarantine-job-get': cofense_quarantine_job_get_command,
-        'cofense-quarantine-job-approve': cofense_quarantine_job_approve_command,
-        'cofense-quarantine-job-delete': cofense_quarantine_job_delete_command,
-        'cofense-message-search-results-get': cofense_message_search_results_get_command,
-        'cofense-ioc-delete': cofense_ioc_delete_command,
-        'cofense-quarantine-job-stop': cofense_quarantine_job_stop_command,
-        'cofense-message-search-create': cofense_message_search_create_command,
-        'cofense-last-ioc-get': cofense_last_ioc_get_command,
-        'cofense-iocs-update': cofense_iocs_update_command,
-        'cofense-ioc-update': cofense_ioc_update_command,
-        'cofense-iocs-list': cofense_iocs_list_command,
-        'cofense-ioc-get': cofense_ioc_get_command,
+    COFENSE_COMMANDS: dict[str, Callable] = {
+        "cofense-message-metadata-get": cofense_message_metadata_get_command,
+        "cofense-message-get": cofense_message_get_command,
+        "cofense-message-attachment-get": cofense_message_attachment_get_command,
+        "cofense-message-token-get": cofense_message_token_get_command,
+        "cofense-quarantine-jobs-list": cofense_quarantine_jobs_list_command,
+        "cofense-quarantine-job-create": cofense_quarantine_job_create_command,
+        "cofense-quarantine-job-restore": cofense_quarantine_job_restore_command,
+        "cofense-message-searches-list": cofense_message_searches_list_command,
+        "cofense-message-search-get": cofense_message_search_get_command,
+        "cofense-quarantine-job-get": cofense_quarantine_job_get_command,
+        "cofense-quarantine-job-approve": cofense_quarantine_job_approve_command,
+        "cofense-quarantine-job-delete": cofense_quarantine_job_delete_command,
+        "cofense-message-search-results-get": cofense_message_search_results_get_command,
+        "cofense-ioc-delete": cofense_ioc_delete_command,
+        "cofense-quarantine-job-stop": cofense_quarantine_job_stop_command,
+        "cofense-message-search-create": cofense_message_search_create_command,
+        "cofense-last-ioc-get": cofense_last_ioc_get_command,
+        "cofense-iocs-update": cofense_iocs_update_command,
+        "cofense-ioc-update": cofense_ioc_update_command,
+        "cofense-iocs-list": cofense_iocs_list_command,
+        "cofense-ioc-get": cofense_ioc_get_command,
     }
 
     command = demisto.command()
@@ -2541,15 +2862,15 @@ def main():
             args = demisto.args()
             remove_nulls_from_dictionary(trim_spaces_from_args(args))
             return_results(COFENSE_COMMANDS[command](client, args))
-        elif command == 'cofense-searchable-headers-list':
+        elif command == "cofense-searchable-headers-list":
             return_results(cofense_searchable_headers_list_command(client))
         else:
-            raise NotImplementedError(f'Command {command} is not implemented')
+            raise NotImplementedError(f"Command {command} is not implemented")
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

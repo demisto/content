@@ -1,6 +1,7 @@
+from datetime import datetime
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from datetime import datetime
 
 DESCRIPTION = "{} busy workers has reached {} of total workers"
 
@@ -39,7 +40,7 @@ def nano_to_secs(table):
         else:
             minutes = int(secs / 60)
             mod_sec = secs % 60
-            entry["Duration"] = f"{str(minutes)} Minutes and {mod_sec} seconds"
+            entry["Duration"] = f"{minutes!s} Minutes and {mod_sec} seconds"
 
 
 def format_time(table):
@@ -52,8 +53,9 @@ def format_details(table):
     for entry in table:
         details = entry["Details"]
         getdetails = re.compile(
-            r'task \[(?P<taskid>[\d]+)\]\s\[(?P<taskname>[\w\d\s!@#$%^&*()_+-={}]+)], playbook\s \
-            \[(?P<pbname>[\w\d\s!@#$%^&*()_+-={}]+)],\sinvestigation\s\[(?P<investigationid>[\d]+)\]')
+            r"task \[(?P<taskid>[\d]+)\]\s\[(?P<taskname>[\w\d\s!@#$%^&*()_+-={}]+)], playbook\s \
+            \[(?P<pbname>[\w\d\s!@#$%^&*()_+-={}]+)],\sinvestigation\s\[(?P<investigationid>[\d]+)\]"
+        )
         all_images = [m.groups() for m in getdetails.finditer(details)]
         for item in all_images:
             newdetails = {"TaskID": item[0], "TaskName": item[1], "PlaybookName": item[2], "InvestigationID": item[3]}
@@ -66,7 +68,7 @@ def format_details(table):
 def main(args):
     if is_demisto_version_ge("8.0.0"):
         msg = "Not Available for XSOAR v8"
-        html = f"<h3 style={XSOARV8_HTML_STYLE}{str(msg)}</h3>"
+        html = f"<h3 style={XSOARV8_HTML_STYLE}{msg!s}</h3>"
         demisto.results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": html})
         sys.exit()
     incident = demisto.incident()

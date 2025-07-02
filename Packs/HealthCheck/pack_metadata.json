@@ -2,7 +2,7 @@
     "name": "System Diagnostics and Health Check",
     "description": "CS Health Check",
     "support": "community",
-    "currentVersion": "3.0.4",
+    "currentVersion": "3.0.5",
     "author": "Cortex XSOAR Customer Success",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
@@ -21,6 +21,13 @@
     "githubUser": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

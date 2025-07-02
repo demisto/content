@@ -3,8 +3,7 @@ import json
 import demistomock as demisto
 from SixgillSearchIndicators import search_indicators
 
-
-json_raw_data = '''[
+json_raw_data = """[
     {
         "Contents": [
             {
@@ -151,41 +150,54 @@ json_raw_data = '''[
             }
         ]
     }
-]'''
+]"""
 
 
 def execute_command(command, args=None):
-    if command == 'findIndicators':
+    if command == "findIndicators":
         return json.loads(json_raw_data)
     else:
         return []
 
 
 def test_search_indicators(mocker):
-    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
-    args = {
-        'query': "sourceBrands:Sixgill_Darkfeed and sixgillactor:\"random\"",
-        'size': 50
-    }
+    mocker.patch.object(demisto, "executeCommand", side_effect=execute_command)
+    args = {"query": 'sourceBrands:Sixgill_Darkfeed and sixgillactor:"random"', "size": 50}
 
     response = search_indicators(args)
 
-    expected_res = [{
-        'CustomFields': {'actor': 'random', 'description': 'Malware available for download from file-sharing sites',
-                         'firstseenbysource': '2020-05-14T05:43:32.629Z', 'name': 'malware_download_urls',
-                         'sixgillactor': 'random',
-                         'sixgilldescription': 'Malware available for download from file-sharing sites',
-                         'sixgillfeedid': 'darkfeed_010', 'sixgillfeedname': 'malware_download_urls',
-                         'sixgillindicatorid': 'indicator--31a397b6-38c6-458b-85af-5bca582522de',
-                         'sixgilllanguage': 'en', 'sixgillmitreattcktactic': 'Build Capabilities',
-                         'sixgillmitreattcktechnique': 'Obtain/re-use payloads',
-                         'sixgillpostreference': 'https://portal.cybersixgill.com/#/search?q=_id:bbeb1570bc604531c6',
-                         'sixgillposttitle': 'rand [FULL]', 'sixgillsource': 'forum_rand',
-                         'sixgillvirustotaldetectionrate': None, 'sixgillvirustotalurl': None,
-                         'tags': ['malicious-activity', 'malware', 'Build Capabilities', 'Obtain/re-use payloads']},
-        'expiration': '2020-08-19T12:41:09.501322894Z', 'expirationStatus': 'active',
-        'firstSeen': '0001-01-01T00:00:00Z', 'id': '300755', 'lastSeen': '0001-01-01T00:00:00Z', 'score': 3,
-        'sourceBrands': ['Sixgill_Darkfeed'], 'sourceInstances': ['Sixgill_Darkfeed_instance_1'],
-        'value': 'https://random.txt'}]
+    expected_res = [
+        {
+            "CustomFields": {
+                "actor": "random",
+                "description": "Malware available for download from file-sharing sites",
+                "firstseenbysource": "2020-05-14T05:43:32.629Z",
+                "name": "malware_download_urls",
+                "sixgillactor": "random",
+                "sixgilldescription": "Malware available for download from file-sharing sites",
+                "sixgillfeedid": "darkfeed_010",
+                "sixgillfeedname": "malware_download_urls",
+                "sixgillindicatorid": "indicator--31a397b6-38c6-458b-85af-5bca582522de",
+                "sixgilllanguage": "en",
+                "sixgillmitreattcktactic": "Build Capabilities",
+                "sixgillmitreattcktechnique": "Obtain/re-use payloads",
+                "sixgillpostreference": "https://portal.cybersixgill.com/#/search?q=_id:bbeb1570bc604531c6",
+                "sixgillposttitle": "rand [FULL]",
+                "sixgillsource": "forum_rand",
+                "sixgillvirustotaldetectionrate": None,
+                "sixgillvirustotalurl": None,
+                "tags": ["malicious-activity", "malware", "Build Capabilities", "Obtain/re-use payloads"],
+            },
+            "expiration": "2020-08-19T12:41:09.501322894Z",
+            "expirationStatus": "active",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "id": "300755",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "score": 3,
+            "sourceBrands": ["Sixgill_Darkfeed"],
+            "sourceInstances": ["Sixgill_Darkfeed_instance_1"],
+            "value": "https://random.txt",
+        }
+    ]
 
     assert response.outputs == expected_res

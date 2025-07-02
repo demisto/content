@@ -2,7 +2,7 @@ import sys
 
 
 def readFile(filepath):
-    with open(filepath, 'r') as f:
+    with open(filepath, mode="r") as f:  # noqa: UP015
         out = f.read()
         return out
     return []
@@ -10,8 +10,8 @@ def readFile(filepath):
 
 def main(argv):
     # create commonServer js file to extract doc from
-    jsScript = readFile('./Packs/Base/Scripts/CommonServer/CommonServer.js')
-    with open('./Documentation/commonServerJsDoc.js', 'w') as fp:
+    jsScript = readFile("./Packs/Base/Scripts/CommonServer/CommonServer.js")
+    with open("./Documentation/commonServerJsDoc.js", "w") as fp:
         fp.write(jsScript)
 
 

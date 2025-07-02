@@ -13,10 +13,7 @@ def test_timeDifferenceInHours():
 @patch("DSPMRerunIncidents.demisto.info")
 def test_reopenInvestigation(mock_info, mock_execute_command):
     incident_id = "12345"
-    mock_execute_command.side_effect = [
-        [{"Contents": "Investigation reopened"}],
-        [{"Contents": "done"}]
-    ]
+    mock_execute_command.side_effect = [[{"Contents": "Investigation reopened"}], [{"Contents": "done"}]]
     result = reopenInvestigation(incident_id)
 
     assert result is True
@@ -30,10 +27,7 @@ def test_reopenInvestigation(mock_info, mock_execute_command):
 @patch("DSPMRerunIncidents.timeDifferenceInHours")
 @patch("DSPMRerunIncidents.demisto.info")
 def test_reopenIncident(mock_info, mock_time_diff, mock_reopen_investigation):
-    args = {
-        "rerun_time": 48,
-        "incident_list": {"incident_id": "1", "incident_created": "2024-11-01 10:00:00.000000"}
-    }
+    args = {"rerun_time": 48, "incident_list": {"incident_id": "1", "incident_created": "2024-11-01 10:00:00.000000"}}
 
     # Mock responses
     mock_time_diff.return_value = True

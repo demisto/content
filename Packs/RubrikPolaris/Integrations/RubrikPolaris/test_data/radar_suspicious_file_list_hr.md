@@ -1,7 +1,7 @@
 ### Anomaly Information
-|Anomaly ID|Is Anomaly|Anomaly Probability|Severity|Encryption|Anomaly Type|Total Suspicious Files|Total Ransomware Note|Detection Time|Snapshot Time|
-|---|---|---|---|---|---|---|---|---|---|
-| 00000000-0000-0000-0000-000000000001:::VirtualMachine:::00000000-0000-0000-0000-000000000001-vm-206:::00000000-0000-0000-0000-000000000001 | true | 0.949999988079071 | Critical | HIGH | LockBit | 1 | 1 | 2024-02-05T18:49:03.000Z | 2024-02-05T16:59:30.000Z |
+|Anomaly ID|Is Anomaly|Anomaly Probability|Severity|Encryption|Anomaly|Anomaly Type|Resolution Status|Total Suspicious Files|Total Ransomware Note|Detection Time|Snapshot Time|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 00000000-0000-0000-0000-000000000001:::VirtualMachine:::00000000-0000-0000-0000-000000000001-vm-206:::00000000-0000-0000-0000-000000000001 | true | 0.949999988079071 | Critical | HIGH | LockBit | FILESYSTEM | UNRESOLVED | 1 | 1 | 2024-02-05T18:49:03.000Z | 2024-02-05T16:59:30.000Z |
 
 
 ### Suspicious Files

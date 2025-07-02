@@ -10,11 +10,20 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Breach Simulation"],
+    "tags": [
+        "Breach Simulation"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

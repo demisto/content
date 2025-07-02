@@ -24,3 +24,4 @@
 !opencti-indicator-field-remove field=marking value=c9819001-c80c-45e1-8edb-e543e350f195
 !opencti-get-indicators limit=2 label_id=07cfae2d-6cc9-42c5-9fd0-32eff8142404
 !opencti-indicator-types-list
+!opencti-get-incidents additional_filters=`[{"key": "description","operator": "eq","values": ["test"],"mode": "and"}]`

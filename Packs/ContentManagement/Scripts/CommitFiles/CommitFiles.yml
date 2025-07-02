@@ -1,4 +1,8 @@
 args:
+- description: Set to true if the files should be committed while preserving ${} placeholders instead of replacing them with context data.
+  isArray: false
+  name: cicd_keep_placeholders_in_files
+  defaultValue: true
 - description: The files to commit.
   isArray: true
   name: files

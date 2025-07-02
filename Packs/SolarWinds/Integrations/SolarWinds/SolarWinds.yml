@@ -12,10 +12,10 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: 'Port number with which to connect to the Orion server. Default is 17778.'
+- additionalinfo: 'Port number with which to connect to the Orion server. Default is 17774.'
   display: Port
   name: port
-  defaultvalue: 17778
+  defaultvalue: 17774
   required: false
   type: 0
   section: Connect
@@ -467,7 +467,7 @@ script:
       Executes a query request.
       Note: The guidelines for composing the query can be found in the 'View Integration Documentation' linked in the integration tips.
     name: swis-query
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

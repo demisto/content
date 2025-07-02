@@ -54,7 +54,7 @@ configuration:
   required: false
 - display: Authorization code
   displaypassword: Authorization code
-  additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
+  additionalinfo: for Authorization code mode - received from the authorization step. See detailed instructions in the Help section.
   hiddenusername: true
   name: auth_code
   type: 9
@@ -515,7 +515,7 @@ script:
     - contextPath: AzureWAF.ResourceGroup.tags
       description: Resource group tags.
       type: String
-  dockerimage: demisto/crypto:1.0.0.117163
+  dockerimage: demisto/crypto:1.0.0.3539024
   runonce: false
   script: '-'
   subtype: python3

@@ -12,32 +12,34 @@ enabled: true
 args:
 - name: date
   default: true
-  description: The date to use in the object
+  description: The date to use in the object.
 - name: dateFormat
   description: |-
-    The date format for the result, can be ISO/GMT/UTC/Locale/Date/Year/Month/Day/DayInWeek/Hours.
-    Note that the response will start from 0, E.G. if the current month is October
+    The date format for the result. Can be ISO/GMT/UTC/Locale/Date/Year/Month/Day/DayInWeek/Hours.
+    Note that the response will start from 0. For example, if the current month is October
     (the 10th month) the result will be 9.
     Note:
-    In XSOAR versions 6.11.0 or later, or 8.1.0 or later, the time format returned when UTC or GMT is given has changed.
-    Instead of 'Wed Jan 18 2023 12:59:12 GMT+0000 (UTC)', The output will be 'Wed, 18 Jan 2023 15:04:41 GMT'.
+    In Cortex XSOAR versions 6.11 or later, or 8.1.0 or later, the time format returned when UTC or GMT is given has changed.
+    Instead of 'Wed Jan 18 2023 12:59:12 GMT+0000 (UTC)', The output will be 'Wed, 18 Jan 2023 15:59:12 GMT'.
 - name: contextKey
-  description: prefix the keys in the context for the results
+  description: Prefix the keys in the context for the results.
 - name: minutesAgo
-  description: Will subtract minutesAgo minutes from current time
+  description: Will subtract minutesAgo minutes from current time.
 - name: hoursAgo
-  description: Will subtract hoursAgo hours from current time
+  description: Will subtract hoursAgo hours from current time.
 - name: daysAgo
-  description: Will subtract daysAgo days from current time
+  description: Will subtract daysAgo days from current time.
 - name: monthsAgo
-  description: Will subtract monthsAgo months from current time
+  description: Will subtract monthsAgo months from current time.
 - name: yearsAgo
-  description: Will subtract yearsAgo years from current time
+  description: Will subtract yearsAgo years from current time.
 outputs:
 - contextPath: TimeNowUnix
-  description: number of milliseconds since 1970/01/01
+  description: Number of milliseconds since 1970/01/01.
+  type: Number
 - contextPath: TimeNow
-  description: current time in ISO format
+  description: Current time.
+  type: String
 scripttarget: 0
 tests:
 - GetTime-Test

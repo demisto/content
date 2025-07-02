@@ -1,0 +1,35 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"caseInsensitive": true,
+	"cliName": "cybelangelregistrantname",
+	"closeForm": false,
+	"content": true,
+	"description": "Name of the registrar for attributed domain",
+	"editForm": true,
+	"hidden": false,
+	"id": "incident_cybelangelregistrantname",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "CybelAngel Registrant Name",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"group": 0,
+	"fromVersion": "6.2.0"
+}

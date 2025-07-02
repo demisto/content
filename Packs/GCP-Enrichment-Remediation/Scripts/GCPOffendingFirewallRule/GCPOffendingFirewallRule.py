@@ -1,10 +1,10 @@
+import traceback
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any
-import traceback
 
-
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def is_port_in_range(port_range: str, port: str) -> bool:
@@ -17,7 +17,7 @@ def is_port_in_range(port_range: str, port: str) -> bool:
     Returns:
         bool: whether there was a match between the supplied port in args and the supplied range.
     """
-    start, end = port_range.split('-')
+    start, end = port_range.split("-")
     return int(start) <= int(port) <= int(end)
 
 
@@ -45,24 +45,24 @@ def is_there_traffic_match(port: str, protocol: str, rule: dict, network_tags: l
     """
     # Match rule needs to be direction ingress, source from internet (0.0.0.0/0), enabled and an allow rule.
     if (
-        rule.get('direction') == 'INGRESS'
-        and '0.0.0.0/0' in rule.get('sourceRanges', [])
-        and rule.get('disabled') is False
-        and 'allowed' in rule
+        rule.get("direction") == "INGRESS"
+        and "0.0.0.0/0" in rule.get("sourceRanges", [])
+        and rule.get("disabled") is False
+        and "allowed" in rule
     ):
         # Test if targetTags are relevant or not (if show up in keys or tag match)
-        target_tags_verdict = ('targetTags' not in rule.keys() or len(set(rule.get('targetTags', [])) & set(network_tags)) > 0)
-        for entry in rule['allowed']:
+        target_tags_verdict = "targetTags" not in rule or len(set(rule.get("targetTags", [])) & set(network_tags)) > 0
+        for entry in rule["allowed"]:
             # Match is all protocol AND either no target tags OR target tags match
-            if entry.get('IPProtocol') == 'all' and target_tags_verdict:
+            if entry.get("IPProtocol") == "all" and target_tags_verdict:
                 return True
             # Complicated because just {'IPProtocol': 'udp'} means all udp ports
             # therefore if protocol match but no ports, this is a match
-            elif entry.get('IPProtocol') == protocol.lower() and 'ports' not in entry:
+            elif entry.get("IPProtocol") == protocol.lower() and "ports" not in entry:
                 return True
             # Else need to go through all ports to see if range or not
-            elif entry.get('IPProtocol') == protocol.lower() and 'ports' in entry:
-                for port_entry in entry.get('ports', []):
+            elif entry.get("IPProtocol") == protocol.lower() and "ports" in entry:
+                for port_entry in entry.get("ports", []):
                     if "-" in port_entry:
                         res = is_port_in_range(port_entry, port)
                         if res and target_tags_verdict:
@@ -73,7 +73,7 @@ def is_there_traffic_match(port: str, protocol: str, rule: dict, network_tags: l
     return False
 
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
 def gcp_offending_firewall_rule(args: dict[str, Any]) -> CommandResults:
@@ -95,32 +95,26 @@ def gcp_offending_firewall_rule(args: dict[str, Any]) -> CommandResults:
 
     # Using `demisto.executeCommand` instead of `execute_command` because for
     # multiple integration instances we can expect one too error out.
-    network_url_filter = f"network=\"{network_url}\""
-    fw_rules = demisto.executeCommand(
-        "gcp-compute-list-firewall", {"project_id": project_id, "filters": network_url_filter}
-    )
-    fw_rules_returned = [
-        instance
-        for instance in fw_rules
-        if (not isError(instance) and instance.get("Contents", {}).get("id"))
-    ]
+    network_url_filter = f'network="{network_url}"'
+    fw_rules = demisto.executeCommand("gcp-compute-list-firewall", {"project_id": project_id, "filters": network_url_filter})
+    fw_rules_returned = [instance for instance in fw_rules if (not isError(instance) and instance.get("Contents", {}).get("id"))]
     if not fw_rules_returned:
         return CommandResults(readable_output="Could not find specified firewall info.")
     final_match_list = []
-    for rule in fw_rules_returned[0].get('Contents', {}).get('items', []):
+    for rule in fw_rules_returned[0].get("Contents", {}).get("items", []):
         if is_there_traffic_match(port, protocol, rule, network_tags):
-            final_match_list.append(rule['name'])
+            final_match_list.append(rule["name"])
     if not final_match_list:
         return CommandResults(readable_output="Could not find any potential offending firewall rules.")
 
     return CommandResults(
-        outputs={'GCPOffendingFirewallRule': final_match_list},
-        raw_response={'GCPOffendingFirewallRule': final_match_list},
+        outputs={"GCPOffendingFirewallRule": final_match_list},
+        raw_response={"GCPOffendingFirewallRule": final_match_list},
         readable_output=f"Potential Offending GCP Firewall Rule(s) Found: {final_match_list}",
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -128,11 +122,11 @@ def main():
         return_results(gcp_offending_firewall_rule(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute GCPOffendingFirewallRule. Error: {str(ex)}')
+        return_error(f"Failed to execute GCPOffendingFirewallRule. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

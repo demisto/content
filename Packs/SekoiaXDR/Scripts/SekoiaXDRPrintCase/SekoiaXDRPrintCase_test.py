@@ -59,18 +59,14 @@ def test_get_case_info(mocker):
             "alerts": [{"short_id": "4"}, {"short_id": "5"}, {"short_id": "6"}],
         },
     ]
-    mocker.patch.object(
-        demisto, "executeCommand", return_value=[{"Type": 3, "Contents": cases_output}]
-    )
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 3, "Contents": cases_output}])
     assert "title1" in get_case_info("1")
     assert "title2" in get_case_info("1")
     assert "1, 2, 3" in get_case_info("1")
 
 
 def test_main(mocker):
-    mocker.patch.object(
-        demisto, "incident", return_value={"CustomFields": {"caseid": "1"}}
-    )
+    mocker.patch.object(demisto, "incident", return_value={"CustomFields": {"caseid": "1"}})
     mocker.patch(
         "SekoiaXDRPrintCase.get_case_info",
         return_value="### Case Info:\n\

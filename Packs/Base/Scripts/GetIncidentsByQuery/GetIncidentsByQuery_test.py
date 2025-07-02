@@ -1,10 +1,10 @@
-import pytest
-from CommonServerPython import DemistoException, EntryType
-import demistomock as demisto
-import GetIncidentsByQuery
-
 import json
 import pickle
+
+import demistomock as demisto
+import GetIncidentsByQuery
+import pytest
+from CommonServerPython import DemistoException, EntryType
 
 
 def test_encode_outputs():
@@ -17,6 +17,7 @@ def test_encode_outputs():
     Then: Ensure the results are encoded correctly, or an error is raised in case of unexpected format
     """
     from GetIncidentsByQuery import encode_outputs
+
     incidents = [{"id": 1}]
     assert json.loads(encode_outputs(incidents, "json")) == incidents
     assert pickle.loads(encode_outputs(incidents, "pickle")) == incidents  # guardrails-disable-line

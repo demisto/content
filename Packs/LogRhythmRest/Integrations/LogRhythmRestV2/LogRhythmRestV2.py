@@ -1,67 +1,113 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-import re
 import mimetypes
+import re
 import sys
 
 import dateparser
+import demistomock as demisto  # noqa: F401
 import urllib3
-
+from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
 
-''' GLOBAL VARS '''
-ALARM_HEADERS = ['alarmId', 'alarmStatus', 'associatedCases', 'alarmRuleName', 'dateInserted', 'dateUpdated',
-                 'entityName', 'alarmDataCached', 'personId', 'eventCount', 'rbpMax', 'rbpAvg']
+""" GLOBAL VARS """
+ALARM_HEADERS = [
+    "alarmId",
+    "alarmStatus",
+    "associatedCases",
+    "alarmRuleName",
+    "dateInserted",
+    "dateUpdated",
+    "entityName",
+    "alarmDataCached",
+    "personId",
+    "eventCount",
+    "rbpMax",
+    "rbpAvg",
+]
 
-ALARM_EVENTS_HEADERS = ['commonEventName', 'logMessage', 'priority', 'logDate', 'impactedHostId', 'impactedZone',
-                        'serviceName', '', 'entityName', 'classificationName', 'classificationTypeName']
+ALARM_EVENTS_HEADERS = [
+    "commonEventName",
+    "logMessage",
+    "priority",
+    "logDate",
+    "impactedHostId",
+    "impactedZone",
+    "serviceName",
+    "",
+    "entityName",
+    "classificationName",
+    "classificationTypeName",
+]
 
-CASE_EVIDENCES_HEADERS = ['number', 'type', 'status', 'dateCreated', 'createdBy', 'text', 'alarm', 'file']
+CASE_EVIDENCES_HEADERS = ["number", "type", "status", "dateCreated", "createdBy", "text", "alarm", "file"]
 
-TAG_HEADERS = ['number', 'text', 'dateCreated', 'createdBy']
+TAG_HEADERS = ["number", "text", "dateCreated", "createdBy"]
 
-ENTITY_HEADERS = ['id', 'name', 'fullName', 'recordStatusName', 'shortDesc', 'dateUpdated']
+ENTITY_HEADERS = ["id", "name", "fullName", "recordStatusName", "shortDesc", "dateUpdated"]
 
-USER_HEADERS = ['id', 'fullName', 'userType', 'firstName', 'lastName', 'recordStatusName', 'dateUpdated',
-                'objectPermissions']
+USER_HEADERS = ["id", "fullName", "userType", "firstName", "lastName", "recordStatusName", "dateUpdated", "objectPermissions"]
 
-LIST_HEADERS = ['guid', 'name', 'listType', 'status', 'shortDescription', 'id', 'entityName', 'dateCreated',
-                'owner', 'writeAccess', 'readAccess']
+LIST_HEADERS = [
+    "guid",
+    "name",
+    "listType",
+    "status",
+    "shortDescription",
+    "id",
+    "entityName",
+    "dateCreated",
+    "owner",
+    "writeAccess",
+    "readAccess",
+]
 
-NETWORK_HEADERS = ['id', 'name', 'shortDesc', 'longDesc', 'recordStatusName', 'bip', 'eip', 'entity', 'riskLevel',
-                   'dateUpdated', 'threatLevel', 'threatLevelComment', 'hostZone', 'location']
+NETWORK_HEADERS = [
+    "id",
+    "name",
+    "shortDesc",
+    "longDesc",
+    "recordStatusName",
+    "bip",
+    "eip",
+    "entity",
+    "riskLevel",
+    "dateUpdated",
+    "threatLevel",
+    "threatLevelComment",
+    "hostZone",
+    "location",
+]
 
-ALARM_STATUS = {0: 'New',
-                1: 'Opened',
-                2: 'Working',
-                3: 'Escalated',
-                4: 'Closed',
-                5: 'Closed_FalseAlarm',
-                6: 'Closed_Resolved',
-                7: 'Closed_Unresolved',
-                8: 'Closed_Reported',
-                9: 'Closed_Monitor'}
+ALARM_STATUS = {
+    0: "New",
+    1: "Opened",
+    2: "Working",
+    3: "Escalated",
+    4: "Closed",
+    5: "Closed_FalseAlarm",
+    6: "Closed_Resolved",
+    7: "Closed_Unresolved",
+    8: "Closed_Reported",
+    9: "Closed_Monitor",
+}
 
-CASE_STATUS = {'Created': 1,
-               'Completed': 2,
-               'Incident': 3,
-               'Mitigated': 4,
-               'Resolved': 5}
+CASE_STATUS = {"Created": 1, "Completed": 2, "Incident": 3, "Mitigated": 4, "Resolved": 5}
 
-QUERY_TYPES_MAP = {'host_name': {'filter_type': 23, 'value_type': 4},
-                   'entity_id': {'filter_type': 136, 'value_type': 2},
-                   'source_type': {'filter_type': 9, 'value_type': 2},
-                   'username': {'filter_type': 43, 'value_type': 4},
-                   'subject': {'filter_type': 33, 'value_type': 4},
-                   'sender': {'filter_type': 31, 'value_type': 4},
-                   'recipient': {'filter_type': 32, 'value_type': 4},
-                   'hash_': {'filter_type': 138, 'value_type': 4},
-                   'url': {'filter_type': 42, 'value_type': 4},
-                   'process_name': {'filter_type': 41, 'value_type': 4},
-                   'object_': {'filter_type': 34, 'value_type': 4},
-                   'ipaddress': {'filter_type': 17, 'value_type': 5}}
+QUERY_TYPES_MAP = {
+    "host_name": {"filter_type": 23, "value_type": 4},
+    "entity_id": {"filter_type": 136, "value_type": 2},
+    "source_type": {"filter_type": 9, "value_type": 2},
+    "username": {"filter_type": 43, "value_type": 4},
+    "subject": {"filter_type": 33, "value_type": 4},
+    "sender": {"filter_type": 31, "value_type": 4},
+    "recipient": {"filter_type": 32, "value_type": 4},
+    "hash_": {"filter_type": 138, "value_type": 4},
+    "url": {"filter_type": 42, "value_type": 4},
+    "process_name": {"filter_type": 41, "value_type": 4},
+    "object_": {"filter_type": 34, "value_type": 4},
+    "ipaddress": {"filter_type": 17, "value_type": 5},
+}
 
 SOURCE_TYPE_MAP = {
     "API_-_AWS_CloudTrail": 1000598,
@@ -1019,7 +1065,7 @@ SOURCE_TYPE_MAP = {
     "UDLA_-_VMWare_vCenter_Server": 1000378,
     "UDLA_-_VMWare_vCloud": 1000538,
     "VLS_-_Syslog_-_Infoblox_-_DNS_RPZ": 1000643,
-    "VLS_-_Syslog_-_Infoblox_-_Threat_Protection": 1000642
+    "VLS_-_Syslog_-_Infoblox_-_Threat_Protection": 1000642,
 }
 
 
@@ -1027,28 +1073,43 @@ class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def alarms_list_request(self, alarm_id=None, alarm_status=None, offset=None, count=None, alarm_rule_name=None,
-                            entity_name=None, case_association=None, created_after=None):
+    def alarms_list_request(
+        self,
+        alarm_id=None,
+        alarm_status=None,
+        offset=None,
+        count=None,
+        alarm_rule_name=None,
+        entity_name=None,
+        case_association=None,
+        created_after=None,
+    ):
         if alarm_id:
-            response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}')
-            alarms = [response.get('alarmDetails')]
+            response = self._http_request("GET", f"lr-alarm-api/alarms/{alarm_id}")
+            alarms = [response.get("alarmDetails")]
         else:
             if alarm_status:
                 alarm_status = next((id for id, status in ALARM_STATUS.items() if status == alarm_status))
 
-            params = assign_params(alarmStatus=alarm_status, offset=offset, count=count,
-                                   associatedCases=case_association,
-                                   alarmRuleName=alarm_rule_name, entityName=entity_name, orderby='DateInserted')
+            params = assign_params(
+                alarmStatus=alarm_status,
+                offset=offset,
+                count=count,
+                associatedCases=case_association,
+                alarmRuleName=alarm_rule_name,
+                entityName=entity_name,
+                orderby="DateInserted",
+            )
 
-            response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params)
-            alarms = response.get('alarmsSearchDetails')
+            response = self._http_request("GET", "lr-alarm-api/alarms/", params=params)
+            alarms = response.get("alarmsSearchDetails")
             alarms = alarms if alarms else []
             if created_after:
                 filtered_alarms = []
                 created_after = dateparser.parse(created_after)
 
                 for alarm in alarms:
-                    date_inserted = dateparser.parse(alarm.get('dateInserted'))
+                    date_inserted = dateparser.parse(alarm.get("dateInserted"))
                     if date_inserted > created_after:
                         filtered_alarms.append(alarm)
                     else:
@@ -1058,105 +1119,128 @@ class Client(BaseClient):
 
         if alarms:
             for alarm in alarms:
-                alarm['alarmStatus'] = ALARM_STATUS[alarm['alarmStatus']]
+                alarm["alarmStatus"] = ALARM_STATUS[alarm["alarmStatus"]]
 
         return alarms, response
 
     def alarm_update_request(self, alarm_id, alarm_status, rbp):
-        data = {"alarmStatus": alarm_status if alarm_status else None,
-                "rBP": rbp if rbp else None}
+        data = {"alarmStatus": alarm_status if alarm_status else None, "rBP": rbp if rbp else None}
 
         # delete empty values
         data = {k: v for k, v in data.items() if v}
 
-        response = self._http_request('PATCH', f'lr-alarm-api/alarms/{alarm_id}', json_data=data)
+        response = self._http_request("PATCH", f"lr-alarm-api/alarms/{alarm_id}", json_data=data)
 
         return response
 
     def alarm_add_comment_request(self, alarm_id, alarm_comment):
         data = {"alarmComment": alarm_comment}
 
-        response = self._http_request('POST', f'lr-alarm-api/alarms/{alarm_id}/comment', json_data=data)
+        response = self._http_request("POST", f"lr-alarm-api/alarms/{alarm_id}/comment", json_data=data)
 
         return response
 
     def alarm_history_list_request(self, alarm_id, person_id, date_updated, type_, offset, count):
         params = assign_params(personId=person_id, dateUpdated=date_updated, type=type_, offset=offset, count=count)
 
-        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/history', params=params)
+        response = self._http_request("GET", f"lr-alarm-api/alarms/{alarm_id}/history", params=params)
 
-        alarm_history = response.get('alarmHistoryDetails')
+        alarm_history = response.get("alarmHistoryDetails")
         return alarm_history, response
 
     def alarm_events_list_request(self, alarm_id):  # pragma: no cover
-        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/events')
+        response = self._http_request("GET", f"lr-alarm-api/alarms/{alarm_id}/events")
 
-        alarm_events = response.get('alarmEventsDetails')
+        alarm_events = response.get("alarmEventsDetails")
         return alarm_events, response
 
     def alarm_summary_request(self, alarm_id):  # pragma: no cover
-        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/summary')
+        response = self._http_request("GET", f"lr-alarm-api/alarms/{alarm_id}/summary")
 
-        alarm_summary = response.get('alarmSummaryDetails')
+        alarm_summary = response.get("alarmSummaryDetails")
         return alarm_summary, response
 
     def get_alarm_details_request(self, alarm_id):  # pragma: no cover
-        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}')
+        response = self._http_request("GET", f"lr-alarm-api/alarms/{alarm_id}")
 
-        alarm_details = response.get('alarmDetails')
+        alarm_details = response.get("alarmDetails")
         return alarm_details, response
 
     def alarm_drilldown_request(self, alarm_id):  # pragma: no cover
-        headers = self._headers | {'content-type': 'application/json'}
-        response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers)
+        headers = self._headers | {"content-type": "application/json"}
+        response = self._http_request("GET", f"lr-drilldown-cache-api/drilldown/{alarm_id}", headers=headers)
 
-        drilldown_results = response.get('Data', {}).get('DrillDownResults')
+        drilldown_results = response.get("Data", {}).get("DrillDownResults")
         return drilldown_results, response
 
-    def cases_list_request(self, case_id=None, timestamp_filter_type=None, timestamp=None, priority=None, status=None,
-                           owners=None, tags=None, text=None, evidence_type=None, reference_id=None, external_id=None,
-                           offset=None, count=None):
-
-        params = assign_params(priority=priority, statusNumber=status, ownerNumber=owners, tagNumber=tags, text=text,
-                               evidenceType=evidence_type, referenceId=reference_id, externalId=external_id)
+    def cases_list_request(
+        self,
+        case_id=None,
+        timestamp_filter_type=None,
+        timestamp=None,
+        priority=None,
+        status=None,
+        owners=None,
+        tags=None,
+        text=None,
+        evidence_type=None,
+        reference_id=None,
+        external_id=None,
+        offset=None,
+        count=None,
+    ):
+        params = assign_params(
+            priority=priority,
+            statusNumber=status,
+            ownerNumber=owners,
+            tagNumber=tags,
+            text=text,
+            evidenceType=evidence_type,
+            referenceId=reference_id,
+            externalId=external_id,
+        )
         headers = self._headers
 
-        headers['orderBy'] = 'dateCreated'
+        headers["orderBy"] = "dateCreated"
 
         if timestamp_filter_type and timestamp:
             headers[timestamp_filter_type] = timestamp
         if offset:
-            headers['offset'] = offset
+            headers["offset"] = offset
         if count:
-            headers['count'] = str(count)
+            headers["count"] = str(count)
 
-        cases = self._http_request('GET', 'lr-case-api/cases', params=params, headers=headers)
+        cases = self._http_request("GET", "lr-case-api/cases", params=params, headers=headers)
 
         if case_id:
-            cases = next((case for case in cases if case.get('id') == case_id), None)
+            cases = next((case for case in cases if case.get("id") == case_id), None)
         return cases
 
     def case_create_request(self, name, priority, external_id, due_date, summary):
-        data = {"name": name, "priority": int(priority), "externalId": external_id, "dueDate": due_date,
-                "summary": summary}
+        data = {"name": name, "priority": int(priority), "externalId": external_id, "dueDate": due_date, "summary": summary}
 
         # delete empty values
         data = {k: v for k, v in data.items() if v}
 
-        response = self._http_request('POST', 'lr-case-api/cases', json_data=data)
+        response = self._http_request("POST", "lr-case-api/cases", json_data=data)
 
         return response
 
     def case_update_request(self, case_id, name, priority, external_id, due_date, summary, entity_id, resolution):
-        data = {"name": name, "externalId": external_id, "dueDate": due_date,
-                "summary": summary, "entityId": int(entity_id) if entity_id else None,
-                "resolution": int(resolution) if resolution else None,
-                "priority": int(priority) if priority else None}
+        data = {
+            "name": name,
+            "externalId": external_id,
+            "dueDate": due_date,
+            "summary": summary,
+            "entityId": int(entity_id) if entity_id else None,
+            "resolution": int(resolution) if resolution else None,
+            "priority": int(priority) if priority else None,
+        }
 
         # delete empty values
         data = {k: v for k, v in data.items() if v}
 
-        response = self._http_request('PUT', f'lr-case-api/cases/{case_id}', json_data=data)
+        response = self._http_request("PUT", f"lr-case-api/cases/{case_id}", json_data=data)
 
         return response
 
@@ -1165,78 +1249,76 @@ class Client(BaseClient):
 
         data = {"statusNumber": status_number}
 
-        response = self._http_request(
-            'PUT', f'lr-case-api/cases/{case_id}/actions/changeStatus/', json_data=data)
+        response = self._http_request("PUT", f"lr-case-api/cases/{case_id}/actions/changeStatus/", json_data=data)
 
         return response
 
     def case_evidence_list_request(self, case_id, evidence_number=None, evidence_type=None, status=None):
         params = assign_params(type=evidence_type, status=status)
 
-        evidences = self._http_request('GET', f'lr-case-api/cases/{case_id}/evidence', params=params)
+        evidences = self._http_request("GET", f"lr-case-api/cases/{case_id}/evidence", params=params)
 
         if evidence_number:
-            evidences = next((evidence for evidence in evidences if evidence.get('number') == int(evidence_number)),
-                             None)
+            evidences = next((evidence for evidence in evidences if evidence.get("number") == int(evidence_number)), None)
         return evidences
 
     def case_alarm_evidence_add_request(self, case_id, alarm_numbers):  # pragma: no cover
         alarms = [int(alarm) for alarm in alarm_numbers]
         data = {"alarmNumbers": alarms}
 
-        response = self._http_request(
-            'POST', f'lr-case-api/cases/{case_id}/evidence/alarms', json_data=data)
+        response = self._http_request("POST", f"lr-case-api/cases/{case_id}/evidence/alarms", json_data=data)
 
         return response
 
     def case_note_evidence_add_request(self, case_id, note):  # pragma: no cover
         data = {"text": note}
-        response = self._http_request(
-            'POST', f'lr-case-api/cases/{case_id}/evidence/note', json_data=data)
+        response = self._http_request("POST", f"lr-case-api/cases/{case_id}/evidence/note", json_data=data)
 
         return response
 
     def case_file_evidence_add_request(self, case_id, entry_id):
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data; boundary=---------------------------'
+        headers["Content-Type"] = "multipart/form-data; boundary=---------------------------"
 
         get_file_path_res = demisto.getFilePath(entry_id)
         file_path = get_file_path_res["path"]
         file_name = get_file_path_res["name"]
-        with open(file_path, 'rb') as file:
+        with open(file_path, "rb") as file:
             file_bytes = file.read()
 
-        file_content = file_bytes.decode('iso-8859-1')
+        file_content = file_bytes.decode("iso-8859-1")
         content_type = mimetypes.guess_type(file_path)[0]
 
-        data = '-----------------------------\n' \
-               f'Content-Disposition: form-data; name="file"; filename="{file_name}"\n' \
-               f'Content-Type: {content_type}\n\n' \
-               f'{file_content}\n' \
-               '-----------------------------\n' \
-               'Content-Disposition: form-data; name="note"\n\n' \
-               '-------------------------------'
+        data = (
+            "-----------------------------\n"
+            f'Content-Disposition: form-data; name="file"; filename="{file_name}"\n'
+            f"Content-Type: {content_type}\n\n"
+            f"{file_content}\n"
+            "-----------------------------\n"
+            'Content-Disposition: form-data; name="note"\n\n'
+            "-------------------------------"
+        )
 
-        response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', data=data)
+        response = self._http_request("POST", f"lr-case-api/cases/{case_id}/evidence/file", data=data)
 
         return response
 
     def case_evidence_delete_request(self, case_id, evidence_number):  # pragma: no cover
-        self._http_request('DELETE', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}', resp_type='text')
+        self._http_request("DELETE", f"lr-case-api/cases/{case_id}/evidence/{evidence_number}", resp_type="text")
 
     def case_file_evidence_download_request(self, case_id, evidence_number):  # pragma: no cover
         response = self._http_request(
-            'GET', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}/download/', resp_type='other')
+            "GET", f"lr-case-api/cases/{case_id}/evidence/{evidence_number}/download/", resp_type="other"
+        )
 
-        filename = re.findall("filename=\"(.+)\"", response.headers['Content-Disposition'])[0]
+        filename = re.findall('filename="(.+)"', response.headers["Content-Disposition"])[0]
         return fileResult(filename, response.content)
 
     def case_tags_add_request(self, case_id, tag_numbers):  # pragma: no cover
         tags = [int(tag) for tag in tag_numbers]
         data = {"numbers": tags}
 
-        response = self._http_request(
-            'PUT', f'lr-case-api/cases/{case_id}/actions/addTags', json_data=data)
+        response = self._http_request("PUT", f"lr-case-api/cases/{case_id}/actions/addTags", json_data=data)
 
         return response
 
@@ -1244,8 +1326,7 @@ class Client(BaseClient):
         tags = [int(tag) for tag in tag_numbers]
         data = {"numbers": tags}
 
-        response = self._http_request(
-            'PUT', f'lr-case-api/cases/{case_id}/actions/removeTags', json_data=data)
+        response = self._http_request("PUT", f"lr-case-api/cases/{case_id}/actions/removeTags", json_data=data)
 
         return response
 
@@ -1254,56 +1335,61 @@ class Client(BaseClient):
         headers = self._headers
 
         if offset:
-            headers['offset'] = offset
+            headers["offset"] = offset
         if count:
-            headers['count'] = count
+            headers["count"] = count
 
-        response = self._http_request('GET', 'lr-case-api/tags', params=params, headers=headers)
+        response = self._http_request("GET", "lr-case-api/tags", params=params, headers=headers)
 
         return response
 
     def case_collaborators_list_request(self, case_id):
-        return self._http_request('GET', f'lr-case-api/cases/{case_id}/collaborators')
+        return self._http_request("GET", f"lr-case-api/cases/{case_id}/collaborators")
 
     def case_collaborators_update_request(self, case_id, owner, collaborators):
         collaborators = [int(collaborator) for collaborator in collaborators]
 
-        data = {"owner": int(owner),
-                "collaborators": collaborators}
+        data = {"owner": int(owner), "collaborators": collaborators}
 
-        response = self._http_request(
-            'PUT', f'lr-case-api/cases/{case_id}/collaborators', json_data=data)
+        response = self._http_request("PUT", f"lr-case-api/cases/{case_id}/collaborators", json_data=data)
 
         return response
 
     def entities_list_request(self, entity_id, parent_entity_id, offset, count):
         params = assign_params(parentEntityId=parent_entity_id, offset=offset, count=count)
 
-        entities = self._http_request('GET', 'lr-admin-api/entities', params=params)
+        entities = self._http_request("GET", "lr-admin-api/entities", params=params)
         if entity_id:
-            entities = next((entity for entity in entities if entity.get('id') == int(entity_id)), None)
+            entities = next((entity for entity in entities if entity.get("id") == int(entity_id)), None)
         return entities
 
-    def hosts_list_request(self, host_name=None, entity_name=None, record_status=None, offset=None,
-                           count=None, endpoint_id_list=None, endpoint_hostname_list=None):
-        params = assign_params(name=host_name, entity=entity_name, recordStatus=record_status, offset=offset,
-                               count=count)
+    def hosts_list_request(
+        self,
+        host_name=None,
+        entity_name=None,
+        record_status=None,
+        offset=None,
+        count=None,
+        endpoint_id_list=None,
+        endpoint_hostname_list=None,
+    ):
+        params = assign_params(name=host_name, entity=entity_name, recordStatus=record_status, offset=offset, count=count)
 
-        hosts = self._http_request('GET', 'lr-admin-api/hosts', params=params)
+        hosts = self._http_request("GET", "lr-admin-api/hosts", params=params)
 
         if endpoint_id_list:
             endpoint_id_list = [int(id_) for id_ in endpoint_id_list]
-            hosts = list(filter(lambda host: host.get('id') in endpoint_id_list, hosts))
+            hosts = list(filter(lambda host: host.get("id") in endpoint_id_list, hosts))
 
         if endpoint_hostname_list:
-            hosts = list(filter(lambda host: host.get('name') in endpoint_hostname_list, hosts))
+            hosts = list(filter(lambda host: host.get("name") in endpoint_hostname_list, hosts))
 
         return hosts
 
     def users_list_request(self, user_ids, entity_ids, user_status, offset, count):
         params = assign_params(id=user_ids, entityIds=entity_ids, userStatus=user_status, offset=offset, count=count)
 
-        response = self._http_request('GET', 'lr-admin-api/users', params=params)
+        response = self._http_request("GET", "lr-admin-api/users", params=params)
 
         return response
 
@@ -1311,45 +1397,64 @@ class Client(BaseClient):
         headers = self._headers
 
         if list_type:
-            headers['listType'] = list_type
+            headers["listType"] = list_type
 
         if list_name:
-            headers['name'] = list_name
+            headers["name"] = list_name
 
         if can_edit:
-            headers['canEdit'] = can_edit
+            headers["canEdit"] = can_edit
 
-        response = self._http_request('GET', 'lr-admin-api/lists', headers=headers)
+        response = self._http_request("GET", "lr-admin-api/lists", headers=headers)
 
         return response
 
-    def list_summary_create_update_request(self, list_type, name, enabled, use_patterns, replace_existing, read_access,
-                                           write_access, restricted_read, entity_name, need_to_notify, does_expire,
-                                           owner):
+    def list_summary_create_update_request(
+        self,
+        list_type,
+        name,
+        enabled,
+        use_patterns,
+        replace_existing,
+        read_access,
+        write_access,
+        restricted_read,
+        entity_name,
+        need_to_notify,
+        does_expire,
+        owner,
+    ):
         data = {
             "autoImportOption": {"enabled": enabled, "replaceExisting": replace_existing, "usePatterns": use_patterns},
-            "doesExpire": does_expire, "entityName": entity_name, "owner": int(owner),
-            "listType": list_type, "name": name, "needToNotify": need_to_notify, "readAccess": read_access,
-            "restrictedRead": restricted_read, "writeAccess": write_access}
+            "doesExpire": does_expire,
+            "entityName": entity_name,
+            "owner": int(owner),
+            "listType": list_type,
+            "name": name,
+            "needToNotify": need_to_notify,
+            "readAccess": read_access,
+            "restrictedRead": restricted_read,
+            "writeAccess": write_access,
+        }
 
-        response = self._http_request('POST', 'lr-admin-api/lists', json_data=data)
+        response = self._http_request("POST", "lr-admin-api/lists", json_data=data)
 
         return response
 
     def list_details_and_items_get_request(self, list_id, max_items):
-        self._headers['maxItemsThreshold'] = str(sys.maxsize)
-        raw_response = self._http_request('GET', f'lr-admin-api/lists/{list_id}')
+        self._headers["maxItemsThreshold"] = str(sys.maxsize)
+        raw_response = self._http_request("GET", f"lr-admin-api/lists/{list_id}")
         response = raw_response.copy()
-        if max_items and response.get('items'):
-            items = response.get('items')[:int(max_items)]
-            response['items'] = items
+        if max_items and response.get("items"):
+            items = response.get("items")[: int(max_items)]
+            response["items"] = items
         return response, raw_response
 
     def list_items_add_request(self, list_id, items):
         if type(items) is dict:
             items = [items]
         data = {"items": items}
-        response = self._http_request('POST', f'lr-admin-api/lists/{list_id}/items', json_data=data)
+        response = self._http_request("POST", f"lr-admin-api/lists/{list_id}/items", json_data=data)
 
         return response
 
@@ -1358,13 +1463,28 @@ class Client(BaseClient):
             items = [items]
         data = {"items": items}
 
-        response = self._http_request('DELETE', f'lr-admin-api/lists/{list_id}/items', json_data=data)
+        response = self._http_request("DELETE", f"lr-admin-api/lists/{list_id}/items", json_data=data)
 
         return response
 
-    def execute_search_query_request(self, number_of_days, source_type, host_name, username, subject, sender,
-                                     recipient, hash_, url, process_name, object_, ipaddress, max_message,
-                                     query_timeout, entity_id):
+    def execute_search_query_request(
+        self,
+        number_of_days,
+        source_type,
+        host_name,
+        username,
+        subject,
+        sender,
+        recipient,
+        hash_,
+        url,
+        process_name,
+        object_,
+        ipaddress,
+        max_message,
+        query_timeout,
+        entity_id,
+    ):
         # Create filter query
         query = []
 
@@ -1373,10 +1493,10 @@ class Client(BaseClient):
         for field_key, field_val in arguments.items():
             if field_val and QUERY_TYPES_MAP.get(field_key):
                 query_type = QUERY_TYPES_MAP[field_key]
-                filter_type = query_type.get('filter_type')
-                value_type = query_type.get('value_type')
+                filter_type = query_type.get("filter_type")
+                value_type = query_type.get("value_type")
 
-                if field_key == 'source_type' and field_val != 'all':
+                if field_key == "source_type" and field_val != "all":
                     query.append(self.generate_query_item(filter_type, value_type, SOURCE_TYPE_MAP[field_val]))
                 else:
                     query.append(self.generate_query_item(filter_type, value_type, field_val))
@@ -1388,11 +1508,7 @@ class Client(BaseClient):
             "queryTimeout": int(query_timeout),
             "queryRawLog": True,
             "queryEventManager": False,
-            "dateCriteria": {
-                "useInsertedDate": False,
-                "lastIntervalValue": int(number_of_days),
-                "lastIntervalUnit": 4
-            },
+            "dateCriteria": {"useInsertedDate": False, "lastIntervalValue": int(number_of_days), "lastIntervalUnit": 4},
             "queryLogSources": [],
             "queryFilter": {
                 "msgFilterType": 2,
@@ -1402,12 +1518,12 @@ class Client(BaseClient):
                     "fieldOperator": 1,
                     "filterMode": 1,
                     "filterGroupOperator": 0,
-                    "filterItems": query
-                }
-            }
+                    "filterItems": query,
+                },
+            },
         }
 
-        response = self._http_request('POST', 'lr-search-api/actions/search-task', json_data=data)
+        response = self._http_request("POST", "lr-search-api/actions/search-task", json_data=data)
 
         return response
 
@@ -1417,55 +1533,49 @@ class Client(BaseClient):
         elif value_type == 5:
             value = str(value)
         else:
-            value = {
-                "value": value,
-                "matchType": 2
-            }
+            value = {"value": value, "matchType": 2}
 
         query = {
             "filterItemType": 0,
             "fieldOperator": 1,
             "filterMode": 1,
-            "values": [
-                {
-                    "filterType": filter_type,
-                    "valueType": value_type,
-                    "value": value
-                }
-            ]
+            "values": [{"filterType": filter_type, "valueType": value_type, "value": value}],
         }
 
         return query
 
     def get_query_result_request(self, task_id, page_size):
         data = {
-            'data': {
-                'searchGuid': task_id,
-                'search': {
-                    'sort': [],
-                    'groupBy': [
-                        'string'
-                    ],
-                    'fields': []
-                },
-                'paginator': {
-                    'origin': 0,
-                    'page_size': int(page_size)
-                }
+            "data": {
+                "searchGuid": task_id,
+                "search": {"sort": [], "groupBy": ["string"], "fields": []},
+                "paginator": {"origin": 0, "page_size": int(page_size)},
             }
         }
 
-        response = self._http_request('POST', 'lr-search-api/actions/search-result', json_data=data)
+        response = self._http_request("POST", "lr-search-api/actions/search-result", json_data=data)
 
         return response
 
-    def add_host_request(self, entity_id, entity_name, name, short_desc, long_desc, risk_level, threat_level,
-                         threat_level_comments, status, host_zone, use_eventlog_credentials, os, os_type):
+    def add_host_request(
+        self,
+        entity_id,
+        entity_name,
+        name,
+        short_desc,
+        long_desc,
+        risk_level,
+        threat_level,
+        threat_level_comments,
+        status,
+        host_zone,
+        use_eventlog_credentials,
+        os,
+        os_type,
+    ):
         data = {
             "id": -1,
-            "entity": {
-                "name": entity_name
-            },
+            "entity": {"name": entity_name},
             "name": name,
             "shortDesc": short_desc,
             "longDesc": long_desc,
@@ -1476,53 +1586,54 @@ class Client(BaseClient):
             "hostZone": host_zone,
             "os": os,
             "useEventlogCredentials": use_eventlog_credentials,
-            "osType": os_type
+            "osType": os_type,
         }
 
         if entity_id:
-            data['entity']['id'] = int(entity_id)
+            data["entity"]["id"] = int(entity_id)
 
         # delete empty values
         data = {k: v for k, v in data.items() if isinstance(v, bool) or v}
 
-        response = self._http_request('POST', 'lr-admin-api/hosts', json_data=data)
+        response = self._http_request("POST", "lr-admin-api/hosts", json_data=data)
 
         return response
 
     def hosts_status_update(self, host_id, status):
-        data = [{'hostId': int(host_id), 'status': status}]
-        response = self._http_request('PUT', 'lr-admin-api/hosts/status', json_data=data)
+        data = [{"hostId": int(host_id), "status": status}]
+        response = self._http_request("PUT", "lr-admin-api/hosts/status", json_data=data)
         return response
 
     def networks_list_request(self, network_id, name, record_status, bip, eip, offset, count):
         if network_id:
-            return self._http_request('GET', f'lr-admin-api/networks/{network_id}')
+            return self._http_request("GET", f"lr-admin-api/networks/{network_id}")
         else:
             params = assign_params(name=name, recordStatus=record_status, BIP=bip, EIP=eip, offset=offset, count=count)
-            return self._http_request('GET', 'lr-admin-api/networks/', params=params)
+            return self._http_request("GET", "lr-admin-api/networks/", params=params)
 
 
 def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    alarm_id = args.get('alarm_id')
-    alarm_status = args.get('alarm_status')
-    alarm_rule_name = args.get('alarm_rule_name')
-    entity_name = args.get('entity_name')
-    case_association = args.get('case_association')
-    offset = args.get('offset')
-    count = args.get('count')
+    alarm_id = args.get("alarm_id")
+    alarm_status = args.get("alarm_status")
+    alarm_rule_name = args.get("alarm_rule_name")
+    entity_name = args.get("entity_name")
+    case_association = args.get("case_association")
+    offset = args.get("offset")
+    count = args.get("count")
 
-    alarms, raw_response = client.alarms_list_request(alarm_id, alarm_status, offset, count, alarm_rule_name,
-                                                      entity_name, case_association)
+    alarms, raw_response = client.alarms_list_request(
+        alarm_id, alarm_status, offset, count, alarm_rule_name, entity_name, case_association
+    )
 
     if alarms:
-        hr = tableToMarkdown('Alarms', alarms, headerTransform=pascalToSpace, headers=ALARM_HEADERS, removeNull=True)
+        hr = tableToMarkdown("Alarms", alarms, headerTransform=pascalToSpace, headers=ALARM_HEADERS, removeNull=True)
     else:
-        hr = 'No alarms were found.'
+        hr = "No alarms were found."
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Alarm',
-        outputs_key_field='alarmId',
+        outputs_prefix="LogRhythm.Alarm",
+        outputs_key_field="alarmId",
         outputs=alarms,
         raw_response=raw_response,
     )
@@ -1531,16 +1642,16 @@ def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def alarm_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    alarm_id = args.get('alarm_id')
-    alarm_status = args.get('alarm_status')
-    rbp = args.get('rbp')
+    alarm_id = args.get("alarm_id")
+    alarm_status = args.get("alarm_status")
+    rbp = args.get("rbp")
 
     if not alarm_status and not rbp:
-        raise DemistoException('alarm_status and rbp arguments are empty, please provide at least one of them.')
+        raise DemistoException("alarm_status and rbp arguments are empty, please provide at least one of them.")
 
     response = client.alarm_update_request(alarm_id, alarm_status, rbp)
     command_results = CommandResults(
-        readable_output=f'Alarm {alarm_id} has been updated.',
+        readable_output=f"Alarm {alarm_id} has been updated.",
         raw_response=response,
     )
 
@@ -1548,12 +1659,12 @@ def alarm_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 
 def alarm_add_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    alarm_id = args.get('alarm_id')
-    alarm_comment = args.get('alarm_comment')
+    alarm_id = args.get("alarm_id")
+    alarm_comment = args.get("alarm_comment")
 
     response = client.alarm_add_comment_request(alarm_id, alarm_comment)
     command_results = CommandResults(
-        readable_output=f'Comment added successfully to the alarm {alarm_id}.',
+        readable_output=f"Comment added successfully to the alarm {alarm_id}.",
         raw_response=response,
     )
 
@@ -1561,25 +1672,24 @@ def alarm_add_comment_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def alarm_history_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    alarm_id = args.get('alarm_id')
-    person_id = args.get('person_id')
-    date_updated = args.get('date_updated')
-    type_ = args.get('type')
-    offset = args.get('offset')
-    count = args.get('count')
+    alarm_id = args.get("alarm_id")
+    person_id = args.get("person_id")
+    date_updated = args.get("date_updated")
+    type_ = args.get("type")
+    offset = args.get("offset")
+    count = args.get("count")
 
-    alarm_history, raw_response = client.alarm_history_list_request(alarm_id, person_id, date_updated, type_, offset,
-                                                                    count)
+    alarm_history, raw_response = client.alarm_history_list_request(alarm_id, person_id, date_updated, type_, offset, count)
 
     if alarm_history:
-        hr = tableToMarkdown(f'History for alarm {alarm_id}', alarm_history, headerTransform=pascalToSpace)
+        hr = tableToMarkdown(f"History for alarm {alarm_id}", alarm_history, headerTransform=pascalToSpace)
     else:
-        hr = f'No history records found for alarm {alarm_id}.'
+        hr = f"No history records found for alarm {alarm_id}."
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.AlarmHistory',
-        outputs_key_field='',
+        outputs_prefix="LogRhythm.AlarmHistory",
+        outputs_key_field="",
         outputs=alarm_history,
         raw_response=raw_response,
     )
@@ -1588,24 +1698,25 @@ def alarm_history_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def alarm_events_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    alarm_id = args.get('alarm_id')
+    alarm_id = args.get("alarm_id")
     if not alarm_id:
-        raise DemistoException('Invalid alarm_id')
+        raise DemistoException("Invalid alarm_id")
 
     alarm_events, raw_response = client.alarm_events_list_request(alarm_id)
 
     if alarm_events:
-        hr = tableToMarkdown(f'Events for alarm {alarm_id}', alarm_events, headerTransform=pascalToSpace,
-                             headers=ALARM_EVENTS_HEADERS)
+        hr = tableToMarkdown(
+            f"Events for alarm {alarm_id}", alarm_events, headerTransform=pascalToSpace, headers=ALARM_EVENTS_HEADERS
+        )
     else:
-        hr = f'No events found for alarm {alarm_id}.'
+        hr = f"No events found for alarm {alarm_id}."
 
-    [event.update({'alarmId': int(alarm_id)}) for event in alarm_events]
+    [event.update({"alarmId": int(alarm_id)}) for event in alarm_events]
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.AlarmEvents',
-        outputs_key_field='alarmId',
+        outputs_prefix="LogRhythm.AlarmEvents",
+        outputs_key_field="alarmId",
         outputs=alarm_events,
         raw_response=raw_response,
     )
@@ -1614,28 +1725,28 @@ def alarm_events_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    alarm_id = args.get('alarm_id')
+    alarm_id = args.get("alarm_id")
     if not alarm_id:
-        raise DemistoException('Invalid alarm_id')
+        raise DemistoException("Invalid alarm_id")
 
     alarm_summary, raw_response = client.alarm_summary_request(alarm_id)
-    alarm_summary['alarmId'] = int(alarm_id)
+    alarm_summary["alarmId"] = int(alarm_id)
     ec = alarm_summary.copy()
 
-    alarm_event_summary = alarm_summary.get('alarmEventSummary')
+    alarm_event_summary = alarm_summary.get("alarmEventSummary")
     if alarm_event_summary:
-        del alarm_summary['alarmEventSummary']
-        hr = tableToMarkdown('Alarm summary', alarm_summary, headerTransform=pascalToSpace)
-        hr = hr + tableToMarkdown('Alarm event summary', alarm_event_summary, headerTransform=pascalToSpace)
+        del alarm_summary["alarmEventSummary"]
+        hr = tableToMarkdown("Alarm summary", alarm_summary, headerTransform=pascalToSpace)
+        hr = hr + tableToMarkdown("Alarm event summary", alarm_event_summary, headerTransform=pascalToSpace)
     else:
-        hr = tableToMarkdown(f'Alarm {alarm_id} summary', alarm_summary, headerTransform=pascalToSpace)
+        hr = tableToMarkdown(f"Alarm {alarm_id} summary", alarm_summary, headerTransform=pascalToSpace)
 
-    alarm_summary['alarmId'] = int(alarm_id)
+    alarm_summary["alarmId"] = int(alarm_id)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.AlarmSummary',
-        outputs_key_field='alarmId',
+        outputs_prefix="LogRhythm.AlarmSummary",
+        outputs_key_field="alarmId",
         outputs=ec,
         raw_response=raw_response,
     )
@@ -1644,22 +1755,22 @@ def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def get_alarm_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    alarm_id = args.get('alarm_id')
+    alarm_id = args.get("alarm_id")
     if not alarm_id:
-        raise DemistoException('Invalid alarm_id')
+        raise DemistoException("Invalid alarm_id")
 
     alarm_details, raw_response = client.get_alarm_details_request(alarm_id)
-    alarm_details['alarmId'] = int(alarm_id)
+    alarm_details["alarmId"] = int(alarm_id)
     ec = alarm_details.copy()
 
-    hr = tableToMarkdown(f'Alarm {alarm_id} details', alarm_details, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f"Alarm {alarm_id} details", alarm_details, headerTransform=pascalToSpace)
 
-    alarm_details['alarmId'] = int(alarm_id)
+    alarm_details["alarmId"] = int(alarm_id)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.AlarmDetails',
-        outputs_key_field='alarmId',
+        outputs_prefix="LogRhythm.AlarmDetails",
+        outputs_key_field="alarmId",
         outputs=ec,
         raw_response=raw_response,
     )
@@ -1668,22 +1779,22 @@ def get_alarm_details_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def alarm_drilldown_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    alarm_id = args.get('alarm_id')
+    alarm_id = args.get("alarm_id")
     if not alarm_id:
-        raise DemistoException('Invalid alarm_id')
+        raise DemistoException("Invalid alarm_id")
 
     drilldown_results, raw_response = client.alarm_drilldown_request(alarm_id)
-    drilldown_results['AlarmID'] = int(alarm_id)
+    drilldown_results["AlarmID"] = int(alarm_id)
     ec = drilldown_results.copy()
 
-    hr = tableToMarkdown(f'Alarm {alarm_id} Drilldown', drilldown_results, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f"Alarm {alarm_id} Drilldown", drilldown_results, headerTransform=pascalToSpace)
 
-    drilldown_results['AlarmID'] = int(alarm_id)
+    drilldown_results["AlarmID"] = int(alarm_id)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.AlarmDrilldown',
-        outputs_key_field='AlarmID',
+        outputs_prefix="LogRhythm.AlarmDrilldown",
+        outputs_key_field="AlarmID",
         outputs=ec,
         raw_response=raw_response,
     )
@@ -1692,32 +1803,45 @@ def alarm_drilldown_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def cases_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    timestamp_filter_type = args.get('timestamp_filter_type')
-    timestamp = args.get('timestamp')
-    priority = args.get('priority')
-    status = args.get('status')
-    owners = args.get('owners')
-    tags = args.get('tags')
-    text = args.get('text')
-    evidence_type = args.get('evidence_type')
-    reference_id = args.get('reference_id')
-    external_id = args.get('external_id')
-    offset = args.get('offset')
-    count = args.get('count')
+    case_id = args.get("case_id")
+    timestamp_filter_type = args.get("timestamp_filter_type")
+    timestamp = args.get("timestamp")
+    priority = args.get("priority")
+    status = args.get("status")
+    owners = args.get("owners")
+    tags = args.get("tags")
+    text = args.get("text")
+    evidence_type = args.get("evidence_type")
+    reference_id = args.get("reference_id")
+    external_id = args.get("external_id")
+    offset = args.get("offset")
+    count = args.get("count")
 
-    cases = client.cases_list_request(case_id, timestamp_filter_type, timestamp, priority, status, owners, tags,
-                                      text, evidence_type, reference_id, external_id, offset, count)
+    cases = client.cases_list_request(
+        case_id,
+        timestamp_filter_type,
+        timestamp,
+        priority,
+        status,
+        owners,
+        tags,
+        text,
+        evidence_type,
+        reference_id,
+        external_id,
+        offset,
+        count,
+    )
 
     if cases:
-        hr = tableToMarkdown('Cases', cases, headerTransform=pascalToSpace)
+        hr = tableToMarkdown("Cases", cases, headerTransform=pascalToSpace)
     else:
-        hr = 'No cases found.'
+        hr = "No cases found."
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Case',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Case",
+        outputs_key_field="id",
         outputs=cases,
         raw_response=cases,
     )
@@ -1726,20 +1850,20 @@ def cases_list_command(client: Client, args: Dict[str, Any]) -> CommandResults: 
 
 
 def case_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    name = args.get('name')
-    priority = args.get('priority')
-    external_id = args.get('external_id')
-    due_date = args.get('due_date')
-    summary = args.get('summary')
+    name = args.get("name")
+    priority = args.get("priority")
+    external_id = args.get("external_id")
+    due_date = args.get("due_date")
+    summary = args.get("summary")
 
     response = client.case_create_request(name, priority, external_id, due_date, summary)
 
-    hr = tableToMarkdown('Case created successfully', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown("Case created successfully", response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Case',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Case",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -1748,24 +1872,23 @@ def case_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    name = args.get('name')
-    priority = args.get('priority')
-    external_id = args.get('external_id')
-    due_date = args.get('due_date')
-    summary = args.get('summary')
-    entity_id = args.get('entity_id')
-    resolution = args.get('resolution')
+    case_id = args.get("case_id")
+    name = args.get("name")
+    priority = args.get("priority")
+    external_id = args.get("external_id")
+    due_date = args.get("due_date")
+    summary = args.get("summary")
+    entity_id = args.get("entity_id")
+    resolution = args.get("resolution")
 
-    response = client.case_update_request(case_id, name, priority, external_id, due_date, summary, entity_id,
-                                          resolution)
+    response = client.case_update_request(case_id, name, priority, external_id, due_date, summary, entity_id, resolution)
 
-    hr = tableToMarkdown(f'Case {case_id} updated successfully', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f"Case {case_id} updated successfully", response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Case',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Case",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -1774,17 +1897,17 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def case_status_change_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    status = args.get('status')
+    case_id = args.get("case_id")
+    status = args.get("status")
 
     response = client.case_status_change_request(case_id, status)
 
-    hr = tableToMarkdown('Case status updated successfully', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown("Case status updated successfully", response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Case',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Case",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -1793,25 +1916,26 @@ def case_status_change_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def case_evidence_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    evidence_number = args.get('evidence_number')
-    evidence_type = args.get('evidence_type')
-    status = args.get('status')
+    case_id = args.get("case_id")
+    evidence_number = args.get("evidence_number")
+    evidence_type = args.get("evidence_type")
+    status = args.get("status")
 
     evidences = client.case_evidence_list_request(case_id, evidence_number, evidence_type, status)
 
     if evidences:
-        hr = tableToMarkdown(f'Evidences for case {case_id}', evidences, headerTransform=pascalToSpace,
-                             headers=CASE_EVIDENCES_HEADERS)
+        hr = tableToMarkdown(
+            f"Evidences for case {case_id}", evidences, headerTransform=pascalToSpace, headers=CASE_EVIDENCES_HEADERS
+        )
     else:
-        hr = f'No evidences found for case {case_id}.'
+        hr = f"No evidences found for case {case_id}."
 
-    ec = {'CaseID': case_id, 'Evidences': evidences}
+    ec = {"CaseID": case_id, "Evidences": evidences}
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.CaseEvidence',
-        outputs_key_field='CaseID',
+        outputs_prefix="LogRhythm.CaseEvidence",
+        outputs_key_field="CaseID",
         outputs=ec,
         raw_response=evidences,
     )
@@ -1820,20 +1944,24 @@ def case_evidence_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def case_alarm_evidence_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    alarm_numbers = argToList(args.get('alarm_numbers'))
+    case_id = args.get("case_id")
+    alarm_numbers = argToList(args.get("alarm_numbers"))
 
     evidences = client.case_alarm_evidence_add_request(case_id, alarm_numbers)
 
-    hr = tableToMarkdown(f'Alarms added as evidence to case {case_id} successfully', evidences,
-                         headerTransform=pascalToSpace, headers=CASE_EVIDENCES_HEADERS)
+    hr = tableToMarkdown(
+        f"Alarms added as evidence to case {case_id} successfully",
+        evidences,
+        headerTransform=pascalToSpace,
+        headers=CASE_EVIDENCES_HEADERS,
+    )
 
-    ec = [{'CaseID': case_id, 'Evidences': evidences}]
+    ec = [{"CaseID": case_id, "Evidences": evidences}]
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.AlarmEvidence',
-        outputs_key_field='CaseID',
+        outputs_prefix="LogRhythm.AlarmEvidence",
+        outputs_key_field="CaseID",
         outputs=ec,
         raw_response=evidences,
     )
@@ -1842,19 +1970,23 @@ def case_alarm_evidence_add_command(client: Client, args: Dict[str, Any]) -> Com
 
 
 def case_note_evidence_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    note = args.get('note')
+    case_id = args.get("case_id")
+    note = args.get("note")
 
     evidences = client.case_note_evidence_add_request(case_id, note)
-    hr = tableToMarkdown(f'Note added as evidence to case {case_id} successfully', evidences,
-                         headerTransform=pascalToSpace, headers=CASE_EVIDENCES_HEADERS)
+    hr = tableToMarkdown(
+        f"Note added as evidence to case {case_id} successfully",
+        evidences,
+        headerTransform=pascalToSpace,
+        headers=CASE_EVIDENCES_HEADERS,
+    )
 
-    ec = [{'CaseID': case_id, 'Evidences': evidences}]
+    ec = [{"CaseID": case_id, "Evidences": evidences}]
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.NoteEvidence',
-        outputs_key_field='',
+        outputs_prefix="LogRhythm.NoteEvidence",
+        outputs_key_field="",
         outputs=ec,
         raw_response=evidences,
     )
@@ -1863,19 +1995,23 @@ def case_note_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
 
 
 def case_file_evidence_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    entry_id = args.get('entryId')
+    case_id = args.get("case_id")
+    entry_id = args.get("entryId")
 
     evidences = client.case_file_evidence_add_request(case_id, entry_id)
-    hr = tableToMarkdown(f'File added as evidence to case {case_id} successfully', evidences,
-                         headerTransform=pascalToSpace, headers=CASE_EVIDENCES_HEADERS)
+    hr = tableToMarkdown(
+        f"File added as evidence to case {case_id} successfully",
+        evidences,
+        headerTransform=pascalToSpace,
+        headers=CASE_EVIDENCES_HEADERS,
+    )
 
-    ec = [{'CaseID': case_id, 'Evidences': evidences}]
+    ec = [{"CaseID": case_id, "Evidences": evidences}]
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.FileEvidence',
-        outputs_key_field='',
+        outputs_prefix="LogRhythm.FileEvidence",
+        outputs_key_field="",
         outputs=ec,
         raw_response=evidences,
     )
@@ -1884,35 +2020,35 @@ def case_file_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
 
 
 def case_evidence_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    evidence_number = args.get('evidence_number')
+    case_id = args.get("case_id")
+    evidence_number = args.get("evidence_number")
 
     client.case_evidence_delete_request(case_id, evidence_number)
     command_results = CommandResults(
-        readable_output=f'Evidence deleted successfully from case {case_id}.',
+        readable_output=f"Evidence deleted successfully from case {case_id}.",
     )
 
     return command_results
 
 
 def case_file_evidence_download_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    evidence_number = args.get('evidence_number')
+    case_id = args.get("case_id")
+    evidence_number = args.get("evidence_number")
 
     return client.case_file_evidence_download_request(case_id, evidence_number)
 
 
 def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    tag_numbers = argToList(args.get('tag_numbers'))
+    case_id = args.get("case_id")
+    tag_numbers = argToList(args.get("tag_numbers"))
 
     response = client.case_tags_add_request(case_id, tag_numbers)
-    hr = tableToMarkdown(f'Tags added successfully to case {case_id}', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f"Tags added successfully to case {case_id}", response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Case',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Case",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -1921,16 +2057,16 @@ def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def case_tags_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    tag_numbers = argToList(args.get('tag_numbers'))
+    case_id = args.get("case_id")
+    tag_numbers = argToList(args.get("tag_numbers"))
 
     response = client.case_tags_remove_request(case_id, tag_numbers)
-    hr = tableToMarkdown(f'Tags removed successfully from case {case_id}', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f"Tags removed successfully from case {case_id}", response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Case',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Case",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -1939,20 +2075,20 @@ def case_tags_remove_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def tags_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    tag_name = args.get('tag_name')
-    offset = args.get('offset')
-    count = args.get('count')
+    tag_name = args.get("tag_name")
+    offset = args.get("offset")
+    count = args.get("count")
 
     response = client.tags_list_request(tag_name, offset, count)
     if response:
-        hr = tableToMarkdown('Tags', response, headerTransform=pascalToSpace, headers=TAG_HEADERS)
+        hr = tableToMarkdown("Tags", response, headerTransform=pascalToSpace, headers=TAG_HEADERS)
     else:
-        hr = 'No tags were found.'
+        hr = "No tags were found."
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Tag',
-        outputs_key_field='number',
+        outputs_prefix="LogRhythm.Tag",
+        outputs_key_field="number",
         outputs=response,
         raw_response=response,
     )
@@ -1961,22 +2097,22 @@ def tags_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  
 
 
 def case_collaborators_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
+    case_id = args.get("case_id")
 
     response = client.case_collaborators_list_request(case_id)
-    collaborators = response.get('collaborators')
+    collaborators = response.get("collaborators")
 
-    hr = tableToMarkdown('Case owner', response.get('owner'), headerTransform=pascalToSpace)
+    hr = tableToMarkdown("Case owner", response.get("owner"), headerTransform=pascalToSpace)
     if collaborators:
-        hr = hr + tableToMarkdown('Case collaborators', collaborators, headerTransform=pascalToSpace)
+        hr = hr + tableToMarkdown("Case collaborators", collaborators, headerTransform=pascalToSpace)
 
     ec = response.copy()
-    ec['CaseID'] = case_id
+    ec["CaseID"] = case_id
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.CaseCollaborator',
-        outputs_key_field='CaseID',
+        outputs_prefix="LogRhythm.CaseCollaborator",
+        outputs_key_field="CaseID",
         outputs=ec,
         raw_response=response,
     )
@@ -1985,25 +2121,25 @@ def case_collaborators_list_command(client: Client, args: Dict[str, Any]) -> Com
 
 
 def case_collaborators_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    case_id = args.get('case_id')
-    owner = args.get('owner')
-    collaborators = argToList(args.get('collaborators'))
+    case_id = args.get("case_id")
+    owner = args.get("owner")
+    collaborators = argToList(args.get("collaborators"))
 
     response = client.case_collaborators_update_request(case_id, owner, collaborators)
-    collaborators = response.get('collaborators')
+    collaborators = response.get("collaborators")
 
-    hr = f'### Case {case_id} updated successfully\n'
-    hr = hr + tableToMarkdown('Case owner', response.get('owner'), headerTransform=pascalToSpace)
+    hr = f"### Case {case_id} updated successfully\n"
+    hr = hr + tableToMarkdown("Case owner", response.get("owner"), headerTransform=pascalToSpace)
     if collaborators:
-        hr = hr + tableToMarkdown('Case collaborators', collaborators, headerTransform=pascalToSpace)
+        hr = hr + tableToMarkdown("Case collaborators", collaborators, headerTransform=pascalToSpace)
 
     ec = response.copy()
-    ec['CaseID'] = case_id
+    ec["CaseID"] = case_id
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.CaseCollaborator',
-        outputs_key_field='CaseID',
+        outputs_prefix="LogRhythm.CaseCollaborator",
+        outputs_key_field="CaseID",
         outputs=ec,
         raw_response=response,
     )
@@ -2012,21 +2148,21 @@ def case_collaborators_update_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    entity_id = args.get('entity_id')
-    parent_entity_id = args.get('parent_entity_id')
-    offset = args.get('offset')
-    count = args.get('count')
+    entity_id = args.get("entity_id")
+    parent_entity_id = args.get("parent_entity_id")
+    offset = args.get("offset")
+    count = args.get("count")
 
     response = client.entities_list_request(entity_id, parent_entity_id, offset, count)
     if response:
-        hr = tableToMarkdown('Entities', response, headerTransform=pascalToSpace, headers=ENTITY_HEADERS)
+        hr = tableToMarkdown("Entities", response, headerTransform=pascalToSpace, headers=ENTITY_HEADERS)
     else:
-        hr = 'No entities were found.'
+        hr = "No entities were found."
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Entity',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Entity",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -2035,24 +2171,24 @@ def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    host_id = args.get('host_id')
-    host_name = args.get('host_name')
-    entity_name = args.get('entity_name')
-    record_status = args.get('record_status')
-    offset = args.get('offset')
-    count = args.get('count')
+    host_id = args.get("host_id")
+    host_name = args.get("host_name")
+    entity_name = args.get("entity_name")
+    record_status = args.get("record_status")
+    offset = args.get("offset")
+    count = args.get("count")
     host_ids = [host_id] if host_id else []
 
     response = client.hosts_list_request(host_name, entity_name, record_status, offset, count, host_ids)
     if response:
-        hr = tableToMarkdown('Hosts', response, headerTransform=pascalToSpace)
+        hr = tableToMarkdown("Hosts", response, headerTransform=pascalToSpace)
     else:
-        hr = 'No hosts were found.'
+        hr = "No hosts were found."
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Host',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Host",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -2061,22 +2197,22 @@ def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults: 
 
 
 def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    user_ids = args.get('user_ids')
-    entity_ids = args.get('entity_ids')
-    user_status = args.get('user_status')
-    offset = args.get('offset')
-    count = args.get('count')
+    user_ids = args.get("user_ids")
+    entity_ids = args.get("entity_ids")
+    user_status = args.get("user_status")
+    offset = args.get("offset")
+    count = args.get("count")
 
     response = client.users_list_request(user_ids, entity_ids, user_status, offset, count)
     if response:
-        hr = tableToMarkdown('Users', response, headerTransform=pascalToSpace, headers=USER_HEADERS)
+        hr = tableToMarkdown("Users", response, headerTransform=pascalToSpace, headers=USER_HEADERS)
     else:
-        hr = 'No users were found.'
+        hr = "No users were found."
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.User',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.User",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -2085,20 +2221,20 @@ def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults: 
 
 
 def lists_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    list_type = args.get('list_type')
-    list_name = args.get('list_name')
-    can_edit = args.get('can_edit')
+    list_type = args.get("list_type")
+    list_name = args.get("list_name")
+    can_edit = args.get("can_edit")
 
     response = client.lists_get_request(list_type, list_name, can_edit)
     if response:
-        hr = tableToMarkdown('Lists', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
+        hr = tableToMarkdown("Lists", response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
     else:
-        hr = 'No lists were found.'
+        hr = "No lists were found."
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.List',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.List",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -2107,30 +2243,40 @@ def lists_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:  
 
 
 def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    list_type = args.get('list_type')
-    name = args.get('name')
-    enabled = argToBoolean(args.get('enabled'))
-    use_patterns = argToBoolean(args.get('use_patterns'))
-    replace_existing = argToBoolean(args.get('replace_existing'))
-    read_access = args.get('read_access')
-    write_access = args.get('write_access')
-    restricted_read = argToBoolean(args.get('restricted_read'))
-    entity_name = args.get('entity_name')
-    need_to_notify = argToBoolean(args.get('need_to_notify'))
-    does_expire = argToBoolean(args.get('does_expire'))
-    owner = args.get('owner')
+    list_type = args.get("list_type")
+    name = args.get("name")
+    enabled = argToBoolean(args.get("enabled"))
+    use_patterns = argToBoolean(args.get("use_patterns"))
+    replace_existing = argToBoolean(args.get("replace_existing"))
+    read_access = args.get("read_access")
+    write_access = args.get("write_access")
+    restricted_read = argToBoolean(args.get("restricted_read"))
+    entity_name = args.get("entity_name")
+    need_to_notify = argToBoolean(args.get("need_to_notify"))
+    does_expire = argToBoolean(args.get("does_expire"))
+    owner = args.get("owner")
 
     response = client.list_summary_create_update_request(
-        list_type, name, enabled, use_patterns, replace_existing, read_access, write_access, restricted_read,
+        list_type,
+        name,
+        enabled,
+        use_patterns,
+        replace_existing,
+        read_access,
+        write_access,
+        restricted_read,
         entity_name,
-        need_to_notify, does_expire, owner)
+        need_to_notify,
+        does_expire,
+        owner,
+    )
 
-    hr = tableToMarkdown('List created successfully', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
+    hr = tableToMarkdown("List created successfully", response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.List',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.List",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -2139,22 +2285,22 @@ def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    list_guid = args.get('list_guid')
-    max_items = args.get('max_items')
+    list_guid = args.get("list_guid")
+    max_items = args.get("max_items")
 
     response, raw_response = client.list_details_and_items_get_request(list_guid, max_items)
     response = response.copy()
-    list_items = response.get('items')
-    response.pop('items', None)
+    list_items = response.get("items")
+    response.pop("items", None)
 
-    hr = tableToMarkdown(f'List {list_guid} details', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
+    hr = tableToMarkdown(f"List {list_guid} details", response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
     if list_items:
-        hr = hr + tableToMarkdown('List items', list_items, headerTransform=pascalToSpace)
+        hr = hr + tableToMarkdown("List items", list_items, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.ListDetails',
-        outputs_key_field='guid',
+        outputs_prefix="LogRhythm.ListDetails",
+        outputs_key_field="guid",
         outputs=raw_response,
         raw_response=raw_response,
     )
@@ -2163,24 +2309,24 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    list_guid = args.get('list_guid')
-    items_json = args.get('items')
+    list_guid = args.get("list_guid")
+    items_json = args.get("items")
     if not items_json:
-        raise DemistoException('Invalid items_json')
+        raise DemistoException("Invalid items_json")
 
     try:
         items = json.loads(items_json)
     except ValueError as e:
-        demisto.error(f'Unable to parse the items arg in lr-list-items-add command: {e}')
-        raise DemistoException('Unable to parse JSON string. Please verify the items argument is valid.')
+        demisto.error(f"Unable to parse the items arg in lr-list-items-add command: {e}")
+        raise DemistoException("Unable to parse JSON string. Please verify the items argument is valid.")
 
     response = client.list_items_add_request(list_guid, items)
-    hr = tableToMarkdown(f'The item added to the list {list_guid}.', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f"The item added to the list {list_guid}.", response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.ListItemsAdd',
-        outputs_key_field='guid',
+        outputs_prefix="LogRhythm.ListItemsAdd",
+        outputs_key_field="guid",
         outputs=response,
         raw_response=response,
     )
@@ -2189,24 +2335,24 @@ def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    list_guid = args.get('list_guid')
-    items_json = args.get('items')
+    list_guid = args.get("list_guid")
+    items_json = args.get("items")
     if not items_json:
-        raise DemistoException('Invalid items_json')
+        raise DemistoException("Invalid items_json")
 
     try:
         items = json.loads(items_json)
     except ValueError as e:
-        demisto.error(f'Unable to parse the items arg in lr-list-items-remove command: {e}')
-        raise DemistoException('Unable to parse JSON string. Please verify the items argument is valid.')
+        demisto.error(f"Unable to parse the items arg in lr-list-items-remove command: {e}")
+        raise DemistoException("Unable to parse JSON string. Please verify the items argument is valid.")
 
     response = client.list_items_remove_request(list_guid, items)
-    hr = tableToMarkdown(f'The item deleted from the list {list_guid}.', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f"The item deleted from the list {list_guid}.", response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.ListItemsRemove',
-        outputs_key_field='guid',
+        outputs_prefix="LogRhythm.ListItemsRemove",
+        outputs_key_field="guid",
         outputs=response,
         raw_response=response,
     )
@@ -2215,69 +2361,84 @@ def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def execute_search_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    number_of_days = args.get('number_of_days')
-    search_name = args.get('search_name')
-    source_type = args.get('source_type')
-    host_name = args.get('host_name')
-    username = args.get('username')
-    subject = args.get('subject')
-    sender = args.get('sender')
-    recipient = args.get('recipient')
-    hash_ = args.get('hash')
-    url = args.get('url')
-    process_name = args.get('process_name')
-    object_ = args.get('object')
-    ipaddress = args.get('ip_address')
-    max_message = args.get('max_message')
-    query_timeout = args.get('query_timeout')
-    entity_id = args.get('entity_id')
-    page_size = args.get('page_size', 50)
-    interval_in_secs = int(args.get('interval_in_seconds', 10))
+    number_of_days = args.get("number_of_days")
+    search_name = args.get("search_name")
+    source_type = args.get("source_type")
+    host_name = args.get("host_name")
+    username = args.get("username")
+    subject = args.get("subject")
+    sender = args.get("sender")
+    recipient = args.get("recipient")
+    hash_ = args.get("hash")
+    url = args.get("url")
+    process_name = args.get("process_name")
+    object_ = args.get("object")
+    ipaddress = args.get("ip_address")
+    max_message = args.get("max_message")
+    query_timeout = args.get("query_timeout")
+    entity_id = args.get("entity_id")
+    page_size = args.get("page_size", 50)
+    interval_in_secs = int(args.get("interval_in_seconds", 10))
 
-    response = client.execute_search_query_request(number_of_days, source_type, host_name, username, subject, sender,
-                                                   recipient, hash_, url, process_name, object_, ipaddress, max_message,
-                                                   query_timeout, entity_id)
-    task_id = response.get('TaskId')
-    ec = {'TaskId': task_id, 'StatusMessage': response.get('StatusMessage')}
+    response = client.execute_search_query_request(
+        number_of_days,
+        source_type,
+        host_name,
+        username,
+        subject,
+        sender,
+        recipient,
+        hash_,
+        url,
+        process_name,
+        object_,
+        ipaddress,
+        max_message,
+        query_timeout,
+        entity_id,
+    )
+    task_id = response.get("TaskId")
+    ec = {"TaskId": task_id, "StatusMessage": response.get("StatusMessage")}
 
     if not search_name:
-        search_name = f'LogRhythm search {datetime.now()}'
-    ec['SearchName'] = search_name
+        search_name = f"LogRhythm search {datetime.now()}"
+    ec["SearchName"] = search_name
 
-    if not is_demisto_version_ge('6.2.0'):  # only 6.2.0 version and above support polling command.
+    if not is_demisto_version_ge("6.2.0"):  # only 6.2.0 version and above support polling command.
         return CommandResults(
-            readable_output=f'New search query created, Task ID={task_id}',
-            outputs_prefix='LogRhythm.Search',
-            outputs_key_field='TaskId',
+            readable_output=f"New search query created, Task ID={task_id}",
+            outputs_prefix="LogRhythm.Search",
+            outputs_key_field="TaskId",
             outputs=ec,
             raw_response=response,
         )
 
-    get_results_args = {'task_id': task_id, 'page_size': page_size}
+    get_results_args = {"task_id": task_id, "page_size": page_size}
     query_results = client.get_query_result_request(task_id, page_size)
-    items = query_results.get('Items', [])
-    status = query_results.get('TaskStatus')
+    items = query_results.get("Items", [])
+    status = query_results.get("TaskStatus")
 
     if items:
-        hr = tableToMarkdown(f'Search results for task {task_id}', items, headerTransform=pascalToSpace)
+        hr = tableToMarkdown(f"Search results for task {task_id}", items, headerTransform=pascalToSpace)
     else:
-        hr = f'Task status: {status}'
+        hr = f"Task status: {status}"
 
-    ec['TaskId'] = task_id
-    ec['TaskStatus'] = status
-    ec['Results'] = items
+    ec["TaskId"] = task_id
+    ec["TaskStatus"] = status
+    ec["Results"] = items
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Search',
-        outputs_key_field='TaskId',
+        outputs_prefix="LogRhythm.Search",
+        outputs_key_field="TaskId",
         outputs=ec,
         raw_response=query_results,
     )
 
-    if status == 'Searching':
-        scheduled_command = ScheduledCommand(command='lr-get-query-result', next_run_in_seconds=interval_in_secs,
-                                             args=get_results_args, timeout_in_seconds=600)
+    if status == "Searching":
+        scheduled_command = ScheduledCommand(
+            command="lr-get-query-result", next_run_in_seconds=interval_in_secs, args=get_results_args, timeout_in_seconds=600
+        )
         command_results.scheduled_command = scheduled_command
         return command_results
 
@@ -2285,24 +2446,24 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    task_id = args.get('task_id')
-    page_size = args.get('page_size')
+    task_id = args.get("task_id")
+    page_size = args.get("page_size")
 
     response = client.get_query_result_request(task_id, page_size)
 
-    items = response.get('Items')
-    status = response.get('TaskStatus')
+    items = response.get("Items")
+    status = response.get("TaskStatus")
     if items:
-        hr = tableToMarkdown(f'Search results for task {task_id}', items, headerTransform=pascalToSpace)
+        hr = tableToMarkdown(f"Search results for task {task_id}", items, headerTransform=pascalToSpace)
     else:
-        hr = f'Task status: {status}'
+        hr = f"Task status: {status}"
 
-    ec = [{'TaskId': task_id, 'TaskStatus': status, 'Results': items}]
+    ec = [{"TaskId": task_id, "TaskStatus": status, "Results": items}]
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Search',
-        outputs_key_field='TaskId',
+        outputs_prefix="LogRhythm.Search",
+        outputs_key_field="TaskId",
         outputs=ec,
         raw_response=response,
     )
@@ -2311,30 +2472,42 @@ def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    entity_id = args.get('entity-id')
-    entity_name = args.get('entity-name')
-    name = args.get('name')
-    short_desc = args.get('short-description')
-    long_desc = args.get('long-description')
-    risk_level = args.get('risk-level')
-    threat_level = args.get('threat-level')
-    threat_level_comments = args.get('threat-level-comments')
-    status = args.get('host-status')
-    host_zone = args.get('host-zone')
-    use_eventlog_credentials = argToBoolean(args.get('use-eventlog-credentials'))
-    os_type = args.get('os-type')
-    os = args.get('os')
+    entity_id = args.get("entity-id")
+    entity_name = args.get("entity-name")
+    name = args.get("name")
+    short_desc = args.get("short-description")
+    long_desc = args.get("long-description")
+    risk_level = args.get("risk-level")
+    threat_level = args.get("threat-level")
+    threat_level_comments = args.get("threat-level-comments")
+    status = args.get("host-status")
+    host_zone = args.get("host-zone")
+    use_eventlog_credentials = argToBoolean(args.get("use-eventlog-credentials"))
+    os_type = args.get("os-type")
+    os = args.get("os")
 
-    response = client.add_host_request(entity_id, entity_name, name, short_desc, long_desc, risk_level, threat_level,
-                                       threat_level_comments, status, host_zone, use_eventlog_credentials,
-                                       os, os_type)
+    response = client.add_host_request(
+        entity_id,
+        entity_name,
+        name,
+        short_desc,
+        long_desc,
+        risk_level,
+        threat_level,
+        threat_level_comments,
+        status,
+        host_zone,
+        use_eventlog_credentials,
+        os,
+        os_type,
+    )
 
-    hr = tableToMarkdown('Host added successfully', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown("Host added successfully", response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Host',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Host",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -2343,12 +2516,12 @@ def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:  #
 
 
 def hosts_status_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    host_id = args.get('host_id')
-    status = args.get('host_status')
+    host_id = args.get("host_id")
+    status = args.get("host_status")
 
     response = client.hosts_status_update(host_id, status)
     command_results = CommandResults(
-        readable_output=f'Host status updated successfully to {status}.',
+        readable_output=f"Host status updated successfully to {status}.",
         raw_response=response,
     )
 
@@ -2356,24 +2529,24 @@ def hosts_status_update_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def networks_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    network_id = args.get('network_id')
-    name = args.get('name')
-    record_status = args.get('record_status')
-    bip = args.get('bip')
-    eip = args.get('eip')
-    count = args.get('count')
-    offset = args.get('offset')
+    network_id = args.get("network_id")
+    name = args.get("name")
+    record_status = args.get("record_status")
+    bip = args.get("bip")
+    eip = args.get("eip")
+    count = args.get("count")
+    offset = args.get("offset")
 
     response = client.networks_list_request(network_id, name, record_status, bip, eip, offset, count)
     if response:
-        hr = tableToMarkdown('Networks', response, headerTransform=pascalToSpace, headers=NETWORK_HEADERS)
+        hr = tableToMarkdown("Networks", response, headerTransform=pascalToSpace, headers=NETWORK_HEADERS)
     else:
-        hr = 'No networks were found.'
+        hr = "No networks were found."
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Network',
-        outputs_key_field='id',
+        outputs_prefix="LogRhythm.Network",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
@@ -2382,11 +2555,10 @@ def networks_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:  # pragma: no cover
-    endpoint_id_list = argToList(args.get('id'))
-    endpoint_hostname_list = argToList(args.get('hostname'))
+    endpoint_id_list = argToList(args.get("id"))
+    endpoint_hostname_list = argToList(args.get("hostname"))
 
-    endpoints = client.hosts_list_request(endpoint_id_list=endpoint_id_list,
-                                          endpoint_hostname_list=endpoint_hostname_list)
+    endpoints = client.hosts_list_request(endpoint_id_list=endpoint_id_list, endpoint_hostname_list=endpoint_hostname_list)
 
     if type(endpoints) is dict:
         endpoints = [endpoints]
@@ -2395,147 +2567,169 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
 
     if endpoints:
         for endpoint in endpoints:
-            hr = tableToMarkdown('Logrhythm endpoint', endpoint, headerTransform=pascalToSpace)
+            hr = tableToMarkdown("Logrhythm endpoint", endpoint, headerTransform=pascalToSpace)
 
             endpoint_indicator = Common.Endpoint(
-                id=endpoint.get('id'),
-                hostname=endpoint.get('name'),
-                os=endpoint.get('os'),
-                os_version=endpoint.get('osVersion'),
-                status='Online' if endpoint.get('recordStatusName') == "Active" else 'Offline')
+                id=endpoint.get("id"),
+                hostname=endpoint.get("name"),
+                os=endpoint.get("os"),
+                os_version=endpoint.get("osVersion"),
+                status="Online" if endpoint.get("recordStatusName") == "Active" else "Offline",
+            )
 
-            command_results.append(CommandResults(
-                readable_output=hr,
-                raw_response=endpoint,
-                indicator=endpoint_indicator,
-            ))
+            command_results.append(
+                CommandResults(
+                    readable_output=hr,
+                    raw_response=endpoint,
+                    indicator=endpoint_indicator,
+                )
+            )
 
     else:
-        command_results.append(CommandResults(
-            readable_output="No endpoints were found.",
-            raw_response=endpoints,
-        ))
+        command_results.append(
+            CommandResults(
+                readable_output="No endpoints were found.",
+                raw_response=endpoints,
+            )
+        )
     return command_results
 
 
-def test_module(client: Client, is_fetch: bool, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int,
-                fetch_time: str) -> None:  # pragma: no cover
+def test_module(
+    client: Client, is_fetch: bool, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int, fetch_time: str
+) -> None:  # pragma: no cover
     client.lists_get_request(None, None, None)
     if is_fetch:
         fetch_incidents_command(client, fetch_type, cases_max_fetch, alarms_max_fetch, fetch_time)
-    return_results('ok')
+    return_results("ok")
 
 
-def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int,
-                            fetch_time: str, alarm_status_filter: str = '', alarm_rule_name_filter: str = '',
-                            case_tags_filter: str = '', case_status_filter: str = '',
-                            case_priority_filter: str = '', fetch_case_evidences=False):  # pragma: no cover
-    if fetch_type == 'Both':
-        case_incidents = fetch_cases(client, cases_max_fetch, fetch_time, fetch_case_evidences,
-                                     case_tags_filter, case_status_filter, case_priority_filter)
-        alarm_incidents = fetch_alarms(client, alarms_max_fetch, fetch_time,
-                                       alarm_status_filter, alarm_rule_name_filter)
+def fetch_incidents_command(
+    client: Client,
+    fetch_type: str,
+    cases_max_fetch: int,
+    alarms_max_fetch: int,
+    fetch_time: str,
+    alarm_status_filter: str = "",
+    alarm_rule_name_filter: str = "",
+    case_tags_filter: str = "",
+    case_status_filter: str = "",
+    case_priority_filter: str = "",
+    fetch_case_evidences=False,
+):  # pragma: no cover
+    if fetch_type == "Both":  # noqa: RET503
+        case_incidents = fetch_cases(
+            client, cases_max_fetch, fetch_time, fetch_case_evidences, case_tags_filter, case_status_filter, case_priority_filter
+        )
+        alarm_incidents = fetch_alarms(client, alarms_max_fetch, fetch_time, alarm_status_filter, alarm_rule_name_filter)
         return case_incidents + alarm_incidents
-    elif fetch_type == 'Alarms':
+    elif fetch_type == "Alarms":
         return fetch_alarms(client, alarms_max_fetch, fetch_time, alarm_status_filter, alarm_rule_name_filter)
-    elif fetch_type == 'Cases':
-        return fetch_cases(client, cases_max_fetch, fetch_time, fetch_case_evidences,
-                           case_tags_filter, case_status_filter, case_priority_filter)
+    elif fetch_type == "Cases":
+        return fetch_cases(
+            client, cases_max_fetch, fetch_time, fetch_case_evidences, case_tags_filter, case_status_filter, case_priority_filter
+        )
 
 
-def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filter: str,
-                 alarm_rule_name_filter: str):  # pragma: no cover
+def fetch_alarms(
+    client: Client, limit: int, fetch_time: str, alarm_status_filter: str, alarm_rule_name_filter: str
+):  # pragma: no cover
     alarm_incidents = []
     last_run = demisto.getLastRun()
-    alarm_last_run = last_run.get('AlarmLastRun')
+    alarm_last_run = last_run.get("AlarmLastRun")
     fetch_time_date = dateparser.parse(fetch_time)
-    assert fetch_time_date is not None, f'could not parse {fetch_time}'
+    assert fetch_time_date is not None, f"could not parse {fetch_time}"
     first_run = fetch_time_date.strftime("%Y-%m-%dT%H:%M:%S")
 
-    alarms_list_args: dict = {'count': limit}
+    alarms_list_args: dict = {"count": limit}
 
     if alarm_last_run:
-        alarms_list_args['created_after'] = alarm_last_run
+        alarms_list_args["created_after"] = alarm_last_run
     elif first_run:
-        alarms_list_args['created_after'] = first_run
+        alarms_list_args["created_after"] = first_run
 
     # filter alerts
     if alarm_status_filter:
-        alarms_list_args['alarm_status'] = alarm_status_filter  # type: ignore
+        alarms_list_args["alarm_status"] = alarm_status_filter  # type: ignore
     if alarm_rule_name_filter:
-        alarms_list_args['alarm_rule_name'] = alarm_rule_name_filter  # type: ignore
+        alarms_list_args["alarm_rule_name"] = alarm_rule_name_filter  # type: ignore
 
     alarms, _ = client.alarms_list_request(**alarms_list_args)
 
     for alarm in alarms:
-        alarm['incidentType'] = 'Alarm'
+        alarm["incidentType"] = "Alarm"
         incident = {
-            'name': f'Alarm #{alarm.get("alarmId")} {alarm.get("alarmRuleName")}',
-            'occurred': f'{alarm.get("dateInserted")}Z',
-            'labels': [{'type': 'alarmId', 'value': str(alarm.get('alarmId'))}],
-            'rawJSON': json.dumps(alarm)
+            "name": f'Alarm #{alarm.get("alarmId")} {alarm.get("alarmRuleName")}',
+            "occurred": f'{alarm.get("dateInserted")}Z',
+            "labels": [{"type": "alarmId", "value": str(alarm.get("alarmId"))}],
+            "rawJSON": json.dumps(alarm),
         }
         alarm_incidents.append(incident)
 
     if alarms:
-        last_run['AlarmLastRun'] = alarms[0].get('dateInserted')
+        last_run["AlarmLastRun"] = alarms[0].get("dateInserted")
         demisto.setLastRun(last_run)
     return alarm_incidents
 
 
-def fetch_cases(client: Client, limit: int, fetch_time: str, fetch_case_evidences: bool,
-                case_tags_filter: str, case_status_filter: str, case_priority_filter: str):  # pragma: no cover
+def fetch_cases(
+    client: Client,
+    limit: int,
+    fetch_time: str,
+    fetch_case_evidences: bool,
+    case_tags_filter: str,
+    case_status_filter: str,
+    case_priority_filter: str,
+):  # pragma: no cover
     case_incidents = []
     last_run = demisto.getLastRun()
-    case_last_run = last_run.get('CaseLastRun')
+    case_last_run = last_run.get("CaseLastRun")
     fetch_time_date = dateparser.parse(fetch_time)
-    assert fetch_time_date is not None, f'could not parse {fetch_time}'
+    assert fetch_time_date is not None, f"could not parse {fetch_time}"
     first_run = fetch_time_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    cases_list_args = {'count': limit}
+    cases_list_args = {"count": limit}
 
     if case_last_run:
-        cases_list_args['timestamp_filter_type'] = 'createdAfter'  # type: ignore
-        cases_list_args['timestamp'] = case_last_run
+        cases_list_args["timestamp_filter_type"] = "createdAfter"  # type: ignore
+        cases_list_args["timestamp"] = case_last_run
     elif first_run:
-        cases_list_args['timestamp_filter_type'] = 'createdAfter'  # type: ignore
-        cases_list_args['timestamp'] = first_run  # type: ignore
+        cases_list_args["timestamp_filter_type"] = "createdAfter"  # type: ignore
+        cases_list_args["timestamp"] = first_run  # type: ignore
 
     # filter cases
     if case_tags_filter:
-        cases_list_args['tags'] = case_tags_filter  # type: ignore
+        cases_list_args["tags"] = case_tags_filter  # type: ignore
     if case_status_filter:
-        cases_list_args['status'] = str(CASE_STATUS.get(case_status_filter))  # type: ignore
+        cases_list_args["status"] = str(CASE_STATUS.get(case_status_filter))  # type: ignore
     if case_priority_filter:
-        cases_list_args['priority'] = case_priority_filter  # type: ignore
+        cases_list_args["priority"] = case_priority_filter  # type: ignore
 
     cases = client.cases_list_request(**cases_list_args)
 
     for case in cases:
         file_names = []
-        case['incidentType'] = 'Case'
+        case["incidentType"] = "Case"
 
         if fetch_case_evidences:
-            case_id = case.get('id')
+            case_id = case.get("id")
             evidences = client.case_evidence_list_request(case_id)
-            case['CaseEvidence'] = evidences
+            case["CaseEvidence"] = evidences
             for evidence in evidences:
-                if evidence.get('type') == 'file':
-                    file_result = client.case_file_evidence_download_request(case_id, evidence.get('number'))
-                    file_names.append({
-                        'path': file_result.get('FileID'),
-                        'name': file_result.get('File')})
+                if evidence.get("type") == "file":
+                    file_result = client.case_file_evidence_download_request(case_id, evidence.get("number"))
+                    file_names.append({"path": file_result.get("FileID"), "name": file_result.get("File")})
 
         incident = {
-            'name': f'Case #{case.get("number")} {case.get("name")}',
-            'occurred': case.get('dateCreated'),
-            'attachment': file_names,
-            'rawJSON': json.dumps(case)
+            "name": f'Case #{case.get("number")} {case.get("name")}',
+            "occurred": case.get("dateCreated"),
+            "attachment": file_names,
+            "rawJSON": json.dumps(case),
         }
         case_incidents.append(incident)
 
     if cases:
-        last_run['CaseLastRun'] = cases[-1].get('dateCreated')
+        last_run["CaseLastRun"] = cases[-1].get("dateCreated")
         demisto.setLastRun(last_run)
     return case_incidents
 
@@ -2543,88 +2737,96 @@ def fetch_cases(client: Client, limit: int, fetch_time: str, fetch_case_evidence
 def main() -> None:  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
-    url = params.get('url')
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    incidents_type = params.get('fetchType', 'Both')
-    fetch_time = params.get('first_fetch', '7 days')
-    is_fetch: bool = params.get('isFetch', False)
-    alarms_max_fetch = params.get('alarmsMaxFetch', 100)
-    cases_max_fetch = params.get('casesMaxFetch', 100)
-    alarm_status_filter = params.get('alarm_status_filter', '')
-    alarm_rule_name_filter = params.get('alarm_rule_name_filter', '')
-    case_priority_filter = params.get('case_priority_filter', '')
-    case_status_filter = params.get('case_status_filter', '')
-    case_tags_filter = params.get('case_tags_filter', '')
-    fetch_case_evidences = params.get('fetch_case_evidences', False)
+    url = params.get("url")
+    verify_certificate: bool = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    incidents_type = params.get("fetchType", "Both")
+    fetch_time = params.get("first_fetch", "7 days")
+    is_fetch: bool = params.get("isFetch", False)
+    alarms_max_fetch = params.get("alarmsMaxFetch", 100)
+    cases_max_fetch = params.get("casesMaxFetch", 100)
+    alarm_status_filter = params.get("alarm_status_filter", "")
+    alarm_rule_name_filter = params.get("alarm_rule_name_filter", "")
+    case_priority_filter = params.get("case_priority_filter", "")
+    case_status_filter = params.get("case_status_filter", "")
+    case_tags_filter = params.get("case_tags_filter", "")
+    fetch_case_evidences = params.get("fetch_case_evidences", False)
 
-    api_key = params.get('credentials', {}).get('password')
-    headers = {'Authorization': f'Bearer {api_key}'}
+    api_key = params.get("credentials", {}).get("password")
+    headers = {"Authorization": f"Bearer {api_key}"}
 
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     try:
-        client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
+        client: Client = Client(urljoin(url, ""), verify_certificate, proxy, headers=headers, auth=None)
 
         commands = {
-            'lr-alarms-list': alarms_list_command,
-            'lr-alarm-update': alarm_update_command,
-            'lr-alarm-add-comment': alarm_add_comment_command,
-            'lr-alarm-history-list': alarm_history_list_command,
-            'lr-alarm-events-list': alarm_events_list_command,
-            'lr-alarm-summary': alarm_summary_command,
-            'lr-get-alarm-details': get_alarm_details_command,
-            'lr-alarm-drilldown': alarm_drilldown_command,
-            'lr-cases-list': cases_list_command,
-            'lr-case-create': case_create_command,
-            'lr-case-update': case_update_command,
-            'lr-case-status-change': case_status_change_command,
-            'lr-case-evidence-list': case_evidence_list_command,
-            'lr-case-alarm-evidence-add': case_alarm_evidence_add_command,
-            'lr-case-note-evidence-add': case_note_evidence_add_command,
-            'lr-case-file-evidence-add': case_file_evidence_add_command,
-            'lr-case-evidence-delete': case_evidence_delete_command,
-            'lr-case-file-evidence-download': case_file_evidence_download_command,
-            'lr-case-tags-add': case_tags_add_command,
-            'lr-case-tags-remove': case_tags_remove_command,
-            'lr-tags-list': tags_list_command,
-            'lr-case-collaborators-list': case_collaborators_list_command,
-            'lr-case-collaborators-update': case_collaborators_update_command,
-            'lr-entities-list': entities_list_command,
-            'lr-hosts-list': hosts_list_command,
-            'lr-users-list': users_list_command,
-            'lr-lists-get': lists_get_command,
-            'lr-list-summary-create-update': list_summary_create_update_command,
-            'lr-list-details-and-items-get': list_details_and_items_get_command,
-            'lr-list-items-add': list_items_add_command,
-            'lr-list-items-remove': list_items_remove_command,
-            'lr-execute-search-query': execute_search_query_command,
-            'lr-get-query-result': get_query_result_command,
-            'lr-add-host': add_host_command,
-            'lr-hosts-status-update': hosts_status_update_command,
-            'lr-networks-list': networks_list_command,
-            'endpoint': endpoint_command,
+            "lr-alarms-list": alarms_list_command,
+            "lr-alarm-update": alarm_update_command,
+            "lr-alarm-add-comment": alarm_add_comment_command,
+            "lr-alarm-history-list": alarm_history_list_command,
+            "lr-alarm-events-list": alarm_events_list_command,
+            "lr-alarm-summary": alarm_summary_command,
+            "lr-get-alarm-details": get_alarm_details_command,
+            "lr-alarm-drilldown": alarm_drilldown_command,
+            "lr-cases-list": cases_list_command,
+            "lr-case-create": case_create_command,
+            "lr-case-update": case_update_command,
+            "lr-case-status-change": case_status_change_command,
+            "lr-case-evidence-list": case_evidence_list_command,
+            "lr-case-alarm-evidence-add": case_alarm_evidence_add_command,
+            "lr-case-note-evidence-add": case_note_evidence_add_command,
+            "lr-case-file-evidence-add": case_file_evidence_add_command,
+            "lr-case-evidence-delete": case_evidence_delete_command,
+            "lr-case-file-evidence-download": case_file_evidence_download_command,
+            "lr-case-tags-add": case_tags_add_command,
+            "lr-case-tags-remove": case_tags_remove_command,
+            "lr-tags-list": tags_list_command,
+            "lr-case-collaborators-list": case_collaborators_list_command,
+            "lr-case-collaborators-update": case_collaborators_update_command,
+            "lr-entities-list": entities_list_command,
+            "lr-hosts-list": hosts_list_command,
+            "lr-users-list": users_list_command,
+            "lr-lists-get": lists_get_command,
+            "lr-list-summary-create-update": list_summary_create_update_command,
+            "lr-list-details-and-items-get": list_details_and_items_get_command,
+            "lr-list-items-add": list_items_add_command,
+            "lr-list-items-remove": list_items_remove_command,
+            "lr-execute-search-query": execute_search_query_command,
+            "lr-get-query-result": get_query_result_command,
+            "lr-add-host": add_host_command,
+            "lr-hosts-status-update": hosts_status_update_command,
+            "lr-networks-list": networks_list_command,
+            "endpoint": endpoint_command,
         }
 
-        if command == 'test-module':
+        if command == "test-module":
             test_module(client, is_fetch, incidents_type, cases_max_fetch, alarms_max_fetch, fetch_time)
-        elif command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents_command(client, incidents_type, cases_max_fetch, alarms_max_fetch,
-                                                      fetch_time, alarm_status_filter=alarm_status_filter,
-                                                      alarm_rule_name_filter=alarm_rule_name_filter,
-                                                      case_tags_filter=case_tags_filter,
-                                                      case_status_filter=case_status_filter,
-                                                      case_priority_filter=case_priority_filter,
-                                                      fetch_case_evidences=fetch_case_evidences))
+        elif command == "fetch-incidents":
+            demisto.incidents(
+                fetch_incidents_command(
+                    client,
+                    incidents_type,
+                    cases_max_fetch,
+                    alarms_max_fetch,
+                    fetch_time,
+                    alarm_status_filter=alarm_status_filter,
+                    alarm_rule_name_filter=alarm_rule_name_filter,
+                    case_tags_filter=case_tags_filter,
+                    case_status_filter=case_status_filter,
+                    case_priority_filter=case_priority_filter,
+                    fetch_case_evidences=fetch_case_evidences,
+                )
+            )
         elif command in commands:
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
         return_error(str(e))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

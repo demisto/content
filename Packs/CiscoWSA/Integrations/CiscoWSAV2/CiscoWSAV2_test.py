@@ -1,8 +1,9 @@
 import json
 import os
-import pytest
 from http import HTTPStatus
 from unittest.mock import patch
+
+import pytest
 from CommonServerPython import *
 
 """CONSTANTS"""
@@ -22,9 +23,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(
-        os.path.join("test_data/outputs", file_name), mode="r", encoding="utf-8"
-    ) as mock_file:
+    with open(os.path.join("test_data/outputs", file_name), encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -70,13 +69,13 @@ def test_fail_handle_request_headers_command_request(
     Then:
     - Ensure relevant error raised.
     """
-    mock_response = load_mock_response('login_fail.json')
+    mock_response = load_mock_response("login_fail.json")
 
     url = f"{BASE_URL}/{V2_PREFIX}/login"
     requests_mock.post(url=url, status_code=HTTPStatus.UNAUTHORIZED, json=mock_response)
     with pytest.raises(DemistoException) as error:
         mock_client.handle_request_headers()
-    assert "Authorization Error: make sure username and password are set correctly." == str(error.value)
+    assert str(error.value) == "Authorization Error: make sure username and password are set correctly."
 
 
 def test_handle_request_headers_command_new_request(
@@ -92,7 +91,7 @@ def test_handle_request_headers_command_new_request(
     Then:
     - Ensure that the command get a new jwt.
     """
-    mock_response = load_mock_response('login.json')
+    mock_response = load_mock_response("login.json")
     url = f"{BASE_URL}/{V2_PREFIX}/login"
     requests_mock.post(url=url, status_code=HTTPStatus.OK, json=mock_response)
     mock_client.handle_request_headers()
@@ -183,7 +182,7 @@ def test_list_access_policy_command(
     assert result.outputs_prefix == "CiscoWSA.AccessPolicy"
     assert len(result.outputs) == expected_outputs_len
     assert result.outputs_key_field == "policy_name"
-    assert result.outputs[0]['policy_name'] == 'test2'
+    assert result.outputs[0]["policy_name"] == "test2"
 
 
 def test_create_access_policy_command(
@@ -233,7 +232,7 @@ def test_create_fail_access_policy_command(
     """
     from CiscoWSAV2 import create_access_policy_command
 
-    mock_response = load_mock_response('access_policy_create_fail.json')
+    mock_response = load_mock_response("access_policy_create_fail.json")
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.post(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
@@ -298,7 +297,7 @@ def test_update_fail_access_policy_command(
     """
     from CiscoWSAV2 import update_access_policy_command
 
-    mock_response = load_mock_response('access_policy_create_fail.json')
+    mock_response = load_mock_response("access_policy_create_fail.json")
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.put(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
@@ -535,7 +534,7 @@ def test_fail_delete_access_policy_command(
     """
     from CiscoWSAV2 import delete_access_policy_command
 
-    mock_response = load_mock_response('access_policy_delete_fail.json')
+    mock_response = load_mock_response("access_policy_delete_fail.json")
 
     url = f"{BASE_URL}/{V3_PREFIX}/web_security/access_policies"
     requests_mock.delete(url=url, status_code=HTTPStatus.MULTI_STATUS, json=mock_response)
@@ -614,8 +613,8 @@ def test_list_domain_map_command(
 
     assert result.outputs_prefix == "CiscoWSA.DomainMap"
     assert len(result.outputs) == expected_outputs_len
-    assert result.outputs_key_field == 'domain_name'
-    assert result.outputs[0]['domain_name'] == 'test.com'
+    assert result.outputs_key_field == "domain_name"
+    assert result.outputs[0]["domain_name"] == "test.com"
 
 
 def test_create_domain_map_command(
@@ -666,7 +665,8 @@ def test_fail_create_domain_map_command(
      - Ensure relevant error raised.
     """
     from CiscoWSAV2 import create_domain_map_command
-    mock_response = load_mock_response('domain_map_create_fail.json')
+
+    mock_response = load_mock_response("domain_map_create_fail.json")
 
     url = f"{BASE_URL}/{V2_PREFIX}/configure/web_security/domain_map"
     requests_mock.post(url=url, status_code=HTTPStatus.OK, json=mock_response)
@@ -817,11 +817,7 @@ def test_fail_delete_domain_map_command(
         ),
         (
             "identification_profiles_list.json",
-            {
-                "page": 1,
-                "page_size": 4,
-                "limit": 3
-            },
+            {"page": 1, "page_size": 4, "limit": 3},
             4,
         ),
         (
@@ -862,8 +858,8 @@ def test_list_identification_profiles_command(
 
     assert result.outputs_prefix == "CiscoWSA.IdentificationProfile"
     assert len(result.outputs) == expected_outputs_len
-    assert result.outputs_key_field == 'profile_name'
-    assert result.outputs[0]['profile_name'] == 'test7'
+    assert result.outputs_key_field == "profile_name"
+    assert result.outputs[0]["profile_name"] == "test7"
 
 
 def test_create_identification_profiles_command(
@@ -1030,19 +1026,23 @@ def test_delete_handler(
     [
         (
             {},
-            106, 1,
+            106,
+            1,
         ),
         (
             {"type": "custom"},
-            0, 1,
+            0,
+            1,
         ),
         (
             {"type": "predefined"},
-            106, 0,
+            106,
+            0,
         ),
         (
             {"contain": "Adu"},
-            1, 0,
+            1,
+            0,
         ),
     ],
 )
@@ -1097,11 +1097,7 @@ def test_list_url_categories_command(
         ),
         (
             ["test.com", "test1.com", "test2.com", "test3.com", "test4.com"],
-            {
-                "page": 2,
-                "page_size": 2,
-                "limit": 4
-            },
+            {"page": 2, "page_size": 2, "limit": 4},
             ["test2.com", "test3.com"],
         ),
         (
@@ -1143,11 +1139,7 @@ def test_pagination_function(response, arguments, paginated_response):
         ),
         (
             ["test.com", "test1.com", "test2.com", "test3.com", "test4.com"],
-            {
-                "page": 2,
-                "page_size": -1,
-                "limit": 4
-            },
+            {"page": 2, "page_size": -1, "limit": 4},
             "page_size has to be positive number.",
         ),
         (

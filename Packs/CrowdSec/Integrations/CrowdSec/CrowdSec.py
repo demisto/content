@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """
     Cortex XSOAR CrowdSec Integration
 """
@@ -7,7 +8,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -33,7 +34,7 @@ TABLE_HEADERS = [
     "CrowdSec Score",
     "Background Noise Score",
     "CrowdSec Console Link",
-    "CrowdSec Taxonomy"
+    "CrowdSec Taxonomy",
 ]
 
 CROWDSEC_CTI_API_URL = "https://cti.api.crowdsec.net/v2/"
@@ -46,7 +47,7 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def get_ip_information(self, ip: str) -> Dict:
+    def get_ip_information(self, ip: str) -> dict:
         """
         Returns a simple python dict with the enriched information
         about the provided IP.
@@ -56,21 +57,15 @@ class Client(BaseClient):
 
         :return: dict as {"ip": ip, "ip_range": ip_range ...}
         """
-        response = self._http_request(
-            method="GET", url_suffix=f"/smoke/{ip}", resp_type="response", ok_codes=(200, 404)
-        )
+        response = self._http_request(method="GET", url_suffix=f"/smoke/{ip}", resp_type="response", ok_codes=(200, 404))
 
         if response.status_code == 429:
-            raise Exception(
-                "You have been rate limited by CrowdSec CTI API. Please upgrade to Pro or wait."
-            )
+            raise Exception("You have been rate limited by CrowdSec CTI API. Please upgrade to Pro or wait.")
 
         return response.json()
 
     def test_module(self, ip: str):
-        return self._http_request(
-            method="GET", url_suffix=f"/smoke/{ip}", resp_type="response", ok_codes=(200, 403, 404)
-        )
+        return self._http_request(method="GET", url_suffix=f"/smoke/{ip}", resp_type="response", ok_codes=(200, 403, 404))
 
 
 """ HELPER FUNCTIONS """
@@ -78,11 +73,11 @@ class Client(BaseClient):
 
 def format_readable(ip: str, data: dict, status: int) -> str:
     behaviors_readable = ""
-    for behavior in data.get("behaviors", list()):
+    for behavior in data.get("behaviors", []):
         behaviors_readable += behavior["label"] + "\n"
 
     cves_readable = ""
-    for attack_detail in data.get("attack_details", list()):
+    for attack_detail in data.get("attack_details", []):
         cves_readable += attack_detail["label"] + "\n"
 
     history = data.get("history", {})
@@ -105,7 +100,7 @@ def format_readable(ip: str, data: dict, status: int) -> str:
             "CrowdSec Score": f'{overall_score.get("total", "0")}/5',
             "Background Noise Score": f'{data.get("background_noise_score", 0)}/10',
             "CrowdSec Console Link": f"https://app.crowdsec.net/cti/{ip}",
-            "CrowdSec Taxonomy": "https://docs.crowdsec.net/docs/next/cti_api/taxonomy"
+            "CrowdSec Taxonomy": "https://docs.crowdsec.net/docs/next/cti_api/taxonomy",
         }
     ]
 
@@ -151,18 +146,15 @@ def test_module(client: Client) -> str:
     return message
 
 
-def ip_command(
-    client: Client, reliability: str, args: Dict[str, Any]
-) -> List[CommandResults]:
-
-    ips = argToList(args.get('ip'))
+def ip_command(client: Client, reliability: str, args: dict[str, Any]) -> List[CommandResults]:
+    ips = argToList(args.get("ip"))
     if not ips or len(ips) == 0:
         raise ValueError("'ip' argument not specified")
 
     command_results: List[CommandResults] = []
     for ip in ips:
         if not is_ip_valid(ip):
-            raise ValueError("Invalid IP '{}'".format(ip))
+            raise ValueError(f"Invalid IP '{ip}'")
 
         # Call the Client function and get the raw response
         result = client.get_ip_information(ip)
@@ -190,15 +182,8 @@ def ip_command(
                 dbot_score=dbot_score,
             )
         else:
-            tags = [behavior["name"] for behavior in result.get("behaviors", list())]
-            tags.extend(
-                [
-                    classification["name"]
-                    for classification in result["classifications"].get(
-                        "classifications", list()
-                    )
-                ]
-            )
+            tags = [behavior["name"] for behavior in result.get("behaviors", [])]
+            tags.extend([classification["name"] for classification in result["classifications"].get("classifications", [])])
             ip_indicator = Common.IP(
                 ip=ip,
                 dbot_score=dbot_score,
@@ -221,17 +206,19 @@ def ip_command(
                         source="CrowdSec",
                         timestamp=datetime.now().strftime(DATE_FORMAT),
                         link="https://docs.crowdsec.net/docs/next/cti_api/taxonomy",
-                    )
+                    ),
                 ],
             )
 
-        command_results.append(CommandResults(
-            outputs_prefix="CrowdSec.Info",
-            outputs_key_field="ip",
-            outputs=result,
-            indicator=ip_indicator,
-            readable_output=format_readable(ip, result, score),
-        ))
+        command_results.append(
+            CommandResults(
+                outputs_prefix="CrowdSec.Info",
+                outputs_key_field="ip",
+                outputs=result,
+                indicator=ip_indicator,
+                readable_output=format_readable(ip, result, score),
+            )
+        )
 
     return command_results
 
@@ -244,23 +231,15 @@ def main() -> None:
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
 
-    demisto.debug(
-        f"Command being called is {demisto.command()} with args {demisto.args()} and params {demisto.params()}"
-    )
+    demisto.debug(f"Command being called is {demisto.command()} with args {demisto.args()} and params {demisto.params()}")
     try:
-        reliability = demisto.params().get(
-            "integrationReliability", "B - Usually reliable"
-        )
+        reliability = demisto.params().get("integrationReliability", "B - Usually reliable")
         if DBotScoreReliability.is_valid_type(reliability):
-            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
-                reliability
-            )
+            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
-            raise Exception(
-                "Please provide a valid value for the Source Reliability parameter."
-            )
+            raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
-        headers: Dict = {"x-api-key": api_key}
+        headers: dict = {"x-api-key": api_key}
 
         client = Client(
             base_url=CROWDSEC_CTI_API_URL,
@@ -279,9 +258,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

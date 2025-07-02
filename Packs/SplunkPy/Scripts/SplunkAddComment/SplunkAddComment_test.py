@@ -3,8 +3,9 @@ def test_add_comment_as_note():
     adding a comment as a note.
     """
     from SplunkAddComment import add_comment
-    result = add_comment({'comment': 'New comment', 'tags': 'comment tag to splunk'})
 
-    assert result.readable_output == 'New comment'
-    assert result.tags == ['comment tag to splunk']
+    result = add_comment({"comment": "New comment", "tags": "comment tag to splunk"})
+
+    assert result.readable_output == "New comment"
+    assert result.tags == ["comment tag to splunk"]
     assert result.mark_as_note

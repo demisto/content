@@ -96,6 +96,18 @@
       "type": "string",
       "is_array": false
     },
+    "event_fwlink": {
+        "type": "string",
+        "is_array": false
+      },
+    "detection_source": {
+        "type": "string",
+        "is_array": false
+      },
+    "threat_category": {
+        "type": "string",
+        "is_array": false
+      },
     "provider_guid": {
       "type": "string",
       "is_array": false

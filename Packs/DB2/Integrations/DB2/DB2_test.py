@@ -1,10 +1,8 @@
+import ibm_db
 import pytest
 from CommonServerPython import *
-import ibm_db
-from ibm_db_dbi import Connection
-
 from DB2 import Client, query_command
-
+from ibm_db_dbi import Connection
 
 ARGS1 = {
     "query": (

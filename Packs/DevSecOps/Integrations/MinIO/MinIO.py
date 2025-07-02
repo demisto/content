@@ -1,9 +1,9 @@
-from CommonServerPython import *
-import urllib3
-from minio import Minio
 import io
-from minio.commonconfig import REPLACE, CopySource
-from minio.commonconfig import Tags
+
+import urllib3
+from CommonServerPython import *
+from minio import Minio
+from minio.commonconfig import REPLACE, CopySource, Tags  # pylint: disable=E0401, E0611
 
 
 class Client(Minio):
@@ -12,21 +12,17 @@ class Client(Minio):
 
 
 def make_bucket_command(client, args):
-
     response = []
 
-    name = str(args.get('name', ''))
+    name = str(args.get("name", ""))
 
     client.make_bucket(bucket_name=name)
 
-    response.append({
-        'bucket': name,
-        'status': 'created'
-    })
+    response.append({"bucket": name, "status": "created"})
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Buckets',
-        outputs_key_field='bucket',
+        outputs_prefix="MinIO.Buckets",
+        outputs_key_field="bucket",
         outputs=response,
         raw_response=response,
     )
@@ -35,19 +31,15 @@ def make_bucket_command(client, args):
 
 
 def remove_bucket_command(client, args):
-
     response = []
-    name = str(args.get('name', ''))
+    name = str(args.get("name", ""))
 
     client.remove_bucket(bucket_name=name)
-    response.append({
-        'bucket': name,
-        'status': 'removed'
-    })
+    response.append({"bucket": name, "status": "removed"})
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Buckets',
-        outputs_key_field='bucket',
+        outputs_prefix="MinIO.Buckets",
+        outputs_key_field="bucket",
         outputs=response,
         raw_response=response,
     )
@@ -60,14 +52,11 @@ def list_buckets_command(client, args):
     buckets = client.list_buckets()
 
     for bucket in buckets:
-        response.append({
-            'bucket': bucket.name,
-            'creation_date': str(bucket.creation_date)
-        })
+        response.append({"bucket": bucket.name, "creation_date": str(bucket.creation_date)})
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Buckets',
-        outputs_key_field='bucket',
+        outputs_prefix="MinIO.Buckets",
+        outputs_key_field="bucket",
         outputs=response,
         raw_response=response,
     )
@@ -78,27 +67,30 @@ def list_buckets_command(client, args):
 def list_objects_command(client, args):
     response = []
 
-    bucket_name = str(args.get('bucket_name'))
-    prefix = args.get('prefix')
-    start_after = args.get('start_after')
-    include_user_meta = args.get('include_user_meta', False)
+    bucket_name = str(args.get("bucket_name"))
+    prefix = args.get("prefix")
+    start_after = args.get("start_after")
+    include_user_meta = args.get("include_user_meta", False)
 
-    objects = client.list_objects(bucket_name=bucket_name, prefix=prefix, start_after=start_after,
-                                  include_user_meta=include_user_meta)
+    objects = client.list_objects(
+        bucket_name=bucket_name, prefix=prefix, start_after=start_after, include_user_meta=include_user_meta
+    )
 
     for stored_object in objects:
-        response.append({
-            'bucket': bucket_name,
-            'object': stored_object.object_name,
-            'is_dir': stored_object.is_dir,
-            'size': stored_object.size,
-            'etag': stored_object.etag,
-            'last_modified': str(stored_object.last_modified)
-        })
+        response.append(
+            {
+                "bucket": bucket_name,
+                "object": stored_object.object_name,
+                "is_dir": stored_object.is_dir,
+                "size": stored_object.size,
+                "etag": stored_object.etag,
+                "last_modified": str(stored_object.last_modified),
+            }
+        )
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Objects',
-        outputs_key_field='bucket,object',
+        outputs_prefix="MinIO.Objects",
+        outputs_key_field="bucket,object",
         outputs=response,
         raw_response=response,
     )
@@ -109,12 +101,12 @@ def list_objects_command(client, args):
 def get_object_command(client, args):
     response = None
 
-    bucket_name = str(args.get('bucket_name'))
-    object_name = str(args.get('name'))
-    offset = int(args.get('offset', 0))
-    length = int(args.get('length', 0))
-    extra_query_params = args.get('extra_query_params', None)
-    request_headers = args.get('request_headers', None)
+    bucket_name = str(args.get("bucket_name"))
+    object_name = str(args.get("name"))
+    offset = int(args.get("offset", 0))
+    length = int(args.get("length", 0))
+    extra_query_params = args.get("extra_query_params", None)
+    request_headers = args.get("request_headers", None)
     object_bytes = None
     try:
         response = client.get_object(
@@ -123,7 +115,7 @@ def get_object_command(client, args):
             offset=offset,
             length=length,
             extra_query_params=extra_query_params,
-            request_headers=request_headers
+            request_headers=request_headers,
         )
         object_bytes = response.read()
     finally:
@@ -135,26 +127,26 @@ def get_object_command(client, args):
 
 
 def stat_object_command(client, args):
-
     response = []
-    bucket_name = str(args.get('bucket_name'))
-    object_name = str(args.get('name'))
-    extra_query_params = args.get('extra_query_params', None)
+    bucket_name = str(args.get("bucket_name"))
+    object_name = str(args.get("name"))
+    extra_query_params = args.get("extra_query_params", None)
 
-    object_stats = client.stat_object(bucket_name=bucket_name, object_name=object_name,
-                                      extra_query_params=extra_query_params)
+    object_stats = client.stat_object(bucket_name=bucket_name, object_name=object_name, extra_query_params=extra_query_params)
 
-    response.append({
-        'bucket': bucket_name,
-        'object': object_name,
-        'content-type': object_stats.metadata.get('Content-Type'),
-        'etag': object_stats.metadata.get('ETag'),
-        'size': object_stats.size
-    })
+    response.append(
+        {
+            "bucket": bucket_name,
+            "object": object_name,
+            "content-type": object_stats.metadata.get("Content-Type"),
+            "etag": object_stats.metadata.get("ETag"),
+            "size": object_stats.size,
+        }
+    )
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Objects',
-        outputs_key_field='bucket,object',
+        outputs_prefix="MinIO.Objects",
+        outputs_key_field="bucket,object",
         outputs=response,
         raw_response=response,
     )
@@ -163,21 +155,16 @@ def stat_object_command(client, args):
 
 
 def remove_object_command(client, args):
-
     response = []
-    name = str(args.get('name', ''))
-    bucket_name = str(args.get('bucket_name', ''))
+    name = str(args.get("name", ""))
+    bucket_name = str(args.get("bucket_name", ""))
 
     client.remove_object(object_name=name, bucket_name=bucket_name)
-    response.append({
-        'bucket': bucket_name,
-        'object': name,
-        'status': 'removed'
-    })
+    response.append({"bucket": bucket_name, "object": name, "status": "removed"})
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Objects',
-        outputs_key_field='bucket,object',
+        outputs_prefix="MinIO.Objects",
+        outputs_key_field="bucket,object",
         outputs=response,
         raw_response=response,
     )
@@ -186,30 +173,25 @@ def remove_object_command(client, args):
 
 
 def fput_object_command(client, args):
-
     response = []
-    bucket_name = str(args.get('bucket_name', ''))
-    entry_id = args.get('entry_id', '')
-    content_type = args.get('content_type', 'application/octet-stream')
-    metadata = args.get('metadata', None)
+    bucket_name = str(args.get("bucket_name", ""))
+    entry_id = args.get("entry_id", "")
+    content_type = args.get("content_type", "application/octet-stream")
+    metadata = args.get("metadata", None)
 
     get_file_path_res = demisto.getFilePath(entry_id)
     object_path = get_file_path_res["path"]
     object_name = get_file_path_res["name"]
 
-    client.fput_object(object_name=object_name, bucket_name=bucket_name,
-                       file_path=object_path, content_type=content_type,
-                       metadata=metadata)
+    client.fput_object(
+        object_name=object_name, bucket_name=bucket_name, file_path=object_path, content_type=content_type, metadata=metadata
+    )
 
-    response.append({
-        'bucket': bucket_name,
-        'object': object_name,
-        'status': 'uploaded'
-    })
+    response.append({"bucket": bucket_name, "object": object_name, "status": "uploaded"})
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Objects',
-        outputs_key_field='bucket,object',
+        outputs_prefix="MinIO.Objects",
+        outputs_key_field="bucket,object",
         outputs=response,
         raw_response=response,
     )
@@ -218,29 +200,29 @@ def fput_object_command(client, args):
 
 
 def put_object_command(client, args):
-
     response = []
-    bucket_name = str(args.get('bucket_name', ''))
-    object_name = str(args.get('name'))
-    data_bytes = args.get('data').encode('utf-8')
-    content_type = args.get('content_type', 'application/octet-stream')
-    metadata = args.get('metadata', None)
+    bucket_name = str(args.get("bucket_name", ""))
+    object_name = str(args.get("name"))
+    data_bytes = args.get("data").encode("utf-8")
+    content_type = args.get("content_type", "application/octet-stream")
+    metadata = args.get("metadata", None)
 
     data = io.BytesIO(data_bytes)
 
-    client.put_object(object_name=object_name, bucket_name=bucket_name,
-                      data=data, content_type=content_type,
-                      metadata=metadata, length=len(data_bytes))
+    client.put_object(
+        object_name=object_name,
+        bucket_name=bucket_name,
+        data=data,
+        content_type=content_type,
+        metadata=metadata,
+        length=len(data_bytes),
+    )
 
-    response.append({
-        'bucket': bucket_name,
-        'object': object_name,
-        'status': 'uploaded'
-    })
+    response.append({"bucket": bucket_name, "object": object_name, "status": "uploaded"})
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Objects',
-        outputs_key_field='bucket,object',
+        outputs_prefix="MinIO.Objects",
+        outputs_key_field="bucket,object",
         outputs=response,
         raw_response=response,
     )
@@ -249,31 +231,26 @@ def put_object_command(client, args):
 
 
 def copy_object_command(client, args):
+    bucket_name_src = args.get("bucket_name_src", "")
+    object_name_src = args.get("name_src")
+    bucket_name_dst = args.get("bucket_name_dst", "")
+    object_name_dst = args.get("name_dst")
 
-    bucket_name_src = args.get('bucket_name_src', '')
-    object_name_src = args.get('name_src')
-    bucket_name_dst = args.get('bucket_name_dst', '')
-    object_name_dst = args.get('name_dst')
-
-    metadata = args.get('metadata', None)
+    metadata = args.get("metadata", None)
 
     client.copy_object(
         bucket_name_dst,
         object_name_dst,
         CopySource(bucket_name_src, object_name_src),
         metadata=metadata,
-        metadata_directive=REPLACE
+        metadata_directive=REPLACE,
     )
 
-    res = {
-        'bucket': bucket_name_dst,
-        'object': object_name_dst,
-        'status': 'copied'
-    }
+    res = {"bucket": bucket_name_dst, "object": object_name_dst, "status": "copied"}
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Objects',
-        outputs_key_field=['bucket', 'object'],
+        outputs_prefix="MinIO.Objects",
+        outputs_key_field=["bucket", "object"],
         outputs=res,
         raw_response=res,
     )
@@ -282,21 +259,16 @@ def copy_object_command(client, args):
 
 
 def get_tags_command(client, args):
-
-    bucket_name = args.get('bucket_name', '')
-    object_name = args.get('name')
+    bucket_name = args.get("bucket_name", "")
+    object_name = args.get("name")
     tag = client.get_object_tags(bucket_name=bucket_name, object_name=object_name)
-    res = {
-        'bucket': bucket_name,
-        'object': object_name,
-        'status': 'completed'
-    }
+    res = {"bucket": bucket_name, "object": object_name, "status": "completed"}
     if tag:
-        res['tags'] = tag
+        res["tags"] = tag
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Objects',
-        outputs_key_field=['bucket', 'object'],
+        outputs_prefix="MinIO.Objects",
+        outputs_key_field=["bucket", "object"],
         outputs=res,
         raw_response=res,
     )
@@ -305,11 +277,10 @@ def get_tags_command(client, args):
 
 
 def set_tag_command(client, args):
-
-    bucket_name = args.get('bucket_name', '')
-    object_name = args.get('name')
-    tag_key = args.get('tag_key')
-    tag_value = args.get('tag_value')
+    bucket_name = args.get("bucket_name", "")
+    object_name = args.get("name")
+    tag_key = args.get("tag_key")
+    tag_value = args.get("tag_value")
 
     existing_tag = client.get_object_tags(bucket_name=bucket_name, object_name=object_name)
 
@@ -319,16 +290,11 @@ def set_tag_command(client, args):
         tags.update(existing_tag)
     client.set_object_tags(bucket_name, object_name, tags)
 
-    res = {
-        'bucket': bucket_name,
-        'object': object_name,
-        'tags': tags,
-        'status': 'completed'
-    }
+    res = {"bucket": bucket_name, "object": object_name, "tags": tags, "status": "completed"}
 
     command_results = CommandResults(
-        outputs_prefix='MinIO.Objects',
-        outputs_key_field=['bucket', 'object'],
+        outputs_prefix="MinIO.Objects",
+        outputs_key_field=["bucket", "object"],
         outputs=res,
         raw_response=res,
     )
@@ -339,50 +305,44 @@ def set_tag_command(client, args):
 def test_module(client):
     # Test functions here
     client.list_buckets()
-    demisto.results('ok')
+    demisto.results("ok")
 
 
 def main():
-
     params = demisto.params()
     args = demisto.args()
 
-    server = params.get('server')
-    port = params.get('port', '9000')
-    access_key = params.get('access_key')
-    access_secret = params.get('access_secret')
-    secure_connection = params.get('ssl', False)
+    server = params.get("server")
+    port = params.get("port", "9000")
+    access_key = params.get("access_key")
+    access_secret = params.get("access_secret")
+    secure_connection = params.get("ssl", False)
 
     endpoint = server + ":" + port
 
     command = demisto.command()
 
-    LOG(f'Command being called is {command}')
+    LOG(f"Command being called is {command}")
 
     try:
         urllib3.disable_warnings()
-        client = Client(
-            endpoint=endpoint,
-            access_key=access_key,
-            secret_key=access_secret,
-            secure=secure_connection
-        )
+        client = Client(endpoint=endpoint, access_key=access_key, secret_key=access_secret, secure=secure_connection)
         commands = {
-            'minio-make-bucket': make_bucket_command,
-            'minio-remove-bucket': remove_bucket_command,
-            'minio-list-buckets': list_buckets_command,
-            'minio-list-objects': list_objects_command,
-            'minio-get-object': get_object_command,
-            'minio-stat-object': stat_object_command,
-            'minio-remove-object': remove_object_command,
-            'minio-fput-object': fput_object_command,
-            'minio-put-object': put_object_command,
-            'minio-copy-object': copy_object_command,
-            'minio-get-tags': get_tags_command,
-            'minio-set-tag': set_tag_command
+            "minio-make-bucket": make_bucket_command,
+            "minio-remove-bucket": remove_bucket_command,
+            "minio-list-buckets": list_buckets_command,
+            "minio-list-objects": list_objects_command,
+            "minio-get-object": get_object_command,
+            "minio-stat-object": stat_object_command,
+            "minio-remove-object": remove_object_command,
+            "minio-fput-object": fput_object_command,
+            "minio-put-object": put_object_command,
+            "minio-copy-object": copy_object_command,
+            "minio-get-tags": get_tags_command,
+            "minio-set-tag": set_tag_command,
         }
 
-        if command == 'test-module':
+        if command == "test-module":
             test_module(client)
 
         else:
@@ -392,5 +352,5 @@ def main():
         return_error(str(e))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

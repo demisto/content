@@ -18,32 +18,25 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 MAX_ALERT_IDS_STORED = 300
 
 """ Types """
-FetchIncidentsStorage = TypedDict("FetchIncidentsStorage", {
-    "last_modified_fetched": str,
-    "zf-ids": list[str],
-})
+FetchIncidentsStorage = TypedDict(
+    "FetchIncidentsStorage",
+    {
+        "last_modified_fetched": str,
+        "zf-ids": list[str],
+    },
+)
 
 
 """ CLIENT """
 
 ALLOWED_SORT_FIELDS = ["timestamp", "last_modified"]
-ALLOWED_ALERT_FILTERS = [
-    "last_modified_min_date",
-    "escalated_min_date",
-    "min_timestamp",
-    "max_timestamp"
-]
+ALLOWED_ALERT_FILTERS = ["last_modified_min_date", "escalated_min_date", "min_timestamp", "max_timestamp"]
 
 
 class ZFClient(BaseClient):
-    def __init__(
-        self, username, token, only_escalated, *args, **kwargs
-    ):
+    def __init__(self, username, token, only_escalated, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.credentials = {
-            "username": username,
-            "password": token
-        }
+        self.credentials = {"username": username, "password": token}
         self.only_escalated = only_escalated
         self.auth_token = token
 
@@ -58,7 +51,7 @@ class ZFClient(BaseClient):
         files: dict[str, Any] | None = None,
         prefix: str | None = "1.0",
         empty_response: bool = False,
-        **kwargs
+        **kwargs,
     ) -> Response:
         pref_string = f"/{prefix}" if prefix else ""
 
@@ -76,7 +69,7 @@ class ZFClient(BaseClient):
             error_handler=self.handle_zerofox_error,
             files=files,
             resp_type="response",
-            **kwargs
+            **kwargs,
         )
 
     def api_request(
@@ -84,14 +77,14 @@ class ZFClient(BaseClient):
         method: str,
         url_suffix: str = "/",
         full_url: str | None = None,
-        headers_builder_type: str | None = 'api',
+        headers_builder_type: str | None = "api",
         params: dict[str, str] | None = None,
         data: dict[str, Any] | None = None,
         ok_codes: tuple[int, ...] = None,
         files: dict[str, Any] | None = None,
         prefix: str | None = "1.0",
         empty_response: bool = False,
-        **kwargs
+        **kwargs,
     ) -> dict[str, Any]:
         """
         :param method: HTTP request type
@@ -115,17 +108,10 @@ class ZFClient(BaseClient):
         headers = {}
         if headers_builder_type is not None:
             if headers_builder_type not in ("api", "cti"):
-                raise ValueError(
-                    "`headers_builder_type` should be 'api' or 'cti'"
-                )
-            header_builder = {
-                "api": self.get_api_request_header,
-                "cti": self.get_cti_request_header
-            }.get(headers_builder_type)
+                raise ValueError("`headers_builder_type` should be 'api' or 'cti'")
+            header_builder = {"api": self.get_api_request_header, "cti": self.get_cti_request_header}.get(headers_builder_type)
             if header_builder is None:
-                raise ValueError(
-                    "`headers_builder_type` should be 'api' or 'cti'"
-                )
+                raise ValueError("`headers_builder_type` should be 'api' or 'cti'")
             headers = header_builder()
 
             if files:
@@ -143,7 +129,7 @@ class ZFClient(BaseClient):
             return_empty_response=empty_response,
             error_handler=self.handle_zerofox_error,
             files=files,
-            **kwargs
+            **kwargs,
         )
 
     def handle_zerofox_error(self, raw_response: Response):
@@ -226,14 +212,10 @@ class ZFClient(BaseClient):
         """
         url_suffix: str = "/alerts/"
         if not params.get("limit"):
-            params['limit'] = 100
+            params["limit"] = 100
         if self.only_escalated:
-            params['escalated'] = 'true'
-        response_content = self.api_request(
-            "GET",
-            url_suffix,
-            params=params
-        )
+            params["escalated"] = "true"
+        response_content = self.api_request("GET", url_suffix, params=params)
         return response_content.get("alerts", [])
 
     def get_alerts(self, filter_by: dict[str, Any] = None, sort_by: str = None, **kwargs) -> list[dict[str, Any]]:
@@ -249,36 +231,21 @@ class ZFClient(BaseClient):
         try:
             params = {}
             if filter_by:
-                params.update({
-                    k: v for k, v in filter_by.items()
-                    if k in ALLOWED_ALERT_FILTERS
-                })
+                params.update({k: v for k, v in filter_by.items() if k in ALLOWED_ALERT_FILTERS})
             if sort_direction := kwargs.pop("sort_direction", "asc"):
-                params['sort_direction'] = sort_direction
+                params["sort_direction"] = sort_direction
             if sort_by in ALLOWED_SORT_FIELDS:
-                params['sort_field'] = sort_by
+                params["sort_field"] = sort_by
             if self.only_escalated:
-                params['escalated'] = 'true'
-            response_content = self.api_request(
-                "GET",
-                url_suffix,
-                retries=RETRIES,
-                params=params
-            )
+                params["escalated"] = "true"
+            response_content = self.api_request("GET", url_suffix, retries=RETRIES, params=params)
             alerts = response_content.get("alerts", [])
             while next_page := response_content.get("next", None):
-                response_content = self.api_request(
-                    "GET",
-                    retries=RETRIES,
-                    full_url=next_page
-                )
-                alerts += (response_content.get("alerts", []))
+                response_content = self.api_request("GET", retries=RETRIES, full_url=next_page)
+                alerts += response_content.get("alerts", [])
             return alerts
         except Exception as e:
-            raise ZeroFoxGetAlertsException(
-                escalated=self.only_escalated,
-                cause=e
-            )
+            raise ZeroFoxGetAlertsException(escalated=self.only_escalated, cause=e)
 
     def get_alert(self, alert_id: int) -> dict[str, Any]:
         """
@@ -290,16 +257,9 @@ class ZFClient(BaseClient):
             response_content = self.api_request("GET", url_suffix)
             return response_content.get("alert", {})
         except Exception as e:
-            raise ZeroFoxGetAlertException(
-                alert_id=alert_id,
-                cause=e
-            )
+            raise ZeroFoxGetAlertException(alert_id=alert_id, cause=e)
 
-    def alert_user_assignment(
-        self,
-        alert_id: int,
-        username: str
-    ) -> dict[str, Any]:
+    def alert_user_assignment(self, alert_id: int, username: str) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :param username: The username we want to assign to the alert.
@@ -339,11 +299,7 @@ class ZFClient(BaseClient):
             )
             return response_content
         except Exception as e:
-            raise ZeroFoxAlertActionException(
-                alert_id=alert_id,
-                action=action,
-                cause=e
-            )
+            raise ZeroFoxAlertActionException(alert_id=alert_id, action=action, cause=e)
 
     def close_alert(self, alert_id: int) -> dict[str, Any]:
         """
@@ -373,12 +329,7 @@ class ZFClient(BaseClient):
         """
         return self.alert_action(alert_id, self.AlertAction.CANCEL_TAKEDOWN)
 
-    def modify_alert_tags(
-        self,
-        alert_id: int,
-        action: str,
-        tags_list: list[str]
-    ) -> dict[str, Any]:
+    def modify_alert_tags(self, alert_id: int, action: str, tags_list: list[str]) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :param action: action can be 'added' or 'removed'. It indicates
@@ -397,7 +348,9 @@ class ZFClient(BaseClient):
             ],
         }
         response_content = self.api_request(
-            "POST", url_suffix, data=request_body,
+            "POST",
+            url_suffix,
+            data=request_body,
         )
         return response_content
 
@@ -430,7 +383,9 @@ class ZFClient(BaseClient):
         }
         request_body = remove_none_dict(request_body)
         response_content = self.api_request(
-            "POST", url_suffix, data=request_body,
+            "POST",
+            url_suffix,
+            data=request_body,
         )
         return response_content
 
@@ -472,18 +427,9 @@ class ZFClient(BaseClient):
             )
             return response_content
         except Exception as e:
-            raise ZeroFoxModifyNotesException(
-                alert_id=alert_id,
-                cause=e
-            )
+            raise ZeroFoxModifyNotesException(alert_id=alert_id, cause=e)
 
-    def submit_threat(
-        self,
-        source: str,
-        alert_type: str,
-        violation: str,
-        entity_id: str
-    ) -> dict[str, Any]:
+    def submit_threat(self, source: str, alert_type: str, violation: str, entity_id: str) -> dict[str, Any]:
         """
         :param source: The source of the threat.
         :param alert_type: The type of the alert.
@@ -508,11 +454,7 @@ class ZFClient(BaseClient):
         return response_content
 
     def send_alert_attachment(
-        self,
-        alert_id: int,
-        file_name: str,
-        file_content: BinaryIO,
-        attachment_type: str
+        self, alert_id: int, file_name: str, file_content: BinaryIO, attachment_type: str
     ) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
@@ -529,7 +471,7 @@ class ZFClient(BaseClient):
         # request_body = {"attachment_type": attachment_type}
 
         response_content = self.api_request(
-            'POST',
+            "POST",
             url_suffix,
             files=files,
         )
@@ -579,11 +521,7 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_phishing(
-        self,
-        domain: str | None = None,
-        ip: str | None = None
-    ) -> dict[str, Any]:
+    def get_cti_phishing(self, domain: str | None = None, ip: str | None = None) -> dict[str, Any]:
         """
         :param domain: The domain to lookup in phishing CTI Feed
         :param ip: The ip to lookup in phishing CTI Feed
@@ -632,10 +570,7 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_botnet_compromised_credentials(
-        self,
-        email: str
-    ) -> dict[str, Any]:
+    def get_cti_botnet_compromised_credentials(self, email: str) -> dict[str, Any]:
         """
         :param email: The email to lookup in botnet-compromised-credentials
         CTI Feed
@@ -794,15 +729,12 @@ class AlertToIncident:
             "details": f"A ZeroFox Alert with Id {alert.get('id', '')} has been raised.\
             It compromises entity {alert.get('entity', {}).get('name', '')},\
               it was found on {alert.get('network', '')}\
-                  and was triggered by rule {alert.get('rule_name', '')}."
+                  and was triggered by rule {alert.get('rule_name', '')}.",
         }
         return incident
 
 
-def parse_dict_values_to_integer(
-    params: dict[str, Any],
-    keys: list[str]
-) -> dict[str, Any]:
+def parse_dict_values_to_integer(params: dict[str, Any], keys: list[str]) -> dict[str, Any]:
     params_copy = deepcopy(params)
     for key in keys:
         value = params_copy.get(key)
@@ -833,11 +765,7 @@ def severity_string_to_num(severity_str: str) -> int:
     return severity_map.get(severity_str, -1)
 
 
-def get_nested_key(
-    obj: dict[str, Any],
-    path: list[str],
-    default_value: Any | None = None
-) -> Any:
+def get_nested_key(obj: dict[str, Any], path: list[str], default_value: Any | None = None) -> Any:
     """
     It returns the value of a nested key in a dictionary
     :param obj: The dictionary we want to get the value from
@@ -899,12 +827,14 @@ def get_alert_contents(alert: dict[str, Any]) -> dict[str, Any]:
         "PerpetratorName": get_nested_key(alert, ["perpetrator", "name"]),
         "PerpetratorUrl": get_nested_key(alert, ["perpetrator", "url"]),
         "PerpetratorTimeStamp": get_nested_key(
-            alert, ["perpetrator", "timestamp"],
+            alert,
+            ["perpetrator", "timestamp"],
         ),
         "PerpetratorType": get_nested_key(alert, ["perpetrator", "type"]),
         "PerpetratorID": get_nested_key(alert, ["perpetrator", "id"]),
         "PerpetratorNetwork": get_nested_key(
-            alert, ["perpetrator", "network"],
+            alert,
+            ["perpetrator", "network"],
         ),
         "RuleGroupID": alert.get("rule_group_id"),
         "Status": alert.get("status"),
@@ -924,10 +854,7 @@ def get_alert_contents(alert: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def transform_alert_human_readable_values(
-    alert: dict[str, Any],
-    title_keys: list[str] | None = None
-) -> dict[str, Any]:
+def transform_alert_human_readable_values(alert: dict[str, Any], title_keys: list[str] | None = None) -> dict[str, Any]:
     """
     It takes an alert and convert the keys indicated in `title_keys` to
     title case
@@ -944,8 +871,7 @@ def transform_alert_human_readable_values(
 
 
 def transform_alerts_human_readable_values(
-    alerts: dict[str, Any] | list[dict[str, Any]],
-    title_keys: list[str] | None = None
+    alerts: dict[str, Any] | list[dict[str, Any]], title_keys: list[str] | None = None
 ) -> dict[str, Any] | list[dict[str, Any]]:
     """
     It takes an alert or a list of alerts and convert the keys specified in
@@ -993,9 +919,7 @@ def transform_alert_human_readable_header(header: str) -> str:
     return transformations.get(header, header)
 
 
-def get_human_readable_alerts(
-    alerts: dict[str, Any] | list[dict[str, Any]]
-) -> str:
+def get_human_readable_alerts(alerts: dict[str, Any] | list[dict[str, Any]]) -> str:
     visible_keys = [
         "ID",
         "EntityName",
@@ -1010,9 +934,7 @@ def get_human_readable_alerts(
         "Tags",
     ]
     title_keys = ["AlertType", "RuleName", "Network", "EntityName"]
-    transformed_alerts = transform_alerts_human_readable_values(
-        alerts, title_keys=title_keys
-    )
+    transformed_alerts = transform_alerts_human_readable_values(alerts, title_keys=title_keys)
     readable_output: str = tableToMarkdown(
         "ZeroFox Alerts",
         transformed_alerts,
@@ -1030,10 +952,7 @@ def remove_none_dict(input_dict: dict[Any, Any]) -> dict[Any, Any]:
     :param input_dict: any dictionary in the world is OK
     :return: same dictionary but without None values
     """
-    return {
-        key: value for key, value in input_dict.items()
-        if value is not None
-    }
+    return {key: value for key, value in input_dict.items() if value is not None}
 
 
 def get_entity_contents(entity: dict[str, Any]) -> dict[str, Any]:
@@ -1057,9 +976,7 @@ def get_entity_contents(entity: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def get_entity_human_readable_outputs(
-    contents: dict[str, Any]
-) -> dict[str, Any]:
+def get_entity_human_readable_outputs(contents: dict[str, Any]) -> dict[str, Any]:
     """
     returns the convention for the war room
     :param contents: Contents is a dictionary
@@ -1080,7 +997,7 @@ def get_c2_domain_content(c2_domain_record: dict[str, Any]) -> dict[str, Any]:
     return {
         "Domain": c2_domain_record.get("domain", ""),
         "LastModified": c2_domain_record.get("created_at", ""),
-        "IPs": ", ".join(c2_domain_record.get("ip_addresses", []))
+        "IPs": ", ".join(c2_domain_record.get("ip_addresses", [])),
     }
 
 
@@ -1088,14 +1005,11 @@ def get_phishing_content(phishing_record: dict[str, Any]) -> dict[str, Any]:
     return {
         "Domain": phishing_record.get("domain", ""),
         "LastModified": phishing_record.get("scanned", ""),
-        "IPs": get_nested_key(phishing_record, ["host", "ip"], "")
+        "IPs": get_nested_key(phishing_record, ["host", "ip"], ""),
     }
 
 
-def get_compromised_domain_content(
-    c2_domain_response: dict[str, Any],
-    phishing_response: dict[str, Any]
-) -> list[dict[str, Any]]:
+def get_compromised_domain_content(c2_domain_response: dict[str, Any], phishing_response: dict[str, Any]) -> list[dict[str, Any]]:
     """
     It merges the content of c2_domain_response and phishing_response and
     format it to be standardized as compromised domain content
@@ -1107,21 +1021,15 @@ def get_compromised_domain_content(
     compromised_domain_content = []
 
     c2_domains_results = c2_domain_response.get("results", [])
-    compromised_domain_content += [
-        get_c2_domain_content(record) for record in c2_domains_results
-    ]
+    compromised_domain_content += [get_c2_domain_content(record) for record in c2_domains_results]
 
     phishing_results = phishing_response.get("results", [])
-    compromised_domain_content += [
-        get_phishing_content(record) for record in phishing_results
-    ]
+    compromised_domain_content += [get_phishing_content(record) for record in phishing_results]
 
     return compromised_domain_content
 
 
-def get_email_address_content(
-    email_address_record: dict[str, Any]
-) -> dict[str, Any]:
+def get_email_address_content(email_address_record: dict[str, Any]) -> dict[str, Any]:
     return {
         "Domain": email_address_record.get("domain", ""),
         "Email": email_address_record.get("email", ""),
@@ -1129,9 +1037,7 @@ def get_email_address_content(
     }
 
 
-def get_credentials_content(
-    credentials_record: dict[str, Any]
-) -> dict[str, Any]:
+def get_credentials_content(credentials_record: dict[str, Any]) -> dict[str, Any]:
     return {
         "Domain": credentials_record.get("domain", ""),
         "Email": credentials_record.get("email", ""),
@@ -1139,9 +1045,7 @@ def get_credentials_content(
     }
 
 
-def get_botnet_credentials_content(
-    botnet_credentials_record: dict[str, Any]
-) -> dict[str, Any]:
+def get_botnet_credentials_content(botnet_credentials_record: dict[str, Any]) -> dict[str, Any]:
     return {
         "Domain": botnet_credentials_record.get("domain", ""),
         "Email": botnet_credentials_record.get("email", ""),
@@ -1168,22 +1072,13 @@ def get_compromised_email_content(
     compromised_email_content = []
 
     email_addresses_results = email_addressed_response.get("results", [])
-    compromised_email_content += [
-        get_email_address_content(record)
-        for record in email_addresses_results
-    ]
+    compromised_email_content += [get_email_address_content(record) for record in email_addresses_results]
 
     credentials_results = credentials_response.get("results", [])
-    compromised_email_content += [
-        get_credentials_content(record)
-        for record in credentials_results
-    ]
+    compromised_email_content += [get_credentials_content(record) for record in credentials_results]
 
     botnet_credentials_results = botnet_credentials_response.get("results", [])
-    compromised_email_content += [
-        get_botnet_credentials_content(record)
-        for record in botnet_credentials_results
-    ]
+    compromised_email_content += [get_botnet_credentials_content(record) for record in botnet_credentials_results]
 
     return compromised_email_content
 
@@ -1204,10 +1099,7 @@ def get_phishing_ip_content(botnet_result: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def get_malicious_ip_content(
-    botnet_response: dict[str, Any],
-    phishing_response: dict[str, Any]
-) -> list[dict[str, Any]]:
+def get_malicious_ip_content(botnet_response: dict[str, Any], phishing_response: dict[str, Any]) -> list[dict[str, Any]]:
     """
     It merges the content of botnet_response and phishing_response and
     format it to be standardized as malicious ip content
@@ -1219,24 +1111,15 @@ def get_malicious_ip_content(
     malicious_ip_content = []
 
     botnet_results = botnet_response.get("results", [])
-    malicious_ip_content += [
-        get_botnet_ip_content(record)
-        for record in botnet_results
-    ]
+    malicious_ip_content += [get_botnet_ip_content(record) for record in botnet_results]
 
     phishing_results = phishing_response.get("results", [])
-    malicious_ip_content += [
-        get_phishing_ip_content(record)
-        for record in phishing_results
-    ]
+    malicious_ip_content += [get_phishing_ip_content(record) for record in phishing_results]
 
     return malicious_ip_content
 
 
-def get_malicious_hash_type_content(
-    malicious_hash_result: dict[str, Any],
-    hash_type: str
-) -> dict[str, str]:
+def get_malicious_hash_type_content(malicious_hash_result: dict[str, Any], hash_type: str) -> dict[str, str]:
     family_content = malicious_hash_result.get("family", [])
     if not family_content:
         family_content = []
@@ -1251,17 +1134,11 @@ def get_malicious_hash_type_content(
     }
 
 
-def get_malicious_hash_content(
-    hash_type: str,
-    malicious_hash_response: dict[str, Any]
-) -> list[dict[str, Any]]:
+def get_malicious_hash_content(hash_type: str, malicious_hash_response: dict[str, Any]) -> list[dict[str, Any]]:
     malicious_hash_content = []
 
     malicious_hash_results = malicious_hash_response.get("results", [])
-    malicious_hash_content += [
-        get_malicious_hash_type_content(record, hash_type)
-        for record in malicious_hash_results
-    ]
+    malicious_hash_content += [get_malicious_hash_type_content(record, hash_type) for record in malicious_hash_results]
 
     return malicious_hash_content
 
@@ -1274,9 +1151,7 @@ def get_exploit_content(exploit_result: dict[str, Any]) -> dict[str, str]:
     }
 
 
-def get_exploits_content(
-    exploits_response: dict[str, Any]
-) -> list[dict[str, Any]]:
+def get_exploits_content(exploits_response: dict[str, Any]) -> list[dict[str, Any]]:
     """
     It formats the exploits_response to be standardized as exploits content
 
@@ -1286,10 +1161,7 @@ def get_exploits_content(
     exploits_content = []
 
     exploits_results = exploits_response.get("results", [])
-    exploits_content += [
-        get_exploit_content(record)
-        for record in exploits_results
-    ]
+    exploits_content += [get_exploit_content(record) for record in exploits_results]
 
     return exploits_content
 
@@ -1299,24 +1171,19 @@ def _build_incidents_given_last_fetch(
     created_since: datetime,
     is_valid_alert: Callable[[dict[str, Any]], bool],
 ) -> tuple[list[dict[str, Any]], datetime, list[str]]:
-
     if client.only_escalated:
         alerts = [
-            alert for alert in client.get_alerts(
-                filter_by={
-                    "escalated_min_date": created_since.strftime(DATE_FORMAT)},
-                sort_by="timestamp",
-                sort_direction="asc"
+            alert
+            for alert in client.get_alerts(
+                filter_by={"escalated_min_date": created_since.strftime(DATE_FORMAT)}, sort_by="timestamp", sort_direction="asc"
             )
             if is_valid_alert(alert)
         ]
     else:
         alerts = [
-            alert for alert in client.get_alerts(
-                filter_by={
-                    "min_timestamp": created_since.strftime(DATE_FORMAT)},
-                sort_by="timestamp",
-                sort_direction="asc"
+            alert
+            for alert in client.get_alerts(
+                filter_by={"min_timestamp": created_since.strftime(DATE_FORMAT)}, sort_by="timestamp", sort_direction="asc"
             )
             if is_valid_alert(alert)
         ]
@@ -1324,17 +1191,12 @@ def _build_incidents_given_last_fetch(
         return [], created_since, []
 
     alert_to_incident = AlertToIncident()
-    incidents: list[dict[str, Any]] = [
-        alert_to_incident.map(alert) for alert in alerts
-    ]
+    incidents: list[dict[str, Any]] = [alert_to_incident.map(alert) for alert in alerts]
 
-    parsed_last_alert_timestamp = __compute_latest_timestamp(
-        alerts, "timestamp")
+    parsed_last_alert_timestamp = __compute_latest_timestamp(alerts, "timestamp")
     if parsed_last_alert_timestamp is None:
-        raise ValueError(
-            "Incorrect timestamp in last alert of fetch-incidents")
-    processed_alerts_ids: list[str] = [str(alert.get("id", ""))
-                                       for alert in alerts]
+        raise ValueError("Incorrect timestamp in last alert of fetch-incidents")
+    processed_alerts_ids: list[str] = [str(alert.get("id", "")) for alert in alerts]
 
     return incidents, parsed_last_alert_timestamp, processed_alerts_ids
 
@@ -1355,10 +1217,7 @@ def __compute_latest_timestamp(alerts, timestamp_field: str):
     return parsed_last_alert_timestamp
 
 
-def parse_last_fetched_date(
-    last_fetched_str: str | None,
-    first_fetch_time: str
-) -> datetime:
+def parse_last_fetched_date(last_fetched_str: str | None, first_fetch_time: str) -> datetime:
     # If no last_fetched present, use default value
     if not last_fetched_str:
         last_fetched_str = first_fetch_time
@@ -1381,20 +1240,18 @@ def test_module(client: ZFClient) -> str:
 
 
 def fetch_incidents(
-    client: ZFClient,
-    last_run: FetchIncidentsStorage,
-    first_fetch_time: str
+    client: ZFClient, last_run: FetchIncidentsStorage, first_fetch_time: str
 ) -> tuple[FetchIncidentsStorage, list[dict[str, Any]]]:
     # Last modified fetch date
     last_modified_fetched_str = last_run.get("last_modified_fetched", "")
-    last_fetched = parse_last_fetched_date(
-        last_modified_fetched_str, first_fetch_time)
+    last_fetched = parse_last_fetched_date(last_modified_fetched_str, first_fetch_time)
     # ZeroFox Alert IDs previously created
     zf_ids: list[str] = list(map(str, last_run.get("zf-ids", [])))
 
     # Fetch new alerts
     def is_non_registered_alert(alert):
         return str(alert.get("id")) not in zf_ids
+
     incidents, last_fetched, alert_ids = _build_incidents_given_last_fetch(
         client=client,
         created_since=last_fetched,
@@ -1413,10 +1270,7 @@ def fetch_incidents(
     return next_run, incidents
 
 
-def get_modified_remote_data_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data_command(client: ZFClient, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """
     Gets the modified remote alert IDs.
     Args:
@@ -1432,17 +1286,12 @@ def get_modified_remote_data_command(
     # Get alerts modified after `last_update`
     try:
         alerts = client.get_alerts(
-            filter_by={
-                "last_modified_min_date": f"{last_update}"
-            },
-            sort_by="last_modified",
-            sort_direction="asc"
+            filter_by={"last_modified_min_date": f"{last_update}"}, sort_by="last_modified", sort_direction="asc"
         )
     except Exception as e:
         raise Exception(f"There was an error {e}, skip update")
 
-    demisto.debug(f"Fetched {len(alerts)} alerts that "
-                  f" were modified since {last_update}")
+    demisto.debug(f"Fetched {len(alerts)} alerts that  were modified since {last_update}")
     modified_alert_ids = [str(alert.get("id")) for alert in alerts]
 
     return GetModifiedRemoteDataResponse(
@@ -1450,10 +1299,7 @@ def get_modified_remote_data_command(
     )
 
 
-def get_remote_data_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> GetRemoteDataResponse:
+def get_remote_data_command(client: ZFClient, args: dict[str, Any]) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated remote alert.
     Args:
@@ -1469,34 +1315,23 @@ def get_remote_data_command(
     alert_id = args.remote_incident_id
 
     alert: dict[str, Any] = client.get_alert(alert_id)
-    logs = sorted(
-        filter(lambda log: log['timestamp'] > last_update,
-               alert.get("logs", [])
-               ),
-        key=lambda log: log['timestamp'])
+    logs = sorted(filter(lambda log: log["timestamp"] > last_update, alert.get("logs", [])), key=lambda log: log["timestamp"])
     demisto.debug(f"Alert fetched with id {alert.get('id')}")
 
     entries = []
     for log in logs:
         if log.get("action", "") == "close":
-            demisto.debug(
-                f"Incident associated with {alert_id=} is being closed"
+            demisto.debug(f"Incident associated with {alert_id=} is being closed")
+            entries.append(
+                {
+                    "Contents": {"dbotIncidentClose": True, "closeReason": "Other", "closeNotes": "Closed in ZeroFox"},
+                }
             )
-            entries.append({
-                "Contents": {
-                    "dbotIncidentClose": True,
-                    "closeReason": "Other",
-                    "closeNotes": "Closed in ZeroFox"
-                },
-            })
 
     return GetRemoteDataResponse(mirrored_object=alert, entries=entries)
 
 
-def get_alert_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def get_alert_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     alert: dict[str, Any] = client.get_alert(alert_id)
@@ -1512,10 +1347,7 @@ def get_alert_command(
     )
 
 
-def alert_user_assignment_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def alert_user_assignment_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     username: str = args.get("username", "")
@@ -1524,18 +1356,14 @@ def alert_user_assignment_command(
     contents = get_alert_contents(alert)
 
     return CommandResults(
-        readable_output="Successful assignment "
-                        f"of {username} to alert {alert_id}.",
+        readable_output="Successful assignment of {username} to alert {alert_id}.",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
         outputs_key_field="ID",
     )
 
 
-def close_alert_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def close_alert_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     client.close_alert(alert_id)
@@ -1550,10 +1378,7 @@ def close_alert_command(
     )
 
 
-def open_alert_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def open_alert_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     client.open_alert(alert_id)
@@ -1568,10 +1393,7 @@ def open_alert_command(
     )
 
 
-def alert_request_takedown_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def alert_request_takedown_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     client.alert_request_takedown(alert_id)
@@ -1586,10 +1408,7 @@ def alert_request_takedown_command(
     )
 
 
-def alert_cancel_takedown_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def alert_cancel_takedown_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     client.alert_cancel_takedown(alert_id)
@@ -1604,10 +1423,7 @@ def alert_cancel_takedown_command(
     )
 
 
-def modify_alert_tags_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def modify_alert_tags_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     action_string: str = args.get("action", "")
@@ -1632,10 +1448,7 @@ def modify_alert_tags_command(
     )
 
 
-def create_entity_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def create_entity_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = parse_dict_values_to_integer(args, ["policy_id"])
     name = params.get("name", "")
     raw_strict_name_matching = params.get("strict_name_matching", "")
@@ -1645,7 +1458,11 @@ def create_entity_command(
     policy_id: int = params.get("policy_id", "")
     organization = params.get("organization", "")
     response_content = client.create_entity(
-        name, strict_name_matching, tags, policy_id, organization,
+        name,
+        strict_name_matching,
+        tags,
+        policy_id,
+        organization,
     )
     entity_id: int = response_content.get("id", "")
 
@@ -1664,16 +1481,21 @@ def create_entity_command(
     )
 
 
-def list_alerts_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def list_alerts_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = remove_none_dict(args)
     # handle all integer query params
-    params = parse_dict_values_to_integer(params, [
-        "entity", "entity_term", "last_modified", "offset", "page_id",
-        "rule_id", "limit",
-    ])
+    params = parse_dict_values_to_integer(
+        params,
+        [
+            "entity",
+            "entity_term",
+            "last_modified",
+            "offset",
+            "page_id",
+            "rule_id",
+            "limit",
+        ],
+    )
     # handle severity/risk_rating parameter - special case
     risk_rating_string = str(params.get("risk_rating", ""))
     if risk_rating_string:
@@ -1685,14 +1507,8 @@ def list_alerts_command(
         raise Exception("Incorrect limit. Limit should be 0 <= x <= 100.")
     alerts = client.list_alerts(params)
     if not alerts:
-        return CommandResults(
-            readable_output="No alerts found.",
-            outputs=[],
-            outputs_prefix="ZeroFox.Alert"
-        )
-    output: list[dict[str, Any]] = [
-        get_alert_contents(alert) for alert in alerts
-    ]
+        return CommandResults(readable_output="No alerts found.", outputs=[], outputs_prefix="ZeroFox.Alert")
+    output: list[dict[str, Any]] = [get_alert_contents(alert) for alert in alerts]
     readable_output = get_human_readable_alerts(output)
     return CommandResults(
         outputs=output,
@@ -1701,15 +1517,20 @@ def list_alerts_command(
     )
 
 
-def list_entities_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def list_entities_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = remove_none_dict(args)
     # handle all integer query params
-    params = parse_dict_values_to_integer(params, [
-        "group", "label", "network", "page", "policy", "type",
-    ])
+    params = parse_dict_values_to_integer(
+        params,
+        [
+            "group",
+            "label",
+            "network",
+            "page",
+            "policy",
+            "type",
+        ],
+    )
     response_content = client.list_entities(params)
     if not response_content:
         return CommandResults(
@@ -1727,10 +1548,7 @@ def list_entities_command(
             )
         else:
             contents = [get_entity_contents(entity) for entity in entities]
-            human_readable = [
-                get_entity_human_readable_outputs(content)
-                for content in contents
-            ]
+            human_readable = [get_entity_human_readable_outputs(content) for content in contents]
             headers = ["Name", "Type", "Policy", "Email", "Tags", "ID"]
             return CommandResults(
                 readable_output=tableToMarkdown(
@@ -1751,10 +1569,7 @@ def list_entities_command(
     )
 
 
-def get_entity_types_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def get_entity_types_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     response_content = client.get_entity_types()
     entity_types: list[dict[str, Any]] = response_content.get("results", [])
     human_readable = []
@@ -1775,10 +1590,7 @@ def get_entity_types_command(
     )
 
 
-def get_policy_types_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def get_policy_types_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     response_content = client.get_policy_types()
     policy_types: list[dict[str, Any]] = response_content.get("policies", [])
     human_readable = []
@@ -1801,10 +1613,7 @@ def get_policy_types_command(
     )
 
 
-def modify_alert_notes_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def modify_alert_notes_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     alert_notes: str = params.get("notes", "")
@@ -1818,18 +1627,14 @@ def modify_alert_notes_command(
     contents = get_alert_contents(alert)
 
     return CommandResults(
-        readable_output="Successful note modification of alert "
-                        f"with ID: {alert_id}",
+        readable_output="Successful note modification of alert with ID: {alert_id}",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
         outputs_key_field="ID",
     )
 
 
-def submit_threat_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def submit_threat_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     source: str = args.get("source", "")
     alert_type: str = args.get("alert_type", "")
     violation: str = args.get("violation", "")
@@ -1856,10 +1661,7 @@ def submit_threat_command(
     )
 
 
-def send_alert_attachment_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def send_alert_attachment_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     alert_id: int = args.get("alert_id", "")
     entry_id: str = args.get("entry_id", "")
     attachment_type: str = args.get("attachment_type", "")
@@ -1871,7 +1673,10 @@ def send_alert_attachment_command(
 
     with open(entry["path"], "rb") as file:
         client.send_alert_attachment(
-            alert_id, entry["name"], file, attachment_type,
+            alert_id,
+            entry["name"],
+            file,
+            attachment_type,
         )
 
     alert: dict[str, Any] = client.get_alert(alert_id)
@@ -1885,10 +1690,7 @@ def send_alert_attachment_command(
     )
 
 
-def get_alert_attachments_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def get_alert_attachments_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     alert_id: int = args.get("alert_id", "")
     response_content = client.get_alert_attachments(alert_id)
     attachments: list[dict[str, Any]] = response_content.get("attachments", [])
@@ -1896,10 +1698,12 @@ def get_alert_attachments_command(
     for attachment in attachments:
         attachment_id: int = attachment.get("id", "")
         attachment_name: str = attachment.get("name", "")
-        human_readable.append({
-            "ID": attachment_id,
-            "Name": attachment_name,
-        })
+        human_readable.append(
+            {
+                "ID": attachment_id,
+                "Name": attachment_name,
+            }
+        )
     headers = ["ID", "Name"]
     return CommandResults(
         outputs=attachments,
@@ -1913,10 +1717,7 @@ def get_alert_attachments_command(
     )
 
 
-def get_compromised_credentials_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def get_compromised_credentials_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     alert_id = args["alert_id"]
     credentials = client.get_compromised_credentials(alert_id)
     if credentials:
@@ -1926,10 +1727,7 @@ def get_compromised_credentials_command(
     )
 
 
-def compromised_domain_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def compromised_domain_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     domain: str = args.get("domain", "")
 
     c2_domains_response = client.get_cti_c2_domains(domain)
@@ -1952,16 +1750,12 @@ def compromised_domain_command(
     )
 
 
-def compromised_email_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def compromised_email_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     email: str = args.get("email", "")
 
     email_addresses_response = client.get_cti_email_addresses(email)
     credentials_response = client.get_cti_compromised_credentials(email)
-    botnet_credentials_response = client\
-        .get_cti_botnet_compromised_credentials(email)
+    botnet_credentials_response = client.get_cti_botnet_compromised_credentials(email)
 
     outputs = get_compromised_email_content(
         email_addresses_response,
@@ -1985,10 +1779,7 @@ def compromised_email_command(
     )
 
 
-def malicious_ip_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def malicious_ip_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     ip: str = args.get("ip", "")
 
     botnet_response = client.get_cti_botnet(ip)
@@ -2012,10 +1803,7 @@ def malicious_ip_command(
     )
 
 
-def malicious_hash_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def malicious_hash_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     hash: str = args.get("hash", "")
 
     outputs = []
@@ -2036,10 +1824,7 @@ def malicious_hash_command(
     )
 
 
-def search_exploits_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
+def search_exploits_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
     since: str = args.get("since", "")
 
     exploits_response = client.get_cti_exploits(since)
@@ -2066,22 +1851,18 @@ def main():
     params = demisto.params()
     USERNAME: str = params.get("credentials", {}).get("identifier")
     PASSWORD: str = params.get("credentials", {}).get("password")
-    BASE_URL: str = (
-        params["url"][:-1]
-        if params["url"].endswith("/")
-        else params["url"]
-    )
+    BASE_URL: str = params["url"][:-1] if params["url"].endswith("/") else params["url"]
     FETCH_TIME: str = params.get(
-        "fetch_time", FETCH_TIME_DEFAULT,
+        "fetch_time",
+        FETCH_TIME_DEFAULT,
     ).strip()
     USE_SSL: bool = not params.get("insecure", False)
-    PROXY: bool = params.get('proxy', False)
+    PROXY: bool = params.get("proxy", False)
     ONLY_ESCALATED: bool = params.get("only_escalated", False)
 
     commands: dict[str, Callable[[ZFClient, dict[str, Any]], Any]] = {
         "get-modified-remote-data": get_modified_remote_data_command,
         "get-remote-data": get_remote_data_command,
-
         # ZeroFox Alerts
         "zerofox-get-alert": get_alert_command,
         "zerofox-alert-user-assignment": alert_user_assignment_command,
@@ -2100,7 +1881,6 @@ def main():
         "zerofox-send-alert-attachment": send_alert_attachment_command,
         "zerofox-get-alert-attachments": get_alert_attachments_command,
         "zerofox-get-compromised-credentials": get_compromised_credentials_command,
-
         # ZeroFox CTI Feed
         "zerofox-search-compromised-domain": compromised_domain_command,
         "zerofox-search-compromised-email": compromised_email_command,
@@ -2122,10 +1902,10 @@ def main():
 
         command = demisto.command()
 
-        if command == 'test-module':
+        if command == "test-module":
             results = test_module(client)
             return_results(results)
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             next_run, incidents = fetch_incidents(
                 client,
                 last_run=demisto.getLastRun(),

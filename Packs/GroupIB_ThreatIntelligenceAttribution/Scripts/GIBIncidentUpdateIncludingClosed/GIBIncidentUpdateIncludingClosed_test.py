@@ -1,18 +1,7 @@
 import demistomock as demisto
 from GIBIncidentUpdateIncludingClosed import prevent_duplication
 
-
-EXISTING_INCIDENT = [
-    {
-        "Contents": {
-            "total": 1,
-            "data": [
-                {"id": "1",
-                 "gibid": "12v"}
-            ]
-        }
-    }
-]
+EXISTING_INCIDENT = [{"Contents": {"total": 1, "data": [{"id": "1", "gibid": "12v"}]}}]
 INCOMING_INCIDENT = {"gibid": "12v"}
 
 

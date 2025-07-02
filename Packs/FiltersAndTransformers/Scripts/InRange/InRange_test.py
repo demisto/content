@@ -1,13 +1,15 @@
-import pytest
-
 import demistomock as demisto
+import pytest
 from InRange import main
 
 
-@pytest.mark.parametrize('left,right,expected', [
-    ('4', '1,8', True),
-    ('7', '-1,3', False),
-])
+@pytest.mark.parametrize(
+    "left,right,expected",
+    [
+        ("4", "1,8", True),
+        ("7", "-1,3", False),
+    ],
+)
 def test_in_range(mocker, left, right, expected):
     """
     Given:
@@ -21,10 +23,14 @@ def test_in_range(mocker, left, right, expected):
         - Case A: True is returned
         - Case B: False is returned
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'left': left,
-        'right': right,
-    })
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "left": left,
+            "right": right,
+        },
+    )
+    mocker.patch.object(demisto, "results")
     main()
     demisto.results.assert_called_with(expected)

@@ -1,4 +1,5 @@
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from sigma import exceptions
 from sigma.backends.carbonblack import CarbonBlackBackend
 from sigma.backends.cortexxdr import CortexXDRBackend
@@ -8,9 +9,6 @@ from sigma.backends.qradar import QradarBackend
 from sigma.backends.sentinelone import SentinelOneBackend
 from sigma.backends.splunk import SplunkBackend
 from sigma.rule import SigmaRule
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 
 def main():
@@ -32,15 +30,25 @@ def main():
         rule_str = indicator["CustomFields"]["sigmaruleraw"]
         rule = SigmaRule.from_yaml(rule_str)
         query = siem.convert_rule(rule)[0]
-        execute_command("setIndicator", {"sigmaconvertedquery": f"{query}",
-                                         "querylanguage": f"{args['SIEM'].replace('_', ' ')}",
-                                         "value": indicator["value"]})
+        execute_command(
+            "setIndicator",
+            {
+                "sigmaconvertedquery": f"{query}",
+                "querylanguage": f"{args['SIEM'].replace('_', ' ')}",
+                "value": indicator["value"],
+            },
+        )
 
     except exceptions.SigmaTransformationError as e:
         query = f"ERROR:\n{e}"
-        execute_command("setIndicator", {"sigmaconvertedquery": f"{query}",
-                                         "querylanguage": f"{args['SIEM'].replace('_', ' ')}",
-                                         "value": indicator["value"]})
+        execute_command(
+            "setIndicator",
+            {
+                "sigmaconvertedquery": f"{query}",
+                "querylanguage": f"{args['SIEM'].replace('_', ' ')}",
+                "value": indicator["value"],
+            },
+        )
         return_error(f"Failed to parse Sigma rule to {args['SIEM']} language")
 
     except KeyError:

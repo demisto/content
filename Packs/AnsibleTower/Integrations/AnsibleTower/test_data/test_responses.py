@@ -53,51 +53,51 @@ JOB_TEMPLATE_LAUNCH_RES = {
     "job_slice_number": 0,
     "job_slice_count": 1,
     "credential": 1,
-    "vault_credential": None
+    "vault_credential": None,
 }
 
 JOB_TEMPLATE_EXPECTED = {
-    'artifacts': {},
-    'controller_node': '',
-    'created': '2020-12-29 14:38:47.792496',
-    'credential': 1,
-    'description': '',
-    'elapsed': 0.0,
-    'execution_node': '',
-    'extra_vars': '{}',
-    'failed': False,
-    'finished': None,
-    'id': 1,
-    'instance_group': None,
-    'inventory': 1,
-    'job_args': '',
-    'job_cwd': '',
-    'job_explanation': '',
-    'job_tags': '',
-    'job_template': 5,
-    'job_type': 'run',
-    'launch_type': 'manual',
-    'limit': '',
-    'modified': '2020-12-29 14:38:47.889460',
-    'name': 'job example',
-    'passwords_needed_to_start': [],
-    'playbook': 'example.yml',
-    'project': 4,
-    'result_traceback': '',
-    'scm_revision': '',
-    'skip_tags': '',
-    'started': None,
-    'status': 'pending',
-    'timeout': 0,
-    'type': 'job',
-    'url': '/api/example',
-    'vault_credential': None}
+    "artifacts": {},
+    "controller_node": "",
+    "created": "2020-12-29 14:38:47.792496",
+    "credential": 1,
+    "description": "",
+    "elapsed": 0.0,
+    "execution_node": "",
+    "extra_vars": "{}",
+    "failed": False,
+    "finished": None,
+    "id": 1,
+    "instance_group": None,
+    "inventory": 1,
+    "job_args": "",
+    "job_cwd": "",
+    "job_explanation": "",
+    "job_tags": "",
+    "job_template": 5,
+    "job_type": "run",
+    "launch_type": "manual",
+    "limit": "",
+    "modified": "2020-12-29 14:38:47.889460",
+    "name": "job example",
+    "passwords_needed_to_start": [],
+    "playbook": "example.yml",
+    "project": 4,
+    "result_traceback": "",
+    "scm_revision": "",
+    "skip_tags": "",
+    "started": None,
+    "status": "pending",
+    "timeout": 0,
+    "type": "job",
+    "url": "/api/example",
+    "vault_credential": None,
+}
 
 ADHOC_COMMAND_LAUNCH_RES = {
     "id": 1,
     "type": "ad_hoc_command",
     "url": "/api/v2/ad_hoc_commands/1/",
-
     "created": "2020-12-23T11:41:26.600084Z",
     "modified": "2020-12-23T11:41:26.636218Z",
     "name": "ping",
@@ -125,37 +125,38 @@ ADHOC_COMMAND_LAUNCH_RES = {
     "extra_vars": "",
     "become_enabled": False,
     "diff_mode": False,
-    "ad_hoc_command": 1
+    "ad_hoc_command": 1,
 }
 
-ADHOC_COMMAND_LAUNCH_EXPECTED = \
-    {'ad_hoc_command': 1,
-     'become_enabled': False,
-     'controller_node': '',
-     'created': '2020-12-23 11:41:26.600084',
-     'credential': 1,
-     'elapsed': 0.0,
-     'execution_node': '',
-     'extra_vars': '',
-     'failed': False,
-     'finished': None,
-     'id': 1,
-     'inventory': 1,
-     'job_args': '',
-     'job_cwd': '',
-     'job_explanation': '',
-     'job_type': 'run',
-     'launch_type': 'manual',
-     'limit': '',
-     'modified': '2020-12-23 11:41:26.636218',
-     'module_args': '',
-     'module_name': 'ping',
-     'name': 'ping',
-     'result_traceback': '',
-     'started': None,
-     'status': 'pending',
-     'type': 'ad_hoc_command',
-     'url': '/api/v2/ad_hoc_commands/1/'}
+ADHOC_COMMAND_LAUNCH_EXPECTED = {
+    "ad_hoc_command": 1,
+    "become_enabled": False,
+    "controller_node": "",
+    "created": "2020-12-23 11:41:26.600084",
+    "credential": 1,
+    "elapsed": 0.0,
+    "execution_node": "",
+    "extra_vars": "",
+    "failed": False,
+    "finished": None,
+    "id": 1,
+    "inventory": 1,
+    "job_args": "",
+    "job_cwd": "",
+    "job_explanation": "",
+    "job_type": "run",
+    "launch_type": "manual",
+    "limit": "",
+    "modified": "2020-12-23 11:41:26.636218",
+    "module_args": "",
+    "module_name": "ping",
+    "name": "ping",
+    "result_traceback": "",
+    "started": None,
+    "status": "pending",
+    "type": "ad_hoc_command",
+    "url": "/api/v2/ad_hoc_commands/1/",
+}
 
 ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_RES = {
     "count": 9,
@@ -166,10 +167,7 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_RES = {
             "id": 165,
             "type": "job_event",
             "url": "/api/v2/job_events/165/",
-            "related": {
-                "job": "/api/v2/jobs/39/",
-                "children": "/api/v2/job_events/165/children/"
-            },
+            "related": {"job": "/api/v2/jobs/39/", "children": "/api/v2/job_events/165/children/"},
             "summary_fields": {
                 "job": {
                     "id": 39,
@@ -180,9 +178,9 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_RES = {
                     "elapsed": 2.992,
                     "type": "job",
                     "job_template_id": 7,
-                    "job_template_name": "Demo Job Template"
+                    "job_template_name": "Demo Job Template",
                 },
-                "role": {}
+                "role": {},
             },
             "created": "2022-02-08T11:59:05.179012Z",
             "modified": "2022-02-08T11:59:05.298323Z",
@@ -193,7 +191,7 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_RES = {
             "event_data": {
                 "playbook": "hello_world.yml",
                 "playbook_uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3",
-                "uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3"
+                "uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3",
             },
             "event_level": 0,
             "failed": False,
@@ -209,9 +207,9 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_RES = {
             "stdout": "",
             "start_line": 0,
             "end_line": 0,
-            "verbosity": 0
+            "verbosity": 0,
         }
-    ]
+    ],
 }
 
 ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED = [
@@ -219,10 +217,7 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED = [
         "id": 165,
         "type": "job_event",
         "url": "/api/v2/job_events/165/",
-        "related": {
-                "job": "/api/v2/jobs/39/",
-                "children": "/api/v2/job_events/165/children/"
-        },
+        "related": {"job": "/api/v2/jobs/39/", "children": "/api/v2/job_events/165/children/"},
         "summary_fields": {
             "job": {
                 "id": 39,
@@ -233,9 +228,9 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED = [
                 "elapsed": 2.992,
                 "type": "job",
                 "job_template_id": 7,
-                "job_template_name": "Demo Job Template"
+                "job_template_name": "Demo Job Template",
             },
-            "role": {}
+            "role": {},
         },
         "created": "2022-02-08T11:59:05.179012Z",
         "modified": "2022-02-08T11:59:05.298323Z",
@@ -246,7 +241,7 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED = [
         "event_data": {
             "playbook": "hello_world.yml",
             "playbook_uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3",
-            "uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3"
+            "uuid": "f86bf74e-17dd-45c4-864d-001e6b848cd3",
         },
         "event_level": 0,
         "failed": False,
@@ -262,6 +257,6 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED = [
         "stdout": "",
         "start_line": 0,
         "end_line": 0,
-        "verbosity": 0
+        "verbosity": 0,
     }
 ]
