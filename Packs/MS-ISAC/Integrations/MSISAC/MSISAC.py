@@ -17,7 +17,7 @@ urllib3.disable_warnings()
 API_ROUTE = "/api/v1"
 MSISAC_FETCH_WINDOW_DEFAULT = 1
 XSOAR_INCIDENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-MSISAC_CREATED_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%Z"
+MSISAC_CREATED_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 
 """ CLIENT CLASS """
