@@ -1021,11 +1021,10 @@ def test_validate_apis_enabled_some_disabled(mocker):
     # Execute the function
     result = validate_apis_enabled(mock_creds, project_id, apis)
 
-    # Should return the disabled APIs
-    assert "storage.googleapis.com" in result
-    assert "container.googleapis.com" in result
-    assert "compute.googleapis.com" not in result
+    expected_disabled_apis = {"storage.googleapis.com", "container.googleapis.com"}
+    assert set(result) == expected_disabled_apis
     assert len(result) == 2
+    assert "compute.googleapis.com" not in set(result)
 
 
 def test_validate_apis_enabled_api_check_fails(mocker):
@@ -1058,10 +1057,8 @@ def test_validate_apis_enabled_api_check_fails(mocker):
     # Execute the function
     result = validate_apis_enabled(mock_creds, project_id, apis)
 
-    # Should return the API that failed the check
-    assert "storage.googleapis.com" in result
-    assert "compute.googleapis.com" not in result
-    assert len(result) == 1
+    assert set(result) == {"storage.googleapis.com"}
+    assert "compute.googleapis.com" not in set(result)
 
 
 def test_validate_apis_enabled_service_usage_unavailable(mocker):
