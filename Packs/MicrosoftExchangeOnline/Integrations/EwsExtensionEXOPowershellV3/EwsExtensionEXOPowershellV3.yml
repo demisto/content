@@ -384,8 +384,8 @@ script:
       type: string
     description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
     execution: true
-  - name: ews-block-sender-office-365-quick-action
-    prettyname: Block Sender - Office 365
+  - name: ews-email-security-block-sender-office-365-quick-action
+    prettyname: "[Email Security] Block Sender - Office 365"
     quickaction: true
     hidden: true
     arguments:
@@ -2434,8 +2434,8 @@ script:
       description: The value of the entry that was removed.
       type: string
     description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
-  - name: ews-unblock-sender-office-365-quick-action
-    prettyname: Unblock Sender - Office 365
+  - name: ews-email-security-unblock-sender-office-365-quick-action
+    prettyname: "[Email Security] Unblock Sender - Office 365"
     quickaction: true
     hidden: true
     arguments:

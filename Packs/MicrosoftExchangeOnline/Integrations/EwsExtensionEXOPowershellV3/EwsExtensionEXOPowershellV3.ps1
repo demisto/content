@@ -2531,7 +2531,7 @@ function Main
             "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-block-sender-office-365-quick-action" {
+            "$script:COMMAND_PREFIX-email-security-block-sender-office-365-quick-action" {
                 ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-get-tenant-allow-block-list-items" {
@@ -2543,7 +2543,7 @@ function Main
             "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-unblock-sender-office-365-quick-action" {
+            "$script:COMMAND_PREFIX-email-security-unblock-sender-office-365-quick-action" {
                 ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-export-quarantinemessage" {
