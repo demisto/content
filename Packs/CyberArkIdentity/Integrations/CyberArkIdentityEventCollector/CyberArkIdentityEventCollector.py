@@ -129,7 +129,6 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
         return after
 
     def authenticate(self):
-        demisto.debug(f"Starting authentication. verify={self.request.verify}")
         credentials = base64.b64encode(f"{self.credentials.identifier}:{self.credentials.password}".encode()).decode()
         request = IntegrationHTTPRequest(
             method=Method.POST,
@@ -204,7 +203,6 @@ def main(command: str, demisto_params: dict):
 
     try:
         if command == "test-module":
-            demisto.debug("Starting test-module execution")
             get_events.run()
             demisto.results("ok")
 
