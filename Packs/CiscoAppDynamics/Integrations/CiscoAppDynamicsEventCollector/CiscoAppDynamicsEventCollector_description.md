@@ -23,4 +23,4 @@ You can find the application_id in the Controller UI:
 
 1. Navigate to Applications in the AppDynamics Controller.
 2. Select the application you are interested in.
-3. The application ID is visible in the URL as application=<ID>.
+3. The application ID is visible in the URL as application = ID.
