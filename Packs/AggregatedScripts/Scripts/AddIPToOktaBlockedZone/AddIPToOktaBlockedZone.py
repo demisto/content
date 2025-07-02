@@ -48,8 +48,8 @@ def ip_in_range(ip: str, ip_range: str) -> bool:
         # Cast to IPv4Address for mypy's benefit, now that we've checked the version
         ip_obj = cast(ipaddress.IPv4Address, ip_obj)
 
-        if '-' in ip_range:
-            start_ip_str, end_ip_str = ip_range.split('-')
+        if "-" in ip_range:
+            start_ip_str, end_ip_str = ip_range.split("-")
             start_ip = ipaddress.ip_address(start_ip_str)
             end_ip = ipaddress.ip_address(end_ip_str)
 
@@ -62,7 +62,7 @@ def ip_in_range(ip: str, ip_range: str) -> bool:
             end_ip = cast(ipaddress.IPv4Address, end_ip)
 
             return start_ip <= ip_obj <= end_ip
-        elif '/' in ip_range:
+        elif "/" in ip_range:
             ip_network_obj = ipaddress.ip_network(ip_range, strict=False)
 
             if ip_network_obj.version != 4:
@@ -73,7 +73,7 @@ def ip_in_range(ip: str, ip_range: str) -> bool:
             ip_network_obj = cast(ipaddress.IPv4Network, ip_network_obj)
 
             return ip_obj in ip_network_obj
-        else: # Single IP
+        else:  # Single IP
             single_ip_obj = ipaddress.ip_address(ip_range)
 
             if single_ip_obj.version != 4:
