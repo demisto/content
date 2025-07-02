@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: CrowdstrikeFalcon
+  id: CrowdstrikeFalconRepsol
   version: -1
 configuration:
 - defaultvalue: 'false'
@@ -135,6 +135,13 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM Detection fetch query
+  name: ngsiem_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -228,6 +235,7 @@ configuration:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
+  - NGSIEM Detection
   hidden:
   - marketplacev2
   - platform
@@ -311,8 +319,8 @@ configuration:
   - xsoar
   - xpanse
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: CrowdStrike Falcon
-name: CrowdstrikeFalcon
+display: CrowdStrike Falcon Repsol
+name: CrowdstrikeFalconRepsol
 script:
   commands:
   - arguments:
@@ -466,6 +474,7 @@ script:
         For example, filter="device.hostname:'CS-SE-TG-W7-01'"
         For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
       name: filter
+      defaultValue: "product:'epp'+type:'ldt'"
     - auto: PREDEFINED
       description: Whether to get additional data such as device and behaviors processed.
       name: extended_data

@@ -43,6 +43,14 @@
                 }
             }
         },
+        "CrowdStrike Falcon NGSIEM Detection": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "simple": "state"
+                }
+            }
+        },
         "CrowdStrike Falcon Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
