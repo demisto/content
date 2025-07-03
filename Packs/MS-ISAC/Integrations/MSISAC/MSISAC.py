@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 
 import json
+import re
 
 import urllib3
 
@@ -18,6 +19,7 @@ API_ROUTE = "/api/v1"
 MSISAC_FETCH_WINDOW_DEFAULT = 1
 XSOAR_INCIDENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MSISAC_CREATED_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+ALERT_ID_REGEX = "^(?:alert-)?\\d+$"
 
 
 """ CLIENT CLASS """
@@ -304,12 +306,13 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
 
     alert_id = args.get("alert_id", None)
 
+    # error handling since API only returns 500 errors.
     if not alert_id:
         raise ValueError("alert_id not specified")
+    elif not re.match(ALERT_ID_REGEX, alert_id):
+        raise DemistoException('alert_id format invalid. Please use "alert-12345" or "12345"')
 
     # alert is our raw response
-    # Returns 500 internal error if no event is found
-    # Returns 500 internal error if improper input is given
     alert = client.get_alert(alert_id=alert_id)
 
     return CommandResults(
@@ -395,7 +398,7 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
 
             cases_to_fetch.append(
                 {
-                    "name": f"MS-ISAC Case: {case_id} - Affected IP {affected_ip}",
+                    "name": f"MS-ISAC Case: {case_id} - Affected IP: {affected_ip}",
                     "occurred": case_created_time.strftime(XSOAR_INCIDENT_DATE_FORMAT),
                     "rawJSON": json.dumps(case),
                     # We are not using mirroring.
