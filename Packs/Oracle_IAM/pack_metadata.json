@@ -1,6 +1,6 @@
 {
     "name": "Oracle IAM",
-    "description": "Oracle IAM",
+    "description": "A suite of solutions that enables secure user authentication, authorization, identity governance, and access control across enterprise applications and services.",
     "support": "xsoar",
     "currentVersion": "1.0.28",
     "author": "Cortex XSOAR",

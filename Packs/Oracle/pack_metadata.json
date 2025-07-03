@@ -1,6 +1,6 @@
 {
     "name": "Oracle Database",
-    "description": "The modeling rules for Oracle event collectors.",
+    "description": "A database management system designed for high performance, scalability, and secure data storage across cloud and on-premises environments.",
     "support": "xsoar",
     "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
