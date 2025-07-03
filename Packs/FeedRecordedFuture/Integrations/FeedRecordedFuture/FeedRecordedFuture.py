@@ -492,7 +492,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 risk_string = item.get("RiskString")
                 if isinstance(risk_string, str):
                     raw_json["RiskString"] = format_risk_string(risk_string)
-                demisto.debug(f"RF: Updating threat assessment field to {criticality_label}")
+                demisto.debug(f"RF: Updating {value} threat assessment field to {criticality_label}")
                 indicator_obj = {
                     "value": value,
                     "type": raw_json["type"],
