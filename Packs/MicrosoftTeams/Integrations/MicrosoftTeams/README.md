@@ -218,7 +218,6 @@ Update the messaging endpoint in the Azure bot configuration:
 For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the xdr in the URL to crtx.
 
-
 2. Ensure the **long-running instance** parameter is enabled in the integration instance configuration.
 
 3. Set the port parameter under the Connect section of the integration instance.
