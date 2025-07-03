@@ -550,35 +550,33 @@ def core_get_contributing_event_command(client: Client, args: Dict) -> CommandRe
         CommandResults: Object containing the formatted asset details,
                         raw response, and outputs for integration context.
     """
-    if alert_ids := argToList(args.get("alert_ids")):
-        alerts = []
+    alert_ids = argToList(args.get("alert_ids"))
+    alerts = []
 
-        for alert_id in alert_ids:
-            if alert := client.get_contributing_event_by_alert_id(int(alert_id)).get("reply", {}):
-                page_number = max(int(args.get("page_number", 1)), 1) - 1  # Min & default zero (First page)
-                page_size = max(int(args.get("page_size", 50)), 0)  # Min zero & default 50
-                offset = page_number * page_size
-                limit = max(int(args.get("limit", 0)), 0) or offset + page_size
+    for alert_id in alert_ids:
+        if alert := client.get_contributing_event_by_alert_id(int(alert_id)).get("reply", {}):
+            page_number = max(int(args.get("page_number", 1)), 1) - 1  # Min & default zero (First page)
+            page_size = max(int(args.get("page_size", 50)), 0)  # Min zero & default 50
+            offset = page_number * page_size
+            limit = max(int(args.get("limit", 0)), 0) or offset + page_size
 
-                alert_with_events = {
-                    "alertID": str(alert_id),
-                    "events": alert.get("events", [])[offset:limit],
-                }
-                alerts.append(alert_with_events)
+            alert_with_events = {
+                "alertID": str(alert_id),
+                "events": alert.get("events", [])[offset:limit],
+            }
+            alerts.append(alert_with_events)
 
-        readable_output = tableToMarkdown(
-            "Contributing events", alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
-        )
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ContributingEvent",
-            outputs_key_field="alertID",
-            outputs=alerts,
-            raw_response=alerts,
-        )
+    readable_output = tableToMarkdown(
+        "Contributing events", alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ContributingEvent",
+        outputs_key_field="alertID",
+        outputs=alerts,
+        raw_response=alerts,
+    )
 
-    else:
-        return CommandResults(readable_output="The alert_ids argument cannot be empty.")
 
 def main():  # pragma: no cover
     """

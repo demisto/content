@@ -3343,7 +3343,6 @@ Adding the same indicator, but with different parameters, will update the existi
 | Core.Indicator.class | String | String representing the indicator class. |
 | Core.Indicator.vendors | List | List representing the vendors who reported this indicator. |
 
-
 ### core-get-contributing-event
 
 ***
