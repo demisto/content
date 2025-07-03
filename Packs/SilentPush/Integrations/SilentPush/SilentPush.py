@@ -44,6 +44,9 @@ SEARCH_SCAN = "explore/scandata/search/raw"
 LIVE_SCAN_URL = "explore/tools/scanondemand"
 FUTURE_ATTACK_INDICATOR = "/api/v2/iocs/threat-ranking"
 SCREENSHOT_URL = "explore/tools/screenshotondemand"
+ADD_FEED = "api/v1/feeds/"
+THREAT_CHECK = "https://api.threatcheck.silentpush.com/v1/"
+EXPORT_DATA = "app/v1/export/organization-exports/"
 
 """ COMMANDS INPUTS """
 
@@ -248,6 +251,38 @@ SCREENSHOT_URL_INPUTS = [
         required=True,
     )
 ]
+
+ADD_FEED_INPUTS = [
+    InputArgument(name="name", description="Name of the feed", required=True),
+    InputArgument(name="type", description="Feed Type", required=True),
+    InputArgument(name="category", description="Feed Category", required=False),
+    InputArgument(name="vendor", description="Vendor", required=False),
+    InputArgument(name="feed_description", description="URL for the screenshot.", required=False),
+    InputArgument(name="tags", description="Tags that should be attached with the feed", required=False),
+]
+
+ADD_INDICATORS_INPUTS = [
+    InputArgument(name="feed_uuid", description="UUID of the feed", required=True),
+    InputArgument(name="indicators", description="Indicators for the feed", required=True),
+]
+
+ADD_INDICATOR_TAGS_INPUTS = [
+    InputArgument(name="feed_uuid", description="UUID of the feed.", required=True),
+    InputArgument(name="indicator_name", description="The name of the indicator to tag.", required=True),
+    InputArgument(name="tags", description="Tags to be added to the indicator.", required=True),
+]
+
+RUN_THREAT_CHECK_INPUTS = [
+    InputArgument(name="data", description="The name of the data source to query.", required=True),
+    InputArgument(name="query", description="The value to check for threats (e.g., IP or domain).", required=True),
+    InputArgument(name="type", description="The type of the value being queried (e.g., ip, domain).", required=True),
+    InputArgument(name="user_identifier", description="A unique identifier for the user making the request.", required=True),
+]
+
+GET_DATA_EXPORTS_INPUTS = [
+    InputArgument(name="feed_url", description="The URL from which to export the feed data.", required=True)
+]
+
 
 """ COMMANDS OUTPUTS """
 
@@ -1737,6 +1772,41 @@ SCREENSHOT_URL_OUTPUTS = [
     OutputArgument(name="url", output_type=str, description="The URL that was used to generate the screenshot."),
 ]
 
+ADD_FEED_OUTPUTS = [
+    OutputArgument(name="name", output_type=str, description="The name of the feed."),
+    OutputArgument(name="type", output_type=str, description="The type of the feed."),
+    OutputArgument(name="vendor", output_type=str, description="The vendor of the feed."),
+    OutputArgument(name="feed_description", output_type=str, description="A description of the feed."),
+    OutputArgument(name="category", output_type=str, description="The category of the feed."),
+    OutputArgument(name="tags", output_type=list, description="Tags associated with the feed."),
+]
+
+
+ADD_INDICATORS_OUTPUTS = [
+    OutputArgument(
+        name="created_or_updated",
+        output_type=list,
+        description="List of indicator names that were created or updated in the feed.",
+    ),
+    OutputArgument(
+        name="invalid_indicators",
+        output_type=list,
+        description="List of indicators that were considered invalid and not added to the feed.",
+    ),
+]
+
+ADD_INDICATOR_TAGS_OUTPUTS = [
+    OutputArgument(name="uuid", output_type=str, description="The UUID of the indicator."),
+    OutputArgument(name="name", output_type=str, description="The name of the indicator."),
+    OutputArgument(name="tags", output_type=str, description="The tags assigned to the indicator."),
+]
+
+RUN_THREAT_CHECK_OUTPUTS = [
+    OutputArgument(name="is_listed", output_type=bool, description="Indicates whether the queried value is listed as a threat."),
+    OutputArgument(name="listed_txt", output_type=str, description="Textual description of the listing status."),
+    OutputArgument(name="query", output_type=str, description="The original value that was checked."),
+]
+
 
 metadata_collector = YMLMetadataCollector(
     integration_name="SilentPush",
@@ -2466,6 +2536,130 @@ class Client(BaseClient):
             return {"error": "No screenshot URL returned"}
 
         return {"status_code": screenshot_data.get("response", 200), "screenshot_url": screenshot_url}
+
+    def add_feed(self, args: dict) -> dict[str, Any]:
+        """
+        Add new feed on SilentPush.
+
+        Args:
+            args: Payload for filtering and pagination.
+
+        Returns:
+            Dict[str, Any]: Response containing feed information.
+        """
+        url = self._base_url.replace("/api/v1/merge-api", "") + f"{ADD_FEED}"
+
+        payload = {
+            "name": args.get("name"),
+            "type": args.get("type"),
+            "vendor": args.get("vendor"),
+            "feed_description": args.get("feed_description"),
+            "category": args.get("category"),
+            "tags": argToList(args.get("tags")),
+        }
+        remove_nulls_from_dictionary(payload)
+
+        response = self._http_request(method="POST", url=url, data=payload)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to add new feed: {response['errors']}"}
+
+        return response
+
+    def add_indicators(self, args: dict) -> dict[str, Any]:
+        """
+        Add new indicator on SilentPush.
+
+        Args:
+            args: Payload for filtering and pagination.
+
+        Returns:
+            Dict[str, Any]: Response containing indicators information.
+        """
+        feed_uuid = args.get("feed_uuid")
+        url = self._base_url.replace("/api/v1/merge-api", "") + f"{ADD_FEED}" + f"{feed_uuid}" + "/indicators/"
+        indicators = argToList(args.get("indicators"))
+        payload = {"indicators": indicators}
+        remove_nulls_from_dictionary(payload)
+        response = self._http_request(method="POST", url=url, data=payload)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to add new indicators: {response['errors']}"}
+
+        return response
+
+    def add_indicators_tags(self, args: dict) -> dict[str, Any]:
+        """
+        Add new indicator tags on SilentPush.
+
+        Args:
+            args: Payload for tags.
+
+        Returns:
+            Dict[str, Any]: Response containing indicator tags information.
+        """
+        feed_uuid = args.get("feed_uuid")
+        indicator_name = args.get("indicator_name")
+        url = (
+            self._base_url.replace("/api/v1/merge-api", "")
+            + f"{ADD_FEED}"
+            + f"{feed_uuid}"
+            + "/indicators/"
+            + f"{indicator_name}"
+            + "/update-tags/"
+        )
+        tags = argToList(args.get("tags"))
+        payload = {"tags": tags}
+        remove_nulls_from_dictionary(payload)
+        response = self._http_request(method="PUT", url=url, data=payload)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to add new indicators: {response['errors']}"}
+
+        return response
+
+    def run_threat_check(self, args: dict) -> dict[str, Any]:
+        """
+        Fetch threat checks on SilentPush.
+
+        Args:
+            args: Params for threat checks.
+
+        Returns:
+            Dict[str, Any]: Response containing threat check information.
+        """
+        url = f"{THREAT_CHECK}"
+        params = {"t": args.get("type"), "d": args.get("data"), "u": args.get("user_identifier"), "q": args.get("query")}
+        remove_nulls_from_dictionary(params)
+        response = self._http_request(method="GET", url=url, params=params)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to add new indicators: {response['errors']}"}
+
+        return response
+
+    def get_data_exports(self, feed_url: dict) -> requests.Response:
+        """
+        Exports data on SilentPush.
+
+        Args:
+            feed_url: Feed url for exporting data.
+
+        Returns:
+            Dict[str, Any]: Response containing feed information.
+        """
+        server_url = self._base_url.replace("/api/v1/merge-api", "")
+        url = f"{server_url}{EXPORT_DATA}{feed_url}"
+
+        response = requests.request(
+            method="GET",
+            url=url,  # <<< this must be full_url, not something else
+            headers=self._headers,
+            verify=self.verify,
+            proxies=self.proxies,
+        )
+
+        return response
 
 
 """ COMMAND FUNCTIONS """
@@ -3912,6 +4106,204 @@ def screenshot_url_command(client: Client, args: dict[str, Any]) -> CommandResul
     )
 
 
+@metadata_collector.command(
+    command_name="silentpush-add-feed",
+    inputs_list=ADD_FEED_INPUTS,
+    outputs_prefix="SilentPush.AddFeed",
+    outputs_list=ADD_FEED_OUTPUTS,
+    description="This command add the new feed",
+)
+def add_feed_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler for adding new feeds.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'name' and 'type' key.
+
+    Returns:
+        CommandResults: JSON response of added feed.
+    """
+
+    name = args.get("name")
+    if not name:
+        raise ValueError("Name is required")
+
+    feed_type = args.get("type")
+    if not feed_type:
+        raise ValueError("Type is required")
+
+    result = client.add_feed(args)
+
+    return CommandResults(
+        outputs_prefix="SilentPush.AddFeed",
+        outputs_key_field="name",
+        outputs=result,
+        readable_output=tableToMarkdown("SilentPush Add Feed", result),
+        raw_response=result,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-add-indicators",
+    inputs_list=ADD_INDICATORS_INPUTS,
+    outputs_prefix="SilentPush.AddIndicators",
+    outputs_list=ADD_INDICATORS_OUTPUTS,
+    description="This command add indicators to the feed",
+)
+def add_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler for add new indicators.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' and 'indicators key.
+
+    Returns:
+        CommandResults: JSON response of added indicators.
+    """
+    feed_uuid = args.get("feed_uuid")
+    if not feed_uuid:
+        raise ValueError("Feed UUID is required")
+
+    indicators = args.get("indicators")
+    if not indicators:
+        raise ValueError("Indicators is required")
+
+    result = client.add_indicators(args)
+
+    return CommandResults(
+        outputs_prefix="SilentPush.AddIndicators",
+        outputs_key_field="feed_uuid",
+        outputs=result,
+        readable_output=tableToMarkdown("SilentPush Add Indicators", result),
+        raw_response=result,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-add-indicator-tags",
+    inputs_list=ADD_INDICATOR_TAGS_INPUTS,
+    outputs_prefix="SilentPush.AddIndicatorTags",
+    outputs_list=ADD_INDICATOR_TAGS_OUTPUTS,
+    description="This command updates tags to the indicators",
+)
+def add_indicators_tags_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler for add new indicator tags.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' and 'indicator_name key.
+
+    Returns:
+        CommandResults: JSON response of added indicator tags.
+    """
+    feed_uuid = args.get("feed_uuid")
+    if not feed_uuid:
+        raise ValueError("Feed UUID is required")
+
+    indicator_name = args.get("indicator_name")
+    if not indicator_name:
+        raise ValueError("Indicator name is required")
+
+    if not args.get("tags"):
+        raise ValueError("The 'tags' argument is required and cannot be empty.")
+
+    result = client.add_indicators_tags(args)
+
+    return CommandResults(
+        outputs_prefix="SilentPush.AddIndicatorTags",
+        outputs_key_field="feed_uuid",
+        outputs=result,
+        readable_output=tableToMarkdown("SilentPush Add Indicator Tags", result),
+        raw_response=result,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-run-threat-check",
+    inputs_list=RUN_THREAT_CHECK_INPUTS,
+    outputs_prefix="SilentPush.RunThreatCheck",
+    outputs_list=RUN_THREAT_CHECK_OUTPUTS,
+    description="This command runs the threat check on the specified ",
+)
+def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler to fetch threat checks.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' key.
+
+    Returns:
+        CommandResults: JSON response of threat check.
+    """
+    threat_type = args.get("type")
+    if not threat_type:
+        raise ValueError("Threat type is required")
+
+    data = args.get("data")
+    if not data:
+        raise ValueError("Data is required")
+
+    user_identifier = args.get("user_identifier")
+    if not user_identifier:
+        raise ValueError("User identifier is required")
+
+    query = args.get("query")
+    if not query:
+        raise ValueError("Query is required")
+
+    result = client.run_threat_check(args)
+
+    return CommandResults(
+        outputs_prefix="SilentPush.RunThreatCheck",
+        outputs_key_field="query",
+        outputs=result,
+        readable_output=tableToMarkdown("SilentPush Threat Check", result),
+        raw_response=result,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-get-data-exports",
+    inputs_list=GET_DATA_EXPORTS_INPUTS,
+    outputs_prefix="SilentPush.GetDataExports",
+    outputs_list=[],
+    file_output=True,
+    description="This command runs the threat check on the specified ",
+)
+def get_data_exports_command(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Command handler to export data.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' key.
+
+    Returns:
+        CommandResults: JSON response of threat check.
+    """
+
+    feed_url = args.get("feed_url")
+
+    if not feed_url:
+        raise ValueError("Feed url is required")
+
+    response = client.get_data_exports(feed_url)
+
+    # Check for errors
+    if response.status_code != 200:
+        raise Exception(f"Failed to download file: {response.status_code} {response.text}")
+
+    # Choose a filename (you can extract from headers or use feed_url)
+    filename = feed_url.split("/")[-1] or "exported_data"
+
+    # Return fileResult
+    return fileResult(filename, response.content)
+
+
 """ MAIN FUNCTION """
 
 
@@ -3990,6 +4382,21 @@ def main() -> None:
 
         elif demisto.command() == "silentpush-screenshot-url":
             return_results(screenshot_url_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-add-feed":
+            return_results(add_feed_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-add-indicators":
+            return_results(add_indicators_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-add-indicator-tags":
+            return_results(add_indicators_tags_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-run-threat-check":
+            return_results(run_threat_check_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-get-data-exports":
+            return_results(get_data_exports_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
