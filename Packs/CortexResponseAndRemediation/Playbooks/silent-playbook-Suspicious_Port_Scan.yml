@@ -3450,7 +3450,9 @@ tasks:
           - operator: RemoveEmpty
             args:
               empty_values: {}
-              remove_keys: {}
+              remove_keys:
+                value:
+                  simple: "true"
           - operator: uniq
     separatecontext: false
     continueonerror: true
