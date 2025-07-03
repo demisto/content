@@ -3,6 +3,7 @@ Infoblox enables you to receive metadata about IPs in your network and manages t
 Configure Infoblox on XSOAR
 ---------------------------
 
+
 ##### Required Permissions
 
 The API supports only HTTP Basic Authentication. Every user must have permissions that grants them access to the API.

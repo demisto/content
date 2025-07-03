@@ -1,5 +1,6 @@
 IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the `ServiceNow` integration in order to:
 
+
 - View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI, and enrich it with Cortex XSOAR data.
 - View, create, update and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.

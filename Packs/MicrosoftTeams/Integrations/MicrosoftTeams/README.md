@@ -369,6 +369,7 @@ For more detailed instructions, refer to the [Configuring the instance with the 
 - If a non-Cortex XSOAR user ran the `new incident` command in the chat with the bot, the owner of the created incident would be the logged in Cortex XSOAR user, not the external user who ran the command.
 - The ***send-notification*** command currently supports only adaptive cards without user responses. To collect user responses from adaptive cards, please use the ***MicrosoftTeamsAsk*** command.
 
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
