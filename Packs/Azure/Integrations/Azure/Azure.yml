@@ -1748,4 +1748,3 @@ fromversion: 8.11.0
 isCloudProviderIntegration: true
 tests:
 - No tests (auto formatted)
-marketplaces: []
