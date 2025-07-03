@@ -145,7 +145,6 @@ class Client(BaseClient):  # pragma: no cover
             incidents: List = []
             # handle paging
             demisto.debug("Test-IronScales: pulling loop start")
-            break_condition = False
             wait_time = 5
             while page <= total_pages:
                 demisto.debug(f"Test-IronScales: page num is {str(page)}, starting loop")
@@ -160,25 +159,18 @@ class Client(BaseClient):  # pragma: no cover
                 demisto.debug(f"Test-IronScales: new incidents for page num {str(page)}, incidents ids: \
                               {str([incident.get('incidentID') for incident in response.get('incidents', [])])}")
                 page += 1
-                if not new_incidents or page > total_pages:
-                    demisto.debug("Test-IronScales: met loop condition, breaking...")
-                    break_condition = True
                 if new_incidents:
                     demisto.debug(
                         f"Test-IronScales: first and last incidents ids for page num {str(page-1)}:\
                         {str(new_incidents[0].get('incidentID'))}, {str(new_incidents[-1].get('incidentID'))}"
                     )
-                    incidents.extend(new_incidents)
-                if break_condition:
-                    incidents_sorted_by_time = sorted(
-                        incidents,
-                        key=lambda incident: datetime.strptime(
-                            incident.get("created", "2019-08-24T14:15:22Z"), "%Y-%m-%dT%H:%M:%SZ"
-                        ),
-                    )
-                    incidents_ids_sorted_by_time = [incident.get("incidentID") for incident in incidents_sorted_by_time]
-                    break
+                incidents.extend(new_incidents)
             demisto.debug(f"Test-IronScales: loop ended. fetched {str(len(incidents))} new ids")
+            incidents_sorted_by_time = sorted(
+                incidents,
+                key=lambda incident: datetime.strptime(incident.get("created", "2019-08-24T14:15:22Z"), "%Y-%m-%dT%H:%M:%SZ"),
+            )
+            incidents_ids_sorted_by_time = [incident.get("incidentID") for incident in incidents_sorted_by_time]
             return incidents_ids_sorted_by_time
         except Exception as e:
             demisto.debug(f"Test-IronScales: Exception message:{e}")
@@ -293,7 +285,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[CommandRes
     limit: int = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     since_time = arg_to_datetime(args.get("since_time") or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
     assert isinstance(since_time, datetime)
-    events, _ = fetch_events_command(client, since_time, limit)
+    events, _, _ = fetch_events_command(client, since_time, limit)
     message = "All Incidents" if client.all_incident else "Open Incidents"
     result = CommandResults(
         readable_output=tableToMarkdown(message, events),
@@ -302,13 +294,71 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[CommandRes
     return result, events
 
 
+def get_new_last_id(last_timestamp, incident, new_last_ids):
+    incident_time = arg_to_datetime(incident.get("_time"))
+    if not last_timestamp:  # first fetch case
+        new_last_ids.append(incident.get("incident_id"))
+        last_timestamp = incident_time
+    else:
+        if incident_time > last_timestamp:  # new timestamp - new last_ids list
+            new_last_ids = []
+            last_timestamp = incident_time
+        new_last_ids.append(incident.get("incident_id"))
+    return last_timestamp, new_last_ids
+
+
+def all_incidents_trimmer(incident_ids, client, max_fetch, last_timestamp_ids, last_timestamp):
+    """
+    In all_incidents case, we will save a list of the ids that share the same timestamp as the last id.
+    That way we will not return duplicates in each run.
+
+    Args:
+        incident_ids (_type_): the new ids that we pulled
+        client (_type_): client
+        events (_type_): an empty list, perhaps delete?
+        max_fetch (_type_): max fetch
+        last_timestamp_ids (_type_): Ids that we already seen
+        last_timestamp (_type_): the last timestamp that we pulled
+    """
+    events: List[dict[str, Any]] = []
+    new_last_ids: list[int] = []  # the new ids to save for the next run
+    if last_timestamp_ids:
+        last_timestamp_ids = set(last_timestamp_ids)  # for better runtime
+    for i in incident_ids:
+        # remove ids that already pulled
+        if last_timestamp_ids and i in last_timestamp_ids:
+            continue
+        try:
+            incident = client.get_incident(i)  # get incident details
+            events.extend(incident_to_events(incident))
+        except Exception:
+            demisto.debug(f"Test-IronScales: Error in getting incident id {i} details")
+            # todo - need to print message to the customer
+            continue
+        last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids)
+        if len(events) >= max_fetch:
+            break
+    return events, new_last_ids[-1] if new_last_ids else [], new_last_ids
+
+
+def open_incidents_trimmer(incident_ids, client, max_fetch, last_id):
+    events: List[dict[str, Any]] = []
+    for i in incident_ids:
+        incident = client.get_incident(i)
+        events.extend(incident_to_events(incident))
+        last_id = max(i, last_id)
+        if len(events) >= max_fetch:
+            break
+    return events, last_id, []
+
+
 def fetch_events_command(
     client: Client,
     first_fetch: datetime,
     max_fetch: int,
     last_id: Optional[int] = None,
     last_timestamp_ids: Optional[List] = None,
-) -> tuple[List[dict[str, Any]], int]:
+) -> tuple[List[dict[str, Any]], int, list[Any] | None]:
     """Fetches IRONSCALES incidents as events to XSIAM.
     Note: each report of incident will be considered as an event.
 
@@ -330,21 +380,14 @@ def fetch_events_command(
     )
     demisto.debug(f"Test-IronScales: returned from get_incident_ids_to_fetch with {str(len(incident_ids))} new incidents")
     last_id = last_id or -1
-    for i in incident_ids:
-        # remove ids that already pulled
-        if last_timestamp_ids and i in last_timestamp_ids:
-            continue
-        try:
-            incident = client.get_incident(i)
-        except Exception:
-            demisto.debug(f"Test-IronScales: Error in getting incident id {i} details")
-            # todo - need to print log to the customer
-            continue
-        events.extend(incident_to_events(incident))
-        last_id = max(i, last_id)
-        if len(events) >= max_fetch:
-            break
-    return events, last_id
+    if client.all_incident:
+        events, last_id, last_timestamp_ids = all_incidents_trimmer(
+            incident_ids, client, max_fetch, last_timestamp_ids, first_fetch
+        )  # type: ignore
+    else:
+        events, last_id, last_timestamp_ids = open_incidents_trimmer(incident_ids, client, max_fetch, last_id)
+
+    return events, last_id, last_timestamp_ids
 
 
 def test_module_command(client: Client, first_fetch: datetime) -> str:
@@ -403,7 +446,7 @@ def main():
                 demisto.debug("Test-IronScales: last_run buffer is not empty. using other first_fetch time.")
                 first_fetch = arg_to_datetime(demisto.getLastRun().get("last_incident_time")) or first_fetch
                 demisto.debug(f'Test-IronScales: new time = {demisto.getLastRun().get("last_incident_time")}')
-            events, last_id = fetch_events_command(
+            events, last_id, last_timestamp_ids = fetch_events_command(
                 client=client,
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
@@ -417,7 +460,7 @@ def main():
                         last event: {str(last_id)}, num of events: {len(events)},\
                         set last run to: 'last_id': {last_id},\
                             'last_incident_time': {events[-1].get('first_reported_date')if events else None},\
-                                'last_timestamp_ids': {get_incidents_with_the_same_timestamps(events)}"
+                                'last_timestamp_ids': {last_timestamp_ids}"
             )
 
             send_events_to_xsiam(events, VENDOR, PRODUCT)
@@ -426,7 +469,7 @@ def main():
                 {
                     "last_id": last_id,
                     "last_incident_time": events[-1].get("first_reported_date") if events else None,
-                    "last_timestamp_ids": get_incidents_with_the_same_timestamps(events),
+                    "last_timestamp_ids": last_timestamp_ids,
                 }
             )
 

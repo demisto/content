@@ -37,7 +37,7 @@ def test_fetch_events_by_fetch_time(client):
     When: Running fetch-events, where `max_fetch` param is 1 and `first_fetch` param is "2 days ago".
     Then: Ensure only the first event that occured up to 2 days ago is returned.
     """
-    events, last_id = fetch_events_command(
+    events, last_id, _ = fetch_events_command(
         client,
         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=1,
@@ -53,7 +53,7 @@ def test_fetch_events_by_last_id(client):
     When: Running fetch-events, where `max_fetch` param is 10 and the last fetched incident id is 1.
     Then: Ensure incidents 3 and 4 are returned as events.
     """
-    res, last_run = fetch_events_command(
+    res, last_run, _ = fetch_events_command(
         client,
         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
@@ -260,17 +260,20 @@ def test_respects_max_fetch(mocker):
             i += 2
 
     mocker.patch.object(client, "_http_request", side_effect=ids_generator())
-    mocker.patch.object(client, "get_incident", side_effect=lambda x: x)
+    mocker.patch.object(
+        client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": f"{str(2019+x)}-08-24T14:15:22Z"}
+    )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
-    res, last_run = fetch_events_command(
+    res, last_run, last_timestamp_ids = fetch_events_command(
         client,
         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
     )
     assert len(res) == 10
-    assert res[0] == 1
+    assert res[0].get("incident_id") == 1
     assert last_run == 10
+    assert last_timestamp_ids == [10]
 
 
 def test_all_incidents_last_id(mocker):
@@ -297,18 +300,20 @@ def test_all_incidents_last_id(mocker):
     ]
 
     mocker.patch.object(client, "_http_request", side_effect=responses)
-    mocker.patch.object(client, "get_incident", side_effect=lambda x: x)
+    mocker.patch.object(
+        client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": f"{str(2019+x)}-08-24T14:15:22Z"}
+    )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
-    res, last_run = fetch_events_command(
+    res, last_run, _ = fetch_events_command(
         client,
         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
         last_id=1,
-        last_timestamp_ids={1},
+        last_timestamp_ids=[1],
     )
     assert len(res) == 3
-    assert res[0] == 2
+    assert res[0].get("incident_id") == 2
     assert last_run == 4
 
 
@@ -336,18 +341,20 @@ def test_all_incidents_last_id_complex(mocker):
             i += 2
 
     mocker.patch.object(client, "_http_request", side_effect=ids_generator())
-    mocker.patch.object(client, "get_incident", side_effect=lambda x: x)
+    mocker.patch.object(
+        client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": f"{str(2019+x)}-08-24T14:15:22Z"}
+    )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
-    res, last_run = fetch_events_command(
+    res, last_run, _ = fetch_events_command(
         client,
         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
         last_id=2,
-        last_timestamp_ids={1, 2},
+        last_timestamp_ids=[1, 2],
     )
     assert len(res) == 10
-    assert res[0] == 3
+    assert res[0].get("incident_id") == 3
     assert last_run == 12
 
 
