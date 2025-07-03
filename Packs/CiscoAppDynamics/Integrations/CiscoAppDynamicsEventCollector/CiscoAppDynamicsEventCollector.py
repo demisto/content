@@ -474,7 +474,18 @@ def main() -> None:  # pragma: no cover
             return_results(get_events(client, args, params))
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        error_message = str(e)
+        if "Verify that the server URL" in error_message or "Not Found" in error_message:
+            return_error(
+                f"Failed to execute {command} command.\nError:\nVerify that the server URL parameter is correct and that you have access to the server from your host."
+            )
+        if "Unauthorized" in error_message:
+            return_error(
+                f"Failed to execute {command} command.\nError:\nVerify that the server URL parameter and credentials are correct and that you have access to the server from your host."
+            )
+        if "Invalid application id" in error_message:
+            return_error(f"Failed to execute {command} command.\nError:\nInvalid application id is specified.")
+        return_error(f"Failed to execute {command} command.\nError:\n{error_message}")
 
 
 """ ENTRY POINT """
