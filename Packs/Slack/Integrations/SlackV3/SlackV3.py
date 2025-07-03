@@ -91,26 +91,6 @@ IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
 
 """ HELPER FUNCTIONS """
-
-
-def get_war_room_url(url: str) -> str:
-    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
-    if is_xsiam() or is_platform():
-        incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
-        incident_url = urlparse(url)
-        war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
-        # executed from the incident War Room
-        if incident_id and incident_id.startswith("INCIDENT-"):
-            war_room_url += f"/war_room?caseId={incident_id.split('-')[-1]}"
-        # executed from the alert War Room
-        else:
-            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
-
-        return war_room_url
-
-    return url
-
-
 def get_bot_id() -> str:
     """
     Gets the app bot ID
@@ -2137,7 +2117,6 @@ def send_message(
                 if investigation.get("type") != PLAYGROUND_INVESTIGATION_TYPE:
                     link = server_links.get("warRoom")
                     if link:
-                        link = get_war_room_url(link)
                         if entry:
                             link += "/" + entry
                         message += f"\nView it on: {link}"
