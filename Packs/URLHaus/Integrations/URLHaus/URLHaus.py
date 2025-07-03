@@ -762,7 +762,7 @@ def main():
         demisto_params = demisto.params()
         command = demisto.command()
 
-        auth_key =  demisto_params.get("credentials", {}).get("password")
+        auth_key = demisto_params.get("credentials", {}).get("password")
         if not auth_key:
             raise ValueError("Missing required param Auth Key. Please set this param in the instance configuration.")
 
