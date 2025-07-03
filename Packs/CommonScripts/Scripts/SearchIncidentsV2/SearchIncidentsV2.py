@@ -191,12 +191,13 @@ def search_incidents(args: Dict):  # pragma: no cover
     page_size = args.get("size") or DEFAULT_PAGE_SIZE
     more_pages = len(all_found_incidents) == page_size
     all_found_incidents = add_incidents_link(apply_filters(all_found_incidents, args), platform)
-
-    # Adding all incident ids for dedup process
-    incidents_ids = {incident.get("id") for incident in all_found_incidents}
-
     demisto.debug(f"Amount of incidents after filtering = {len(all_found_incidents)} before pagination")
     page = STARTING_PAGE_NUMBER
+
+    if all_found_incidents:
+        first_incident = all_found_incidents[0]
+        args['todate'] = first_incident.get('created')
+        demisto.info(f"Setting todate argument to be {first_incident.get('created')} to avoid duplications")
 
     while more_pages and len(all_found_incidents) < limit:
         args["page"] = page
@@ -208,16 +209,6 @@ def search_incidents(args: Dict):  # pragma: no cover
 
         demisto.debug(f"before filtering {len(current_page_found_incidents)=} {args=} {page=}")
         more_pages = len(current_page_found_incidents) == page_size
-
-        # dedup incidents
-        demisto.debug(f"before dedup process with {len(current_page_found_incidents)=}")
-        current_page_found_incidents = [
-            incident for incident in current_page_found_incidents if incident.get("id") not in incidents_ids
-        ]
-
-        # Adding all new incident ids for dedup process
-        incidents_ids.update([incident.get("id") for incident in current_page_found_incidents])
-        demisto.debug(f"after dedup process with {len(current_page_found_incidents)=}")
 
         current_page_found_incidents = add_incidents_link(apply_filters(current_page_found_incidents, args), platform)
         demisto.debug(f"after filtering = {len(current_page_found_incidents)=}")
