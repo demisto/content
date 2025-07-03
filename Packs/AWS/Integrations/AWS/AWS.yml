@@ -571,7 +571,7 @@ script:
       description: 'The name of the role to associate the policy with. This parameter accepts a string of upper and lowercase letters and numbers, with no spaces. You can also include any of the following characters: _+=,.@-.'
       required: true
     - name: policy_name
-      description: 'The name of the policy document. This parameter accepts a string of upper and lowercase letters and numbers, with no spaces. You can also include any of the following characters: _+=,.@-'
+      description: 'The name of the policy document. This parameter accepts a string of upper and lowercase letters and numbers, with no spaces. You can also include any of the following characters: _+=,.@-.'
       required: true
     - name: policy_document
       description: 'The policy document in JSON format. Must be a valid IAM policy document that defines the permissions for the role.'
