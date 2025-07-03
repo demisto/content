@@ -1,6 +1,8 @@
 import concurrent.futures
 import copy
 import secrets
+import threading
+import time
 import uuid
 from enum import Enum
 from ipaddress import ip_address
@@ -91,6 +93,9 @@ ID_QUERY_REGEX = re.compile(r"(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)")
 NAME_AND_GROUP_REGEX = re.compile(r"^[\w-]+$")
 ASCENDING_ID_ORDER = "+id"
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
+_CONTEXT_LOCK = threading.RLock()
+_CONTEXT_LOCK_TIMEOUT = 30  # seconds
 
 DEFAULT_EVENTS_COLUMNS = """QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime"""  # noqa: E501
 DEFAULT_ASSETS_LIMIT = 100
@@ -1188,6 +1193,9 @@ def insert_to_updated_context(
     if offense_ids is None:
         offense_ids = []
     updated_context_data, version = get_integration_context_with_version()
+    if not updated_context_data or MIRRORED_OFFENSES_QUERIED_CTX_KEY not in updated_context_data:
+        demisto.debug("Detected invalid context structure in insert_to_updated_context. Attempting to repair.")
+        updated_context_data = migrate_integration_ctx(updated_context_data or {})
     new_context_data = updated_context_data.copy()
     if should_force_update:
         return context_data, version
@@ -1230,20 +1238,42 @@ def safely_update_context_data_partial(changes: dict, attempts=5) -> None:
     Reads the current integration context+version,
     deep-merges `changes` into it, then writes it back.
     Retries up to `attempts` times if there's a version conflict.
+    Uses thread locking to prevent concurrent access.
     """
-    for _ in range(attempts):
-        ctx, version = get_integration_context_with_version()
-        merged = copy.deepcopy(ctx)
-        deep_merge_context_changes(merged, changes)
+    demisto.debug(f"[Context Update] Attempting to acquire lock for partial update with changes: {list(changes.keys())}")
+    
+    if not _CONTEXT_LOCK.acquire(timeout=_CONTEXT_LOCK_TIMEOUT):
+        error_msg = f"[Context Update] Failed to acquire lock within {_CONTEXT_LOCK_TIMEOUT} seconds"
+        demisto.error(error_msg)
+        raise DemistoException(error_msg)
+    
+    try:
+        demisto.debug(f"[Context Update] Lock acquired, starting update attempts (max {attempts})")
+        
+        for attempt in range(attempts):
+            ctx, version = get_integration_context_with_version()
+            demisto.debug(f"[Context Update] Attempt {attempt + 1}/{attempts} - Current version: {version}")
+            
+            merged = copy.deepcopy(ctx)
+            deep_merge_context_changes(merged, changes)
 
-        try:
-            demisto.debug(f"Merging partial data to context {merged}")
-            set_integration_context(merged, version=version)
-            return  # success
-        except Exception as e:
-            demisto.debug(f"Version conflict or error setting context: {e}. Retrying...")
+            try:
+                demisto.debug(f"[Context Update] Merging partial data to context with keys: {list(changes.keys())}")
+                set_integration_context(merged, version=version)
+                demisto.debug(f"[Context Update] Successfully updated context on attempt {attempt + 1}")
+                return  # success
+            except Exception as e:
+                demisto.debug(f"[Context Update] Version conflict or error setting context: {e}. Retrying...")
+                if attempt < attempts - 1:
+                    time.sleep(0.1 * (attempt + 1))  # Exponential backoff
 
-    raise DemistoException(f"Failed updating context after {attempts} attempts.")
+        error_msg = f"[Context Update] Failed updating context after {attempts} attempts"
+        demisto.error(error_msg)
+        raise DemistoException(error_msg)
+    
+    finally:
+        _CONTEXT_LOCK.release()
+        demisto.debug("[Context Update] Lock released")
 
 
 def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
@@ -2027,30 +2057,54 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
     If found, we clear the key sub-dicts and 'samples', plus remove the 'reset' key.
     Returns True if a reset was triggered and handled, False otherwise.
     """
+    demisto.debug("[Context Reset] Checking if reset was triggered")
+    
     if not ctx or not version:
         ctx, version = get_integration_context_with_version()
 
     if ctx and RESET_KEY in ctx:
         print_debug_msg("Reset fetch-incidents.")
-        demisto.setLastRun({LAST_FETCH_KEY: 0})
-
-        ctx.pop(RESET_KEY, None)
-
-        ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = {}
-        ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = {}
-        ctx["samples"] = []
-
-        partial_changes = {
-            # We do NOT set RESET_KEY, effectively removing it from context
-            MIRRORED_OFFENSES_QUERIED_CTX_KEY: ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY],
-            MIRRORED_OFFENSES_FINISHED_CTX_KEY: ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY],
-            "samples": ctx["samples"],
-        }
-
-        safely_update_context_data_partial(partial_changes)
+        demisto.debug("[Context Reset] Reset key found in context, performing reset")
+        
+        # Acquire lock for the entire reset operation to ensure consistency
+        demisto.debug("[Context Reset] Attempting to acquire lock for reset operation")
+        if not _CONTEXT_LOCK.acquire(timeout=_CONTEXT_LOCK_TIMEOUT):
+            error_msg = f"[Context Reset] Failed to acquire lock within {_CONTEXT_LOCK_TIMEOUT} seconds"
+            demisto.error(error_msg)
+            raise DemistoException(error_msg)
+        
+        try:
+            demisto.setLastRun({LAST_FETCH_KEY: 0})
+            
+            # Create the changes to apply - we don't include RESET_KEY to effectively remove it
+            partial_changes = {
+                MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                "samples": [],
+            }
+            
+            # Get fresh context to ensure we don't miss any concurrent updates
+            fresh_ctx, fresh_version = get_integration_context_with_version()
+            
+            # Create a complete context without the RESET_KEY
+            new_ctx = copy.deepcopy(fresh_ctx)
+            new_ctx.pop(RESET_KEY, None)
+            new_ctx.update(partial_changes)
+            
+            try:
+                set_integration_context(new_ctx, version=fresh_version)
+                demisto.debug("[Context Reset] Successfully reset context")
+            except Exception as e:
+                demisto.debug(f"[Context Reset] Failed to update context: {e}. Will retry with partial update.")
+                # Fall back to partial update if direct update fails
+                safely_update_context_data_partial(partial_changes)
+        finally:
+            _CONTEXT_LOCK.release()
+            demisto.debug("[Context Reset] Lock released")
 
         return True
 
+    demisto.debug("[Context Reset] No reset triggered")
     return False
 
 
@@ -2571,10 +2625,29 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
 
     Returns: The ids of the mirrored offenses being currently processed.
     """
-    if MIRRORED_OFFENSES_QUERIED_CTX_KEY not in context_data or MIRRORED_OFFENSES_FINISHED_CTX_KEY not in context_data:
-        raise ValueError(
-            f"Context data is missing keys: {MIRRORED_OFFENSES_QUERIED_CTX_KEY} or {MIRRORED_OFFENSES_FINISHED_CTX_KEY}"
+    # Defensive check with detailed logging for troubleshooting
+    missing_keys = []
+    if MIRRORED_OFFENSES_QUERIED_CTX_KEY not in context_data:
+        missing_keys.append(MIRRORED_OFFENSES_QUERIED_CTX_KEY)
+    if MIRRORED_OFFENSES_FINISHED_CTX_KEY not in context_data:
+        missing_keys.append(MIRRORED_OFFENSES_FINISHED_CTX_KEY)
+    
+    if missing_keys:
+        # Log detailed context information for debugging
+        print_debug_msg(f"Context corruption detected at stage: {stage}")
+        print_debug_msg(f"Missing keys: {missing_keys}")
+        print_debug_msg(f"Available context keys: {list(context_data.keys())}")
+        print_debug_msg(f"Full context data: {context_data}")
+        
+        # Create a detailed error message
+        error_msg = (
+            f"Context data corruption detected at stage '{stage}'. "
+            f"Missing required keys: {missing_keys}. "
+            f"Available keys: {list(context_data.keys())}. "
+            f"This indicates the context was not properly initialized or was corrupted. "
+            f"Context data: {context_data}"
         )
+        raise ValueError(error_msg)
 
     if not context_data:
         print_debug_msg("Not printing stats")
@@ -2692,7 +2765,12 @@ def recover_from_last_run(ctx: dict | None = None, version: Any = None):
             f"ID from context: {last_highest_id_context}"
         )
 
-        partial_changes = {LAST_FETCH_KEY: last_highest_id_last_run, "samples": ctx.get("samples", [])}
+        partial_changes = {
+            LAST_FETCH_KEY: last_highest_id_last_run, 
+            "samples": ctx.get("samples", []),
+            MIRRORED_OFFENSES_QUERIED_CTX_KEY: ctx.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {}),
+            MIRRORED_OFFENSES_FINISHED_CTX_KEY: ctx.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
+        }
 
         safely_update_context_data_partial(partial_changes)
 
