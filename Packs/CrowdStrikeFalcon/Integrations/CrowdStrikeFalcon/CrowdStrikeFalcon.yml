@@ -5159,6 +5159,7 @@ script:
       type: String
   dockerimage: demisto/py3-tools:1.0.0.3205634
   isfetch: true
+  isfetch:platform: false
   isfetch:marketplacev2: false
   isfetchevents: true
   ismappable: true
