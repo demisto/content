@@ -146,6 +146,7 @@ tasks:
                     right:
                       value:
                         simple: Core.OriginalAlert.event.action_module_sha256
+                      iscontext: true
                 accessor: Score
             iscontext: true
           ignorecase: true
