@@ -147,6 +147,7 @@ tasks:
                       value:
                         simple: alert.cgosha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -864,6 +865,7 @@ tasks:
                       value:
                         simple: alert.cgosha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:

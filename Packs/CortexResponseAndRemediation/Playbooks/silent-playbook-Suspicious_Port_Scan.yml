@@ -565,6 +565,7 @@ tasks:
                       value:
                         simple: alert.cgosha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -3446,6 +3447,10 @@ tasks:
                 value:
                   simple: alert.osparentsha256
                 iscontext: true
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
           - operator: uniq
     separatecontext: false
     continueonerror: true
