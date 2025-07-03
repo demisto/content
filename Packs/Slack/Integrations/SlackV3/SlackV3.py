@@ -1,22 +1,24 @@
-import asyncio
-import concurrent
-import logging.handlers
-import ssl
-import threading
-from typing import Literal, TypedDict, get_args
-from urllib.parse import urlparse
-
-import aiohttp
-import demistomock as demisto  # noqa: F401
-import slack_sdk
-from CommonServerPython import *  # noqa: F401
-from slack_sdk.errors import SlackApiError
-from slack_sdk.socket_mode.aiohttp import SocketModeClient
-from slack_sdk.socket_mode.request import SocketModeRequest
-from slack_sdk.socket_mode.response import SocketModeResponse
-from slack_sdk.web.async_client import AsyncWebClient
-from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
+from slack_sdk.web.async_slack_response import AsyncSlackResponse
+from slack_sdk.web.async_client import AsyncWebClient
+from slack_sdk.socket_mode.response import SocketModeResponse
+from slack_sdk.socket_mode.request import SocketModeRequest
+from slack_sdk.socket_mode.aiohttp import SocketModeClient
+from slack_sdk.errors import SlackApiError
+import slack_sdk
+import aiohttp
+from urllib.parse import urlparse
+from typing import Literal, TypedDict, get_args
+import threading
+import ssl
+import logging.handlers
+import concurrent
+import asyncio
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+CONSTANT_PACK_VERSION = '3.5.22'
+demisto.debug('pack id = Slack, pack version = 3.5.22')
+
 
 """ CONSTANTS """
 
@@ -89,6 +91,7 @@ DEMISTO_API_KEY: str
 DEMISTO_URL: str
 IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
+SLASH_COMMANDS: List[Dict] = []  # Slash commands
 
 """ HELPER FUNCTIONS """
 
@@ -1156,6 +1159,204 @@ async def handle_listen_error(error: str):
     demisto.error(error)
     demisto.updateModuleHealth(error)
 
+# This function handles the creation of incidents based on the slash commands and sub-commands.
+
+
+def handle_slack_command(command, command_text, user_email):
+    """
+    Handles Slack slash commands based on the configuration
+
+    Args:
+        command (str): The slash command
+        command_text (str): The text after the command
+        user_email (str): The email of the user who issued the command
+
+    Returns:
+        dict: Incident data or error message
+    """
+    global SLASH_COMMANDS
+    incident_json = {'name': 'Unnamed Incident', 'type': 'Unknown', 'labels': []}
+    result = {'success': True, 'incident': incident_json}
+
+    # Parse command_text to extract sub_command and remaining text
+    command_text_parts = command_text.strip().split()
+    sub_command_text = command_text_parts[0] if command_text_parts else ""
+    remaining_text = " ".join(command_text_parts[1:]) if len(command_text_parts) > 1 else ""
+
+    for cmd in SLASH_COMMANDS:
+        if f'/{cmd.get("command")}' == str(command):
+            # Check if this command supports sub-commands
+            if cmd.get("sub_command", False):
+                # Look for the sub_command in the list
+                sub_command_found = False
+                for sub_cmd in cmd.get("sub_command_list", []):
+                    if sub_cmd.get("sub_command_name") == sub_command_text:
+                        sub_command_found = True
+                        # Check whitelist/blacklist
+                        whitelist = sub_cmd.get("whitelist", [])
+                        blacklist = sub_cmd.get("blacklist", [])
+
+                        # Control access based on whitelist/blacklist
+                        if whitelist and user_email not in whitelist:
+                            result = {'success': False, 'error': 'You are not authorized to use this command.'}
+                            return result
+
+                        if blacklist and user_email in blacklist:
+                            result = {'success': False, 'error': 'You are not authorized to use this command.'}
+                            return result
+
+                        # Validate that remaining_text is not empty and not equal to sub_command_name
+                        if not remaining_text:
+                            result = {
+                                'success': False, 'error': f'Parameter is required for sub-command "{sub_command_text}". Please provide a parameter after the sub-command.'}
+                            return result
+
+                        if remaining_text == sub_command_text:
+                            result = {
+                                'success': False, 'error': f'Parameter cannot be the same as the sub-command name "{sub_command_text}". Please provide a different parameter.'}
+                            return result
+
+                        # Create incident with sub-command configuration
+                        if sub_cmd.get("add_command_details_to_incident_name"):
+                            incident_json = {
+                                'name': f'{sub_cmd.get("incident_name")} ({remaining_text})',
+                                'type': str(sub_cmd.get("incident_type")),
+                                'labels': []
+                            }
+                        else:
+                            incident_json = {
+                                'name': f'{sub_cmd.get("incident_name")}',
+                                'type': str(sub_cmd.get("incident_type")),
+                                'labels': []
+                            }
+                        # Add command text as a label if it exists
+                        if command_text:
+                            incident_json['labels'].append({'type': 'slack_command', 'value': command})
+                            incident_json['labels'].append({'type': 'slack_sub_command', 'value': sub_command_text})
+                            incident_json['labels'].append({'type': 'slack_sub_command_parameter', 'value': remaining_text})
+                        result = {'success': True, 'incident': incident_json}
+                        return result
+
+                # If no matching sub-command was found, use the default command configuration
+                if not sub_command_found:
+                    # Check whitelist/blacklist for the main command
+                    whitelist = cmd.get("whitelist", [])
+                    blacklist = cmd.get("blacklist", [])
+
+                    # Control access based on whitelist/blacklist
+                    if whitelist and user_email not in whitelist:
+                        result = {'success': False, 'error': 'You are not authorized to use this command.'}
+                        return result
+
+                    if blacklist and user_email in blacklist:
+                        result = {'success': False, 'error': 'You are not authorized to use this command.'}
+                        return result
+
+                    # Create incident with main command configuration + all command text
+                    if cmd.get("add_command_details_to_incident_name"):
+                        incident_json = {
+                            'name': f'{cmd.get("incident_name")} ({command_text})',
+                            'type': str(cmd.get("incident_type")),
+                            'labels': []
+                        }
+                    else:
+                        incident_json = {
+                            'name': f'{cmd.get("incident_name")}',
+                            'type': str(cmd.get("incident_type")),
+                            'labels': []
+                        }
+                    # Add command text as a label if it exists
+                    if command_text:
+                        incident_json['labels'].append({'type': 'slack_command', 'value': command})
+                        incident_json['labels'].append({'type': 'slack_command_parameter', 'value': command_text})
+                    result = {'success': True, 'incident': incident_json}
+                    return result
+            else:
+                # No sub-commands or no sub-command provided, handle as before
+                # Check whitelist/blacklist for the main command
+                whitelist = cmd.get("whitelist", [])
+                blacklist = cmd.get("blacklist", [])
+
+                # Control access based on whitelist/blacklist
+                if whitelist and user_email not in whitelist:
+                    result = {'success': False, 'error': 'You are not authorized to use this command.'}
+                    return result
+
+                if blacklist and user_email in blacklist:
+                    result = {'success': False, 'error': 'You are not authorized to use this command.'}
+                    return result
+
+                # Create incident with main command configuration
+                if cmd.get("add_command_details_to_incident_name"):
+                    incident_json = {
+                        'name': f'{cmd.get("incident_name")} ({command_text})',
+                        'type': str(cmd.get("incident_type")),
+                        'labels': []
+                    }
+                else:
+                    incident_json = {
+                        'name': f'{cmd.get("incident_name")}',
+                        'type': str(cmd.get("incident_type")),
+                        'labels': []
+                    }
+                # Add command text as a label if it exists
+                if command_text:
+                    incident_json['labels'].append({'type': 'slack_command', 'value': command})
+                    incident_json['labels'].append({'type': 'slack_command_parameter', 'value': command_text})
+                result = {'success': True, 'incident': incident_json}
+                return result
+
+    return result
+
+# This function handles the creation of incidents based on the slash commands and sub-commands.
+
+
+async def handle_slack_slash_command(user: dict, text: str, client: AsyncWebClient, command: str):
+    """
+    Handles a slash command
+
+    Args:
+        user: The user who run the command
+        text: The message text
+        client: The Slack client
+        command: The slash command that was used
+
+    Returns:
+        Text to return to the user
+    """
+    user_email = user.get('profile', {}).get('email', '')
+    user_name = user.get('name', '')
+    demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=user.get('name'))
+
+    if not demisto_user and not ALLOW_INCIDENTS:
+        data = 'You are not authorized to create incidents.'
+    else:
+        try:
+            command_result = handle_slack_command(command, text, user_email)
+
+            if command_result.get('success', False):
+                incident_json = json.dumps(command_result.get('incident', {}))
+                data = await translate_create(incident_json, user_name, user_email, demisto_user)
+            else:
+                # Return the error message
+                data = command_result.get('error', 'Failed to process command')
+        except Exception as e:
+            data = f'Failed creating incidents: {str(e)}'
+
+    if not data:
+        data = 'Sorry, I could not perform the selected operation.'
+    body = {
+        'users': user.get('id')
+    }
+    im = await send_slack_request_async(client, 'conversations.open', body=body)
+    channel = im.get('channel', {}).get('id')  # type: ignore
+    body = {
+        'text': data,
+        'channel': channel
+    }
+
+    await send_slack_request_async(client, 'chat.postMessage', body=body)
+
 
 async def start_listening():
     """
@@ -1249,64 +1450,71 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
     Returns:
         Creation result
     """
-    json_pattern = r"(?<=json=).*"
-    name_pattern = r"(?<=name=).*"
-    type_pattern = r"(?<=type=).*"
-    message = message.replace("\n", "").replace("`", "")
-    json_match = re.search(json_pattern, message)
+    message = message.replace("\n", '').replace('`', '')
     created_incident = None
-    data = ""
-    user_demisto_id = ""
-    request_fields = {"ReporterEmail": user_email, "Message": message}
+    data = ''
+    user_demisto_id = ''
+    request_fields = {'ReporterEmail': user_email, 'Message': message}
     incidents = []
     if demisto_user:
-        user_demisto_id = demisto_user.get("id", "")
+        user_demisto_id = demisto_user.get('id', '')
 
-    if json_match:
-        if re.search(name_pattern, message) or re.search(type_pattern, message):
-            data = "No other properties other than json should be specified."
-        else:
+    # Check if message is a JSON string
+    try:
+        incidents_json = message
+        incidents = json.loads(incidents_json.replace('"', '"').replace('"', '"'))
+        if not isinstance(incidents, list):
+            incidents = [incidents]
+    except json.JSONDecodeError:
+        # If not JSON, try to parse using regex patterns
+        json_pattern = r'(?<=json=).*'
+        name_pattern = r'(?<=name=).*'
+        type_pattern = r'(?<=type=).*'
+
+        json_match = re.search(json_pattern, message)
+        if json_match:
+            if re.search(name_pattern, message) or re.search(type_pattern, message):
+                data = 'No other properties other than json should be specified.'
+                return data
             incidents_json = json_match.group()
-            incidents = json.loads(incidents_json.replace("“", '"').replace("”", '"'))
+            incidents = json.loads(incidents_json.replace('"', '"').replace('"', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
-            add_req_data_to_incidents(incidents, request_fields)
-            created_incident = await create_incidents(incidents, user_name, user_email, user_demisto_id)
-
-            if not created_incident:
-                data = "Failed creating incidents."
-    else:
-        name_match = re.search(name_pattern, message)
-        if not name_match:
-            data = "Please specify arguments in the following manner: name=<name> type=[type] or json=<json>."
         else:
-            incident_name = re.sub("type=.*", "", name_match.group()).strip()
-            incident_type = ""
+            name_match = re.search(name_pattern, message)
+            if not name_match:
+                data = 'Please specify arguments in the following manner: name=<name> type=[type] or json=<json>.'
+                return data
+
+            incident_name = re.sub('type=.*', '', name_match.group()).strip()
+            incident_type = ''
 
             type_match = re.search(type_pattern, message)
             if type_match:
-                incident_type = re.sub("name=.*", "", type_match.group()).strip()
+                incident_type = re.sub('name=.*', '', type_match.group()).strip()
 
-            incident = {"name": incident_name}
-
+            incident = {'name': incident_name}
             incident_type = incident_type or INCIDENT_TYPE
             if incident_type:
-                incident["type"] = incident_type
-            incidents = add_req_data_to_incidents([incident], request_fields)
-            created_incident = await create_incidents([incident], user_name, user_email, user_demisto_id)
-            if not created_incident:
-                data = "Failed creating incidents."
+                incident['type'] = incident_type
+            incidents = [incident]
 
-    if created_incident:
-        demisto.debug(f"Created {len(incidents)} incidents")
-        update_integration_context_samples(incidents)
-        if isinstance(created_incident, list):
-            created_incident = created_incident[0]
-        server_links = demisto.demistoUrls()
-        server_link = server_links.get("server")
-        incident_name = created_incident["name"]
-        incident_id = created_incident["id"]
-        data = f"Successfully created incident {incident_name}.\n View it on: {server_link}#/WarRoom/{incident_id}"
+    add_req_data_to_incidents(incidents, request_fields)
+    created_incident = await create_incidents(incidents, user_name, user_email, user_demisto_id)
+
+    if not created_incident:
+        data = 'Failed creating incidents.'
+        return data
+
+    demisto.debug(f'Created {len(incidents)} incidents')
+    update_integration_context_samples(incidents)
+    if isinstance(created_incident, list):
+        created_incident = created_incident[0]
+    server_links = demisto.demistoUrls()
+    server_link = server_links.get('server')
+    incident_name = created_incident['name']
+    incident_id = created_incident['id']
+    data = f'Successfully created incident: {incident_name}\n<{server_link}#/WarRoom/{incident_id}|View incident>'
 
     return data
 
@@ -1354,6 +1562,10 @@ def is_bot_message(data: dict) -> bool:
         return True
     elif event.get("subtype") == "bot_message":
         return True
+    # Check if the message is a slash command in a direct message
+    # This prevents slash commands from being interpreted as bot messages
+    elif bool(data.get('command') and data.get('user_id') and data.get('user_name') and data.get('channel_name') == 'directmessage'):
+        return False
     return bool(not (event.get("user") or data.get("user", {}).get("id") or data.get("envelope_id")))
 
 
@@ -1378,7 +1590,8 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
     if entitlement_match:
         content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
-        demisto.handleEntitlementForUser(incident_id, guid, user.get("profile", {}).get("email"), content, task_id)  # type: ignore
+        demisto.handleEntitlementForUser(incident_id, guid, user.get(
+            "profile", {}).get("email"), content, task_id)  # type: ignore
 
         return "Thank you for your response."
     else:
@@ -1600,7 +1813,15 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 return
 
         # Check if slash command received. If so, ignore for now.
-        if data.get("command", None):
+        if data.get('command', None):
+            if data.get('command') != None:
+                user = await get_user_details(user_id=data.get('user_id'))
+                demisto.debug("Listen 1 ismail")
+                # type: ignore
+                await handle_slack_slash_command(user, data.get('text', ''), ASYNC_CLIENT, str(data.get('command')))
+                demisto.debug("Listen 2 ismail")
+                reset_listener_health()
+                return
             return
 
         # Check to see if the event is about a newly handled event.
@@ -2879,7 +3100,8 @@ def init_globals(command_name: str = ""):
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
     global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
-    global IGNORE_RETRIES, EXTENSIVE_LOGGING
+    # SLASH_COMMANDS is a global variable that stores the configuration for all slash commands including their sub-commands, whitelist/blacklist settings, and incident creation parameters
+    global IGNORE_RETRIES, EXTENSIVE_LOGGING, SLASH_COMMANDS
 
     VERIFY_CERT = not demisto.params().get("unsecure", False)
     if not VERIFY_CERT:
@@ -2921,6 +3143,19 @@ def init_globals(command_name: str = ""):
     common_channels = demisto.params().get("common_channels", None)
     COMMON_CHANNELS = parse_common_channels(common_channels)
     DISABLE_CACHING = demisto.params().get("disable_caching", False)
+
+    try:
+        slash_commands_param = demisto.params().get('slash_commands', '[]')
+        if slash_commands_param:
+            SLASH_COMMANDS = json.loads(slash_commands_param)
+        else:
+            SLASH_COMMANDS = []
+    except json.JSONDecodeError as e:
+        demisto.error(f"Error parsing slash_commands parameter: {str(e)}")
+        SLASH_COMMANDS = []
+    except Exception as e:
+        demisto.error(f"Unexpected error while initializing SLASH_COMMANDS: {str(e)}")
+        SLASH_COMMANDS = []
 
     # Formats the error message for the 'Channel Not Found' errors
     error_str = "The channel was not found"
