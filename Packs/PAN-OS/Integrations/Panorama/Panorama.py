@@ -6562,7 +6562,18 @@ def panorama_show_device_version_command(target: Optional[str] = None):
 
 
 @logger
-def panorama_check_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None):
+def panorama_check_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None) -> Dict:
+    """panorama_check_latest_dynamic_update_content Check for available firewall Dyanmic Update items.
+
+    Run API call to request the firewall to check update servers for all available Dynamic Update items of the given type.
+
+    Args:
+        update_type (DynamicUpdateType): The type of dynamic update item to check for.
+        target (Optional[str], optional): The serial number of a firewall to proxy through Panorama to.
+
+    Returns:
+        Dict: Dictionary containing firewall API response.
+    """
     params = {
         "type": "op",
         "cmd": f"<request><{update_type.value}><upgrade><check/></upgrade></{update_type.value}></request>",
@@ -6674,7 +6685,18 @@ def panorama_check_latest_dynamic_update_command(args: dict):
 
 
 @logger
-def panorama_download_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None):
+def panorama_download_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None) -> Dict:
+    """panorama_download_latest_dynamic_update_content Download the latest available firewall Dynamic Update item.
+
+    Run API call to download the latest available Dynamic Update item of the given type.
+
+    Args:
+        update_type (DynamicUpdateType):  The type of dynamic update item to download.
+        target (Optional[str], optional):  The serial number of a firewall to proxy through Panorama to.
+
+    Returns:
+        Dict: Dictionary containing firewall API response.
+    """
     params = {
         "type": "op",
         "cmd": f"<request><{update_type.value}><upgrade><download><latest/></download></upgrade></{update_type.value}></request>",
@@ -6865,7 +6887,18 @@ def panorama_dynamic_update_download_status_command(update_type: DynamicUpdateTy
 
 
 @logger
-def panorama_install_latest_dynamic_update(update_type: DynamicUpdateType, target: str):
+def panorama_install_latest_dynamic_update(update_type: DynamicUpdateType, target: str) -> Dict:
+    """panorama_install_latest_dynamic_update Install the latest available firewall Dynamic Update item.
+
+    Run API call to install the latest available Dynamic Update item of the given type.
+
+    Args:
+        update_type (DynamicUpdateType): The type of dynamic update item to install.
+        target (str): The serial number of a firewall to proxy through Panorama to.
+
+    Returns:
+        Dict: Dictionary containing firewall API response.
+    """
     params = {
         "type": "op",
         "cmd": f"<request><{update_type.value}><upgrade><install><version>latest</version></install></upgrade></{update_type.value}></request>",

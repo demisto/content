@@ -1317,8 +1317,6 @@ tasks:
     scriptarguments:
       newer_images_only:
         simple: yes
-      panos_instance_name:
-        simple: ${PANOSIntegrationInstance}
       target:
         simple: ${inputs.targetDevice}
     separatecontext: false
@@ -2007,8 +2005,6 @@ tasks:
     scriptarguments:
       disk_space_units:
         simple: M
-      panos_instance_name:
-        simple: ${PANOSIntegrationInstance}
       target:
         complex:
           root: inputs
