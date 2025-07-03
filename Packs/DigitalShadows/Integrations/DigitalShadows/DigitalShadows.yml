@@ -349,7 +349,7 @@ script:
     - name: filter_minimumTotalRecords
       description: Only include data breaches that have at least this many total records (inclusive)
     - name: filter_published
-      description: Narrow down to records based on when they were published.
+      description: Narrow down to records based on when they were published
     - name: filter_repostedCredentials
       description: Filter out breaches depending on whether they consist entirely of reposted credentials or not. ORIGINAL or REPOST
     - name: filter_severities
