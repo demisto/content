@@ -7,15 +7,14 @@ issilent: true
 tasks:
   "0":
     id: "0"
-    taskid: a981597c-ee9b-4d99-8622-dba5021bf3fc
+    taskid: 0c35cb74-1ba5-439a-8a92-6e50e47d6db3
     type: start
     task:
-      id: a981597c-ee9b-4d99-8622-dba5021bf3fc
+      id: 0c35cb74-1ba5-439a-8a92-6e50e47d6db3
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -37,13 +36,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3be302c1-252d-4dbb-859b-800c81177191
+    taskid: 29abeced-ecbd-44fd-8631-0dc8ba63131a
     type: regular
     task:
-      id: 3be302c1-252d-4dbb-859b-800c81177191
+      id: 29abeced-ecbd-44fd-8631-0dc8ba63131a
       version: -1
       name: Get Host Risk score
-      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      description: Retrieve the risk score of a specific host or list of hosts with
+        the highest risk score in the environment along with the reason affecting
+        each score.
       script: '|||core-list-risky-hosts'
       type: regular
       iscommand: true
@@ -67,16 +68,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 654dc9e8-5ef6-4753-8fa6-609ce154582b
+    taskid: ee25c065-a0d8-4995-8075-f1550bf6211b
     type: regular
     task:
-      id: 654dc9e8-5ef6-4753-8fa6-609ce154582b
+      id: ee25c065-a0d8-4995-8075-f1550bf6211b
       version: -1
       name: Get the alert's extra data
       description: Returns extended information about each alert ID.
@@ -113,10 +114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 43d4796e-a36e-4e3d-9731-36f39660b690
+    taskid: 1c46d2e6-7d93-45d8-b5bb-9d1eba958884
     type: condition
     task:
-      id: 43d4796e-a36e-4e3d-9731-36f39660b690
+      id: 1c46d2e6-7d93-45d8-b5bb-9d1eba958884
       version: -1
       name: Is the loaded DLL malicious?
       description: Check if the loaded DLL is malicious
@@ -147,8 +148,11 @@ tasks:
                       value:
                         simple: Core.OriginalAlert.event.action_module_sha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
       - - operator: isEqualNumber
           left:
@@ -165,6 +169,7 @@ tasks:
                       value:
                         simple: Core.OriginalAlert.event.action_module_sha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -187,13 +192,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4f18a42a-12ce-4eb9-8a20-fec42f513135
+    taskid: e32222a7-4f51-478f-8ce1-6bfe6b05f965
     type: regular
     task:
-      id: 4f18a42a-12ce-4eb9-8a20-fec42f513135
+      id: e32222a7-4f51-478f-8ce1-6bfe6b05f965
       version: -1
       name: Check the CGO signer and DLL company similarity
-      description: Check the similarity between the CGO process signer and the loaded DLL's company attribute.
+      description: Check the similarity between the CGO process signer and the loaded
+        DLL's company attribute.
       scriptName: StringSimilarity
       type: regular
       iscommand: false
@@ -212,7 +218,8 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: 'Core.OriginalAlert.event.action_module_file_info.company is empty'
+                  simple: Core.OriginalAlert.event.action_module_file_info.company
+                    is empty
       string_B:
         complex:
           root: alert
@@ -242,16 +249,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 2bb7eb4a-0916-48d4-8274-8663a7230cce
+    taskid: 34fb2063-1610-480c-8ad3-7025287f810a
     type: title
     task:
-      id: 2bb7eb4a-0916-48d4-8274-8663a7230cce
+      id: 34fb2063-1610-480c-8ad3-7025287f810a
       version: -1
       name: Analysis
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -273,10 +279,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2764fbda-ab36-499b-8ce2-d9cdde3745a6
+    taskid: 373f2e44-32d1-4abb-810a-b26abb49378c
     type: condition
     task:
-      id: 2764fbda-ab36-499b-8ce2-d9cdde3745a6
+      id: 373f2e44-32d1-4abb-810a-b26abb49378c
       version: -1
       name: Is the Host Risk High?
       description: Checks if the host risk score is set to High.
@@ -318,13 +324,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: ab48686b-bbd1-4f96-8fc9-ff097885715e
+    taskid: 209d2b10-d746-48fa-8522-55dcd3308b5b
     type: condition
     task:
-      id: ab48686b-bbd1-4f96-8fc9-ff097885715e
+      id: 209d2b10-d746-48fa-8522-55dcd3308b5b
       version: -1
       name: Is CGO uncommon in this alert?
-      description: "Checks if the causality chain is unusual for this alert. If the CGO name matches one on the list, the alert will be marked as a true positive (TP)."
+      description: Checks if the causality chain is unusual for this alert. If the
+        CGO name matches one on the list, the alert will be marked as a true positive
+        (TP).
       type: condition
       iscommand: false
       brand: ""
@@ -390,16 +398,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 259c10ff-e6f1-458c-844d-338ef85d47c2
+    taskid: 4712cc6c-d28c-482f-8a0f-7506a80c0f22
     type: title
     task:
-      id: 259c10ff-e6f1-458c-844d-338ef85d47c2
+      id: 4712cc6c-d28c-482f-8a0f-7506a80c0f22
       version: -1
       name: Remediation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -422,16 +429,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 28236b29-3d28-4404-859a-67b405eb9a4d
+    taskid: 43b20acc-d5bc-4889-8efa-83242bd23521
     type: title
     task:
-      id: 28236b29-3d28-4404-859a-67b405eb9a4d
+      id: 43b20acc-d5bc-4889-8efa-83242bd23521
       version: -1
       name: Investigation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -454,10 +460,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 879c83b5-66ed-45d4-87e5-dc16f0c7497f
+    taskid: 21ae1e28-6c5c-4109-809a-515828336e63
     type: condition
     task:
-      id: 879c83b5-66ed-45d4-87e5-dc16f0c7497f
+      id: 21ae1e28-6c5c-4109-809a-515828336e63
       version: -1
       name: Any related alerts?
       description: |-
@@ -525,16 +531,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 2abcf759-92c6-4629-8414-7bc3a54a894a
+    taskid: 3289a3ea-47de-46ef-8b7f-9ccfe76bccb3
     type: title
     task:
-      id: 2abcf759-92c6-4629-8414-7bc3a54a894a
+      id: 3289a3ea-47de-46ef-8b7f-9ccfe76bccb3
       version: -1
       name: No malicious activity detected
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -556,10 +561,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 337e6419-2449-42eb-87e8-0c05164c0579
+    taskid: 9d451f1b-365b-4876-8ed0-c3babf1f3ff2
     type: regular
     task:
-      id: 337e6419-2449-42eb-87e8-0c05164c0579
+      id: 9d451f1b-365b-4876-8ed0-c3babf1f3ff2
       version: -1
       name: Close Alert - True Positive
       description: commands.local.cmd.close.inv
@@ -572,7 +577,8 @@ tasks:
       - "31"
     scriptarguments:
       closeNotes:
-        simple: Resolved as True Positive - Handled by the playbook "Rundll32.exe executes a rare unsigned module"
+        simple: Resolved as True Positive - Handled by the playbook "Rundll32.exe
+          executes a rare unsigned module"
       closeReason:
         simple: Resolved - True Positive
       id:
@@ -595,16 +601,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 18f21c91-f77f-494d-816e-ec25a810f8fc
+    taskid: 72145999-b2ed-457e-857b-9f44c978d2b6
     type: title
     task:
-      id: 18f21c91-f77f-494d-816e-ec25a810f8fc
+      id: 72145999-b2ed-457e-857b-9f44c978d2b6
       version: -1
       name: Finish Remediation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -626,10 +631,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 7c321802-aef3-4ba2-9f53-4336e2cdf612
+    taskid: 52d61208-6af7-4566-971a-dd3c1c8cbb07
     type: condition
     task:
-      id: 7c321802-aef3-4ba2-9f53-4336e2cdf612
+      id: 52d61208-6af7-4566-971a-dd3c1c8cbb07
       version: -1
       name: Check if the DLL is suspicious
       description: Check if the DLL is suspicious
@@ -660,8 +665,11 @@ tasks:
                       value:
                         simple: Core.OriginalAlert.event.action_module_sha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
       - - operator: greaterThanOrEqual
           left:
@@ -678,6 +686,7 @@ tasks:
                       value:
                         simple: Core.OriginalAlert.event.action_module_sha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -700,10 +709,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 1c548669-49cc-45e9-8cd8-bb4e13244449
+    taskid: 2d16efb4-48ef-4206-8bb1-38bb063b22b8
     type: regular
     task:
-      id: 1c548669-49cc-45e9-8cd8-bb4e13244449
+      id: 2d16efb4-48ef-4206-8bb1-38bb063b22b8
       version: -1
       name: Check tf the DLL file is quarantined
       description: Retrieves the quarantine status for a selected file.
@@ -739,16 +748,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b4e06160-6d57-4529-8c25-793bb09d343a
+    taskid: b8923032-bedb-4487-827c-2f8037b6a1c8
     type: title
     task:
-      id: b4e06160-6d57-4529-8c25-793bb09d343a
+      id: b8923032-bedb-4487-827c-2f8037b6a1c8
       version: -1
       name: Terminate CGO
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -770,16 +778,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 43802c12-7369-4105-8f1e-57714ae2e41b
+    taskid: ba70eb43-59be-4dbc-8e6e-a665f57f8dda
     type: title
     task:
-      id: 43802c12-7369-4105-8f1e-57714ae2e41b
+      id: ba70eb43-59be-4dbc-8e6e-a665f57f8dda
       version: -1
       name: Quarentine DLL
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -801,13 +808,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 31546a37-85b5-49af-8dd5-51f3285fd438
+    taskid: bdef93fd-336e-405f-815f-07b074d5acb6
     type: condition
     task:
-      id: 31546a37-85b5-49af-8dd5-51f3285fd438
+      id: bdef93fd-336e-405f-815f-07b074d5acb6
       version: -1
       name: Should quarantine the file?
-      description: Determines whether to quarantine the files based on their quarantine status.
+      description: Determines whether to quarantine the files based on their quarantine
+        status.
       type: condition
       iscommand: false
       brand: ""
@@ -853,10 +861,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: bc809b36-0c2a-428d-8303-9b9c47f7ad06
+    taskid: bed33a42-b382-430d-82ee-285ef7b24e3f
     type: regular
     task:
-      id: bc809b36-0c2a-428d-8303-9b9c47f7ad06
+      id: bed33a42-b382-430d-82ee-285ef7b24e3f
       version: -1
       name: File quarantine
       description: Quarantines a file on selected endpoints.
@@ -912,10 +920,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: db370eb9-d8eb-41c9-8014-94a870971fae
+    taskid: a50a91df-e3b3-4305-8a0d-ae6e872b7e87
     type: regular
     task:
-      id: db370eb9-d8eb-41c9-8014-94a870971fae
+      id: a50a91df-e3b3-4305-8a0d-ae6e872b7e87
       version: -1
       name: Manual action needed – DLL file couldn't be quarantined
       description: |-
@@ -953,16 +961,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 7586c9cb-0617-4fce-86f8-5ffc0d993b28
+    taskid: 81c6bf5c-bd5b-427d-855d-90b28f9b4b7d
     type: title
     task:
-      id: 7586c9cb-0617-4fce-86f8-5ffc0d993b28
+      id: 81c6bf5c-bd5b-427d-855d-90b28f9b4b7d
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -981,13 +988,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 47281942-33a2-476b-8776-8feb82cb2572
+    taskid: 76b9bddb-84bf-473d-8732-5792b081410d
     type: regular
     task:
-      id: 47281942-33a2-476b-8776-8feb82cb2572
+      id: 76b9bddb-84bf-473d-8732-5792b081410d
       version: -1
       name: Terminate Causality (CGO)
-      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available only for
+        Cortex XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -1036,10 +1044,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 953cc262-2b48-489f-878d-fe1ac0119e40
+    taskid: 5e7a6d16-894e-4900-872e-81bfb670a331
     type: regular
     task:
-      id: 953cc262-2b48-489f-878d-fe1ac0119e40
+      id: 5e7a6d16-894e-4900-872e-81bfb670a331
       version: -1
       name: Terminate Causality Process Manually
       description: |
@@ -1071,10 +1079,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 4618df80-9e41-43c7-8d97-c3ad3ba79ede
+    taskid: 46f92dd8-3ec0-42dc-8e5b-76014b18aa69
     type: regular
     task:
-      id: 4618df80-9e41-43c7-8d97-c3ad3ba79ede
+      id: 46f92dd8-3ec0-42dc-8e5b-76014b18aa69
       version: -1
       name: Search related alerts by causality chain
       description: |-
@@ -1113,7 +1121,27 @@ tasks:
       includeinformational:
         simple: "true"
       query:
-        simple: "(\ncid:${alert.cid.[0]} or \nactorprocessinstanceid:${alert.cid.[0]} or \nactionprocessinstanceid:${alert.cid.[0]} or \nactorprocessinstanceid:${alert.actorprocessinstanceid.[0]} or \nactionprocessinstanceid:${alert.actorprocessinstanceid.[0]}\n)  \nAND \n(\nname:\"Regsvr32 may have run code from an untrusted source\" OR \nname:\"Process calls ActiveX Object with a shell command\" OR \nname:\"Command-line arguments match Mimikatz execution\" OR \nname:\"Unicode RTL Override Character\" OR\nname:\"Screensaver process executed from Users or temporary folder by a scripting engine process\" OR \nname:\"Unsigned and unpopular process performed a DLL injection\" OR \nname:\"Unsigned and unpopular process performed queue APC injection\" OR \nname:\"Unsigned and unpopular process performed an injection\" OR \nname:\"Unsigned and unpopular process performed process hollowing injection\" OR \nname:\"Unsigned and unpopular process performed a DLL injection to a commonly abused process\" OR \nname:\"Unsigned and unpopular process performed injection into a commonly abused process\" OR \nname:\"Uncommon Service Create/Config\" OR \nname:\"Unsigned and unpopular process injected into a commonly abused process\" OR \nname:\"Unsigned process injects code into a process\" OR \nname:\"New service created via command line\" OR \nname:\"PowerShell is used to execute a CPL file\" OR \nname:\"Task scheduled by commonly abused host process\" OR \nname:\"Unsigned process running from a temporary directory\" OR \nname:\"Suspicious file created in AppData directory\" \n)"
+        simple: "(\ncid:${alert.cid.[0]} or \nactorprocessinstanceid:${alert.cid.[0]}
+          or \nactionprocessinstanceid:${alert.cid.[0]} or \nactorprocessinstanceid:${alert.actorprocessinstanceid.[0]}
+          or \nactionprocessinstanceid:${alert.actorprocessinstanceid.[0]}\n)  \nAND
+          \n(\nname:\"Regsvr32 may have run code from an untrusted source\" OR \nname:\"Process
+          calls ActiveX Object with a shell command\" OR \nname:\"Command-line arguments
+          match Mimikatz execution\" OR \nname:\"Unicode RTL Override Character\"
+          OR\nname:\"Screensaver process executed from Users or temporary folder by
+          a scripting engine process\" OR \nname:\"Unsigned and unpopular process
+          performed a DLL injection\" OR \nname:\"Unsigned and unpopular process performed
+          queue APC injection\" OR \nname:\"Unsigned and unpopular process performed
+          an injection\" OR \nname:\"Unsigned and unpopular process performed process
+          hollowing injection\" OR \nname:\"Unsigned and unpopular process performed
+          a DLL injection to a commonly abused process\" OR \nname:\"Unsigned and
+          unpopular process performed injection into a commonly abused process\" OR
+          \nname:\"Uncommon Service Create/Config\" OR \nname:\"Unsigned and unpopular
+          process injected into a commonly abused process\" OR \nname:\"Unsigned process
+          injects code into a process\" OR \nname:\"New service created via command
+          line\" OR \nname:\"PowerShell is used to execute a CPL file\" OR \nname:\"Task
+          scheduled by commonly abused host process\" OR \nname:\"Unsigned process
+          running from a temporary directory\" OR \nname:\"Suspicious file created
+          in AppData directory\" \n)"
       todate:
         simple: now
     separatecontext: false
@@ -1134,10 +1162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: ab608f24-0c02-4d7f-8db3-0436a00a222f
+    taskid: 88b207cd-a053-4569-8080-377584506795
     type: regular
     task:
-      id: ab608f24-0c02-4d7f-8db3-0436a00a222f
+      id: 88b207cd-a053-4569-8080-377584506795
       version: -1
       name: Extract the DLL's extension
       description: Extract the DLL's extension.
@@ -1186,13 +1214,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: cbd42f8b-68c4-471b-89a0-af3643e0351b
+    taskid: ae92ef82-5fc0-4985-8f58-00ea247377d4
     type: condition
     task:
-      id: cbd42f8b-68c4-471b-89a0-af3643e0351b
+      id: ae92ef82-5fc0-4985-8f58-00ea247377d4
       version: -1
       name: Check if the fuzzyhash is not similar
-      description: Remove false positives if the CGO signer is similar to the company name in the DLL's attribute (excluding Microsoft Corporation).
+      description: Remove false positives if the CGO signer is similar to the company
+        name in the DLL's attribute (excluding Microsoft Corporation).
       type: condition
       iscommand: false
       brand: ""
@@ -1250,10 +1279,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 7d09fe4c-29a8-493c-9c82-f75279c98c67
+    taskid: 9928334b-3f90-4972-842e-461db0b7bbf7
     type: condition
     task:
-      id: 7d09fe4c-29a8-493c-9c82-f75279c98c67
+      id: 9928334b-3f90-4972-842e-461db0b7bbf7
       version: -1
       name: Suspicious DLL and medium-risk host?
       description: |-
@@ -1307,6 +1336,7 @@ tasks:
                       value:
                         simple: Core.OriginalAlert.event.action_module_sha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
                 transformers:
                 - operator: SetIfEmpty
@@ -1336,16 +1366,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 9ecf2e5f-b833-456e-8f36-69264b0a9360
+    taskid: f8ef678e-ad8b-4c7f-801f-c47eef3b1b77
     type: title
     task:
-      id: 9ecf2e5f-b833-456e-8f36-69264b0a9360
+      id: f8ef678e-ad8b-4c7f-801f-c47eef3b1b77
       version: -1
       name: Related Alerts
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -1367,10 +1396,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: df7d8195-afe3-4151-8426-02a95f68c5dc
+    taskid: a04767b8-05ac-4433-880f-477d9a3402c9
     type: regular
     task:
-      id: df7d8195-afe3-4151-8426-02a95f68c5dc
+      id: a04767b8-05ac-4433-880f-477d9a3402c9
       version: -1
       name: Close Alert - False Positive
       description: commands.local.cmd.close.inv
@@ -1383,7 +1412,8 @@ tasks:
       - "31"
     scriptarguments:
       closeNotes:
-        simple: Resolved as false positive - handled by the playbook "Rundll32.exe executes a rare unsigned module"
+        simple: Resolved as false positive - handled by the playbook "Rundll32.exe
+          executes a rare unsigned module"
       closeReason:
         simple: Resolved - False Positive
       id:
@@ -1406,10 +1436,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: b1f04d00-0019-4a6b-81db-ea37291567f8
+    taskid: 7d020778-3334-4b47-8e08-7785a519d039
     type: regular
     task:
-      id: b1f04d00-0019-4a6b-81db-ea37291567f8
+      id: 7d020778-3334-4b47-8e08-7785a519d039
       version: -1
       name: Search related alerts by Case ID
       description: |-
@@ -1446,7 +1476,24 @@ tasks:
       fromdate:
         simple: 5 hours ago
       query:
-        simple: "(\n${alert.parentXDRIncident=val.split('-')[1]})  \nAND \n(\nname:\"Regsvr32 may have run code from an untrusted source\" OR \nname:\"Process calls ActiveX Object with a shell command\" OR \nname:\"Command-line arguments match Mimikatz execution\" OR \nname:\"Unicode RTL Override Character\" OR\nname:\"Screensaver process executed from Users or temporary folder by a scripting engine process\" OR \nname:\"Unsigned and unpopular process performed a DLL injection\" OR \nname:\"Unsigned and unpopular process performed queue APC injection\" OR \nname:\"Unsigned and unpopular process performed an injection\" OR \nname:\"Unsigned and unpopular process performed process hollowing injection\" OR \nname:\"Unsigned and unpopular process performed a DLL injection to a commonly abused process\" OR \nname:\"Unsigned and unpopular process performed injection into a commonly abused process\" OR \nname:\"Uncommon Service Create/Config\" OR \nname:\"Unsigned and unpopular process injected into a commonly abused process\" OR \nname:\"Unsigned process injects code into a process\" OR \nname:\"New service created via command line\" OR \nname:\"PowerShell is used to execute a CPL file\" OR \nname:\"Task scheduled by commonly abused host process\" OR \nname:\"Unsigned process running from a temporary directory\" OR \nname:\"Suspicious file created in AppData directory\" \n)"
+        simple: "(\n${alert.parentXDRIncident=val.split('-')[1]})  \nAND \n(\nname:\"Regsvr32
+          may have run code from an untrusted source\" OR \nname:\"Process calls ActiveX
+          Object with a shell command\" OR \nname:\"Command-line arguments match Mimikatz
+          execution\" OR \nname:\"Unicode RTL Override Character\" OR\nname:\"Screensaver
+          process executed from Users or temporary folder by a scripting engine process\"
+          OR \nname:\"Unsigned and unpopular process performed a DLL injection\" OR
+          \nname:\"Unsigned and unpopular process performed queue APC injection\"
+          OR \nname:\"Unsigned and unpopular process performed an injection\" OR \nname:\"Unsigned
+          and unpopular process performed process hollowing injection\" OR \nname:\"Unsigned
+          and unpopular process performed a DLL injection to a commonly abused process\"
+          OR \nname:\"Unsigned and unpopular process performed injection into a commonly
+          abused process\" OR \nname:\"Uncommon Service Create/Config\" OR \nname:\"Unsigned
+          and unpopular process injected into a commonly abused process\" OR \nname:\"Unsigned
+          process injects code into a process\" OR \nname:\"New service created via
+          command line\" OR \nname:\"PowerShell is used to execute a CPL file\" OR
+          \nname:\"Task scheduled by commonly abused host process\" OR \nname:\"Unsigned
+          process running from a temporary directory\" OR \nname:\"Suspicious file
+          created in AppData directory\" \n)"
       todate:
         simple: now
     separatecontext: false
@@ -1467,10 +1514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 11223b3e-6a34-4274-9827-b530a6ffbbfd
+    taskid: 5b6fdac2-b839-4a71-8bb7-0d377afdfb3c
     type: regular
     task:
-      id: 11223b3e-6a34-4274-9827-b530a6ffbbfd
+      id: 5b6fdac2-b839-4a71-8bb7-0d377afdfb3c
       version: -1
       name: Enrich the DLL's SHA256
       description: Checks the file reputation of the given hash.
