@@ -117,39 +117,39 @@ Alternatively, you can check each relevant command section below for the minimum
 
 There are two flows in order to configure the integration as was mentioned before:
 
-1. Authorization Code flow (Support [The chat commands](#chat-commands))
-2. Client Credentials flow
+1. Client Credentials
+2. Authorization Code (Support [The chat commands](#chat-commands))
 
 In order to configure the integration follow the next steps:
 
 1. Search for Microsoft Teams integration after you have installed it from the marketplace.
 2. Click **Add instance** to create and configure a new integration instance by using one of the flows. Instructions below.
 
-    | **Parameter** | **Description**                                                                                                                                                    | **Required** |
-    | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-    | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint.         | True |
-    | Bot ID | Bot ID.                                                                                                                                                            | True |
-    | Bot Password | Bot Password.                                                                                                                                                      | True |
-    | Authentication Type | Can be Client Credentials or Authorization Code. Please check the limitations for each flow.                                                                       | True |
-    | Application redirect URI | Used for Authorization Code flow only. Need to be configured in the Teams application in the Azure portal as well.                                                 | False |
-    | Authorization code | For Authorization Code flow. Received from the authorization step, after running generate-login-url command. See the Detailed instructions under the Help section. | False |
-    | Default team | The team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter.                                  | True |
-    | Notifications channel |                                                                                                                                                                    | True |
-    | Certificate (Required for HTTPS) |                                                                                                                                                                    | False |
-    | Private Key (Required for HTTPS) |                                                                                                                                                                    | False |
-    | Minimum incident severity to send notifications to Teams by |                                                                                                                                                                    | False |
-    | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel.                                                                                | False |
-    | Allow external users to create incidents via direct message |                                                                                                                                                                    | False |
-    | The header of an external form hyperlink. |                                                                                                                                                                    | False |
-    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and Cortex XSIAM.                                                                                                          | False |
-    | Use system proxy settings |                                                                                                                                                                    | False |
-    | Long running instance | Must be checked when using the Bot.                                                                                                                                | True |
-    | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | longRunningPort                                                                                                                                                    | False |
-    | Incident type | Incident type.                                                                                                                                                     | False |
+    | **Parameter** | **Description**                                                                                                                                                             | **Required** |
+    | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+    | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint.                  | True |
+    | Bot ID | Bot ID.                                                                                                                                                                     | True |
+    | Bot Password | Bot Password.                                                                                                                                                               | True |
+    | Authentication Type | Can be Client Credentials or Authorization Code. Please check the limitations for each flow.                                                                                | True |
+    | Application redirect URI | **Used for Authorization Code flow**. Need to be configured in the Teams application in the Azure portal as well.                                                           | False |
+    | Authorization code | **Used for Authorization Code flow**. Received from the authorization step, after running generate-login-url command. See the Detailed instructions under the Help section. | False |
+    | Default team | The team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter.                                           | True |
+    | Notifications channel |                                                                                                                                                                             | True |
+    | Certificate (Required for HTTPS) |                                                                                                                                                                             | False |
+    | Private Key (Required for HTTPS) |                                                                                                                                                                             | False |
+    | Minimum incident severity to send notifications to Teams by |                                                                                                                                                                             | False |
+    | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel.                                                                                         | False |
+    | Allow external users to create incidents via direct message |                                                                                                                                                                             | False |
+    | The header of an external form hyperlink. |                                                                                                                                                                             | False |
+    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and Cortex XSIAM.                                                                                                                   | False |
+    | Use system proxy settings |                                                                                                                                                                             | False |
+    | Long running instance | Must be checked when using the Bot.                                                                                                                                         | True |
+    | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | The long running port.                                                                                                                                                      | False |
+    | Incident type | Incident type.                                                                                                                                                              | False |
 
 ### Authentication Using the Client Credentials Flow
 
-Note ⚠️: The chat commands are only supported when using the `Authorization Code flow`.
+Note ⚠️: The **chat commands** are only supported when using the `Authorization Code flow`.
 
 1. Choose the 'Client Credentials' option in the *Authentication Type* parameter.
 2. Enter your Client/Application ID in the *Bot ID* parameter.
@@ -180,7 +180,7 @@ If you encounter any issue or error — especially a message saying **"Tenant ID
 
 ### 4. Add the Demisto Bot to a Team
 
-- The following needs to be done after configuring the integration on Cortex XSOAR/Cortex XSIAM (the previous step).
+- The following needs to be done after configuring the integration on Cortex XSOAR/XSIAM (the previous step).
 - According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
 1. Download the ZIP file located at the bottom of this article.
