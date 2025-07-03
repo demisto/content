@@ -1225,7 +1225,7 @@ script:
     description: Deletes an email for all recipients.
     arguments:
     - name: internet_message_id
-      description: The unique identifier of the email message, e.g., <abc123@mail.example.com>
+      description: The unique identifier of the email message, e.g., <abc123@mail.example.com>.
       required: true
       prettyname: Internet message ID
       auto: PREDEFINED
