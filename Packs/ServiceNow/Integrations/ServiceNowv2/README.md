@@ -1206,7 +1206,7 @@ Uploads a file to the specified ticket.
 
 #### Human Readable Output
 
->### File uploaded successfully to ticket {TICKET ID}.
+>### File uploaded successfully to ticket {TICKET ID}
 >
 >|Download link|Filename|System ID|
 >|---|---|---|
