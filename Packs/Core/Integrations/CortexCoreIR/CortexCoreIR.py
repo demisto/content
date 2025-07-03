@@ -101,15 +101,20 @@ class Client(CoreClient):
                 "alert_id": alert_id,
             }
         }
+        try:
+            reply = self._http_request(
+                method="POST",
+                json_data=request_data,
+                headers=self._headers,
+                url_suffix="/alerts/get_correlation_alert_data/",
+            )
 
-        reply = self._http_request(
-            method="POST",
-            json_data=request_data,
-            headers=self._headers,
-            url_suffix="/alerts/get_correlation_alert_data/",
-        )
-
-        return reply
+            return reply
+        except Exception as e:
+            if "[404]" in str(e):
+                raise DemistoException(f"Got 404 when querying for alert ID {alert_id}, alert not found.")
+            else:
+                raise e
 
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
