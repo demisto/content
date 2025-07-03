@@ -11,7 +11,7 @@ configuration:
   name: credentials
   type: 9
   section: Connect
-  required: true
+  required: false
 - display: Services
   name: url
   options:

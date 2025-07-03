@@ -23,7 +23,7 @@ configuration:
   name: credentials
   type: 9
   section: Connect
-  required: true
+  required: false
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: Bad
