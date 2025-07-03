@@ -1,5 +1,4 @@
-The SAP Cloud for Customer solution helps you manage day-to-day sales and service interactions efficiently by sending and receiving signals between front- and back-office solutions and providing a single view of the customer.
-This integration was integrated and tested with version xx of SAPCloudForCustomerC4C.
+Use the SAP Cloud for Customer C4C Integration to fetch events from SAP Cloud.
 
 ## Configure SAP Cloud For Customer C4C in Cortex
 
@@ -39,3 +38,19 @@ Retrieves events from the SAP Cloud for Customer API based on specified filters.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!sap-cloud-get-events start_date="01-07-2025 14:00:00" limit="5"```
+
+#### Human Readable Output
+
+>### Indicators from Anomali ThreatStream Feed
+>
+>|BROWSER|CBROWSER_VERSION|CCAL_DAY|CCLIENT_TYPE|CCOLD_START_IND|CDEVICE_TYPE|
+>|---|---|---|---|---|---|
+>| 02 | ver1 | 2025-04-05 | RUI | 1 | default |
+>| 02 | ver2 | 2025-04-05 | RUI | 2 | default |
+>| 02 | ver3 | 2025-04-05 | RUI | 2 | default |
+>| 02 | ver4 | 2025-04-05 | RUI | 1 | default |
+>| 02 | ver5 | 2025-04-05 | RUI | 1 | default |
