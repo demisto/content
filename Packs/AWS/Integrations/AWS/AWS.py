@@ -67,9 +67,9 @@ class S3:
             "BlockPublicAcls": argToBoolean(args.get("block_public_acls")) if args.get("block_public_acls") else None,
             "IgnorePublicAcls": argToBoolean(args.get("ignore_public_acls")) if args.get("ignore_public_acls") else None,
             "BlockPublicPolicy": argToBoolean(args.get("block_public_policy")) if args.get("block_public_policy") else None,
-            "RestrictPublicBuckets": argToBoolean(args.get("restrict_public_buckets"))
-            if args.get("restrict_public_buckets")
-            else None,
+            "RestrictPublicBuckets": (
+                argToBoolean(args.get("restrict_public_buckets")) if args.get("restrict_public_buckets") else None
+            ),
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -108,8 +108,11 @@ class S3:
                     readable_output=f"Successfully {status.lower()} versioning configuration for bucket `{bucket}`"
                 )
             raise DemistoException(
-                f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                f"Request completed but received unexpected status code: "
+                f"{response['ResponseMetadata']['HTTPStatusCode']}. "
+                f"{json.dumps(response)}"
             )
+
         except Exception as e:
             raise DemistoException(f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}")
 
@@ -147,13 +150,17 @@ class S3:
                     target_bucket = bucket_logging_status["LoggingEnabled"].get("TargetBucket", "")
                     target_prefix = bucket_logging_status["LoggingEnabled"].get("TargetPrefix", "")
                     return CommandResults(
-                        readable_output=f"Successfully enabled logging for bucket '{bucket}'. Logs will be stored in '{target_bucket}/{target_prefix}'."
+                        readable_output=(
+                            f"Successfully enabled logging for bucket '{bucket}'. "
+                            f"Logs will be stored in '{target_bucket}/{target_prefix}'."
+                        )
                     )
                 else:
                     return CommandResults(readable_output=f"Successfully disabled logging for bucket '{bucket}'")
-
             raise DemistoException(
-                f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                f"Couldn't apply bucket policy to {args.get('bucket')} bucket. "
+                f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}."
+                f"{json.dumps(response)}"
             )
 
         except Exception as e:
@@ -178,7 +185,8 @@ class S3:
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(readable_output=f"Successfully updated ACL for bucket {bucket} to '{acl}'")
         raise DemistoException(
-            f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+            f"Request completed but received unexpected status code: "
+            f"{response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
         )
 
     @staticmethod
@@ -207,7 +215,9 @@ class S3:
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
             raise DemistoException(
-                f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Status code: {response['ResponseMetadata']['HTTPStatusCode']}.{json.dumps(response)}"
+                f"Couldn't apply bucket policy to {args.get('bucket')} bucket. "
+                f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}."
+                f"{json.dumps(response)}"
             )
         except Exception as e:
             raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
@@ -261,15 +271,15 @@ class IAM:
             "MinimumPasswordLength": arg_to_number(args.get("minimum_password_length")),
             "RequireSymbols": argToBoolean(args.get("require_symbols")) if args.get("require_symbols") else None,
             "RequireNumbers": argToBoolean(args.get("require_numbers")) if args.get("require_numbers") else None,
-            "RequireUppercaseCharacters": argToBoolean(args.get("require_uppercase_characters"))
-            if args.get("require_uppercase_characters")
-            else None,
-            "RequireLowercaseCharacters": argToBoolean(args.get("require_lowercase_characters"))
-            if args.get("require_lowercase_characters")
-            else None,
-            "AllowUsersToChangePassword": argToBoolean(args.get("allow_users_to_change_password"))
-            if args.get("allow_users_to_change_password")
-            else None,
+            "RequireUppercaseCharacters": (
+                argToBoolean(args.get("require_uppercase_characters")) if args.get("require_uppercase_characters") else None
+            ),
+            "RequireLowercaseCharacters": (
+                argToBoolean(args.get("require_lowercase_characters")) if args.get("require_lowercase_characters") else None
+            ),
+            "AllowUsersToChangePassword": (
+                argToBoolean(args.get("allow_users_to_change_password")) if args.get("allow_users_to_change_password") else None
+            ),
             "MaxPasswordAge": arg_to_number(args.get("max_password_age")),
             "PasswordReusePrevention": arg_to_number(args.get("password_reuse_prevention")),
             "HardExpiry": argToBoolean(args.get("hard_expiry")) if args.get("hard_expiry") else None,
@@ -317,7 +327,8 @@ class IAM:
     @staticmethod
     def delete_login_profile_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
+        Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services
+        through the AWS Management Console.
 
         Args:
             client (BotoClient): The boto3 client for IAM service
@@ -336,7 +347,9 @@ class IAM:
                 return CommandResults(readable_output=f"Successfully deleted login profile for user '{user_name}'")
             else:
                 raise DemistoException(
-                    f"Failed to delete login profile for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                    f"Failed to delete login profile for user '{user_name}'. "
+                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                    f"{json.dumps(response)}"
                 )
         except Exception as e:
             raise DemistoException(f"Error deleting login profile for user '{user_name}': {str(e)}")
@@ -371,7 +384,9 @@ class IAM:
                 return CommandResults(readable_output=f"Successfully added/updated policy '{policy_name}' for user '{user_name}'")
             else:
                 raise DemistoException(
-                    f"Failed to add/update policy '{policy_name}' for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                    f"Failed to add/update policy '{policy_name}' for user '{user_name}'. "
+                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                    f"{json.dumps(response)}"
                 )
         except Exception as e:
             raise DemistoException(f"Error adding/updating policy '{policy_name}' for user '{user_name}': {str(e)}")
@@ -402,16 +417,19 @@ class IAM:
                 )
             else:
                 raise DemistoException(
-                    f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                    f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. "
+                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                    f"{json.dumps(response)}"
                 )
+
         except Exception as e:
             raise DemistoException(f"Error removing role '{role_name}' from instance profile '{instance_profile_name}': {str(e)}")
 
     @staticmethod
     def update_access_key_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's access key as part of a key rotation workflow.
-
+        Changes the status of the specified access key from Active to Inactive, or vice versa.
+        This operation can be used to disable a user's access key as part of a key rotation workflow.
         Args:
             client (BotoClient): The boto3 client for IAM service
             args (Dict[str, Any]): Command arguments including:
@@ -441,7 +459,9 @@ class IAM:
                 )
             else:
                 raise DemistoException(
-                    f"Failed to update access key '{access_key_id}' status. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                    f"Failed to update access key '{access_key_id}' status. "
+                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                    f"{json.dumps(response)}"
                 )
         except Exception as e:
             raise DemistoException(f"Error updating access key '{access_key_id}' status: {str(e)}")
@@ -766,8 +786,8 @@ class EKS:
     @staticmethod
     def update_cluster_config_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Updates an Amazon EKS cluster configuration. Only a single type of update (logging / resources_vpc_config) is allowed per call.
-
+        Updates an Amazon EKS cluster configuration. Only a single type of update
+        (logging / resources_vpc_config) is allowed per call.
         Args:
             client (BotoClient): The boto3 client for EKS service
             args (Dict[str, Any]): Command arguments including cluster name and configuration options
@@ -890,7 +910,9 @@ class RDS:
                 )
             else:
                 raise DemistoException(
-                    f"Failed to modify DB cluster. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                    f"Failed to modify DB cluster. "
+                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                    f"{json.dumps(response)}"
                 )
 
         except Exception as e:
@@ -942,7 +964,9 @@ class RDS:
                 )
             else:
                 raise DemistoException(
-                    f"Failed to modify DB cluster snapshot attribute. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                    f"Failed to modify DB cluster snapshot attribute. "
+                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                    f"{json.dumps(response)}"
                 )
 
         except Exception as e:
@@ -992,7 +1016,9 @@ class RDS:
                 )
             else:
                 raise DemistoException(
-                    f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. Error {response['Error']['Message']}",
+                    f"Failed to modify DB instance. "
+                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                    f"Error {response['Error']['Message']}",
                 )
 
         except Exception as e:
@@ -1023,7 +1049,10 @@ class RDS:
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             # Return the changed fields in the command results:
             return CommandResults(
-                readable_output=f"Successfully modified DB snapshot attribute for {args.get('db_snapshot_identifier')}:\n{tableToMarkdown('Modified', kwargs)}"
+                readable_output=(
+                    f"Successfully modified DB snapshot attribute for {args.get('db_snapshot_identifier')}:\n"
+                    f"{tableToMarkdown('Modified', kwargs)}"
+                )
             )
 
         else:
@@ -1095,7 +1124,9 @@ class CloudTrail:
                 )
             else:
                 raise DemistoException(
-                    f"Failed to update CloudTrail. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                    f"Failed to update CloudTrail. "
+                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                    f"{json.dumps(response)}"
                 )
 
         except Exception as e:
