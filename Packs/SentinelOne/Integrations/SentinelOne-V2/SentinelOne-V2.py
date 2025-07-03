@@ -3082,14 +3082,13 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     try:
         # If any scope is provided, use the scoped request
         if site_ids or group_ids or account_ids:
-            scope_parts = []
-            if site_ids:
-                scope_parts.append(f"sites={site_ids}")
-            if group_ids:
-                scope_parts.append(f"groups={group_ids}")
-            if account_ids:
-                scope_parts.append(f"accounts={account_ids}")
-            scope_str = ", ".join(scope_parts)
+            scope_map = {
+                "site_ids": ("site", site_ids),
+                "group_ids": ("group", group_ids),
+                "account_ids": ("account", account_ids),
+            }
+            scope_parts = [f"{label}: {value}" for key, (label, value) in scope_map.items() if value]
+            scope_str = ", ".join(scope_parts) if scope_parts else "unknown"
             demisto.debug(f"Adding sha1 {sha1} to blocklist with scopes: {scope_str}")
 
             result = client.add_hash_to_blocklists_request(
@@ -3101,21 +3100,11 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
                 account_ids=account_ids,
                 source=args.get("source"),
             )
-            scope_items = []
-            if site_ids:
-                scope_items.append(f"site: {site_ids}")
-            if group_ids:
-                scope_items.append(f"group: {group_ids}")
-            if account_ids:
-                scope_items.append(f"account: {account_ids}")
-            scope_str = ", ".join(scope_items) if scope_items else "unknown"
             status = {"hash": sha1, "status": f"Added to {scope_str} blocklist"}
-            if site_ids:
-                status["site_ids"] = site_ids
-            if group_ids:
-                status["group_ids"] = group_ids
-            if account_ids:
-                status["account_ids"] = account_ids
+            # Add scope info to status if present
+            for key in ("site_ids", "group_ids", "account_ids"):
+                if locals()[key]:
+                    status[key] = locals()[key]
         else:
             result = client.add_hash_to_blocklist_request(
                 value=sha1,

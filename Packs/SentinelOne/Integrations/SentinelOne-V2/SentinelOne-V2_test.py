@@ -276,7 +276,8 @@ def test_remove_hash_from_blocklist_multiple_site_scope(mocker, requests_mock):
     sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
     url = (
         "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
-        "?tenant=False&siteIds=siteX,siteY&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains=" + sha1
+        "?tenant=False&siteIds=2134673222384,2144637475766&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        + sha1
     )
     raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
     requests_mock.get(url, json=raw_blockist_response)
@@ -288,7 +289,9 @@ def test_remove_hash_from_blocklist_multiple_site_scope(mocker, requests_mock):
         return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
-    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "siteX,siteY"})
+    mocker.patch.object(
+        demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222384,2144637475766"}
+    )
 
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -311,7 +314,8 @@ def test_remove_hash_from_blocklist_single_site_scope(mocker, requests_mock):
     sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
     url = (
         "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
-        "?tenant=False&siteIds=siteX&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains=" + sha1
+        "?tenant=False&siteIds=2134673222384&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        + sha1
     )
     raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
     requests_mock.get(url, json=raw_blockist_response)
@@ -323,7 +327,7 @@ def test_remove_hash_from_blocklist_single_site_scope(mocker, requests_mock):
         return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
-    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "siteX"})
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222384"})
 
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -346,7 +350,7 @@ def test_remove_hash_from_blocklist_multiple_group_scope(mocker, requests_mock):
     sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
     url = (
         "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
-        "?tenant=False&groupIds=groupX,groupY&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        "?tenant=False&groupIds=3327473684756,3365722136475&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
         + sha1
     )
     raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
@@ -359,7 +363,9 @@ def test_remove_hash_from_blocklist_multiple_group_scope(mocker, requests_mock):
         return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
-    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "group_ids": "groupX,groupY"})
+    mocker.patch.object(
+        demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "group_ids": "3327473684756,3365722136475"}
+    )
 
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -382,7 +388,8 @@ def test_remove_hash_from_blocklist_single_group_scope(mocker, requests_mock):
     sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
     url = (
         "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
-        "?tenant=False&groupIds=groupX&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains=" + sha1
+        "?tenant=False&groupIds=3327473684756&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        + sha1
     )
     raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
     requests_mock.get(url, json=raw_blockist_response)
@@ -394,7 +401,7 @@ def test_remove_hash_from_blocklist_single_group_scope(mocker, requests_mock):
         return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
-    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "group_ids": "groupX"})
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "group_ids": "3327473684756"})
 
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -417,7 +424,7 @@ def test_remove_hash_from_blocklist_multiple_account_scope(mocker, requests_mock
     sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
     url = (
         "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
-        "?tenant=False&accountIds=accountX,accountY&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        "?tenant=False&accountIds=4437562837465,4467983212746&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
         + sha1
     )
     raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
@@ -430,7 +437,9 @@ def test_remove_hash_from_blocklist_multiple_account_scope(mocker, requests_mock
         return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
-    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "account_ids": "accountX,accountY"})
+    mocker.patch.object(
+        demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "account_ids": "4437562837465,4467983212746"}
+    )
 
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -453,7 +462,8 @@ def test_remove_hash_from_blocklist_single_account_scope(mocker, requests_mock):
     sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
     url = (
         "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
-        "?tenant=False&accountIds=accountX&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains=" + sha1
+        "?tenant=False&accountIds=4437562837465&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        + sha1
     )
     raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
     requests_mock.get(url, json=raw_blockist_response)
@@ -465,7 +475,7 @@ def test_remove_hash_from_blocklist_single_account_scope(mocker, requests_mock):
         return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
-    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "account_ids": "accountX"})
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "account_ids": "4437562837465"})
 
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -496,7 +506,7 @@ def test_add_hash_to_blocklist_args_multiple_site_ids(mocker, requests_mock):
         },
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
-    args = {"sha1": sha1, "os_type": "WINDOWS", "site_ids": "siteX,siteY"}
+    args = {"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222384,2144637475766"}
     mocker.patch.object(demisto, "args", return_value=args)
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -504,7 +514,7 @@ def test_add_hash_to_blocklist_args_multiple_site_ids(mocker, requests_mock):
 
     request_body = requests_mock.last_request.json()
     request_filter = request_body.get("filter")
-    assert request_filter.get("siteIds") == "siteX,siteY"
+    assert request_filter.get("siteIds") == "2134673222384,2144637475766"
 
     call = mock_return_results.call_args_list
     assert call, "return_results not called"
@@ -513,8 +523,8 @@ def test_add_hash_to_blocklist_args_multiple_site_ids(mocker, requests_mock):
     outputs = result.outputs
 
     assert outputs["hash"] == sha1
-    assert outputs["status"] == "Added to site: siteX,siteY blocklist"
-    assert outputs.get("site_ids") == "siteX,siteY"
+    assert outputs["status"] == "Added to site: 2134673222384,2144637475766 blocklist"
+    assert outputs.get("site_ids") == "2134673222384,2144637475766"
 
 
 def test_add_hash_to_blocklist_args_single_site_id(mocker, requests_mock):
@@ -535,7 +545,7 @@ def test_add_hash_to_blocklist_args_single_site_id(mocker, requests_mock):
         },
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
-    args = {"sha1": sha1, "os_type": "WINDOWS", "site_ids": "siteX"}
+    args = {"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222384"}
     mocker.patch.object(demisto, "args", return_value=args)
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -543,7 +553,7 @@ def test_add_hash_to_blocklist_args_single_site_id(mocker, requests_mock):
 
     request_body = requests_mock.last_request.json()
     request_filter = request_body.get("filter")
-    assert request_filter.get("siteIds") == "siteX"
+    assert request_filter.get("siteIds") == "2134673222384"
 
     call = mock_return_results.call_args_list
     assert call, "return_results not called"
@@ -552,8 +562,8 @@ def test_add_hash_to_blocklist_args_single_site_id(mocker, requests_mock):
     outputs = result.outputs
 
     assert outputs["hash"] == sha1
-    assert outputs["status"] == "Added to site: siteX blocklist"
-    assert outputs.get("site_ids") == "siteX"
+    assert outputs["status"] == "Added to site: 2134673222384 blocklist"
+    assert outputs.get("site_ids") == "2134673222384"
 
 
 def test_add_hash_to_blocklist_args_multiple_group_ids(mocker, requests_mock):
@@ -574,7 +584,7 @@ def test_add_hash_to_blocklist_args_multiple_group_ids(mocker, requests_mock):
         },
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
-    args = {"sha1": sha1, "os_type": "WINDOWS", "group_ids": "group1,group2"}
+    args = {"sha1": sha1, "os_type": "WINDOWS", "group_ids": "3327473684756,3365722136475"}
     mocker.patch.object(demisto, "args", return_value=args)
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -582,7 +592,7 @@ def test_add_hash_to_blocklist_args_multiple_group_ids(mocker, requests_mock):
 
     request_body = requests_mock.last_request.json()
     request_filter = request_body.get("filter")
-    assert request_filter.get("groupIds") == "group1,group2"
+    assert request_filter.get("groupIds") == "3327473684756,3365722136475"
 
     call = mock_return_results.call_args_list
     assert call, "return_results not called"
@@ -591,8 +601,8 @@ def test_add_hash_to_blocklist_args_multiple_group_ids(mocker, requests_mock):
     outputs = result.outputs
 
     assert outputs["hash"] == sha1
-    assert outputs["status"] == "Added to group: group1,group2 blocklist"
-    assert outputs.get("group_ids") == "group1,group2"
+    assert outputs["status"] == "Added to group: 3327473684756,3365722136475 blocklist"
+    assert outputs.get("group_ids") == "3327473684756,3365722136475"
 
 
 def test_add_hash_to_blocklist_args_single_group_id(mocker, requests_mock):
@@ -613,7 +623,7 @@ def test_add_hash_to_blocklist_args_single_group_id(mocker, requests_mock):
         },
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
-    args = {"sha1": sha1, "os_type": "WINDOWS", "group_ids": "group1"}
+    args = {"sha1": sha1, "os_type": "WINDOWS", "group_ids": "3327473684756"}
     mocker.patch.object(demisto, "args", return_value=args)
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -621,7 +631,7 @@ def test_add_hash_to_blocklist_args_single_group_id(mocker, requests_mock):
 
     request_body = requests_mock.last_request.json()
     request_filter = request_body.get("filter")
-    assert request_filter.get("groupIds") == "group1"
+    assert request_filter.get("groupIds") == "3327473684756"
 
     call = mock_return_results.call_args_list
     assert call, "return_results not called"
@@ -630,8 +640,8 @@ def test_add_hash_to_blocklist_args_single_group_id(mocker, requests_mock):
     outputs = result.outputs
 
     assert outputs["hash"] == sha1
-    assert outputs["status"] == "Added to group: group1 blocklist"
-    assert outputs.get("group_ids") == "group1"
+    assert outputs["status"] == "Added to group: 3327473684756 blocklist"
+    assert outputs.get("group_ids") == "3327473684756"
 
 
 def test_add_hash_to_blocklist_args_multiple_account_ids(mocker, requests_mock):
@@ -652,7 +662,7 @@ def test_add_hash_to_blocklist_args_multiple_account_ids(mocker, requests_mock):
         },
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
-    args = {"sha1": sha1, "os_type": "WINDOWS", "account_ids": "acc123,acc456"}
+    args = {"sha1": sha1, "os_type": "WINDOWS", "account_ids": "4437562837465,4467983212746"}
     mocker.patch.object(demisto, "args", return_value=args)
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -660,7 +670,7 @@ def test_add_hash_to_blocklist_args_multiple_account_ids(mocker, requests_mock):
 
     request_body = requests_mock.last_request.json()
     request_filter = request_body.get("filter")
-    assert request_filter.get("accountIds") == "acc123,acc456"
+    assert request_filter.get("accountIds") == "4437562837465,4467983212746"
 
     call = mock_return_results.call_args_list
     assert call, "return_results not called"
@@ -669,8 +679,8 @@ def test_add_hash_to_blocklist_args_multiple_account_ids(mocker, requests_mock):
     outputs = result.outputs
 
     assert outputs["hash"] == sha1
-    assert outputs["status"] == "Added to account: acc123,acc456 blocklist"
-    assert outputs.get("account_ids") == "acc123,acc456"
+    assert outputs["status"] == "Added to account: 4437562837465,4467983212746 blocklist"
+    assert outputs.get("account_ids") == "4437562837465,4467983212746"
 
 
 def test_add_hash_to_blocklist_args_single_account_id(mocker, requests_mock):
@@ -691,7 +701,7 @@ def test_add_hash_to_blocklist_args_single_account_id(mocker, requests_mock):
         },
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
-    args = {"sha1": sha1, "os_type": "WINDOWS", "account_ids": "acc123"}
+    args = {"sha1": sha1, "os_type": "WINDOWS", "account_ids": "4437562837465"}
     mocker.patch.object(demisto, "args", return_value=args)
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -699,7 +709,7 @@ def test_add_hash_to_blocklist_args_single_account_id(mocker, requests_mock):
 
     request_body = requests_mock.last_request.json()
     request_filter = request_body.get("filter")
-    assert request_filter.get("accountIds") == "acc123"
+    assert request_filter.get("accountIds") == "4437562837465"
 
     call = mock_return_results.call_args_list
     assert call, "return_results not called"
@@ -708,8 +718,8 @@ def test_add_hash_to_blocklist_args_single_account_id(mocker, requests_mock):
     outputs = result.outputs
 
     assert outputs["hash"] == sha1
-    assert outputs["status"] == "Added to account: acc123 blocklist"
-    assert outputs.get("account_ids") == "acc123"
+    assert outputs["status"] == "Added to account: 4437562837465 blocklist"
+    assert outputs.get("account_ids") == "4437562837465"
 
 
 def test_add_hash_to_blocklist_global_fallback(mocker, requests_mock):
