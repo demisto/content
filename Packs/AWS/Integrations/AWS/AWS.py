@@ -107,7 +107,9 @@ class S3:
                 return CommandResults(
                     readable_output=f"Successfully {status.lower()} versioning configuration for bucket `{bucket}`"
                 )
-            raise DemistoException(f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+            raise DemistoException(
+                f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+            )
         except Exception as e:
             raise DemistoException(f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}")
 
@@ -150,11 +152,12 @@ class S3:
                 else:
                     return CommandResults(readable_output=f"Successfully disabled logging for bucket '{bucket}'")
 
-            raise DemistoException(f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+            raise DemistoException(
+                f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+            )
 
         except Exception as e:
             raise DemistoException(f"Failed to configure logging for bucket '{bucket}'. Error: {str(e)}")
-            
 
     @staticmethod
     def put_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -174,7 +177,9 @@ class S3:
         response = client.put_bucket_acl(Bucket=bucket, ACL=acl)
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(readable_output=f"Successfully updated ACL for bucket {bucket} to '{acl}'")
-        raise DemistoException(f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+        raise DemistoException(
+            f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+        )
 
     @staticmethod
     def put_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -201,7 +206,9 @@ class S3:
             response = client.put_bucket_policy(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
-            raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Status code: {response['ResponseMetadata']['HTTPStatusCode']}.{json.dumps(response)}")
+            raise DemistoException(
+                f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Status code: {response['ResponseMetadata']['HTTPStatusCode']}.{json.dumps(response)}"
+            )
         except Exception as e:
             raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
 
@@ -279,7 +286,9 @@ class IAM:
                 readable_output=f"Successfully updated account password policy for account: {args.get('account_id')}"
             )
         else:
-            raise DemistoException(f"Couldn't updated account password policy for account: {args.get('account_id')}. {json.dumps(response)}")
+            raise DemistoException(
+                f"Couldn't updated account password policy for account: {args.get('account_id')}. {json.dumps(response)}"
+            )
 
     @staticmethod
     def put_role_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -326,7 +335,9 @@ class IAM:
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 return CommandResults(readable_output=f"Successfully deleted login profile for user '{user_name}'")
             else:
-                raise DemistoException(f"Failed to delete login profile for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+                raise DemistoException(
+                    f"Failed to delete login profile for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                )
         except Exception as e:
             raise DemistoException(f"Error deleting login profile for user '{user_name}': {str(e)}")
 
@@ -359,7 +370,9 @@ class IAM:
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 return CommandResults(readable_output=f"Successfully added/updated policy '{policy_name}' for user '{user_name}'")
             else:
-                raise DemistoException(f"Failed to add/update policy '{policy_name}' for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+                raise DemistoException(
+                    f"Failed to add/update policy '{policy_name}' for user '{user_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                )
         except Exception as e:
             raise DemistoException(f"Error adding/updating policy '{policy_name}' for user '{user_name}': {str(e)}")
 
@@ -388,7 +401,9 @@ class IAM:
                     readable_output=f"Successfully removed role '{role_name}' from instance profile '{instance_profile_name}'"
                 )
             else:
-                raise DemistoException(f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+                raise DemistoException(
+                    f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                )
         except Exception as e:
             raise DemistoException(f"Error removing role '{role_name}' from instance profile '{instance_profile_name}': {str(e)}")
 
@@ -425,7 +440,9 @@ class IAM:
                     readable_output=f"Successfully updated access key '{access_key_id}' status to '{status}'{user_info}"
                 )
             else:
-                raise DemistoException(f"Failed to update access key '{access_key_id}' status. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+                raise DemistoException(
+                    f"Failed to update access key '{access_key_id}' status. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                )
         except Exception as e:
             raise DemistoException(f"Error updating access key '{access_key_id}' status: {str(e)}")
 
@@ -817,7 +834,8 @@ class EKS:
                 outputs_prefix="AWS.EKS.UpdateCluster",
                 outputs=response_data,
                 raw_response=response_data,
-                outputs_key_field="id")
+                outputs_key_field="id",
+            )
         except Exception as e:
             if "No changes needed" in str(e):
                 return CommandResults(readable_output="No changes needed for the required update.")
@@ -871,7 +889,9 @@ class RDS:
                     outputs_key_field="DBClusterIdentifier",
                 )
             else:
-                raise DemistoException(f"Failed to modify DB cluster. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+                raise DemistoException(
+                    f"Failed to modify DB cluster. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                )
 
         except Exception as e:
             raise DemistoException(f"Error modifying DB cluster: {str(e)}")
@@ -921,7 +941,9 @@ class RDS:
                     outputs_key_field="DBClusterSnapshotIdentifier",
                 )
             else:
-                raise DemistoException(f"Failed to modify DB cluster snapshot attribute. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+                raise DemistoException(
+                    f"Failed to modify DB cluster snapshot attribute. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                )
 
         except Exception as e:
             raise DemistoException(f"Error modifying DB cluster snapshot attribute: {str(e)}")
@@ -969,7 +991,8 @@ class RDS:
                     outputs_key_field="DBInstanceIdentifier",
                 )
             else:
-                raise DemistoException(f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. Error {response['Error']['Message']}",
+                raise DemistoException(
+                    f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. Error {response['Error']['Message']}",
                 )
 
         except Exception as e:
@@ -1071,7 +1094,9 @@ class CloudTrail:
                     raw_response=response,
                 )
             else:
-                raise DemistoException(f"Failed to update CloudTrail. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}")
+                raise DemistoException(
+                    f"Failed to update CloudTrail. Status code: {response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
+                )
 
         except Exception as e:
             raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
