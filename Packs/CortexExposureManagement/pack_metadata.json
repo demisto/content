@@ -53,7 +53,5 @@
     "itemPrefix": [
         "EM"
     ],
-    "supportedModules": [
-        "asm"
-    ]
+    "supportedModules": []
 }
