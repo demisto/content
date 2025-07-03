@@ -59,8 +59,6 @@ Creating the Demisto Bot using Microsoft Azure Portal:
 13. Go back to the previous page, and navigate to **Channels** in the left bar.
 14. Click **Microsoft Teams** under **Available Channels**, click the checkbox, click **Agree**, then click **Apply**.
 
-Note ⚠️: in step 5,   
-
 ### 2. Grant the Demisto Bot Permissions in Microsoft Graph
 
 In order to connect to Microsoft Teams use one of the following authentication methods:
