@@ -1970,12 +1970,12 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
             }
             "Starting" {
-                return "$script:INTEGRATION_NAME - Search already starting from previous run.", $entry_context, $search
+                return "$script:INTEGRATION_NAME - Search is already starting from a previous run.", $entry_context, $search
             }
             "Completed" {
                 $demisto.debug("Search completed, items: $($search.Items)")
                 if ($search.Items -eq 0) {
-                    return "$script:INTEGRATION_NAME - Search already completed previously with no results. Run again with force=true to retry.", $entry_context, $search
+                    return "$script:INTEGRATION_NAME - Search already completed with no results. Run again with force=true to retry.", $entry_context, $search
                 }
                 $action = $client.GetSearchAction($search_action_name, "SilentlyContinue")
                 if (-not $action) {
@@ -1987,7 +1987,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 switch ($action.Status) {
                     "InProgress" { return "$script:INTEGRATION_NAME - Deletion in progress from previous run. Run again with force=true to retry.", $entry_context, $action }
                     "Starting"   { return "$script:INTEGRATION_NAME - Deletion starting from previous run. Run again with force=true to retry.", $entry_context, $action }
-                    "Completed"  { return "$script:INTEGRATION_NAME - Already deleted. Run again with force=true to retry.", $entry_context }
+                    "Completed"  { return "$script:INTEGRATION_NAME - Deletion already completed. Run again with force=true to retry.", $entry_context }
                 }
             }
             default { throw "Unhandled search status: $status" }
@@ -2170,7 +2170,7 @@ function Main {
                 -PollingArgs $polling_args `
                 -RemoveSelfRefs $true `
                 -NextRun "30" `
-                -Timeout "600" | Out-Null
+                -Timeout "3600" | Out-Null
         }
         else {
             ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
