@@ -5,21 +5,22 @@ This script gathers endpoint data from multiple integrations and returns an endp
 ---
 
 | **Name** | **Description** |
-| --- |-----------------|
-| Script Type | python3         |
-| Cortex XSOAR Version | 6.10.0          |
+| --- | --- |
+| Script Type | python3 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Inputs
 
 ---
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                               |
-| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| agent_id | List of agent IDs of the endpoint to retrieve.                                                                                                                                                                                                |
-| agent_ip | List of agent IPs of the endpoint to retrieve.                                                                                                                                                                                                |
-| agent_hostname | List of agent hostnames of the endpoint to retrieve.                                                                                                                                                                                          |
-| brands | Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Active Directory Query v2, CrowdstrikeFalcon, ExtraHop v2'. |
-| verbose | Set to true to display human-readable output for each step of the command. Set to false \(default\) to only display the final result.                                                                                                         |
+| **Argument Name** | **Description** |
+| --- | --- |
+| endpoint_id | List of endpoint IDs retrieve. |
+| endpoint_ip | List of endpont IPs to retrieve. |
+| endpoint_hostname | List of endpoint hostnames retrieve. |
+| brands | Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Active Directory Query v2'. |
+| verbose | Set to true to display human-readable output for each step of the command. Set to false \(default\) to only display the final result. |
+| additional_fields | When set to true, retrieves additional fields from every brand beyond standard endpoint data. Default is false. |
 
 ## Outputs
 
