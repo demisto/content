@@ -2,6 +2,7 @@ Use the Microsoft Teams integration to send messages, notifications, and create 
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 This document includes the following sections to help you understand, set up, and use the integration effectively:
+
 1. [Integration Architecture](#integration-architecture)
 2. [Setup and Configuration](#setup-and-configuration)
 3. [Known Limitations](#known-limitations)
@@ -18,7 +19,6 @@ The web server for the integration runs within a long-running Docker container. 
 ### Protocol Diagram
 
 ![image](../../doc_files/MicrosoftTeamsProtocalDiagram.png)
-
 
 # Setup and Configuration
 
@@ -68,13 +68,16 @@ In order to connect to Microsoft Teams use one of the following authentication m
 2. *Authorization Code Flow* (Support The [chat commands](#chat-commands))
 
 **Perform the following steps to add the needed permissions**:
+
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For each of the next permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.
 
-#### For Client Credentials Flow add the following:
+#### For Client Credentials Flow add the following
+
 **Application Permissions**:
+
 - `User.Read.All`
 - `GroupMember.Read.All`
 - `Channel.ReadBasic.All`
@@ -84,8 +87,10 @@ In order to connect to Microsoft Teams use one of the following authentication m
 - `OnlineMeetings.ReadWrite.All`
 - `Calls.Initiate.All`
 
-#### For Authorization Code Flow add the following:
+#### For Authorization Code Flow add the following
+
 **Delegated Permissions**:
+
 - `User.Read.All`
 - `GroupMember.Read.All`
 - `Channel.ReadBasic.All`
@@ -109,11 +114,14 @@ Alternatively, you can check each relevant command section below for the minimum
 8. Click **Authentication** > **Platform configurations** > **Add a platform**. Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
 
 ### 3. Configure Microsoft Teams on Cortex XSOAR/XSIAM
+
 There are two flows in order to configure the integration as was mentioned before:
+
 1. Authorization Code flow (Support [The chat commands](#chat-commands))
 2. Client Credentials flow
 
 In order to configure the integration follow the next steps:
+
 1. Search for Microsoft Teams integration after you have installed it from the marketplace.
 2. Click **Add instance** to create and configure a new integration instance by using one of the flows. Instructions below.
 
@@ -140,7 +148,9 @@ In order to configure the integration follow the next steps:
     | Incident type | Incident type.                                                                                                                                                     | False |
 
 ### Authentication Using the Client Credentials Flow
+
 Note ⚠️: The chat commands are only supported when using the `Authorization Code flow`.
+
 1. Choose the 'Client Credentials' option in the *Authentication Type* parameter.
 2. Enter your Client/Application ID in the *Bot ID* parameter.
 3. Enter your Client Secret in the *Bot Password* parameter.
@@ -289,7 +299,6 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
-
 ## Known Limitations
 
 - In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to. It will trigger a communication and solve the issue.
@@ -314,6 +323,7 @@ In order to verify that the messaging endpoint is open as expected, you can surf
 - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
 - For additional security, we recommend placing the Teams integration web server behind a reverse proxy (such as NGINX).
 - By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
+
     ```
      -----BEGIN PRIVATE KEY-----
      ...
@@ -322,7 +332,7 @@ In order to verify that the messaging endpoint is open as expected, you can surf
 
 - You must not set a certificate and/or private key if you are using the Cortex XSOAR rerouting setup.
 - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
- 
+
 In order to verify which certificate is used, run the following (replace {MESSAGING-ENDPOINT} with the messaging endpoint):
 
      curl {MESSAGING-ENDPOINT} -vI
@@ -337,7 +347,6 @@ Make sure the output does not contain the following:
   - microsoftonline.com
 When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u), it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
-    
 ## Troubleshooting
 
 1. The integration works by spinning up a web server that listens to events and data posted to it from Microsoft Teams.
@@ -359,7 +368,7 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
    6. **Verify the Docker container is up and running** and publish the configured port to the outside world:
 
        From the Cortex XSOAR/XSIAM engine machine run:
-   
+
        `docker ps | grep teams`
 
        You should see the following, assuming port 7000 is used:
@@ -377,7 +386,6 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
    7. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not for Cortex XSOAR/Cortex XSIAM Rerouting ).
        1. Run `openssl s_client -connect <domain.com>:443` .
        2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
-
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, it means the AAD application has insufficient permissions.
 To retrieves the API permissions associated with the used graph access token you can run the `microsoft-teams-token-permissions-list` command ([microsoft-teams-token-permissions-list documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-token-permissions-list)).
