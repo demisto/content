@@ -32,12 +32,12 @@ Note: The information in this video is for Cortex XSOAR 6 but mostly still appli
 
 ## Prerequisites
 
-1. [Create the Demisto Bot in Microsoft Azure Portal](#1-create-the-demisto-bot-in-microsoft-teams)
+1. [Create the Demisto Bot in Microsoft Azure Portal](#1-create-the-demisto-bot-in-microsoft-azure-portal)
 2. [Grant the Demisto Bot Permissions](#2-grant-the-demisto-bot-permissions-in-microsoft-graph)
 3. [Configure Microsoft Teams on Cortex XSOAR/XSIAM](#configure-microsoft-teams-on-cortex-xsoar/xsiam)
 4. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
-### 1. Create the Demisto Bot in Microsoft Teams
+### 1. Create the Demisto Bot in Microsoft Azure Portal
 
 Creating the Demisto Bot using Microsoft Azure Portal:
 
@@ -71,7 +71,7 @@ In order to connect to Microsoft Teams use one of the following authentication m
 1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
-4. For each of the next permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.
+4. For each of the permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.
 
 Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires authenticating with `Client Credentials` due to a limitation in Microsoft's permissions system. (Calling this command will perform the authentication seemlessly)
 
@@ -151,7 +151,7 @@ In order to configure the integration follow the next steps:
 
 ### Authentication Using the Client Credentials Flow
 
-Note ⚠️: The **chat commands** are only supported when using the `Authorization Code flow`.
+Note ⚠️: The **chat commands** are not supported when using the `Client Credentials Flow`.
 
 1. Choose the 'Client Credentials' option in the *Authentication Type* parameter.
 2. Enter your Client/Application ID in the *Bot ID* parameter.
@@ -160,12 +160,11 @@ Note ⚠️: The **chat commands** are only supported when using the `Authorizat
 5. Set the *Long running instance* parameter to 'True'.
 6. Save the instance.
 7. Click **Test** to validate the URLs, token, and connection.
-8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#1-create-the-demisto-bot-in-microsoft-teams) section).
+8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#1-create-the-demisto-bot-in-microsoft-azure-portal) section).
 9. [Add the Demisto Bot to a Team](#4-add-the-demisto-bot-to-a-team).
 
 ### Authentication Using the Authorization Code Flow
 
-Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires authenticating with `Client Credentials`.
 
 1. Choose the 'Authorization Code' option in the *Authentication Type* parameter.
 2. Enter your Client/Application ID in the *Bot ID* parameter.
@@ -180,7 +179,7 @@ Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/g
 11. Save the instance.
 12. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
-If you encounter any issue or error — especially a message saying **"Tenant ID is not found"** — please refer to the [Troubleshooting](#Troubleshooting) section.
+If you encounter any issue or error — such as a **"Tenant ID is not found"** error — please refer to the [Troubleshooting](#Troubleshooting) section.
 
 ### 4. Add the Demisto Bot to a Team
 
@@ -190,7 +189,7 @@ If you encounter any issue or error — especially a message saying **"Tenant ID
 1. Download the ZIP file located at the [Download Demisto Bot](#download-demisto-bot) section.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
-4. Update the following values to use the *Bot ID* from step 5 of the [Create the Demisto Bot in Microsoft Teams](#1-create-the-demisto-bot-in-microsoft-teams) section:
+4. Update the following values to use the *Bot ID* from step 5 of the [Create the Demisto Bot in Microsoft Teams](#1-create-the-demisto-bot-in-microsoft-azure-portal) section:
 
     - The `id` field.
     - The `BotId` attribute in the `bots` list.
@@ -213,8 +212,8 @@ If you encounter any issue or error — especially a message saying **"Tenant ID
 
 When migrating from Cortex XSOAR 6 to Cortex XSOAR 8 or Cortex XSIAM, follow these steps to ensure your Microsoft Teams integration continues to work as expected:
 
-1. For this step you can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint automatically.
-Update the messaging endpoint in the Azure bot configuration:
+1. Update the bot's messaging endpoint in the Azure portal.
+For this step you can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint automatically, or create it manually using the following instructions:
 For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the xdr in the URL to crtx.
 
