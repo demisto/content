@@ -530,13 +530,20 @@ def test_is_execution_time_exceeded_mocked(mock_datetime):
     Test is_execution_time_exceeded with mocked datetime to simulate precise timing.
     """
     start_time = datetime(2024, 1, 1, 12, 0, 0)
-    mock_datetime.utcnow.return_value = datetime(2024, 1, 1, 12, 0, 15)  # 15 seconds later
+
+    # Mock datetime.now to return a datetime with 15 seconds difference
+    mock_now = MagicMock(return_value=datetime(2024, 1, 1, 12, 0, 15))
+    mock_datetime.now = mock_now
+
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time exceeded the limit but returned False."
+    mock_now.assert_called_with(UTC)
 
-    mock_datetime.utcnow.return_value = datetime(2024, 1, 1, 12, 0, 5)  # 5 seconds later
+    # Change the mock to return a datetime with only 5 seconds difference
+    mock_now.return_value = datetime(2024, 1, 1, 12, 0, 5)
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time is within the limit but returned False."
+    mock_now.assert_called_with(UTC)
 
 
 def test_get_yesterday_time():
