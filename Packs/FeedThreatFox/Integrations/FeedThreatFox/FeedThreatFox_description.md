@@ -10,7 +10,7 @@ Please note that the fetch indicators process will automatically skip any indica
 A manual command is also available to retrieve indicators from ThreatFox as needed and should be used with caution.
 For more details, refer to the ThreatFox documentation: <https://threatfox.abuse.ch/api/>
 
-#### Create an Auth Key for abuse.ch
+#### Create the required Auth Key for abuse.ch
 > Note: If you already have a profile, you can skip steps 1 and 2.
 
 1. Sign up for an abuse.ch account. You can do this easily by using an existing account that you may already have on X, LinkedIn, Google or Github. Just log in with the authentication provider of your choice here: https://auth.abuse.ch/
