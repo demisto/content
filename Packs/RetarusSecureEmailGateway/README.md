@@ -25,12 +25,6 @@ Data normalization capabilities:
 | Patient Zero Detection           | PZD                              |
 | Sandboxing                       | Sandboxing                       |
 
-### Supported timestamp formats
-
-YYYY-MM-DD hh:mm:ss +hhmm (time zone based on UTC).
-
-Example: "2018-10-16 14:58:43 +0200".
-
 ***
 
 ## Data Collection

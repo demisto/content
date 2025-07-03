@@ -3,13 +3,13 @@ alter
         tmp_description = if(direction = "INBOUND", "Inbound Email", "Outbound Email"),
         source_ipv4 = arrayindex(regextract(sourceIp , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
         source_ipv6 = arrayindex(regextract(sourceIp, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0)
-| alter
         tmp_description_2 = if(
         status = "ACCEPTED", ", Email Accepted", 
         status = "REJECTED", ", Email Rejected",
         status = "INFECTED" ,", Email Is Infected", 
         status = "DETECTED", ", Malicious File/ URL Detected", 
         status = "SUSPICIOUS",", Suspicious File/ URL Found" )
+
 | alter
         xdm.email.origination_timestamp = parse_timestamp("%F %X %z",to_string(ts)),
         xdm.observer.version = version,
@@ -35,7 +35,6 @@ alter
         extract_details = metaData -> details
 
 | alter
-        xdm.email.mime = extract_mimeType,
         xdm.email.attachment.file_type	= extract_mimeType,	
         xdm.alert.original_threat_name = extract_details,
         xdm.target.url = if(extract_threatType = "URL", extract_url),
