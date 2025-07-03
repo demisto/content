@@ -54,6 +54,6 @@
         "EM"
     ],
     "supportedModules": [
-        "exposure_management"
+        "asm"
     ]
 }
