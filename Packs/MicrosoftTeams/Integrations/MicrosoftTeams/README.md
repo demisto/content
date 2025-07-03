@@ -1,5 +1,5 @@
 Use the Microsoft Teams integration to send messages, notifications, and create meetings.
-This integration was integrated and tested with version 1.0 of Microsoft Teams.
+This integration was tested with version 1.0 of Microsoft Teams.
 
 This document includes the following sections to help you understand, set up, and use the integration effectively:
 
@@ -46,33 +46,36 @@ Creating the Demisto Bot using Microsoft Azure Portal:
 3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
 4. For Type of App, select **Multi Tenant**.
 5. For Creation type, select **Create new Microsoft App ID** for Creation Type if you don't already have an app registration, otherwise, select **Use existing app registration**, and fill in you App ID.
+    - **Note ⚠️:** if you choose **Use existing app registration**, make sure to delete the previous created bot with the same app id, remove it from the team it was added to as well.
 6. Click **Review + Create**, and wait for the validation to pass.
 7. Click **Create** if the validation has passed, and wait for the deployment to finish.
 8. Under Next Steps, click **Go to resource**.
-9. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
-    - To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations, use the `microsoft-teams-create-messaging-endpoint`command.
-    **Note ⚠️:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#3-configure-microsoft-teams-on-cortex-xsoarxsiam) section.
+9. **Skip this step and return after configuring the Microsoft Teams instance in Cortex XSOAR/XSIAM**. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
+    - **Note ⚠️:** To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations, use the `microsoft-teams-create-messaging-endpoint`command.
+    Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#3-configure-microsoft-teams-on-cortex-xsoarxsiam) section.
 10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
 11. Click **New Client Secret**, fill in the **Description** and **Expires** fields as desired. Then click **Add**.
 12. Copy the client secret from the **value** field and store it for the next steps.
 13. Go back to the previous page, and navigate to **Channels** in the left bar.
 14. Click **Microsoft Teams** under **Available Channels**, click the checkbox, click **Agree**, then click **Apply**.
 
-Note ⚠️: in step 5, if you choose **Use existing app registration**, make sure to delete the previous created bot with the same app id, remove it from the team it was added to as well.  
+Note ⚠️: in step 5,   
 
 ### 2. Grant the Demisto Bot Permissions in Microsoft Graph
 
 In order to connect to Microsoft Teams use one of the following authentication methods:
 
 1. *Client Credentials Flow*
-2. *Authorization Code Flow* (Support The [chat commands](#chat-commands))
+2. *Authorization Code Flow* (Supports the [chat commands](#chat-commands))
 
 **Perform the following steps to add the needed permissions**:
 
-1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
+1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For each of the next permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.
+
+Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires authenticating with `Client Credentials` due to a limitation in Microsoft's permissions system. (Calling this command will perform the authentication seemlessly)
 
 #### For Client Credentials Flow add the following
 
@@ -103,19 +106,20 @@ In order to connect to Microsoft Teams use one of the following authentication m
 - `AppCatalog.Read.All`
 - `TeamsAppInstallation.ReadWriteSelfForChat`
 
-Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires authenticating with `Client Credentials` due to a limitation in Microsoft's permissions system. (Calling this command will perform the authentication seemlessly)
-
 Alternatively, you can check each relevant command section below for the minimum permissions it requires.
 
-**Next:**
 5. Verify that all permissions were added, and click **Grant admin consent**.
+
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
+
 7. Click **Expose an API** and add **Application ID URI**
+
 8. Click **Authentication** > **Platform configurations** > **Add a platform**. Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
 
 ### 3. Configure Microsoft Teams on Cortex XSOAR/XSIAM
 
 There are two flows in order to configure the integration as was mentioned before:
+Please note that you need to use the flow to which you have added permissions.
 
 1. Client Credentials
 2. Authorization Code (Support [The chat commands](#chat-commands))
@@ -143,7 +147,7 @@ In order to configure the integration follow the next steps:
     | The header of an external form hyperlink. |                                                                                                                                                                             | False |
     | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and Cortex XSIAM.                                                                                                                   | False |
     | Use system proxy settings |                                                                                                                                                                             | False |
-    | Long running instance | Must be checked when using the Bot.                                                                                                                                         | True |
+    | Long running instance | **Must be checked when using the Bot.**                                                                                                                                     | True |
     | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | The long running port.                                                                                                                                                      | False |
     | Incident type | Incident type.                                                                                                                                                              | False |
 
@@ -163,10 +167,12 @@ Note ⚠️: The **chat commands** are only supported when using the `Authorizat
 
 ### Authentication Using the Authorization Code Flow
 
+Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires authenticating with `Client Credentials`.
+
 1. Choose the 'Authorization Code' option in the *Authentication Type* parameter.
 2. Enter your Client/Application ID in the *Bot ID* parameter.
 3. Enter your Client Secret in the *Bot Password* parameter.
-4. Enter your Application redirect URI in the *Application redirect URI* parameter.
+4. Enter your Application redirect URI in the *Application redirect URI* parameter. You need to configure the redirect URI in the Azure portal under the Authentication section within the bot settings.
 5. Set the *Default team* and the *Notifications channel* parameters.
 6. Set the *Long running instance* parameter to 'True'.
 7. Save the instance.
