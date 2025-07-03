@@ -51,7 +51,7 @@ Creating the Demisto Bot using Microsoft Azure Portal:
 8. Under Next Steps, click **Go to resource**.
 9. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
     - To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations, use the `microsoft-teams-create-messaging-endpoint`command.
-    **Note ⚠️:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#configure-microsoft-teams-on-cortex-xsoar) section.
+    **Note ⚠️:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#3-configure-microsoft-teams-on-cortex-xsoarxsiam) section.
 10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
 11. Click **New Client Secret**, fill in the **Description** and **Expires** fields as desired. Then click **Add**.
 12. Copy the client secret from the **value** field and store it for the next steps.
@@ -212,7 +212,7 @@ When migrating from Cortex XSOAR 6 to Cortex XSOAR 8 or Cortex XSIAM, follow the
 1. Update the messaging endpoint in the Azure bot configuration:
 For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the xdr in the URL to crtx.
-You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint automatically.
+**You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint automatically.**
 
 2. Ensure the **long-running instance** parameter is enabled in the integration instance configuration.
 
@@ -246,7 +246,7 @@ For Cortex XSOAR version 8 and Cortex XSIAM: `https://ext-<CORTEX-XSOAR-SERVER-A
 
 The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR/XSIAM](#configure-microsoft-teams-on-cortex-xsoar) step. Make sure to set the instance name in all lowercase letters and as one word.
 
-- Note ⚠️: You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint, based on the server URL, the server version, and the instance configurations. For more information, see -[microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint).
+- Note ⚠️: You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint, based on the server URL, the server version, and the instance configurations. For more information, see -[microsoft-teams-create-messaging-endpoint documentation](#microsoft-teams-create-messaging-endpoint).
 
 The port to be configured in [Configure Microsoft Teams on Cortex XSOAR/XSIAM](#configure-microsoft-teams-on-cortex-xsoar) step should be any available port that is not used by another service.
 
@@ -275,8 +275,8 @@ The port (`7000` in this example), to which the reverse proxy should forward the
 
 ### 3. Using Apache reverse proxy and Cortex XSOAR engine
 
-In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR/Cortex XSIAM, goes through a reverse proxy (e.g., [Apache](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html)) and possibly a load balancer, which relays the HTTPS requests posted from Microsoft Teams
-to a Cortex XSOAR/Cortex XSIAM engine, which can be put in a DMZ, on HTTP.
+In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR/XSIAM, goes through a reverse proxy (e.g., [Apache](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html)) and possibly a load balancer, which relays the HTTPS requests posted from Microsoft Teams
+to a Cortex XSOAR/XSIAM engine, which can be put in a DMZ, on HTTP.
 
 The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the web server the integration spins up, listens on that port.
 
@@ -288,7 +288,7 @@ The port (`7000` in this example), to which the reverse proxy should forward the
 
 In this configuration, we will use [Cloudflare proxy](https://support.cloudflare.com/hc/en-us/articles/360039824852-Cloudflare-and-the-Cloud-Conceptual-overview-videos).
 
-The messaging endpoint should be the Cortex XSOAR/Cortex XSIAM URL, which needs to be hosted on Cloudflare, with the port to which Cloudflare proxy directs the HTTPS traffic, e.g., `https://mysite.com:8443`
+The messaging endpoint should be the Cortex XSOAR/XSIAM URL, which needs to be hosted on Cloudflare, with the port to which Cloudflare proxy directs the HTTPS traffic, e.g., `https://mysite.com:8443`
 
 In the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step, the following need to be configured:
 
