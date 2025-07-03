@@ -147,7 +147,7 @@ tasks:
                         simple: alert.targetprocesssha256
                       iscontext: true
                     ignorecase: true
-                - - operator: containsGeneral
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -156,6 +156,7 @@ tasks:
                       value:
                         simple: alert.initiatorsha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -1945,7 +1946,6 @@ tasks:
       windows_file_paths:
         simple: C:\Windows\System32\inetsrv\config\applicationHost.config
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -2060,6 +2060,8 @@ tasks:
       '#none#':
       - "198"
     scriptarguments:
+      contextKey:
+        simple: ApplicationHostConfig
       entryID:
         complex:
           root: File
@@ -4668,7 +4670,7 @@ tasks:
     task:
       id: 385e5670-599a-43ff-ab1d-8cd959d9a5f9
       version: -1
-      name: Script Successfully Retrieved?
+      name: Application Host config file Successfully Retrieved?
       description: Checks whether the script was retrieved successfully.
       type: condition
       iscommand: false
@@ -5035,7 +5037,7 @@ tasks:
     task:
       id: f4799348-93a6-4fe0-8adc-13eb5b16758d
       version: -1
-      name: Get Dll from Application Host Config
+      name: Get DLL from Application Host Config
       description: Sets all DLLs from the ApplicationHost.config file into the context under the key 'dllFromApplicationHostConfig'.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -5504,7 +5506,7 @@ tasks:
       {
         "position": {
           "x": -4655,
-          "y": 3153
+          "y": 3152
         }
       }
     note: false
@@ -6268,7 +6270,7 @@ tasks:
             iscontext: true
           right:
             value: {}
-        - operator: isEqualString
+      - - operator: isEqualString
           left:
             value:
               simple: foundIncidents.sourceBrand
