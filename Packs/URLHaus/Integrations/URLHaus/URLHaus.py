@@ -762,11 +762,11 @@ def main():
         demisto_params = demisto.params()
         command = demisto.command()
 
-        auth_header =  demisto_params.get("credentials", {}).get("password")
-        if not auth_header:
+        auth_key =  demisto_params.get("credentials", {}).get("password")
+        if not auth_key:
             raise ValueError("Missing required param Auth Key. Please set this param in the instance configuration.")
 
-        HEADERS["Auth-Key"] = auth_header
+        HEADERS["Auth-Key"] = auth_key
 
         params = {
             "api_url": demisto_params["url"].rstrip("/"),
