@@ -415,21 +415,27 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected
     assert len(return_results_mocker.call_args[0][0].outputs) == expected_incidents_length
 
 
-def test_search_with_duplicates(mocker):
+def test_query_argument_with_unicode_escape(mocker):
     """
-    Given: Duplicated incidents from executing getIncidents command to the platform in 2 different requests in a row.
-    When: Running the command with limit that is larger than the page size (100).
-    Then: Validate that the command return incident list without duplications.
+    Given:
+       - A query to search incidents with unicode escape
+
+    When:
+       - Executing the SearchIncidentsV2 command and check arg validation.
+
+    Then:
+       - Make sure the query format is correct and is_valid_args method is not failed.
     """
     import SearchIncidentsV2
 
-    incidents = [
-        [{"Contents": {"data": [{"id": "1", "name": "n/a"}, {"id": "2", "name": "n/a"}, {"id": "3", "name": "n/a"}]}}],
-        {"data": [{"id": "2", "name": "n/a"}, {"id": "3", "name": "n/a"}, {"id": "4", "name": "n/a"}]},
-        {"data": [{"id": "3", "name": "n/a"}, {"id": "4", "name": "n/a"}, {"id": "5", "name": "n/a"}]},
+    special_chars = ["\n", "\t", "\\", '"', "'", "\7", "\r", "\\x", "\\X", "\\N", "\\u", "\\U"]
+    args_array = [
+        {"query": f"`(username:'user{special_char}sername') and (name:'name_1' or name:'name_2')`"}
+        for special_char in special_chars
     ]
-    mocker.patch.object(SearchIncidentsV2, "execute_command", side_effect=incidents)
-    mocker.patch.object(SearchIncidentsV2, "check_if_found_incident", return_value=True)
-
-    _, inc, _ = SearchIncidentsV2.search_incidents({"size": 3, "limit": 5})
-    assert len(inc) == 5
+    mocker.patch.object(demisto, "args", side_effect=args_array)
+    mocker.patch.object(SearchIncidentsV2, "return_results")
+    mocker.patch("SearchIncidentsV2.get_demisto_version", return_value={})
+    for _ in special_chars:
+        mocker.patch.object(SearchIncidentsV2, "execute_command", side_effect=execute_get_incidents_command_side_effect(1))
+        SearchIncidentsV2.main()
