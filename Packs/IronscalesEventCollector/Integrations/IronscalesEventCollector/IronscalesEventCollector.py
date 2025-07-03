@@ -145,12 +145,13 @@ class Client(BaseClient):  # pragma: no cover
             incidents: List = []
             # handle paging
             demisto.debug("Test-IronScales: pulling loop start")
-            wait_time = 5
             while page <= total_pages:
                 demisto.debug(f"Test-IronScales: page num is {str(page)}, starting loop")
                 params["page"] = page
                 demisto.debug(f"Test-IronScales: sending http request with params: {str(params)}")
-                response = self._http_request(method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params)
+                response = self._http_request(
+                    method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params, retries=4, backoff_factor=5
+                )
                 total_pages = response.get("total_pages")
                 ######## Debugging Area ########
                 self.debug_function(response)
@@ -174,9 +175,6 @@ class Client(BaseClient):  # pragma: no cover
             return incidents_ids_sorted_by_time
         except Exception as e:
             demisto.debug(f"Test-IronScales: Exception message:{e}")
-            if "429" in str(e):
-                # time.sleep(wait _time) todo- look here before third meeting
-                wait_time *= 2
             raise Exception("An error occured in get_all_incident_ids. check logs to see why")
 
 
@@ -296,18 +294,19 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[CommandRes
 
 def get_new_last_id(last_timestamp, incident, new_last_ids):
     incident_time = arg_to_datetime(incident.get("_time"))
-    if not last_timestamp:  # first fetch case
+    if not new_last_ids:  # first fetch case
         new_last_ids.append(incident.get("incident_id"))
         last_timestamp = incident_time
     else:
         if incident_time > last_timestamp:  # new timestamp - new last_ids list
-            new_last_ids = []
+            new_last_ids = [incident.get("incident_id")]
             last_timestamp = incident_time
-        new_last_ids.append(incident.get("incident_id"))
+        elif incident_time == last_timestamp:
+            new_last_ids.append(incident.get("incident_id"))
     return last_timestamp, new_last_ids
 
 
-def all_incidents_trimmer(incident_ids, client, max_fetch, last_timestamp_ids, last_timestamp):
+def all_incidents_trimmer(incident_ids, client, max_fetch, last_timestamp_ids, last_timestamp, last_id):
     """
     In all_incidents case, we will save a list of the ids that share the same timestamp as the last id.
     That way we will not return duplicates in each run.
@@ -315,7 +314,6 @@ def all_incidents_trimmer(incident_ids, client, max_fetch, last_timestamp_ids, l
     Args:
         incident_ids (_type_): the new ids that we pulled
         client (_type_): client
-        events (_type_): an empty list, perhaps delete?
         max_fetch (_type_): max fetch
         last_timestamp_ids (_type_): Ids that we already seen
         last_timestamp (_type_): the last timestamp that we pulled
@@ -338,7 +336,7 @@ def all_incidents_trimmer(incident_ids, client, max_fetch, last_timestamp_ids, l
         last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids)
         if len(events) >= max_fetch:
             break
-    return events, new_last_ids[-1] if new_last_ids else [], new_last_ids
+    return events, new_last_ids[-1] if new_last_ids else last_id, new_last_ids
 
 
 def open_incidents_trimmer(incident_ids, client, max_fetch, last_id):
@@ -374,7 +372,6 @@ def fetch_events_command(
             - ID of the most recent incident ingested in the current run.
     """
     demisto.debug("Test-IronScales: going in fetch_events")
-    events: List[dict[str, Any]] = []
     incident_ids: List[int] = get_incident_ids_to_fetch(
         client=client, first_fetch=first_fetch, last_id=last_id, max_fetch=max_fetch
     )
@@ -382,7 +379,7 @@ def fetch_events_command(
     last_id = last_id or -1
     if client.all_incident:
         events, last_id, last_timestamp_ids = all_incidents_trimmer(
-            incident_ids, client, max_fetch, last_timestamp_ids, first_fetch
+            incident_ids, client, max_fetch, last_timestamp_ids, first_fetch, last_id
         )  # type: ignore
     else:
         events, last_id, last_timestamp_ids = open_incidents_trimmer(incident_ids, client, max_fetch, last_id)
