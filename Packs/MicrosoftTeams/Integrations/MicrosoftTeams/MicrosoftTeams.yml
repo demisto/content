@@ -163,7 +163,7 @@ script:
       name: channel
     - description: The message to send to the channel or team member.
       name: message
-    - description: Display name or email address of the team member to send the message to.
+    - description: Display name or email address of the team member to send the message to
       name: team_member
     - description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
       name: team

@@ -1086,7 +1086,7 @@ script:
     - description: War Room entry ID that includes the file.
       name: file_id
       required: true
-    - description: Filename of the uploaded file to override the existing file name in the entry.
+    - description: Filename of the uploaded file to override the existing file name in the entry
       name: file_name
     description: Uploads a file to the specified ticket.
     name: servicenow-upload-file

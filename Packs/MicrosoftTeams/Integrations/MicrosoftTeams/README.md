@@ -372,7 +372,7 @@ For more detailed instructions, refer to the [Configuring the instance with the 
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
+After you successfully execute a command, a DBot message appears in the War Room with the command details..
 
 ### send-notification
 
