@@ -241,7 +241,8 @@ def get_connected_endpoints(
         },
         brand=BRAND_CORE_IR,
     ).execute()
-    verbose_command_results.append(endpoints_details)
+    for i in range(len(endpoints_details[1])):
+        verbose_command_results.append(endpoints_details[1][i])
     pack_prefix = "Core" if command_prefix == CORE_COMMAND_PREFIX else "PaloAltoNetworksXDR"
     e_details = endpoints_details[0][0].get(f"{pack_prefix}.Endpoint(val.endpoint_id == obj.endpoint_id)") or []
     connected_endpoints = []
@@ -379,14 +380,17 @@ def core_or_xdr_quarantine_file(
         e_id = res.get("endpoint_id")
         status = res.get("status")
         if status == "COMPLETED_SUCCESSFULLY":
-            response = status_commands.get(e_id).execute()
-            verbose_command_results.append(response)
-            for val in response[0][0].values():
-                quarantine_status = val.get("status")
-                if quarantine_status:
-                    message = "File successfully quarantined"
-                else:
-                    message = f"Failed to quarantine file. {val.get('error_description')}"
+            status_command = status_commands.get(e_id)
+            if status_command:
+                response = status_command.execute()
+                for i in range(len(response[1])):
+                    verbose_command_results.append(response[1][i])
+                for val in response[0][0].values():
+                    quarantine_status = val.get("status")
+                    if quarantine_status:
+                        message = "File successfully quarantined"
+                    else:
+                        message = f"Failed to quarantine file. {val.get('error_description')}"
         else:
             message = f"Failed to quarantine file. {res.get('error_description')}"
         readable_context.append({"endpoint_id": e_id, "message": message})

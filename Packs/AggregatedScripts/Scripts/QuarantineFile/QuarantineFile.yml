@@ -34,27 +34,27 @@ args:
 comment: This script run quarantine-file command on a specific file by the agent for a file that was identified as suspicious.
 name: quarantine-file
 outputs:
-  - contextPath: QuarantineFile.FilePath.
-    description: Path of the file that was quarantined.
-    type: String
-  - contextPath: QuarantineFile.FileHash.
-    description: Hash of the file.
-    type: String
-  - contextPath: QuarantineFile.Status
-    description: whether the command was running succussefully or not.
-    type: Boolean
-  - contextPath: QuarantineFile.Result
-    description: whether the command was running succussefully or not.
-    type: String
-  - contextPath: QuarantineFile.Message
-    description: If the command run successfully - message for success else message that contain the error.
-    type: String
-  - contextPath: QuarantineFile.Brand
-    description: The integration that used to run the command.
-    type: String
-  - contextPath: QuarantineFile.EndpointID
-    description: The endpoint_id which the command was executed on.
-    type: String
+- contextPath: QuarantineFile.FilePath.
+  description: Path of the file that was quarantined.
+  type: String
+- contextPath: QuarantineFile.FileHash.
+  description: Hash of the file.
+  type: String
+- contextPath: QuarantineFile.Status
+  description: whether the command was running succussefully or not.
+  type: Boolean
+- contextPath: QuarantineFile.Result
+  description: whether the command was running succussefully or not.
+  type: String
+- contextPath: QuarantineFile.Message
+  description: If the command run successfully - message for success else message that contain the error.
+  type: String
+- contextPath: QuarantineFile.Brand
+  description: The integration that used to run the command.
+  type: String
+- contextPath: QuarantineFile.EndpointID
+  description: The endpoint_id which the command was executed on.
+  type: String
 script: '-'
 timeout: '0'
 type: python
