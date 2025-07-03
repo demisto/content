@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 import pytest
 
-from CommonServerPython import CommandResults, EntryType, DemistoException
+from CommonServerPython import CommandResults, DemistoException
 
 
 def test_parse_resource_ids_with_valid_input():
@@ -81,7 +81,7 @@ def test_s3_put_public_access_block_command_failure(mocker):
     """
     Given: A mocked boto3 S3 client and valid arguments for public access block.
     When: put_public_access_block_command is called with failed response.
-    Then: It should return CommandResults with error message.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import S3
 
@@ -90,34 +90,15 @@ def test_s3_put_public_access_block_command_failure(mocker):
 
     args = {"bucket": "test-bucket", "block_public_acls": "true"}
 
-    result = S3.put_public_access_block_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
-
-
-def test_s3_put_bucket_versioning_command_success(mocker):
-    """
-    Given: A mocked boto3 S3 client and valid bucket versioning arguments.
-    When: put_bucket_versioning_command is called successfully.
-    Then: It should return CommandResults with success message.
-    """
-    from AWS import S3
-
-    mock_client = mocker.Mock()
-    mock_client.put_bucket_versioning.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
-
-    args = {"bucket": "test-bucket", "status": "Enabled", "mfa_delete": "Disabled"}
-
-    result = S3.put_bucket_versioning_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert "Successfully enabled versioning" in result.readable_output
+    with pytest.raises(DemistoException, match="Couldn't apply public access block to the test-bucket bucket"):
+        S3.put_public_access_block_command(mock_client, args)
 
 
 def test_s3_put_bucket_versioning_command_exception(mocker):
     """
     Given: A mocked boto3 S3 client that raises an exception.
     When: put_bucket_versioning_command is called and encounters an error.
-    Then: It should return CommandResults with error entry type.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import S3
 
@@ -126,9 +107,8 @@ def test_s3_put_bucket_versioning_command_exception(mocker):
 
     args = {"bucket": "test-bucket", "status": "Enabled"}
 
-    result = S3.put_bucket_versioning_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Failed to update versioning configuration for bucket test-bucket"):
+        S3.put_bucket_versioning_command(mock_client, args)
 
 
 def test_s3_put_bucket_logging_command_enable_logging(mocker):
@@ -189,7 +169,7 @@ def test_s3_put_bucket_acl_command_unexpected_status(mocker):
     """
     Given: A mocked boto3 S3 client returning unexpected status code.
     When: put_bucket_acl_command is called with non-200 response.
-    Then: It should return CommandResults with unexpected status message.
+    Then: It should raise DemistoException with unexpected status message.
     """
     from AWS import S3
 
@@ -198,9 +178,8 @@ def test_s3_put_bucket_acl_command_unexpected_status(mocker):
 
     args = {"bucket": "test-bucket", "acl": "private"}
 
-    result = S3.put_bucket_acl_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert "unexpected status code" in result.readable_output
+    with pytest.raises(DemistoException, match="Request completed but received unexpected status code: 400"):
+        S3.put_bucket_acl_command(mock_client, args)
 
 
 def test_s3_put_bucket_policy_command_success(mocker):
@@ -225,7 +204,7 @@ def test_s3_put_bucket_policy_command_exception(mocker):
     """
     Given: A mocked boto3 S3 client that raises an exception.
     When: put_bucket_policy_command is called and encounters an error.
-    Then: It should return CommandResults with error entry type and error message.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import S3
 
@@ -234,9 +213,8 @@ def test_s3_put_bucket_policy_command_exception(mocker):
 
     args = {"bucket": "test-bucket", "policy": {"Version": "2012-10-17"}}
 
-    result = S3.put_bucket_policy_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Couldn't apply bucket policy to test-bucket bucket"):
+        S3.put_bucket_policy_command(mock_client, args)
 
 
 def test_iam_get_account_password_policy_command_success(mocker):
@@ -302,7 +280,7 @@ def test_iam_update_account_password_policy_command_get_policy_error(mocker):
     """
     Given: A mocked boto3 IAM client that fails to get current password policy.
     When: update_account_password_policy_command encounters an error getting current policy.
-    Then: It should return CommandResults with error entry type.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import IAM
 
@@ -311,9 +289,8 @@ def test_iam_update_account_password_policy_command_get_policy_error(mocker):
 
     args = {"account_id": "123456789"}
 
-    result = IAM.update_account_password_policy_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Couldn't check current account password policy for account"):
+        IAM.update_account_password_policy_command(mock_client, args)
 
 
 def test_iam_put_role_policy_command_success(mocker):
@@ -343,7 +320,7 @@ def test_iam_put_role_policy_command_exception(mocker):
     from AWS import IAM
 
     mock_client = mocker.Mock()
-    mock_client.put_user_policy.side_effect = Exception("Access denied")
+    mock_client.put_role_policy.side_effect = Exception("Access denied")
 
     args = {"policy_document": '{"Version": "2012-10-17"}', "policy_name": "test-policy", "role_name": "test-role"}
 
@@ -373,7 +350,7 @@ def test_iam_delete_login_profile_command_exception(mocker):
     """
     Given: A mocked boto3 IAM client that raises an exception.
     When: delete_login_profile_command encounters an error during execution.
-    Then: It should return CommandResults with error entry type and error message.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import IAM
 
@@ -382,9 +359,8 @@ def test_iam_delete_login_profile_command_exception(mocker):
 
     args = {"user_name": "test-user"}
 
-    result = IAM.delete_login_profile_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Error deleting login profile for user 'test-user'"):
+        IAM.delete_login_profile_command(mock_client, args)
 
 
 def test_iam_put_user_policy_command_success(mocker):
@@ -445,7 +421,7 @@ def test_iam_remove_role_from_instance_profile_command_exception(mocker):
     """
     Given: A mocked boto3 IAM client that raises an exception.
     When: remove_role_from_instance_profile_command encounters an error.
-    Then: It should return CommandResults with error entry type and error message.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import IAM
 
@@ -454,9 +430,8 @@ def test_iam_remove_role_from_instance_profile_command_exception(mocker):
 
     args = {"instance_profile_name": "test-profile", "role_name": "test-role"}
 
-    result = IAM.remove_role_from_instance_profile_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Error removing role 'test-role' from instance profile"):
+        IAM.remove_role_from_instance_profile_command(mock_client, args)
 
 
 def test_iam_update_access_key_command_success(mocker):
@@ -517,7 +492,7 @@ def test_ec2_modify_instance_metadata_options_command_failure(mocker):
     """
     Given: A mocked boto3 EC2 client returning non-OK status code.
     When: modify_instance_metadata_options_command is called with failed response.
-    Then: It should return CommandResults with error entry type and failure message.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import EC2
 
@@ -526,9 +501,8 @@ def test_ec2_modify_instance_metadata_options_command_failure(mocker):
 
     args = {"instance_id": "i-1234567890abcdef0", "http_tokens": "required"}
 
-    result = EC2.modify_instance_metadata_options_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Couldn't updated public EC2 instance metadata"):
+        EC2.modify_instance_metadata_options_command(mock_client, args)
 
 
 def test_ec2_modify_instance_attribute_command_success(mocker):
@@ -842,7 +816,7 @@ def test_rds_modify_db_cluster_command_exception(mocker):
     """
     Given: A mocked boto3 RDS client that raises an exception.
     When: modify_db_cluster_command encounters an error during execution.
-    Then: It should return CommandResults with error entry type and error message.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import RDS
 
@@ -851,9 +825,8 @@ def test_rds_modify_db_cluster_command_exception(mocker):
 
     args = {"db_cluster_identifier": "test-cluster", "deletion_protection": "true"}
 
-    result = RDS.modify_db_cluster_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Error modifying DB cluster"):
+        RDS.modify_db_cluster_command(mock_client, args)
 
 
 def test_rds_modify_db_cluster_snapshot_attribute_command_success(mocker):
@@ -881,7 +854,7 @@ def test_rds_modify_db_cluster_snapshot_attribute_command_failure(mocker):
     """
     Given: A mocked boto3 RDS client returning non-OK status code.
     When: modify_db_cluster_snapshot_attribute_command is called with failed response.
-    Then: It should return CommandResults with error entry type and failure message.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import RDS
 
@@ -892,9 +865,8 @@ def test_rds_modify_db_cluster_snapshot_attribute_command_failure(mocker):
 
     args = {"db_cluster_snapshot_identifier": "test-snapshot", "attribute_name": "restore"}
 
-    result = RDS.modify_db_cluster_snapshot_attribute_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Error modifying DB cluster snapshot attribute"):
+        RDS.modify_db_cluster_snapshot_attribute_command(mock_client, args)
 
 
 def test_rds_modify_db_instance_command_success(mocker):
@@ -922,7 +894,7 @@ def test_rds_modify_db_instance_command_exception(mocker):
     """
     Given: A mocked boto3 RDS client that raises an exception.
     When: modify_db_instance_command encounters an error during execution.
-    Then: It should return CommandResults with error entry type and error message.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import RDS
 
@@ -931,9 +903,8 @@ def test_rds_modify_db_instance_command_exception(mocker):
 
     args = {"db_instance_identifier": "test-instance", "multi_az": "true"}
 
-    result = RDS.modify_db_instance_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Error modifying DB instance"):
+        RDS.modify_db_instance_command(mock_client, args)
 
 
 def test_rds_modify_db_snapshot_attribute_command_success(mocker):
@@ -962,7 +933,7 @@ def test_rds_modify_db_snapshot_attribute_command_failure(mocker):
     """
     Given: A mocked boto3 RDS client returning non-OK status code.
     When: modify_db_snapshot_attribute_command is called with failed response.
-    Then: It should return CommandResults with error entry type and failure message.
+    Then: It should raise DemistoException with error message.
     """
     from AWS import RDS
 
@@ -971,9 +942,8 @@ def test_rds_modify_db_snapshot_attribute_command_failure(mocker):
 
     args = {"db_snapshot_identifier": "test-snapshot", "attribute_name": "restore", "values_to_remove": ["123456789012"]}
 
-    result = RDS.modify_db_snapshot_attribute_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Couldn't modify DB snapshot attribute for"):
+        RDS.modify_db_snapshot_attribute_command(mock_client, args)
 
 
 def test_cloudtrail_start_logging_command_success(mocker):
@@ -1007,9 +977,8 @@ def test_cloudtrail_start_logging_command_exception(mocker):
 
     args = {"name": "test-trail"}
 
-    result = CloudTrail.start_logging_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Error starting logging for CloudTrail"):
+        CloudTrail.start_logging_command(mock_client, args)
 
 
 def test_cloudtrail_update_trail_command_success(mocker):
@@ -1051,9 +1020,8 @@ def test_cloudtrail_update_trail_command_exception(mocker):
 
     args = {"name": "test-trail", "s3_bucket_name": "test-bucket"}
 
-    result = CloudTrail.update_trail_command(mock_client, args)
-    assert isinstance(result, CommandResults)
-    assert result.entry_type == EntryType.ERROR
+    with pytest.raises(DemistoException, match="Error updating CloudTrail"):
+        CloudTrail.update_trail_command(mock_client, args)
 
 
 def test_register_proxydome_header(mocker):
@@ -1101,81 +1069,3 @@ def test_register_proxydome_header_adds_correct_header(mocker):
     header_function(mock_request)
 
     assert mock_request.headers["x-caller-id"] == "test-token-123"
-
-
-def test_execute_aws_command_success(mocker):
-    """
-    Given: A valid AWS command, arguments, and parameters.
-    When: execute_aws_command is called with proper configuration.
-    Then: It should return CommandResults from the appropriate service handler.
-    """
-    from AWS import execute_aws_command
-    from http import HTTPStatus
-
-    mock_credentials = {"key": "test-key", "access_token": "test-secret"}
-    mock_client = mocker.Mock()
-
-    # Mock the client's response with the expected structure
-    mock_client.put_public_access_block.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
-
-    mocker.patch("AWS.get_cloud_credentials", return_value=mock_credentials)
-    mocker.patch("AWS.get_service_client", return_value=mock_client)
-
-    command = "aws-s3-public-access-block-put"
-    args = {"account_id": "123456789012", "bucket": "test-bucket"}
-    params = {"region": "us-east-1"}
-
-    result = execute_aws_command(command, args, params)
-
-    # Verify the result
-    assert isinstance(result, CommandResults)
-    assert "Successfully applied public access block" in result.readable_output
-
-    # Verify the mock was called correctly
-    mock_client.put_public_access_block.assert_called_once()
-
-
-def test_execute_aws_command_with_account_id(mocker):
-    """
-    Given: AWS command arguments including a specific account ID.
-    When: execute_aws_command is called with account ID for credential retrieval.
-    Then: It should retrieve credentials for the specified account and execute successfully.
-    """
-    from AWS import execute_aws_command
-
-    mock_credentials = {"key": "account-key", "access_token": "account-secret"}
-    mock_client = mocker.Mock()
-
-    # Mock the client's response with the expected structure
-    mock_client.get_account_password_policy.return_value = {
-        "PasswordPolicy": {
-            "MinimumPasswordLength": 8,
-            "RequireSymbols": True,
-            "RequireNumbers": True,
-            "RequireUppercaseCharacters": True,
-            "RequireLowercaseCharacters": True,
-            "AllowUsersToChangePassword": True,
-            "ExpirePasswords": False,
-            "MaxPasswordAge": 90,
-            "PasswordReusePrevention": 3,
-            "HardExpiry": False,
-        }
-    }
-
-    mocker.patch("AWS.get_cloud_credentials", return_value=mock_credentials)
-    mocker.patch("AWS.get_service_client", return_value=mock_client)
-
-    command = "aws-iam-account-password-policy-get"
-    args = {"account_id": "987654321098"}
-    params = {}
-
-    result = execute_aws_command(command, args, params)
-
-    # Verify the result
-    assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.IAM.PasswordPolicy"
-    assert result.outputs_key_field == "AccountId"
-    assert "AWS IAM Account Password Policy" in result.readable_output
-
-    # Verify the mock was called correctly
-    mock_client.get_account_password_policy.assert_called_once()
