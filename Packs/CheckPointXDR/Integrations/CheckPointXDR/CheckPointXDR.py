@@ -48,7 +48,7 @@ class Client(BaseClient):
 
         return incidents
 
-    def update_incident(self, status: Optional[str] = None, incident_id: Optional[str] = None) -> dict:
+    def update_incident(self, status: int, close_reason: str = "", incident_id: Optional[str] = None) -> dict:
         """
         Update an incident in CheckPoint XDR.
 
@@ -74,9 +74,14 @@ class Client(BaseClient):
 
         # Only include status in the update if it was provided
         # if status:
-            # TODO: Add mapping of XSOAR status to XDR status
-        update_data["status"] = 'in progress'
-        
+        # new, in progress, close - handled, close - prevented, close - false positive, close - known activity
+        status_map = {
+            "Resolved": "close - handled",
+            "Duplicate": "close - known activity",
+            "False Positive": "close - false positive",
+            "Other": "close - prevented",
+        }
+        update_data["status"] = status_map[close_reason]
 
         # If no fields to update, log and return
         if not update_data:
@@ -163,51 +168,12 @@ def get_instances_id():
 def parse_incidents(xdr_incidents: list[dict[str, Any]], mirroring_fields: dict, startTS: int, max_fetch: int):
     incidents: list[dict[str, Any]] = []
     for incident in xdr_incidents.get("incidents", []):
-        # Extracting insights and alerts
-        insights = incident.get("insights", [])
-        alerts = [
-            {
-                "category": insight.get("attack_family", ""),
-                "action_pretty": insight.get("creation_time", ""),
-                "description": insight.get("summary", ""),
-                "severity": insight.get("severity", "medium"),
-                "host_name": next((asset["value"] for asset in insight.get("assets", []) if asset["type"] == "host"), ""),
-                "user_name": next((asset["value"] for asset in insight.get("assets", []) if asset["type"] == "user"), ""),
-                "detection_timestamp": insight.get("detection_time", ""),
-                "name": insight.get("summary", ""),
-            }
-            for insight in insights
-        ]
-
         incident.update(mirroring_fields)
 
         # Constructing the XSOAR incident
         incidents.append({
-            # 'type': 'Check Point XDR Incident',
             'dbotMirrorId': incident.get("id", "unknown_id"),
             "occurred": incident.get("created_at", ""),
-            "updated": incident.get("updated_at", ""),
-            # try to remove all CustomFields and replace with mapper
-            "CustomFields": {
-                "externalid": incident.get("id", ""),
-                "xdrdescription": incident.get("summary", ""),
-                "xdralertcount": len(insights),
-                "xdrstatus": incident.get("status", ""),
-                "owner": incident.get("assignee", ""),
-                "xdrmodificationtime": incident.get("updated_at", ""),
-                "xdralerts": alerts,
-                "xdrfollowUp": incident.get("follow_up", False),
-                "tenantname": incident.get("tenantId", ""),
-                "xdrdisplayid": incident.get("display_id", ""),
-                "sourcepriority": incident.get("priority", ""),
-                "externalconfidence": incident.get("confidence", ""),
-                "xdrfirstseen": incident.get("firstSeen", ""),
-                "xdrlastseen": incident.get("lastSeen", ""),
-                "sensors": incident.get("sensors", []),
-                "indicators": incident.get("indicators", []),
-                "mitretacticid": incident.get("mitre_tactics", []),
-                "mitretechniqueid": incident.get("mitre_techniques", [])
-            },
             "severity": map_severity(incident.get("severity", "medium")),
             "name": f"#{incident.get('display_id', '')} - {incident.get('summary', '')}",
             'details': incident.get("summary", ""),
@@ -244,65 +210,32 @@ def fetch_incidents(client: Client, mirroring_fields: dict, last_run: dict[str, 
     return {'last_fetch': last_insight_time}, incidents
 
 
-def handle_incident_close_out_or_reactivation(delta: dict, incident_status: IncidentStatus):
-    """
-    Handle the incident close out. If the close out is enabled, the incident will be resolved and the classification and
-    determination will be updated according to the close reason.
-
-    Args:
-        delta (dict): The delta of the incident to update.
-        incident_status (IncidentStatus): The incident status in XSOAR.
-
-    """
-    demisto.debug("XDR - Starting handle_incident_close_out_or_reactivation")
-    # Only close or reopen microsoft incidents based on xsoar if close_out is enabled.
-    if not argToBoolean(demisto.params().get("close_out", False)):
-        demisto.debug("XDR - Close out is not enabled")
-        return
-    demisto.debug("XDR - Close out is enabled")
-    if incident_status == IncidentStatus.DONE:
-        if any(delta.get(key) for key in ["closeReason", "closeNotes", "closingUserId"]):
-            delta["status"] = "Resolved"
-            demisto.debug("XDR - Updating incident status to Resolved")
-            # this functionality awaits https://jira-dc.paloaltonetworks.com/browse/CRTX-151123?filter=-2
-            # once resolved the microsoft365classification field needs to be returned to the close form in order to get
-            # the classification and determination fields in delta.
-            if delta.get("closeReason") == "FalsePositive" and delta.get("classification") != "FalsePositive":
-                delta.update({"classification": "FalsePositive", "determination": "Other"})
-                demisto.debug("XDR - Updating classification and determination to FalsePositive and Other")
-            elif delta.get("closeReason") == "Other" or delta.get("closeReason") == "Duplicate":
-                delta.update({"classification": "Unknown", "determination": "NotAvailable"})
-                demisto.debug("XDR - Updating classification and determination to Unknown and NotAvailable")
-    else:
-        if any(delta.get(key) == "" for key in ["closeReason", "closeNotes", "closingUserId"]):
-            delta["status"] = "Active"
-            demisto.debug("XDR - Updating incident status to Active")
-
-
 def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     update_remote_system_args = UpdateRemoteSystemArgs(args)
     remote_incident_id = update_remote_system_args.remote_incident_id
     delta = update_remote_system_args.delta
     incident_changed = update_remote_system_args.incident_changed
     inc_status = update_remote_system_args.inc_status
+    data = update_remote_system_args.data
 
     demisto.debug(
         f"XDR - update_remote_system_command called with {remote_incident_id=}, {delta=}, "
-        f"{incident_changed=}, {inc_status=}"
+        f"{incident_changed=}, {inc_status=}, {data=}"
     )
 
     # Check if we're closing the incident
-    # if inc_status == IncidentStatus.DONE:
-    demisto.debug("XDR - Incident is being updated, updating remote system")
-    if argToBoolean(demisto.params().get("close_out", True)):
-        try:
-            # Update XDR incident to Resolved status
-            client.update_incident(status="Resolved", incident_id=remote_incident_id)
-            demisto.debug(f"XDR - Successfully closed incident {remote_incident_id} in XDR")
-        except Exception as e:
-            demisto.error(f"XDR - Failed to close incident {remote_incident_id} in XDR: {str(e)}")
-    # else:
-    #     demisto.debug("XDR - close_out is not enabled, skipping closure in XDR")
+    if inc_status == IncidentStatus.DONE:
+        close_reason = delta.get("closeReason", "")
+        if argToBoolean(demisto.params().get("close_out", True)):
+            demisto.debug("XDR - Incident is being updated, updating remote system")
+            try:
+                # Update XDR incident to Resolved status
+                client.update_incident(status=int(inc_status), close_reason=close_reason, incident_id=remote_incident_id)
+                demisto.debug(f"XDR - Successfully closed incident {remote_incident_id} in XDR")
+            except Exception as e:
+                demisto.error(f"XDR - Failed to close incident {remote_incident_id} in XDR: {str(e)}")
+        else:
+            demisto.debug("XDR - close_out is not enabled, skipping closure in XDR")
 
     return remote_incident_id
 
@@ -353,24 +286,8 @@ def main() -> None:  # pragma: no cover
             demisto.incidents(incidents)
             demisto.debug(f"Set last run to {next_run.get('last_fetch')}")
             demisto.setLastRun(next_run)
-            # remove next 2 commands which used for mirror in
-        elif command == "get-modified-remote-data":
-            last_run_ids = demisto.getIntegrationContext().get("last_run_ids", [0])
-            demisto.info(f"{last_run_ids=}")
-            first_id = int(last_run_ids[0])
-            modified_list = range(first_id - NUMBER_OF_INC_TO_FETCH, first_id)
-            result = GetModifiedRemoteDataResponse(
-                [str(item) for item in modified_list]
-            )
-        elif command == "get-remote-data":
-            remote_args = GetRemoteDataArgs(args)
-            remote_incident_id = remote_args.remote_incident_id
-            demisto.info(
-                f"Fetching remote incident details for ID: {remote_incident_id}"
-            )
         elif command == "update-remote-system":
             demisto.debug('XDR - update-remote-system')
-            # demisto.debug(f"XDR - Running update-remote-system command with args: {args}")
             return_results(update_remote_system_command(client, args))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())

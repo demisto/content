@@ -5,29 +5,99 @@
     "fromVersion": "6.9.0",
     "id": "CheckPointXDR_Incoming_Mapper",
     "mapping": {
-        "Check Point XDR Incident": {
-            "dontMapEventToLabels": false,
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
             "internalMapping": {
-                "dbotMirrorId": {
-                    "simple": "id"
+                "Additional Indicators": {
+                    "simple": "indicators"
                 },
-                "severity": {
+                "External Confidence": {
+                    "simple": "confidence"
+                },
+                "External Severity": {
                     "simple": "severity"
                 },
-                "externalId": {
+                "External System ID": {
                     "simple": "id"
                 },
-                "status": {
-                    "simple": "status"
+                "MITRE Tactic ID": {
+                    "simple": "mitre_tactics"
+                },
+                "MITRE Technique ID": {
+                    "simple": "mitre_techniques"
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Tactic": {
+                    "complex": {
+                        "accessor": "[0]",
+                        "filters": [],
+                        "root": "mitre_tactics",
+                        "transformers": []
+                    }
+                },
+                "Technique": {
+                    "complex": {
+                        "accessor": "[0]",
+                        "filters": [],
+                        "root": "mitre_techniques",
+                        "transformers": []
+                    }
+                },
+                "Tenant Name": {
+                    "simple": "tenantId"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
                 },
                 "details": {
                     "simple": "summary"
                 },
-                "owner": {
-                    "simple": "assignee"
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "display_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": true
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "summary"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
                 },
                 "occurred": {
                     "simple": "created_at"
+                },
+                "owner": {
+                    "simple": "assignee"
+                },
+                "severity": {
+                    "simple": "severity"
                 }
             }
         }

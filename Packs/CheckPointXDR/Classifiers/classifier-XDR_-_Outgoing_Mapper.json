@@ -1,44 +1,25 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "CheckPointXDR_Out_mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": {
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"severity": {
-					"simple": "severity"
-				},
-				"status": {
-					"simple": "status"
-				}
-			}
-		}
-	},
-	"name": "CheckPointXDR_Out_mapper",
-	"nameRaw": "CheckPointXDR_Out_mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-outgoing",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "CheckPointXDR_Out_Mapper",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Status": {
+                    "simple": "status"
+                },
+                "Status Reason": {
+                    "simple": "status"
+                }
+            }
+        }
+    },
+    "name": "CheckPointXDR_Out_Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
 }
