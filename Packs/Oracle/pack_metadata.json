@@ -1,5 +1,5 @@
 {
-    "name": "Oracle",
+    "name": "Oracle Database",
     "description": "The modeling rules for Oracle event collectors.",
     "support": "xsoar",
     "currentVersion": "1.0.5",
@@ -7,11 +7,20 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Database"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Data Source"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "oracle",
+        "db",
+        "Database"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
