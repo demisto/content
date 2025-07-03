@@ -189,7 +189,7 @@ class Client(BaseClient):
 
     def get_health_events(self, start_time: int, end_time: int) -> list[dict]:
         """
-        Fetches all Healthrule Violations Events in a loop,
+        Fetches all Health Rule Violations in a loop,
         using the API's BETWEEN_TIMES.
         start-time and end-time are in milliseconds.
         Args:
@@ -200,7 +200,7 @@ class Client(BaseClient):
         """
         events: list[dict] = []
         params = HEALTH_EVENT.default_params.copy()
-        demisto.debug("Fetching Healthrule Violations Events")
+        demisto.debug("Fetching Health Rule Violations")
         while len(events) <= HEALTH_EVENT.max_fetch:
             params.update(
                 {
@@ -219,7 +219,7 @@ class Client(BaseClient):
                 break
             start_time = events[-1][HEALTH_EVENT.time_field]
 
-        demisto.debug(f"Fetched total {len(events)} Healthrule Violations Events from API.")
+        demisto.debug(f"Fetched total {len(events)} Health Rule Violations from API.")
         return add_fields_to_events(events, HEALTH_EVENT)
 
 
@@ -313,7 +313,7 @@ def get_events(client: Client, args: dict[str, Any], params: dict[str, Any]) -> 
       - start_time (str): ISO 8601 string, e.g. "2025-04-27T10:00:00Z"
       - end_time   (str): ISO 8601 string, e.g. "2025-04-27T10:05:00Z"
       - limit      (str): comma-separated list of event types to fetch,
-                         e.g. "Audit,Healthrule Violations Events".
+                         e.g. "Audit, Health Rule Violations".
       - should_push_events (bool): push events to XSIAM.
 
     Returns:
