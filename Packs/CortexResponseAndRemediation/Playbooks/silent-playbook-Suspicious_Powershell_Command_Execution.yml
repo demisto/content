@@ -191,7 +191,7 @@ tasks:
       '#default#':
       - "2"
       Malicious:
-      - "4"
+      - "10"
     separatecontext: false
     conditions:
     - label: Malicious
@@ -210,38 +210,7 @@ tasks:
       {
         "position": {
           "x": 507,
-          "y": -110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: b2420736-f04f-4594-8f41-e809e5899d57
-    type: title
-    task:
-      id: b2420736-f04f-4594-8f41-e809e5899d57
-      version: -1
-      name: Remediation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "10"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -392,
-          "y": 215
+          "y": -93
         }
       }
     note: false
@@ -349,7 +318,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -392,
+          "x": -409,
           "y": 1581
         }
       }
@@ -376,6 +345,8 @@ tasks:
     nexttasks:
       '#error#':
       - "12"
+      '#none#':
+      - "13"
     scriptarguments:
       agent_id:
         simple: ${alert.agentid}
@@ -389,7 +360,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -793,
+          "x": -677,
           "y": 1701
         }
       }
@@ -425,7 +396,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -793,
+          "x": -932,
           "y": 1943
         }
       }
@@ -457,13 +428,15 @@ tasks:
         simple: The alert has been resolved. It was confirmed as a true positive by the Suspicious Powershell Command Execution playbook.
       closeReason:
         simple: Resolved - True Positive
+      id:
+        simple: ${alert.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -337,
-          "y": 2078
+          "y": 2094
         }
       }
     note: false
@@ -800,11 +773,19 @@ tasks:
       id: b26523e8-5627-447c-8977-5a1b3fe88699
       version: -1
       name: Block Indicators - Generic v3
+      description: |-
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2.
       playbookName: Block Indicators - Generic v3
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -1231,14 +1212,36 @@ tasks:
       version: -1
       name: Manual Task - Analyst Decision for Next Actions
       description: |-
-        Based on the investigation the following findings were found:
-        - command-line risk score: **Suspicious (10 <x< 60)**
+        ## Investigation Summary
 
-        Analyst approval is required for the following remediation actions:
-        - Kill causality process tree
-        - Block malicious indicators
-        - Add malicious files to the block list
-        - No action
+        Based on the automated analysis, the following findings were identified:
+
+        ### Risk Assessment
+        - **Command-line Risk Score:** Medium Risk (10-60 range)
+        - **Alert Classification:** Requires analyst review for final determination
+
+        ### Recommended Remediation Actions
+
+        Please review the alert and select the appropriate response:
+
+        #### Available Actions:
+        - **True Positive Response:**
+          - Terminate the causality process tree
+          - Block identified malicious indicators
+          - Add malicious files to blocklist
+          - Close alert as True Positive
+
+        - **False Positive Response:**
+          - Close alert as benign activity
+          - No blocking or termination actions
+
+        - **No Action:**
+          - Keep alert open for extended investigation
+          - Manual analysis required
+
+        ### Evidence Review Required
+        Please examine the process details, command-line arguments, and risk indicators before making your decision.
+            
       type: collection
       iscommand: false
       brand: ""
@@ -1457,17 +1460,17 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "11_12_#error#": 0.6,
+      "11_12_#error#": 0.77,
+      "23_10_Malicious": 0.47,
       "33_31_yes": 0.5,
       "39_13_#default#": 0.12,
-      "3_4_Malicious": 0.69,
       "5_6_#default#": 0.32
     },
     "paper": {
       "dimensions": {
         "height": 2748,
-        "width": 2261,
-        "x": -793,
+        "width": 2400,
+        "x": -932,
         "y": -470
       }
     }
