@@ -1410,11 +1410,11 @@ def test_azure_client_create_policy_assignment(mocker, client):
         display_name="Test Policy",
         description="Test description",
         parameters={"param1": "value1"},
-        scope_prefix=f"{PREFIX_URL_AZURE}sub-id",
+        scope="/scope",
     )
 
     # Verify correct API call was made
-    expected_url = f"{PREFIX_URL_AZURE}sub-id/providers/Microsoft.Authorization/policyAssignments/test-policy"
+    expected_url = "https://management.azure.com/scope/providers/Microsoft.Authorization/policyAssignments/test-policy"
     client.http_request.assert_called_once()
     call_args = client.http_request.call_args
     assert call_args[1]["method"] == "PUT"

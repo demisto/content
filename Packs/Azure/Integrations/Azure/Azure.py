@@ -428,7 +428,7 @@ class AzureClient:
             )
 
     def create_policy_assignment(
-        self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope_prefix: str
+        self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
     ):
         """
         Create a policy assignment in Azure.
@@ -438,11 +438,12 @@ class AzureClient:
             display_name (str): Display name for the policy assignment.
             parameters (str): Parameters for the policy assignment.
             description (str): Description of the policy assignment.
-            scope_prefix (str): Scope prefix for the policy assignment (e.g., subscription or resource group).
+            scope (str): Scope of the policy assignment (e.g., subscription or resource group).
         Returns:
             dict: The full response from the Azure policy assignment creation API.
         """
-        full_url = f"{scope_prefix}/providers/Microsoft.Authorization/policyAssignments/{name}"
+        # subscription_id is required as argument for token creation.
+        full_url = f"https://management.azure.com{scope}/providers/Microsoft.Authorization/policyAssignments/{name}"
         params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
         data = {
             "properties": {
@@ -1386,21 +1387,12 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
         CommandResults: The command results in MD table and context data.
     """
     name = args.get("name", "")
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    scope_level = args.get("scope_level")
-    scope_prefix = f"{PREFIX_URL_AZURE}{subscription_id}"
-    if scope_level == "resource group":
-        try:
-            resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-            scope_prefix = scope_prefix + f"/resourceGroups/{resource_group_name}"
-        except Exception:
-            raise ValueError("Resource group name is required when scope level is 'resource group'.")
-
+    scope = args.get("scope", "")
     policy_definition_id: str = args.get("policy_definition_id", "")
     display_name = args.get("display_name", "")
     parameters = json.loads(args.get("parameters", "{}"))
     description = args.get("description", "")
-    response = client.create_policy_assignment(name, policy_definition_id, display_name, parameters, description, scope_prefix)
+    response = client.create_policy_assignment(name, policy_definition_id, display_name, parameters, description, scope)
     outputs = [
         {
             "Name": response.get("name"),
@@ -2095,13 +2087,12 @@ def main():
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
         }
-        if command != "test-module" or not connector_id:
-            client = get_azure_client(params, args)
-
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
-            return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
-        elif command == "test-module":
+            return return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
+
+        client = get_azure_client(params, args)
+        if command == "test-module":
             return_results(test_module(client))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))

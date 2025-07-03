@@ -70,9 +70,11 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
+      required: true
     - description: The name of the resource group.
       name: resource_group_name
       type: String
+      required: true
     - description: The name of the security group.
       name: security_group_name
       required: true
@@ -168,8 +170,10 @@ script:
   - arguments:
     - description: The resource group name.
       name: resource_group_name
+      required: true
     - description: The subscription ID.
       name: subscription_id
+      required: true
     - description: The name of the storage account.
       name: account_name
       required: true
@@ -399,8 +403,10 @@ script:
   - arguments:
     - description: The resource group name.
       name: resource_group_name
+      required: true
     - description: The subscription ID.
       name: subscription_id
+      required: true
     - description: The name of the storage account.
       name: account_name
       required: true
@@ -454,6 +460,7 @@ script:
     - name: scope
       type: string
       description: The scope of the policy assignment.
+      required: true
     - name: policy_definition_id
       required: false
       type: string
@@ -522,6 +529,7 @@ script:
     - name: resource_group_name
       type: string
       description: The resource group name.
+      required: true
     - name: server_name
       type: string
       required: true
@@ -531,6 +539,7 @@ script:
       required: true
       description: The configuration setting name.
     - name: subscription_id
+      required: true
       type: string
       description: Subscription ID.
     - name: source
@@ -545,11 +554,11 @@ script:
   - arguments:
     - name: resource_group_name
       type: string
-      required: false
+      required: true
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: false
+      required: true
       description: Subscription ID.
     - name: name
       type: string
@@ -674,11 +683,11 @@ script:
   - arguments:
     - name: resource_group_name
       type: string
-      required: false
+      required: true
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: false
+      required: true
       description: Subscription ID.
     - name: name
       type: string
@@ -794,11 +803,11 @@ script:
   - arguments:
     - name: resource_group_name
       type: string
-      required: false
+      required: true
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: false
+      required: true
       description: Subscription ID.
     - name: server_name
       type: string
@@ -826,6 +835,7 @@ script:
       type: String
     - name: subscription_id
       type: string
+      required: true
       description: subscription ID.
     - name: location
       description: Resource location.
@@ -878,11 +888,11 @@ script:
   - arguments:
     - name: resource_group_name
       type: string
-      required: false
+      required: true
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: false
+      required: true
       description: Subscription ID.
     - name: disk_name
       type: string
@@ -1020,11 +1030,11 @@ script:
   - arguments:
     - name: resource_group_name
       type: String
-      required: false
+      required: true
       description: The resource group name.
     - name: subscription_id
       type: String
-      required: false
+      required: true
       description: Subscription ID.
     - name: name
       type: String
@@ -1257,9 +1267,11 @@ script:
   - arguments:
     - name: resource_group_name
       type: String
+      required: true
       description: The resource group name.
     - name: subscription_id
       type: String
+      required: true
       description: Subscription ID.
     - name: registry_name
       type: String
@@ -1366,11 +1378,11 @@ script:
   - arguments:
     - name: resource_group_name
       type: String
-      required: false
+      required: true
       description: The resource group name.
     - name: subscription_id
       type: String
-      required: false
+      required: true
       description: Subscription ID.
     - name: server_name
       type: String
@@ -1390,9 +1402,11 @@ script:
       name: vault_name
       required: true
     - name: subscription_id
+      required: true
       description: The subscription ID.
       type: String
     - name: resource_group_name
+      required: true
       description: The name of the resource group.
       type: String
     - name: enable_purge_protection
@@ -1496,9 +1510,10 @@ script:
       - 'false'
     - description: Subscription ID.
       name: subscription_id
+      required: true
     - description: The name of the resource group.
-      isArray: true
       name: resource_group_name
+      required: true
     description: Updates the database's threat detection policy.
     name: azure-sql-db-threat-policy-update
     outputs:
@@ -1565,9 +1580,10 @@ script:
       required: true
     - description: Subscription ID.
       name: subscription_id
+      required: true
     - description: The name of the resource group.
-      isArray: true
       name: resource_group_name
+      required: true
     description: Updates a logical database's transparent data encryption configuration.
     name: azure-sql-db-transparent-data-encryption-set
     outputs: [] # has no outputs for this command from response
@@ -1584,8 +1600,9 @@ script:
       type: bool
     - description: Subscription ID.
       name: subscription_id
+      required: true
     - description: The name of the resource group.
-      isArray: true
+      required: true
       name: resource_group_name
     description: Updates the properties of an existing Azure Cosmos DB database account.
     name: azure-cosmos-db-update
@@ -1727,7 +1744,7 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/crypto:1.0.0.3174650
-fromversion: 6.1.0
+fromversion: 8.11.0
 isCloudProviderIntegration: true
 tests:
 - No tests (auto formatted)
