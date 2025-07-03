@@ -299,8 +299,9 @@ class EndpointCommandRunner:
         demisto.debug(f'get_commands_outputs for command "{command}" with {len(results)} entry results')
 
         for entry in results:
-            if is_error(entry):
-                command_error_outputs.append(hr_to_command_results(command, args, get_error(entry), is_error=True))  # type: ignore[arg-type]
+            entry_type = entry.get("Type")
+            if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
+                command_error_outputs.append(hr_to_command_results(command, args, entry.get("Contents"), entry_type=entry_type))  # type: ignore[arg-type]
             else:
                 command_context_outputs.append(entry.get("EntryContext", {}))
                 human_readable_outputs.append(entry.get("HumanReadable") or "")
@@ -679,7 +680,7 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
 
 
 def hr_to_command_results(
-    command_name: str, args: dict[str, Any], human_readable: str, is_error: bool = False
+    command_name: str, args: dict[str, Any], human_readable: str, entry_type: str = EntryType.NOTE
 ) -> CommandResults | None:
     """
     Converts human-readable output to CommandResults object for display in Demisto.
@@ -696,12 +697,15 @@ def hr_to_command_results(
     Returns:
         CommandResults | None: A CommandResults object with formatted output, or None if no human_readable text provided.
     """
+    status_map = {
+        EntryType.ERROR: 'Error',
+        EntryType.WARNING: 'Warning',
+    }
     result = None
     if human_readable:
         command = f'!{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
-        result_type = EntryType.ERROR if is_error else EntryType.NOTE
-        result_message = f"#### {'Error' if is_error else 'Result'} for {command}\n{human_readable}"
-        result = CommandResults(readable_output=result_message, entry_type=result_type, mark_as_note=True)
+        result_message = f"#### {status_map.get(entry_type, "Result")} for {command}\n{human_readable}"
+        result = CommandResults(readable_output=result_message, entry_type=entry_type, mark_as_note=True)
     return result
 
 
@@ -829,7 +833,7 @@ def get_raw_endpoints(output_keys: list[str], raw_context: list[dict[str, Any]])
         lists_of_objects = [to_list(get_outputs(key, context)) for key in output_keys]
 
         # Use zip to group corresponding elements together
-        for grouped_objects in zip(*lists_of_objects):
+        for grouped_objects in zip(*[output for output in lists_of_objects if output]):
             raw_endpoint = {}
             for raw_data in grouped_objects:
                 raw_endpoint.update(raw_data)

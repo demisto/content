@@ -742,7 +742,7 @@ def test_hr_to_command_results():
     human_readable = "This is a human-readable result."
 
     # Call the function
-    result = hr_to_command_results(command_name, args, human_readable, is_error=False)
+    result = hr_to_command_results(command_name, args, human_readable, entry_type=False)
 
     # Expected result
     expected_command = "!example-command arg1=value1 arg2=value2"
@@ -755,7 +755,7 @@ def test_hr_to_command_results():
 
     # Test error case
     error_human_readable = "An error occurred."
-    result = hr_to_command_results(command_name, args, error_human_readable, is_error=True)
+    result = hr_to_command_results(command_name, args, error_human_readable, entry_type=True)
 
     expected_output = f"#### Error for {expected_command}\n{error_human_readable}"
 
@@ -765,7 +765,7 @@ def test_hr_to_command_results():
     assert result.mark_as_note is True
 
     # Test with no human_readable
-    result = hr_to_command_results(command_name, args, "", is_error=False)
+    result = hr_to_command_results(command_name, args, "", entry_type=False)
 
     # Assertions
     assert result is None
