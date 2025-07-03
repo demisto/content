@@ -6,7 +6,7 @@ This integration was integrated and tested with version v1 of URLhaus.
 | **Parameter** | **Description** | **Required** |
 | --- | --- |--------------|
 | Server URL (e.g. https://192.168.0.1) |  | False        |
-| Auth Key | Auth Key for authentication with abuse.ch  | False        |
+| Auth Key | Auth Key for authentication with abuse.ch  | True         |
 | Source Reliability | Reliability of the source providing the intelligence data. | True         |
 | Trust any certificate (not secure) |  | False        |
 | Use system proxy settings |  | False        |

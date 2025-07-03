@@ -12,6 +12,7 @@ configuration:
   type: 9
   section: Connect
   required: false
+  additionalinfo: Starting June 30th 2025 this parameter is mandatory.
 - display: Services
   name: url
   options:

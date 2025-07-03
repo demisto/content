@@ -29,7 +29,7 @@ def main():
 
     auth_key = demisto.params().get("credentials", {}).get("password")
     if not auth_key:
-        raise ValueError("Missing required param Auth Key. Please set this param in the instance configuration.")
+        raise ValueError("Missing required parameter Auth Key. Please set this parameter in the instance configuration.")
 
     params = {k: v for k, v in demisto.params().items() if v is not None}
     params["feed_url_to_config"] = feed_url_to_config

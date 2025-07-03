@@ -435,7 +435,7 @@ def main() -> None:
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
         if not auth_key:
-            raise ValueError("Missing required param Auth Key. Please set this param in the instance configuration.")
+            raise ValueError("Missing required parameter Auth Key. Please set this parameter in the instance configuration.")
 
         client = Client(base_url=base_url, headers={"Auth-Key": auth_key})
 
