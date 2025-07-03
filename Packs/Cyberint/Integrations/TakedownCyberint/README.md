@@ -143,7 +143,6 @@ Retrieve takedowns requests.
 | status_reason           | String   | Status reason.                      |
 | id                      | String   | Takedown request ID (UUID).         |
 
-
 ### cyberint-takedown-url
 
 ***
