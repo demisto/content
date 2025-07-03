@@ -10,6 +10,7 @@ allowed_reason_values_str = (
     "fake_job_post, sensitive_file_on_antivirus_repository, instant_messaging_impersonation, other"
 )
 
+
 class Client(BaseClient):
     """
     Client to use in the Cyberint Takedown integration.
@@ -106,9 +107,7 @@ class Client(BaseClient):
             "actions": {"action": action} if action else None,
             "alert_id": alert_id,
             "alert_ref_id": alert_ref_id,
-            "blocklist_requests": {"blocked_date": blocked_date, "sent_date": sent_date}
-            if blocked_date or sent_date
-            else None,
+            "blocklist_requests": {"blocked_date": blocked_date, "sent_date": sent_date} if blocked_date or sent_date else None,
             "brand": brand,
             "created_date": created_date,
             "customer": customer,
@@ -180,7 +179,7 @@ def submit_takedown_request_command(
         "fake_job_post",
         "sensitive_file_on_antivirus_repository",
         "instant_messaging_impersonation",
-        "other"
+        "other",
     ]
 
     # Validate reason value
@@ -288,7 +287,7 @@ def retrieve_takedown_requests_command(
         "fake_job_post",
         "sensitive_file_on_antivirus_repository",
         "instant_messaging_impersonation",
-        "other"
+        "other",
     ]
 
     # Validate reason value

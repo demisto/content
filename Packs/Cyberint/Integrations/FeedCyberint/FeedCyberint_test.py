@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import re
 from unittest import mock
 from unittest.mock import MagicMock, patch
@@ -510,7 +510,7 @@ def test_is_execution_time_exceeded_within_limit():
     """
     Test is_execution_time_exceeded when execution time is within the timeout limit.
     """
-    start_time = datetime.utcnow() - timedelta(seconds=5)  # Within timeout
+    start_time = datetime.now(UTC) - timedelta(seconds=5)  # Within timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time is within the limit but returned True."
 
@@ -519,7 +519,7 @@ def test_is_execution_time_exceeded_exceeded_limit():
     """
     Test is_execution_time_exceeded when execution time exceeds the timeout limit.
     """
-    start_time = datetime.utcnow() - timedelta(seconds=15)  # Exceeds timeout
+    start_time = datetime.now(UTC) - timedelta(seconds=15)  # Exceeds timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time exceeded the limit but returned False."
 

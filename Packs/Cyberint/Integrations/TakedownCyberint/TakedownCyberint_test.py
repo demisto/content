@@ -57,10 +57,7 @@ def test_test_module_forbidden_error(client):
         assert result == "ok"
     except DemistoException as exc:
         # Accept if the exception is forbidden (status 403 or message)
-        if (
-            str(exc) == "Forbidden"
-            or (hasattr(exc, 'res') and getattr(exc.res, 'status_code', None) == 403)
-        ):
+        if str(exc) == "Forbidden" or (hasattr(exc, "res") and getattr(exc.res, "status_code", None) == 403):
             pass  # Acceptable for legacy or alternate logic
         else:
             raise
@@ -347,6 +344,7 @@ def test_retrieve_takedown_requests_command_success(requests_mock, client):
     Scenario: Retrieve takedown requests successfully.
     """
     from TakedownCyberint import retrieve_takedown_requests_command
+
     mock_response = {
         "data": {
             "takedown_requests": [
@@ -387,6 +385,7 @@ def test_retrieve_takedown_requests_command_empty(requests_mock, client):
     Scenario: Retrieve takedown requests returns empty response.
     """
     from TakedownCyberint import retrieve_takedown_requests_command
+
     mock_response = {"data": {"takedown_requests": []}}
     requests_mock.post(f"{BASE_URL}/takedown/api/v1/request", json=mock_response)
     args = {"customer_id": "Cyberint"}
@@ -400,6 +399,7 @@ def test_retrieve_takedown_requests_command_empty(requests_mock, client):
 
 def test_takedown_response_header_transformer():
     from TakedownCyberint import takedown_response_header_transformer
+
     assert takedown_response_header_transformer("customer_id") == "Customer ID"
     assert takedown_response_header_transformer("actions") == "Actions"
     assert takedown_response_header_transformer("alert_id") == "Alert ID"
@@ -413,23 +413,30 @@ def test_main_test_module(monkeypatch):
     Test the main() function for the 'test-module' command.
     """
     import TakedownCyberint
+
     called = {}
+
     def fake_params():
         return {"url": BASE_URL, "access_token": {"password": TOKEN}, "insecure": True, "proxy": False}
+
     def fake_args():
         return {}
+
     def fake_command():
         return "test-module"
+
     def fake_return_results(res):
         called["result"] = res
+
     monkeypatch.setattr(TakedownCyberint.demisto, "params", fake_params)
     monkeypatch.setattr(TakedownCyberint.demisto, "args", fake_args)
     monkeypatch.setattr(TakedownCyberint.demisto, "command", fake_command)
     monkeypatch.setattr(TakedownCyberint, "return_results", fake_return_results)
+
     class DummyClient(TakedownCyberint.Client):
         def retrieve_takedown_requests(self, *a, **kw):
             return {"dummy": True}
+
     monkeypatch.setattr(TakedownCyberint, "Client", DummyClient)
     TakedownCyberint.main()
     assert called["result"] == "ok"
-
