@@ -176,7 +176,7 @@ Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/g
 7. Save the instance.
 8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
 9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
-10. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
+10. Run the ***!microsoft-teams-generate-login-url*** command in the Playground and follow the on-screen instructions.
 11. Save the instance.
 12. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
@@ -187,10 +187,10 @@ If you encounter any issue or error — especially a message saying **"Tenant ID
 - The following needs to be done after configuring the integration on Cortex XSOAR/XSIAM (the previous step).
 - According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
-1. Download the ZIP file located at the bottom of this article.
+1. Download the ZIP file located at the [Download Demisto Bot](#download-demisto-bot) section.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
-4. Update the following values to use the *Bot ID* from step 5 of the [Create the Demisto Bot in Microsoft Teams](#creating-the-demisto-bot-using-microsoft-azure-portal) section:
+4. Update the following values to use the *Bot ID* from step 5 of the [Create the Demisto Bot in Microsoft Teams](#1-create-the-demisto-bot-in-microsoft-teams) section:
 
     - The `id` field.
     - The `BotId` attribute in the `bots` list.
@@ -213,10 +213,11 @@ If you encounter any issue or error — especially a message saying **"Tenant ID
 
 When migrating from Cortex XSOAR 6 to Cortex XSOAR 8 or Cortex XSIAM, follow these steps to ensure your Microsoft Teams integration continues to work as expected:
 
-1. Update the messaging endpoint in the Azure bot configuration:
+1. For this step you can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint automatically.
+Update the messaging endpoint in the Azure bot configuration:
 For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEX-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the xdr in the URL to crtx.
-**You can use the `microsoft-teams-create-messaging-endpoint` command to generate the messaging endpoint automatically.**
+
 
 2. Ensure the **long-running instance** parameter is enabled in the integration instance configuration.
 
@@ -305,11 +306,10 @@ All HTTPS traffic that will hit the selected messaging endpoint will be directed
 
 ## Known Limitations
 
-- In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to. It will trigger a communication and solve the issue.
 - The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires using the `Client Credentials` authentication due to a limitation in Microsoft's permissions system. As such, when using `Authorization Code flow` and calling this command, the integration will internally authenticate using the `Client Credentials flow`.
 - The chat commands are only supported when using the `Authorization Code flow`.
 - Posting a message or adaptive card to a private/shared channel is currently not supported in the ***send-notification*** command. Thus, also the ***mirror_investigation*** command does not support private/shared channels. For more information, see [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
-- In case of multiple chats/users sharing the same name, the first one will be taken.
+- In case of multiple chats/users sharing the same name, only one will be used.
 - If a non-Cortex XSOAR/XSIAM user ran the `new incident` command in the chat with the bot, the owner of the created incident would be the logged in Cortex XSOAR/XSIAM user, not the external user who ran the command.
 - See Microsoft documentation for [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams).
 
