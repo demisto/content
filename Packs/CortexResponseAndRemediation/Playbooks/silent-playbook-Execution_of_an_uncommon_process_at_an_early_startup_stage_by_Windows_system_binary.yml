@@ -6633,6 +6633,7 @@ tasks:
       id: 27572c31-c2f8-4310-b8a2-63171b2206ff
       version: -1
       name: Analyst Approval to block dll of malicious IIS module
+      description: Analyst Approval to block dll of malicious IIS module.
       type: condition
       iscommand: false
       brand: ""
@@ -6688,6 +6689,7 @@ tasks:
       id: d9c9a1c0-de3c-4c1c-8379-01de48ef6f9e
       version: -1
       name: Analyst Approval to disable the scheduled task
+      description: Analyst Approval to disable the scheduled task.
       type: condition
       iscommand: false
       brand: ""
