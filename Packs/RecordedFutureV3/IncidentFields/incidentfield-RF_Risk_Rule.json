@@ -47,7 +47,6 @@
 	"name": "RF Risk Rule",
 	"neverSetAsRequired": false,
 	"openEnded": false,
-	"orgType": "grid",
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,

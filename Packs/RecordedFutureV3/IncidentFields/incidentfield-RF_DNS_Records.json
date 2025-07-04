@@ -71,7 +71,6 @@
 	"name": "RF DNS Records",
 	"neverSetAsRequired": false,
 	"openEnded": false,
-	"orgType": "grid",
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,

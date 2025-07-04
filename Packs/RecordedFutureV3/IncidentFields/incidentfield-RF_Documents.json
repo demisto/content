@@ -47,7 +47,6 @@
 	"name": "RF Documents",
 	"neverSetAsRequired": false,
 	"openEnded": false,
-	"orgType": "grid",
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,

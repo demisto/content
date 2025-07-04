@@ -22,7 +22,6 @@
 	"name": "RF Markdown",
 	"neverSetAsRequired": false,
 	"openEnded": false,
-	"orgType": "markdown",
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,

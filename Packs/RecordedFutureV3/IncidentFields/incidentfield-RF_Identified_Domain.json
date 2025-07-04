@@ -59,7 +59,6 @@
 	"name": "RF Identified Domain",
 	"neverSetAsRequired": false,
 	"openEnded": false,
-	"orgType": "grid",
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,

@@ -18,7 +18,6 @@
 	"name": "RF Portal URL",
 	"neverSetAsRequired": false,
 	"openEnded": false,
-	"orgType": "url",
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,

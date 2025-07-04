@@ -18,7 +18,6 @@
 	"name": "RF AI Insights",
 	"neverSetAsRequired": false,
 	"openEnded": false,
-	"orgType": "longText",
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,

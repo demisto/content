@@ -71,7 +71,6 @@
 	"name": "RF Identified CVE",
 	"neverSetAsRequired": false,
 	"openEnded": false,
-	"orgType": "grid",
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,
