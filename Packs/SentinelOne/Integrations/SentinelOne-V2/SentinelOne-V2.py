@@ -3121,14 +3121,20 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         # already being on the list, it is ignored and the returned status is updated
         js = e.res.json()
         errors = js.get("errors")
-        if (
-            errors
-            and len(errors) == 1
-            and (error := errors[0]).get("code") == 4000030
-            and error.get("title") == "Already Exists Error"
-        ):
-            status = {"hash": sha1, "status": "Already on blocklist"}
-            result = js
+        if errors and len(errors) == 1:
+            error = errors[0]
+            code = error.get("code")
+            title = error.get("title")
+            detail = error.get("detail", "")
+
+            if code == 4000030 and title == "Already Exists Error":
+                status = {"hash": sha1, "status": "Already on blocklist"}
+                result = js
+            elif code == 4000010 and title == "Validation Error":
+                status = {"hash": sha1, "status": f"Error: Invalid siteId - {detail}"}
+                result = js
+            else:
+                raise e
         else:
             raise e
 
@@ -3215,19 +3221,37 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
     else:
         demisto.debug(f"Removing sha1 {sha1} from blocklist with all scopes")
 
-    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type, site_ids, group_ids, account_ids)
+    try:
+        hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type, site_ids, group_ids, account_ids)
 
-    if not hash_ids:
-        status = {"hash": sha1, "status": "Not on blocklist"}
-        result = None
-    else:
-        result = []
-        numRemoved = 0
-        for hash_id in hash_ids:
-            numRemoved += 1
-            result.append(client.remove_hash_from_blocklist_request(hash_id=hash_id))
+        if not hash_ids:
+            status = {"hash": sha1, "status": "Not on blocklist"}
+            result = None
+        else:
+            result = []
+            numRemoved = 0
+            for hash_id in hash_ids:
+                numRemoved += 1
+                result.append(client.remove_hash_from_blocklist_request(hash_id=hash_id))
 
-        status = {"hash": sha1, "status": f"Removed {numRemoved} entries from blocklist"}
+            status = {"hash": sha1, "status": f"Removed {numRemoved} entries from blocklist"}
+
+    except DemistoException as e:
+        # Handle validation error for invalid siteId (4000010 error code)
+        js = e.res.json()
+        errors = js.get("errors")
+        if (
+            errors
+            and len(errors) == 1
+            and (error := errors[0]).get("code") == 4000010
+            and error.get("title") == "Validation Error"
+        ):
+            # Specific case for invalid siteId
+            status = {"hash": sha1, "status": f"Error: Invalid siteId - {error.get('detail')}"}
+            result = js  # You can return the full response for debugging or logging purposes
+        else:
+            # Reraise the exception if it's not the expected validation error
+            raise e
 
     return CommandResults(
         readable_output=f"{sha1}: {status['status']}.",

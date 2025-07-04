@@ -340,6 +340,124 @@ def test_remove_hash_from_blocklist_single_site_scope(mocker, requests_mock):
     assert outputs["status"] == "Removed 1 entries from blocklist"
 
 
+def test_remove_hash_from_blocklist_wrong_site_scope(mocker, requests_mock):
+    """
+    When:
+        An invalid site_id is provided, the response should indicate that the hash is not on the blocklist.
+    Return:
+        Status indicating the hash is not found on the blocklist.
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+
+    # Construct the URL with the invalid site ID
+    url = (
+        f"https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        f"?tenant=False&siteIds=2134673222300&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains={sha1}"
+    )
+
+    # Simulate the hash not being on the blocklist (empty list)
+    raw_blocklist_response = {"data": []}  # Empty response indicates hash not found
+
+    # Mock the GET request to return the blocklist response indicating the hash is not on the blocklist
+    requests_mock.get(url, json=raw_blocklist_response)
+
+    # Mock the DELETE request (this should not be called as the hash is not found)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    # Mocking the 'demisto' environment as in the reference test
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222300"})
+
+    # Patch the return_results function to capture the result of the command execution
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    # Run the main function which triggers the integration logic
+    main()
+
+    # Capture the call and assert the correct outputs
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    # Assertions for the test
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Not on blocklist"  # Status should indicate hash is not on blocklist
+
+    # Ensure that the GET and DELETE requests were called
+    assert len(requests_mock.request_history) == 1  # Only one GET request, no DELETE since hash is not found
+    assert requests_mock.request_history[0].method == "GET"  # First request is GET
+
+    # Ensure the GET request was called with the correct URL (with the invalid site_id)
+    assert requests_mock.request_history[0].url == url
+
+
+def test_remove_hash_from_blocklist_invalid_site_id(mocker, requests_mock):
+    """
+    When:
+        An invalid site_id (e.g., site_id = 0) is provided, the response should indicate that the site_id is invalid.
+    Return:
+        Status indicating an invalid site_id error.
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+
+    # Construct the URL with an invalid site ID (0)
+    url = (
+        f"https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        f"?tenant=False&siteIds=0&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains={sha1}"
+    )
+
+    # Mocking the error response from SentinelOne API for invalid siteId
+    error_response = {
+        "errors": [
+            {
+                "code": 4000010,
+                "detail": "siteIds: 0: Must be greater than or equal to 100000000000000000.",
+                "title": "Validation Error",
+            }
+        ]
+    }
+
+    # Mock the GET request to return the error response for invalid siteId
+    requests_mock.get(url, json=error_response, status_code=400)
+
+    # Mock the DELETE request (this should not be called due to the error)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    # Mocking the 'demisto' environment as in the reference test
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "0"})
+
+    # Patch the return_results function to capture the result of the command execution
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    # Run the main function which triggers the integration logic
+    main()
+
+    # Capture the call and assert the correct outputs
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    # Assertions for the test
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Error: Invalid siteId - siteIds: 0: Must be greater than or equal to 100000000000000000."
+
+    # Ensure that the GET request was called with the correct URL (with invalid site_id)
+    assert len(requests_mock.request_history) == 1  # Only one GET request due to the error
+    assert requests_mock.request_history[0].method == "GET"  # First request is GET
+
+    # Ensure the GET request was called with the correct URL (with the invalid site_id)
+    assert requests_mock.request_history[0].url == url
+
+
 def test_remove_hash_from_blocklist_multiple_group_scope(mocker, requests_mock):
     """
     When:
@@ -564,6 +682,107 @@ def test_add_hash_to_blocklist_args_single_site_id(mocker, requests_mock):
     assert outputs["hash"] == sha1
     assert outputs["status"] == "Added to site: 2134673222384 blocklist"
     assert outputs.get("site_ids") == "2134673222384"
+
+
+def test_add_hash_to_blocklist_invalid_site_id(mocker, requests_mock):
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+
+    error_response = {
+        "errors": [
+            {
+                "code": 4000010,
+                "detail": "siteIds: 0: Must be greater than or equal to 100000000000000000.",
+                "title": "Validation Error",
+            }
+        ]
+    }
+
+    # Mock the POST request to the SentinelOne API to return validation error
+    requests_mock.post(
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions",
+        json=error_response,
+        status_code=400,
+    )
+
+    # Patch demisto.args() to provide inputs
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "0"})
+
+    # Patch demisto.params() to provide integration params
+    mocker.patch.object(
+        demisto, "params", return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"}
+    )
+
+    # Patch demisto.command() to simulate command name
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+
+    # Patch return_results to capture the output
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    # Run main() which will call add_hash_to_blocklist internally
+    main()
+
+    # Check what was returned
+    call_args = mock_return_results.call_args[0][0]
+    outputs = call_args.outputs
+
+    assert outputs["hash"] == sha1
+    assert "Invalid siteId" in outputs["status"] or "Validation Error" in outputs["status"]
+
+    # You can also assert the requests_mock history to confirm one POST call with the invalid site id
+    assert len(requests_mock.request_history) == 1
+    assert requests_mock.request_history[0].method == "POST"
+
+
+def test_add_hash_to_blocklist_wrong_site_id(mocker, requests_mock):
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+
+    error_response = {
+        "errors": [
+            {
+                "code": 4000010,
+                "detail": "Cannot find blocklist or exclusion for the requested scope [2163822726089822800]",
+                "title": "Validation Error",
+            }
+        ]
+    }
+
+    # Mock the POST request to the SentinelOne API to return validation error
+    requests_mock.post(
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions",
+        json=error_response,
+        status_code=400,
+    )
+
+    # Patch demisto.args() to provide inputs
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2163822726089822800"})
+
+    # Patch demisto.params() to provide integration params
+    mocker.patch.object(
+        demisto, "params", return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"}
+    )
+
+    # Patch demisto.command() to simulate command name
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+
+    # Patch return_results to capture the output
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    # Run main() which will call add_hash_to_blocklist internally
+    main()
+
+    # Get what was returned by return_results()
+    call_args = mock_return_results.call_args[0][0]
+
+    outputs = call_args.outputs
+    readable = call_args.readable_output
+
+    assert outputs["hash"] == sha1
+    assert "Invalid siteId" in outputs["status"] or "Validation Error" in outputs["status"]
+    assert "Cannot find blocklist or exclusion for the requested scope" in readable
+
+    # Confirm one POST call with the invalid site id was made
+    assert len(requests_mock.request_history) == 1
+    assert requests_mock.request_history[0].method == "POST"
 
 
 def test_add_hash_to_blocklist_args_multiple_group_ids(mocker, requests_mock):
