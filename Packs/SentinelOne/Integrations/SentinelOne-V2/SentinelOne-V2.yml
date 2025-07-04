@@ -100,12 +100,6 @@ configuration:
   section: Collect
   additionalinfo: Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites.
   required: false
-- name: block_site_ids
-  display: Block Site IDs
-  type: 0
-  section: Collect
-  required: false
-  additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1685,8 +1679,9 @@ script:
       description: Name of the blocklist scope.
       type: String
   - arguments:
-    - description: SHA1 hash to add to the global blocklist.
+    - description: SHA1 hash to add to the blocklist.
       name: sha1
+      required: true
     - defaultValue: XSOAR
       description: String describing the source of the block.
       name: source
@@ -1701,8 +1696,14 @@ script:
     - defaultValue: Blocked from XSOAR
       description: Note stored in SentinelOne about the block.
       name: description
-    description: Add a hash to the global blocklist in SentinelOne.
+    - description: Comma-separated string of site IDs to scope the blocklist.
+      name: site_ids
+    - description: Comma-separated string of group IDs to scope the blocklist.
+      name: group_ids
+    - description: Comma-separated string of account IDs to scope the blocklist.
+      name: account_ids
     name: sentinelone-add-hash-to-blocklist
+    description: Add a hash to the blocklist in SentinelOne. Supports scoping by site, group, or account. If Scope not provided, the block will be global.
     outputs:
     - contextPath: SentinelOne.AddHashToBlocklist.hash
       description: Hash of the file.
@@ -1718,6 +1719,12 @@ script:
       - windows
       - macos
       - linux
+    - description: Comma-separated string of site IDs to scope the blocklist.
+      name: site_ids
+    - description: Comma-separated string of group IDs to scope the blocklist.
+      name: group_ids
+    - description: Comma-separated string of account IDs to scope the blocklist.
+      name: account_ids
     description: Remove a hash from the global blocklist in SentinelOne.
     name: sentinelone-remove-hash-from-blocklist
     outputs:

@@ -106,9 +106,8 @@ def get_agents_outputs(agents, column_to_display: list | None = None):
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, headers=None, block_site_ids=None):
+    def __init__(self, base_url, verify=True, proxy=False, headers=None):
         super().__init__(base_url, verify, proxy, headers=headers)
-        self.block_site_ids = block_site_ids
 
     def remove_hash_from_blocklist_request(self, hash_id) -> dict:
         body = {"data": {"ids": [hash_id]}}
@@ -131,21 +130,47 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix="restrictions", json_data=body)
         return response.get("data") or {}
 
-    def add_hash_to_blocklists_request(self, value, os_type, site_ids, description="", source="") -> dict:
+    def add_hash_to_blocklists_request(
+        self,
+        value,
+        os_type,
+        site_ids=None,
+        description="",
+        source="",
+        group_ids=None,
+        account_ids=None,
+    ) -> dict:
         """
         Supports adding hashes to multiple scoped site blocklists
         """
-        demisto.debug(f"Site ids: {site_ids}")
-        # We do not use the assign_params function, because if these values are empty or None, we still want them
-        # sent to the server
-        for site_id in site_ids:
-            data = {"value": value, "source": source, "osType": os_type, "type": "black_hash", "description": description}
+        # Treat as comma-separated strings
+        site_ids = site_ids or ""
+        group_ids = group_ids or ""
+        account_ids = account_ids or ""
 
-            filt = {"siteIds": [site_id], "tenant": True}
+        filt = {}
+        if site_ids:
+            filt["siteIds"] = site_ids
+        if group_ids:
+            filt["groupIds"] = group_ids
+        if account_ids:
+            filt["accountIds"] = account_ids
+        # If no scoping fields, set tenant True for global
+        if not filt:
+            filt["tenant"] = True
 
-            body = {"data": data, "filter": filt}
-            demisto.debug(f"Site id: {site_id}")
-            response = self._http_request(method="POST", url_suffix="restrictions", json_data=body, ok_codes=[200])
+        data = {
+            "value": value,
+            "source": source,
+            "osType": os_type,
+            "type": "black_hash",
+            "description": description,
+        }
+
+        body = {"data": data, "filter": filt}
+        demisto.debug(f"Adding hash to blocklist with filter: {filt}")
+
+        response = self._http_request(method="POST", url_suffix="restrictions", json_data=body, ok_codes=[200])
         return response.get("data") or {}
 
     def get_blocklist_request(
@@ -3050,20 +3075,42 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     if not sha1:
         raise DemistoException("You must specify a valid SHA1 hash")
 
+    site_ids = args.get("site_ids")
+    group_ids = args.get("group_ids")
+    account_ids = args.get("account_ids")
+
     try:
-        if sites := client.block_site_ids:
-            demisto.debug(f"Adding sha1 {sha1} to sites {sites}")
+        # If any scope is provided, use the scoped request
+        if site_ids or group_ids or account_ids:
+            scope_map = {
+                "site_ids": ("site", site_ids),
+                "group_ids": ("group", group_ids),
+                "account_ids": ("account", account_ids),
+            }
+            scope_parts = [f"{label}: {value}" for key, (label, value) in scope_map.items() if value]
+            scope_str = ", ".join(scope_parts) if scope_parts else "unknown"
+            demisto.debug(f"Adding sha1 {sha1} to blocklist with scopes: {scope_str}")
+
             result = client.add_hash_to_blocklists_request(
                 value=sha1,
                 description=args.get("description"),
                 os_type=args.get("os_type"),
-                site_ids=sites,
+                site_ids=site_ids,
+                group_ids=group_ids,
+                account_ids=account_ids,
                 source=args.get("source"),
             )
-            status = {"hash": sha1, "status": "Added to scoped blocklist"}
+            status = {"hash": sha1, "status": f"Added to {scope_str} blocklist"}
+            # Add scope info to status if present
+            for key in ("site_ids", "group_ids", "account_ids"):
+                if locals()[key]:
+                    status[key] = locals()[key]
         else:
             result = client.add_hash_to_blocklist_request(
-                value=sha1, description=args.get("description"), os_type=args.get("os_type"), source=args.get("source")
+                value=sha1,
+                description=args.get("description"),
+                os_type=args.get("os_type"),
+                source=args.get("source"),
             )
             status = {"hash": sha1, "status": "Added to global blocklist"}
     except DemistoException as e:
@@ -3074,14 +3121,20 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         # already being on the list, it is ignored and the returned status is updated
         js = e.res.json()
         errors = js.get("errors")
-        if (
-            errors
-            and len(errors) == 1
-            and (error := errors[0]).get("code") == 4000030
-            and error.get("title") == "Already Exists Error"
-        ):
-            status = {"hash": sha1, "status": "Already on blocklist"}
-            result = js
+        if errors and len(errors) == 1:
+            error = errors[0]
+            code = error.get("code")
+            title = error.get("title")
+            detail = error.get("detail", "")
+
+            if code == 4000030 and title == "Already Exists Error":
+                status = {"hash": sha1, "status": "Already on blocklist"}
+                result = js
+            elif code == 4000010 and title == "Validation Error":
+                status = {"hash": sha1, "status": f"Error: Invalid siteId - {detail}"}
+                result = js
+            else:
+                raise e
         else:
             raise e
 
@@ -3095,22 +3148,30 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) -> list[str | None]:
+def get_hash_ids_from_blocklist(
+    client: Client, sha1: str, os_type: str = None, site_ids: str = None, group_ids: str = None, account_ids: str = None
+) -> list[str | None]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
 
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
     ret: list = []
-    if client.block_site_ids:
+    if site_ids or group_ids or account_ids:
         PAGE_SIZE = 20
-        site_ids = ",".join(client.block_site_ids)
+        site_ids = site_ids
+        group_ids = group_ids
+        account_ids = account_ids
         block_list = client.get_blocklist_request(
             tenant=False,
             skip=0,
             limit=PAGE_SIZE,
             os_type=os_type,
             site_ids=site_ids,
+            group_ids=group_ids,
+            account_ids=account_ids,
+            # Sort by updatedAt to ensure the most recent entries are returned first
+            # This is important because the blocklist can have multiple entries for the same hash
             sort_by="updatedAt",
             sort_order="asc",
             value_contains=sha1,
@@ -3141,19 +3202,56 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
     if not sha1:
         raise DemistoException("You must specify a valid Sha1 hash")
     os_type = args.get("os_type", None)
-    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type)
 
-    if not hash_ids:
-        status = {"hash": sha1, "status": "Not on blocklist"}
-        result = None
+    site_ids = args.get("site_ids")
+    group_ids = args.get("group_ids")
+    account_ids = args.get("account_ids")
+
+    if site_ids or group_ids or account_ids:
+        # If any scope is provided, use the scoped request
+        scope_parts = []
+        if site_ids:
+            scope_parts.append(f"sites={site_ids}")
+        if group_ids:
+            scope_parts.append(f"groups={group_ids}")
+        if account_ids:
+            scope_parts.append(f"accounts={account_ids}")
+        scope_str = ", ".join(scope_parts)
+        demisto.debug(f"Removing sha1 {sha1} from blocklist with scopes: {scope_str}")
     else:
-        result = []
-        numRemoved = 0
-        for hash_id in hash_ids:
-            numRemoved += 1
-            result.append(client.remove_hash_from_blocklist_request(hash_id=hash_id))
+        demisto.debug(f"Removing sha1 {sha1} from blocklist with all scopes")
 
-        status = {"hash": sha1, "status": f"Removed {numRemoved} entries from blocklist"}
+    try:
+        hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type, site_ids, group_ids, account_ids)
+
+        if not hash_ids:
+            status = {"hash": sha1, "status": "Not on blocklist"}
+            result = None
+        else:
+            result = []
+            numRemoved = 0
+            for hash_id in hash_ids:
+                numRemoved += 1
+                result.append(client.remove_hash_from_blocklist_request(hash_id=hash_id))
+
+            status = {"hash": sha1, "status": f"Removed {numRemoved} entries from blocklist"}
+
+    except DemistoException as e:
+        # Handle validation error for invalid siteId (4000010 error code)
+        js = e.res.json()
+        errors = js.get("errors")
+        if (
+            errors
+            and len(errors) == 1
+            and (error := errors[0]).get("code") == 4000010
+            and error.get("title") == "Validation Error"
+        ):
+            # Specific case for invalid siteId
+            status = {"hash": sha1, "status": f"Error: Invalid siteId - {error.get('detail')}"}
+            result = js  # You can return the full response for debugging or logging purposes
+        else:
+            # Reraise the exception if it's not the expected validation error
+            raise e
 
     return CommandResults(
         readable_output=f"{sha1}: {status['status']}.",
@@ -4064,7 +4162,6 @@ def main():
     fetch_threat_rank = int(params.get("fetch_threat_rank", 0))
     fetch_limit = int(params.get("fetch_limit", 10))
     fetch_site_ids = params.get("fetch_site_ids", None)
-    block_site_ids = argToList(params.get("block_site_ids")) or []
     mirror_direction = params.get("mirror_direction", None)
 
     headers = {
@@ -4152,7 +4249,6 @@ def main():
         "commands_without_params": {
             "get-mapping-fields": get_mapping_fields_command,
         },
-
     }
 
     """ COMMANDS MANAGER / SWITCH PANEL """
@@ -4165,7 +4261,6 @@ def main():
             verify=use_ssl,
             headers=headers,
             proxy=proxy,
-            block_site_ids=block_site_ids,
         )
 
         if command == "test-module":
