@@ -4577,7 +4577,8 @@ def update_remote_system_command(
                     transition_name=delta["status"],
                     issue_fields={}
                 )
-                client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields_payload)
+                if issue_fields_payload:
+                    client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields_payload)
 
                 demisto.debug("Transitioned the issue and updated fields successfully in a single call.")
             else:
