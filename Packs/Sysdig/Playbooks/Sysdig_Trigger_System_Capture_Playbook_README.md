@@ -14,7 +14,7 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* PrintErrorEntry
 
 ### Commands
 
