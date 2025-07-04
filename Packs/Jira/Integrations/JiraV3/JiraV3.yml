@@ -432,6 +432,13 @@ script:
     - description: Deprecated. Please use attachment_name.
       name: attachmentName
       hidden: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to make this an internal comment.
+      name: internal_comment
+      predefined:
+      - "false"
+      - "true"
     description: Uploads a file attachment to an issue.
     name: jira-issue-upload-file
   - arguments:
