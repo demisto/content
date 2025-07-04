@@ -37,6 +37,7 @@ from SilentPush import (
     add_indicators_tags_command,
     get_data_exports_command,
     run_threat_check_command,
+    add_feed_tags_command,
 )
 from CommonServerPython import DemistoException, EntryType
 
@@ -1538,6 +1539,29 @@ def test_get_data_exports_command_success(mock_client):
     assert result["File"] == "export.csv"
     assert result["Contents"] == content
     assert result["Type"] == EntryType.FILE
+
+
+def test_add_feed_tags_command_success(mocker):
+    # Mock args
+    args = {"feed_uuid": "abc123", "tag": "malware"}
+
+    # Mocked result returned by client.add_feed_tags
+    mock_response = {"created_or_updated": [{"uuid": "8eb9c1b8-edbb-4081-9978-590f5c5a0319", "tag": "phishing"}]}
+
+    # Mock the Client and its method
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.add_feed_tags.return_value = mock_response
+
+    # Run the command
+    result = add_feed_tags_command(mock_client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.AddFeedTags"
+    assert result.outputs_key_field == "feed_uuid"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+    assert "SilentPush Add Feed Tags" in result.readable_output
 
 
 def test_get_data_exports_command_missing_feed_url(mock_client):

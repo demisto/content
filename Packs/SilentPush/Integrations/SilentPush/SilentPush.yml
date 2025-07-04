@@ -26,30 +26,30 @@ configuration:
 script:
   commands:
   - deprecated: false
-    description: This command add the new feed.
+    description: This command add the new feed
     name: silentpush-add-feed
     arguments:
     - name: name
       isArray: false
-      description: Name of the feed.
+      description: Name of the feed
       required: true
       secret: false
       default: false
     - name: type
       isArray: false
-      description: Feed Type.
+      description: Feed Type
       required: true
       secret: false
       default: false
     - name: category
       isArray: false
-      description: Feed Category.
+      description: Feed Category
       required: false
       secret: false
       default: false
     - name: vendor
       isArray: false
-      description: Vendor.
+      description: Vendor
       required: false
       secret: false
       default: false
@@ -61,13 +61,13 @@ script:
       default: false
     - name: tags
       isArray: false
-      description: Tags that should be attached with the feed.
+      description: Tags that should be attached with the feed
       required: false
       secret: false
       default: false
     outputs:
     - contextPath: SilentPush.AddFeed.name
-      description: 'The name of the feed.'
+      description: The name of the feed.
       type: String
     - contextPath: SilentPush.AddFeed.type
       description: The type of the feed.
@@ -85,18 +85,41 @@ script:
       description: Tags associated with the feed.
       type: Unknown
   - deprecated: false
-    description: This command add indicators to the feed.
+    description: This command add indicators to the feed
+    name: silentpush-add-feed-tags
+    arguments:
+    - name: feed_uuid
+      isArray: false
+      description: Never return query metadata, even if original request did include metadata.
+      required: false
+      secret: false
+      default: false
+    - name: tags
+      isArray: false
+      description: Comma separated tags to be updated to the feed.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.AddFeedTags.created_or_updated
+      description: List of indicator names that were created or updated in the feed.
+      type: Unknown
+    - contextPath: SilentPush.AddFeedTags.invalid_indicators
+      description: List of indicators that were considered invalid and not added to the feed.
+      type: Unknown
+  - deprecated: false
+    description: This command add indicators to the feed
     name: silentpush-add-indicators
     arguments:
     - name: feed_uuid
       isArray: false
-      description: UUID of the feed.
+      description: UUID of the feed
       required: true
       secret: false
       default: false
     - name: indicators
       isArray: false
-      description: Indicators for the feed.
+      description: Indicators for the feed
       required: true
       secret: false
       default: false
@@ -108,7 +131,7 @@ script:
       description: List of indicators that were considered invalid and not added to the feed.
       type: Unknown
   - deprecated: false
-    description: This command updates tags to the indicators.
+    description: This command updates tags to the indicators
     name: silentpush-add-indicator-tags
     arguments:
     - name: feed_uuid
@@ -180,13 +203,13 @@ script:
     arguments:
     - name: qtype
       isArray: false
-      description: DNS record type.
+      description: DNS record type
       required: true
       secret: false
       default: false
     - name: qname
       isArray: false
-      description: The DNS record name to lookup.
+      description: The DNS record name to lookup
       required: true
       secret: false
       default: false
@@ -429,7 +452,7 @@ script:
       description: Dictionary of Autonomous System Numbers (ASNs) associated with the domain.
       type: Unknown
   - deprecated: false
-    description: 'This command runs the threat check on the specified.'
+    description: 'This command runs the threat check on the specified '
     name: silentpush-get-data-exports
     arguments:
     - name: feed_url
@@ -526,7 +549,7 @@ script:
       description: Queried domain.
       type: String
     - contextPath: SilentPush.Certificate.metadata
-      description: Metadata of the response.
+      description: Metadata of the response
       type: String
     - contextPath: SilentPush.Certificate.certificates.cert_index
       description: Index of the certificate.
@@ -627,7 +650,7 @@ script:
       default: false
     outputs:
     - contextPath: SilentPush.Enrichment.value
-      description: Queried value.
+      description: Queried value
       type: String
     - contextPath: SilentPush.Enrichment.domain_string_frequency_probability.avg_probability
       description: Average probability score of the domain string.
@@ -651,8 +674,8 @@ script:
       description: Indicates if the domain is in the Alexa top 10k.
       type: Boolean
     - contextPath: SilentPush.Enrichment.domain_urls.results_summary.alexa_top10k_score
-      description: Score indicating domain’s Alexa top 10k ranking.
-      type: Number
+      description: "Score indicating domain's Alexa top 10k ranking."
+      type: String
     - contextPath: SilentPush.Enrichment.domain_urls.results_summary.dynamic_domain_score
       description: Score indicating likelihood of domain being dynamically generated.
       type: Number
@@ -666,7 +689,7 @@ script:
       description: Number of results found for the domain.
       type: Number
     - contextPath: SilentPush.Enrichment.domain_urls.results_summary.url_shortner_score
-      description: Score of the shortned URL.
+      description: Score of the shortned URL
       type: Number
     - contextPath: SilentPush.Enrichment.domaininfo.domain
       description: Domain name analyzed.
@@ -741,13 +764,13 @@ script:
       description: Provided nameserver.
       type: String
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domain_density
-      description: Number of domains sharing this NS.
+      description: Number of domains sharing this NS
       type: Number
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domains_listed
       description: Number of listed domains using this NS.
       type: Number
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_reputation
-      description: Reputation score for this NS.
+      description: Reputation score for this NS
       type: Number
     - contextPath: SilentPush.Enrichment.scan_data.certificates.domain
       description: Domain for which the SSL certificate was issued.
@@ -795,7 +818,7 @@ script:
       description: The date when the headers were scanned.
       type: String
     - contextPath: SilentPush.Enrichment.scan_data.headers.headers.cache-control
-      description: HTTP cache-control.
+      description: HTTP cache-control
       type: String
     - contextPath: SilentPush.Enrichment.scan_data.headers.headers.content-length"
       description: Content lenght of the HTTP response.
@@ -813,7 +836,7 @@ script:
       description: HTTP response code for the domain scan.
       type: String
     - contextPath: SilentPush.Enrichment.scan_data.html.html_body_murmur3
-      description: hash of the page content.
+      description: hash of the page content
       type: String
     - contextPath: SilentPush.Enrichment.scan_data.html.html_body_ssdeep
       description: SSDEEP hash (used for fuzzy matching similar HTML content).
@@ -924,7 +947,7 @@ script:
       description: This field is usually used to indicate a known organization or individual associated with the IP.
       type: String
     - contextPath: SilentPush.Enrichment.ip2asn.benign_info.known_benign
-      description: Indicates whether this IP/ASN is explicitly known to be safe (e.g., a reputable cloud provider or public service).
+      description: Indicates whether this IP/ASN is explicitly known to be safe (e.g., a reputable cloud provider or public service)
       type: Boolean
     - contextPath: SilentPush.Enrichment.ip2asn.benign_info.tags
       description: Contains descriptive tags if the IP/ASN has a known role (e.g., "Google Bot", "Cloudflare Proxy").
@@ -1390,19 +1413,19 @@ script:
     arguments:
     - name: ipv4
       isArray: false
-      description: IPv4 address for which information needs to be retrieved.
+      description: IPv4 address for which information needs to be retrieved
       required: true
       secret: false
       default: false
     - name: explain
       isArray: false
-      description: Show the information used to calculate the reputation score.
+      description: Show the information used to calculate the reputation score
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The maximum number of reputation history to retrieve.
+      description: The maximum number of reputation history to retrieve
       required: false
       secret: false
       default: false
@@ -1452,7 +1475,7 @@ script:
       default: false
     - name: force_metadata_off
       isArray: false
-      description: 'Never return query metadata, even if original request did include metadata.'
+      description: Never return query metadata, even if original request did include metadata.
       required: false
       secret: false
       default: false
@@ -1472,19 +1495,19 @@ script:
     arguments:
     - name: nameserver
       isArray: false
-      description: Nameserver name for which information needs to be retrieved.
+      description: Nameserver name for which information needs to be retrieved
       required: true
       secret: false
       default: false
     - name: explain
       isArray: false
-      description: Show the information used to calculate the reputation score.
+      description: Show the information used to calculate the reputation score
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The maximum number of reputation history to retrieve.
+      description: The maximum number of reputation history to retrieve
       required: false
       secret: false
       default: false
@@ -1642,7 +1665,7 @@ script:
       defaultValue: self
     - name: as_of
       isArray: false
-      description: 'Build infratags from padns data where the as_of timestamp equivalent is between the first_seen and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - relative time <sec> seconds ago.'
+      description: 'Build infratags from padns data where the as_of timestamp equivalent is between the first_seen and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - relative time <sec> seconds ago'
       required: false
       secret: false
       default: false
@@ -2318,7 +2341,7 @@ script:
       description: The type of DNS record (e.g., NS).
       type: String
   - deprecated: false
-    description: 'This command runs the threat check on the specified.'
+    description: 'This command runs the threat check on the specified '
     name: silentpush-run-threat-check
     arguments:
     - name: data

@@ -2566,6 +2566,28 @@ class Client(BaseClient):
 
         return response
 
+    def add_feed_tags(self, args: dict) -> dict[str, Any]:
+        """
+        Add new feed on SilentPush.
+
+        Args:
+            args: Payload for filtering and pagination.
+
+        Returns:
+            Dict[str, Any]: Response containing feed tags information.
+        """
+        feed_uuid = args.get("feed_uuid")
+        url = self._base_url.replace("/api/v1/merge-api", "") + f"{ADD_FEED}" + f"{feed_uuid}" + "/tags/"
+        tags = argToList(args.get("tags"))
+        payload = {"tags": tags}
+        remove_nulls_from_dictionary(payload)
+        response = self._http_request(method="POST", url=url, data=payload)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to add feed tags: {response['errors']}"}
+
+        return response
+
     def add_indicators(self, args: dict) -> dict[str, Any]:
         """
         Add new indicator on SilentPush.
@@ -2614,7 +2636,7 @@ class Client(BaseClient):
         response = self._http_request(method="PUT", url=url, data=payload)
 
         if isinstance(response, dict) and response.get("errors"):
-            return {"error": f"Failed to add new indicators: {response['errors']}"}
+            return {"error": f"Failed to add indicator tags: {response['errors']}"}
 
         return response
 
@@ -2634,7 +2656,7 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url=url, params=params)
 
         if isinstance(response, dict) and response.get("errors"):
-            return {"error": f"Failed to add new indicators: {response['errors']}"}
+            return {"error": f"Failed to run threat check: {response['errors']}"}
 
         return response
 
@@ -4144,6 +4166,58 @@ def add_feed_command(client: Client, args: dict[str, Any]) -> CommandResults | d
     )
 
 
+ADD_FEED_TAGS_INPUTS = [
+    InputArgument(
+        name="feed_uuid",
+        description="Never return query metadata, even if original request did include metadata.",
+    ),
+    InputArgument(
+        name="tags",
+        description="Comma separated tags to be updated to the feed.",
+    ),
+]
+
+ADD_FEED_TAGS_OUTPUTS = [
+    OutputArgument(name="created_or_updated", description="List of tags that have been created or updated to the feed.")
+]
+
+
+@metadata_collector.command(
+    command_name="silentpush-add-feed-tags",
+    inputs_list=ADD_FEED_TAGS_INPUTS,
+    outputs_prefix="SilentPush.AddFeedTags",
+    outputs_list=ADD_INDICATORS_OUTPUTS,
+    description="This command add indicators to the feed",
+)
+def add_feed_tags_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler for adding new feed tags.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' key.
+
+    Returns:
+        CommandResults: JSON response of added tags.
+    """
+    feed_uuid = args.get("feed_uuid")
+    if not feed_uuid:
+        raise ValueError("Feed UUID is required")
+
+    if not args.get("tags"):
+        raise ValueError("Tags name is required")
+
+    result = client.add_feed_tags(args)
+
+    return CommandResults(
+        outputs_prefix="SilentPush.AddFeedTags",
+        outputs_key_field="feed_uuid",
+        outputs=result,
+        readable_output=tableToMarkdown("SilentPush Add Feed Tags", result),
+        raw_response=result,
+    )
+
+
 @metadata_collector.command(
     command_name="silentpush-add-indicators",
     inputs_list=ADD_INDICATORS_INPUTS,
@@ -4385,6 +4459,9 @@ def main() -> None:
 
         elif demisto.command() == "silentpush-add-feed":
             return_results(add_feed_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-add-feed-tags":
+            return_results(add_feed_tags_command(client, demisto.args()))
 
         elif demisto.command() == "silentpush-add-indicators":
             return_results(add_indicators_command(client, demisto.args()))
