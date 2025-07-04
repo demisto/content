@@ -1422,11 +1422,11 @@ tasks:
       - "74"
     scriptarguments:
       query:
-        simple: dataset  = xdr_data | filter agent_id  = "${alert.agentid}" and event_type = ENUM.REGISTRY and event_sub_type = ENUM.REGISTRY_SET_VALUE and action_registry_key_name contains "SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"  and action_registry_data contains "${alert.targetprocessname.[0]}" | fields causality_actor_process_image_sha256 ,actor_process_image_sha256 ,actor_process_command_line , causality_actor_process_command_line
+        simple: dataset  = xdr_data | filter agent_id  = "${alert.agentid}" and event_type = ENUM.FILE and event_sub_type = ENUM.FILE_WRITE and action_file_sha256 = "${alert.targetprocesssha256.[0]}" and (action_file_path contains "AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" or action_file_path contains "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup")| fields causality_actor_process_image_name , causality_actor_process_image_sha256 ,actor_process_image_name , actor_process_image_sha256 , causality_actor_process_signature_status , actor_process_signature_status
       query_name:
         simple: Search_Startup_Folder_Persistence
       time_frame:
-        simple: between ${PersistenceQueryStartTime} and ${PersistenceQueryEndTime}
+        simple: between ${ExplorerQueryStartTime} and ${ExplorerQueryEndTime}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1484,7 +1484,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: not signed
+              simple: UNSIGNED
+          ignorecase: true
         - operator: isEqualString
           left:
             value:
@@ -1492,7 +1493,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: not signed
+              simple: UNSIGNED
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -3592,6 +3594,11 @@ tasks:
             value:
               simple: Print spooler set to load new DLL on boot
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.CustomFields.registrydata.[0]
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -3764,14 +3771,14 @@ tasks:
     conditions:
     - label: "Yes"
       condition:
-      - - operator: isNotEqualString
+      - - operator: isEqualString
           left:
             value:
               simple: 'PaloAltoNetworksXQL.GenericQuery.results.action_module_signature_status '
             iscontext: true
           right:
             value:
-              simple: SIGNED
+              simple: UNSIGNED
           ignorecase: true
     - label: Check dll reputation
       condition:
