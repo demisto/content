@@ -628,11 +628,8 @@
 			}
 		]
 	},
-	"fromServerVersion": "6.5.0",
 	"group": "incident",
 	"id": "RF Playbook Alert Generic Layout",
-	"itemVersion": "1.8.3",
-	"locked": false,
 	"name": "RF Playbook Alert Generic Layout",
 	"system": false,
 	"version": -1,

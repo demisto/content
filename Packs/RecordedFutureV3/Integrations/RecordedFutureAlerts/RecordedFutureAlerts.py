@@ -118,7 +118,7 @@ class Client(BaseClient):
             status_list_to_retry=STATUS_TO_RETRY,
         )
 
-    def whoami(self) -> dict:
+    def whoami(self) -> Union[dict, list[CommandResults]]:
         return self._get(
             url_suffix="/info/whoami",
             timeout=60,
@@ -140,7 +140,7 @@ class Client(BaseClient):
         """Search alert rules."""
         return self._get(url_suffix="/v3/alert/rules", params=demisto.args())
 
-    def alert_lookup(self, alert_id: str) -> dict:
+    def alert_lookup(self, alert_id: str) -> Union[dict, list[CommandResults]]:
         return self._get(
             url_suffix="/v3/alert/lookup",
             params={"alert_id": alert_id},
@@ -172,7 +172,7 @@ class Client(BaseClient):
         )
         return response_content
 
-    def fetch_incidents(self) -> dict:
+    def fetch_incidents(self) -> Union[dict, list[CommandResults]]:
         """Fetch incidents."""
         classic_query_params = demisto.getLastRun().get("next_query_classic", {})
         playbook_query_params = demisto.getLastRun().get("next_query_playbook", {})
@@ -206,10 +206,10 @@ class Actions:
         demisto_params = demisto.params()
 
         # Validate first_fetch
-        first_fetch = str(demisto_params.get("first_fetch", ""))
+        first_fetch_str = str(demisto_params.get("first_fetch", ""))
 
-        if first_fetch.isnumeric():
-            first_fetch = int(first_fetch)
+        if first_fetch_str.isnumeric():
+            first_fetch = int(first_fetch_str)
         else:
             raise ValueError("'first_fetch' parameter must be a number")
         ninety_days_in_minutes = 90 * 24 * 60
@@ -217,9 +217,9 @@ class Actions:
             raise ValueError("'first_fetch' parameter cannot be bigger than 90 days")
 
         # Validate max_fetch
-        max_fetch = str(demisto_params.get("max_fetch", ""))
-        if max_fetch.isnumeric():
-            max_fetch = int(max_fetch)
+        max_fetch_str = str(demisto_params.get("max_fetch", ""))
+        if max_fetch_str.isnumeric():
+            max_fetch = int(max_fetch_str)
         else:
             raise ValueError("'max_fetch' parameter must be a number")
         if max_fetch > 50:
@@ -243,7 +243,6 @@ class Actions:
         if isinstance(response, CommandResults):
             # 404.
             return_error("404 in fetch incidents")
-            return []
         alerts = response.get("alerts", [])
         next_query_classic = response.get("next_query_classic", {})
         next_query_playbook = response.get("next_query_playbook", {})
@@ -296,7 +295,8 @@ class Actions:
                 image_id=image_id,
                 alert_subtype=alert_subtype,
             )
-            return_results(f"Fetched {image_id=} ({alert_type=} {alert_subtype=} {alert_id=}): {image_content[:50]} (truncated)")
+            return_results(f"Fetched {image_id=} ({alert_type=} {alert_subtype=} {alert_id=}): {str(image_content[:50])} "
+                           f"(truncated)")
             file_name = self._get_file_name_from_image_id(image_id)
             file_result_obj = fileResult(file_name, image_content)
             demisto.results(file_result_obj)  # Important
@@ -323,7 +323,6 @@ class Actions:
             lookup_data = lookup_result[0].outputs
         else:
             return_error("Failed to lookup alert.")
-            return  # noqa
 
         alert_type = lookup_data.get("type")
         alert_subtype = lookup_data.get("subtype")

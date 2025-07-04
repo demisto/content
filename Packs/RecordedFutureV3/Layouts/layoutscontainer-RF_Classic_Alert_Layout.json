@@ -662,11 +662,8 @@
 			}
 		]
 	},
-	"fromServerVersion": "6.0.0",
 	"group": "incident",
 	"id": "RF Classic Alert Layout",
-	"itemVersion": "1.8.0",
-	"locked": false,
 	"name": "RF Classic Alert Layout",
 	"system": false,
 	"version": -1,

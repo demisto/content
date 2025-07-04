@@ -649,11 +649,8 @@
 			}
 		]
 	},
-	"fromServerVersion": "6.0.0",
 	"group": "incident",
 	"id": "RF Facility Risk Playbook Alert Layout",
-	"itemVersion": "1.8.3",
-	"locked": false,
 	"name": "RF Facility Risk Playbook Alert Layout",
 	"system": false,
 	"version": -1,

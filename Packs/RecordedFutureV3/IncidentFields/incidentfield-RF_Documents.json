@@ -1,6 +1,5 @@
 {
 	"associatedToAll": false,
-	"definitionId": "",
 	"associatedTypes": [
 		"RF Classic Alert"
 	],
@@ -33,7 +32,7 @@
 			"width": 150
 		}
 	],
-	"content": false,
+	"content": true,
 	"defaultRows": [
 		{},
 		{},
@@ -52,7 +51,6 @@
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,
-	"runScriptAfterUpdate": false,
 	"script": "",
 	"selectValues": [],
 	"sla": 0,

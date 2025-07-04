@@ -32,7 +32,7 @@
 			"width": 490
 		}
 	],
-	"content": false,
+	"content": true,
 	"defaultRows": [
 		{},
 		{},
@@ -51,7 +51,6 @@
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,
-	"runScriptAfterUpdate": false,
 	"script": "",
 	"selectValues": [],
 	"sla": 0,

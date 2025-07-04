@@ -646,11 +646,8 @@
 			}
 		]
 	},
-	"fromServerVersion": "6.0.0",
 	"group": "incident",
 	"id": "RF Domain Abuse Playbook Alert Layout",
-	"itemVersion": "1.8.3",
-	"locked": false,
 	"name": "RF Domain Abuse Playbook Alert Layout",
 	"system": false,
 	"version": -1,
