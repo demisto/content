@@ -49,35 +49,35 @@ List Classic or Playbook alerts.
 
 | **Argument Name**         | **Description**                                                                                                                                                                                      | **Required** |
 |---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| include_classic_alerts    | Whether classic alerts should be included in the response. Possible values are: true, false. Default is true.                                                                                        | Optional     | 
-| include_playbook_alerts   | Whether playbook alerts should be included in the response. Possible values are: true, false. Default is true.                                                                                       | Optional     | 
-| classic_alert_rule_ids    | Comma-separated Classic Alert Rule IDs. Only applied to Classic Alert search.                                                                                                                        | Optional     | 
-| playbook_alert_categories | Comma-separated Playbook Alert categories. Only applied to Playbook Alert search. Possible values are: domain_abuse, cyber_vulnerability, code_repo_leakage, third_party_risk, geopolitics_facility. | Optional     | 
-| playbook_alert_priorities | Comma-separated Playbook Alert priorities. Only applied to Playbook Alert search. Possible values are: Informational, Moderate, High.                                                                | Optional     | 
-| statuses                  | Comma-separated list of statuses to include. Possible values are: New, InProgress, Resolved, Dismissed.                                                                                              | Optional     | 
-| limit                     | Maximum number of alerts to return. Maximum allowed value is 50. Default is 10.                                                                                                                      | Optional     | 
-| order_by                  | Field to sort by. Possible values are: created_at, updated_at. Default value is updated_at.                                                                                                          | Optional     | 
-| order_direction           | Direction to sort by. Possible values are: asc, desc. Default value is desc.                                                                                                                         | Optional     | 
-| created_from              | Return only alerts created on or after this datetime (ex. "2025-05-17T16:06:00Z").                                                                                                                   | Optional     | 
-| created_to                | Return only alerts created on or before this datetime (ex. "2025-05-17T16:06:00Z").                                                                                                                  | Optional     | 
-| updated_from              | Return only alerts updated on or after this datetime (ex. "2025-05-17T16:06:00Z").                                                                                                                   | Optional     | 
-| updated_to                | Return only alerts updated on or before this datetime (ex. "2025-05-17T16:06:00Z").                                                                                                                  | Optional     | 
+| include_classic_alerts    | Whether classic alerts should be included in the response. Possible values are: true, false. Default is true.                                                                                        | Optional     |
+| include_playbook_alerts   | Whether playbook alerts should be included in the response. Possible values are: true, false. Default is true.                                                                                       | Optional     |
+| classic_alert_rule_ids    | Comma-separated Classic Alert Rule IDs. Only applied to Classic Alert search.                                                                                                                        | Optional     |
+| playbook_alert_categories | Comma-separated Playbook Alert categories. Only applied to Playbook Alert search. Possible values are: domain_abuse, cyber_vulnerability, code_repo_leakage, third_party_risk, geopolitics_facility. | Optional     |
+| playbook_alert_priorities | Comma-separated Playbook Alert priorities. Only applied to Playbook Alert search. Possible values are: Informational, Moderate, High.                                                                | Optional     |
+| statuses                  | Comma-separated list of statuses to include. Possible values are: New, InProgress, Resolved, Dismissed.                                                                                              | Optional     |
+| limit                     | Maximum number of alerts to return. Maximum allowed value is 50. Default is 10.                                                                                                                      | Optional     |
+| order_by                  | Field to sort by. Possible values are: created_at, updated_at. Default value is updated_at.                                                                                                          | Optional     |
+| order_direction           | Direction to sort by. Possible values are: asc, desc. Default value is desc.                                                                                                                         | Optional     |
+| created_from              | Return only alerts created on or after this datetime (ex. "2025-05-17T16:06:00Z").                                                                                                                   | Optional     |
+| created_to                | Return only alerts created on or before this datetime (ex. "2025-05-17T16:06:00Z").                                                                                                                  | Optional     |
+| updated_from              | Return only alerts updated on or after this datetime (ex. "2025-05-17T16:06:00Z").                                                                                                                   | Optional     |
+| updated_to                | Return only alerts updated on or before this datetime (ex. "2025-05-17T16:06:00Z").                                                                                                                  | Optional     |
 
 #### Context Output
 
 | **Path**                                           | **Type** | **Description**                                                                                                                   |
 |----------------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------|
-| RecordedFutureAlerts.Alert.id                      | string   | Unique id of the alert in Recorded Future.                                                                                        | 
-| RecordedFutureAlerts.Alert.title                   | string   | Title of the alert.                                                                                                               | 
-| RecordedFutureAlerts.Alert.type                    | string   | Alert type (classic-alert / playbook-alert).                                                                                      | 
-| RecordedFutureAlerts.Alert.subtype                 | string   | Alert subtype (domain_abuse / cyber_vulnerability / code_repo_leakage / third_party_risk / geopolitics_facility / classic-alert). | 
-| RecordedFutureAlerts.Alert.status                  | string   | Status of the alert.                                                                                                              | 
-| RecordedFutureAlerts.Alert.created                 | string   | When the alert was created as an ISO8601 string.                                                                                  | 
-| RecordedFutureAlerts.Alert.updated                 | string   | When the alert was updated as an ISO8601 string.                                                                                  | 
-| RecordedFutureAlerts.Alert.classic_alert_rule_name | string   | If alert is a classic alert, this is the name of the rule that triggered the alert.                                               | 
-| RecordedFutureAlerts.Alert.classic_alert_rule_id   | string   | If alert is a classic alert, this is the name of the rule that triggered the alert.                                               | 
-| RecordedFutureAlerts.Alert.playbook_alert_category | string   | If alert is a playbook alert, this is the category of the alert.                                                                  | 
-| RecordedFutureAlerts.Alert.playbook_alert_priority | string   | If alert is a playbook alert, this is the priority of the alert.                                                                  | 
+| RecordedFutureAlerts.Alert.id                      | string   | Unique id of the alert in Recorded Future.                                                                                        |
+| RecordedFutureAlerts.Alert.title                   | string   | Title of the alert.                                                                                                               |
+| RecordedFutureAlerts.Alert.type                    | string   | Alert type (classic-alert / playbook-alert).                                                                                      |
+| RecordedFutureAlerts.Alert.subtype                 | string   | Alert subtype (domain_abuse / cyber_vulnerability / code_repo_leakage / third_party_risk / geopolitics_facility / classic-alert). |
+| RecordedFutureAlerts.Alert.status                  | string   | Status of the alert.                                                                                                              |
+| RecordedFutureAlerts.Alert.created                 | string   | When the alert was created as an ISO8601 string.                                                                                  |
+| RecordedFutureAlerts.Alert.updated                 | string   | When the alert was updated as an ISO8601 string.                                                                                  |
+| RecordedFutureAlerts.Alert.classic_alert_rule_name | string   | If alert is a classic alert, this is the name of the rule that triggered the alert.                                               |
+| RecordedFutureAlerts.Alert.classic_alert_rule_id   | string   | If alert is a classic alert, this is the name of the rule that triggered the alert.                                               |
+| RecordedFutureAlerts.Alert.playbook_alert_category | string   | If alert is a playbook alert, this is the category of the alert.                                                                  |
+| RecordedFutureAlerts.Alert.playbook_alert_priority | string   | If alert is a playbook alert, this is the priority of the alert.                                                                  |
 
 #### Command Example
 
@@ -135,19 +135,19 @@ Update an alert in the Recorded Future platform.
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                            | **Required** |
 |-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| alert_id          | ID of alert to update.                                                                                                                                                                                                                                     | Required     | 
-| status            | New status to set for the alert. Possible values are: New, InProgress, Dismissed, Resolved.                                                                                                                                                                | Optional     | 
-| comment           | Add comment / Replace note.                                                                                                                                                                                                                                | Optional     | 
-| reopen            | Only for Playbook Alerts. Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Can only be used with status=Resolved. Possible values are: never, significant_updates. Default: reopen on significant updates. | Optional     | 
+| alert_id          | ID of alert to update.                                                                                                                                                                                                                                     | Required     |
+| status            | New status to set for the alert. Possible values are: New, InProgress, Dismissed, Resolved.                                                                                                                                                                | Optional     |
+| comment           | Add comment / Replace note.                                                                                                                                                                                                                                | Optional     |
+| reopen            | Only for Playbook Alerts. Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Can only be used with status=Resolved. Possible values are: never, significant_updates. Default: reopen on significant updates. | Optional     |
 
 #### Context Output
 
 | **Path**                           | **Type** | **Description**                                             |
 |------------------------------------|----------|-------------------------------------------------------------|
-| RecordedFutureAlerts.Alert.id      | string   | Unique id of the alert in Recorded Future.                  | 
-| RecordedFutureAlerts.Alert.type    | string   | Alert type (classic-alert / playbook-alert).                | 
-| RecordedFutureAlerts.Alert.status  | string   | Status of alert in Recorded Future.                         | 
-| RecordedFutureAlerts.Alert.comment | string   | Note (Classic) or comment (Playbook) that was just applied. | 
+| RecordedFutureAlerts.Alert.id      | string   | Unique id of the alert in Recorded Future.                  |
+| RecordedFutureAlerts.Alert.type    | string   | Alert type (classic-alert / playbook-alert).                |
+| RecordedFutureAlerts.Alert.status  | string   | Status of alert in Recorded Future.                         |
+| RecordedFutureAlerts.Alert.comment | string   | Note (Classic) or comment (Playbook) that was just applied. |
 
 #### Command Example
 
@@ -190,8 +190,8 @@ Search for alert rule IDs.
 
 | **Path**                            | **Type** | **Description**  |
 |-------------------------------------|----------|------------------|
-| RecordedFutureAlerts.AlertRule.id   | string   | Alert rule ID.   | 
-| RecordedFutureAlerts.AlertRule.name | string   | Alert rule name. | 
+| RecordedFutureAlerts.AlertRule.id   | string   | Alert rule ID.   |
+| RecordedFutureAlerts.AlertRule.name | string   | Alert rule name. |
 
 #### Command Example
 
@@ -245,5 +245,4 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description**                              |
 |----------|----------|----------------------------------------------|
-| Files    | Unknown  | New images are attached into incident Files. | 
-
+| Files    | Unknown  | New images are attached into incident Files. |
