@@ -2433,7 +2433,7 @@ script:
     - contextPath: EWS.RemovedTenantBlocks.Value
       description: The value of the entry that was removed.
       type: string
-    description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
+    description: Remove items from the tenant's Allow/Block Lists. You can delete items by their value or by their unique ID. Uses the PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
   - name: ews-email-security-unblock-sender-office-365-quick-action
     prettyname: "[Email Security] Unblock Sender - Office 365"
     quickaction: true
@@ -2457,7 +2457,7 @@ script:
       - Tenant
       - AdvancedDelivery
       - Submission
-      description: List subtype to remove items from.
+      description: List the subtype to remove items from.
       defaultValue: Tenant
     outputs:
     - contextPath: EWS.RemovedTenantBlocks.Action
@@ -2508,7 +2508,7 @@ script:
     - contextPath: EWS.RemovedTenantBlocks.Value
       description: The value of the entry that was removed.
       type: string
-    description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
+    description: Remove items from the Tenant's Allow/Block Lists. You can delete items by their value or by their unique ID. Uses the PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
   - name: ews-rule-list
     arguments:
     - name: mailbox
