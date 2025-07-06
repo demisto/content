@@ -36,9 +36,9 @@ More information on remote logging configuration can be found [here](https://www
 
 ### Cortex XSIAM side - Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM).
 
-Follow the below steps to configure the Broker VM to receive <Vendor> <Product> logs.
+Follow the below steps to configure the Broker VM to receive Cisco ISE logs.
 
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
