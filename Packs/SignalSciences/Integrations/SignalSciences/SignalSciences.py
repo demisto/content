@@ -280,20 +280,28 @@ def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enab
 
 def validate_get_events_args(from_time, until_time, sort, limit, page, action, ip, status):
     if from_time is not None and not represents_int(str(from_time)):
+        demisto.debug(f"[test] Error: from_time must be an integer.")
         return_error("Error: from_time must be an integer.")
     if until_time is not None and not represents_int(str(until_time)):
+        demisto.debug(f"[test] Error: until_time must be an integer.")
         return_error("Error: until_time must be an integer.")
     if sort is not None and not (sort == "asc" or sort == "desc"):
+        demisto.debug(f"[test] Error: sort value must be 'asc' or 'desc'.")
         return_error("Error: sort value must be 'asc' or 'desc'.")
     if limit is not None and (not represents_int(str(limit)) or int(limit) < 0 or int(limit) > 1000):
+        demisto.debug(f"[test] Error: limit must be an integer, larger than 0 and at most 1000")
         return_error("Error: limit must be an integer, larger than 0 and at most 1000")
     if action is not None and not (action == "flagged" or action == "info"):
+        demisto.debug(f"[test] Error: action value must be 'flagged' or 'info'")
         return_error("Error: action value must be 'flagged' or 'info'")
     if ip is not None and not is_ip_valid(str(ip)):
+        demisto.debug(f"[test] Error: illegal value for 'ip' argument. Must be a valid ip address")
         return_error("Error: illegal value for 'ip' argument. Must be a valid ip address")
     if status is not None and not (status == "active" or status == "expired"):
+        demisto.debug(f"[test] Error: status value must be 'active' or 'expired'")
         return_error("Error: status value must be 'active' or 'expired'")
     if page is not None and not represents_int(str(page)):
+        demisto.debug(f"[test] Error: page must be an integer.")
         return_error("Error: page must be an integer.")
 
 
@@ -534,8 +542,9 @@ def remove_milliseconds_from_iso(date_in_iso_format):
 def get_events_from_given_sites(list_of_site_names_to_fetch, desired_from_time_in_posix):
     events_from_given_sites = []  # type: List[Any]
     for site_name in list_of_site_names_to_fetch:
+        demisto.debug(f"[test] {site_name=}")
         fetch_from_site_response_json = get_events(siteName=site_name, from_time=desired_from_time_in_posix)
-
+        demisto.debug(f"[test] {fetch_from_site_response_json=}")
         events_fetched_from_site = fetch_from_site_response_json.get("data", [])
         events_from_given_sites.extend(events_fetched_from_site)
     return events_from_given_sites
@@ -724,9 +733,11 @@ def get_events(
 ):
     validate_get_events_args(from_time, until_time, sort, limit, page, action, ip, status)
     url = SERVER_URL + GET_EVENTS_SUFFIX.format(CORPNAME, siteName)
+    demisto.debug(f"[test] {url=}")
     data_for_request = create_get_event_data_from_args(
         from_time, until_time, sort, since_id, max_id, limit, page, action, tag, ip, status
     )
+    demisto.debug(f"[test] {data_for_request=}")
     events_data_response = http_request("GET", url, params_dict=data_for_request)
 
     return events_data_response
@@ -1400,16 +1411,18 @@ def fetch_incidents():
     most_recent_event_time = ""
 
     last_run_data = demisto.getLastRun()
-    demisto.debug(f"{last_run_data=}")
+    demisto.debug(f"[test] {last_run_data=}")
     if last_run_data.get("time"):
         last_run_time = last_run_data["time"]
     else:
         date_time_interval_ago = now_utc - timedelta(minutes=int(FETCH_INTERVAL))
         date_time_interval_ago_posix = datetime_to_posix_without_milliseconds(date_time_interval_ago)
         last_run_time = date_time_interval_ago_posix
-    demisto.debug(f"{last_run_time=}")
+    demisto.debug(f"[test] {last_run_time=}")
     list_of_sites_to_fetch = get_list_of_site_names_to_fetch()
+    demisto.debug(f"[test] {list_of_sites_to_fetch=}")
     events_array = get_events_from_given_sites(list_of_sites_to_fetch, last_run_time)
+    demisto.debug(f"[test] {events_array=}")
     incidents = []
     for event in events_array:
         event_time = event["timestamp"]
@@ -1422,7 +1435,9 @@ def fetch_incidents():
         if event_time > most_recent_event_time:
             most_recent_event_time = event_time
 
+
     most_recent_event_time = most_recent_event_time or last_run_time
+    demisto.debug(f"[test] {most_recent_event_time=}")
     demisto.incidents(incidents)
     demisto.setLastRun({"time": most_recent_event_time})
 
