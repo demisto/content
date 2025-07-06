@@ -316,7 +316,7 @@ tasks:
       version: -1
       name: FPX Analyzer
       description: This Python script is designed to analyze a PFX (Personal Information Exchange) file for various suspicious or noteworthy characteristics from a security perspective.
-      scriptName: PFXAnalyzerTest
+      scriptName: PFXAnalyzer
       type: regular
       iscommand: false
       brand: ""
