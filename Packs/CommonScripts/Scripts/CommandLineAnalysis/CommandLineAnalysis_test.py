@@ -141,5 +141,4 @@ def test_analyze_command_line():
 
     result = analyze_command_line(MACOS_COMMAND_LINE, custom_patterns=["secret_copy"])
     assert result["risk"] == "High Risk"
-    assert 'custom patterns detected (1 instances)' in result["findings"]["original"]
-    
+    assert "custom patterns detected (1 instances)" in result["findings"]["original"]
