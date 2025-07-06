@@ -49,8 +49,6 @@ def test_identify_and_decode_base64(sample_malicious_command):
 
 
 # Test reverse_command
-
-
 def test_reverse_command():
     reversed_string = "llehSrewoP"
     result, was_reversed = reverse_command(reversed_string)
@@ -116,9 +114,23 @@ def test_check_suspicious_macos_applescript_commands():
     assert "tell application finder" in matches["infostealer_characteristics"][0]
 
 
+def test_custom_patterns_score():
+    """Test that custom patterns are properly scored in command line analysis."""
+    
+    command = "cmd \"test\""
+    result = analyze_command_line(command, custom_patterns=["test"])
+    assert result["score"] == 21
+
+
+def test_custom_high_risk_combo():
+    """Test that custom patterns combined with suspicious indicators produce high risk scores."""
+    
+    command = "PoWeRsHeLl.exe -w h -nop \"test\""
+    result = analyze_command_line(command, custom_patterns=["test"])
+    assert result["score"] == 71
+    assert result["risk"] == "High Risk"
+
 # Test analyze_command_line
-
-
 def test_analyze_command_line():
     result = analyze_command_line(MALICIOUS_COMMAND_LINE)
     assert result["risk"] == "High Risk"
@@ -127,3 +139,7 @@ def test_analyze_command_line():
 
     result = analyze_command_line(MACOS_COMMAND_LINE)
     assert result["risk"] == "Medium Risk"
+
+
+
+
