@@ -1,31 +1,27 @@
-## Nasuni File Services
+## Netmotion VPN
 
-This pack supports Syslog-based log ingestion from Nasuni File Services and includes parsing and modeling rules (XDM mapping) for Cortex XSIAM.
+This pack supports Syslog-based log ingestion from Netmotion VPN and includes parsing and modeling rules (XDM mapping) for Cortex XSIAM.
 
 ## Supported Event types
 
-Volume audit logs.
+- RPC Rule
+- Security Binding Rule
+- Security Authenticating Rule
+- IMP Rule
 
-## Configuration on Nasuni File Services Side
+## Configuration on Netmotion VPN Side
 
-1. Log in to the Nasuni Management Console (NMC) with admin rights.
-2. Go to: `Volumes`.
-3. For each relevant volume:
-   - Ensure `File System Auditing` is enabled.
-   - Set `Output Type` to **Syslog**.
-4. Go to: `Filers > Syslog Export Settings`.
-5. Select the Edge Appliance(s) and click `Edit Filers`.
-6. In the `Servers` text box enter the IP or Hostname of your Broker VM in the following format - IP:port (example - `<your-broker-ip>:<port>`).
-   If no port is specified it will default to UDP 514 (the system support log forwarding via UDP only).
-7. Set the following settings:
-   - `Send Auditing Messages`: **On**.
-   - `Facility`: **local1** (recommended).
-   - `Log Level`: **Info** or higher.
-8. Click `Save Settings`.
-
-## Log format
-
-Nasuni audit logs are sent in **RFC 5424** syslog format with a JSON payload.
+1. Log in to the **NetMotion Mobility console** as an administrator.  
+2. Navigate to: **Configure > Server Settings**.  
+3. In the left pane, select:
+   - **Global Server Settings** (for all servers), or  
+   - A specific server name (to apply only to it).  
+4. Enable Syslog forwarding:
+   - **Select** “Syslog – On / Off” and **check** “Turn syslog event logging on.”
+   - Set **Syslog – Server Host** to your Broker VM’s IP/hostname.
+   - (Optional) Adjust **Syslog – Server Port** (default is UDP 514).
+5. (Optional) Configure `Facility` and `Log Level` if available.
+6. **Save** the settings.
 
 ## Collect Events from Proofpoint Protection Server
 
@@ -44,7 +40,7 @@ You can configure the specific vendor and product for this instance.
     -----------------------------------------------------------------------------------------------------------------------------------------------------------
     | Parameter: :            | Value :                                                                                                                       |
     |-------------------------|-------------------------------------------------------------------------------------------------------------------------------|                 
-    | `Protocol`              | Select **UDP**                                                                                                                |
-    | `Port`                  | Enter the port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from NMC                           |
-    | `Vendor`                | Enter `nasuni`                                                                                                                |
-    | `Product`               | Enter `file_services`                                                                                                         |
+    | `Protocol`              | Select **UDP** or **TCP**                                                                                                             |
+    | `Port`                  | Enter the port that Cortex XSIAM Broker VM should listen on for receiving forwarded events                                    |
+    | `Vendor`                | Enter `netmotion`                                                                                                             |
+    | `Product`               | Enter `vpn`                                                                                                                   |
