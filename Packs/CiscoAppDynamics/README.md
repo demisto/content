@@ -1,0 +1,1 @@
+AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs. AppDynamics offers solutions for application modernization, cloud and hybrid monitoring, and application security with business context.
