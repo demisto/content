@@ -155,7 +155,7 @@ class TestCacheManager:
                 )
                 with pytest.raises(AssertionError):
                     cache_manager.organization_name("first")
-                organizations_mock.assert_called_once
+                assert organizations_mock.called_once
 
             def test_when_orgainzation_dosnt_exist(self, cache_manager, requests_mock):
                 organizations_mock = requests_mock.get(
@@ -163,7 +163,7 @@ class TestCacheManager:
                 )
                 with pytest.raises(AssertionError):
                     cache_manager.organization_name("first")
-                organizations_mock.assert_called_once()
+                assert organizations_mock.called_once
 
 
 @freeze_time(datetime.fromtimestamp(1640995200))
@@ -505,7 +505,7 @@ class TestZendeskClient:
         def test_with_user_name(self, zendesk_client, requests_mock):
             mocked_request = requests_mock.get(full_url("users/autocomplete"), json={"users": []})
             zendesk_client.zendesk_user_list(user_name="test")
-            mocked_request.assert_called_once()
+            mocked_request.called_once
 
         def test_general_with_specific_roles(self, zendesk_client, requests_mock):
             mocked_request = requests_mock.get(full_url("users"), json={"users": []})
@@ -516,12 +516,12 @@ class TestZendeskClient:
         def test_zendesk_user_create(self, zendesk_client, requests_mock):
             post_users = requests_mock.post(full_url("users/create_or_update"), json=get_json_file("users/1"))
             zendesk_client.zendesk_user_create(name="user name", email="user@email.com")
-            post_users.assert_called_once()
+            post_users.called_once()
 
         def test_zendesk_user_create_and_check_if_user_exists(self, zendesk_client, requests_mock):
             post_users = requests_mock.post(full_url("users/create"), json=get_json_file("users/1"))
             zendesk_client.zendesk_user_create(name="user name", email="user@email.com", check_if_user_exists=True)
-            post_users.assert_called_once()
+            assert post_users.called_once
 
         def test_zendesk_user_create_with_specifict_role(self, zendesk_client, requests_mock, mocker):
             validate_role_mock = mocker.patch.object(Validators, "validate_role")
@@ -949,8 +949,8 @@ class TestFetchIncidents:
             demisto_incidents_mock = mocker.patch.object(demisto, "incidents")
             demisto_set_lust_run_mock = mocker.patch.object(demisto, "setLastRun")
             zendesk_client.fetch_incidents({}, {})
-            ticket_mock_10.assert_called_once()
-            ticket_mock_20.assert_called_once()
+            assert ticket_mock_10.called_once
+            assert ticket_mock_20.called_once
             demisto_incidents_mock.assert_called_once()
             assert [json.loads(x["rawJSON"])["id"] for x in demisto_incidents_mock.call_args[0][0]] == [10, 20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
@@ -1042,7 +1042,7 @@ class TestFetchIncidents:
                 ),
             )
             assert ticket_mock_10.call_count == ticket_mock_20.call_count == 0
-            assert demisto_incidents_mock.called_once_with([])
+            demisto_incidents_mock.assert_called_once_with([])
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 "fetched_tickets": [10, 20],
                 "fetch_time": "2023-01-15T11:59:00Z",
@@ -1060,7 +1060,7 @@ class TestFetchIncidents:
             demisto_set_lust_run_mock = mocker.patch.object(demisto, "setLastRun")
             zendesk_client.fetch_incidents({}, json.dumps({"fetched_tickets": [10], "fetch_time": "2023-01-12T12:00:00Z"}))
             assert ticket_mock_10.call_count == 0
-            ticket_mock_20.assert_called_once()
+            assert ticket_mock_20.called_once
             demisto_incidents_mock.assert_called_once()
             assert [json.loads(x["rawJSON"])["id"] for x in demisto_incidents_mock.call_args[0][0]] == [20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
