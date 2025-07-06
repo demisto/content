@@ -6,6 +6,9 @@ display: Zendesk v2
 category: Case Management
 description: IT service management.
 detaileddescription: Zendesk integration requires the API key and a username.
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Server URL (e.g., https://demisto.zendesk.com)
   name: base_url
