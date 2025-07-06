@@ -16,7 +16,8 @@ configuration:
   name: credentials
   type: 9
   section: Connect
-  required: true
+  required: false
+  additionalinfo: Starting June 30th 2025 this parameter is mandatory.
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
