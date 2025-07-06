@@ -150,7 +150,7 @@ class Client(BaseClient):  # pragma: no cover
                 params["page"] = page
                 demisto.debug(f"Test-IronScales: sending http request with params: {str(params)}")
                 response = self._http_request(
-                    method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params, retries=4, backoff_factor=5
+                    method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params, retries=4
                 )
                 total_pages = response.get("total_pages")
                 ######## Debugging Area ########
@@ -169,7 +169,7 @@ class Client(BaseClient):  # pragma: no cover
             demisto.debug(f"Test-IronScales: loop ended. fetched {str(len(incidents))} new ids")
             incidents_sorted_by_time = sorted(
                 incidents,
-                key=lambda incident: datetime.strptime(incident.get("created", "2019-08-24T14:15:22Z"), "%Y-%m-%dT%H:%M:%SZ"),
+                key=lambda incident: datetime.strptime(incident.get("created"), "%Y-%m-%dT%H:%M:%SZ"),
             )
             incidents_ids_sorted_by_time = [incident.get("incidentID") for incident in incidents_sorted_by_time]
             return incidents_ids_sorted_by_time
@@ -293,20 +293,21 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[CommandRes
 
 
 def get_new_last_id(last_timestamp, incident, new_last_ids):
+    demisto.debug("Test-IronScales: going into get_new_last_id")
     incident_time = arg_to_datetime(incident.get("_time"))
-    if not new_last_ids:  # first fetch case
-        new_last_ids.append(incident.get("incident_id"))
+    inc_id = incident.get("incident_id")
+    if last_timestamp is None or incident_time > last_timestamp:
+        demisto.debug("Test-IronScales: started a new last ids set!")
+        new_last_ids = {inc_id}
         last_timestamp = incident_time
     else:
-        if incident_time > last_timestamp:  # new timestamp - new last_ids list
-            new_last_ids = [incident.get("incident_id")]
-            last_timestamp = incident_time
-        elif incident_time == last_timestamp:
-            new_last_ids.append(incident.get("incident_id"))
+        demisto.debug(f"Test-IronScales: added a new id to the set! id: {inc_id}")
+        new_last_ids.add(inc_id)
+    demisto.debug("Test-IronScales: ended get_new_last_id in success")
     return last_timestamp, new_last_ids
 
 
-def all_incidents_trimmer(incident_ids, client, max_fetch, last_timestamp_ids, last_timestamp, last_id):
+def all_incidents_trimmer(incident_ids, client: Client, max_fetch, last_timestamp_ids, last_timestamp, last_id):
     """
     In all_incidents case, we will save a list of the ids that share the same timestamp as the last id.
     That way we will not return duplicates in each run.
@@ -318,10 +319,13 @@ def all_incidents_trimmer(incident_ids, client, max_fetch, last_timestamp_ids, l
         last_timestamp_ids (_type_): Ids that we already seen
         last_timestamp (_type_): the last timestamp that we pulled
     """
+    demisto.debug("Test-IronScales: going in all_incidents_trimmer")
     events: List[dict[str, Any]] = []
-    new_last_ids: list[int] = []  # the new ids to save for the next run
+    new_last_ids: set[int] = set()  # the new ids to save for the next run
     if last_timestamp_ids:
         last_timestamp_ids = set(last_timestamp_ids)  # for better runtime
+        demisto.debug("Test-IronScales: cast ids list to set")
+    demisto.debug("Test-IronScales: starting incidents enrichment loop")
     for i in incident_ids:
         # remove ids that already pulled
         if last_timestamp_ids and i in last_timestamp_ids:
@@ -336,6 +340,11 @@ def all_incidents_trimmer(incident_ids, client, max_fetch, last_timestamp_ids, l
         last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids)
         if len(events) >= max_fetch:
             break
+    demisto.debug("Test-IronScales: cast ids set to list")
+    new_last_ids: list[int] = list(new_last_ids)
+    demisto.debug(f"Test-IronScales: returned from all_incidents_trimmer with the values:\
+                  events(only id): {str([event.get('incident_id') for event in events])}")
+
     return events, new_last_ids[-1] if new_last_ids else last_id, new_last_ids
 
 
@@ -355,7 +364,7 @@ def fetch_events_command(
     first_fetch: datetime,
     max_fetch: int,
     last_id: Optional[int] = None,
-    last_timestamp_ids: Optional[List] = None,
+    last_timestamp_ids: Optional[List] = [],
 ) -> tuple[List[dict[str, Any]], int, list[Any] | None]:
     """Fetches IRONSCALES incidents as events to XSIAM.
     Note: each report of incident will be considered as an event.
@@ -390,21 +399,6 @@ def fetch_events_command(
 def test_module_command(client: Client, first_fetch: datetime) -> str:
     fetch_events_command(client, first_fetch, max_fetch=1)
     return "ok"
-
-
-def get_incidents_with_the_same_timestamps(incidents):
-    """
-    this function store all the incidents with the same timestamp as the last incident,
-    so we will be able to filter the incidents that we already seen in the next run.
-    """
-    if not incidents:
-        return None
-    last_incident = incidents[-1]
-    incidents_with_same_time = []
-    for incident in incidents[::-1]:
-        if incident.get("_time") == last_incident.get("_time"):
-            incidents_with_same_time.append(incident.get("incident_id"))
-    return incidents_with_same_time
 
 
 def main():
@@ -448,7 +442,7 @@ def main():
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
                 last_id=demisto.getLastRun().get("last_id"),
-                last_timestamp_ids=demisto.getLastRun().get("last_timestamp_ids"),
+                last_timestamp_ids=demisto.getLastRun().get("last_timestamp_ids", []),
             )
             demisto.debug("Test-IronScales: returned from fetch_event")
             demisto.debug(
@@ -456,7 +450,7 @@ def main():
                     {str([event.get('incident_id') for event in events])},\
                         last event: {str(last_id)}, num of events: {len(events)},\
                         set last run to: 'last_id': {last_id},\
-                            'last_incident_time': {events[-1].get('first_reported_date')if events else None},\
+                            'last_incident_time': {events[-1].get('_time')if events else None},\
                                 'last_timestamp_ids': {last_timestamp_ids}"
             )
 
@@ -465,7 +459,7 @@ def main():
             demisto.setLastRun(
                 {
                     "last_id": last_id,
-                    "last_incident_time": events[-1].get("first_reported_date") if events else None,
+                    "last_incident_time": events[-1].get("_time") if events else None,
                     "last_timestamp_ids": last_timestamp_ids,
                 }
             )

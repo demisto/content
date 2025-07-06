@@ -145,6 +145,7 @@ def test_test_module(mocker, params, is_valid, result_msg):
 
 
 ###### get all incidents tests #######
+# timezone.utc
 from datetime import datetime, timedelta, UTC
 
 UTC = UTC
@@ -224,8 +225,8 @@ def test_multiple_pages(mocker):
         all_incident=True,
     )
     responses = [
-        {"total_pages": 2, "incidents": [{"incidentID": 1}]},
-        {"total_pages": 2, "incidents": [{"incidentID": 2}]},
+        {"total_pages": 2, "incidents": [{"incidentID": 1, "created": "2019-08-24T14:15:22Z"}]},
+        {"total_pages": 2, "incidents": [{"incidentID": 2, "created": "2019-08-24T14:15:22Z"}]},
         {"total_pages": 2, "incidents": []},
     ]
 
@@ -256,7 +257,13 @@ def test_respects_max_fetch(mocker):
     def ids_generator():
         i = 1
         while i < 100:
-            yield {"total_pages": 50, "incidents": [{"incidentID": i}, {"incidentID": i + 1}]}
+            yield {
+                "total_pages": 50,
+                "incidents": [
+                    {"incidentID": i, "created": "2019-08-24T14:15:22Z"},
+                    {"incidentID": i + 1, "created": "2019-08-24T14:15:22Z"},
+                ],
+            }
             i += 2
 
     mocker.patch.object(client, "_http_request", side_effect=ids_generator())
@@ -294,8 +301,20 @@ def test_all_incidents_last_id(mocker):
     )
 
     responses = [
-        {"total_pages": 2, "incidents": [{"incidentID": 1}, {"incidentID": 2}]},
-        {"total_pages": 2, "incidents": [{"incidentID": 3}, {"incidentID": 4}]},
+        {
+            "total_pages": 2,
+            "incidents": [
+                {"incidentID": 1, "created": "2019-08-24T14:15:22Z"},
+                {"incidentID": 2, "created": "2019-08-24T14:15:22Z"},
+            ],
+        },
+        {
+            "total_pages": 2,
+            "incidents": [
+                {"incidentID": 3, "created": "2019-08-24T14:15:22Z"},
+                {"incidentID": 4, "created": "2019-08-24T14:15:22Z"},
+            ],
+        },
         {"total_pages": 2, "incidents": []},
     ]
 
@@ -337,7 +356,13 @@ def test_all_incidents_last_id_complex(mocker):
     def ids_generator():
         i = 1
         while i < 100:
-            yield {"total_pages": 50, "incidents": [{"incidentID": i}, {"incidentID": i + 1}]}
+            yield {
+                "total_pages": 50,
+                "incidents": [
+                    {"incidentID": i, "created": "2019-08-24T14:15:22Z"},
+                    {"incidentID": i + 1, "created": "2019-08-24T14:15:22Z"},
+                ],
+            }
             i += 2
 
     mocker.patch.object(client, "_http_request", side_effect=ids_generator())
@@ -386,3 +411,159 @@ def test_last_run_from_context(mocker):
     mocker.patch.object(Client, "get_incident", side_effect=lambda x: x)
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [{x: 1}])
     main()
+
+
+def test_sort_incidents(mocker):
+    """
+    When: pulling all incidents
+    Then: return the incidents sorted by timestamps
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
+    client = Client(
+        company_id="1",
+        base_url="test_url",
+        verify_certificate=True,
+        proxy=False,
+        api_key="test",
+        scopes=[""],
+        all_incident=True,
+    )
+
+    responses = [
+        {
+            "total_pages": 2,
+            "incidents": [
+                {"incidentID": 1, "created": "2019-08-24T14:15:22Z"},
+                {"incidentID": 13, "created": "2019-08-24T14:15:25Z"},
+            ],
+        },
+        {
+            "total_pages": 2,
+            "incidents": [
+                {"incidentID": 5, "created": "2019-08-24T14:15:20Z"},
+                {"incidentID": 2, "created": "2019-08-24T14:15:00Z"},
+            ],
+        },
+        {"total_pages": 2, "incidents": []},
+    ]
+
+    mocker.patch.object(client, "_http_request", side_effect=responses)
+    mocker.patch.object(
+        client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": f"{str(2019+x)}-08-24T14:15:22Z"}
+    )
+    mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
+
+    start_time = datetime.now(UTC) - timedelta(days=1)
+    result = client.get_all_incident_ids(start_time)
+    assert result == [2, 5, 1, 13]
+    assert len(result) == 4
+
+
+def test_same_timestamp(mocker):
+    """
+    Given: A page where we already seen some of the incidents in it
+    When: running fetch_events_command with all_incidents = True and we already pulled some incidents
+    Then: pull only new incidents
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
+    client = Client(
+        company_id="1",
+        base_url="test_url",
+        verify_certificate=True,
+        proxy=False,
+        api_key="test",
+        scopes=[""],
+        all_incident=True,
+    )
+
+    responses = [
+        {
+            "total_pages": 2,
+            "incidents": [
+                {"incidentID": 1, "created": "2024-08-24T14:15:12Z"},
+                {"incidentID": 2, "created": "2024-08-24T14:15:20Z"},
+            ],
+        },
+        {
+            "total_pages": 2,
+            "incidents": [
+                {"incidentID": 3, "created": "2024-08-24T14:15:22Z"},
+                {"incidentID": 4, "created": "2024-08-24T14:15:22Z"},
+            ],
+        },
+        {"total_pages": 2, "incidents": []},
+    ]
+    times = ["2024-08-24T14:15:12Z", "2024-08-24T14:15:20Z", "2024-08-24T14:15:22Z", "2024-08-24T14:15:22Z"]
+
+    mocker.patch.object(client, "_http_request", side_effect=responses)
+    mocker.patch.object(client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": times[x - 1]})
+    mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
+
+    res, last_run, last_timestamp_ids = fetch_events_command(
+        client,
+        first_fetch=arg_to_datetime("2019-08-24T14:15:02Z", settings=DATEPARSER_SETTINGS),  # type: ignore
+        max_fetch=10,
+        last_id=0,
+        last_timestamp_ids=[0],
+    )
+    assert len(res) == 4
+    assert res[0].get("incident_id") == 1
+    assert last_timestamp_ids == [3, 4]
+
+
+def test_unknown_incident_id(mocker):
+    """
+    Given: A page where we already seen some of the incidents in it
+    When: running fetch_events_command with all_incidents = True and we already pulled some incidents
+    Then: pull only new incidents
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
+    client = Client(
+        company_id="1",
+        base_url="test_url",
+        verify_certificate=True,
+        proxy=False,
+        api_key="test",
+        scopes=[""],
+        all_incident=True,
+    )
+
+    responses = [
+        {
+            "total_pages": 2,
+            "incidents": [
+                {"incidentID": 1, "created": "2024-08-24T14:15:12Z"},
+                {"incidentID": 2, "created": "2024-08-24T14:15:20Z"},
+            ],
+        },
+        {
+            "total_pages": 2,
+            "incidents": [
+                {"incidentID": 3, "created": "2024-08-24T14:15:22Z"},
+                {"incidentID": 4, "created": "2024-08-24T14:15:22Z"},
+            ],
+        },
+        {"total_pages": 2, "incidents": []},
+    ]
+
+    def new_get_incident(incident):
+        if incident != 3:
+            return {"incident_id": incident, "_time": times[incident - 1]}
+        raise ValueError("Incident 13500 not found for company")
+
+    times = ["2024-08-24T14:15:12Z", "2024-08-24T14:15:20Z", "2024-08-24T14:15:22Z", "2024-08-24T14:15:22Z"]
+
+    mocker.patch.object(client, "_http_request", side_effect=responses)
+    mocker.patch.object(client, "get_incident", side_effect=new_get_incident)
+    mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
+
+    res, last_run, last_timestamp_ids = fetch_events_command(
+        client,
+        first_fetch=arg_to_datetime("2019-08-24T14:15:02Z", settings=DATEPARSER_SETTINGS),  # type: ignore
+        max_fetch=10,
+        last_id=0,
+        last_timestamp_ids=[0],
+    )
+    assert len(res) == 3
+    assert res[-1].get("incident_id") == 4
+    assert last_timestamp_ids == [4]
