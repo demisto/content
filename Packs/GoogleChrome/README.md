@@ -53,7 +53,7 @@ Extensions management allows IT administrators to test and evaluate extension fo
 ## Configure Google Workspace
 
 To configure ingestion of data from Google Workspace follow the procedure below:
-[Ingest Logs and Data from Google Workspace](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Ingest-Logs-and-Data-from-Google-Workspace)
+[Ingest Logs and Data from Google Workspace](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Ingest-Logs-and-Data-from-Google-Workspace)
 
 - To configure Google Workspace you must have user with the corresponding permissions.
 - To configure emails data ingestion you must set up compliance email account as mentioned in the above link.
