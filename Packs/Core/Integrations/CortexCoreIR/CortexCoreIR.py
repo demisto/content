@@ -131,10 +131,15 @@ class Client(CoreClient):
                 return status, ""
 
         return "Failure", "No action"
-
+    @polling_function(
+        name='block-ip-command',
+        interval=1,
+        timeout=60,
+        poll_message="Waiting for response"
+    )
     def wait_for_block_ip_status(
         self, ip_address: str, group_id: int, endpoint_id: str, timeout: float = 10.0, interval: float = 0.5
-    ) -> dict:
+    ):
         """
         Poll get_block_ip_action_status() until status is 'completed' or 'failed',
         or until timeout seconds have elapsed.
@@ -153,18 +158,19 @@ class Client(CoreClient):
             demisto.debug(f"Polled status='{status}' for IP {ip_address};")
 
             if status in {"Fail", "Success"}:
-                return {
-                    "ip_address": ip_address,
-                    "Reason": "Success" if status == "Success" else f"Failure: {message}",
-                    "endpoint_id": endpoint_id,
-                }
+                return PollResult(
+                    response = {
+                        "ip_address": ip_address,
+                        "Reason": "Success" if status == "Success" else f"Failure: {message}",
+                        "endpoint_id": endpoint_id,
+                    },
+                    continue_to_poll=False
+                    )
 
             if time.time() - start >= timeout:
                 demisto.debug(f"Timeout waiting for action {group_id} on {endpoint_id}")
                 return {"ip address": ip_address, "Reason": "timeout", "endpoint_id": endpoint_id}
 
-        polling_function()
-        return {}
 
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
