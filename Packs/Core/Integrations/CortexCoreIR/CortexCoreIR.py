@@ -734,7 +734,7 @@ def main():  # pragma: no cover
                     command_decision_field="action_id",
                     results_function=action_status_get_command,
                     polling_field="status",
-                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"], 
                 )
             )
 
