@@ -51,7 +51,9 @@ Creating the Demisto Bot using Microsoft Azure Portal:
 6. Click **Review + Create**, and wait for the validation to pass.
 7. Click **Create** if the validation has passed, and wait for the deployment to finish.
 8. Under Next Steps, click **Go to resource**.
-9. **Skip this step and return after configuring the Microsoft Teams instance in Cortex XSOAR/XSIAM**. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
+9. **This step can be skipped for now, return to it after configuring the Microsoft Teams instance in Cortex XSOAR/XSIAM**.
+
+    Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
     - **Note ⚠️:** To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations, use the `microsoft-teams-create-messaging-endpoint`command.
     Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#3-configure-microsoft-teams-on-cortex-xsoarxsiam) section.
 10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
@@ -190,8 +192,9 @@ If you encounter any issue or error — especially a message saying **"Tenant ID
 
 ### 4. Add the Demisto Bot to a Team
 
-- After configuring the integration on Cortex XSOAR/XSIAM (the previous step), do the following:
-- According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
+According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
+
+After configuring the integration on Cortex XSOAR/XSIAM (the previous step), do the following:
 
 1. Download the ZIP file located at the [Download Demisto Bot](#download-demisto-bot) section.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
