@@ -1,26 +1,26 @@
 <~XSIAM>
- 
+
 ## Overview
+
 Cisco Identity Services Engine (ISE) is a next-generation NAC solution used to manage endpoint, user, and device access to network resources within a zero-trust architecture.
 
- 
-## This pack includes:
- 
-Data normalization capabilities:
-  * Rules for parsing and modeling Cisco ISE logs that are ingested via Syslog on Cortex XSIAM.
-    * The ingested Cisco ISE logs can be queried in XQL Search using the *`cisco_ise_raw`* dataset.
- 
-### Supported Timestamp Formats:
+## This pack includes
 
-- MMM dd hh:mm:ss
-- yyyy-MM-dd hh:mm:ss.nnn [+|-]nn:nn
-- yyyy-MM-dd hh:mm:ss.nnn [+|-]nnnn
- 
- 
+Data normalization capabilities:
+
+* Rules for parsing and modeling Cisco ISE logs that are ingested via Syslog on Cortex XSIAM.
+  * The ingested Cisco ISE logs can be queried in XQL Search using the *`cisco_ise_raw`* dataset.
+
+### Supported Timestamp Formats
+
+* MMM dd hh:mm:ss
+* yyyy-MM-dd hh:mm:ss.nnn [+|-]nn:nn
+* yyyy-MM-dd hh:mm:ss.nnn [+|-]nnnn
+
 ***
- 
+
 ## Data Collection
- 
+
 ### Cisco ISE side
 
 To configure basic syslog collection follow the below steps:
@@ -33,22 +33,23 @@ To configure basic syslog collection follow the below steps:
 To prevent log segmentation, set the Maximum Length of the log to **8096**.
 
 More information on remote logging configuration can be found [here](https://www.cisco.com/c/en/us/support/docs/security/identity-services-engine/222223-configure-external-syslog-server-on-ise.html).
- 
+
 ### Cortex XSIAM side - Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
- 
+
 Follow the below steps to configure the Broker VM to receive <Vendor> <Product> logs.
- 
+
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, set the following parameters:
- 
+
     | Parameter    | Value                                                                                                                       |
-    |:-------------|:----------------------------------------------------------------------------------------------------------------------------|                 
+    |:-------------|:----------------------------------------------------------------------------------------------------------------------------|
     | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Cisco ISE). |
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Cisco ISE.   |
     | `Vendor`     | Enter cisco.                                                                                                                |
     | `Product`    | Enter ise.                                                                                                                  |
-    
+
 </~XSIAM>
