@@ -4672,8 +4672,6 @@ tasks:
     scriptarguments:
       app_name:
         simple: ${Core.OriginalAlert.event.auth_target}
-      policy_name:
-        simple: Cortex App Block Access - $Core.OriginalAlert.event.auth_target}
       username:
         simple: ${Core.OriginalAlert.event.auth_identity}
     separatecontext: false
@@ -4707,7 +4705,7 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "169"
+      - "171"
       "yes":
       - "187"
     scriptarguments:
@@ -5086,7 +5084,7 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "169"
+      - "171"
       "yes":
       - "175"
     scriptarguments:
@@ -5166,12 +5164,12 @@ view: |-
       "167_169_Disable Account": 0.71,
       "167_172_No Action": 0.57,
       "167_176_Block App Access": 0.9,
-      "176_169_no": 0.35,
+      "176_171_no": 0.43,
       "176_187_yes": 0.55,
       "180_179_yes": 0.58,
       "180_188_no": 0.26,
       "182_184_yes": 0.5,
-      "187_169_no": 0.38,
+      "187_171_no": 0.57,
       "28_10_yes": 0.41,
       "28_117_#default#": 0.25,
       "2_5_#default#": 0.59,
