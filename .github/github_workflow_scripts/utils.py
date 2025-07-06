@@ -236,6 +236,10 @@ def get_support_level(pack_dirs: set[str]) -> set[str]:
     packs_support_levels = set()
 
     for pack_dir in pack_dirs:
+        pack_metadata = get_pack_metadata(pack_dir)
+        print(f"{pack_metadata=}")
+        pack_support_level = pack_metadata.get("support")
+        print(f"{pack_support_level=}")
         if pack_support_level := get_pack_metadata(pack_dir).get("support"):
             print(f"Pack support level for pack {pack_dir} is {pack_support_level}")  # noqa: T201
             packs_support_levels.add(pack_support_level)
