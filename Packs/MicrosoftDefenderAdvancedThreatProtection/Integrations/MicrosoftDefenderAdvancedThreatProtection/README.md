@@ -42,7 +42,7 @@ For more details about the authentication used in this integration, see [Microso
 
 **Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
 
-**Note**: When using the Authorization Code Flow, please make sure the user you authenticate with has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
+**Note**: When using the Authorization Code Flow, ensure the authenticated user has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
 
 ### Required Permissions
 
@@ -67,7 +67,7 @@ Please add the following permissions to the app registration. Choose application
 - WindowsDefenderATP - Machine.LiveResponse - Application / Delegated
 - WindowsDefenderATP - Machine.Read.All - Application / Machine.Read - Delegated
 
-These access permissions can be verified by running the **microsoft-atp-list-auth-permissions** command after setting up an integration instance.
+**Note**: Access permissions can be verified by running the **microsoft-atp-list-auth-permissions** command after configuring the integration instance.
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 
@@ -222,7 +222,9 @@ Isolates a machine from accessing external network.
 
 ##### Required Permissions
 
-Machine.Isolate (part of the "Active Remediation Actions" role)
+Machine.Isolate
+
+**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -866,7 +868,9 @@ Initiates Microsoft Defender Antivirus scan on a machine.
 
 ##### Required Permissions
 
-Machine.Scan (part of the "Active Remediation Actions" role)
+Machine.Scan
+
+**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 #### Base Command
 
@@ -1763,7 +1767,9 @@ Collects an investigation package from a machine.
 
 ##### Required Permissions
 
-Machine.CollectForensics (part of the "Active Remediation Actions" role)
+Machine.CollectForensics
+
+**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -1835,7 +1841,9 @@ Gets a URI that allows downloading of an investigation package.
 
 ##### Required Permissions
 
-Machine.CollectForensics (part of the "Active Remediation Actions" role)
+Machine.CollectForensics
+
+**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -1879,7 +1887,9 @@ Restricts the execution of all applications on the machine except a predefined s
 
 ##### Required Permissions
 
-Machine.RestrictExecution (part of the "Active Remediation Actions" role)
+Machine.RestrictExecution
+
+**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -1951,7 +1961,9 @@ Enables the execution of any application on the machine.
 
 ##### Required Permissions
 
-Machine.RestrictExecution (part of the "Active Remediation Actions" role)
+Machine.RestrictExecution
+
+**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -2023,7 +2035,9 @@ Stops the execution of a file on a machine and deletes it.
 
 ##### Required Permissions
 
-Machine.StopAndQuarantine (part of the "Active Remediation Actions" role)
+Machine.StopAndQuarantine
+
+**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
