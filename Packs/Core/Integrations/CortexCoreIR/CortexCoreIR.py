@@ -88,7 +88,6 @@ class Client(CoreClient):
         return reply
 
     def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> dict[str, str]:
-        demisto.debug("Block ip function")
         results = {}
         for ip_address in ip_list:
             response = self._http_request(
@@ -96,16 +95,85 @@ class Client(CoreClient):
                 headers=self._headers,
                 url_suffix="/endpoints/block_ip",
                 json_data={
-                    "addresses": [ip_address],
-                    "endpoint_id": endpoint_id,
-                    "direction": "both",
-                    "duration": duration,
+                    "request_data": {
+                        "addresses": [ip_address],
+                        "endpoint_id": endpoint_id,
+                        "direction": "both",
+                        "duration": duration,
+                    }
                 },
             )
-            demisto.debug(f"Response: {response}")
-            results[ip_address] = response.get("reply", {}).get("group_action_id", "")
+            group_id = response.get("reply", {}).get("group_action_id", "")
+            demisto.debug(f"Block request for {ip_address} returned with group_id {response}")
+            results[ip_address] = group_id
 
         return results
+
+    def get_status_block_ip(self, ip_address: str, group_id: int, endpoint_id: str):
+        """
+        Poll get_status_block_ip_action until status is 'completed' or 'failed',
+        or until timeout seconds have elapsed.
+
+        :param timeout: total seconds to wait before giving up
+        :param interval: seconds between polls
+        :returns: the final action_result dict
+        """
+        reply = self.action_status_get(group_id)
+        data = reply.get("data") or {}
+        error_reasons = reply.get("errorReasons", {})
+
+        for current_endpoint_id, status in data.items():
+            if current_endpoint_id == endpoint_id:
+                # Results only for the asked endpoint_id
+                action_result = {
+                    "ip_block_results": ip_address,
+                    "endpoint": endpoint_id,
+                    "status": status,
+                }
+                demisto.debug(f"Action resutls: {action_result}")
+                if error_reason := error_reasons.get(endpoint_id):
+                    action_result["ErrorReasons"] = error_reason
+                    action_result["error_description"] = (
+                        error_reason.get("errorDescription")
+                        or get_missing_files_description(error_reason.get("missing_files"))
+                        or "An error occurred while processing the request."
+                    )
+                return action_result
+        return {
+            "ip_block_results": ip_address,
+            "endpoint": endpoint_id,
+            "status": "No action",
+        }
+
+    def wait_for_block_ip_status(
+        self, ip_address: str, group_id: int, endpoint_id: str, timeout: float = 10.0, interval: float = 0.5
+    ) -> dict:
+        """
+        Poll get_block_ip_action_status() until status is 'completed' or 'failed',
+        or until timeout seconds have elapsed.
+
+        :param timeout: total seconds to wait before giving up
+        :param interval: seconds between polls
+        :returns: the final action_result dict
+        """
+        start = time.time()
+        while True:
+            is_endpoint_connected = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
+            if not is_endpoint_connected:
+                demisto.debug(f"Endpoint disconnected {endpoint_id}")
+                return {"ip address": ip_address, "endpoint": endpoint_id, "status": "endpoint disconnected"}
+            result = self.get_status_block_ip(ip_address, group_id, endpoint_id)
+            status = result.get("status", "").lower()
+            demisto.debug(f"Polled status='{status}' for IP {ip_address}; elapsed={time.time()-start:.1f}s")
+
+            if status in {"completed_successfully", "failed"}:
+                return result
+
+            if time.time() - start >= timeout:
+                demisto.debug(f"Timeout waiting for action {group_id} on {endpoint_id}")
+                return {"ip address": ip_address, "endpoint": endpoint_id, "status": "timeout"}
+
+            time.sleep(interval)
 
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
@@ -538,31 +606,18 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
 def core_block_ip_command(client: Client, args: dict) -> CommandResults:
     ip_list = argToList(args.get("ip_list", []))
     demisto.debug(f"Blocking {len(ip_list)} addresses: {ip_list}")
-    endpoint_id = args.get("endpoint_id", "")
+    endpoint_id_list = argToList(args.get("endpoint_id_list", []))
     duration = arg_to_number(args.get("duration")) or 300
-    group_dict = client.block_ip_request(endpoint_id=endpoint_id, ip_list=ip_list, duration=duration)
+    endpoint_group_dict = {}
+    for endpoint_id in endpoint_id_list:
+        endpoint_group_dict[endpoint_id] = client.block_ip_request(endpoint_id=endpoint_id, ip_list=ip_list, duration=duration)
 
-    result = []
-    for ip_address, action_id in group_dict.items():
-        reply = client.action_status_get(str(action_id))
-        data = reply.get("data") or {}
-        error_reasons = reply.get("errorReasons", {})
+    results = []
+    for endpoint_id in endpoint_id_list:
+        for ip_address, group_id in endpoint_group_dict[endpoint_id].items():
+            results.append(client.wait_for_block_ip_status(ip_address, int(group_id), endpoint_id))
 
-        for endpoint_id, status in data.items():
-            action_result = {
-                "ip_block_results": ip_address,
-                "status": status,
-            }
-            demisto.debug(f"Action resutls: {action_result}")
-            if error_reason := error_reasons.get(endpoint_id):
-                action_result["ErrorReasons"] = error_reason
-                action_result["error_description"] = (
-                    error_reason.get("errorDescription")
-                    or get_missing_files_description(error_reason.get("missing_files"))
-                    or "An error occurred while processing the request."
-                )
-            result.append(action_result)
-    hr = tableToMarkdown(name="Block IP Results", t=result)
+    hr = tableToMarkdown(name="Block IP Results", t=results)
     return CommandResults(readable_output=hr)
 
 

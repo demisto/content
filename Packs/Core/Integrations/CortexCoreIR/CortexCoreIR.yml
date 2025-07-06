@@ -4266,8 +4266,8 @@ script:
       description: List representing the vendors who reported this indicator.
       type: List
   - arguments:
-    - description: ID of an agent that supports the operation.
-      name: endpoint_id
+    - description: List of ID's of agents that supports the operation.
+      name: endpoint_id_list
       required: true
     - description: List of IPv6 or IPv4 to blocklist.
       name: ip_list
