@@ -154,7 +154,7 @@ test command.
 
 #### Base Command
 
-`aha-test`
+`aha-test usetobe@myself.com`
 
 #### Input
 
