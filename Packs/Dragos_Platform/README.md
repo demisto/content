@@ -39,7 +39,7 @@ For more information contact Dragos support.
 
 ### Cortex XSIAM side
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Configure-the-Broker-VM).
 
 ### Broker VM
 

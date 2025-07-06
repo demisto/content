@@ -42,9 +42,9 @@ When configuring the instance, you should use a yml file that configures the ven
 
 Follow these steps in order to configure the XDR Collector:
 
-1. The implementation of the Collector for both of the methods requires to create a [Profile](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Add-an-XDR-Collector-Profile-for-Windows) for each integration.
+1. The implementation of the Collector for both of the methods requires to create a [Profile](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Add-an-XDR-Collector-Profile-for-Windows) for each integration.
    - For **XSIAM version 1.2** only, in the relevant profile under the *XDR Collectors Profiles*, copy and paste the information from the [Filebeat Configuration File](#filebeat-configuration-file) section.
-2. Create a [Policy](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Apply-Profiles-to-Collection-Machine-Policies) and allocate the profiles you created to it.
+2. Create a [Policy](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Apply-Profiles-to-Collection-Machine-Policies) and allocate the profiles you created to it.
 
 #### Filebeat Configuration File
 
