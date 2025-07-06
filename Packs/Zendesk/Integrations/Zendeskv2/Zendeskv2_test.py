@@ -516,7 +516,7 @@ class TestZendeskClient:
         def test_zendesk_user_create(self, zendesk_client, requests_mock):
             post_users = requests_mock.post(full_url("users/create_or_update"), json=get_json_file("users/1"))
             zendesk_client.zendesk_user_create(name="user name", email="user@email.com")
-            post_users.called_once()
+            assert post_users.called_once
 
         def test_zendesk_user_create_and_check_if_user_exists(self, zendesk_client, requests_mock):
             post_users = requests_mock.post(full_url("users/create"), json=get_json_file("users/1"))
@@ -970,7 +970,7 @@ class TestFetchIncidents:
             demisto_set_lust_run_mock = mocker.patch.object(demisto, "setLastRun")
             zendesk_client.fetch_incidents({"max_fetch": 1}, {})
             assert ticket_mock_20.call_count == 0
-            ticket_mock_10.assert_called_once()
+            assert ticket_mock_10.called_once
             demisto_incidents_mock.assert_called_once()
             assert [json.loads(x["rawJSON"])["id"] for x in demisto_incidents_mock.call_args[0][0]] == [10]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
@@ -1006,7 +1006,7 @@ class TestFetchIncidents:
                 ),
             )
             assert ticket_mock_10.call_count == 0
-            ticket_mock_20.assert_called_once()
+            assert ticket_mock_20.called_once
             demisto_incidents_mock.assert_called_once()
             assert [json.loads(x["rawJSON"])["id"] for x in demisto_incidents_mock.call_args[0][0]] == [20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
