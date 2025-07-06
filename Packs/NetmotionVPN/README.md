@@ -23,7 +23,7 @@ This pack supports Syslog-based log ingestion from Netmotion VPN and includes pa
 5. (Optional) Configure `Facility` and `Log Level` if available.
 6. **Save** the settings.
 
-## Collect Events from Proofpoint Protection Server
+## Collect Events from Netmotion VPM
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
