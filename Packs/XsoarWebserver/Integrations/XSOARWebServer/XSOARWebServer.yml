@@ -107,3 +107,14 @@ script:
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false
