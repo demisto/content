@@ -61,6 +61,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
 display: Tenable.sc
 name: Tenable.sc
