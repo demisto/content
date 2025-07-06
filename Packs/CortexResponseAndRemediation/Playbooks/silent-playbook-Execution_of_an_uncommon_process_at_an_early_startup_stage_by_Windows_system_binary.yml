@@ -37,12 +37,12 @@ description: |-
   Remediation:
 
   The playbook performs actions to stop the attack and remove persistence mechanisms by:
-  - Terminate the malicious process.
-  - Quarantine the malicious process. (Requires analyst approval.)
-  - Adding the malicious process hash to the block list. (Requires analyst approval.)
-  - Searching for and deleting malicious scheduled tasks to remove persistence. (Requires analyst approval.)
-  - Recommend deleting specific registry keys to remove persistence.
-  - Automatically close the alert.
+  - Terminating the malicious process.
+  - Quarantining the malicious process. (Requires analyst approval)
+  - Adding the malicious process hash to the block list. (Requires analyst approval)
+  - Searching for and deleting malicious scheduled tasks to remove persistence. (Requires analyst approval)
+  - Recommending the deleting of specific registry keys to remove persistence.
+  - Automatically closing the alert.
 tags:
 - TA0003 - Persistence
 - T1547 - Boot or Logon Autostart Execution
@@ -2723,7 +2723,7 @@ tasks:
       id: 77c587bb-ec8b-4a45-8ae3-7adc7d228d52
       version: -1
       name: Add hash to Block list
-      description: Block lists requested files which have not already been block listed or added to allow lists.
+      description: Block list requested files that have not already been block listed, or added to allow lists.
       script: '|||core-blocklist-files'
       type: regular
       iscommand: true
