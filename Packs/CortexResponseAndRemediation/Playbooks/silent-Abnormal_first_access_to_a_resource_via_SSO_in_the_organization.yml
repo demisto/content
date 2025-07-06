@@ -2961,6 +2961,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "188"
       "yes":
       - "86"
     scriptarguments:
@@ -3002,8 +3004,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 494,
-          "y": 2935
+          "x": 489,
+          "y": 3090
         }
       }
     note: false
@@ -3232,7 +3234,7 @@ tasks:
       {
         "position": {
           "x": 185,
-          "y": 2164
+          "y": 2178
         }
       }
     note: false
@@ -3876,8 +3878,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 495,
-          "y": 3093
+          "x": 490,
+          "y": 3248
         }
       }
     note: false
@@ -4118,8 +4120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 886,
-          "y": 3809
+          "x": 881,
+          "y": 3964
         }
       }
     note: false
@@ -4152,8 +4154,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 149,
-          "y": 3656
+          "x": 144,
+          "y": 3811
         }
       }
     note: false
@@ -4226,8 +4228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 494,
-          "y": 3389
+          "x": 489,
+          "y": 3544
         }
       }
     note: false
@@ -4261,8 +4263,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 886,
-          "y": 4098
+          "x": 881,
+          "y": 4253
         }
       }
     note: false
@@ -4317,8 +4319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 494,
-          "y": 3517
+          "x": 489,
+          "y": 3672
         }
       }
     note: false
@@ -4351,8 +4353,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 886,
-          "y": 3656
+          "x": 881,
+          "y": 3811
         }
       }
     note: false
@@ -4468,8 +4470,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 149,
-          "y": 3809
+          "x": 144,
+          "y": 3964
         }
       }
     note: false
@@ -4506,8 +4508,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -53,
-          "y": 4337
+          "x": -59,
+          "y": 4662
         }
       }
     note: false
@@ -4540,8 +4542,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 577,
-          "y": 4648
+          "x": 881,
+          "y": 4800
         }
       }
     note: false
@@ -4574,8 +4576,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 577,
-          "y": 3958
+          "x": 572,
+          "y": 4113
         }
       }
     note: false
@@ -4608,8 +4610,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2,
-          "y": 3256
+          "x": -3,
+          "y": 3411
         }
       }
     note: false
@@ -4640,8 +4642,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 149,
-          "y": 4011
+          "x": 144,
+          "y": 4166
         }
       }
     note: false
@@ -4679,8 +4681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 353,
-          "y": 4483
+          "x": 348,
+          "y": 4662
         }
       }
     note: false
@@ -4707,7 +4709,7 @@ tasks:
       "no":
       - "169"
       "yes":
-      - "175"
+      - "187"
     scriptarguments:
       brandname:
         simple: '["MicrosoftGraphIdentityandAccess","MicrosoftGraphApplications"]'
@@ -4716,8 +4718,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 353,
-          "y": 4213
+          "x": 348,
+          "y": 4368
         }
       }
     note: false
@@ -4863,6 +4865,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "188"
       "yes":
       - "179"
     scriptarguments:
@@ -5056,8 +5060,76 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 494,
-          "y": 3261
+          "x": 489,
+          "y": 3416
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "187":
+    id: "187"
+    taskid: 7d4ec3c6-6df5-40c5-8a34-ca536608c16a
+    type: condition
+    task:
+      id: 7d4ec3c6-6df5-40c5-8a34-ca536608c16a
+      version: -1
+      name: Verify integrations availability (Azure)
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "169"
+      "yes":
+      - "175"
+    scriptarguments:
+      brandname:
+        simple: '["MicrosoftGraphIdentityandAccess","MicrosoftGraphApplications"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 348,
+          "y": 4527
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "188":
+    id: "188"
+    taskid: 9f1ba193-4d28-4a43-8eae-29660cdd2f4b
+    type: title
+    task:
+      id: 9f1ba193-4d28-4a43-8eae-29660cdd2f4b
+      version: -1
+      name: Integration is not available
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "105"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1374,
+          "y": 2935
         }
       }
     note: false
@@ -5075,6 +5147,7 @@ view: |-
       "102_87_yes": 0.59,
       "103_185_no": 0.41,
       "103_88_yes": 0.59,
+      "104_188_no": 0.39,
       "104_86_yes": 0.39,
       "107_116_#default#": 0.24,
       "109_116_#default#": 0.34,
@@ -5093,7 +5166,12 @@ view: |-
       "167_169_Disable Account": 0.71,
       "167_172_No Action": 0.57,
       "167_176_Block App Access": 0.9,
+      "176_169_no": 0.35,
+      "176_187_yes": 0.55,
+      "180_179_yes": 0.58,
+      "180_188_no": 0.26,
       "182_184_yes": 0.5,
+      "187_169_no": 0.38,
       "28_10_yes": 0.41,
       "28_117_#default#": 0.25,
       "2_5_#default#": 0.59,
@@ -5113,7 +5191,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4670,
+        "height": 4822,
         "width": 5976,
         "x": -3075,
         "y": 48
