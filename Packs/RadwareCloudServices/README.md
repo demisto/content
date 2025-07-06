@@ -112,7 +112,7 @@ You need to update this file to include a syslog *output* plugin that would forw
 
 ### Configure Cortex XSIAM Broker VM Syslog Server  
 
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Configure-the-Broker-VM).
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 
