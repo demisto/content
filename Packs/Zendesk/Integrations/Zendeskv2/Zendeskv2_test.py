@@ -505,7 +505,7 @@ class TestZendeskClient:
         def test_with_user_name(self, zendesk_client, requests_mock):
             mocked_request = requests_mock.get(full_url("users/autocomplete"), json={"users": []})
             zendesk_client.zendesk_user_list(user_name="test")
-            mocked_request.called_once
+            assert mocked_request.called_once
 
         def test_general_with_specific_roles(self, zendesk_client, requests_mock):
             mocked_request = requests_mock.get(full_url("users"), json={"users": []})
