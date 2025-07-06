@@ -11,7 +11,7 @@ import io
 """ CONSTANTS """
 POLYSWARM_DEMISTO_VERSION = "0.2.0"
 ERROR_ENDPOINT = "Error with endpoint: "
-
+#test
 
 # Allows nested keys to be accesible
 def makehash():
