@@ -20,8 +20,7 @@ This pack supports Syslog-based log ingestion from Netmotion VPN and includes pa
    - **Select** “Syslog – On / Off” and **check** “Turn syslog event logging on.”
    - Set **Syslog – Server Host** to your Broker VM’s IP/hostname.
    - (Optional) Adjust **Syslog – Server Port** (default is UDP 514).
-5. (Optional) Configure `Facility` and `Log Level` if available.
-6. **Save** the settings.
+5. **Save** the settings.
 
 ## Collect Events from Netmotion VPM
 
@@ -40,7 +39,7 @@ You can configure the specific vendor and product for this instance.
     -----------------------------------------------------------------------------------------------------------------------------------------------------------
     | Parameter: :            | Value :                                                                                                                       |
     |-------------------------|-------------------------------------------------------------------------------------------------------------------------------|                 
-    | `Protocol`              | Select **UDP** or **TCP**                                                                                                             |
+    | `Protocol`              | Select **UDP** or **TCP**                                                                                                     |
     | `Port`                  | Enter the port that Cortex XSIAM Broker VM should listen on for receiving forwarded events                                    |
     | `Vendor`                | Enter `netmotion`                                                                                                             |
     | `Product`               | Enter `vpn`                                                                                                                   |
