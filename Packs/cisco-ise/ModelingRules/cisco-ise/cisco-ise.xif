@@ -289,60 +289,106 @@ alter
         xdm.target.host.device_category = ServerType,
         xdm.network.session_id = SessionId;
 
-// ### Everything NOT - CISE_Passed_Authentications, CISE_Failed_Attempts, CISE_RADIUS_Diagnostics, CISE_Alarm, CISE_RADIUS_Accounting
-alter         
-    logType = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s(\w+)\s"),0)
-| filter logType not in ("CISE_Passed_Authentications", "CISE_Failed_Attempts", "CISE_RADIUS_Diagnostics", "CISE_Alarm", "CISE_RADIUS_Accounting")
-| alter
-    logSeverity = lowercase(arrayindex(regextract(_raw_log, "\s+(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)[\s:]+"),0)),
-    get_description1 = arrayindex(regextract(_raw_log, "INFO\s+null:(.*)"),0),
-    get_description2 = arrayindex(regextract(_raw_log, "(?:WARN\s+|DEBUG\s+|ERROR\s+|FATAL\s+|CRITICAL\s+|NOTICE\s+|INFO\s+)(.*)"),0),
-    get_description3 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s+(.*)"),0),
-    get_description4 = arrayindex(regextract(_raw_log, "(?:DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)\:\s+(.*)"), 0),
-    get_message = arrayindex(regextract(_raw_log, "MESSAGE=([^\,]+)"),0),
-    get_ProfilerErrorMessage = arrayindex(regextract(_raw_log, "ProfilerErrorMessage=([^\,]+)"),0),
-    get_FailureReason = arrayindex(regextract(_raw_log, "FailureReason=([^,\\;]+)"),0),
-    get_src_ip = arrayindex(regextract(_raw_log, "(?:EndpointNADAddress|EndpointIPAddress)=([^\,]+)"),0),
-    get_ProfilerServer = arrayindex(regextract(_raw_log, "ProfilerServer=([^\,]+)"),0),
-    get_mac_address = arrayindex(regextract(_raw_log, "(?:EndpointMacAddress|MacAddress)=([^,;\\]+)"),0),
-    get_os = arrayindex(regextract(_raw_log, "(?:OperatingSystem|AD-Operating-System)=([^,;\\]+)"),0),
-    get_tar_ip = arrayindex(regextract(_raw_log, "(?:PeerAddress|DestinationIPAddress)=([^,;\\]+)"),0),
-    get_rules_1 = arrayindex(regextract(_raw_log, "posturePassCondition=((?:\S+\\,\s)+[^\\,]+)"),0),
-    get_rules_2 = arrayindex(regextract(_raw_log, "IdentitySelectionMatchedRule=([^,\\;]+)"),0),
-    get_UserType = arrayindex(regextract(_raw_log, "UserType=([^,\\;]+)"),0),
-    get_sys_mgmt = arrayindex(regextract(_raw_log, "System-Management:\s+([^\,]+)"),0)
-| alter
-    check_src_ipv4 = if(get_src_ip !~= ":", get_src_ip, null),
-    check_src_ipv6 = if(get_src_ip ~= ":", get_src_ip, null),
+// ### Everything NOT - CISE_Passed_Authentications, CISE_Failed_Attempts, CISE_RADIUS_Diagnostics, CISE_RADIUS_Accounting, CISE_TACACS_Accounting, CISE_Alarm, CISE_Administrative_and_Operational_Audit, CISE_External_MDM
+/* --------------------------------------------------------------------------------
+Key_Values
+   - AuthenticationMethod=
+   - Authen-Method=
+   - DestinationPort=
+   - DestinationIPAddress=
+   - Device Type=
+   - EndpointNADAddress=
+   - EndpointIPAddress=
+   - FailureReason=
+   - FeedUrl=
+   - IdentitySelectionMatchedRule=
+   - MESSAGE=
+   - EndpointMacAddress=
+   - MacAddress=
+   - NAS-Port=
+   - NetworkDeviceName=
+   - NetworkDeviceGroups=
+   - OperatingSystem=
+   - AD-Operating-System=
+   - OriginalUserName=
+   - OperationMessageText=
+   - PeerAddress=
+   - posturePassCondition=
+   - ProfilerErrorMessage=
+   - System-Management:
+   - ShutdownReason=
+   - UniqueConnectionIdentifier=
+   - UserType=
+   - UserName=
+   - User-Fetch-Organizational-Unit=
 
-    check_tar_ipv4 = if(get_tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(get_tar_ip, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0), null),
-    check_tar_ipv6 = if(get_tar_ip ~= ":", arrayindex(regextract(get_tar_ip, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0), null),
-    check_tar_mac = if(get_tar_ip ~= "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}", arrayindex(regextract(get_tar_ip, "\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}[:-]\d{2}|\d{12}"), 0), null)
+   -------------------------------------------------------------------------------*/
+
+alter
+    logType = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s(\w+)\s"),0)
+| filter logType not in ("CISE_Passed_Authentications", "CISE_Failed_Attempts", "CISE_RADIUS_Diagnostics", "CISE_RADIUS_Accounting", "CISE_TACACS_Accounting", "CISE_Alarm", "CISE_Administrative_and_Operational_Audit", "CISE_External_MDM")
+| alter
+    AuthenticationMethod = arrayindex(regextract(_raw_log, "AuthenticationMethod=([^\,;]+)"),0),
+    Authen_Method = arrayindex(regextract(_raw_log, "Authen-Method=([^\,;]+)"),0),
+    Description1 = arrayindex(regextract(_raw_log, "(?:DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)\s*([^:]+\:\s+[^,]+)"), 0),
+    Description2 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s\S+\s\w+\s\d+\s+(.*)"), 0),
+    DestinationPort = arrayindex(regextract(_raw_log, "DestinationPort=([^\\,]+)"),0),
+    DestinationIPAddress_ipv4 = arrayindex(regextract(_raw_log, "DestinationIPAddress=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+    DestinationIPAddress_ipv6 = arrayindex(regextract(_raw_log, "DestinationIPAddress=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}),"),0),
+    Device_Type = arrayindex(regextract(_raw_log, "Device Type=Device Type#([^\,]+)"), 0),
+    EndpointNADAddress_ipv4 = arrayindex(regextract(_raw_log, "EndpointNADAddress=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+    EndpointNADAddress_ipv6 = arrayindex(regextract(_raw_log, "EndpointNADAddress=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}),"),0),
+    EndpointIPAddress_ipv4 = arrayindex(regextract(_raw_log, "EndpointIPAddress=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+    EndpointIPAddress_ipv6 = arrayindex(regextract(_raw_log, "EndpointIPAddress=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}),"),0),
+    FailureReason = arrayindex(regextract(_raw_log, "FailureReason=([^,\\;]+)"),0),
+    FeedUrl = arrayindex(regextract(_raw_log, "FeedUrl=([^,]+)"),0),
+    IdentitySelectionMatchedRule = arrayindex(regextract(_raw_log, "IdentitySelectionMatchedRule=([^,\\;]+)"),0),
+    logSeverity = lowercase(arrayindex(regextract(_raw_log, "\s+(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)[\s:]+"),0)),
+    Message = arrayindex(regextract(_raw_log, "MESSAGE=([^\,]+)"),0),
+    Mac_address = arrayindex(regextract(_raw_log, "(?:EndpointMacAddress|MacAddress)=([^,;\\]+)"),0),
+    NAS_Port = arrayindex(regextract(_raw_log, "NAS-Port=(\d+)"),0),
+    NetworkDeviceName = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+),"),0),
+    NetworkDeviceGroups_DeviceType = arrayindex(regextract(_raw_log, "NetworkDeviceGroups=Device Type#([^\,]+)"), 0),
+    OS = arrayindex(regextract(_raw_log, "(?:OperatingSystem|AD-Operating-System)=([^,;\\]+)"),0),
+    OriginalUserName = arrayindex(regextract(_raw_log, "OriginalUserName=([^,\\;]+)"),0),
+    OperationMessageText = arrayindex(regextract(_raw_log, "OperationMessageText=([^,\\;]+)"),0),
+    PeerAddress_ipv4 = arrayindex(regextract(_raw_log, "PeerAddress=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+    PeerAddress_ipv6 = arrayindex(regextract(_raw_log, "PeerAddress=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}),"),0),
+    PosturePassCondition = arrayindex(regextract(_raw_log, "posturePassCondition=((?:\S+\\,\s)+[^\\,]+)"),0),
+    ProfilerErrorMessage = arrayindex(regextract(_raw_log, "ProfilerErrorMessage=([^\,]+)"),0),
+    Sys_mgmt = arrayindex(regextract(_raw_log, "System-Management:\s+([^\,]+)"),0),
+    ShutdownReason = arrayindex(regextract(_raw_log, "ShutdownReason[\s+=]+([^,]+)"),0),
+    UniqueConnectionIdentifier = arrayindex(regextract(_raw_log, "UniqueConnectionIdentifier[\s+=]+(\S+)\,"),0),
+    UserType = arrayindex(regextract(_raw_log, "UserType=([^,\\;]+)"),0),
+    UserName = arrayindex(regextract(_raw_log, "UserName=([a-zA-Z0-9\@\-\\\/\\\._]+)"),0),
+    User_Fetch_Organizational_Unit = arrayindex(regextract(_raw_log, "User-Fetch-Organizational-Unit=([^,\\;]+)"),0)
 | alter
     xdm.event.type = logType,
     xdm.event.original_event_type = arrayindex(regextract(_raw_log, "(\d+)\s(?:DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)"),0),
-    xdm.observer.name = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s([\S]+)"),0),
-    xdm.observer.type = get_ProfilerServer,
+    xdm.event.description = coalesce(OperationMessageText, Description1, Description2),
     xdm.event.log_level = if(logSeverity ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, logSeverity ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, logSeverity ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, logSeverity ~= "error", XDM_CONST.LOG_LEVEL_ERROR, logSeverity = "fatal", XDM_CONST.LOG_LEVEL_EMERGENCY, logSeverity ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, logSeverity ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, logSeverity = null, null, XDM_CONST.LOG_LEVEL_NOTICE),
-    xdm.source.host.device_category = to_string(regextract(_raw_log, "NetworkDeviceGroups=([^\,\\]+)")),
-    xdm.event.description = if(logSeverity != null, coalesce(get_description1, get_description2, get_description4), get_description3),
-    xdm.alert.description = coalesce(get_message, get_ProfilerErrorMessage, get_FailureReason, get_sys_mgmt),
-    xdm.source.ipv4 = check_src_ipv4,
-    xdm.source.ipv6 = check_src_ipv6,
-    xdm.source.host.os = get_os,
-    xdm.network.rule = coalesce(get_rules_1, get_rules_2),
-    xdm.auth.auth_method = arrayindex(regextract(_raw_log, "AuthenticationMethod=([^\\,]+)"),0),
-    xdm.target.port = to_integer(arrayindex(regextract(_raw_log, "DestinationPort=([^\\,]+)"),0)),
-    xdm.target.ipv4 = check_tar_ipv4,
-    xdm.target.ipv6 = if(check_tar_ipv6 !~= "\S{2}:\S{2}:\S{2}:\S{2}:\S{2}:\S{2}", check_tar_ipv6, null),
-    xdm.target.host.mac_addresses = arraycreate(check_tar_mac, get_mac_address),
-    xdm.source.user.domain = arrayindex(regextract(_raw_log, "CN=([^\\,]+)"), 0),
-    xdm.network.session_id = arrayindex(regextract(_raw_log, "UniqueConnectionIdentifier[\s+=]+(\S+)\,"),0),
-    xdm.event.outcome_reason = arrayindex(regextract(_raw_log, "ShutdownReason[\s+=]+([^,]+)"),0),
-    xdm.intermediate.port = to_integer(arrayindex(regextract(_raw_log, "NAS-Port=(\d+)"),0)),
-    xdm.source.host.hostname = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+),"),0),
-    xdm.source.user.ou = arrayindex(regextract(_raw_log, "User-Fetch-Organizational-Unit=([^,\\;]+)"),0),
-    xdm.source.user.username = arrayindex(regextract(_raw_log, "OriginalUserName=([^,\\;]+)"),0),
-    xdm.source.user.user_type = if(get_UserType = "User", XDM_CONST.USER_TYPE_REGULAR, get_UserType = "Host", XDM_CONST.USER_TYPE_MACHINE_ACCOUNT, get_UserType = null, null, to_string(get_UserType)),
-    xdm.event.operation_sub_type = arrayindex(regextract(_raw_log, "OperationMessageText=([^,\\;]+)"),0),
-    xdm.target.url = arrayindex(regextract(_raw_log, "FeedUrl=([^,]+)"),0);
+    xdm.event.outcome = if(Description1 ~= "[Ss][Uu][Cc][Cc][Ee]" or Message ~= "[Ss][Uu][Cc][Cc][Ee]", XDM_CONST.OUTCOME_SUCCESS, Description1 ~= "[Ff][Aa][Ii][Ll]" or Message ~= "[Ff][Aa][Ii][Ll]", XDM_CONST.OUTCOME_FAILED, null),
+    xdm.event.outcome_reason = coalesce(FailureReason, ProfilerErrorMessage, Sys_mgmt, ShutdownReason, Message),
+    xdm.observer.name = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s([\S]+)"),0),
+    xdm.auth.auth_method = coalesce(AuthenticationMethod, Authen_Method),
+    xdm.network.rule = coalesce(PosturePassCondition, IdentitySelectionMatchedRule),
+    xdm.network.session_id = UniqueConnectionIdentifier,
+    xdm.target.port = to_integer(DestinationPort),
+    xdm.target.ipv4 = coalesce(DestinationIPAddress_ipv4, PeerAddress_ipv4),
+    xdm.target.ipv6 = coalesce(DestinationIPAddress_ipv6, PeerAddress_ipv6),
+    xdm.target.url = FeedUrl,
+    xdm.source.user.user_type = if(UserType = "User", XDM_CONST.USER_TYPE_REGULAR, UserType = "Host", XDM_CONST.USER_TYPE_MACHINE_ACCOUNT, UserType = null, null, to_string(UserType)),
+    xdm.source.user.username = coalesce(OriginalUserName, UserName),
+    xdm.source.user.ou = User_Fetch_Organizational_Unit,
+    xdm.source.host.mac_addresses = arraycreate(Mac_address),
+    xdm.source.host.os = OS,
+    xdm.source.ipv4 = coalesce(EndpointIPAddress_ipv4, EndpointNADAddress_ipv4),
+    xdm.source.ipv6 = coalesce(EndpointIPAddress_ipv6, EndpointNADAddress_ipv6),
+    xdm.source.port = if(EndpointIPAddress_ipv4 = null and EndpointIPAddress_ipv6 = null, to_integer(NAS_Port), null),
+    xdm.source.host.hostname = if(EndpointIPAddress_ipv4 = null and EndpointIPAddress_ipv6 = null, NetworkDeviceName, null),
+    xdm.source.host.device_category = if(EndpointIPAddress_ipv4 = null and EndpointIPAddress_ipv6 = null, coalesce(Device_Type, NetworkDeviceGroups_DeviceType), null),
+    xdm.intermediate.ipv4 = if(EndpointIPAddress_ipv4 != null, EndpointNADAddress_ipv4, null),
+    xdm.intermediate.ipv6 = if(EndpointIPAddress_ipv6 != null, EndpointNADAddress_ipv6, null),
+    xdm.intermediate.port = if(EndpointIPAddress_ipv4 != null or EndpointIPAddress_ipv6 != null, to_integer(NAS_Port), null),
+    xdm.intermediate.host.hostname = if(EndpointIPAddress_ipv4 != null or EndpointIPAddress_ipv6 != null, NetworkDeviceName, null),
+    xdm.intermediate.host.device_category = if(EndpointIPAddress_ipv4 != null or EndpointIPAddress_ipv6 != null, coalesce(Device_Type, NetworkDeviceGroups_DeviceType), null);
