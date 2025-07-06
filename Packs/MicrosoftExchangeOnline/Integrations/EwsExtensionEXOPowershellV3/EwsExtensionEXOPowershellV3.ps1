@@ -988,7 +988,7 @@ class ExchangeOnlinePowershellV3Client
         #>
     }
 
-    [PSObject]GetMessageTrace([string[]]$sender_address, [string[]]$recipient_address, [string[]]$from_ip, [string[]]$to_ip, [string[]]$message_id,
+    [PSObject]GetMessageTrace([string[]]$sender_address, [string[]]$recipient_address, [string]$from_ip, [string]$to_ip, [string[]]$message_id,
         [string]$message_trace_id, [int32]$page, [int32]$page_size, [String]$start_date, [String]$end_date, [string]$status) {
         $response = ""
         try {
@@ -2208,10 +2208,8 @@ function GetMessageTraceCommand([ExchangeOnlinePowershellV3Client]$client, [hash
     # Parse arguments
     $sender_address = ArgToList $kwargs.sender_address
     $recipient_address = ArgToList $kwargs.recipient_address
-    $from_ip = ArgToList $kwargs.from_ip
-    $to_ip = ArgToList $kwargs.to_ip
 
-    $raw_response = $client.GetMessageTrace($sender_address, $recipient_address, $from_ip, $to_ip, $kwargs.message_id,
+    $raw_response = $client.GetMessageTrace($sender_address, $recipient_address, $kwargs.from_ip, $kwargs.to_ip, $kwargs.message_id,
         $kwargs.message_trace_id, $kwargs.page, $kwargs.page_size, $kwargs.start_date,
         $kwargs.end_date, $kwargs.status)
 
