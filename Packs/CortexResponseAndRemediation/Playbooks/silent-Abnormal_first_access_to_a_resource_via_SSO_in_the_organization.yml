@@ -1875,7 +1875,7 @@ tasks:
       query_name:
         simple: Azure app creation details
       time_frame:
-        simple: 7 days ago
+        simple: 3 days ago
       timeout_in_seconds:
         simple: "120"
     separatecontext: false

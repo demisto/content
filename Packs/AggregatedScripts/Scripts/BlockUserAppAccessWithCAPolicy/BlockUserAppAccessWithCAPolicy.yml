@@ -12,7 +12,7 @@ comment: Checks if a CA policy exists. If yes, adds the user if needed. If no, c
 enabled: true
 args:
 - name: policy_name
-  required: true
+  required: false
   description: The display name of the Conditional Access policy to check or create.
 - name: username
   required: true
