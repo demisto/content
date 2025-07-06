@@ -23,7 +23,7 @@ class Client(BaseClient):
         self.account_id = account_id
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers={"x-api-key": api_key, "Context": account_id})
 
-    def get_events(self, start_time=None, end_time=None, skip=0, take=PAGE_SIZE) -> dict[str, Any] | Response:
+    def get_events(self, start_time: int, end_time: int, skip=0, take=PAGE_SIZE) -> dict[str, Any] | Response:
         """
         Fetches events from a specific time range with pagination support.
         Args:
@@ -49,7 +49,7 @@ class Client(BaseClient):
             json_data=params,
         )
 
-    def get_alerts(self, start_time=None, end_time=None, skip=0, take=PAGE_SIZE) -> dict[str, Any] | Response:
+    def get_alerts(self, start_time: int, end_time: int, skip=0, take=PAGE_SIZE) -> dict[str, Any] | Response:
         """
         Fetches alerts from a specific time range with pagination support.
         Args:
