@@ -124,26 +124,13 @@ class Client(CoreClient):
 
         for current_endpoint_id, status in data.items():
             if current_endpoint_id == endpoint_id:
-                # Results only for the asked endpoint_id
-                action_result = {
-                    "ip_block_results": ip_address,
-                    "endpoint": endpoint_id,
-                    "status": status,
-                }
-                demisto.debug(f"Action resutls: {action_result}")
-                if error_reason := error_reasons.get(endpoint_id):
-                    action_result["ErrorReasons"] = error_reason
-                    action_result["error_description"] = (
-                        error_reason.get("errorDescription")
-                        or get_missing_files_description(error_reason.get("missing_files"))
-                        or "An error occurred while processing the request."
-                    )
-                return action_result
-        return {
-            "ip_block_results": ip_address,
-            "endpoint": endpoint_id,
-            "status": "No action",
-        }
+                if status == "FAILED":
+                    return "Failure", error_reasons.get("errorText","")
+                elif status == "COMPLETED_SUCCESSFULLY":
+                    return "Success",""
+                return status, ""
+                
+        return "Failure", "No action"
 
     def wait_for_block_ip_status(
         self, ip_address: str, group_id: int, endpoint_id: str, timeout: float = 10.0, interval: float = 0.5
@@ -162,19 +149,19 @@ class Client(CoreClient):
             if not is_endpoint_connected:
                 demisto.debug(f"Endpoint disconnected {endpoint_id}")
                 return {"ip address": ip_address, "endpoint": endpoint_id, "status": "endpoint disconnected"}
-            result = self.get_status_block_ip(ip_address, group_id, endpoint_id)
-            status = result.get("status", "").lower()
-            demisto.debug(f"Polled status='{status}' for IP {ip_address}; elapsed={time.time()-start:.1f}s")
+            status, message = self.get_status_block_ip(ip_address, group_id, endpoint_id)
+            demisto.debug(f"Polled status='{status}' for IP {ip_address};")
 
-            if status in {"completed_successfully", "failed"}:
-                return result
+            if status in {"Fail", "Success"}:
+                return {"ip_address": ip_address,
+                        "Reason": "Success" if status == "Success" else f"Failure: {message}", "endpoint_id":endpoint_id}
 
             if time.time() - start >= timeout:
                 demisto.debug(f"Timeout waiting for action {group_id} on {endpoint_id}")
-                return {"ip address": ip_address, "endpoint": endpoint_id, "status": "timeout"}
-
-            time.sleep(interval)
-
+                return {"ip address": ip_address,  "Reason": "timeout", "endpoint_id": endpoint_id}
+        
+        polling_function()
+        return {}
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get("file_hash")
