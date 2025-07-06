@@ -7,8 +7,8 @@
         "AUTO_UPDATE_DOCKER_REVIEWER": "The GitHub username for auto-update-docker PRs reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
-        "itssapir",
-        "ilappe"
+        "YaelShamai",
+        "merit-maita"
     ],
     "CONTRIBUTION_TL": "dantavori",
     "CONTRIBUTION_SECURITY_REVIEWER": [""],
