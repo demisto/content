@@ -5254,7 +5254,7 @@ class TestGetWarRoomURL:
         )
         assert get_war_room_url(url) == expected_war_room_url
 
-    def test_get_war_room_url_with_platform_from_cases_war_room(mocker):
+    def test_get_war_room_url_with_platform_from_cases_war_room(self, mocker):
         url = "https://example.com/incidents/war_room?caseId=INCIDENT-2'"
         expected_war_room_url = "https://example.com/cases/war_room?caseId=2"
 
@@ -5264,7 +5264,7 @@ class TestGetWarRoomURL:
 
         assert get_war_room_url(url) == expected_war_room_url
 
-    def test_get_war_room_url_with_platform_from_issue_war_room(mocker):
+    def test_get_war_room_url_with_platform_from_issue_war_room(self, mocker):
         url = "https://example.com/incidents/war_room?caseId=1"
         expected_war_room_url = "https://example.com/issue-view/1"
 
