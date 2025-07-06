@@ -1275,7 +1275,7 @@ def analyze_command_line(command_line: str, custom_patterns: list[str] | None = 
     for check_name, check in checks.items():
         results["analysis"]["original"][check_name] = check(parsed_command_line)
 
-    results["analysis"]["custom_patterns"] = (
+    results["analysis"]["original"]["custom_patterns"] = (
         check_custom_patterns(parsed_command_line, custom_patterns) if custom_patterns else []
     )
 
