@@ -21,6 +21,7 @@ Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the i
 | proxy | Use system proxy settings | False |
 
 ## Retrieve Egress API Key
+
 To retrieve the Egress API key from Panorama - Click "Generate API Key" under **Panorama->Cloud Services->Configuration->Service Setup.** For more information, see [Retrieve the IP Addresses for Prisma Access](https://docs.paloaltonetworks.com/prisma/prisma-access/prisma-access-panorama-admin/prisma-access-overview/retrieve-ip-addresses-for-prisma-access).
 
 ## Commands
