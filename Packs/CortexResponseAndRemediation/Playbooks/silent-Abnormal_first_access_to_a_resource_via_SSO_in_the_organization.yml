@@ -4712,7 +4712,7 @@ tasks:
       - "187"
     scriptarguments:
       brandname:
-        simple: '["MicrosoftGraphIdentityandAccess","MicrosoftGraphApplications"]'
+        simple: MicrosoftGraphIdentityandAccess
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -5091,7 +5091,7 @@ tasks:
       - "175"
     scriptarguments:
       brandname:
-        simple: '["MicrosoftGraphIdentityandAccess","MicrosoftGraphApplications"]'
+        simple: MicrosoftGraphApplications
     separatecontext: false
     continueonerrortype: ""
     view: |-
