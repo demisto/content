@@ -154,36 +154,6 @@ def get_end_date(start_date_str: str, days: int = 2) -> str:
     return end_date.strftime(STRFTIME_FORMAT)
 
 
-def get_events_for_get(client: Client, report_id: str, start_date: str, skip: int, top: int) -> Optional[List[Dict[str, Any]]]:
-    """
-    Get a list of events from the SAP Cloud for Customer API.
-
-    Args:
-        client (Client): The client object to use for API requests.
-        report_id (str): The ID of the report to fetch events from.
-        start_date (str): Fetch events that are newer than or equal to this time (formatted as DD-MM-YYYY HH:MM:SS).
-        skip (int): Number of items to skip for pagination.
-        top (int): Maximum number of events to return in this request.
-
-    Returns:
-        Dict[str, Any]: A list of events.
-    """
-    params = {
-        "$filter": f"CTIMESTAMP ge '{start_date} INDIA'",  # TODO will be fixes once the client returns a response
-        "$skip": skip,
-        "$top": top,
-        "$format": "json",
-    }
-
-    res = client.http_request(
-        method="GET",
-        url_suffix=f"{URL_SUFFIX}{report_id}?",
-        params=params,
-    )
-
-    return res.get("d", {}).get("results", [])
-
-
 def get_events_command(client: Client, report_id: str, args: dict) -> tuple[List[Dict], CommandResults]:
     """
     Retrieves events from the SAP Cloud for Customer API based on provided parameters.
