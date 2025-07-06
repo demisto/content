@@ -110,7 +110,7 @@ def get_war_room_url(url: str) -> str:
 
         if incident_id and incident_id.startswith("INCIDENT-"):
             # Executed from the incident War Room
-            case_id = incident_id.split('-')[-1]
+            case_id = incident_id.split("-")[-1]
             war_room_url += f"/war_room?caseId={case_id}"
         else:
             # Executed from the alert War Room
@@ -122,7 +122,7 @@ def get_war_room_url(url: str) -> str:
     if is_platform():
         if incident_id and incident_id.startswith("INCIDENT-"):
             # Executed from the cases War Room
-            case_id = incident_id.split('-')[-1]
+            case_id = incident_id.split("-")[-1]
             war_room_url = f"{base_url}/cases/war_room?caseId={case_id}"
         else:
             # Executed from the issue War Room
@@ -131,6 +131,7 @@ def get_war_room_url(url: str) -> str:
         return war_room_url
 
     return url
+
 
 def get_bot_id() -> str:
     """

@@ -5275,7 +5275,6 @@ class TestGetWarRoomURL:
         assert get_war_room_url(url) == expected_war_room_url
 
 
-
 def test_send_file_api_exception(mocker):
     """
     Given:
