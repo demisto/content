@@ -1525,7 +1525,7 @@ class ExchangeOnlinePowershellV3Client
         Specifies the Inbox rule that you want to disable.
 
         .EXAMPLE
-        Disable-InboxRule -Identity "MoveAnnouncements" -Mailbox "Joe@Contoso.com"
+        Disable-InboxRule -Identity "MoveAnnouncements" -Mailbox "example@example.com"
 
         .OUTPUTS
         PSObject - Raw response
@@ -1671,7 +1671,7 @@ class ExchangeOnlinePowershellV3Client
         Specifies the rule that you want to remove.
 
         .EXAMPLE
-        Remove-TransportRule -Identity "Redirect messages from kim@contoso.com to legal@contoso.com"
+        Remove-TransportRule -Identity "Redirect messages from example1@example.com to example2@example.com"
 
         .OUTPUTS
         PSObject - Raw response
@@ -1773,7 +1773,7 @@ class ExchangeOnlinePowershellV3Client
         Specifies the mailbox that you want to modify.
 
         .EXAMPLE
-        Set-Mailbox -Identity "John Woods" -DeliverToMailboxAndForward $true -ForwardingSMTPAddress manuel@contoso.com
+        Set-Mailbox -Identity "John Woods" -DeliverToMailboxAndForward $true -ForwardingSMTPAddress example@example.com
 
         .OUTPUTS
         PSObject - Raw response
@@ -2531,6 +2531,9 @@ function Main
             "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
             }
+            "$script:COMMAND_PREFIX-email-security-block-sender-office-365-quick-action" {
+                ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-get-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXOGetTenantAllowBlockListCommand $exo_client $command_arguments
             }
@@ -2538,6 +2541,9 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = EXOCountTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
+                ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-email-security-unblock-sender-office-365-quick-action" {
                 ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-export-quarantinemessage" {
