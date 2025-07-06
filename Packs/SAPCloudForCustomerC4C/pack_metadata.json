@@ -1,6 +1,6 @@
 {
     "name": "SAP Cloud For Customer C4C",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "SAP Cloud for Customer (C4C) Integration for audit event collection. This pack fetches, filters, and paginates audit events from your SAP C4C instance for security monitoring and analysis.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
