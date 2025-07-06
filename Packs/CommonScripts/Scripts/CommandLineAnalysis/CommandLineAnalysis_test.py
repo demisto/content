@@ -120,6 +120,7 @@ def test_custom_patterns_score():
     command = 'cmd "test"'
     result = analyze_command_line(command, custom_patterns=["test"])
     assert result["score"] == 21
+    assert result["analysis"]["original"]["custom_patterns"] == ["test"]
 
 
 def test_custom_high_risk_combo():
@@ -138,5 +139,7 @@ def test_analyze_command_line():
     assert result["parsed_command"] == 'wevtutil cl Security "Double encoding "This is a listener(11.101.124.22)""'
     assert "base64 encoding detected" in result["findings"]["original"]
 
-    result = analyze_command_line(MACOS_COMMAND_LINE)
-    assert result["risk"] == "Medium Risk"
+    result = analyze_command_line(MACOS_COMMAND_LINE, custom_patterns=["secret_copy"])
+    assert result["risk"] == "High Risk"
+    assert 'custom patterns detected (1 instances)' in result["findings"]["original"]
+    
