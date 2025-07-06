@@ -213,18 +213,19 @@ class AzureClient:
                 error_details += f' under subscription ID "{subscription_id}" and resource group "{resource_group_name}"'
             elif subscription_id:
                 error_details += f' under subscription ID "{subscription_id}"'
-            raise ValueError(f"{error_details} was not found.")
+            raise ValueError(f"{error_details} was not found. {str(e)}")
 
         elif "403" in error_msg or "forbidden" in error_msg:
-            raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}".')
+            raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}". {str(e)}')
 
         elif "401" in error_msg or "unauthorized" in error_msg:
-            raise DemistoException(
-                f'Authentication failed when accessing {resource_type} "{resource_name}". Please check credentials.'
-            )
+            raise DemistoException(f'Authentication failed when accessing {resource_type} "{resource_name}". {str(e)}')
 
         elif "400" in error_msg or "bad request" in error_msg:
-            raise DemistoException(f'Invalid request for {resource_type} "{resource_name}". Please check the parameters.')
+            if "intercepted by proxydome" in error_msg:
+                raise DemistoException(f'Request for {resource_type} "{resource_name}" was intercepted by proxydome.')
+
+            raise DemistoException(f'Invalid request for {resource_type} "{resource_name}". {str(e)}')
 
         else:
             # Re-raise the original exception for any other errors
