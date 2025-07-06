@@ -19,7 +19,7 @@ outputs:
 - contextPath: CommandLineAnalysis.decoded_command
   description: The decoded Base64 command line string, if decoding was performed.
 - contextPath: CommandLineAnalysis.risk
-  description: The overall risk level derived from the command line analysis, classified as Low, Medium, High, or Critical.
+  description: The overall risk level derived from the command line analysis, classified as "Low Risk", "Medium Risk", "High Risk", or "Critical Risk".
 - contextPath: CommandLineAnalysis.score
   description: The normalized score (0-100) representing the risk associated with the analyzed command line.
 - contextPath: CommandLineAnalysis
