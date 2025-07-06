@@ -105,6 +105,10 @@ Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/g
 - `AppCatalog.Read.All`
 - `TeamsAppInstallation.ReadWriteSelfForChat`
 
+**Application permissions:** (For `microsoft-teams-ring-user`)
+- `User.Read.All`
+- `Calls.Initiate.All`
+
 Alternatively, you can check each relevant command section below for the minimum permissions it requires.
 
 5. Verify that all permissions were added, and click **Grant admin consent**.
@@ -361,16 +365,15 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
 
     To troubleshoot:
    1. **Verify that the messaging endpoint is configured correctly**. Use the `microsoft-teams-create-messaging-endpoint`command ([microsoft-teams-create-messaging-endpoint documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-create-messaging-endpoint)) to get the correct messaging endpoint based on the server URL, the server version, and the instance configurations.
-   2. Paste the configured messaging endpoint into a browser and press **Enter**. If you receive a `Method Not Allowed` response, the endpoint is valid and ready for communication. If you receive a different error, it typically indicates a problem with the endpoint configuration — **not an issue with Cortex XSOAR 8 or Cortex XSIAM** — and it’s recommended to troubleshoot using the command mentioned above.
-   3. In some cases, a connection is not created between Teams and the messaging endpoint when adding a bot to the team. You can work around this problem by **adding any member to the team the bot was added to** (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
-   4. If the previous step did not work, **remove the bot from the team**, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), **then add the bot to the team again**.
-   5. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, **you can clear the integration cache** in the integration instance config:
+   2. In some cases, a connection is not created between Teams and the messaging endpoint when adding a bot to the team. You can work around this problem by **adding any member to the team the bot was added to** (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
+   3. If the previous step did not work, **remove the bot from the team**, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), **then add the bot to the team again**.
+   4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, **you can clear the integration cache** in the integration instance config:
 
         <img height="75" src="../../doc_files/cache.png" />
 
        First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
        If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
-   6. **Verify the Docker container is up and running** and publish the configured port to the outside world:
+   5. **Verify the Docker container is up and running** and publish the configured port to the outside world:
 
        From the Cortex XSOAR/XSIAM engine machine run:
 
@@ -388,7 +391,7 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
 
        If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
 
-   7. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not for Cortex XSOAR/Cortex XSIAM Rerouting ).
+   6. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not for Cortex XSOAR/Cortex XSIAM Rerouting ).
        1. Run `openssl s_client -connect <domain.com>:443` .
        2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
 
