@@ -462,7 +462,7 @@ def quarantine_file_script(args: Dict[str, Any]) -> list[CommandResults]:
 
     elif hash_type == HASH_SHA256:  # noqa: SIM102
         # supported by Core or XDR
-        quarantine_brands = set({BRAND_CORE_IR, BRAND_XDR_IR}) & set(enabled_brands)
+        quarantine_brands = list(set({BRAND_CORE_IR, BRAND_XDR_IR}) & set(enabled_brands))
         if not quarantine_brands:
             demisto.error(
                 f"Hash_type {HASH_SHA256} supported by {INTEGRATION_FOR_SHA256} integrations."
