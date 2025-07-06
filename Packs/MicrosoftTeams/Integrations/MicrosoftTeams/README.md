@@ -5,6 +5,7 @@ This document includes the following sections to help you understand, set up, an
 
 1. [Integration Architecture](#integration-architecture)
 2. [Setup and Configuration](#setup-and-configuration)
+3. [Setup Examples](#setup-examples)
 3. [Known Limitations](#known-limitations)
 4. [Important Information](#important-information)
 5. [Troubleshooting](#troubleshooting)
@@ -70,7 +71,7 @@ In order to connect to Microsoft Teams use one of the following authentication m
 
 1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
-3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
+3. Click **API permissions > Add a permission > Microsoft Graph > Application/Delegated permissions**.
 4. For each of the next permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.
 
 Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires authenticating with `Client Credentials` due to a limitation in Microsoft's permissions system. (Calling this command will perform the authentication seemlessly)
@@ -110,9 +111,7 @@ Alternatively, you can check each relevant command section below for the minimum
 
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 
-7. Click **Expose an API** and add **Application ID URI**
-
-8. Click **Authentication** > **Platform configurations** > **Add a platform**. Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
+7. Click **Authentication** > **Platform configurations** > **Add a platform**. Choose **Web** and add Redirect URIs: <https://oproxy.demisto.ninja/authcode>
 
 ### 3. Configure Microsoft Teams on Cortex XSOAR/XSIAM
 
@@ -121,6 +120,8 @@ Please note that you need to use the flow to which you have added permissions.
 
 1. Client Credentials
 2. Authorization Code (Support [The chat commands](#chat-commands))
+
+For more detailed instructions, refer to [the relevant authentication flow](#authentication-using-the-authorization-code-flow) section.
 
 In order to configure the integration follow the next steps:
 
@@ -170,7 +171,7 @@ Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/g
 1. Choose the 'Authorization Code' option in the *Authentication Type* parameter.
 2. Enter your Client/Application ID in the *Bot ID* parameter.
 3. Enter your Client Secret in the *Bot Password* parameter.
-4. Enter your Application redirect URI in the *Application redirect URI* parameter. You need to configure the redirect URI in the Azure portal under the Authentication section within the bot settings.
+4. Enter your Application redirect URI in the *Application redirect URI* parameter (Step #7 in the [Grant Permissions](#2-grant-the-demisto-bot-permissions-in-microsoft-graph) section).
 5. Set the *Default team* and the *Notifications channel* parameters.
 6. Set the *Long running instance* parameter to 'True'.
 7. Save the instance.
@@ -324,7 +325,7 @@ All HTTPS traffic that will hit the selected messaging endpoint will be directed
 - Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accessible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
 In order to verify that the messaging endpoint is open as expected, you can surf to the messaging endpoint from a browser in an environment which is disconnected from the Cortex XSOAR environment.
 - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
-- For additional security, we recommend placing the Teams integration web server behind a reverse proxy (such as NGINX).
+- For additional security, we recommend placing the Teams integration web server behind a reverse proxy (such as [NGINX](#2-using-nginx-as-reverse-proxy)).
 - By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
 
     ```
