@@ -564,7 +564,8 @@ outputs:
 - contextPath: Core.Isolation.endpoint_id
   description: The isolated endpoint ID.
 tests:
-- No tests (auto formatted)
+- Kamal Test PB         # Does not exist
+- Kamal_use_case_test   # Does not exist
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2

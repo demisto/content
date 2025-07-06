@@ -1351,7 +1351,7 @@ outputs:
   description: The isolated endpoint ID.
 tests:
 - Containment Plan - Test
-- Containment_Plan_use_case_test
+- Containment_Plan_use_case_test  # Invalid config docstring
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
