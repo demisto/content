@@ -5,7 +5,7 @@ Configure Infoblox on XSOAR
 
 ##### Required Permissions
 
-The API supports only HTTP Basic Authentication. Every user must have permissions that grants them access to the API.
+The API supports only HTTP Basic Authentication. Every user must have permissions that grants them access to the API..
 
 1. Navigate to **Settings** > **Integrations**  > **Servers & Services**.
 2. Search for Infoblox.

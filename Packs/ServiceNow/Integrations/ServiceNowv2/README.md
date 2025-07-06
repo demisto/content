@@ -2,7 +2,7 @@ IT service management. Cortex XSOAR interfaces with ServiceNow to help streamlin
 
 - View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI, and enrich it with Cortex XSOAR data.
 - View, create, update and delete records from any ServiceNow table.
-- Query ServiceNow data with the ServiceNow query syntax.
+- Query ServiceNow data with the ServiceNow query syntax..
 - Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
 
 Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/xanadu-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
