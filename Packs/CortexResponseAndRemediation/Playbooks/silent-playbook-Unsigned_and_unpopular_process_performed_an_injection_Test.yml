@@ -539,7 +539,7 @@ tasks:
                       iscontext: true
                       value:
                         simple: foundIncidents.CustomFields.cid
-                    operator: isEqualString
+                    operator: containsGeneral
                     right:
                       iscontext: true
                       value:

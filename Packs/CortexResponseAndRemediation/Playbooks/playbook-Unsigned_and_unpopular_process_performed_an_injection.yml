@@ -219,7 +219,7 @@ tasks:
               complex:
                 root: foundIncidents.CustomFields
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: foundIncidents.CustomFields.cid
