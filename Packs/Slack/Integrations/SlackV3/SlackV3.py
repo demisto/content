@@ -91,6 +91,47 @@ IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
 
 """ HELPER FUNCTIONS """
+
+
+def get_war_room_url(url: str) -> str:
+    """
+    Constructs a war room URL based on the input URL and incident context.
+    Workarounds for known bugs:
+    - CRTX-107526 for XSIAM URLs
+    - CRTX-183586 for platform URLs
+    """
+    incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
+    parsed_url = urlparse(url)
+    base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
+    if is_xsiam():
+        war_room_url = f"{base_url}/incidents"
+
+        if incident_id and incident_id.startswith("INCIDENT-"):
+            # Executed from the incident War Room
+            case_id = incident_id.split('-')[-1]
+            war_room_url += f"/war_room?caseId={case_id}"
+        else:
+            # Executed from the alert War Room
+            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+
+        return war_room_url
+
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-183586
+    if is_platform():
+        if incident_id and incident_id.startswith("INCIDENT-"):
+            # Executed from the cases War Room
+            case_id = incident_id.split('-')[-1]
+            war_room_url = f"{base_url}/cases/war_room?caseId={case_id}"
+        else:
+            # Executed from the issue War Room
+            war_room_url = f"{base_url}/issue-view/{incident_id}"
+
+        return war_room_url
+
+    return url
+
 def get_bot_id() -> str:
     """
     Gets the app bot ID
@@ -2117,6 +2158,7 @@ def send_message(
                 if investigation.get("type") != PLAYGROUND_INVESTIGATION_TYPE:
                     link = server_links.get("warRoom")
                     if link:
+                        link = get_war_room_url(link)
                         if entry:
                             link += "/" + entry
                         message += f"\nView it on: {link}"
