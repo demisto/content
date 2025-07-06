@@ -67,6 +67,8 @@ Please add the following permissions to the app registration. Choose application
 - WindowsDefenderATP - Machine.LiveResponse - Application / Delegated
 - WindowsDefenderATP - Machine.Read.All - Application / Machine.Read - Delegated
 
+These access permissions can be verified by running the **microsoft-atp-list-auth-permissions** command after setting up an integration instance.
+
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 
 ---
@@ -220,7 +222,7 @@ Isolates a machine from accessing external network.
 
 ##### Required Permissions
 
-Machine.Isolate
+Machine.Isolate (part of the "Active Remediation Actions" role)
 
 ##### Base Command
 
@@ -864,7 +866,7 @@ Initiates Microsoft Defender Antivirus scan on a machine.
 
 ##### Required Permissions
 
-Machine.Scan
+Machine.Scan (part of the "Active Remediation Actions" role)
 
 #### Base Command
 
@@ -1761,7 +1763,7 @@ Collects an investigation package from a machine.
 
 ##### Required Permissions
 
-Machine.CollectForensics
+Machine.CollectForensics (part of the "Active Remediation Actions" role)
 
 ##### Base Command
 
@@ -1833,7 +1835,7 @@ Gets a URI that allows downloading of an investigation package.
 
 ##### Required Permissions
 
-Machine.CollectForensics
+Machine.CollectForensics (part of the "Active Remediation Actions" role)
 
 ##### Base Command
 
@@ -1877,7 +1879,7 @@ Restricts the execution of all applications on the machine except a predefined s
 
 ##### Required Permissions
 
-Machine.RestrictExecution
+Machine.RestrictExecution (part of the "Active Remediation Actions" role)
 
 ##### Base Command
 
@@ -1949,7 +1951,7 @@ Enables the execution of any application on the machine.
 
 ##### Required Permissions
 
-Machine.RestrictExecution
+Machine.RestrictExecution (part of the "Active Remediation Actions" role)
 
 ##### Base Command
 
@@ -2021,7 +2023,7 @@ Stops the execution of a file on a machine and deletes it.
 
 ##### Required Permissions
 
-Machine.StopAndQuarantine
+Machine.StopAndQuarantine (part of the "Active Remediation Actions" role)
 
 ##### Base Command
 
@@ -7365,3 +7367,20 @@ Run this command to get the missing security updates (KBs) from a specific machi
 >
 >|ID|Name|OSBuild|URL|MachineMissedOn|CVEAddressed|\n|---|---|---|---|---|---|
 >| 1234567 | March 20XX Security Updates | 12345 | [https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567](https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567) | 1 | 97 |
+
+### microsoft-atp-list-auth-permissions
+
+***
+Run this command to get the permissions from the decoded JSON Web Token (JWT) from the authentication process.
+
+#### Base Command
+
+`microsoft-atp-list-auth-permissions`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
