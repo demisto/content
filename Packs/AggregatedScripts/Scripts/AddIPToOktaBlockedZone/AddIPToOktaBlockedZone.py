@@ -3,12 +3,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Any, cast  # Import 'cast' for mypy
 
-# --- Constants ---
-# Assuming GLOBAL_ADMIN_ROLE_ID, DEFAULT_NAMED_LOCATION_NAME, DEFAULT_POLICY_NAME
-# are specific to the previous script, but kept them as they were in the provided snippet.
-# If this script doesn't use them, they can be removed or adjusted as needed.
-
-
 # --- Helper Functions ---
 
 
