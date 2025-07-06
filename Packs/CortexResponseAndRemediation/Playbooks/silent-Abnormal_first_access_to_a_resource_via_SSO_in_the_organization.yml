@@ -3917,7 +3917,7 @@ tasks:
             args:
               variation:
                 value:
-                  simple: 7 days ago
+                  simple: 3 days ago
     separatecontext: false
     continueonerrortype: ""
     view: |-
