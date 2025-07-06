@@ -2984,13 +2984,16 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
 
     fetch_query = demisto.params().get("fetch_query")
     if fetch_query:
+        demisto.debug(f"CrowdStrikeFalconMsg: fetch using query {fetch_query}")
         fetch_query = f"created_timestamp:>'{start_fetch_time}'+{fetch_query}"
         response = get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit, offset=detections_offset)
     else:
         response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=detections_offset)
-
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
+    demisto.debug(f"CrowdStrikeFalconMsg: fetched ids from get_fetch_detections: {detections_ids}")
+    demisto.debug(f"CrowdStrikeFalconMsg: number of fetched ids from get_fetch_detections: {len(detections_ids)}")
+    demisto.debug(f"CrowdStrikeFalconMsg: total detections from get_fetch_detections: {total_detections}")
     detections_offset = calculate_new_offset(detections_offset, len(detections_ids), total_detections)
     if detections_offset:
         if detections_offset + fetch_limit > MAX_FETCH_SIZE:
@@ -4589,6 +4592,8 @@ def search_detections_command():
         if not filter_arg:
             return_error("Command Error: Please provide at least one argument.")
         detections_ids = get_detections(filter_arg=filter_arg).get("resources")
+        demisto.debug(f"CrowdStrikeFalconMsg: fetched ids from get_fetch_detections: {detections_ids}")
+        demisto.debug(f"CrowdStrikeFalconMsg: number of fetched ids from get_fetch_detections: {len(detections_ids)}")
     raw_res = get_detections_entities(detections_ids)
     entries = []
     headers = ["ID", "Status", "System", "ProcessStartTime", "CustomerID", "MaxSeverity"]
