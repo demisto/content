@@ -1,10 +1,3 @@
-[CONST]
-LogType_REGEX = "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s(\w+)\s";
-logSeverity_REGEX = "\s+(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)[\s:]+";
-eventID_REGEX= "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s(\d+)";
-originalEventType_REGEX = "(\d+)\s(?:DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)";
-
-
 [MODEL: dataset=cisco_ise_raw]
 
 // CISE_Passed_Authentications, CISE_Failed_Attempts, CISE_RADIUS_Diagnostics, CISE_RADIUS_Accounting, CISE_TACACS_Accounting Parsing
@@ -87,7 +80,6 @@ alter
         NetworkDeviceName = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+),"),0),
         Privilege_Level = arrayindex(regextract(_raw_log, "Privilege-Level=([^\,;]+)"),0),
         Protocol = arrayindex(regextract(_raw_log, "Protocol=([^,]+),"),0),
-        Remote_Address_Hostname = arrayindex(regextract(_raw_log, "Remote-Address=([^,]+),"),0),
         Remote_Address_ipv4 = arrayindex(regextract(_raw_log, "Remote-Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
         Remote_Address_ipv6 = arrayindex(regextract(_raw_log, "Remote-Address=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}),"),0),
         Service = arrayindex(regextract(_raw_log, "Service=([^\,;]+)"),0),
@@ -226,10 +218,10 @@ Key_Values
    -------------------------------------------------------------------------------*/
 
 alter
-    logType = arrayindex(regextract(_raw_log, $LogType_REGEX),0)
+    logType = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s(\w+)\s"),0)
 | filter (logType = "CISE_Administrative_and_Operational_Audit")
 | alter
-    logSeverity = lowercase(arrayindex(regextract(_raw_log, $logSeverity_REGEX),0)),
+    logSeverity = lowercase(arrayindex(regextract(_raw_log, "\s+(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)[\s:]+"),0)),
     Description = arrayindex(regextract(_raw_log, "\s+(?:DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)\s*([^,]+)"),0),
     AdminIPAddress = arrayindex(regextract(_raw_log, "AdminIPAddress\s*=\s*([^,]*),"),0),
     AdminName = arrayindex(regextract(_raw_log, "AdminName\s*=\s*([^,]*),"),0),
@@ -239,13 +231,12 @@ alter
     ObjectType = arrayindex(regextract(_raw_log, "ObjectType\s*=\s*([^,]*),"),0),
     ObjectName = lowercase(arrayindex(regextract(_raw_log, "ObjectName\s*=\s*([^,]*),"),0)),
     OperationMessageText = arrayindex(regextract(_raw_log, "OperationMessageText\s*=\s*([^,]*),"),0),
-    PeerName = arrayindex(regextract(_raw_log, "PeerName\s*=\s*(.*?),\s"),0),
     ShutdownReason = arrayindex(regextract(_raw_log, "ShutdownReason\s*=\s*([^,]*),"),0),
-    Targets = arrayindex(regextract(_raw_log, "Targets\s*=\s*(\S*),\s"),0),
     UniqueConnectionIdentifier = arrayindex(regextract(_raw_log, "UniqueConnectionIdentifier\s*=\s*([^,]*),"),0)
 | alter
-    xdm.event.id = arrayindex(regextract(_raw_log, $eventID_REGEX),0),
-    xdm.event.original_event_type = arrayindex(regextract(_raw_log, $originalEventType_REGEX),0),
+    xdm.event.id = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s(\d+)"),0),
+    xdm.event.type = logType,
+    xdm.event.original_event_type = arrayindex(regextract(_raw_log, "(\d+)\s(?:DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)"),0),
     xdm.event.description = if(ConfigChangeData != null and OperationMessageText != null, concat(OperationMessageText, " - ", ConfigChangeData), coalesce(ConfigChangeData, OperationMessageText, Description)),
     xdm.event.outcome = if(FailureFlag = "false", XDM_CONST.OUTCOME_SUCCESS, FailureFlag = "true", XDM_CONST.OUTCOME_FAILED, null),
     xdm.event.outcome_reason = ShutdownReason,
