@@ -108,6 +108,7 @@ Note ⚠️: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/g
 - `TeamsAppInstallation.ReadWriteSelfForChat`
 
 **Application permissions:** (For `microsoft-teams-ring-user`)
+
 - `User.Read.All`
 - `Calls.Initiate.All`
 
