@@ -1,4 +1,5 @@
 category: Forensics & Malware Analysis
+deprecated: true
 sectionOrder:
   - Connect
   - Collect
@@ -29,7 +30,7 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: ANY.RUN is a cloud-based sandbox with interactive access.
+description: Deprecated. Use ANY.RUN TI Feeds, ANY.RUN TI Lookup, ANY.RUN Cloud Sandbox instead.
 display: ANY.RUN
 name: ANYRUN
 script:
