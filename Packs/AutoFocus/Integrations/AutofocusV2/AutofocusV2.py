@@ -326,7 +326,7 @@ def run_polling_command(client: Client, args: dict, cmd: str, search_function: C
             # continue to look for search results
             args["af_cookie"] = af_cookie
     # get search status
-    command_results, status = results_function(args)
+    command_results, status = results_function(client, args)
     if status != "complete":
         # schedule next poll
         polling_args = {"af_cookie": args.get("af_cookie"), "interval_in_seconds": interval_in_secs, "polling": True, **args}
@@ -799,22 +799,9 @@ def search_samples(
     if not query:
         indicator_args_for_query = {"file_hash": file_hash, "domain": domain, "ip": ip, "url": url}
         used_indicator = validate_no_multiple_indicators_for_search(indicator_args_for_query)
-        search_result = []
-        for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
-            query = build_sample_search_query(used_indicator, _batch, wildfire_verdict, first_seen, last_updated)
-            search_result.append(
-                run_search(
-                    client,
-                    "samples",
-                    query=query,
-                    scope=scope,
-                    size=size,
-                    sort=sort,
-                    order=order,
-                    artifact_source=artifact_source,
-                )
-            )
-        return search_result
+        indicators = indicator_args_for_query[used_indicator]
+        query = build_sample_search_query(used_indicator, indicators, wildfire_verdict, first_seen, last_updated)
+
     return run_search(
         client, "samples", query=query, scope=scope, size=size, sort=sort, order=order, artifact_source=artifact_source
     )
@@ -855,11 +842,9 @@ def search_sessions(
     if not query:
         indicator_args_for_query = {"file_hash": file_hash, "domain": domain, "ip": ip, "url": url}
         used_indicator = validate_no_multiple_indicators_for_search(indicator_args_for_query)
-        search_result = []
-        for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
-            query = build_session_search_query(used_indicator, _batch, from_time, to_time)
-            search_result.append(run_search(client, "sessions", query=query, size=size, sort=sort, order=order))
-        return search_result
+        indicators = indicator_args_for_query[used_indicator]
+        query = build_session_search_query(used_indicator, indicators, from_time, to_time)
+
     return run_search(client, "sessions", query=query, size=size, sort=sort, order=order)
 
 
