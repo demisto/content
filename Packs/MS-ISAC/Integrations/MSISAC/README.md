@@ -22,7 +22,7 @@ Retrieve alert data by its ID
 
 #### Base Command
 
-`msisac-get-event`
+`msisac-get-alert`
 
 #### Input
 
