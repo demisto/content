@@ -356,7 +356,7 @@ tasks:
               empty_values: {}
               remove_keys:
                 value:
-                  simple: 'false'
+                  simple: 'true'
             operator: RemoveEmpty
           - operator: uniq
     separatecontext: false
