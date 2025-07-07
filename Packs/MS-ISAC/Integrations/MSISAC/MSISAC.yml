@@ -231,7 +231,7 @@ script:
       description: The protocol associated with the traffic.
       type: string
     - contextPath: MSISAC.Alert.category
-      description: The category of the alert
+      description: The category of the alert.
       type: string
     - contextPath: MSISAC.Alert.createdAt
       description: The timestamp when the alert was created.
@@ -243,37 +243,37 @@ script:
       description: The destination port number of the traffic.
       type: number
     - contextPath: MSISAC.Alert.encodedPayload
-      description: 
+      description: The encoded payload of the traffic.
       type: string
     - contextPath: MSISAC.Alert.httpHostname
-      description: 
+      description: The HTTP hostname of the traffic.
       type: string
     - contextPath: MSISAC.Alert.httpMethod
-      description: 
+      description: The HTTP method of the traffic.
       type: string
     - contextPath: MSISAC.Alert.httpStatus
-      description: 
+      description: The HTTP status code of the traffic.
       type: number
     - contextPath: MSISAC.Alert.httpUrl
-      description: 
+      description: The HTTP url of the traffic.
       type: string
     - contextPath: MSISAC.Alert.logicalSensor
       description: The name for the sensor that triggered the event.
       type: string
     - contextPath: MSISAC.Alert.mitreTactic
-      description: 
+      description: The mitre tactic associated with the traffic.
       type: string
     - contextPath: MSISAC.Alert.mitreTechnique
-      description: 
+      description: The mitre technique associated with the traffic.
       type: string
     - contextPath: MSISAC.Alert.signatureDirection
       description: The direction of the traffic flow.
       type: string
     - contextPath: MSISAC.Alert.signatureId
-      description: 
+      description: The signature id of the traffic.
       type: number
     - contextPath: MSISAC.Alert.signatureName
-      description: 
+      description: The signature name of the traffic.
       type: string
     - contextPath: MSISAC.Alert.sourceIp
       description: The source IP of the traffic.
@@ -282,7 +282,7 @@ script:
       description: The source port number of the traffic.
       type: number
     - contextPath: MSISAC.Alert.transportProtocol
-      description: 
+      description: The transport protocol of the traffic.
       type: string
   - name: msisac-retrieve-cases
     arguments:
