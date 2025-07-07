@@ -988,7 +988,7 @@ class ExchangeOnlinePowershellV3Client
         #>
     }
 
-    [PSObject]GetMessageTrace([string[]]$sender_address, [string[]]$recipient_address, [string[]]$from_ip, [string[]]$to_ip, [string[]]$message_id,
+    [PSObject]GetMessageTrace([string[]]$sender_address, [string[]]$recipient_address, [string]$from_ip, [string]$to_ip, [string[]]$message_id,
         [string]$message_trace_id, [int32]$page, [int32]$page_size, [String]$start_date, [String]$end_date, [string]$status) {
         $response = ""
         try {
@@ -1525,7 +1525,7 @@ class ExchangeOnlinePowershellV3Client
         Specifies the Inbox rule that you want to disable.
 
         .EXAMPLE
-        Disable-InboxRule -Identity "MoveAnnouncements" -Mailbox "Joe@Contoso.com"
+        Disable-InboxRule -Identity "MoveAnnouncements" -Mailbox "example@example.com"
 
         .OUTPUTS
         PSObject - Raw response
@@ -1671,7 +1671,7 @@ class ExchangeOnlinePowershellV3Client
         Specifies the rule that you want to remove.
 
         .EXAMPLE
-        Remove-TransportRule -Identity "Redirect messages from kim@contoso.com to legal@contoso.com"
+        Remove-TransportRule -Identity "Redirect messages from example1@example.com to example2@example.com"
 
         .OUTPUTS
         PSObject - Raw response
@@ -1773,7 +1773,7 @@ class ExchangeOnlinePowershellV3Client
         Specifies the mailbox that you want to modify.
 
         .EXAMPLE
-        Set-Mailbox -Identity "John Woods" -DeliverToMailboxAndForward $true -ForwardingSMTPAddress manuel@contoso.com
+        Set-Mailbox -Identity "John Woods" -DeliverToMailboxAndForward $true -ForwardingSMTPAddress example@example.com
 
         .OUTPUTS
         PSObject - Raw response
@@ -2208,10 +2208,8 @@ function GetMessageTraceCommand([ExchangeOnlinePowershellV3Client]$client, [hash
     # Parse arguments
     $sender_address = ArgToList $kwargs.sender_address
     $recipient_address = ArgToList $kwargs.recipient_address
-    $from_ip = ArgToList $kwargs.from_ip
-    $to_ip = ArgToList $kwargs.to_ip
 
-    $raw_response = $client.GetMessageTrace($sender_address, $recipient_address, $from_ip, $to_ip, $kwargs.message_id,
+    $raw_response = $client.GetMessageTrace($sender_address, $recipient_address, $kwargs.from_ip, $kwargs.to_ip, $kwargs.message_id,
         $kwargs.message_trace_id, $kwargs.page, $kwargs.page_size, $kwargs.start_date,
         $kwargs.end_date, $kwargs.status)
 
@@ -2531,6 +2529,9 @@ function Main
             "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
             }
+            "$script:COMMAND_PREFIX-email-security-block-sender-office-365-quick-action" {
+                ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-get-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXOGetTenantAllowBlockListCommand $exo_client $command_arguments
             }
@@ -2538,6 +2539,9 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = EXOCountTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
+                ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-email-security-unblock-sender-office-365-quick-action" {
                 ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-export-quarantinemessage" {
