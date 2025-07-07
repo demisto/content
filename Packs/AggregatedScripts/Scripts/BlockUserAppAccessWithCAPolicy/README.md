@@ -18,7 +18,6 @@ This script uses the following commands and scripts.
 * MicrosoftGraphIdentityandAccess
 * msgraph-identity-ca-policies-list
 
-
 ## Inputs
 
 ---

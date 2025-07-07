@@ -19,7 +19,6 @@ This script uses the following commands and scripts.
 * okta-list-zones
 * okta-update-zone
 
-
 ## Inputs
 
 ---
