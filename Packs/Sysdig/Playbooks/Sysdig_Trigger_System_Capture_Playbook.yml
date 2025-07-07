@@ -1,11 +1,5 @@
 id: Sysdig Trigger System Capture
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packName: Sysdig Response Actions
-    itemVersion: 1.0.0
-    fromServerVersion: 6.0.0
-    isoverridable: false
 vcShouldKeepItemLegacyProdMachine: false
 name: Sysdig Trigger System Capture
 description: Example playbook on how to manage different response actions based on
