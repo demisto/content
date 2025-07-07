@@ -158,7 +158,7 @@ class TestFetchActivity:
         mock_get_from_date = mocker.spy(ServiceNowEventCollector, "get_from_date")
         mocker.spy(ServiceNowEventCollector, "get_limit")
         search_events_mock = mocker.patch.object(Client, "search_events", return_value=mock_api_events)
-        mock_enrich = mocker.spy(ServiceNowEventCollector, "enrich_events")
+        mocker.spy(ServiceNowEventCollector, "enrich_events")
 
         # Act
         all_events, command_results = get_events_command(self.client, args, LogType.CASE, last_run)

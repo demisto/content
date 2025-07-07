@@ -1,6 +1,5 @@
 import urllib3
 from enum import Enum
-from typing import Tuple
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -340,7 +339,7 @@ def get_events_command(client: Client, args: dict, log_type: LogType, last_run: 
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events_command(client: Client, last_run: dict, log_types: List[LogType]) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+def fetch_events_command(client: Client, last_run: dict, log_types: List[LogType]):
     """
     Fetches events for all specified log types from ServiceNow.
 
