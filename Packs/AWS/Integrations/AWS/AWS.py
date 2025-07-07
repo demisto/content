@@ -1229,8 +1229,9 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
         # Connectivity check for services
         for service in AWSServices:
             try:
+                session = None
                 # Attempt to create a client for each service
-                get_service_client(
+                client, session = get_service_client(
                     session=session,
                     service_name=service,
                     config=Config(connect_timeout=3, read_timeout=3, retries={"max_attempts": 1}),
