@@ -54,4 +54,4 @@ There are no outputs for this playbook.
 
 ---
 
-![ANY.RUN Detonate URL Windows](../doc_files/ANY.RUN_Detonate_URL_Windows.png)
+![ANY.RUN Detonate URL Windows](../doc_files/ANYRUN_Detonate_URL_Windows.png)

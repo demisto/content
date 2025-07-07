@@ -57,4 +57,4 @@ There are no outputs for this playbook.
 
 ---
 
-![ANY.RUN Detonate File Windows](../doc_files/ANY.RUN_Detonate_File_Windows.png)
+![ANY.RUN Detonate File Windows](../doc_files/ANYRUN_Detonate_File_Windows.png)

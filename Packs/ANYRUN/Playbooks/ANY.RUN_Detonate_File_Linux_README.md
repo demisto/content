@@ -55,4 +55,4 @@ There are no outputs for this playbook.
 
 ---
 
-![ANY.RUN Detonate File Linux](../doc_files/ANY.RUN_Detonate_File_Linux.png)
+![ANY.RUN Detonate File Linux](../doc_files/ANYRUN_Detonate_File_Linux.png)

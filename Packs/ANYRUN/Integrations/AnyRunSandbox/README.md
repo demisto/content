@@ -20,7 +20,7 @@ ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool fo
 * Follow [ANY.RUN Sandbox](https://app.any.run/)
 * [1] Profile > [2] API and Limits > [3] Generate > [4] Copy
 
-![ANY.RUN Generate API KEY](../../doc_files/ANY.RUN_API_TOKEN.png)
+![ANY.RUN Generate API KEY](../../doc_files/ANYRUN_API_TOKEN.png)
 
 
 ## Configure ANY.RUN Sandbox in Cortex

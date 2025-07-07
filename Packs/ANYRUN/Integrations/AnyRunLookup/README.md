@@ -8,7 +8,7 @@ Perform deep searches, look up threats online, and enrich your security solution
 * Follow [ANY.RUN Sandbox](https://app.any.run/)
 * [1] Profile > [2] API and Limits > [3] Generate > [4] Copy
 
-![ANY.RUN Generate API KEY](../../doc_files/ANY.RUN_API_TOKEN.png)
+![ANY.RUN Generate API KEY](../../doc_files/ANYRUN_API_TOKEN.png)
 
 ## Configure ANY.RUN Lookup in Cortex
 
@@ -63,7 +63,7 @@ Perform threat intelligence using specified IOC
 | image_path | Full path to process image. Example: "System32\\conhost.exe". | Optional | 
 | command_line | Full command line that initiated the process. Example: "PDQConnectAgent\\pdq-connect-agent.exe –service". | Optional | 
 | injected_flag | Indication of whether a process has been injected. Possible values are: true, false. | Optional | 
-| destination_ip | The IP address of the network connection that was established or attempted. Example: "147.185.221.22". | Optional | 
+| destination_ip | The IP address of the network connection that was established or attempted. | Optional | 
 | destination_port | The network port through which the connection was established. Example: "49760". | Optional | 
 | destination_ip_asn | Detected ASN. Example: "akamai-as". | Optional | 
 | destination_ip_geo | Two-letter country or region code of the detected IP geolocation. Example: "ae". | Optional | 
@@ -84,7 +84,7 @@ Perform threat intelligence using specified IOC
 | sync_object_name | The name or identifier of the synchronization object used. Example: "rmc". | Optional | 
 | sync_object_type | The type of synchronization object used. Example: "mutex". | Optional | 
 | sync_object_operation | The operation performed on the synchronization object. Example: "create". | Optional | 
-| url | The URL called by the process. Example: "http://192.168.37.128:8880/zv8u". | Optional | 
+| url | The URL called by the process. | Optional | 
 | http_request_content_type | The content type of the HTTP request sent to the server. Example: "application/json". | Optional | 
 | http_response_content_type | The content type of the HTTP response received from the server. Example: "text/html". | Optional | 
 | http_request_file_type | The file type of the file being uploaded in the HTTP request. Example: "binary". | Optional | 

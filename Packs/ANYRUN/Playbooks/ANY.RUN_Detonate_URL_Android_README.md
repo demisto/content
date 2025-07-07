@@ -49,4 +49,4 @@ There are no outputs for this playbook.
 
 ---
 
-![ANY.RUN Detonate URL Android](../doc_files/ANY.RUN_Detonate_URL_Android.png)
+![ANY.RUN Detonate URL Android](../doc_files/ANYRUN_Detonate_URL_Android.png)
