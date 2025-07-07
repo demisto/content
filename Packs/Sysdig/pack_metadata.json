@@ -15,6 +15,9 @@
         "Security",
         "Attack"
     ],
+    "itemPrefix": [
+        "Sysdig"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

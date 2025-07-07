@@ -15,4 +15,4 @@ These capabilities help streamline incident response and enhance security postur
 
 _For more information, visit [Sysdig.](https://sysdig.com)_
 
-[![Sysdig Overview](./doc_files/Author_image.png)](https://sysdig.com)
+[![Sysdig Overview](doc_files/Author_image.png)](https://sysdig.com)
