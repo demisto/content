@@ -25,7 +25,6 @@ alter
 	xdm.auth.auth_method = coalesce(IAU_AUTHENTICATIONMETHOD, IAU_AUTHENTICATIONSCHEMEID),
 	xdm.event.outcome_reason = if(IAU_EVENTSTATUS = 0, IAU_FAILURECODE),
 	xdm.alert.description = object_create("IAU_COMPONENTDATA", IAU_COMPONENTDATA, "IAU_COMPONENTID", IAU_COMPONENTID, "IAU_COMPONENTNAME", IAU_COMPONENTNAME, "IAU_CONTEXTFIELDS", IAU_CONTEXTFIELDS),
-	xdm.observer.sub_type = IAU_HOMEINSTANCE,
 	xdm.observer.type = IAU_ORACLEHOME,
 	xdm.source.process.pid = to_integer(IAU_PROCESSID),
 	xdm.network.session_id = IAU_SESSIONID,
