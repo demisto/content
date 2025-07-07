@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: master
+  CURRENT_BRANCH_NAME: xdr_agent_connect_azure
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: master
+    ref: xdr_agent_connect_azure
     project: "${CI_PROJECT_NAMESPACE}/infra"
