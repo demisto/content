@@ -116,10 +116,11 @@ class Validator:
 
 def get_client_from_params() -> Client:
     """Initialize client from demisto params"""
-    api_key = demisto.params().get("apikey", "").strip()
-    company_id = demisto.params().get("company_id", "").strip()
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
+    params = demisto.params()
+    api_key = params.get("credentials", {}).get("password", "").strip()
+    company_id = params.get("credentials", {}).get("identifier", "").strip()
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     if not api_key:
         raise ValueError("API Key is required")

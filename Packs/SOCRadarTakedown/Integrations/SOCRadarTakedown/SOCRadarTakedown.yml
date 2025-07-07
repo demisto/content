@@ -8,32 +8,12 @@ name: SOCRadar Takedown
 display: SOCRadar Takedown
 category: Data Enrichment & Threat Intelligence
 description: Submit and track takedown requests for phishing domains, social media impersonation, source code leaks, and rogue mobile apps through SOCRadar platform.
-detaileddescription: |
-  This integration allows you to:
-  - Submit takedown requests for phishing domains
-  - Submit takedown requests for social media impersonation
-  - Submit takedown requests for source code leaks  
-  - Submit takedown requests for rogue mobile apps
-  - Track the progress of submitted takedown requests
-  
-  ## Authentication
-  You need a valid SOCRadar API key and Company ID to use this integration.
-  
-  ## Rate Limits
-  Please ensure your API key has adequate rate limits for your usage.
-
 configuration:
-- display: SOCRadar API Key
-  name: apikey
+- name: credentials
+  display: Company ID
   required: true
-  type: 4
-  additionalinfo: Your SOCRadar platform API key
-  section: Connect
-- display: Company ID
-  name: company_id
-  required: true
-  type: 0
-  additionalinfo: Your SOCRadar Company ID
+  type: 9
+  displaypassword: API Key
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
