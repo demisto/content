@@ -5,7 +5,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Sysdig Response Actions in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Your server URL | True |
@@ -34,18 +33,18 @@ Execute response actions through the Sysdig API
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| actionType | Action type to perform. Possible values are: KILL_PROCESS, KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, FILE_QUARANTINE. | Required | 
-| callerId | The caller ID, it must be unique every time. | Required | 
-| container_id | The container ID to apply the action. Example "container.id": "123456789123". | Optional | 
-| path_absolute | The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action. | Optional | 
-| host_id | The host ID. Example "laksjdf1923u90snca893". | Optional | 
-| process_id | The process ID. Example "1234". Required for the `KILL_PROCESS` action. | Optional | 
+| actionType | Action type to perform. Possible values are: KILL_PROCESS, KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, FILE_QUARANTINE. | Required |
+| callerId | The caller ID, it must be unique every time. | Required |
+| container_id | The container ID to apply the action. Example "container.id": "123456789123". | Optional |
+| path_absolute | The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action. | Optional |
+| host_id | The host ID. Example "laksjdf1923u90snca893". | Optional |
+| process_id | The process ID. Example "1234". Required for the `KILL_PROCESS` action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| execute_response_action.Output | Dict | Output of the response-actions API | 
+| execute_response_action.Output | Dict | Output of the response-actions API |
 
 ### create-system-capture
 
@@ -60,20 +59,20 @@ Command to trigger a system capture, it will record all system calls at the host
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| container_id | The container ID to apply the action. Example "container.id": "123456789123". | Required | 
-| host_name | The host name. Example "ip-1-1-1-1.us-west-1.compute.internal". | Required | 
-| capture_name | The capture name. | Required | 
-| agent_id | The agent ID. | Required | 
-| customer_id | The customer ID. | Required | 
-| machine_id | The machine ID/MAC. Example "01:aa:02:bb:03:cc". | Required | 
-| scan_duration | Capture duration in seconds. | Optional | 
-| scap_filter | Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi). | Optional | 
+| container_id | The container ID to apply the action. Example "container.id": "123456789123". | Required |
+| host_name | The host name. Example "ip-1-1-1-1.us-west-1.compute.internal". | Required |
+| capture_name | The capture name. | Required |
+| agent_id | The agent ID. | Required |
+| customer_id | The customer ID. | Required |
+| machine_id | The machine ID/MAC. Example "01:aa:02:bb:03:cc". | Required |
+| scan_duration | Capture duration in seconds. | Optional |
+| scap_filter | Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| create_system_capture.Output | Dict | Output of the system capture created | 
+| create_system_capture.Output | Dict | Output of the system capture created |
 
 ### get-capture-file
 
@@ -88,13 +87,13 @@ Command to get a system capture based on the capture ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| capture_id | System Capture ID. | Required | 
+| capture_id | System Capture ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| get_capture_file.Output | Dict | Output of the system capture downloaded | 
+| get_capture_file.Output | Dict | Output of the system capture downloaded |
 
 ### get-action-execution
 
@@ -109,10 +108,10 @@ Get the status and information of a triggered action execution
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_execution_id | The action exection ID. | Required | 
+| action_execution_id | The action exection ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| get_action_execution.Output | Dict | Output of the action execution info | 
+| get_action_execution.Output | Dict | Output of the action execution info |

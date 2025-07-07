@@ -36,7 +36,9 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url: str, verify: bool, headers: dict[str, str], proxy: bool, ok_codes: tuple[int] = (200, 201, 202)):
+    def __init__(
+        self, base_url: str, verify: bool, headers: dict[str, str], proxy: bool, ok_codes: tuple[int, ...] = (200, 201, 202)
+    ):
         self.base_url = base_url
         self.verify = verify
         self.headers = headers
@@ -204,7 +206,7 @@ def execute_response_action_command(client: Client, args: dict[str, Any]) -> Com
     full_url = _get_public_api_url(client.base_url) + "/secure/response-actions/v1alpha1/action-executions"
     data = _build_data_payload(args)
 
-    result: dict = client.call_sysdig_api(method="POST", full_url=full_url, json_data=data)
+    result: dict = client.call_sysdig_api(method="POST", full_url=full_url, json_data=data)  # type: ignore[assignment]
     readable_output = (
         f"## Response Action: {result.get('actionType')}\n"
         f"Triggered successfully by callerId: **{result.get('callerId')}** with status: **{result.get('status')}**\n"
@@ -228,7 +230,7 @@ def get_action_execution_command(client: Client, args: dict[str, Any]) -> Comman
     action_execution_id = args.get("action_execution_id")
     full_url = _get_public_api_url(client.base_url) + f"/secure/response-actions/v1alpha1/action-executions/{action_execution_id}"
 
-    result: dict = client.call_sysdig_api(method="GET", full_url=full_url)
+    result: dict = client.call_sysdig_api(method="GET", full_url=full_url)  # type: ignore[assignment]
     readable_output = (
         f"## Action Execution Status\n"
         f"- **Action Type:** {result.get('actionType')}\n"
@@ -252,7 +254,7 @@ def create_system_capture_command(client: Client, args: dict[str, Any]) -> Comma
     Trigger a sysdig system capture
     """
     data = _build_capture_payload(args)
-    result: dict = client.call_sysdig_api(method="POST", url_suffix="/api/v1/captures", json_data=data)
+    result: dict = client.call_sysdig_api(method="POST", url_suffix="/api/v1/captures", json_data=data)  # type: ignore[assignment]
     readable_output = (
         f"## Capture: {result.get('capture', {}).get('name')}\n"
         f"- **Status:** {result.get('capture', {}).get('status')}\n"
@@ -279,7 +281,7 @@ def get_capture_file_command(client: Client, args: dict[str, Any]) -> CommandRes
     url_suffix = f"/api/v1/captures/{capture_id}/download"
 
     # The response is a binary file, so we set the resp_type to 'content'
-    result: str | bytes = client.call_sysdig_api(url_suffix=url_suffix, resp_type="content")
+    result: str | bytes = client.call_sysdig_api(url_suffix=url_suffix, resp_type="content")  # type: ignore[assignment]
     incident_id = demisto.incident().get("id")
     file_name = f"{incident_id}_{capture_id}.scap"
 
@@ -305,7 +307,7 @@ def test_module(client: Client):
         'ok' if test passed, anything else will fail the test
     """
 
-    result: dict = client.call_sysdig_api("GET", url_suffix="/api/users/me")
+    result: dict = client.call_sysdig_api("GET", url_suffix="/api/users/me")  # type: ignore[assignment]
     user: dict = result.get("user", {})
     if user and user.get("id"):
         return "ok"
