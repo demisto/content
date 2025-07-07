@@ -1,7 +1,5 @@
 Note: Support for this pack moved to the partner on March, 22, 2022.
 
-GreyMatter Digital Risk Protection minimize digital risk by identifying unwanted exposure and protecting against external threats. The award-winning solution provides ongoing monitoring of a customer's unique assets and exposure across the open, deep, and dark web. This enables clients to detect data loss, brand impersonation, infrastructure risks, cyber threats, and much more.
-
 Working within ReliaQuest's GreyMatter Digital Risk Protection, the Managed Takedown service provides customers with end-to-end takedown management that quickly removes infringing content, domains, documents and mobile applications.
 
 Contact your ReliaQuest GreyMatter DRP representative to obtain API credentials.
