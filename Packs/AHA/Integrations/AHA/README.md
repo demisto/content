@@ -146,5 +146,22 @@ Edit an idea status to Shipped.
 | AHA.Idea.created_at | Date | The idea creation date. |
 
 #### Command example
-
 ```!aha-edit-idea idea_name=DEMO-I-2895```
+### aha-test
+
+***
+test command.
+
+#### Base Command
+
+`aha-test usetobe@myself.com`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| test_arg | test_arg. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
