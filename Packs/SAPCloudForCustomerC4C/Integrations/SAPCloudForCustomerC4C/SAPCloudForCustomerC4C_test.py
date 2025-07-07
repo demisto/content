@@ -4,18 +4,12 @@ from datetime import datetime
 from CommonServerPython import *  # noqa: F401
 
 SAP_CLOUD = "SAP CLOUD FOR CUSTOMER"
-STRFTIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC
-VENDOR = "SAP CLOUD"
-PRODUCT = "C4C"
-FIRST_FETCH = "one minute ago"
 URL_SUFFIX = "/sap/c4c/odata/ana_businessanalytics_analytics.svc/"
-INIT_SKIP = 0
-DEFAULT_TOP = 1000
 
 
 def mock_client():
-    return Client(base_url="https://my313577.crm.ondemand.com", base64String="base64String", verify=True)
+    return Client(base_url="https://testurl.com", base64String="base64String", verify=True)
 
 
 ENCODE_TO_BASE64_TEST_CASES = [
@@ -75,7 +69,6 @@ def test_get_end_date(start_date_str: str, days: int, expected_end_date_str: str
     - Scenarios crossing month and year boundaries.
     - Handling of leap years, including adding days to, across, and after the leap day.
     - Edge cases like adding zero days.
-    - Behavior with negative 'days' input, effectively subtracting days.
 
     Given:
         - `start_date_str` (str): The initial date string in "DD-MM-YYYY HH:MM:SS" format.
@@ -95,7 +88,27 @@ def test_get_end_date(start_date_str: str, days: int, expected_end_date_str: str
 
 def test_get_events_success_without_end_date(mocker):
     """
-    Test case for successful retrieval of events without an end_date.
+    Tests the successful retrieval of events when no end date is specified.
+
+    This test verifies that the `get_events` function correctly fetches event data
+    from the mocked SAP Cloud for Customer (C4C) client when only a start date
+    is provided, ensuring the generated OData filter does not include an end date clause.
+
+    Given:
+        - `mocker`: A pytest fixture for mocking objects and methods.
+    When:
+        - Calling `get_events` with a mocked client instance, a report ID,
+          pagination parameters (`skip`, `top`), and only a `start_date`.
+    Then:
+        Verify that:
+        - The `http_request` method of the mocked client is called exactly once.
+        - The `http_request` call includes the correct `url_suffix` and `params`.
+        - The `$filter` parameter in the `http_request` call correctly specifies
+          `CTIMESTAMP ge '{start_date} INDIA'`.
+        - The `$filter` parameter explicitly *does not* contain an "and CTIMESTAMP le"
+          clause, confirming no end date filter was applied.
+        - The returned `result` from `get_events` matches the `expected_events`
+          provided by the mocked `http_request` response.
     """
     from SAPCloudForCustomerC4C import get_events
 
@@ -133,7 +146,28 @@ def test_get_events_success_without_end_date(mocker):
 
 def test_get_events_success_with_end_date(mocker):
     """
-    Test case for successful retrieval of events with an end_date.
+    Tests the successful retrieval of events when both start and end dates are specified.
+
+    This test verifies that the `get_events` function correctly fetches event data
+    from the mocked SAP Cloud for Customer (C4C) client when both a start date
+    and an end date are provided, ensuring the generated OData filter includes
+    both date clauses.
+
+    Given:
+        - `mocker`: A pytest fixture for mocking objects and methods.
+    When:
+        - Calling `get_events` with a mocked client instance, a report ID,
+          pagination parameters (`skip`, `top`), a `start_date`, and an `end_date`.
+    Then:
+        Verify that:
+        - The `http_request` method of the mocked client is called exactly once.
+        - The `http_request` call includes the correct `url_suffix` and `params`.
+        - The `$filter` parameter in the `http_request` call correctly specifies
+          `CTIMESTAMP ge '{start_date} INDIA' and CTIMESTAMP le '{end_date} INDIA'`.
+        - The `$filter` parameter explicitly *does* contain an "and CTIMESTAMP le"
+          clause, confirming the end date filter was applied.
+        - The returned `result` from `get_events` matches the `expected_events`
+          provided by the mocked `http_request` response.
     """
     from SAPCloudForCustomerC4C import get_events
 
@@ -172,7 +206,24 @@ def test_get_events_success_with_end_date(mocker):
 
 def test_get_events_empty_results(mocker):
     """
-    Test case when the API returns an empty list of results.
+    Tests the scenario where the API returns an empty list of events.
+
+    This test verifies that the `get_events` function correctly handles cases
+    where the mocked SAP Cloud for Customer (C4C) client's API call
+    returns an empty list of results, ensuring the function returns an
+    empty list as expected.
+
+    Given:
+        - `mocker`: A pytest fixture for mocking objects and methods.
+    When:
+        - Calling `get_events` with a mocked client instance, a report ID,
+          pagination parameters (`skip`, `top`), and a `start_date`,
+          where the `http_request` is configured to return an empty list of results.
+    Then:
+        Verify that:
+        - The `http_request` method of the mocked client is called exactly once.
+        - The returned `result` from `get_events` is an empty list,
+          matching the API's empty response.
     """
     from SAPCloudForCustomerC4C import get_events
 
@@ -191,13 +242,26 @@ def test_get_events_empty_results(mocker):
 
 def test_get_events_command_success_single_page(mocker):
     """
-    Tests the successful execution of the get_events_command function, retrieving events in a single page.
+    Tests the successful execution of the `get_events_command` function,
+    retrieving events that fit within a single page.
+
+    This test simulates a scenario where the API returns a number of events
+    less than or equal to the `DEFAULT_TOP` limit, ensuring that the
+    `get_events_command` correctly processes and returns the data
+    without needing multiple API calls for pagination.
 
     Given:
-        - A mock client instance.
-        - Arguments for the command including start_date and a limit <= DEFAULT_TOP.
+        - `mocker`: A pytest fixture for mocking objects and methods.
     When:
-        - Running the get_events_command function.
+        - Running the `get_events_command` function with the mocked client
+          and specified arguments.
+    Then:
+        Verify that:
+        - The `http_request` method of the mocked client is called exactly once.
+        - The `events_list` returned by the command matches the `expected_events`.
+        - The `raw_response` in `cmd_results` matches the `expected_events`.
+        - The `readable_output` in `cmd_results` contains the expected
+          header and table structure for the events.
     """
     from SAPCloudForCustomerC4C import get_events_command
 
@@ -242,7 +306,29 @@ def test_get_events_command_success_single_page(mocker):
 
 def test_get_events_command_success_multiple_pages(mocker):
     """
-    Tests get_events_command for successful retrieval requiring multiple API calls (pagination).
+    Tests the successful execution of the `get_events_command` function,
+    retrieving events that require multiple API calls (pagination).
+
+    This test simulates a scenario where the total number of events to be retrieved
+    exceeds the `DEFAULT_TOP` limit, necessitating multiple paginated API calls
+    to fetch all the data. It verifies that the `get_events_command` correctly
+    handles pagination and aggregates results from successive API responses.
+
+    Given:
+        - `mocker`: A pytest fixture for mocking objects and methods.
+    When:
+        - Running the `get_events_command` function with the mocked client
+          and specified arguments.
+    Then:
+        Verify that:
+        - The `http_request` method of the mocked client is called the expected
+          number of times (e.g., 3 calls for 2 pages of data plus a final
+          call to confirm no more data).
+        - The `events_list` returned by the command contains all events
+          from all paginated responses, matching `expected_all_events`.
+        - The `raw_response` in `cmd_results` matches `expected_all_events`.
+        - The `readable_output` in `cmd_results` contains the expected
+          header for the events.
     """
     from SAPCloudForCustomerC4C import get_events_command
 
@@ -318,7 +404,21 @@ def test_get_events_command_success_multiple_pages(mocker):
 
 def test_get_events_command_no_start_date():
     """
-    Test case when 'start_date' argument is missing.
+    Tests the behavior of `get_events_command` when the 'start_date' argument is missing.
+
+    This test verifies that the `get_events_command` function correctly handles
+    the absence of the mandatory 'start_date' argument, ensuring it returns
+    an empty list for events and an appropriate error message in the command results.
+
+    When:
+        - Running the `get_events_command` function with the missing 'start_date' argument.
+    Then:
+        Verify that:
+        - The `events` list returned by the command is empty.
+        - The `readable_output` in `cmd_results` contains the expected error message
+          indicating that 'start_date' is required.
+        - The `raw_response` in `cmd_results` is an empty dictionary, as no API call
+          would have been made.
     """
     from SAPCloudForCustomerC4C import get_events_command
 
@@ -336,18 +436,26 @@ def test_get_events_command_no_start_date():
 
 def test_fetch_events_first_fetch_success(mocker):
     """
-    Tests successful first fetch (no last_run) of events.
+    Tests the successful first fetch of events by the `fetch_events` function
+    when no previous `last_run` state is available.
+
+    This test simulates the initial execution of `fetch_events`, verifying that
+    it correctly retrieves a specified maximum number of events from the mocked
+    SAP Cloud for Customer (C4C) client and updates the `next_run` state
+    with the current UTC time as the `last_fetch` timestamp.
 
     Given:
-        - A mock client instance.
-        - Integration parameters with report_id.
-        - An empty last_run dictionary.
+        - `mocker`: A pytest fixture for mocking objects and methods.
     When:
-        - Running fetch_events.
+        - Calling `fetch_events` with the mocked client, parameters, and empty `last_run`.
     Then:
-        - `http_request` is called with start_date based on FIRST_FETCH.
-        - `next_run` contains the current time in ISO format.
-        - All expected events are returned.
+        Verify that:
+        - The `http_request` method of the mocked client is called with appropriate
+          parameters (e.g., `$top` matching `max_fetch`, and a filter based on
+          a calculated `start_date` if applicable, or no filter if `last_run` is empty).
+        - The `fetched_events` returned by `fetch_events` match the `expected_events`.
+        - The `next_run` dictionary correctly contains `last_fetch` key with the
+          formatted `fixed_now_dt` as its value.
     """
     from SAPCloudForCustomerC4C import fetch_events
 
@@ -409,10 +517,7 @@ def test_fetch_events_first_fetch_success(mocker):
     ]
 
     mocker.patch("SAPCloudForCustomerC4C.get_current_utc_time", return_value=fixed_now_dt)
-    mocker.patch.object(
-        mock_client_instance, "http_request", return_value={"d": {"results": expected_events[:DEFAULT_TOP]}}
-    )  # First batch
-
+    mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": expected_events}})
     next_run, fetched_events = fetch_events(mock_client_instance, params, last_run={})
 
     assert fetched_events == expected_events
@@ -421,18 +526,19 @@ def test_fetch_events_first_fetch_success(mocker):
 
 def test_fetch_events_report_id_missing():
     """
-    Tests fetch_events when 'report_id' is missing from params, expecting DemistoException.
+    Tests the behavior of `fetch_events` when the 'report_id' is missing from the parameters.
 
-    Given:
-        - A mock client instance.
-        - Integration parameters without 'report_id'.
-        - An empty last_run dictionary.
+    This test verifies that the `fetch_events` function correctly raises a
+    `DemistoException` when the mandatory 'report_id' is not provided in the
+    `params` dictionary, ensuring proper error handling for missing configuration.
+
     When:
-        - Running fetch_events.
+        - Calling `fetch_events` with the mocked client and missing `report_id` parameter.
     Then:
+        Verify that:
         - A `DemistoException` is raised.
-        - `http_request` is not called.
-        - `demisto.debug` confirms the error.
+        - The exception message contains the specific error text:
+          "Report ID must be provided in the integration parameters and must be a string."
     """
     from SAPCloudForCustomerC4C import fetch_events
 
@@ -447,7 +553,28 @@ def test_fetch_events_report_id_missing():
 
 def test_fetch_events_dateparser_fallback(mocker):
     """
-    Tests fetch_events when dateparser.parse fails for last_fetch, leading to fallback to FIRST_FETCH.
+    Tests the behavior of `fetch_events` when `dateparser.parse` fails to parse
+    the `last_fetch` timestamp from `last_run`, leading to a fallback to `FIRST_FETCH` logic.
+
+    This test simulates a scenario where the `last_run` state contains a malformed
+    or unparseable date string for `last_fetch`. It verifies that `fetch_events`
+    gracefully handles this error by reverting to the initial fetch logic (as if
+    it were the very first run), retrieves events from `FIRST_FETCH` onwards,
+    and correctly updates the `next_run` state with a valid current timestamp.
+
+    Given:
+        - `mocker`: A pytest fixture for mocking objects and methods.
+    When:
+        - Calling `fetch_events` with the mocked client, parameters, and the `last_run`
+          containing the malformed date.
+    Then:
+        Verify that:
+        - The `http_request` method of the mocked client is called with parameters
+          consistent with a `FIRST_FETCH` (i.e., no specific `start_date` based on `last_fetch`).
+        - The `fetched_events` returned by `fetch_events` match the `expected_events`.
+        - The `next_run` dictionary correctly contains a `last_fetch` key with the
+          formatted `fixed_now_dt` (current time) as its value, indicating a successful
+          reset of the fetch state.
     """
     from SAPCloudForCustomerC4C import fetch_events
 
