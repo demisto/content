@@ -375,7 +375,7 @@ def fetch_events_command(client: Client, last_run: dict, log_types: List[LogType
             demisto.debug(f"Done de-duplicating. Received {len(unseen_events)} {log_type.type_string} unseen events.")
             enriched_events = enrich_events(unseen_events, log_type)
 
-            last_fetch_time = enriched_events[-1].get("sys_created_on") if enriched_events else from_date
+            last_fetch_time = (enriched_events and enriched_events[-1].get("sys_created_on")) or from_date
             last_run = update_last_run(last_run, log_type, last_fetch_time, list(previous_run_ids))
             collected_events.extend(enriched_events)
 
