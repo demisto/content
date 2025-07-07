@@ -2,7 +2,7 @@
     "name": "Oracle IAM",
     "description": "A suite of solutions that enables secure user authentication, authorization, identity governance, and access control across enterprise applications and services.",
     "support": "xsoar",
-    "currentVersion": "1.0.28",
+    "currentVersion": "1.0.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,7 +12,7 @@
     ],
     "tags": [
         "IAM",
-        "Network"        
+        "Network"
     ],
     "useCases": [
         "Identity and Access Management",
@@ -23,7 +23,7 @@
         "oam",
         "iam",
         "Access Manager",
-        "Identity Federation"        
+        "Identity Federation"
     ],
     "marketplaces": [
         "xsoar",
