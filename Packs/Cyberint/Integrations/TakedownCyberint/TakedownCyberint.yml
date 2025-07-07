@@ -21,8 +21,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: API Key (Leave empty. Fill in the API Key in the password field.)
-  displaypassword: API access token
+- displaypassword: API access token
   name: access_token
   hiddenusername: true
   type: 9
