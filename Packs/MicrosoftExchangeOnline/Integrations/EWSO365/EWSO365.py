@@ -1589,7 +1589,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
     log_memory()
     last_run = get_last_run(client, last_run)
     demisto.debug(f"get_last_run: {last_run=}")
-    excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
+    excluded_ids = last_run.get(LAST_RUN_IDS, {})
     try:
         last_emails = fetch_last_emails(
             client,
@@ -1603,19 +1603,19 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         incident: dict[str, str] = {}
         emails_ids = []  # Used for mark emails as read
         demisto.debug(f"{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}")
-        current_fetch_ids = set()
-
+        current_fetch_ids = dict()
         last_fetch_time = last_run.get(LAST_RUN_TIME)
-
         last_modification_time = last_fetch_time
         demisto.debug(f"{last_fetch_time=}, {last_modification_time=}")
+
         if isinstance(last_modification_time, EWSDateTime):
             last_modification_time = last_modification_time.ewsformat()
 
         for item in last_emails:
             try:
                 if item.message_id:
-                    current_fetch_ids.add(item.message_id)
+                    current_fetch_ids[
+                        item.message_id] = item.datetime_created.ewsformat() if RECEIVED_FILTER else item.last_modified_time.ewsformat()
                     incident = parse_incident_from_item(item)
                     incidents.append(incident)
 
@@ -1672,7 +1672,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         new_last_run = {
             LAST_RUN_TIME: last_incident_run_time,
             LAST_RUN_FOLDER: client.folder_name,
-            LAST_RUN_IDS: list(ids),
+            LAST_RUN_IDS: ids,
             ERROR_COUNTER: 0,
         }
 
@@ -1711,17 +1711,21 @@ def fetch_last_emails(
     demisto.debug(f"Finished getting the folder named {folder_name} by path")
     log_memory()
     if since_datetime:
-        if incident_filter == MODIFIED_FILTER:
-            qs = qs.filter(last_modified_time__gte=since_datetime)
-        else:  # default to "received" time
+        if incident_filter == RECEIVED_FILTER:
             qs = qs.filter(datetime_received__gte=since_datetime)
+        else:
+            qs = qs.filter(last_modified_time__gte=since_datetime)
     else:
         tz = EWSTimeZone("UTC")
         first_fetch_datetime = dateparser.parse(FETCH_TIME)
         assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
-        qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
         demisto.debug(f"{first_fetch_ews_datetime=}")
+        if incident_filter == RECEIVED_FILTER:
+            qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
+        else:
+            qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
+
     qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name.lower() != "mime_content"])
     if incident_filter == RECEIVED_FILTER:
         qs = qs.filter().order_by("datetime_received")
@@ -1729,7 +1733,7 @@ def fetch_last_emails(
         qs = qs.filter().order_by("last_modified_time")
 
     result = []
-    exclude_ids = exclude_ids if exclude_ids else set()
+    exclude_ids = exclude_ids if exclude_ids else dict()
     demisto.debug(f"{APP_NAME} - Exclude ID list: {exclude_ids}")
     qs.chunk_size = min(client.max_fetch, 100)
     qs.page_size = min(client.max_fetch, 100)
@@ -1737,7 +1741,11 @@ def fetch_last_emails(
     demisto.debug(f"Size of the queryset object in fetch-incidents: {sys.getsizeof(qs)}")
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
-        if isinstance(item, Message) and item.message_id not in exclude_ids:
+        if isinstance(item, Message):
+            if item.message_id in exclude_ids:
+                if exclude_ids.get(item.message_id) >= item.last_modified_time.ewsformat():
+                    # If the item was fetched before and its received/modification time hasn't changed since the previous fetch
+                    continue
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
