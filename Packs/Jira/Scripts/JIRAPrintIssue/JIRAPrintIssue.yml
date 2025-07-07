@@ -24,3 +24,5 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+tests:
+- No tests
