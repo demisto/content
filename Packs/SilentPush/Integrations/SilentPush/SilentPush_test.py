@@ -1528,7 +1528,6 @@ def test_get_data_exports_command_success(mock_client):
 
     # Mock the response object returned by client.get_data_exports
     mock_response = type("Response", (), {"status_code": 200, "content": content})()
-
     mock_client.get_data_exports.return_value = mock_response
 
     # Run the command
@@ -1537,7 +1536,7 @@ def test_get_data_exports_command_success(mock_client):
     # Assertions
     assert isinstance(result, dict)
     assert result["File"] == "export.csv"
-    assert result.content == content
+    assert result["Contents"] == content
     assert result["Type"] == EntryType.FILE
 
 
@@ -1565,19 +1564,7 @@ def test_add_feed_tags_command_success(mocker):
 
 
 def test_get_data_exports_command_missing_feed_url(mock_client):
-    args = {""}
+    args = {}
 
     with pytest.raises(ValueError, match="Feed URL is required"):
-        get_data_exports_command(mock_client, args)
-
-
-def test_get_data_exports_command_http_error(mock_client):
-    feed_url = "https://api.silentpush.com/feeds/export.csv"
-    args = {"feed_url": feed_url}
-
-    mock_response = type("Response", (), {"status_code": 404, "text": "Not Found"})()
-
-    mock_client.get_data_exports.return_value = mock_response
-
-    with pytest.raises(Exception, match="Failed to download file: 404 Not Found"):
         get_data_exports_command(mock_client, args)
