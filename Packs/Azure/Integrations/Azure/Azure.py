@@ -454,7 +454,11 @@ class AzureClient:
                 "description": description,
             }
         }
-        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        try:
+            return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            if "400" in str(e) or "bad request" in str(e) and "intercepted by proxydome" in str(e):
+                raise DemistoException("The request was intercepted by proxydome.")
 
     def set_postgres_config(
         self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str, source: str, value: str
@@ -566,7 +570,7 @@ class AzureClient:
         try:
             full_url = (
                 f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
+                f"/providers/Microsoft.Web/sites/{name}/config/authsettings/list"
             )
             params = {"api-version": WEBAPP_API_VERSION}
             return self.http_request(method="GET", full_url=full_url, params=params)
@@ -579,7 +583,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def update_webapp_auth(self, name: str, subscription_id: str, resource_group_name: str, current: dict):
+    def update_webapp_auth(self, name: str, subscription_id: str, resource_group_name: str, enabled: str):
         """
         Updates the authentication settings of a web app.
 
@@ -601,7 +605,7 @@ class AzureClient:
             f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
         )
         params = {"api-version": WEBAPP_API_VERSION}
-        data = current
+        data = {"properties": {"enabled": enabled}}
         demisto.debug(f"Updating WebApp auth of {name}.")
         try:
             return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
@@ -1501,9 +1505,7 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     enabled = args.get("enabled")
-    current = client.get_webapp_auth(name, subscription_id, resource_group_name)
-    current["properties"]["enabled"] = enabled
-    response = client.update_webapp_auth(name, subscription_id, resource_group_name, current)
+    response = client.update_webapp_auth(name, subscription_id, resource_group_name, enabled)
     demisto.debug("Updated webapp auth settings.")
     outputs = [
         {
