@@ -6,8 +6,8 @@ This document includes the following sections to help you understand, set up, an
 - [Integration Architecture](#integration-architecture)
 - [Setup and Configuration](#setup-and-configuration)
 - [Setup Examples](#setup-examples)
-- [Known Limitations](#known-limitations)
 - [Important Information](#important-information)
+- [Known Limitations](#known-limitations)
 - [Troubleshooting](#troubleshooting)
 - [Download Demisto Bot](#download-demisto-bot)
 - [Commands](#commands)
@@ -313,16 +313,6 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
-## Known Limitations
-
-- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires using the `Client Credentials` authentication due to a limitation in Microsoft's permissions system. As such, when using `Authorization Code flow` and calling this command, the integration will internally authenticate using the `Client Credentials flow`.
-- The chat commands are only supported when using the `Authorization Code flow`.
-- Posting a message or adaptive card to a private/shared channel is currently not supported in the ***send-notification*** command. Thus, also the ***mirror_investigation*** command does not support private/shared channels. For more information, see [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
-- The ***send-notification*** command currently supports only adaptive cards without user responses. To collect user responses from adaptive cards, please use the ***MicrosoftTeamsAsk*** command.
-- In case of multiple chats/users sharing the same name, only one will be used.
-- If a non-Cortex XSOAR/XSIAM user ran the `new incident` command in the chat with the bot, the owner of the created incident would be the logged in Cortex XSOAR/XSIAM user, not the external user who ran the command.
-- See Microsoft documentation for [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams).
-
 ## Important Information
 
 - This integration is supported in Cortex XSOAR 8 and up and Cortex XSIAM without using an engine.
@@ -360,6 +350,16 @@ Make sure the output does not contain the following:
   - botframework.com
   - microsoftonline.com
 When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u), it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
+
+## Known Limitations
+
+- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires using the `Client Credentials` authentication due to a limitation in Microsoft's permissions system. As such, when using `Authorization Code flow` and calling this command, the integration will internally authenticate using the `Client Credentials flow`.
+- The chat commands are only supported when using the `Authorization Code flow`.
+- Posting a message or adaptive card to a private/shared channel is currently not supported in the ***send-notification*** command. Thus, also the ***mirror_investigation*** command does not support private/shared channels. For more information, see [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
+- The ***send-notification*** command currently supports only adaptive cards without user responses. To collect user responses from adaptive cards, please use the ***MicrosoftTeamsAsk*** command.
+- In case of multiple chats/users sharing the same name, only one will be used.
+- If a non-Cortex XSOAR/XSIAM user ran the `new incident` command in the chat with the bot, the owner of the created incident would be the logged in Cortex XSOAR/XSIAM user, not the external user who ran the command.
+- See Microsoft documentation for [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams).
 
 ## Troubleshooting
 
