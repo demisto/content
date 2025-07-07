@@ -1,0 +1,167 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: MicrosoftDefenderThreatIntelligence
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  additionalinfo: The API Key to use for the connection
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+display: MicrosoftDefenderThreatIntelligence
+name: MicrosoftDefenderThreatIntelligence
+script:
+  commands:
+
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: article_id
+    - defaultvalue: '50'
+      description: 'Number of incidents in the list.'
+      name: limit
+    - default: false
+      description: 'Filter incidents using "odata" query.'
+      name: odata
+    deprecated: false
+    description: 'Get articles including their properties and relationships.'
+    execution: false
+    name: msg-defender-threat-intel-article-list
+
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: article_id
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: article_indicator_id
+    - defaultvalue: '50'
+      description: 'Number of incidents in the list.'
+      name: limit
+    - default: false
+      description: 'Filter incidents using "odata" query.'
+      name: odata
+    deprecated: false
+    description: 'Get indicators of threat or compromise related to the contents of an article.'
+    execution: false
+    name: msg-defender-threat-intel-article-indicators-list
+
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: intel_profile_id
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: article_indicator_id
+    - defaultvalue: '50'
+      description: 'Number of incidents in the list.'
+      name: limit
+    - default: false
+      description: 'Filter incidents using "odata" query.'
+      name: odata
+    deprecated: false
+    description: 'Get Intelligence Profiles including their properties and relationships.'
+    execution: false
+    name: msg-defender-threat-intel-profile-list
+
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: intel_profile_id
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: intel_profile_indicator_id
+    - defaultvalue: '50'
+      description: 'Number of incidents in the list.'
+      name: limit
+    - default: false
+      description: 'Filter incidents using "odata" query.'
+      name: odata
+    deprecated: false
+    description: 'Get Intelligence Profiles Indicators and their properties.'
+    execution: false
+    name: msg-defender-threat-intel-profile-indicators-list
+
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: host_id
+      required: true
+    - default: false
+      description: 'Filter incidents using "odata" query.'
+      name: odata
+    deprecated: false
+    description: 'Read the properties and relationships of a host object.'
+    execution: false
+    name: msg-defender-threat-intel-host
+
+
+  - arguments:
+    - default: false
+      description: 'hostname or IP address.'
+      name: host_id
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: whois_record_id
+    - default: false
+      description: 'Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.'
+      name: odata
+    - default: false
+      description: 'Number of records in the list.'
+      name: limit
+    deprecated: false
+    description: 'Get the specified whoisRecord resource.'
+    execution: false
+    name: msg-defender-threat-intel-host-whois
+
+  - arguments:
+    - default: false
+      description: 'hostname or IP address.'
+      name: host_id
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: whois_record_id
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      name: whois_history_record_id
+    - default: false
+      description: 'Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.'
+      name: odata
+    - default: false
+      description: 'Number of records in the list.'
+      name: limit
+    deprecated: false
+    description: 'Get the history for a whoisRecord, as represented by a collection of whoisHistoryRecord resources.'
+    execution: false
+    name: msg-defender-threat-intel-host-whois-history
+
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
