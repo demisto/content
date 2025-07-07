@@ -1530,7 +1530,7 @@ def test_integration_context_during_run(test_case_data, mocker):
     mirror_options = test_case_data["mirror_options"]
 
     init_context = test_case_data["init_context"].copy()
-    if mirror_options:
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         init_context |= {
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
@@ -1581,19 +1581,16 @@ def test_integration_context_during_run(test_case_data, mocker):
         assets_limit=100,
         long_running_container_id="12345",
     )
-    if mirror_options:
-        expected_ctx_first_loop |= {
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        expected_ctx_first_loop.update({
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if is_offenses_first_loop else {},
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
             MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
-            LAST_FETCH_KEY: expected_ctx_first_loop.get(LAST_FETCH_KEY, 0),
-            "samples": expected_ctx_first_loop.get("samples", []),
-        }
-    else:
-        expected_ctx_first_loop |= {
-            LAST_FETCH_KEY: expected_ctx_first_loop.get(LAST_FETCH_KEY, 0),
-            "samples": expected_ctx_first_loop.get("samples", []),
-        }
+        })
+        if LAST_FETCH_KEY not in expected_ctx_first_loop:
+            expected_ctx_first_loop[LAST_FETCH_KEY] = 0
+        if "samples" not in expected_ctx_first_loop:
+            expected_ctx_first_loop["samples"] = []
 
     current_context = get_integration_context()
 
@@ -1640,19 +1637,16 @@ def test_integration_context_during_run(test_case_data, mocker):
     for k, v in second_loop_ctx_not_default_values.items():
         expected_ctx_second_loop[k] = v
 
-    if mirror_options:
-        expected_ctx_second_loop |= {
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        expected_ctx_second_loop.update({
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if is_offenses_first_loop else {},
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
             MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
-            LAST_FETCH_KEY: expected_ctx_second_loop.get(LAST_FETCH_KEY, 0),
-            "samples": expected_ctx_second_loop.get("samples", []),
-        }
-    else:
-        expected_ctx_second_loop |= {
-            LAST_FETCH_KEY: expected_ctx_second_loop.get(LAST_FETCH_KEY, 0),
-            "samples": expected_ctx_second_loop.get("samples", []),
-        }
+        })
+        if LAST_FETCH_KEY not in expected_ctx_second_loop:
+            expected_ctx_second_loop[LAST_FETCH_KEY] = 0
+        if "samples" not in expected_ctx_second_loop:
+            expected_ctx_second_loop["samples"] = []
 
     current_context = get_integration_context()
     
