@@ -1859,3 +1859,109 @@ This command add indicators to the feed
 | --- | --- | --- |
 | SilentPush.AddIndicators.created_or_updated | Unknown | List of indicator names that were created or updated in the feed. |
 | SilentPush.AddIndicators.invalid_indicators | Unknown | List of indicators that were considered invalid and not added to the feed. |
+
+### silentpush-list-domain-information
+
+***
+This command get domain information along with Silent Push risk score and live whois information for multiple domains.
+
+#### Base Command
+
+`silentpush-list-domain-information`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domains | Comma-separated list of domains to query. | Required |
+| fetch_risk_score | Whether to fetch risk scores for the domains. | Optional |
+| fetch_whois_info | Whether to fetch WHOIS information for the domains. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.Domain.domain | String | The domain name queried. |
+| SilentPush.Domain.last_seen | Number | The last seen date of the domain in YYYYMMDD format. |
+| SilentPush.Domain.query | String | The domain name used for the query. |
+| SilentPush.Domain.whois_age | Number | The age of the domain in days based on WHOIS creation date. |
+| SilentPush.Domain.first_seen | Number | The first seen date of the domain in YYYYMMDD format. |
+| SilentPush.Domain.is_new | Boolean | Indicates whether the domain is newly observed. |
+| SilentPush.Domain.zone | String | The top-level domain (TLD) or zone of the queried domain. |
+| SilentPush.Domain.registrar | String | The registrar responsible for the domain registration. |
+| SilentPush.Domain.age_score | Number | A risk score based on the domain's age. |
+| SilentPush.Domain.whois_created_date | String | The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format. |
+| SilentPush.Domain.is_new_score | Number | A risk score indicating how new the domain is. |
+| SilentPush.Domain.age | Number | The age of the domain in days. |
+
+### silentpush-reverse-padns-lookup
+
+***
+This command retrieve reverse Passive DNS data for specific DNS record types.
+
+#### Base Command
+
+`silentpush-reverse-padns-lookup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| qtype | Type of DNS record. | Required |
+| qname | The DNS record name to lookup. | Required |
+| netmask | The netmask for the lookup. | Optional |
+| subdomains | Whether to include subdomains in the lookup. | Optional |
+| regex | Regular expression to filter the DNS records. | Optional |
+| first_seen_after | Filter for records first seen after a specific date/time. | Optional |
+| first_seen_before | Filter for records first seen before a specific date/time. | Optional |
+| last_seen_after | Filter for records last seen after a specific date/time. | Optional |
+| last_seen_before | Filter for records last seen before a specific date/time. | Optional |
+| as_of | Specify a date/time for the PADNS lookup. | Optional |
+| sort | Sort the results by specified criteria. | Optional |
+| output_format | Format for the output (e.g., JSON, XML). | Optional |
+| prefer | Preference for certain record types during the lookup. | Optional |
+| with_metadata | Include metadata in the results. | Optional |
+| max_wait | Maximum wait time in seconds for the lookup results. | Optional |
+| skip | Number of results to skip in pagination. | Optional |
+| limit | Limit the number of results returned. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.ReversePADNSLookup.qname | String | The DNS record name looked up. |
+| SilentPush.ReversePADNSLookup.qtype | String | The type of the DNS record. |
+| SilentPush.ReversePADNSLookup.records.answer | String | The answer for the DNS query. |
+| SilentPush.ReversePADNSLookup.records.count | Number | The number of occurrences of the DNS record. |
+| SilentPush.ReversePADNSLookup.records.first_seen | String | Timestamp of when the record was first seen. |
+| SilentPush.ReversePADNSLookup.records.last_seen | String | Timestamp of the most recent occurrence of the record. |
+| SilentPush.ReversePADNSLookup.records.nshash | String | The hash of the NS record. |
+| SilentPush.ReversePADNSLookup.records.query | String | The DNS query associated with the record. |
+| SilentPush.ReversePADNSLookup.records.ttl | Number | Time-to-live (TTL) of the DNS record. |
+| SilentPush.ReversePADNSLookup.records.type | String | The type of DNS record (e.g., NS). |
+
+### silentpush-screenshot-url
+
+***
+This commandGenerate screenshot of a URL.
+
+#### Base Command
+
+`silentpush-screenshot-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | URL for the screenshot. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.Screenshot.file_id | String | Unique identifier for the generated screenshot file. |
+| SilentPush.Screenshot.file_name | String | Name of the screenshot file. |
+| SilentPush.Screenshot.screenshot_url | String | URL to access the generated screenshot. |
+| SilentPush.Screenshot.status | String | Status of the screenshot generation process. |
+| SilentPush.Screenshot.status_code | Number | HTTP status code of the response. |
+| SilentPush.Screenshot.url | String | The URL that was used to generate the screenshot. |
