@@ -1,8 +1,6 @@
 import urllib3
-import traceback
 import re
-from typing import Any, Dict, List, Optional, Union
-from json.decoder import JSONDecodeError
+from typing import Any
 
 # Import XSOAR common functions
 from CommonServerPython import *
@@ -21,6 +19,7 @@ MESSAGES = {
 
 """ CLIENT CLASS """
 
+
 class Client:
     """
     Client class to interact with the SOCRadar Takedown API
@@ -34,16 +33,12 @@ class Client:
         self.verify = verify
         self.proxy = proxy
 
-    def check_auth(self) -> Dict[str, Any]:
+    def check_auth(self) -> dict[str, Any]:
         """Checks if the API key is valid"""
         url = f"{self.base_url}/get/company/{self.company_id}/takedown/requests"
-        
+
         try:
-            response = requests.get(
-                url,
-                headers=self.headers,
-                verify=self.verify
-            )
+            response = requests.get(url, headers=self.headers, verify=self.verify)
 
             if response.status_code == 401:
                 raise Exception("Authorization Error: Invalid API Key")
@@ -59,8 +54,9 @@ class Client:
         except requests.exceptions.RequestException as e:
             raise Exception(f"Connection error: {str(e)}")
 
-    def submit_takedown_request(self, entity: str, request_type: str, abuse_type: str, 
-                               notes: str = "", send_alarm: bool = True, email: str = "") -> Dict[str, Any]:
+    def submit_takedown_request(
+        self, entity: str, request_type: str, abuse_type: str, notes: str = "", send_alarm: bool = True, email: str = ""
+    ) -> dict[str, Any]:
         """Generic method to submit takedown requests"""
         url = f"{self.base_url}/add/company/{self.company_id}/takedown/request"
         data = {
@@ -69,22 +65,19 @@ class Client:
             "type": request_type,
             "notes": notes,
             "send_alarm": send_alarm,
-            "email": email
+            "email": email,
         }
 
-        response = requests.post(
-            url,
-            json=data,
-            headers=self.headers,
-            verify=self.verify
-        )
+        response = requests.post(url, json=data, headers=self.headers, verify=self.verify)
 
         if response.status_code >= 400:
             raise Exception(f"API Error: {response.status_code} - {response.text}")
 
         return response.json()
 
+
 """ HELPER FUNCTIONS """
+
 
 class Validator:
     @staticmethod
@@ -105,18 +98,21 @@ class Validator:
     def validate_url(url: str) -> bool:
         """Basic URL validation"""
         url_pattern = re.compile(
-            r'^https?://'  # http:// or https://
-            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain...
-            r'localhost|'  # localhost...
-            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
-            r'(?::\d+)?'  # optional port
-            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+            r"^https?://"  # http:// or https://
+            r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|"  # domain...
+            r"localhost|"  # localhost...
+            r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
+            r"(?::\d+)?"  # optional port
+            r"(?:/?|[/?]\S+)$",
+            re.IGNORECASE,
+        )
         return url_pattern.match(url) is not None
 
     @staticmethod
     def raise_if_url_not_valid(url: str):
         if not Validator.validate_url(url):
             raise ValueError(f'URL "{url}" is not a valid URL')
+
 
 def get_client_from_params() -> Client:
     """Initialize client from demisto params"""
@@ -130,15 +126,11 @@ def get_client_from_params() -> Client:
     if not company_id:
         raise ValueError("Company ID is required")
 
-    return Client(
-        base_url=SOCRADAR_API_ENDPOINT,
-        api_key=api_key,
-        company_id=company_id,
-        verify=verify_certificate,
-        proxy=proxy
-    )
+    return Client(base_url=SOCRADAR_API_ENDPOINT, api_key=api_key, company_id=company_id, verify=verify_certificate, proxy=proxy)
+
 
 """ COMMAND FUNCTIONS """
+
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication"""
@@ -147,6 +139,7 @@ def test_module(client: Client) -> str:
         return "ok"
     except Exception as e:
         return f"Test failed: {str(e)}"
+
 
 def submit_phishing_domain_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for a phishing domain"""
@@ -163,16 +156,11 @@ def submit_phishing_domain_takedown_command(client: Client) -> CommandResults:
 
     # Submit request
     raw_response = client.submit_takedown_request(
-        entity=domain,
-        request_type=domain_type,
-        abuse_type=abuse_type,
-        notes=notes,
-        send_alarm=send_alarm,
-        email=email
+        entity=domain, request_type=domain_type, abuse_type=abuse_type, notes=notes, send_alarm=send_alarm, email=email
     )
 
     # Prepare output
-    readable_output = f"### Phishing Domain Takedown Request\n"
+    readable_output = "### Phishing Domain Takedown Request\n"
     readable_output += f"**Domain**: {domain}\n"
     readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
@@ -182,10 +170,10 @@ def submit_phishing_domain_takedown_command(client: Client) -> CommandResults:
     outputs = {
         "Domain": domain,
         "AbuseType": abuse_type,
-        "Status": "Success" if raw_response.get('is_success', False) else "Failed",
+        "Status": "Success" if raw_response.get("is_success", False) else "Failed",
         "Message": raw_response.get("message", ""),
         "SendAlarm": send_alarm,
-        "Notes": notes
+        "Notes": notes,
     }
 
     return CommandResults(
@@ -193,8 +181,9 @@ def submit_phishing_domain_takedown_command(client: Client) -> CommandResults:
         outputs_key_field="Domain",
         outputs=outputs,
         readable_output=readable_output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
+
 
 def submit_social_media_impersonation_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for social media impersonation"""
@@ -215,11 +204,11 @@ def submit_social_media_impersonation_takedown_command(client: Client) -> Comman
         abuse_type=abuse_type,
         notes=notes,
         send_alarm=send_alarm,
-        email=email
+        email=email,
     )
 
     # Prepare output
-    readable_output = f"### Social Media Impersonation Takedown Request\n"
+    readable_output = "### Social Media Impersonation Takedown Request\n"
     readable_output += f"**URL**: {url_link}\n"
     readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
@@ -229,10 +218,10 @@ def submit_social_media_impersonation_takedown_command(client: Client) -> Comman
     outputs = {
         "URL": url_link,
         "AbuseType": abuse_type,
-        "Status": "Success" if raw_response.get('is_success', False) else "Failed",
+        "Status": "Success" if raw_response.get("is_success", False) else "Failed",
         "Message": raw_response.get("message", ""),
         "SendAlarm": send_alarm,
-        "Notes": notes
+        "Notes": notes,
     }
 
     return CommandResults(
@@ -240,8 +229,9 @@ def submit_social_media_impersonation_takedown_command(client: Client) -> Comman
         outputs_key_field="URL",
         outputs=outputs,
         readable_output=readable_output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
+
 
 def submit_source_code_leak_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for leaked source code"""
@@ -257,16 +247,11 @@ def submit_source_code_leak_takedown_command(client: Client) -> CommandResults:
 
     # Submit request
     raw_response = client.submit_takedown_request(
-        entity=url_link,
-        request_type="source_code_leak",
-        abuse_type=abuse_type,
-        notes=notes,
-        send_alarm=send_alarm,
-        email=email
+        entity=url_link, request_type="source_code_leak", abuse_type=abuse_type, notes=notes, send_alarm=send_alarm, email=email
     )
 
     # Prepare output
-    readable_output = f"### Source Code Leak Takedown Request\n"
+    readable_output = "### Source Code Leak Takedown Request\n"
     readable_output += f"**URL**: {url_link}\n"
     readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
@@ -276,10 +261,10 @@ def submit_source_code_leak_takedown_command(client: Client) -> CommandResults:
     outputs = {
         "URL": url_link,
         "AbuseType": abuse_type,
-        "Status": "Success" if raw_response.get('is_success', False) else "Failed",
+        "Status": "Success" if raw_response.get("is_success", False) else "Failed",
         "Message": raw_response.get("message", ""),
         "SendAlarm": send_alarm,
-        "Notes": notes
+        "Notes": notes,
     }
 
     return CommandResults(
@@ -287,8 +272,9 @@ def submit_source_code_leak_takedown_command(client: Client) -> CommandResults:
         outputs_key_field="URL",
         outputs=outputs,
         readable_output=readable_output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
+
 
 def submit_rogue_app_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for a rogue mobile app"""
@@ -301,16 +287,11 @@ def submit_rogue_app_takedown_command(client: Client) -> CommandResults:
 
     # Submit request
     raw_response = client.submit_takedown_request(
-        entity=app_info,
-        request_type="rogue_mobile_app",
-        abuse_type=abuse_type,
-        notes=notes,
-        send_alarm=send_alarm,
-        email=email
+        entity=app_info, request_type="rogue_mobile_app", abuse_type=abuse_type, notes=notes, send_alarm=send_alarm, email=email
     )
 
     # Prepare output
-    readable_output = f"### Rogue App Takedown Request\n"
+    readable_output = "### Rogue App Takedown Request\n"
     readable_output += f"**App Info**: {app_info}\n"
     readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
@@ -320,10 +301,10 @@ def submit_rogue_app_takedown_command(client: Client) -> CommandResults:
     outputs = {
         "AppInfo": app_info,
         "AbuseType": abuse_type,
-        "Status": "Success" if raw_response.get('is_success', False) else "Failed",
+        "Status": "Success" if raw_response.get("is_success", False) else "Failed",
         "Message": raw_response.get("message", ""),
         "SendAlarm": send_alarm,
-        "Notes": notes
+        "Notes": notes,
     }
 
     return CommandResults(
@@ -331,23 +312,25 @@ def submit_rogue_app_takedown_command(client: Client) -> CommandResults:
         outputs_key_field="AppInfo",
         outputs=outputs,
         readable_output=readable_output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
+
 """ MAIN FUNCTION """
+
 
 def main():
     """Main function, parses params and runs command functions"""
     try:
         command = demisto.command()
-        
+
         if command == "test-module":
             client = get_client_from_params()
             result = test_module(client)
             return_results(result)
         else:
             client = get_client_from_params()
-            
+
             if command == "socradar-submit-phishing-domain":
                 return_results(submit_phishing_domain_takedown_command(client))
             elif command == "socradar-submit-social-media-impersonation":
@@ -361,6 +344,7 @@ def main():
 
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+
 
 """ ENTRY POINT """
 

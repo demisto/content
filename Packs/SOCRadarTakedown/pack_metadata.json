@@ -8,17 +8,14 @@
     "email": "",
     "created": "2025-06-24T00:00:00Z",
     "categories": [
-        "Threat Intelligence"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "takedown",
-        "phishing",
-        "threat-intelligence",
-        "brand-protection"
+        "Threat Intelligence"
     ],
     "useCases": [
-        "Brand Protection",
-        "Threat Intelligence Management"
+        "Threat Intelligence Management",
+        "Phishing"
     ],
     "keywords": [
         "socradar",
@@ -26,5 +23,10 @@
         "phishing",
         "impersonation",
         "brand protection"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
     ]
 }

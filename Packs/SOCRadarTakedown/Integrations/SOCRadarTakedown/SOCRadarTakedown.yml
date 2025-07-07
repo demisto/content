@@ -1,6 +1,9 @@
 commonfields:
   id: SOCRadar Takedown
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: SOCRadar Takedown
 display: SOCRadar Takedown
 category: Data Enrichment & Threat Intelligence
@@ -25,205 +28,209 @@ configuration:
   required: true
   type: 4
   additionalinfo: Your SOCRadar platform API key
+  section: Connect
 - display: Company ID
   name: company_id
   required: true
   type: 0
   additionalinfo: Your SOCRadar Company ID
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-  defaultvalue: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-  defaultvalue: false
+  section: Connect
+  advanced: true
 
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.12.11.3982393
   commands:
   - name: socradar-submit-phishing-domain
-    description: Submit a takedown request for a phishing domain
+    description: Submit a takedown request for a phishing domain.
     arguments:
     - name: domain
-      description: The phishing domain to be taken down
+      description: The phishing domain to be taken down.
       required: true
     - name: abuse_type
-      description: Type of abuse
+      description: Type of abuse.
       defaultValue: potential_phishing
       predefined:
       - potential_phishing
       - confirmed_phishing
     - name: type
-      description: Domain type
+      description: Domain type.
       defaultValue: phishing_domain
       predefined:
       - phishing_domain
       - lookalike_domain
     - name: notes
-      description: Additional notes for the takedown request
+      description: Additional notes for the takedown request.
       required: false
     - name: send_alarm
-      description: Whether to send alarm notification
+      description: Whether to send alarm notification.
       defaultValue: "true"
       predefined:
       - "true"
       - "false"
     - name: email
-      description: Email address for notifications
+      description: Email address for notifications.
       required: true
     outputs:
     - contextPath: SOCRadarTakedown.PhishingDomain.Domain
-      description: The domain that was reported
+      description: The domain that was reported.
       type: String
     - contextPath: SOCRadarTakedown.PhishingDomain.AbuseType
-      description: Type of abuse reported
+      description: Type of abuse reported.
       type: String
     - contextPath: SOCRadarTakedown.PhishingDomain.Status
-      description: Status of the takedown request
+      description: Status of the takedown request.
       type: String
     - contextPath: SOCRadarTakedown.PhishingDomain.Message
-      description: Response message from the API
+      description: Response message from the API.
       type: String
     - contextPath: SOCRadarTakedown.PhishingDomain.SendAlarm
-      description: Whether alarm notification is enabled
+      description: Whether alarm notification is enabled.
       type: Boolean
     - contextPath: SOCRadarTakedown.PhishingDomain.Notes
-      description: Additional notes for the request
+      description: Additional notes for the request.
       type: String
   - name: socradar-submit-social-media-impersonation
-    description: Submit a takedown request for social media impersonation
+    description: Submit a takedown request for social media impersonation.
     arguments:
     - name: url
-      description: URL of the impersonating social media account
+      description: URL of the impersonating social media account.
       required: true
     - name: abuse_type
-      description: Type of abuse
+      description: Type of abuse.
       defaultValue: impersonating_accounts
       predefined:
       - impersonating_accounts
       - fake_profiles
     - name: notes
-      description: Additional notes for the takedown request
+      description: Additional notes for the takedown request.
       required: false
     - name: send_alarm
-      description: Whether to send alarm notification
+      description: Whether to send alarm notification.
       defaultValue: "true"
       predefined:
       - "true"
       - "false"
     - name: email
-      description: Email address for notifications
+      description: Email address for notifications.
       required: true
     outputs:
     - contextPath: SOCRadarTakedown.SocialMediaImpersonation.URL
-      description: The URL that was reported
+      description: The URL that was reported.
       type: String
     - contextPath: SOCRadarTakedown.SocialMediaImpersonation.AbuseType
-      description: Type of abuse reported
+      description: Type of abuse reported.
       type: String
     - contextPath: SOCRadarTakedown.SocialMediaImpersonation.Status
-      description: Status of the takedown request
+      description: Status of the takedown request.
       type: String
     - contextPath: SOCRadarTakedown.SocialMediaImpersonation.Message
-      description: Response message from the API
+      description: Response message from the API.
       type: String
     - contextPath: SOCRadarTakedown.SocialMediaImpersonation.SendAlarm
-      description: Whether alarm notification is enabled
+      description: Whether alarm notification is enabled.
       type: Boolean
     - contextPath: SOCRadarTakedown.SocialMediaImpersonation.Notes
-      description: Additional notes for the request
+      description: Additional notes for the request.
       type: String
   - name: socradar-submit-source-code-leak
-    description: Submit a takedown request for leaked source code
+    description: Submit a takedown request for leaked source code.
     arguments:
     - name: url
-      description: URL where the source code leak is found
+      description: URL where the source code leak is found.
       required: true
     - name: abuse_type
-      description: Type of abuse
+      description: Type of abuse.
       defaultValue: source_code_leak
       predefined:
       - source_code_leak
       - data_leak
     - name: notes
-      description: Additional notes for the takedown request
+      description: Additional notes for the takedown request.
       required: false
     - name: send_alarm
-      description: Whether to send alarm notification
+      description: Whether to send alarm notification.
       defaultValue: "true"
       predefined:
       - "true"
       - "false"
     - name: email
-      description: Email address for notifications
+      description: Email address for notifications.
       required: true
     outputs:
     - contextPath: SOCRadarTakedown.SourceCodeLeak.URL
-      description: The URL that was reported
+      description: The URL that was reported.
       type: String
     - contextPath: SOCRadarTakedown.SourceCodeLeak.AbuseType
-      description: Type of abuse reported
+      description: Type of abuse reported.
       type: String
     - contextPath: SOCRadarTakedown.SourceCodeLeak.Status
-      description: Status of the takedown request
+      description: Status of the takedown request.
       type: String
     - contextPath: SOCRadarTakedown.SourceCodeLeak.Message
-      description: Response message from the API
+      description: Response message from the API.
       type: String
     - contextPath: SOCRadarTakedown.SourceCodeLeak.SendAlarm
-      description: Whether alarm notification is enabled
+      description: Whether alarm notification is enabled.
       type: Boolean
     - contextPath: SOCRadarTakedown.SourceCodeLeak.Notes
-      description: Additional notes for the request
+      description: Additional notes for the request.
       type: String
   - name: socradar-submit-rogue-app
-    description: Submit a takedown request for a rogue mobile app
+    description: Submit a takedown request for a rogue mobile app.
     arguments:
     - name: app_info
-      description: Information about the rogue mobile app (name, store URL, etc.)
+      description: Information about the rogue mobile app (name, store URL, etc.).
       required: true
     - name: abuse_type
-      description: Type of abuse
+      description: Type of abuse.
       defaultValue: rogue_mobile_app
       predefined:
       - rogue_mobile_app
       - malicious_app
     - name: notes
-      description: Additional notes for the takedown request
+      description: Additional notes for the takedown request.
       required: false
     - name: send_alarm
-      description: Whether to send alarm notification
+      description: Whether to send alarm notification.
       defaultValue: "true"
       predefined:
       - "true"
       - "false"
     - name: email
-      description: Email address for notifications
+      description: Email address for notifications.
       required: true
     outputs:
     - contextPath: SOCRadarTakedown.RogueApp.AppInfo
-      description: Information about the app that was reported
+      description: Information about the app that was reported.
       type: String
     - contextPath: SOCRadarTakedown.RogueApp.AbuseType
-      description: Type of abuse reported
+      description: Type of abuse reported.
       type: String
     - contextPath: SOCRadarTakedown.RogueApp.Status
-      description: Status of the takedown request
+      description: Status of the takedown request.
       type: String
     - contextPath: SOCRadarTakedown.RogueApp.Message
-      description: Response message from the API
+      description: Response message from the API.
       type: String
     - contextPath: SOCRadarTakedown.RogueApp.SendAlarm
-      description: Whether alarm notification is enabled
+      description: Whether alarm notification is enabled.
       type: Boolean
     - contextPath: SOCRadarTakedown.RogueApp.Notes
-      description: Additional notes for the request
+      description: Additional notes for the request.
       type: String
   runonce: false
   ismappable: false
