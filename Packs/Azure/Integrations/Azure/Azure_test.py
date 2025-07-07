@@ -1673,34 +1673,6 @@ def test_azure_client_handle_azure_error_other(client):
     assert "500 - Internal Server Error" in str(excinfo.value)
 
 
-def test_azure_client_get_webapp_auth_success(mocker, client):
-    """
-    Given: An Azure client and webapp authentication parameters.
-    When: The get_webapp_auth method is called.
-    Then: The function should make the correct API call and return auth settings.
-    """
-    # Setup mock response
-    mock_response = {
-        "name": "authsettings",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Web/sites/test-webapp/config/authsettings",
-        "properties": {"enabled": True, "defaultProvider": "AzureActiveDirectory"},
-    }
-    mocker.patch.object(client, "http_request", return_value=mock_response)
-
-    # Call the function
-    result = client.get_webapp_auth(name="test-webapp", subscription_id="sub-id", resource_group_name="test-rg")
-
-    # Verify correct API call
-    expected_url = (
-        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Web/sites/test-webapp/config/authsettings"
-    )
-    client.http_request.assert_called_once_with(method="GET", full_url=expected_url, params={"api-version": WEBAPP_API_VERSION})
-
-    # Verify response
-    assert result == mock_response
-    assert result["properties"]["enabled"] is True
-
-
 def test_azure_client_update_webapp_auth_success(mocker, client):
     """
     Given: An Azure client and webapp authentication update parameters.
@@ -1708,15 +1680,13 @@ def test_azure_client_update_webapp_auth_success(mocker, client):
     Then: The function should make the correct API call and return updated settings.
     """
     # Setup mock response
-    mock_response = {"name": "authsettings", "properties": {"enabled": True}}
+    enabled = True
+    mock_response = {"name": "authsettings", "properties": {"enabled": enabled}}
     mocker.patch.object(client, "http_request", return_value=mock_response)
-
-    # Prepare current auth settings
-    current_auth = {"name": "authsettings", "properties": {"enabled": True}}
 
     # Call the function
     result = client.update_webapp_auth(
-        name="test-webapp", subscription_id="sub-id", resource_group_name="test-rg", current=current_auth
+        name="test-webapp", subscription_id="sub-id", resource_group_name="test-rg", enabled=enabled
     )
 
     # Verify correct API call
@@ -1724,7 +1694,10 @@ def test_azure_client_update_webapp_auth_success(mocker, client):
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Web/sites/test-webapp/config/authsettings"
     )
     client.http_request.assert_called_once_with(
-        method="PUT", full_url=expected_url, json_data=current_auth, params={"api-version": WEBAPP_API_VERSION}
+        method="PUT",
+        full_url=expected_url,
+        json_data={"properties": {"enabled": True}},
+        params={"api-version": WEBAPP_API_VERSION},
     )
 
     # Verify response
@@ -1836,46 +1809,6 @@ def test_set_webapp_config(mocker, client):
     assert result == mock_response
 
 
-def test_get_webapp_auth(mocker, client):
-    """
-    Given: An Azure client and arguments for getting webapp authentication settings.
-    When: The get_webapp_auth method is called.
-    Then: The method should make the correct HTTP request and return the authentication settings.
-    """
-    # Mock arguments
-    name = "test-webapp"
-    subscription_id = "12345678-1234-1234-1234-123456789012"
-    resource_group_name = "test-resource-group"
-
-    # Mock response
-    mock_response = {
-        "id": (
-            f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/"
-            "config/authsettings"
-        ),
-        "name": "authsettings",
-        "properties": {"enabled": True, "unauthenticatedClientAction": "RedirectToLoginPage"},
-    }
-
-    # Mock the client's http_request method
-    mocker.patch.object(client, "http_request", return_value=mock_response)
-
-    # Call the method
-    result = client.get_webapp_auth(name=name, subscription_id=subscription_id, resource_group_name=resource_group_name)
-
-    # Verify the HTTP request was called with correct parameters
-    expected_url = (
-        f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}"
-        f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
-    )
-    expected_params = {"api-version": "2024-04-01"}
-
-    client.http_request.assert_called_once_with(method="GET", full_url=expected_url, params=expected_params)
-
-    # Verify the result matches the mock response
-    assert result == mock_response
-
-
 def test_get_webapp_auth_error_handling(mocker, client):
     """
     Given: An Azure client and arguments for getting webapp authentication settings.
@@ -1908,49 +1841,6 @@ def test_get_webapp_auth_error_handling(mocker, client):
     )
 
 
-def test_update_webapp_auth(mocker, client):
-    """
-    Given: An Azure client and arguments for updating webapp authentication settings.
-    When: The update_webapp_auth method is called.
-    Then: The method should make the correct HTTP request with the current settings.
-    """
-    # Mock arguments
-    name = "test-webapp"
-    subscription_id = "12345678-1234-1234-1234-123456789012"
-    resource_group_name = "test-resource-group"
-    current = {"properties": {"enabled": True, "unauthenticatedClientAction": "RedirectToLoginPage"}}
-
-    # Mock response
-    mock_response = {
-        "id": (
-            f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Web/sites/{name}/"
-            "config/authsettings"
-        ),
-        "name": "authsettings",
-        "properties": {"enabled": True, "unauthenticatedClientAction": "RedirectToLoginPage"},
-    }
-
-    # Mock the client's http_request method
-    mocker.patch.object(client, "http_request", return_value=mock_response)
-
-    # Call the method
-    result = client.update_webapp_auth(
-        name=name, subscription_id=subscription_id, resource_group_name=resource_group_name, current=current
-    )
-
-    # Verify the HTTP request was called with correct parameters
-    expected_url = (
-        f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}"
-        f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
-    )
-    expected_params = {"api-version": "2024-04-01"}
-
-    client.http_request.assert_called_once_with(method="PUT", full_url=expected_url, json_data=current, params=expected_params)
-
-    # Verify the result matches the mock response
-    assert result == mock_response
-
-
 def test_update_webapp_auth_error_handling(mocker, client):
     """
     Given: An Azure client and arguments for updating webapp authentication settings.
@@ -1959,9 +1849,9 @@ def test_update_webapp_auth_error_handling(mocker, client):
     """
     # Mock arguments
     name = "test-webapp"
+    enabled = True
     subscription_id = "12345678-1234-1234-1234-123456789012"
     resource_group_name = "test-resource-group"
-    current = {"properties": {"enabled": True}}
 
     # Mock exception
     mock_exception = Exception("403 Forbidden")
@@ -1973,7 +1863,7 @@ def test_update_webapp_auth_error_handling(mocker, client):
     # Call the method and expect it to raise an exception
     with pytest.raises(DemistoException, match="Insufficient permissions"):
         client.update_webapp_auth(
-            name=name, subscription_id=subscription_id, resource_group_name=resource_group_name, current=current
+            name=name, subscription_id=subscription_id, resource_group_name=resource_group_name, enabled=enabled
         )
 
     # Verify handle_azure_error was called with correct parameters
