@@ -33,7 +33,6 @@ class AWSServices(str, Enum):
     EKS = "eks"
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
-    STS = "sts"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -1201,13 +1200,12 @@ REQUIRED_ACTIONS: list[str] = [
 
 def test_module(params):
     if params.get("test_account_id"):
-        sts_client, _ = get_service_client(
+        iam_client, _ = get_service_client(
             params=params,
-            service_name=AWSServices.STS.value,
+            service_name=AWSServices.IAM,
             config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
         )
-        identity = sts_client.get_caller_identity()
-        demisto.info(f"[AWS Automation Test Module] STS {identity=}")
+        demisto.info("[AWS Automation Test Module] Initialized IAM client")
     else:
         raise DemistoException("Missing AWS credentials or account ID for health check")
 
@@ -1228,36 +1226,11 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
     connectivity_errors: list[HealthCheckError] = []
 
     try:
-        # Verify STS connectivity first
-        try:
-            sts_client, session = get_service_client(
-                credentials=credentials,
-                service_name=AWSServices.STS.value,
-                config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
-            )
-
-            identity = sts_client.get_caller_identity()
-            demisto.info(f"[AWS Automation Health Check] STS {identity=}")
-
-        except Exception as sts_error:
-            demisto.error(f"[AWS Automation Health Check] STS Caller Identity check failed: {sts_error}")
-            sts_error_obj = HealthCheckError(
-                account_id=account_id,
-                connector_id=connector_id,
-                message=f"STS Caller Identity check failed: {str(sts_error)}",
-                error_type=ErrorType.CONNECTIVITY_ERROR,
-            )
-            connectivity_errors.append(sts_error_obj)
-
         # Connectivity check for services
         for service in AWSServices:
             try:
-                # Skip STS it is already checked.
-                if service == AWSServices.STS:
-                    continue
-
                 # Attempt to create a client for each service
-                client, _ = get_service_client(
+                get_service_client(
                     session=session,
                     service_name=service,
                     config=Config(connect_timeout=3, read_timeout=3, retries={"max_attempts": 1}),
