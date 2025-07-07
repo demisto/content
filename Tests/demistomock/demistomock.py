@@ -550,7 +550,7 @@ def getLastRun():
       dict: LastRun object
 
     """
-    return {"last_fetch": "2025-06-29T14:13:20+00:00"}
+    return {"lastRun": "2018-10-24T14:13:20+00:00"}
 
 
 def setLastRun(obj):
