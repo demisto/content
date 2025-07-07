@@ -32,7 +32,8 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
-                                get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD
+                                get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text,
+                                stringEscapeMD,  get_pack_version
                                 )
 
 EVENTS_LOG_ERROR = \
