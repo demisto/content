@@ -6,10 +6,6 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
 from CommonServerPython import * 
 
-# Get configuration from XSOAR
-API_URL = demisto.params().get("url", "https://external.threatmonit.io/api/threatmon/external/v1")
-API_KEY = demisto.params().get("apikey")
-
 class Client:
     def __init__(self, api_url, api_key):
         self.api_url = api_url
@@ -32,7 +28,7 @@ class Client:
     def set_status(self, data):
         """Updates incidents on Threatmon API using PATCH request and pagination."""
 
-        url = f"{self.api_url}/incedent/status"
+        url = f"{self.api_url}/incident/status"
         response = requests.patch(url, headers=self.headers, json=data)
 
         if response.status_code == 200:
@@ -101,11 +97,28 @@ def test_module(client):
     """Tests API connectivity and authentication."""
     try:
         response = client.get_incidents(page=0)
+
+        # Check for expected successful response
         if isinstance(response, dict) and "data" in response:
             return "ok"
-        return "Unexpected API response"
+
+        # Check if API returned an error message
+        if isinstance(response, dict) and "message" in response:
+            return_error(f"Test failed: {response.get('message')}")
+
+        # Generic unexpected structure
+        return_error("Test failed: Unexpected API response structure.")
+
+    except DemistoException as e:
+        if '401' in str(e) or '403' in str(e):
+            return_error("Test failed: Authentication error. Please check your API credentials.")
+        elif '500' in str(e):
+            return_error("Test failed: Server error (500). Please try again later.")
+        else:
+            return_error(f"Test failed: {str(e)}")
+
     except Exception as e:
-        return_error("Test failed: {}".format(str(e)))
+        return_error(f"Test failed: {str(e)}")
 
 def change_incident_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     code = args.get('alarmId')
@@ -122,7 +135,11 @@ def change_incident_status(client: Client, args: Dict[str, Any]) -> CommandResul
 def main():
     """Main function called by Cortex XSOAR."""
     try:
-        client = Client(API_URL, API_KEY)
+        params = demisto.params()
+        api_url = params.get("url", "https://external.threatmonit.io/api/threatmon/external/v1")
+        credentials = params.get('credentials', {})
+        api_key = credentials.get('password')
+        client = Client(api_url, api_key)
         command = demisto.command()
 
         if command == "test-module":

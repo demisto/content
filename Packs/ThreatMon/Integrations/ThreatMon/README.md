@@ -69,8 +69,7 @@ This integration is designed to help security teams streamline incident enrichme
 
 This is a **community-supported integration**. For issues or feature requests:
 
-- Open a GitHub issue under the [Demisto/content](https://github.com/demisto/content/issues) repository.
-- Or contact the ThreatMon team at [integration@threatmonit.io](mailto:integration@threatmonit.io).
+- Contact the ThreatMon team at [integration@threatmonit.io](mailto:integration@threatmonit.io).
 
 ---
 
