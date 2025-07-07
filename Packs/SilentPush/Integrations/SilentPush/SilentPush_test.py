@@ -1578,3 +1578,21 @@ def test_get_data_exports_command_missing_feed_url(mock_client):
 
     with pytest.raises(ValueError, match="Feed URL is required"):
         get_data_exports_command(mock_client, args)
+
+
+def test_add_feed_tags_command_missing_feed_uuid(mocker):
+    # Missing 'feed_uuid'
+    args = {"tags": "malware"}
+    mock_client = mocker.Mock(spec=Client)
+
+    with pytest.raises(ValueError, match="Feed UUID is required"):
+        add_feed_tags_command(mock_client, args)
+
+
+def test_add_feed_tags_command_missing_tags(mocker):
+    # Missing 'tags'
+    args = {"feed_uuid": "abc123"}
+    mock_client = mocker.Mock(spec=Client)
+
+    with pytest.raises(ValueError, match="Tags name is required"):
+        add_feed_tags_command(mock_client, args)
