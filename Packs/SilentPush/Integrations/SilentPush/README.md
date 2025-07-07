@@ -444,7 +444,7 @@ This command retrieves comprehensive enrichment information for a given resource
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource | Type of resource for which information needs to be retrieved {e.g. domain}. | Required |
-| value | Value corresponding to the selected "resource" for which information needs to be retrieved{e.g. silentpush.com}. | Required |
+| value | Value corresponding to the selected "resource" for which information needs to be retrieved {e.g. silentpush.com}. | Required |
 | explain | Include explanation of data calculations. | Optional |
 | scan_data | Include scan data (IPv4 only). | Optional |
 
@@ -452,7 +452,7 @@ This command retrieves comprehensive enrichment information for a given resource
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.Enrichment.value | String | Queried value |
+| SilentPush.Enrichment.value | String | Queried value. |
 | SilentPush.Enrichment.domain_string_frequency_probability.avg_probability | Number | Average probability score of the domain string. |
 | SilentPush.Enrichment.domain_string_frequency_probability.dga_probability_score | Number | Probability score indicating likelihood of being a DGA domain. |
 | SilentPush.Enrichment.domain_string_frequency_probability.domain | String | Domain name analyzed. |
@@ -460,12 +460,12 @@ This command retrieves comprehensive enrichment information for a given resource
 | SilentPush.Enrichment.domain_string_frequency_probability.query | String | Domain name queried. |
 | SilentPush.Enrichment.domain_urls.results_summary.alexa_rank | Number | Alexa rank of the domain. |
 | SilentPush.Enrichment.domain_urls.results_summary.alexa_top10k | Boolean | Indicates if the domain is in the Alexa top 10k. |
-| SilentPush.Enrichment.domain_urls.results_summary.alexa_top10k_score | Number | Score indicating domain’s Alexa top 10k ranking. |
+| SilentPush.Enrichment.domain_urls.results_summary.alexa_top10k_score | Number | Score indicating domain's Alexa top 10k ranking. |
 | SilentPush.Enrichment.domain_urls.results_summary.dynamic_domain_score | Number | Score indicating likelihood of domain being dynamically generated. |
 | SilentPush.Enrichment.domain_urls.results_summary.is_dynamic_domain | Boolean | Indicates if the domain is dynamic. |
 | SilentPush.Enrichment.domain_urls.results_summary.is_url_shortener | Boolean | Indicates if the domain is a known URL shortener. |
 | SilentPush.Enrichment.domain_urls.results_summary.results | Number | Number of results found for the domain. |
-| SilentPush.Enrichment.domain_urls.results_summary.url_shortner_score | Number | Score of the shortned URL |
+| SilentPush.Enrichment.domain_urls.results_summary.url_shortner_score | Number | Score of the shortned URL. |
 | SilentPush.Enrichment.domaininfo.domain | String | Domain name analyzed. |
 | SilentPush.Enrichment.domaininfo.error | String | Error message if no data is available for the domain. |
 | SilentPush.Enrichment.domaininfo.zone | String | TLD zone of the domain. |
@@ -483,16 +483,16 @@ This command retrieves comprehensive enrichment information for a given resource
 | SilentPush.Enrichment.ip_diversity.ip_diversity_all | String | Total number of unique IPs observed for the domain. |
 | SilentPush.Enrichment.ip_diversity.host | String | The hostname being analyzed. |
 | SilentPush.Enrichment.ip_diversity.ip_diversity_groups | String | The number of distinct IP groups \(e.g., IPs belonging to different ranges or providers\). |
-| SilentPush.Enrichment.ns_reputation.is_expired | Boolean | Indicates if the domain’s nameserver is expired. |
+| SilentPush.Enrichment.ns_reputation.is_expired | Boolean | Indicates if the domain\`s nameserver is expired. |
 | SilentPush.Enrichment.ns_reputation.is_parked | Boolean |  The domain is not parked \(a parked domain is one without active content\). |
-| SilentPush.Enrichment.ns_reputation.is_sinkholed | Boolean | The domain is not sinkholed \(not forcibly redirected to a security researcher’s trap\). |
+| SilentPush.Enrichment.ns_reputation.is_sinkholed | Boolean | The domain is not sinkholed \(not forcibly redirected to a security researcher\`s trap\). |
 | SilentPush.Enrichment.ns_reputation.ns_reputation_max | Number | Maximum reputation score for nameservers. |
-| SilentPush.Enrichment.ns_reputation.ns_reputation_score | Number | Reputation score of the domain’s nameservers. |
+| SilentPush.Enrichment.ns_reputation.ns_reputation_score | Number | Reputation score of the domain\`s nameservers. |
 | SilentPush.Enrichment.ns_reputation.ns_srv_reputation.domain | String | The nameservers of domain. |
 | SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server | String | Provided nameserver. |
-| SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domain_density | Number | Number of domains sharing this NS |
+| SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domain_density | Number | Number of domains sharing this NS. |
 | SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domains_listed | Number | Number of listed domains using this NS. |
-| SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_reputation | Number | Reputation score for this NS |
+| SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_reputation | Number | Reputation score for this NS. |
 | SilentPush.Enrichment.scan_data.certificates.domain | String | Domain for which the SSL certificate was issued. |
 | SilentPush.Enrichment.scan_data.certificates.domains | Unknown | Other Domains for which the SSL certificate was issued. |
 | SilentPush.Enrichment.scan_data.certificates.issuer_organization | String | Issuer organization of the SSL certificate. |
@@ -508,13 +508,13 @@ This command retrieves comprehensive enrichment information for a given resource
 | SilentPush.Enrichment.scan_data.headers.hostname | String | The hostname that sent this response. |
 | SilentPush.Enrichment.scan_data.headers.ip | String | The IP address responding to the request. |
 | SilentPush.Enrichment.scan_data.headers.scan_date | String | The date when the headers were scanned. |
-| SilentPush.Enrichment.scan_data.headers.headers.cache-control | String | HTTP cache-control |
+| SilentPush.Enrichment.scan_data.headers.headers.cache-control | String | HTTP cache-control. |
 | SilentPush.Enrichment.scan_data.headers.headers.content-length" | String | Content lenght of the HTTP response. |
 | SilentPush.Enrichment.scan_data.headers.headers.date | String | The date/time of the response. |
 | SilentPush.Enrichment.scan_data.headers.headers.expires | String | Indicates an already expired response. |
 | SilentPush.Enrichment.scan_data.headers.headers.server | String | The web server handling the request \(Cloudflare proxy\). |
 | SilentPush.Enrichment.scan_data.html.hostname | String | HTTP response code for the domain scan. |
-| SilentPush.Enrichment.scan_data.html.html_body_murmur3 | String | hash of the page content |
+| SilentPush.Enrichment.scan_data.html.html_body_murmur3 | String | hash of the page content. |
 | SilentPush.Enrichment.scan_data.html.html_body_ssdeep | String | SSDEEP hash \(used for fuzzy matching similar HTML content\). |
 | SilentPush.Enrichment.scan_data.html.html_title | String | The page title \(suggests a Cloudflare challenge page, likely due to bot protection\). |
 | SilentPush.Enrichment.scan_data.html.ip | String | The IP address responding to the request. |
@@ -551,7 +551,7 @@ This command retrieves comprehensive enrichment information for a given resource
 | SilentPush.Enrichment.ip2asn.asn_takedown_reputation_score | Number | Takedown reputation score of the ASN. |
 | SilentPush.Enrichment.ip2asn.asname | String | Name of the Autonomous System \(AS\). |
 | SilentPush.Enrichment.ip2asn.benign_info.actor | String | This field is usually used to indicate a known organization or individual associated with the IP. |
-| SilentPush.Enrichment.ip2asn.benign_info.known_benign | Boolean | Indicates whether this IP/ASN is explicitly known to be safe \(e.g., a reputable cloud provider or public service\) |
+| SilentPush.Enrichment.ip2asn.benign_info.known_benign | Boolean | Indicates whether this IP/ASN is explicitly known to be safe \(e.g., a reputable cloud provider or public service\). |
 | SilentPush.Enrichment.ip2asn.benign_info.tags | Unknown | Contains descriptive tags if the IP/ASN has a known role \(e.g., "Google Bot", "Cloudflare Proxy"\). |
 | SilentPush.Enrichment.ip2asn.date | Number | Date of the scan data \(YYYYMMDD format\). |
 | SilentPush.Enrichment.ip2asn.density | Number | The density value associated with the IP. |
@@ -610,77 +610,6 @@ This command retrieves comprehensive enrichment information for a given resource
 | SilentPush.Enrichment.ip2asn.subnet_reputation | Number | A measure of how frequently IPs from this subnet appear in threat intelligence databases. |
 | SilentPush.Enrichment.ip2asn.subnet_reputation_explain | Unknown | A breakdown of why the subnet received its reputation score. |
 | SilentPush.Enrichment.ip2asn.subnet_reputation_score | Number | A numerical risk score \(typically 0-100, with higher values indicating higher risk\). |
-
-### **Command Example**  
-
-```bash
-!silentpush-get-enrichment-data resource="ipv4" value="142.251.188.102"
-```
-
-### **Context Example**  
-
-```json
-{
- "resource": "ipv4",
- "value": "142.251.188.102",
- "enrichment_data": {
-  "asn": "15169",
-  "asn_allocation_age": 9140,
-  "asn_allocation_date": "2000-03-30",
-  "asn_rank": 0,
-  "asn_rank_score": 0,
-  "asn_reputation": 0,
-  "asn_reputation_score": 0,
-  "asn_takedown_reputation": 80,
-  "asn_takedown_reputation_score": 80,
-  "as_name": "GOOGLE, US",
-  "benign_info": {
-   "actor": "",
-   "known_benign": false
-  },
-  "tags": [],
-  "date": "2025-04-08",
-  "density": 0,
-  "ip": "142.251.188.102",
-  "ip_flags": {
-   "is_proxy": false,
-   "is_sinkhole": false,
-   "is_vpn": false
-  },
-  "ip_has_expired_certificate": false,
-  "ip_has_open_directory": false,
-  "ip_is_dsl_dynamic": false,
-  "ip_is_dsl_dynamic_score": 0,
-  "ip_is_ipfs_node": false
- }
-}
-```
-
-### **Human Readable Output**  
-
->### Result
->
->| Field                          | Value                    |
->|--------------------------------|--------------------------|
->| ASN                            | 15169                    |
->| ASN Allocation Age             | 9140 days                |
->| ASN Allocation Date            | 2000-03-30               |
->| ASN Rank                       | 0                        |
->| ASN Rank Score                 | 0                        |
->| ASN Reputation                 | 0                        |
->| ASN Reputation Score           | 0                        |
->| ASN Takedown Reputation        | 80                       |
->| ASN Takedown Reputation Score  | 80                       |
->| AS Name                        | GOOGLE, US               |
->| Known Benign                   | No                       |
->| Date                           | 2025-04-08               |
->| Density                        | 0                        |
->| IP Flags (Proxy, Sinkhole, VPN)| No, No, No               |
->| Expired Certificate            | No                       |
->| Open Directory                 | No                       |
->| DSL Dynamic                    | No                       |
->| DSL Dynamic Score              | 0                        |
->| IPFS Node                      | No                       |
 
 ### silentpush-get-future-attack-indicators
 
@@ -913,62 +842,33 @@ This command retrieve status of running job or results from completed job.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | job_id | ID of the job returned by Silent Push actions. | Required |
-| max_wait | Number of seconds to wait for results (0-25 seconds). | Optional |
-| status_only | Return job status, even if job is complete. | Optional |
-| force_metadata_on | Always return query metadata, even if original request did not include metadata. | Optional |
-| force_metadata_off | Never return query metadata, even if original request did include metadata. | Optional |
 
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| SilentPush.JobStatus.get | String | URL to retrieve the job status. |
-| SilentPush.JobStatus.job_id | String | Unique identifier for the job. |
-| SilentPush.JobStatus.status | String | Current status of the job. |
-
-### **Command Example**  
-
-```bash
-!silentpush-get-job-status job_id="d4067541-eafb-424c-98d3-de12d7a91331"
-```
-
-### **Context Example**  
-
-```json
-{
- "job_id": "d4067541-eafb-424c-98d3-de12d7a91331",
- "job_status": {
-  "job_id": "d4067541-eafb-424c-98d3-de12d7a91331",
-  "status": "PENDING"
- }
-}
-```
-
-### **Human Readable Output**  
-
->### Result
->
->| Field      | Value                                   |
->|------------|-----------------------------------------|
->| Job ID     | d4067541-eafb-424c-98d3-de12d7a91331    |
->| Status     | PENDING                                 |
-
-### silentpush-get-nameserver-reputation
+### silentpush-get-ipv4-reputation
 
 ***
-This command retrieve historical reputation data for a specified nameserver, including reputation scores and optional detailed calculation information.
+This command retrieves the reputation information for an IPv4.
 
 #### Base Command
 
-`silentpush-get-nameserver-reputation`
+`silentpush-get-ipv4-reputation`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| nameserver | Nameserver name for which information needs to be retrieved. | Required |
+| ipv4 | IPv4 address for which information needs to be retrieved. | Required |
 | explain | Show the information used to calculate the reputation score. | Optional |
 | limit | The maximum number of reputation history to retrieve. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.IPv4Reputation.date | Number | Date when the reputation information was retrieved. |
+| SilentPush.IPv4Reputation.ip | String | IPv4 address for which the reputation is calculated. |
+| SilentPush.IPv4Reputation.reputation_score | Number | Reputation score for the given IP address. |
+| SilentPush.IPv4Reputation.ip_reputation_explain.ip_density | Number | The number of domain names or services associated with this IP. A higher value may indicate shared hosting or potential abuse. |
+| SilentPush.IPv4Reputation.ip_reputation_explain.names_num_listed | Number | The number of domain names linked to this IP that are flagged or listed in security threat databases. |
 
 #### Context Output
 
@@ -1054,64 +954,34 @@ This command retrieves the reputation history for a specific subnet.
  "subnet_reputation_data": {
   "date": "2025-04-08",
   "subnet": "192.168.0.0/16",
-  "subnet_reputation": 0
- }
-}
-```
-
-### **Human Readable Output**  
-
->### Result
->
->| Field               | Value                    |
->|---------------------|--------------------------|
->| Subnet              | 192.168.0.0/16           |
->| Date                | 2025-04-08               |
->| Subnet Reputation   | 0                        |
-
-### silentpush-list-domain-information
+### silentpush-get-nameserver-reputation
 
 ***
-This command get domain information along with Silent Push risk score and live whois information for multiple domains.
+This command retrieves historical reputation data for a specified nameserver,including reputation scores and optional detailed calculation information.
 
 #### Base Command
 
-`silentpush-list-domain-information`
+`silentpush-get-nameserver-reputation`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domains | Comma-separated list of domains to query. | Required |
-| fetch_risk_score | Whether to fetch risk scores for the domains. | Optional |
-| fetch_whois_info | Whether to fetch WHOIS information for the domains. | Optional |
+| nameserver | Nameserver name for which information needs to be retrieved. | Required | 
+| explain | Show the information used to calculate the reputation score. | Optional | 
+| limit | The maximum number of reputation history to retrieve. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.Domain.domain | String | The domain name queried. |
-| SilentPush.Domain.last_seen | Number | The last seen date of the domain in YYYYMMDD format. |
-| SilentPush.Domain.query | String | The domain name used for the query. |
-| SilentPush.Domain.whois_age | Number | The age of the domain in days based on WHOIS creation date. |
-| SilentPush.Domain.first_seen | Number | The first seen date of the domain in YYYYMMDD format. |
-| SilentPush.Domain.is_new | Boolean | Indicates whether the domain is newly observed. |
-| SilentPush.Domain.zone | String | The top-level domain \(TLD\) or zone of the queried domain. |
-| SilentPush.Domain.registrar | String | The registrar responsible for the domain registration. |
-| SilentPush.Domain.age_score | Number | A risk score based on the domain's age. |
-| SilentPush.Domain.whois_created_date | String | The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format. |
-| SilentPush.Domain.is_new_score | Number | A risk score indicating how new the domain is. |
-| SilentPush.Domain.age | Number | The age of the domain in days. |
+| SilentPush.NameserverReputation.nameserver | Number | The nameserver associated with the reputation history entry. | 
+| SilentPush.NameserverReputation.reputation_data.date | Number | Date of the reputation history entry \(in YYYYMMDD format\). | 
+| SilentPush.NameserverReputation.reputation_data.ns_server | String | Name of the nameserver associated with the reputation history entry. | 
+| SilentPush.NameserverReputation.reputation_data.ns_server_reputation | Number | Reputation score of the nameserver on the specified date. | 
+| SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density | Number | Number of domains associated with the nameserver. | 
+| SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed | Number | Number of domains listed in reputation databases. | 
 
-### **Command Example**  
-
-```bash
-!silentpush-list-domain-information domains="silentpush.com"
-```
-
-### **Context Example**  
-
-```json
 {
  "domains": ["silentpush.com"],
  "domain_information": {
@@ -1296,14 +1166,14 @@ This command get IP information for multiple IPv4s and IPv6s.
 ### **Command Example**  
 
 ```bash
-!silentpush-list-ip-information ips="142.251.188.102"
+!silentpush-list-ip-information ips="0.0.0.0"
 ```
 
 ### **Context Example**  
 
 ```json
 {
- "ips": ["142.251.188.102"],
+ "ips": ["0.0.0.0"],
  "ip_information": {
   "asn": "15169",
   "asn_allocation_age": 9140,
@@ -1323,7 +1193,7 @@ This command get IP information for multiple IPv4s and IPv6s.
   "tags": [],
   "date": "2025-04-08",
   "density": 0,
-  "ip": "142.251.188.102",
+  "ip": "0.0.0.0",
   "ip_flags": {
    "is_proxy": false,
    "is_sinkhole": false,
@@ -1483,161 +1353,138 @@ This command scan a URL to retrieve hosting metadata..
 ### **Command Example**  
 
 ```bash
-!silentpush-live-url-scan url="https://silentpush.com"
+!silentpush-live-url-scan url="https://example.com"
 ```
 
 ### **Context Example**  
 
 ```json
 {
- "url": "https://silentpush.com",
+ "url": "https://example.com",
  "scan_results": {
   "status": "No scan results found",
-  "url": "https://silentpush.com"
+  "url": "https://example.com"
  }
 }
 ```
 
-### **Human Readable Output**  
-
->### Results
->
->| Field          | Value                      |
->|----------------|----------------------------|
->| URL            | <https://silentpush.com>     |
->| Scan Status    | No scan results found      |
-
-### silentpush-reverse-padns-lookup
+### silentpush-live-url-scan
 
 ***
-This command retrieve reverse Passive DNS data for specific DNS record types.
+This command scan a URL to retrieve hosting metadata.
 
 #### Base Command
 
-`silentpush-reverse-padns-lookup`
+`silentpush-live-url-scan`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| qtype | Type of DNS record. | Required |
-| qname | The DNS record name to lookup. | Required |
-| netmask | The netmask for the lookup. | Optional |
-| subdomains | Whether to include subdomains in the lookup. | Optional |
-| regex | Regular expression to filter the DNS records. | Optional |
-| first_seen_after | Filter for records first seen after a specific date/time. | Optional |
-| first_seen_before | Filter for records first seen before a specific date/time. | Optional |
-| last_seen_after | Filter for records last seen after a specific date/time. | Optional |
-| last_seen_before | Filter for records last seen before a specific date/time. | Optional |
-| as_of | Specify a date/time for the PADNS lookup. | Optional |
-| sort | Sort the results by specified criteria. | Optional |
-| output_format | Format for the output (e.g., JSON, XML). | Optional |
-| prefer | Preference for certain record types during the lookup. | Optional |
-| with_metadata | Include metadata in the results. | Optional |
-| max_wait | Maximum wait time in seconds for the lookup results. | Optional |
-| skip | Number of results to skip in pagination. | Optional |
-| limit | Limit the number of results returned. | Optional |
+| url | URL to scan. | Required |
+| platform | Platform to scan the URL on. | Optional |
+| os | Operating system to scan the URL on. | Optional |
+| browser | Browser to scan the URL on. | Optional |
+| region | Region to scan the URL in. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.ReversePADNSLookup.qname | String | The DNS record name looked up. |
-| SilentPush.ReversePADNSLookup.qtype | String | The type of the DNS record. |
-| SilentPush.ReversePADNSLookup.records.answer | String | The answer for the DNS query. |
-| SilentPush.ReversePADNSLookup.records.count | Number | The number of occurrences of the DNS record. |
-| SilentPush.ReversePADNSLookup.records.first_seen | String | Timestamp of when the record was first seen. |
-| SilentPush.ReversePADNSLookup.records.last_seen | String | Timestamp of the most recent occurrence of the record. |
-| SilentPush.ReversePADNSLookup.records.nshash | String | The hash of the NS record. |
-| SilentPush.ReversePADNSLookup.records.query | String | The DNS query associated with the record. |
-| SilentPush.ReversePADNSLookup.records.ttl | Number | Time-to-live \(TTL\) of the DNS record. |
-| SilentPush.ReversePADNSLookup.records.type | String | The type of DNS record \(e.g., NS\). |
+| SilentPush.URLScan.HHV | String | Unique identifier for HHV. |
+| SilentPush.URLScan.adtech.ads_txt | Boolean | Indicates if ads_txt is present. |
+| SilentPush.URLScan.adtech.app_ads_txt | Boolean | Indicates if app_ads_txt is present. |
+| SilentPush.URLScan.adtech.sellers_json | Boolean | Indicates if sellers_json is present. |
+| SilentPush.URLScan.datahash | String | Hash value of the data. |
+| SilentPush.URLScan.domain | String | The domain name. |
+| SilentPush.URLScan.favicon2_avg | String | Hash value for favicon2 average. |
+| SilentPush.URLScan.favicon2_md5 | String | MD5 hash for favicon2. |
+| SilentPush.URLScan.favicon2_murmur3 | Number | Murmur3 hash for favicon2. |
+| SilentPush.URLScan.favicon2_path | String | Path to favicon2 image. |
+| SilentPush.URLScan.favicon_avg | String | Hash value for favicon average. |
+| SilentPush.URLScan.favicon_md5 | String | MD5 hash for favicon. |
+| SilentPush.URLScan.favicon_murmur3 | String | Murmur3 hash for favicon. |
+| SilentPush.URLScan.favicon_path | String | Path to favicon image. |
+| SilentPush.URLScan.favicon_urls | Unknown | List of favicon URLs. |
+| SilentPush.URLScan.header.cache-control | String | Cache control header value. |
+| SilentPush.URLScan.header.content-encoding | String | Content encoding header value. |
+| SilentPush.URLScan.header.content-type | String | Content type header value. |
+| SilentPush.URLScan.header.server | String | Server header value. |
+| SilentPush.URLScan.header.x-powered-by | String | X-Powered-By header value. |
+| SilentPush.URLScan.hostname | String | The hostname of the server. |
+| SilentPush.URLScan.html_body_length | Number | Length of the HTML body. |
+| SilentPush.URLScan.html_body_murmur3 | Number | Murmur3 hash for the HTML body. |
+| SilentPush.URLScan.html_body_sha256 | String | SHA256 hash for the HTML body. |
+| SilentPush.URLScan.html_body_similarity | Number | Similarity score of the HTML body. |
+| SilentPush.URLScan.html_body_ssdeep | String | ssdeep hash for the HTML body. |
+| SilentPush.URLScan.htmltitle | String | The HTML title of the page. |
+| SilentPush.URLScan.ip | String | IP address associated with the domain. |
+| SilentPush.URLScan.jarm | String | JARM \(TLS fingerprint\) value. |
+| SilentPush.URLScan.mobile_enabled | Boolean | Indicates if the mobile version is enabled. |
+| SilentPush.URLScan.opendirectory | Boolean | Indicates if open directory is enabled. |
+| SilentPush.URLScan.origin_domain | String | Origin domain of the server. |
+| SilentPush.URLScan.origin_hostname | String | Origin hostname of the server. |
+| SilentPush.URLScan.origin_ip | String | Origin IP address of the server. |
+| SilentPush.URLScan.origin_jarm | String | JARM \(TLS fingerprint\) value for the origin. |
+| SilentPush.URLScan.origin_path | String | Origin path for the URL. |
+| SilentPush.URLScan.origin_port | Number | Port used for the origin server. |
+| SilentPush.URLScan.origin_ssl.CHV | String | SSL Certificate Chain Value \(CHV\). |
+| SilentPush.URLScan.origin_ssl.SHA1 | String | SHA1 hash of the SSL certificate. |
+| SilentPush.URLScan.origin_ssl.SHA256 | String | SHA256 hash of the SSL certificate. |
+| SilentPush.URLScan.origin_ssl.authority_key_id | String | Authority Key Identifier for SSL certificate. |
+| SilentPush.URLScan.origin_ssl.expired | Boolean | Indicates if the SSL certificate is expired. |
+| SilentPush.URLScan.origin_ssl.issuer.common_name | String | Issuer common name for SSL certificate. |
+| SilentPush.URLScan.origin_ssl.issuer.country | String | Issuer country for SSL certificate. |
+| SilentPush.URLScan.origin_ssl.issuer.organization | String | Issuer organization for SSL certificate. |
+| SilentPush.URLScan.origin_ssl.not_after | String | Expiration date of the SSL certificate. |
+| SilentPush.URLScan.origin_ssl.not_before | String | Start date of the SSL certificate validity. |
+| SilentPush.URLScan.origin_ssl.sans | Unknown | List of Subject Alternative Names \(SANs\) for the SSL certificate. |
+| SilentPush.URLScan.origin_ssl.sans_count | Number | Count of SANs for the SSL certificate. |
+| SilentPush.URLScan.origin_ssl.serial_number | String | Serial number of the SSL certificate. |
+| SilentPush.URLScan.origin_ssl.sigalg | String | Signature algorithm used for the SSL certificate. |
+| SilentPush.URLScan.origin_ssl.subject.common_name | String | Subject common name for the SSL certificate. |
+| SilentPush.URLScan.origin_ssl.subject_key_id | String | Subject Key Identifier for SSL certificate. |
+| SilentPush.URLScan.origin_ssl.valid | Boolean | Indicates if the SSL certificate is valid. |
+| SilentPush.URLScan.origin_ssl.wildcard | Boolean | Indicates if the SSL certificate is a wildcard. |
+| SilentPush.URLScan.origin_subdomain | String | Subdomain of the origin. |
+| SilentPush.URLScan.origin_tld | String | Top-level domain of the origin. |
+| SilentPush.URLScan.origin_url | String | Complete URL of the origin. |
+| SilentPush.URLScan.path | String | Path for the URL. |
+| SilentPush.URLScan.port | Number | Port for the URL. |
+| SilentPush.URLScan.proxy_enabled | Boolean | Indicates if the proxy is enabled. |
+| SilentPush.URLScan.redirect | Boolean | Indicates if a redirect occurs. |
+| SilentPush.URLScan.redirect_count | Number | Count of redirects. |
+| SilentPush.URLScan.redirect_list | Unknown | List of redirect URLs. |
+| SilentPush.URLScan.resolves_to | Unknown | List of IPs the domain resolves to. |
+| SilentPush.URLScan.response | Number | HTTP response code. |
+| SilentPush.URLScan.scheme | String | URL scheme \(e.g., https\). |
+| SilentPush.URLScan.screenshot | String | URL for the domain screenshot. |
+| SilentPush.URLScan.ssl.CHV | String | SSL Certificate Chain Value \(CHV\). |
+| SilentPush.URLScan.ssl.SHA1 | String | SHA1 hash of the SSL certificate. |
+| SilentPush.URLScan.ssl.SHA256 | String | SHA256 hash of the SSL certificate. |
+| SilentPush.URLScan.ssl.authority_key_id | String | Authority Key Identifier for SSL certificate. |
+| SilentPush.URLScan.ssl.expired | Boolean | Indicates if the SSL certificate is expired. |
+| SilentPush.URLScan.ssl.issuer.common_name | String | Issuer common name for SSL certificate. |
+| SilentPush.URLScan.ssl.issuer.country | String | Issuer country for SSL certificate. |
+| SilentPush.URLScan.ssl.issuer.organization | String | Issuer organization for SSL certificate. |
+| SilentPush.URLScan.ssl.not_after | String | Expiration date of the SSL certificate. |
+| SilentPush.URLScan.ssl.not_before | String | Start date of the SSL certificate validity. |
+| SilentPush.URLScan.ssl.sans | Unknown | List of Subject Alternative Names \(SANs\) for the SSL certificate. |
+| SilentPush.URLScan.ssl.sans_count | Number | Count of SANs for the SSL certificate. |
+| SilentPush.URLScan.ssl.serial_number | String | Serial number of the SSL certificate. |
+| SilentPush.URLScan.ssl.sigalg | String | Signature algorithm used for the SSL certificate. |
+| SilentPush.URLScan.ssl.subject.common_name | String | Subject common name for the SSL certificate. |
+| SilentPush.URLScan.ssl.subject_key_id | String | Subject Key Identifier for SSL certificate. |
+| SilentPush.URLScan.ssl.valid | Boolean | Indicates if the SSL certificate is valid. |
+| SilentPush.URLScan.ssl.wildcard | Boolean | Indicates if the SSL certificate is a wildcard. |
+| SilentPush.URLScan.body_analysis.SHV | String | Unique identifier for body analysis. |
+| SilentPush.URLScan.body_analysis.body_sha256 | String | SHA-256 hash of the body content. |
+| SilentPush.URLScan.body_analysis.google-GA4 | Unknown | List of Google GA4 tracking IDs. |
+| SilentPush.URLScan.body_analysis.google-UA | Unknown | List of Google Universal Analytics tracking IDs. |
+| SilentPush.URLScan.body_analysis.google-adstag | Unknown | List of Google Adstag tracking IDs. |
+| SilentPush.URLScan.body_analysis.js_sha256 | Unknown | List of SHA-256 hashes of JavaScript files. |
+| SilentPush.URLScan.body_analysis.js_ssdeep | Unknown | List of ssdeep fuzzy hashes of JavaScript files. |
 
-### **Command Example**  
-
-```bash
-!silentpush-reverse-padns-lookup qtype="ns" qname="vida.ns.cloudflare.com"
-```
-
-### **Context Example**  
-
-```json
-{
- "qtype": "ns",
- "qname": "vida.ns.cloudflare.com",
- "reverse_padns_lookup": {
-  "answer": "vida.ns.cloudflare.com",
-  "count": 541,
-  "first_seen": "2023-10-25 18:46:27",
-  "last_seen": "2025-04-08 09:37:41",
-  "nshash": "9448b4ad541f0e539d2f5ad271d6d581",
-  "query": "ernestchadwick.com"
- }
-}
-```
-
-### **Human Readable Output**  
-
->### Results
->
->| Field             | Value                                |
->|-------------------|--------------------------------------|
->| Answer            | vida.ns.cloudflare.com               |
->| Query Count       | 541                                  |
->| First Seen        | 2023-10-25 18:46:27                  |
->| Last Seen         | 2025-04-08 09:37:41                  |
->| NS Hash           | 9448b4ad541f0e539d2f5ad271d6d581    |
->| Query Domain      | ernestchadwick.com                   |
-
-### silentpush-screenshot-url
-
-***
-This commandGenerate screenshot of a URL.
-
-#### Base Command
-
-`silentpush-screenshot-url`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| url | URL for the screenshot. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| SilentPush.Screenshot.file_id | String | Unique identifier for the generated screenshot file. |
-| SilentPush.Screenshot.file_name | String | Name of the screenshot file. |
-| SilentPush.Screenshot.screenshot_url | String | URL to access the generated screenshot. |
-| SilentPush.Screenshot.status | String | Status of the screenshot generation process. |
-| SilentPush.Screenshot.status_code | Number | HTTP status code of the response. |
-| SilentPush.Screenshot.url | String | The URL that was used to generate the screenshot. |
-
-### **Command Example**  
-
-```bash
-!silentpush-screenshot-url url="https://www.virustotal.com/gui/domain/tbibank-bg.com"
-```
-
-### **Context Example**  
-
-```json
-{
- "url": "https://www.virustotal.com/gui/domain/tbibank-bg.com",
- "screenshot_data": {
-  "status": "Success",
-  "screenshot_url": "https://fs.silentpush.com/screenshots/virustotal.com/f2fa9440ee769ad6f6702529c006522b.jpg",
-  "file_name": "www.virustotal.com_screenshot.jpg"
- }
-}
-```
-
-### **Human Readable Output**  
-
->### Results  
->
 >| Field             | Value                                                             |
 >|-------------------|-------------------------------------------------------------------|
 >| URL               | <https://www.virustotal.com/gui/domain/tbibank-bg.com>              |
@@ -1816,7 +1663,7 @@ This command search Silent Push scan data repositories using SPQL queries.
  "scan_data": [
   {
    "domain": "volunteering.cool",
-   "ip": "44.227.65.245",
+   "ip": "0.0.0.0",
    "asn": "16509",
    "asn_org": "AMAZON-02",
    "city": "Boardman",
@@ -1827,8 +1674,8 @@ This command search Silent Push scan data repositories using SPQL queries.
    "timezone": "America/Los_Angeles",
    "server": "openresty",
    "ssl": "http",
-   "favicon": "http://volunteering.cool/favicon.ico",
-   "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3",
+   "favicon": "http://example.cool/favicon.ico",
+   "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/0.0.0.0 Safari/537.3",
    "scan_date": "2025-04-08T09:12:45Z",
    "status_code": 200
   }
@@ -1842,8 +1689,8 @@ This command search Silent Push scan data repositories using SPQL queries.
 >
 >| Field                   | Value                                      |
 >|-------------------------|--------------------------------------------|
->| Domain                  | [volunteering.cool](http://volunteering.cool) |
->| IP Address              | 44.227.65.245                              |
+>| Domain                  | [volunteering.cool](http://example.cool) |
+>| IP Address              | 0.0.0.0                           |
 >| ASN                     | 16509                                      |
 >| ASN Organization        | AMAZON-02                                  |
 >| City                    | Boardman                                  |
@@ -1854,7 +1701,161 @@ This command search Silent Push scan data repositories using SPQL queries.
 >| Timezone                | America/Los_Angeles                       |
 >| Server                  | openresty                                 |
 >| SSL/TLS Status          | HTTP (No SSL)                             |
->| Favicon                 | ![Favicon](http://volunteering.cool/favicon.ico) |
+>| Favicon                 | ![Favicon](http://example.cool/favicon.ico) |
 >| User Agent              | Mozilla/5.0 (Linux x86_64)                |
 >| Scan Date               | 2025-04-08T09:12:45Z                      |
 >| HTTP Status Code        | 200                                        |
+>
+### silentpush-add-indicator-tags
+
+***
+This command updates tags to the indicators
+
+#### Base Command
+
+`silentpush-add-indicator-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| feed_uuid | UUID of the feed. | Required |
+| indicator_name | The name of the indicator to tag. | Required |
+| tags | Tags to be added to the indicator. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.AddIndicatorTags.uuid | String | The UUID of the indicator. |
+| SilentPush.AddIndicatorTags.name | String | The name of the indicator. |
+| SilentPush.AddIndicatorTags.tags | String | The tags assigned to the indicator. |
+
+### silentpush-add-feed
+
+***
+This command add the new feed
+
+#### Base Command
+
+`silentpush-add-feed`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the feed. | Required |
+| type | Feed Type. | Required |
+| category | Feed Category. | Optional |
+| vendor | Vendor. | Optional |
+| feed_description | URL for the screenshot. | Optional |
+| tags | Tags that should be attached with the feed. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.AddFeed.name | String | The name of the feed. |
+| SilentPush.AddFeed.type | String | The type of the feed. |
+| SilentPush.AddFeed.vendor | String | The vendor of the feed. |
+| SilentPush.AddFeed.feed_description | String | A description of the feed. |
+| SilentPush.AddFeed.category | String | The category of the feed. |
+| SilentPush.AddFeed.tags | Unknown | Tags associated with the feed. |
+
+### silentpush-add-feed-tags
+
+***
+This command add indicators to the feed
+
+#### Base Command
+
+`silentpush-add-feed-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| feed_uuid | Never return query metadata, even if original request did include metadata. | Optional |
+| tags | Comma separated tags to be updated to the feed. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.AddFeedTags.created_or_updated | Unknown | List of indicator names that were created or updated in the feed. |
+| SilentPush.AddFeedTags.invalid_indicators | Unknown | List of indicators that were considered invalid and not added to the feed. |
+
+### silentpush-get-data-exports
+
+***
+This command runs the threat check on the specified
+
+#### Base Command
+
+`silentpush-get-data-exports`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| feed_url | The URL from which to export the feed data. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.GetDataExports.EntryID | Unknown | The EntryID of the report file. |
+| SilentPush.GetDataExports.Extension | String | The extension of the report file. |
+| SilentPush.GetDataExports.Name | String | The name of the report file. |
+| SilentPush.GetDataExports.Info | String | The info of the report file. |
+| SilentPush.GetDataExports.Size | Number | The size of the report file. |
+| SilentPush.GetDataExports.Type | String | The type of the report file. |
+
+### silentpush-run-threat-check
+
+***
+This command runs the threat check on the specified
+
+#### Base Command
+
+`silentpush-run-threat-check`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| data | The name of the data source to query. | Required |
+| query | The value to check for threats (e.g., IP or domain). | Required |
+| type | The type of the value being queried (e.g., ip, domain). | Required |
+| user_identifier | A unique identifier for the user making the request. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.RunThreatCheck.is_listed | Boolean | Indicates whether the queried value is listed as a threat. |
+| SilentPush.RunThreatCheck.listed_txt | String | Textual description of the listing status. |
+| SilentPush.RunThreatCheck.query | String | The original value that was checked. |
+
+### silentpush-add-indicators
+
+***
+This command add indicators to the feed
+
+#### Base Command
+
+`silentpush-add-indicators`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| feed_uuid | UUID of the feed. | Required |
+| indicators | Indicators for the feed. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.AddIndicators.created_or_updated | Unknown | List of indicator names that were created or updated in the feed. |
+| SilentPush.AddIndicators.invalid_indicators | Unknown | List of indicators that were considered invalid and not added to the feed. |

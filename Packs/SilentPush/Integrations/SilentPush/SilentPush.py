@@ -68,9 +68,9 @@ JOB_STATUS_INPUTS = [  # pragma: no cover
     ),
 ]
 NAMESERVER_REPUTATION_INPUTS = [
-    InputArgument(name="nameserver", description="Nameserver name for which information needs to be retrieved", required=True),
-    InputArgument(name="explain", description="Show the information used to calculate the reputation score"),
-    InputArgument(name="limit", description="The maximum number of reputation history to retrieve"),
+    InputArgument(name="nameserver", description="Nameserver name for which information needs to be retrieved.", required=True),
+    InputArgument(name="explain", description="Show the information used to calculate the reputation score."),
+    InputArgument(name="limit", description="The maximum number of reputation history to retrieve."),
 ]
 SUBNET_REPUTATION_INPUTS = [
     InputArgument(
@@ -119,7 +119,7 @@ DOMAIN_INFRATAGS_INPUTS = [
         description="Build infratags from padns data where the as_of timestamp equivalent is between the first_seen "
         "and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - "
         "fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - "
-        "relative time <sec> seconds ago",
+        "relative time <sec> seconds ago.",
         default="self",
     ),
 ]
@@ -179,15 +179,15 @@ ASN_TAKEDOWN_REPUTATION_INPUTS = [
 IPV4_REPUTATION_INPUTS = [
     InputArgument(
         name="ipv4",  # option 1
-        description="IPv4 address for which information needs to be retrieved",
+        description="IPv4 address for which information needs to be retrieved.",
         required=True,
     ),
-    InputArgument(name="explain", description="Show the information used to calculate the reputation score"),
-    InputArgument(name="limit", description="The maximum number of reputation history to retrieve"),
+    InputArgument(name="explain", description="Show the information used to calculate the reputation score."),
+    InputArgument(name="limit", description="The maximum number of reputation history to retrieve."),
 ]
 FORWARD_PADNS_INPUTS = [
-    InputArgument(name="qtype", description="DNS record type", required=True),
-    InputArgument(name="qname", description="The DNS record name to lookup", required=True),
+    InputArgument(name="qtype", description="DNS record type.", required=True),
+    InputArgument(name="qname", description="The DNS record name to lookup.", required=True),
     InputArgument(name="netmask", description="The netmask to filter the lookup results."),
     InputArgument(name="subdomains", description="Flag to include subdomains in the lookup results."),
     InputArgument(name="regex", description="Regular expression to filter the DNS records."),
@@ -253,17 +253,17 @@ SCREENSHOT_URL_INPUTS = [
 ]
 
 ADD_FEED_INPUTS = [
-    InputArgument(name="name", description="Name of the feed", required=True),
-    InputArgument(name="type", description="Feed Type", required=True),
-    InputArgument(name="category", description="Feed Category", required=False),
-    InputArgument(name="vendor", description="Vendor", required=False),
+    InputArgument(name="name", description="Name of the feed.", required=True),
+    InputArgument(name="type", description="Feed Type.", required=True),
+    InputArgument(name="category", description="Feed Category.", required=False),
+    InputArgument(name="vendor", description="Vendor.", required=False),
     InputArgument(name="feed_description", description="URL for the screenshot.", required=False),
-    InputArgument(name="tags", description="Tags that should be attached with the feed", required=False),
+    InputArgument(name="tags", description="Tags that should be attached with the feed.", required=False),
 ]
 
 ADD_INDICATORS_INPUTS = [
-    InputArgument(name="feed_uuid", description="UUID of the feed", required=True),
-    InputArgument(name="indicators", description="Indicators for the feed", required=True),
+    InputArgument(name="feed_uuid", description="UUID of the feed.", required=True),
+    InputArgument(name="indicators", description="Indicators for the feed.", required=True),
 ]
 
 ADD_INDICATOR_TAGS_INPUTS = [
@@ -449,7 +449,7 @@ LIST_DOMAIN_OUTPUTS = [
 ]
 DOMAIN_CERTIFICATE_OUTPUTS = [
     OutputArgument(name="domain", output_type=str, description="Queried domain."),
-    OutputArgument(name="metadata", output_type=str, description="Metadata of the response"),
+    OutputArgument(name="metadata", output_type=str, description="Metadata of the response."),
     OutputArgument(name="certificates.cert_index", output_type=int, description="Index of the certificate."),
     OutputArgument(name="certificates.chain", output_type=list, description="Certificate chain."),
     OutputArgument(name="certificates.date", output_type=int, description="Certificate issue date."),
@@ -483,7 +483,7 @@ DOMAIN_CERTIFICATE_OUTPUTS = [
     OutputArgument(name="job_details.status", output_type=str, description="Status of the job."),
 ]
 ENRICHMENT_OUTPUTS = [
-    OutputArgument(name="value", output_type=str, description="Queried value"),
+    OutputArgument(name="value", output_type=str, description="Queried value."),
     OutputArgument(
         name="domain_string_frequency_probability.avg_probability",
         output_type=float,
@@ -510,7 +510,7 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(
         name="domain_urls.results_summary.alexa_top10k_score",
         output_type=int,
-        description={repr("Score indicating domain's Alexa top 10k ranking.")},
+        description="Score indicating domain's Alexa top 10k ranking.",
     ),
     OutputArgument(
         name="domain_urls.results_summary.dynamic_domain_score",
@@ -533,7 +533,7 @@ ENRICHMENT_OUTPUTS = [
         description="Number of results found for the domain.",
     ),
     OutputArgument(
-        name="domain_urls.results_summary.url_shortner_score", output_type=int, description="Score of the shortned URL"
+        name="domain_urls.results_summary.url_shortner_score", output_type=int, description="Score of the shortned URL."
     ),
     OutputArgument(name="domaininfo.domain", output_type=str, description="Domain name analyzed."),
     OutputArgument(name="domaininfo.error", output_type=str, description="Error message if no data is available for the domain."),
@@ -608,7 +608,7 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(
         name="ns_reputation.ns_srv_reputation.ns_server_domain_density",
         output_type=int,
-        description="Number of domains sharing this NS",
+        description="Number of domains sharing this NS.",
     ),
     OutputArgument(
         name="ns_reputation.ns_srv_reputation.ns_server_domains_listed",
@@ -618,7 +618,7 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(
         name="ns_reputation.ns_srv_reputation.ns_server_reputation",
         output_type=int,
-        description="Reputation score for this NS",
+        description="Reputation score for this NS.",
     ),
     OutputArgument(
         name="scan_data.certificates.domain",
@@ -673,7 +673,7 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(name="scan_data.headers.hostname", output_type=str, description="The hostname that sent this response."),
     OutputArgument(name="scan_data.headers.ip", output_type=str, description="The IP address responding to the request."),
     OutputArgument(name="scan_data.headers.scan_date", output_type=str, description="The date when the headers were scanned."),
-    OutputArgument(name="scan_data.headers.headers.cache-control", output_type=str, description="HTTP cache-control"),
+    OutputArgument(name="scan_data.headers.headers.cache-control", output_type=str, description="HTTP cache-control."),
     OutputArgument(
         name='scan_data.headers.headers.content-length"',
         output_type=str,
@@ -689,7 +689,7 @@ ENRICHMENT_OUTPUTS = [
         description="The web server handling the request (Cloudflare proxy).",
     ),
     OutputArgument(name="scan_data.html.hostname", output_type=str, description="HTTP response code for the domain scan."),
-    OutputArgument(name="scan_data.html.html_body_murmur3", output_type=str, description="hash of the page content"),
+    OutputArgument(name="scan_data.html.html_body_murmur3", output_type=str, description="hash of the page content."),
     OutputArgument(
         name="scan_data.html.html_body_ssdeep",
         output_type=str,
@@ -782,7 +782,7 @@ ENRICHMENT_OUTPUTS = [
         name="ip2asn.benign_info.known_benign",
         output_type=bool,
         description="Indicates whether this IP/ASN is explicitly known to be safe "
-        "(e.g., a reputable cloud provider or public service)",
+        "(e.g., a reputable cloud provider or public service).",
     ),
     OutputArgument(
         name="ip2asn.benign_info.tags",
@@ -1902,17 +1902,25 @@ class Client(BaseClient):
         try:
             response = requests.request(
                 method=method,
-                url=full_url,  # <<< this must be full_url, not something else
+                url=full_url,
                 headers=self._headers,
                 verify=self.verify,
                 params=params,
                 json=data,
                 proxies=self.proxies,
             )
-            response.raise_for_status()
-            return response.json()
         except requests.exceptions.RequestException as e:
-            raise DemistoException(f"Request error: {str(e)}")
+            raise DemistoException(f"Connection error: {str(e)}")
+
+        # Check for non-2xx HTTP responses
+        if not response.ok:
+            raise DemistoException(f"HTTP {response.status_code} Error: {response.text}", res=response)
+
+        # Try parsing JSON
+        try:
+            return response.json()
+        except ValueError:
+            raise DemistoException("Failed to parse JSON response.", res=response)
 
     def get_job_status(self, job_id: str, params: dict) -> dict[str, Any]:
         """
@@ -2835,7 +2843,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
 @metadata_collector.command(
     command_name="silentpush-get-subnet-reputation",
     inputs_list=SUBNET_REPUTATION_INPUTS,
-    outputs_prefix="SilentPush.NameserverReputation",
+    outputs_prefix="SilentPush.SubnetReputation",
     outputs_list=SUBNET_REPUTATION_OUTPUTS,
     description="This command retrieves the reputation history for a specific subnet.",
 )

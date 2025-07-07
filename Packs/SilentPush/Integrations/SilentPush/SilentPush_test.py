@@ -40,7 +40,7 @@ from SilentPush import (
     run_threat_check_command,
     add_feed_tags_command,
 )
-from CommonServerPython import DemistoException, EntryFormat, EntryType
+from CommonServerPython import DemistoException, EntryType
 
 
 def util_load_json(path):
@@ -1548,7 +1548,6 @@ def test_get_data_exports_command_success(mock_client):
     assert isinstance(result, dict)
     assert result["File"] == "export.csv"
     assert result["Type"] == EntryType.FILE
-    assert result["ContentsFormat"] == EntryFormat.ENTRY
 
 
 def test_add_feed_tags_command_success(mocker):
