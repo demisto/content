@@ -10026,3 +10026,21 @@ def test_stringEscapeMD():
     st = "somethig~issue~"
     result = stringEscapeMD(st)
     assert result == "somethig\~issue\~"
+
+
+CONSTANT_PACK_VERSION = '1.0.0'
+
+
+def test_get_pack_version():
+    """
+    Given: A global CONSTANT_PACK_VERSION
+    When: Using the function get_pack_version.
+    Then: assert verify the correct version is returned.
+    """
+
+    with open('CommonServerPython.py', encoding='utf-8') as f:
+        code = f.read()
+
+    exec(code, globals())
+    version = get_pack_version()
+    assert version == '1.0.0'
