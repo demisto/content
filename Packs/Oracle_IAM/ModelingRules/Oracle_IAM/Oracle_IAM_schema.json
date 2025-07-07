@@ -37,7 +37,7 @@
             "is_array": false
         },
         "IAU_TSTZORIGINATING": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         },
         "IAU_REMOTEIP": {
