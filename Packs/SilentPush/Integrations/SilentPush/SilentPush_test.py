@@ -40,7 +40,7 @@ from SilentPush import (
     run_threat_check_command,
     add_feed_tags_command,
 )
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, EntryFormat, EntryType
 
 
 def util_load_json(path):
@@ -1524,7 +1524,7 @@ def test_run_threat_check_command_missing_query(mock_client):
 def mock_file_response(content: bytes, status_code=200, headers=None) -> Response:
     response = Response()
     response.status_code = status_code
-    response._content = content  # private attribute but works
+    response._content = content
     response.headers = headers or {
         "Content-Disposition": 'attachment; filename="export.csv"',
         "Content-Type": "application/octet-stream",
@@ -1533,18 +1533,23 @@ def mock_file_response(content: bytes, status_code=200, headers=None) -> Respons
 
 
 def test_get_data_exports_command_success(mock_client):
-    feed_url = "hhttps://api.silentpush.com/feeds/export.csv"
+    feed_url = "https://api.silentpush.com/feeds/export.csv"
     args = {"feed_url": feed_url}
     content = b"test,data\n1,2"
 
-    # Mock actual Response object from `requests`
+    # Mock the response from the client (returns a real Response object)
     mock_response = mock_file_response(content)
     mock_client.get_data_exports.return_value = mock_response
 
+    # Run the actual command function
     result = get_data_exports_command(mock_client, args)
 
+    # Assertions
+    assert isinstance(result, dict)
     assert result["File"] == "export.csv"
     assert result["Contents"] == content
+    assert result["Type"] == EntryType.FILE
+    assert result["ContentsFormat"] == EntryFormat.ENTRY
 
 
 def test_add_feed_tags_command_success(mocker):
