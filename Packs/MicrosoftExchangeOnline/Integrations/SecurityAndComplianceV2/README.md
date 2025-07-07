@@ -1518,4 +1518,3 @@ Deletes an email for all recipients.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. |
-
