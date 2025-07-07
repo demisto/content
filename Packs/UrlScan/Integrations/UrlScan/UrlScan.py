@@ -704,10 +704,10 @@ def urlscan_search_command(client):
     if search_type == "raw":
         r = urlscan_search(client, search_type, raw_query)
         results = CommandResults(
-            outputs_prefix = "URLScan.Search.Results",
-            raw_response = r,
-            outputs = r['results'],
-            readable_output = f'{r["total"]} results found for {raw_query}',
+            outputs_prefix="URLScan.Search.Results",
+            raw_response=r,
+            outputs=r["results"],
+            readable_output=f'{r["total"]} results found for {raw_query}',
         )
         return_results(results)
     else:
