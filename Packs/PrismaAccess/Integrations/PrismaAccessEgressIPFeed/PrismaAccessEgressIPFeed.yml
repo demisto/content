@@ -21,7 +21,7 @@ configuration:
   type: 0
   section: Connect
   required: true
-- displaypassword: Prisma Access API Key
+- displaypassword: Prisma Access API Key from Panorama
   name: credentials
   type: 9
   section: Connect
