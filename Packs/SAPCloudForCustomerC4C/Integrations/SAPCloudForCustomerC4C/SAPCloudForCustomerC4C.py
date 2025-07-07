@@ -11,14 +11,13 @@ urllib3.disable_warnings()
 
 SAP_CLOUD = "SAP CLOUD FOR CUSTOMER"
 STRFTIME_FORMAT = "%d-%m-%Y %H:%M:%S"
-# ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 VENDOR = "SAP CLOUD"
 PRODUCT = "C4C"
 FIRST_FETCH = "one minute ago"
 URL_SUFFIX = "/sap/c4c/odata/ana_businessanalytics_analytics.svc/"
 INIT_SKIP = 0
 DEFAULT_TOP = 1000
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC
 
 """ CLIENT CLASS """
 
@@ -287,9 +286,7 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
             break
 
     demisto.debug(f"Fetched {len(all_events)} events.")
-    # next_run will be the current time when the fetch started, in ISO format for Demisto's last_run
-    # next_run = {"last_fetch": now.strftime(ISO_8601_FORMAT)}
-    # next_run = {"last_fetch": int(now.timestamp())}
+    # next_run will be the current time when the fetch started
     next_run = {"last_fetch": now.strftime(DATE_FORMAT)}
     return next_run, all_events
 

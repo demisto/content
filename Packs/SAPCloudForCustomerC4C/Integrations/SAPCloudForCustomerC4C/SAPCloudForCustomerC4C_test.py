@@ -5,8 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 SAP_CLOUD = "SAP CLOUD FOR CUSTOMER"
 STRFTIME_FORMAT = "%d-%m-%Y %H:%M:%S"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC
 VENDOR = "SAP CLOUD"
 PRODUCT = "C4C"
 FIRST_FETCH = "one minute ago"
