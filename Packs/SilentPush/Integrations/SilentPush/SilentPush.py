@@ -4363,7 +4363,7 @@ def get_data_exports_command(client: Client, args: dict[str, Any]) -> dict[str, 
     feed_url = args.get("feed_url")
 
     if not feed_url:
-        raise ValueError("Feed url is required")
+        raise ValueError("Feed URL is required")
 
     response = client.get_data_exports(feed_url)
 
