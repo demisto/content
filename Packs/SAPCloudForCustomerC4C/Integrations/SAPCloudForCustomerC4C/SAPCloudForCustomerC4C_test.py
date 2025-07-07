@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 SAP_CLOUD = "SAP CLOUD FOR CUSTOMER"
 STRFTIME_FORMAT = "%d-%m-%Y %H:%M:%S"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 VENDOR = "SAP CLOUD"
 PRODUCT = "C4C"
@@ -416,7 +417,7 @@ def test_fetch_events_first_fetch_success(mocker):
     next_run, fetched_events = fetch_events(mock_client_instance, params, last_run={})
 
     assert fetched_events == expected_events
-    assert next_run == {"last_fetch": fixed_now_dt.strftime(ISO_8601_FORMAT)}
+    assert next_run == {"last_fetch": fixed_now_dt.strftime(DATE_FORMAT)}
 
 
 def test_fetch_events_report_id_missing():
@@ -497,4 +498,4 @@ def test_fetch_events_dateparser_fallback(mocker):
     next_run, fetched_events = fetch_events(mock_client_instance, params, last_run)
 
     assert fetched_events == expected_events
-    assert next_run == {"last_fetch": fixed_now_dt.strftime(ISO_8601_FORMAT)}
+    assert next_run == {"last_fetch": fixed_now_dt.strftime(DATE_FORMAT)}
