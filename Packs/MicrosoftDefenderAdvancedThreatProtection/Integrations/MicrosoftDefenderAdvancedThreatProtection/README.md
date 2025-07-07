@@ -7385,7 +7385,7 @@ Run this command to get the missing security updates (KBs) from a specific machi
 ### microsoft-atp-list-auth-permissions
 
 ***
-This command gets the permissions from the current configured user's role. Use for permission issue detections.
+This command gets the permissions from the currently configured credentials. Use for debugging and detecting permission issues.
 
 #### Base Command
 
