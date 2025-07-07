@@ -96,9 +96,9 @@ class Command:
             CommandResults: CommandResult object with the formatted output.
         """
         if not is_error:
-            return CommandResults(readable_output=f"#### Result for {self}\n{human_readable}")
+            return CommandResults(readable_output=f"Result for {self}\n{human_readable}")
 
-        return CommandResults(readable_output=f"#### Error for {self}\n{human_readable}", entry_type=EntryType.ERROR)
+        return CommandResults(readable_output=f"Error for {self}\n{human_readable}", entry_type=EntryType.ERROR)
 
     def execute(self) -> tuple[list[dict], list[CommandResults]]:
         """
@@ -198,17 +198,22 @@ class Command:
         return f"Command: {self.as_formatted_string}"
 
 
-""" COMMAND EXECUTION FUNCTIONS """
+""" HELPER FUNCTIONS FOR MDE"""
 
 
-def Microsoft_atp_stop_and_quarantine_file():
-    pass  # not polling?
+def Microsoft_atp_quarantine_file(
+    args: dict,
+    readable_context: list[dict],
+    context: list[dict],
+    verbose_command_results: list[CommandResults],
+) -> None:
+    pass
 
 
-""" HELPER FUNCTIONS """
+""" HELPER FUNCTIONS FOR XDR AND CORE"""
 
 
-def get_connected_endpoints(
+def get_connected_xdr_endpoints(
     command_prefix: str,
     args: dict,
     readable_context: list[dict],
@@ -216,7 +221,7 @@ def get_connected_endpoints(
     verbose_command_results: list[CommandResults],
 ) -> list[str]:
     """
-    find all connected endpoints on the device, returns them as list and
+    find all connected endpoints with xdr agent on the device, returns them as list and
     update readable_context and context for the endpoint that are not available.
 
     Args:
@@ -261,8 +266,7 @@ def get_connected_endpoints(
                 "file_hash": file_hash,
                 "file_path": file_path,
                 "endpoint_id": e_id,
-                "status": False,
-                "result": "Failed",
+                "status": "Failed",
                 "message": message,
                 "brand": BRAND_CORE_IR,
             }
@@ -270,7 +274,7 @@ def get_connected_endpoints(
     return connected_endpoints
 
 
-def get_endpoints_to_quarantine(
+def get_endpoints_to_quarantine_with_xdr(
     command_prefix: str,
     args: dict,
     readable_context: list[dict],
@@ -278,7 +282,7 @@ def get_endpoints_to_quarantine(
     verbose_command_results: list[CommandResults],
 ) -> tuple[list[str], dict[str, Command]]:
     """
-    get quarantine status for each connected endpoint.
+    get quarantine status for each connected endpoint with xdr agent.
     for already quarantined file at endpoint update readable_context and context.
 
     Args:
@@ -294,7 +298,7 @@ def get_endpoints_to_quarantine(
     """
     file_hash: str = args.get("file_hash", "")
     file_path: str = args.get("file_path", "")
-    endpoint_ids = get_connected_endpoints(command_prefix, args, readable_context, context, verbose_command_results)
+    endpoint_ids = get_connected_xdr_endpoints(command_prefix, args, readable_context, context, verbose_command_results)
 
     status_commands = {}
     [
@@ -317,9 +321,8 @@ def get_endpoints_to_quarantine(
     endpoints_to_quarantine = []
     for e_id, command in status_commands.items():
         response = command.execute()
-        verbose_command_results.append(response)
-        for val in response[0][0].values():
-            quarantine_status = val.get("status")
+        verbose_command_results.append(response[1])  # type: ignore
+        quarantine_status = list(response[0][0].values())[0].get("status")
         if quarantine_status:
             message = "already quarantined"
             readable_context.append({"endpoint_id": e_id, "message": message})
@@ -328,8 +331,7 @@ def get_endpoints_to_quarantine(
                     "file_hash": file_hash,
                     "file_path": file_path,
                     "endpoint_id": e_id,
-                    "status": quarantine_status,
-                    "result": "Success" if quarantine_status else "Failed",
+                    "status": "Success" if quarantine_status else "Failed",
                     "message": message,
                     "brand": BRAND_CORE_IR,
                 }
@@ -339,7 +341,7 @@ def get_endpoints_to_quarantine(
     return endpoints_to_quarantine, status_commands
 
 
-def core_or_xdr_quarantine_file(
+def xdr_quarantine_file(
     command_prefix: str,
     args: dict,
     readable_context: list[dict],
@@ -359,7 +361,7 @@ def core_or_xdr_quarantine_file(
     file_hash: str = args.get("file_hash", "")
     file_path: str = args.get("file_path", "")
     timeout: int = arg_to_number(args.get("timeout")) or 300
-    endpoints_to_quarantine, status_commands = get_endpoints_to_quarantine(
+    endpoints_to_quarantine, status_commands = get_endpoints_to_quarantine_with_xdr(
         command_prefix, args, readable_context, context, verbose_command_results
     )
 
@@ -375,32 +377,35 @@ def core_or_xdr_quarantine_file(
     ).execute_polling()
     verbose_command_results.append(quarantine_results)
     outputs = quarantine_results.outputs or []
-
-    for res in outputs:
+    message = ""
+    for res in outputs:  # type: ignore
+        quarantine_status = False
         e_id = res.get("endpoint_id")
         status = res.get("status")
         if status == "COMPLETED_SUCCESSFULLY":
             status_command = status_commands.get(e_id)
             if status_command:
+                # check the file's quarantine status after attempting to quarantine it
                 response = status_command.execute()
-                for i in range(len(response[1])):
-                    verbose_command_results.append(response[1][i])
-                for val in response[0][0].values():
-                    quarantine_status = val.get("status")
-                    if quarantine_status:
-                        message = "File successfully quarantined"
-                    else:
-                        message = f"Failed to quarantine file. {val.get('error_description')}"
+                verbose_command_results.append(response[1])  # type: ignore
+                val = list(response[0][0].values())[0]
+                quarantine_status = val.get("status")
+                if quarantine_status:
+                    message = "File successfully quarantined"
+                else:
+                    message = f"Failed to quarantine file. {val.get('error_description')}"
         else:
             message = f"Failed to quarantine file. {res.get('error_description')}"
+
+        if not message:
+            message = f"Failed to quarantine file. Failed to execute command for {e_id}"
         readable_context.append({"endpoint_id": e_id, "message": message})
         context.append(
             {
                 "file_hash": file_hash,
                 "file_path": file_path,
                 "endpoint_id": e_id,
-                "status": quarantine_status,
-                "result": "Success" if quarantine_status else "Failed",
+                "status": "Success" if quarantine_status else "Failed",
                 "message": message,
                 "brand": BRAND_CORE_IR,
             }
@@ -458,7 +463,7 @@ def quarantine_file_script(args: Dict[str, Any]) -> list[CommandResults]:
         if quarantine_brands and BRAND_MDE not in quarantine_brands or BRAND_MDE not in enabled_brands:
             demisto.error(f"Hash_type {HASH_SHA1} supported only by {INTEGRATION_FOR_SHA1} integration.")
             raise DemistoException("Not found supported integration for this file hash type.")
-        # TODO: define command
+        Microsoft_atp_quarantine_file(args, readable_context, context, verbose_command_results)
 
     elif hash_type == HASH_SHA256:  # noqa: SIM102
         # supported by Core or XDR
@@ -471,13 +476,13 @@ def quarantine_file_script(args: Dict[str, Any]) -> list[CommandResults]:
             raise DemistoException("Not found supported integration for this file hash type.")
 
         command_prefix = CORE_COMMAND_PREFIX if BRAND_CORE_IR in quarantine_brands else XDR_COMMAND_PREFIX
-        core_or_xdr_quarantine_file(command_prefix, args, readable_context, context, verbose_command_results)
+        xdr_quarantine_file(command_prefix, args, readable_context, context, verbose_command_results)
 
     summary_command_results = CommandResults(
         outputs_prefix="QuarantineFile",
         outputs_key_field=["endpoint_id", "file_path"],
         readable_output=tableToMarkdown(
-            name=f"### Result for File Quarantine {file_path}", headers=["endpoint_id", "message"], t=readable_context
+            name=f"Result for File Quarantine {file_path}", headers=["endpoint_id", "message"], t=readable_context
         ),
         outputs=context,
     )
