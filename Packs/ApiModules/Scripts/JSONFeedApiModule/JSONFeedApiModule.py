@@ -178,11 +178,10 @@ class Client:
             return result, get_no_update_value(r, feed_name)
         return result, True
 
-    
     @cache
     def http_get(self, url, **kwargs) -> requests.Response:
         return requests.get(url=url, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs)
-    
+
     def http_post(self, url, **kwargs) -> requests.Response:
         return requests.post(
             url=url, data=self.post_data, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs
