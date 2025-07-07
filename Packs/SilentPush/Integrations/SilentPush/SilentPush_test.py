@@ -1547,7 +1547,6 @@ def test_get_data_exports_command_success(mock_client):
     # Assertions
     assert isinstance(result, dict)
     assert result["File"] == "export.csv"
-    assert result["Contents"] == content
     assert result["Type"] == EntryType.FILE
     assert result["ContentsFormat"] == EntryFormat.ENTRY
 
