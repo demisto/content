@@ -1614,6 +1614,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         for item in last_emails:
             try:
                 if item.message_id:
+                    demisto.debug(f"received: {item.datetime_created.ewsformat()}, modified: {item.last_modified_time.ewsformat()}")
                     current_fetch_ids[
                         item.message_id] = item.datetime_created.ewsformat() if RECEIVED_FILTER else item.last_modified_time.ewsformat()
                     incident = parse_incident_from_item(item)
@@ -1664,10 +1665,11 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
 
         # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
         # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
+        demisto.debug(f"{current_fetch_ids=}, {excluded_ids=} ")
         if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
             ids = current_fetch_ids
         else:
-            ids = current_fetch_ids | excluded_ids
+            ids = excluded_ids | current_fetch_ids
 
         new_last_run = {
             LAST_RUN_TIME: last_incident_run_time,
@@ -1743,7 +1745,8 @@ def fetch_last_emails(
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message):
             if item.message_id in exclude_ids:
-                if exclude_ids.get(item.message_id) >= item.last_modified_time.ewsformat():
+                demisto.debug(f"prev: {exclude_ids.get(item.message_id)}, current: {item.last_modified_time.ewsformat()}")
+                if exclude_ids.get(item.message_id) >= (item.datetime_created.ewsformat() if RECEIVED_FILTER else item.last_modified_time.ewsformat()):
                     # If the item was fetched before and its received/modification time hasn't changed since the previous fetch
                     continue
             result.append(item)
