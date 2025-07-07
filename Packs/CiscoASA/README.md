@@ -4,7 +4,7 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the Syslog app already exists, hover over it and click **Configure**.
@@ -29,7 +29,7 @@ Another supported date format is "Jul 08 09:14:35 UTC".
 
 **Note** : If a different timestamp format is used, time extraction and mapping will not be supported.
 
-![Server Screenshot](docs_imgs/CiscoASDM_timestamp.png)
+![Server Screenshot](doc_files/CiscoASDM_timestamp.png)
 
 ### The supported events on Modeling rules
 
