@@ -2586,7 +2586,7 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     visibility = args.get(
         "visibility",
     )
-    internal = argToBoolean(args.get("internal_comment"))
+    internal = argToBoolean(args.get("internal_comment", "false"))
     payload = {"body": text_to_adf(text=comment) if isinstance(client, JiraCloudClient) else comment}
     if visibility:
         payload["visibility"] = {"type": "role", "value": visibility}
