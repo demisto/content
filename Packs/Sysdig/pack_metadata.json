@@ -10,10 +10,10 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "runtime",
-        "response-actions",
-        "sysdig",
-        "falco"
+        "Malware",
+        "Incident Response",
+        "Security",
+        "Attack"
     ],
     "useCases": [],
     "keywords": [],
