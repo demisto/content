@@ -3,7 +3,12 @@ from unittest.mock import MagicMock
 
 import pytest
 from CommonServerPython import *
-from CortexCoreIR import core_execute_command_reformat_args, core_add_indicator_rule_command, Client
+from CortexCoreIR import (
+    core_execute_command_reformat_args,
+    core_add_indicator_rule_command,
+    Client,
+    core_get_contributing_event_command,
+)
 from freezegun import freeze_time
 
 Core_URL = "https://api.xdrurl.com"
@@ -846,3 +851,53 @@ class TestCoreAddIndicator:
 
         assert "Core Add Indicator Rule Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
         mock_post.assert_called_once()
+
+
+def test_core_get_contributing_event(mocker):
+    """
+    Given:
+        - A mock Client and alert ID
+    When:
+        - Calling `core-get-contributing-event`.
+    Then:
+        - Verify that results were correctly parsed.
+    """
+    client = get_mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={
+            "reply": {
+                "events": [
+                    {
+                        "Logon_Type": "1",
+                        "User_Name": "example",
+                        "Domain": "domain",
+                        "Source_IP": "1.1.1.1",
+                        "Process_Name": "C:\\Windows\\System32\\example.exe",
+                        "Host_Name": "WIN10X64",
+                        "Raw_Message": "An account was successfully logged on.",
+                        "_time": 1652982800000,
+                        "aaaaaa": "111111",
+                        "bbbbbb": 1652982800000,
+                        "cccccc": "222222",
+                        "dddddd": 2,
+                        "eeeeee": 1,
+                        "insert_timestamp": 1652982800001,
+                        "_vendor": "PANW",
+                        "_product": "XDR agent",
+                    }
+                ]
+            }
+        },
+    )
+
+    args = {
+        "alert_ids": "1",
+    }
+
+    result = core_get_contributing_event_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Contributing events" in result.readable_output
+    assert result.outputs[0]["alertID"] == "1"
