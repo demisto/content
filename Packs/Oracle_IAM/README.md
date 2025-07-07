@@ -5,7 +5,7 @@ A robust suite that helps organizations securely manage user identities and cont
  
 ## This pack includes:
  
-Data normalization capabilities:
+  * Built-in commands for CRUD (create, read, update, and delete) operations for employee lifecycle processes.
   * Modeling Rule for Audit Event logs that are ingested via the Broker VM on Cortex XSIAM.
   * Parsing Rule for timestamp ingestion.
     * The ingested Oracle OAM logs can be queried in XQL Search using the *`oracle_oam_raw`* dataset.
