@@ -5678,7 +5678,7 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  - description: Run this command to get the permissions from the decoded JSON Web Token (JWT) from the authentication process.
+  - description: This command gets the permissions from the current configured user's role. Use for permission issue detections.
     name: microsoft-atp-list-auth-permissions
   - arguments:
     - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
