@@ -237,8 +237,8 @@ class TestFetchActivity:
         last_run = {}
 
         search_events_mock = mocker.patch.object(Client, "search_events", return_value=[])
+        mocker.patch("ServiceNowEventCollector.enrich_events", return_value="")
 
-        mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
         all_events, command_results = get_events_command(self.client, args, LogType.SYSLOG_TRANSACTIONS, last_run)
 
         assert len(all_events) == 0
@@ -661,7 +661,7 @@ def test_deduplicate_events_resets_ids_after_from_date():
     assert new_run_ids == {"3", "4"}
 
 
-def test_deduplicate_events_no_events(self):
+def test_deduplicate_events_no_events():
     """
     Given:
         - An empty list of events.
