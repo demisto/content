@@ -150,7 +150,7 @@ script:
     - contextPath: get_action_execution.Output
       description: Output of the action execution info.
       type: Dict
-  dockerimage: demisto/python3:3.10.14.101217
+  dockerimage: demisto/python3:3.12.11.3982393
   isfetch: true
   isFetchSamples: true
   runonce: false
