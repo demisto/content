@@ -315,7 +315,7 @@ def test_module(client: Client):
         return "Test failed. Could not retrieve user information from Sysdig API. Please check your credentials and API URL."
 
 
-def main():
+def main():  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
