@@ -32,7 +32,8 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
-                                get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD
+                                get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
+                                execute_polling_command,
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -10094,6 +10095,58 @@ def test_find_and_remove_sensitive_text__not_found(mocker):
     find_and_remove_sensitive_text(input_text, r'(token:\s*)(\S+)')
 
     mock_remove_from_logs.assert_not_called()
+
+
+def test_execute_polling_command(mocker):
+    """
+    Given:
+    - A polling command that returns a war room entry with a polling command and polling args.
+    When:
+    - Calling the `execute_polling_command` funtion.
+    Then:
+    - Ensure that `demisto.executeCommand` is called until the war room entry indicates that polling is done (twice in this case).
+    - Ensure that `demisto.executeCommand` is called with the correct command name and args.
+    - Ensure that `CommandResults` matches the war room entries (namely the context output and human-readable output).
+    """
+    entries = []
+    for i in [1, 2]:
+        file_to_open = "test_data/polling_command_entry_{i}.json".format(i=i)
+        with open(file_to_open) as f:
+            entries.append(json.load(f))
+
+    def mock_polling_command_entry(command_name, args):
+        polling_arg = "action_id"
+        if not polling_arg in args:
+            return entries[0]
+        else:
+            return entries[1]
+
+    mock_execute_command = mocker.patch.object(demisto, "executeCommand", side_effect=mock_polling_command_entry)
+    
+    command_name = "demo-polling-command"
+    original_call_args = {"endpoint_id": "my_endpoint", "interval_in_seconds": 1}
+    
+    command_results = execute_polling_command(command_name, original_call_args)
+
+    # Check that command has been executed twice
+    assert mock_execute_command.call_count == 2
+
+    # Check inputs of first execution (expect original args to be used)
+    mock_first_call_inputs = mock_execute_command.call_args_list[0][0]
+    assert mock_first_call_inputs[0] == command_name
+    assert mock_first_call_inputs[1] == original_call_args
+    
+    # Check inputs of second execution (expect polling args to be used)
+    mock_second_call_inputs = mock_execute_command.call_args_list[1][0]
+    assert mock_second_call_inputs[0] == command_name
+    assert mock_second_call_inputs[1] == entries[0][0]["Metadata"]["pollingArgs"]
+
+    # Check outputs of first execution
+    assert command_results[0].outputs == entries[0][0]["EntryContext"]
+    assert command_results[0].readable_output == entries[0][0]["HumanReadable"]
+    
+    assert command_results[1].outputs == entries[1][0]["EntryContext"]
+    assert command_results[1].readable_output == entries[1][0]["HumanReadable"]
 
 
 def test_stringEscapeMD():
