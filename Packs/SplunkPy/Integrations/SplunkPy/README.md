@@ -100,7 +100,6 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 
 ## Configure SplunkPy in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -145,7 +144,6 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | Incidents Fetch Interval |  | False |
 | Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
 | Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
-
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
@@ -439,7 +437,7 @@ Searches Splunk for events. For human readable output, the table command is supp
 | latest_time | Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for 3 days ago). | Optional |
 | event_limit | The maximum number of events to return. The default is 100. If "0" is selected, all results are returned. | Optional |
 | app | The string that contains the application namespace in which to restrict searches. | Optional|
-| batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a `batch_limit` of 10, the results will be processed 10 at a time over 10 iterations. This does not affect the search or the context and outputs returned. In some cases, specifying a `batch_size` enhances search performance. If you think that the search execution is suboptimal, it is  recommended to try several `batch_size` values to determine which works best for your search. The default is 25,000. | Optional | 
+| batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a `batch_limit` of 10, the results will be processed 10 at a time over 10 iterations. This does not affect the search or the context and outputs returned. In some cases, specifying a `batch_size` enhances search performance. If you think that the search execution is suboptimal, it is  recommended to try several `batch_size` values to determine which works best for your search. The default is 25,000. | Optional |
 | update_context | Determines whether the results will be entered into the context. | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. | Optional |
@@ -582,9 +580,9 @@ Creates a new search job in Splunk.
 
 ```!splunk-job-create query="index=* | head 3"```
 
-##### Context Example 
+##### Context Example
 
-``` 
+```
 {
     "Splunk.Job": "1566221733.1628"
 }
