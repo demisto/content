@@ -369,11 +369,11 @@ def test_limit_zero_skip_fetch_flow(mocker):
     mocker.patch.object(FireEyeETPEventCollector.LastRun, "to_demisto_last_run", return_value={})
 
     collector.fetch_command(demisto_last_run=LAST_RUN_MULTIPLE_EVENT)
-    get_events_mock.assert_called_once()
+    assert get_events_mock.call_count == 1
 
     get_events_mock.reset_mock()
     collector.get_events_command(start_time=datetime(2023, 1, 15, 14, 30, 45, 123000))
-    get_events_mock.assert_called_once()
+    assert get_events_mock.call_count == 1
 
 
 @freeze_time("2025-07-07T17:00:00Z")
@@ -392,10 +392,10 @@ def test_client_get_activity_log(mocker):
     from_time = "2025-07-07T08:22:22+0000Z"
     size = 100
     client.get_activity_log(from_LastModifiedOn=from_time, to_LastModifiedOn="", size=size)
-    
+
     expected_to_time = "2025-07-08T17:00:00+0000Z"  # one day after frozen timestamp
     assert mock_http_request.call_args.kwargs == {
-            "method": "POST",
-            "url_suffix": "/api/v1/users/activitylogs/search",
-            "json_data": {"size": size, "attributes": {"time": {"from": from_time, "to": expected_to_time}}},
+        "method": "POST",
+        "url_suffix": "/api/v1/users/activitylogs/search",
+        "json_data": {"size": size, "attributes": {"time": {"from": from_time, "to": expected_to_time}}},
     }

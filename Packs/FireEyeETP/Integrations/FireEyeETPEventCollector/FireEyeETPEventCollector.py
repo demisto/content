@@ -12,8 +12,8 @@ urllib3.disable_warnings()
 VENDOR = "fireeye"
 PRODUCT = "etp"
 
-EVENTS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"    # for "_TIME" field in the events dataset
-ACTIVITY_LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%zZ"    # for "from" and "to" time filters in user activity log API
+EVENTS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # for "_TIME" field in the events dataset
+ACTIVITY_LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%zZ"  # for "from" and "to" time filters in user activity log API
 
 LOG_LINE = f"{VENDOR}_{PRODUCT}:"
 DEFAULT_FIRST_FETCH = "3 days"
