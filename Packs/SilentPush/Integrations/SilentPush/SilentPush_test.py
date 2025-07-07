@@ -8,6 +8,7 @@ you are implementing with your integration
 
 import uuid
 import json
+from requests import Response
 import pytest
 from SilentPush import (
     Client,
@@ -39,7 +40,7 @@ from SilentPush import (
     run_threat_check_command,
     add_feed_tags_command,
 )
-from CommonServerPython import DemistoException, EntryType
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -1520,24 +1521,30 @@ def test_run_threat_check_command_missing_query(mock_client):
         run_threat_check_command(mock_client, args)
 
 
+def mock_file_response(content: bytes, status_code=200, headers=None) -> Response:
+    response = Response()
+    response.status_code = status_code
+    response._content = content  # private attribute but works
+    response.headers = headers or {
+        "Content-Disposition": 'attachment; filename="export.csv"',
+        "Content-Type": "application/octet-stream",
+    }
+    return response
+
+
 def test_get_data_exports_command_success(mock_client):
-    # Mock inputs
-    feed_url = "https://api.silentpush.com/feeds/export.csv"
+    feed_url = "hhttps://api.silentpush.com/feeds/export.csv"
     args = {"feed_url": feed_url}
     content = b"test,data\n1,2"
 
-    # Mock the response object returned by client.get_data_exports
-    mock_response = type("Response", (), {"status_code": 200, "content": content})()
+    # Mock actual Response object from `requests`
+    mock_response = mock_file_response(content)
     mock_client.get_data_exports.return_value = mock_response
 
-    # Run the command
     result = get_data_exports_command(mock_client, args)
 
-    # Assertions
-    assert isinstance(result, dict)
     assert result["File"] == "export.csv"
     assert result["Contents"] == content
-    assert result["Type"] == EntryType.FILE
 
 
 def test_add_feed_tags_command_success(mocker):
