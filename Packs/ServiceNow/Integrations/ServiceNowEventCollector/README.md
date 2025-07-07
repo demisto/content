@@ -91,7 +91,6 @@ There is no context output for this command.
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
 
-
 ### service-now-get-case-logs
 
 ***
@@ -124,7 +123,6 @@ There is no context output for this command.
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
-
 
 ### service-now-oauth-login
 

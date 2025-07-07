@@ -81,7 +81,7 @@ class TestFetchActivity:
 
     # ---------------- Test get_events_command ------------- #
 
-    def test_get_events_command_standard(self,  mocker):
+    def test_get_events_command_standard(self, mocker):
         """
         Test get_events_command with typical arguments.
 
@@ -99,9 +99,9 @@ class TestFetchActivity:
         last_run = {}
 
         # Mock all helper functions and capture the mock objects
-        mock_get_from_date = mocker.spy(ServiceNowEventCollector,"get_from_date")
-        mock_get_limit = mocker.spy(ServiceNowEventCollector,"get_limit")
-        search_events_mock = mocker.patch.object(Client, "search_events",return_value=mock_api_events)
+        mock_get_from_date = mocker.spy(ServiceNowEventCollector, "get_from_date")
+        mock_get_limit = mocker.spy(ServiceNowEventCollector, "get_limit")
+        search_events_mock = mocker.patch.object(Client, "search_events", return_value=mock_api_events)
         mock_enrich = mocker.spy(ServiceNowEventCollector, "enrich_events")
 
         # Act
@@ -127,17 +127,17 @@ class TestFetchActivity:
 
         # 5. Assert that the events returned are as expected and have been enriched.
         assert len(all_events) == 1
-        assert all_events[0]['sys_id'] == 123
-        assert all_events[0]['sys_created_on'] == '2025-01-10 11:00:00'
-        assert all_events[0]['_time'] == "2025-01-10T11:00:00Z"  # Check that enrichment happened
-        assert all_events[0]['source_log_type'] == "audit"      # Check that enrichment happened
+        assert all_events[0]["sys_id"] == 123
+        assert all_events[0]["sys_created_on"] == "2025-01-10 11:00:00"
+        assert all_events[0]["_time"] == "2025-01-10T11:00:00Z"  # Check that enrichment happened
+        assert all_events[0]["source_log_type"] == "audit"  # Check that enrichment happened
 
         # 6. Ensure command_results is in a human-readable format with the correct content.
         assert isinstance(command_results, CommandResults)
         assert "Audit Events" in command_results.readable_output
         assert "Syslog Transactions Events" not in command_results.readable_output
 
-    def test_get_events_command_when_from_date_not_given(self,  mocker):
+    def test_get_events_command_when_from_date_not_given(self, mocker):
         """
         Test get_events_command with typical arguments.
 
@@ -155,9 +155,9 @@ class TestFetchActivity:
         last_run = {"last_fetch_time_case": "2023-01-01T00:00:00Z"}
 
         # Mock all helper functions and capture the mock objects
-        mock_get_from_date = mocker.spy(ServiceNowEventCollector,"get_from_date")
-        mocker.spy(ServiceNowEventCollector,"get_limit")
-        search_events_mock = mocker.patch.object(Client, "search_events",return_value=mock_api_events)
+        mock_get_from_date = mocker.spy(ServiceNowEventCollector, "get_from_date")
+        mocker.spy(ServiceNowEventCollector, "get_limit")
+        search_events_mock = mocker.patch.object(Client, "search_events", return_value=mock_api_events)
         mock_enrich = mocker.spy(ServiceNowEventCollector, "enrich_events")
 
         # Act
@@ -177,16 +177,16 @@ class TestFetchActivity:
 
         # 3. Assert that the events returned are as expected and have been enriched.
         assert len(all_events) == 1
-        assert all_events[0]['sys_id'] == 123
-        assert all_events[0]['sys_created_on'] == '2025-01-10 11:00:00'
-        assert all_events[0]['_time'] == "2025-01-10T11:00:00Z"  # Check that enrichment happened
-        assert all_events[0]['source_log_type'] == "case"      # Check that enrichment happened
+        assert all_events[0]["sys_id"] == 123
+        assert all_events[0]["sys_created_on"] == "2025-01-10 11:00:00"
+        assert all_events[0]["_time"] == "2025-01-10T11:00:00Z"  # Check that enrichment happened
+        assert all_events[0]["source_log_type"] == "case"  # Check that enrichment happened
 
         # 4. Ensure command_results is in a human-readable format with the correct content.
         assert isinstance(command_results, CommandResults)
         assert "Case Events" in command_results.readable_output
 
-    def test_get_events_command_when_offset_not_given(self,  mocker):
+    def test_get_events_command_when_offset_not_given(self, mocker):
         """
         Test get_events_command with typical arguments.
 
@@ -204,9 +204,9 @@ class TestFetchActivity:
         last_run = {"last_fetch_time_case": "2023-01-01T00:00:00Z"}
 
         # Mock all helper functions and capture the mock objects
-        mocker.spy(ServiceNowEventCollector,"get_from_date")
-        mocker.spy(ServiceNowEventCollector,"get_limit")
-        search_events_mock = mocker.patch.object(Client, "search_events",return_value=mock_api_events)
+        mocker.spy(ServiceNowEventCollector, "get_from_date")
+        mocker.spy(ServiceNowEventCollector, "get_limit")
+        search_events_mock = mocker.patch.object(Client, "search_events", return_value=mock_api_events)
         mocker.spy(ServiceNowEventCollector, "enrich_events")
 
         # Act
@@ -219,7 +219,7 @@ class TestFetchActivity:
             "from_time": "2023-01-01T00:00:00Z",
             "log_type": LogType.CASE,
             "limit": 50,
-            "offset": 0,    # Ensure default value was used
+            "offset": 0,  # Ensure default value was used
         }
 
     def test_get_events_command_empty_response(self, mocker):
@@ -272,16 +272,13 @@ class TestFetchActivity:
 
         # Mock the external API call
         mocker.patch.object(
-            self.client, "search_events", side_effect=[
-                copy.deepcopy(mock_audit_events_from_api),
-                copy.deepcopy(mock_case_events_from_api)
-            ]
+            self.client,
+            "search_events",
+            side_effect=[copy.deepcopy(mock_audit_events_from_api), copy.deepcopy(mock_case_events_from_api)],
         )
 
         # Act:
-        collected_events, updated_last_run = fetch_events_command(
-            self.client, initial_last_run, log_types_to_fetch
-        )
+        collected_events, updated_last_run = fetch_events_command(self.client, initial_last_run, log_types_to_fetch)
 
         # Assert:
         # ------------------ 1. Verify the final collected_events list -------------------
@@ -291,19 +288,20 @@ class TestFetchActivity:
         # Check the first unique event (from the AUDIT call)
         event_1 = collected_events[0]
         assert event_1["sys_id"] == "id_A2"
-        assert event_1["source_log_type"] == LogType.AUDIT.type_string # Verify that enrichment worked
+        assert event_1["source_log_type"] == LogType.AUDIT.type_string  # Verify that enrichment worked
         assert event_1["_time"] == "2025-01-01T10:01:00Z"  # Check that enrichment worked
         assert event_1["sys_created_on"] == "2025-01-01 10:01:00"
-        assert set(event_1.keys()) == expected_event_keys # Verifies there is no other unknown data added
+        assert set(event_1.keys()) == expected_event_keys  # Verifies there is no other unknown data added
 
         # Check the second unique event (from the CASE call)
         event_2 = collected_events[1]
         assert event_2["sys_id"] == "id_C1"
         assert event_2["source_log_type"] == LogType.CASE.type_string
-        assert event_2["_time"] == datetime.strptime("2025-01-01 11:00:00", LOGS_DATE_FORMAT).strftime(DATE_FORMAT) # Check that enrichment worked
+        assert event_2["_time"] == datetime.strptime("2025-01-01 11:00:00", LOGS_DATE_FORMAT).strftime(
+            DATE_FORMAT
+        )  # Check that enrichment worked
         assert event_2["sys_created_on"] == "2025-01-01 11:00:00"
-        assert set(event_2.keys()) == expected_event_keys # Verifies there is no other unknown data added
-
+        assert set(event_2.keys()) == expected_event_keys  # Verifies there is no other unknown data added
 
         # ------------------ 2. Verify the final updated_last_run state -------------------
         # The final dictionary should contain the updated state for ALL log types that were processed.
@@ -313,7 +311,7 @@ class TestFetchActivity:
             LogType.CASE.last_fetch_time_key,
             LogType.CASE.previous_ids_key,
         }
-        assert set(updated_last_run.keys()) == expected_last_run_keys # Check for extra keys
+        assert set(updated_last_run.keys()) == expected_last_run_keys  # Check for extra keys
 
         # Check the AUDIT entry was updated correctly
         assert updated_last_run[LogType.AUDIT.last_fetch_time_key] == "2025-01-01 10:01:00"
@@ -374,8 +372,7 @@ class TestFetchActivity:
         )
         mocker.patch.object(self.client, "search_events", side_effect=[mock_audit_events, mock_syslog_events, mock_case_events])
         mock_enrich = mocker.patch(
-            "ServiceNowEventCollector.enrich_events",
-            side_effect=[mock_audit_events, mock_syslog_events, mock_case_events]
+            "ServiceNowEventCollector.enrich_events", side_effect=[mock_audit_events, mock_syslog_events, mock_case_events]
         )
         mock_deduplicate = mocker.patch(
             "ServiceNowEventCollector.deduplicate_events",
@@ -419,7 +416,6 @@ class TestFetchActivity:
 
         assert collected_events == []
         assert updated_last_run == last_run
-
 
     # ------------- Test Client.search_events --------------------- #
     def test_search_events_uses_expected_api_and_params(self, mocker):
@@ -570,6 +566,7 @@ class TestFetchActivity:
 
 # ---------------- Helper Method Tests ------------- #
 
+
 # ---------------- Test deduplicate_events ------------- #
 def test_deduplicate_events_no_duplicates_at_time_boundary():
     """
@@ -582,10 +579,7 @@ def test_deduplicate_events_no_duplicates_at_time_boundary():
     """
     # Arrange
     from_date = "2023-01-01 01:00:00"
-    events = [
-        {"sys_id": "1", "sys_created_on": "2023-01-01 01:00:00"},
-        {"sys_id": "2", "sys_created_on": "2023-01-01 01:00:00"}
-    ]
+    events = [{"sys_id": "1", "sys_created_on": "2023-01-01 01:00:00"}, {"sys_id": "2", "sys_created_on": "2023-01-01 01:00:00"}]
 
     # Act
     unique_events, new_run_ids = deduplicate_events(events, set(), from_date)
@@ -593,6 +587,7 @@ def test_deduplicate_events_no_duplicates_at_time_boundary():
     # Assert
     assert len(unique_events) == 2
     assert new_run_ids == {"1", "2"}
+
 
 def test_deduplicate_events_with_duplicates():
     """
@@ -608,7 +603,7 @@ def test_deduplicate_events_with_duplicates():
     previous_run_ids = {"1"}  # We saw event "1" in the last run.
     events = [
         {"sys_id": "1", "sys_created_on": "2023-01-01 01:00:00"},  # This is a duplicate.
-        {"sys_id": "2", "sys_created_on": "2023-01-01 01:00:00"}   # This is a new event.
+        {"sys_id": "2", "sys_created_on": "2023-01-01 01:00:00"},  # This is a new event.
     ]
 
     # Act
@@ -619,6 +614,7 @@ def test_deduplicate_events_with_duplicates():
     assert unique_events[0]["sys_id"] == "2"
     # The new set of IDs for the next run should contain all IDs from this timestamp.
     assert updated_previous_run_ids == {"1", "2"}
+
 
 def test_deduplicate_events_with_same_time():
     """
@@ -639,6 +635,7 @@ def test_deduplicate_events_with_same_time():
     assert len(unique_events) == 2
     assert previous_run_ids == {"1", "2"}
 
+
 def test_deduplicate_events_resets_ids_after_from_date():
     """
     Given:
@@ -653,10 +650,7 @@ def test_deduplicate_events_resets_ids_after_from_date():
     from_date = "2023-01-01 01:00:00"
     # These IDs should be ignored and discarded because the new events are later.
     previous_run_ids = {"1", "2"}
-    events = [
-        {"sys_id": "3", "sys_created_on": "2023-01-01 02:00:00"},
-        {"sys_id": "4", "sys_created_on": "2023-01-01 02:00:00"}
-    ]
+    events = [{"sys_id": "3", "sys_created_on": "2023-01-01 02:00:00"}, {"sys_id": "4", "sys_created_on": "2023-01-01 02:00:00"}]
 
     # Act
     unique_events, new_run_ids = deduplicate_events(events, previous_run_ids, from_date)
@@ -665,6 +659,7 @@ def test_deduplicate_events_resets_ids_after_from_date():
     assert len(unique_events) == 2
     # The new set of IDs should only contain the IDs from the new timestamp.
     assert new_run_ids == {"3", "4"}
+
 
 def test_deduplicate_events_no_events(self):
     """
@@ -678,6 +673,7 @@ def test_deduplicate_events_no_events(self):
     unique_events, new_run_ids = deduplicate_events([], set(), "2023-01-01 00:00:00")
     assert unique_events == []
     assert new_run_ids == set()
+
 
 # ------------------ Test get_limit ----------------------- #
 def test_get_limit_uses_arg_limit_when_provided():
@@ -707,6 +703,7 @@ def test_get_limit_uses_arg_limit_when_provided():
 
     assert limit == 200
 
+
 def test_get_limit_no_arg_given_uses_client_default():
     """
     Given:
@@ -734,6 +731,7 @@ def test_get_limit_no_arg_given_uses_client_default():
     limit = get_limit(args, client, LogType.CASE)
 
     assert limit == 250
+
 
 def test_get_limit_with_no_args_or_client_default_uses_fall_back():
     """
@@ -767,6 +765,7 @@ def test_get_limit_with_no_args_or_client_default_uses_fall_back():
 
     assert limit == 1000
 
+
 # ------------------ Test enrich_events ------------------- #
 def test_enrich_events_standard_case():
     """
@@ -789,6 +788,7 @@ def test_enrich_events_standard_case():
     assert result[0]["source_log_type"] == LogType.AUDIT.type_string
     assert result[1]["source_log_type"] == LogType.AUDIT.type_string
 
+
 def test_enrich_events_empty_list():
     """
     Test enrich_events with an empty list of events.
@@ -804,6 +804,7 @@ def test_enrich_events_empty_list():
 
     result = enrich_events(events, LogType.SYSLOG_TRANSACTIONS)
     assert result == []
+
 
 def test_enrich_events_invalid_date_format():
     """
@@ -822,6 +823,7 @@ def test_enrich_events_invalid_date_format():
 
     with pytest.raises(ValueError):
         enrich_events(events, LogType.CASE)
+
 
 def test_enrich_events_partial_valid_dates():
     """
@@ -842,6 +844,7 @@ def test_enrich_events_partial_valid_dates():
     with pytest.raises(ValueError):
         enrich_events(events, LogType.AUDIT)
 
+
 def test_enrich_events_no_sys_created_on_field():
     """
     Test enrich_events with events that lack 'sys_created_on' field.
@@ -858,6 +861,7 @@ def test_enrich_events_no_sys_created_on_field():
     with pytest.raises(KeyError):
         enrich_events(events, LogType.AUDIT)
 
+
 # ------------------ Test get_from_date ----------------------- #
 def test_get_from_date_with_existing_timestamp():
     """
@@ -869,16 +873,14 @@ def test_get_from_date_with_existing_timestamp():
         - The function returns the existing timestamp from last_run.
     """
     # Arrange
-    last_run = {
-        LogType.AUDIT.last_fetch_time_key: "2025-01-01 10:00:00",
-        LogType.CASE.last_fetch_time_key: "2025-02-02 11:00:00"
-    }
+    last_run = {LogType.AUDIT.last_fetch_time_key: "2025-01-01 10:00:00", LogType.CASE.last_fetch_time_key: "2025-02-02 11:00:00"}
 
     # Act
     result = get_from_date(last_run, LogType.AUDIT)
 
     # Assert
     assert result == "2025-01-01 10:00:00"
+
 
 def test_get_from_date_without_existing_timestamp_in_last_run():
     """
@@ -899,6 +901,7 @@ def test_get_from_date_without_existing_timestamp_in_last_run():
     assert abs(datetime.strptime(result, LOGS_DATE_FORMAT) - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(
         seconds=5
     )
+
 
 # ------------------ Test update_last_run ----------------------- #
 def test_update_last_run_existing_log_type():
@@ -921,6 +924,7 @@ def test_update_last_run_existing_log_type():
     # Assert: The existing log type was overridden with new values
     assert updated_last_run[LogType.AUDIT.last_fetch_time_key] == last_event_time
     assert updated_last_run[LogType.AUDIT.previous_ids_key] == previous_run_ids
+
 
 def test_update_last_run_new_log_type():
     """
@@ -949,6 +953,7 @@ def test_update_last_run_new_log_type():
     assert updated_last_run[LogType.AUDIT.last_fetch_time_key] == "2023-01-01T00:00:00Z"
     assert updated_last_run[LogType.AUDIT.previous_ids_key] == ["id1", "id2"]
 
+
 def test_updated_last_run_empty_previous_run_ids():
     """
     Test update_last_run with an empty previous_run_ids list.
@@ -970,6 +975,7 @@ def test_updated_last_run_empty_previous_run_ids():
     assert updated_last_run[LogType.AUDIT.last_fetch_time_key] == last_event_time
     assert updated_last_run[LogType.AUDIT.previous_ids_key] == []
 
+
 def test_updated_last_run_no_existing_data():
     """
     Test update_last_run with an initially empty last_run dictionary.
@@ -989,6 +995,7 @@ def test_updated_last_run_no_existing_data():
 
     assert updated_last_run[LogType.CASE.last_fetch_time_key] == last_event_time
     assert updated_last_run[LogType.CASE.previous_ids_key] == previous_run_ids
+
 
 def test_updated_last_run_multiple_log_types():
     """
@@ -1025,6 +1032,7 @@ def test_updated_last_run_multiple_log_types():
     assert updated_last_run[LogType.CASE.last_fetch_time_key] == "2023-01-04T00:00:00Z"
     assert updated_last_run[LogType.CASE.previous_ids_key] == ["id11", "id12"]
 
+
 # ------------------ Test get_log_types_from_titles ----------------------- #
 def test_get_log_types_from_titles_valid_titles():
     """
@@ -1042,6 +1050,7 @@ def test_get_log_types_from_titles_valid_titles():
 
     # Act & Assert
     assert get_log_types_from_titles(event_types_to_fetch) == expected_log_types
+
 
 def test_get_log_types_from_titles_invalid_title():
     """
@@ -1065,6 +1074,7 @@ def test_get_log_types_from_titles_invalid_title():
     # Check for the more user-friendly error message
     assert expected_message in str(excinfo.value)
 
+
 def test_get_log_types_from_titles_mixed_titles():
     """
     Given:
@@ -1083,6 +1093,7 @@ def test_get_log_types_from_titles_mixed_titles():
     # Assert that both invalid types are reported in the error
     assert "Invalid event type(s) provided: ['Invalid Title', 'Another Bad One']" in str(excinfo.value)
 
+
 def test_get_log_types_from_titles_empty_list():
     """
     Given:
@@ -1094,7 +1105,9 @@ def test_get_log_types_from_titles_empty_list():
     """
     assert get_log_types_from_titles([]) == []
 
+
 # ---------------- Command Method Tests ------------- #
+
 
 # ---------------- Test module_of_testing ------------- #
 def test_module_of_testing_success_and_failure(mocker):
@@ -1126,6 +1139,7 @@ def test_module_of_testing_success_and_failure(mocker):
     mocker.patch("ServiceNowEventCollector.fetch_events_command", return_value=([], {}))
     assert module_of_testing(client, [LogType.AUDIT]) == "ok"
 
+
 # ---------------- Test login_command ------------- #
 def test_login_command_oauth_not_enabled(mocker):
     """
@@ -1147,6 +1161,7 @@ def test_login_command_oauth_not_enabled(mocker):
 
     return_error_mock.assert_called_once()
     assert "can be used only when using OAuth 2.0" in return_error_mock.call_args[0][0]
+
 
 def test_login_command_success(mocker):
     """
@@ -1170,6 +1185,7 @@ def test_login_command_success(mocker):
 
     mock_login.assert_called_once_with("user", "pass")
     assert "Logged in successfully" in result
+
 
 def test_login_command_failure(mocker):
     """
@@ -1195,6 +1211,7 @@ def test_login_command_failure(mocker):
     assert "Failed to login" in return_error_mock.call_args[0][0]
     assert "Invalid credentials" in return_error_mock.call_args[0][0]
 
+
 # ---------------- Test Main ------------- #
 @pytest.mark.parametrize(
     "command, expected_log_type",
@@ -1218,14 +1235,13 @@ def test_main_for_get_events_commands(mocker, command, expected_log_type):
     import demistomock as demisto
 
     # Mock external dependencies
-    mocker.patch.object(demisto, "params", return_value={'url': 'https://test.com'})
+    mocker.patch.object(demisto, "params", return_value={"url": "https://test.com"})
     mocker.patch.object(demisto, "command", return_value=command)
     mocker.patch.object(demisto, "args", return_value={"should_push_events": "true"})
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch("ServiceNowEventCollector.Client")
     mock_get_events = mocker.patch(
-        "ServiceNowEventCollector.get_events_command",
-        return_value=([{"event": "1"}], "readable_output")
+        "ServiceNowEventCollector.get_events_command", return_value=([{"event": "1"}], "readable_output")
     )
     mock_return_results = mocker.patch("ServiceNowEventCollector.return_results")
     mock_send_events = mocker.patch("ServiceNowEventCollector.send_events_to_xsiam")
@@ -1254,14 +1270,13 @@ def test_main_for_fetch_event_command(mocker):
     import demistomock as demisto
 
     # Mock external dependencies
-    mocker.patch.object(demisto, "params", return_value={'url': 'https://test.com', "event_types_to_fetch": ["Audit", "Case"]})
+    mocker.patch.object(demisto, "params", return_value={"url": "https://test.com", "event_types_to_fetch": ["Audit", "Case"]})
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(demisto, "args", return_value={"should_push_events": "true"})
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch("ServiceNowEventCollector.Client")
     mock_fetch_events = mocker.patch(
-        "ServiceNowEventCollector.fetch_events_command",
-        return_value=([{"event": "1"}], {"next run": ""})
+        "ServiceNowEventCollector.fetch_events_command", return_value=([{"event": "1"}], {"next run": ""})
     )
 
     mock_send_events = mocker.patch("ServiceNowEventCollector.send_events_to_xsiam")
@@ -1275,4 +1290,3 @@ def test_main_for_fetch_event_command(mocker):
     # Assert that results were handled correctly
     mock_send_events.assert_called_once_with([{"event": "1"}], vendor="servicenow", product="servicenow")
     mock_set_last_run.assert_called_once_with({"next run": ""})
-

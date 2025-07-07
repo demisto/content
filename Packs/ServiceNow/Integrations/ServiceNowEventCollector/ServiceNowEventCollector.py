@@ -15,30 +15,27 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSIAM
 
 """ CLIENT CLASS """
 
+
 class LogType(Enum):
     """Enum to hold all configuration for different log types."""
-    AUDIT = (
-        "audit", "/api/now/", "table/sys_audit",
-        "last_fetch_time", "previous_run_ids"
-    )
-    SYSLOG_TRANSACTIONS = (
-        "syslog transactions", "/api/now/", "table/syslog_transaction",
-        "last_fetch_time_syslog", "previous_run_ids_syslog"
-    )
-    CASE = (
-        "case", "/api/sn_customerservice/", "case",
-        "last_fetch_time_case", "previous_run_ids_case"
-    )
 
-    def __init__(
-        self, type_string: str, api_base: str, api_endpoint: str,
-        last_fetch_time_key: str, previous_ids_key: str
-    ):
+    AUDIT = ("audit", "/api/now/", "table/sys_audit", "last_fetch_time", "previous_run_ids")
+    SYSLOG_TRANSACTIONS = (
+        "syslog transactions",
+        "/api/now/",
+        "table/syslog_transaction",
+        "last_fetch_time_syslog",
+        "previous_run_ids_syslog",
+    )
+    CASE = ("case", "/api/sn_customerservice/", "case", "last_fetch_time_case", "previous_run_ids_case")
+
+    def __init__(self, type_string: str, api_base: str, api_endpoint: str, last_fetch_time_key: str, previous_ids_key: str):
         self.type_string = type_string
         self.api_base = api_base
         self.api_endpoint = api_endpoint
         self.last_fetch_time_key = last_fetch_time_key
         self.previous_ids_key = previous_ids_key
+
 
 class Client:
     def __init__(
@@ -93,11 +90,13 @@ class Client:
         api_endpoint = log_type.api_endpoint
 
         if self.api_version:
-            api_base = api_base.rstrip('/') + f"/{self.api_version}/"
+            api_base = api_base.rstrip("/") + f"/{self.api_version}/"
 
         return f"{self.server_url.rstrip('/')}{api_base}{api_endpoint}"
 
-    def search_events(self, from_time: str, log_type: LogType, limit: Optional[int] = None, offset: int = 0)-> List[Dict[str, Any]]:
+    def search_events(
+        self, from_time: str, log_type: LogType, limit: Optional[int] = None, offset: int = 0
+    ) -> List[Dict[str, Any]]:
         """
         Queries the ServiceNow API for a specific log type with specified start_time, limit and offset.
 
@@ -124,12 +123,15 @@ class Client:
 
         demisto.debug(f"ServiceNowEventCollector will make a GET request to: {full_url} with query params: {api_query_params}")
 
-        res = self.sn_client.http_request(method="GET", full_url=full_url, url_suffix=None, params=remove_empty_elements(api_query_params))
+        res = self.sn_client.http_request(
+            method="GET", full_url=full_url, url_suffix=None, params=remove_empty_elements(api_query_params)
+        )
 
         return res.get("result", [])
 
 
 """ HELPER METHODS """
+
 
 def get_log_types_from_titles(event_types_to_fetch: List[str]) -> List[LogType]:
     """
@@ -145,11 +147,7 @@ def get_log_types_from_titles(event_types_to_fetch: List[str]) -> List[LogType]:
     Returns:
         A list of LogType Enum members corresponding to the provided titles.
     """
-    titles_to_types = {
-        "Audit": LogType.AUDIT,
-        "Syslog Transactions": LogType.SYSLOG_TRANSACTIONS,
-        "Case": LogType.CASE
-    }
+    titles_to_types = {"Audit": LogType.AUDIT, "Syslog Transactions": LogType.SYSLOG_TRANSACTIONS, "Case": LogType.CASE}
 
     log_types = []
     invalid_types = []
@@ -165,11 +163,11 @@ def get_log_types_from_titles(event_types_to_fetch: List[str]) -> List[LogType]:
     if invalid_types:
         valid_options = ", ".join(titles_to_types.keys())
         raise DemistoException(
-            f"Invalid event type(s) provided: {invalid_types}. "
-            f"Please select from the following list: {valid_options}"
+            f"Invalid event type(s) provided: {invalid_types}. " f"Please select from the following list: {valid_options}"
         )
 
     return log_types
+
 
 def update_last_run(last_run: dict[str, Any], log_type: LogType, last_event_time: str, previous_run_ids: list) -> dict:
     """
@@ -189,6 +187,7 @@ def update_last_run(last_run: dict[str, Any], log_type: LogType, last_event_time
     last_run[log_type.last_fetch_time_key] = last_event_time
     last_run[log_type.previous_ids_key] = previous_run_ids
     return last_run
+
 
 def get_from_date(last_run: dict[str, Any], log_type: LogType) -> str:
     """
@@ -214,6 +213,7 @@ def get_from_date(last_run: dict[str, Any], log_type: LogType) -> str:
     one_min_ago = datetime.utcnow() - timedelta(minutes=1)
     return one_min_ago.strftime(LOGS_DATE_FORMAT)
 
+
 def enrich_events(events: List[Dict[str, Any]], log_type: LogType) -> List[Dict[str, Any]]:
     """
     Enriches a list of events with the '_time' and 'source_log_type' fields.
@@ -230,6 +230,7 @@ def enrich_events(events: List[Dict[str, Any]], log_type: LogType) -> List[Dict[
         event["source_log_type"] = log_type.type_string
 
     return events
+
 
 def get_limit(args: Dict[str, Any], client: Client, log_type: LogType) -> int:
     """
@@ -249,6 +250,7 @@ def get_limit(args: Dict[str, Any], client: Client, log_type: LogType) -> int:
     """
 
     return arg_to_number(args.get("limit")) or client.fetch_limits.get(log_type) or 1000
+
 
 def deduplicate_events(events: list, previous_run_ids: Set[str], from_date: str):
     """
@@ -293,7 +295,9 @@ def deduplicate_events(events: list, previous_run_ids: Set[str], from_date: str)
 
     return unique_events, previous_run_ids
 
+
 """ COMMAND METHODS """
+
 
 def get_events_command(client: Client, args: dict, log_type: LogType, last_run: dict) -> tuple[list, CommandResults]:
     """
@@ -315,11 +319,7 @@ def get_events_command(client: Client, args: dict, log_type: LogType, last_run: 
         - A CommandResults object for display in the war room.
     """
 
-    log_types_to_titles = {
-        LogType.AUDIT: "Audit",
-        LogType.SYSLOG_TRANSACTIONS: "Syslog Transactions",
-        LogType.CASE: "Case"
-    }
+    log_types_to_titles = {LogType.AUDIT: "Audit", LogType.SYSLOG_TRANSACTIONS: "Syslog Transactions", LogType.CASE: "Case"}
 
     from_date = args.get("from_date") or get_from_date(last_run, log_type)
     offset = args.get("offset", 0)
@@ -339,7 +339,8 @@ def get_events_command(client: Client, args: dict, log_type: LogType, last_run: 
 
     return events, CommandResults(readable_output=hr)
 
-def fetch_events_command(client: Client, last_run: dict, log_types: List[LogType])-> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+
+def fetch_events_command(client: Client, last_run: dict, log_types: List[LogType]) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
     Fetches events for all specified log types from ServiceNow.
 
@@ -381,6 +382,7 @@ def fetch_events_command(client: Client, last_run: dict, log_types: List[LogType
 
     return collected_events, last_run
 
+
 def login_command(client: Client, user_name: str, password: str):
     """
     Login the user using OAuth authorization
@@ -412,6 +414,7 @@ def login_command(client: Client, user_name: str, password: str):
             f"correct usage when using OAuth).\n\n{e}"
         )
 
+
 def module_of_testing(client: Client, log_types: list[LogType]) -> str:  # pragma: no cover
     """
     Test API connectivity and authentication.
@@ -430,7 +433,9 @@ def module_of_testing(client: Client, log_types: list[LogType]) -> str:  # pragm
     _, _ = fetch_events_command(client, {}, log_types=log_types)
     return "ok"
 
+
 """ MAIN FUNCTION """
+
 
 def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
@@ -486,12 +491,7 @@ def main() -> None:  # pragma: no cover
             log_type = log_type_map[command]
 
             # Call the function and get the results
-            events, command_results = get_events_command(
-                client=client,
-                args=args,
-                log_type=log_type,
-                last_run=last_run
-            )
+            events, command_results = get_events_command(client=client, args=args, log_type=log_type, last_run=last_run)
 
             # Return human-readable output to the War Room
             return_results(command_results)
@@ -499,7 +499,6 @@ def main() -> None:  # pragma: no cover
             # Push events to XSIAM if needed
             if argToBoolean(args.get("should_push_events", True)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
 
         elif command == "fetch-events":
             demisto.debug(f"Starting new fetch with last_run as {last_run}")
