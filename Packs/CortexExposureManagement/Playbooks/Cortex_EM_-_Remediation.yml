@@ -1,0 +1,353 @@
+description: This playbook handles remediation of exposure issues.
+id: Cortex EM - Remediation
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - AWSAssumeRoleName
+  name: General (Inputs group)
+inputs:
+- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
+  key: AWSAssumeRoleName
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Cortex EM - Remediation
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -1140
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
+      iscommand: false
+      name: |
+        Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -170
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AWSAssumeRoleName:
+        simple: ${inputs.AWSAssumeRoleName}
+      AwsIP:
+        simple: ${Core.CoreAsset.xdm__host__ipv4_addresses.[0]}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Given the IP address this playbook enriches EC2 and IAM information.
+      id: e5e27b20-8203-42f3-b823-dfee26f0a7cd
+      iscommand: false
+      name: AWS - Enrichment
+      playbookId: AWS - Enrichment
+      type: playbook
+      version: -1
+    taskid: e5e27b20-8203-42f3-b823-dfee26f0a7cd
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -740
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AWSAssumeArn:
+        simple: ${inputs.AWSAssumeRoleName}
+      InstanceID:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      Port:
+        simple: ${Core.CoreAsset.xdm__port}
+      Protocol:
+        simple: ${Core.CoreAsset.xdm__ip_protocol}
+      PublicIP:
+        simple: ${Core.CoreAsset.xdm__host__ipv4_addresses.[0]}
+      Region:
+        simple: ${AWS.EC2.Instances.Region}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+      id: 6ef23039-6b0b-40ac-ba05-a2c1d2cb7925
+      iscommand: false
+      name: AWS - Security Group Remediation v2
+      playbookId: AWS - Security Group Remediation v2
+      type: playbook
+      version: -1
+    taskid: 6ef23039-6b0b-40ac-ba05-a2c1d2cb7925
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -600
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de04df94-a3b3-4f85-99af-06157b2b7065
+      iscommand: false
+      name: Cortex EM - Exposure Issue
+      playbookId: Cortex EM - Exposure Issue
+      type: playbook
+      version: -1
+      description: ''
+    taskid: de04df94-a3b3-4f85-99af-06157b2b7065
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -1010
+        }
+      }
+  "30":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.CoreAsset.xdm__asset__provider
+          operator: isEqualString
+          right:
+            value:
+              simple: AWS
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.CoreAsset.xdm__asset__type__id
+          operator: isEqualString
+          right:
+            value:
+              simple: SERVICE
+      label: "yes"
+    continueonerrortype: ""
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if we have the right asset to continue remediation.
+      id: 5014009d-fca2-4127-81f0-5f2c8d7c8aae
+      iscommand: false
+      name: Is asset AWS?
+      type: condition
+      version: -1
+    taskid: 5014009d-fca2-4127-81f0-5f2c8d7c8aae
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -890
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: remediatedFlag
+          operator: isTrue
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if remediation was completed from the previous playbook.
+      id: cc675f85-59e1-441a-81ae-e694e1697230
+      iscommand: false
+      name: Was remediation completed?
+      type: condition
+      version: -1
+    taskid: cc675f85-59e1-441a-81ae-e694e1697230
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -480
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Remediation wasn't completed possibly because appropriate integrations (AWS) weren't configured, cloud instance wasn't found or for other reasons.  Further investigation needed.
+      id: 41dd00fb-8e81-4a0d-99c7-ecec209beed8
+      iscommand: false
+      name: Remediation incomplete
+      type: regular
+      version: -1
+    taskid: 41dd00fb-8e81-4a0d-99c7-ecec209beed8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": -330
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1030,
+        "width": 690,
+        "x": 360,
+        "y": -1140
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
