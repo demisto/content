@@ -3,7 +3,7 @@ commonfields:
   version: 1
 name: Threatmon
 display: Threatmon
-category: Security Information and Event Management
+category: Analytics and SIEM
 description: Integration with Threatmon for vulnerability threat intelligence
 configuration:
   - display: API URL
@@ -11,10 +11,12 @@ configuration:
     type: 0
     required: true
     defaultvalue: https://external.threatmonit.io/api/threatmon/external/v1
-  - display: API Key
-    name: apikey
-    type: 4
+  - displaypassword: API Key
+    additionalinfo: The API Key to use for connection
+    name: credentials
     required: true
+    hiddenusername: true
+    type: 9
   - display: Trust any certificate (not secure)
     name: insecure
     type: 8
@@ -31,14 +33,11 @@ script:
   script: ''    
   type: python
   commands:
-  - name: test-module
-    description: Tests API connectivity and authentication
-    execution: false
   - name: threatmon_update_incident_status
     arguments:
     - name: alarmId
       required: true
-      description: Threatmon Incedent Code (ID)
+      description: Threatmon Incident Code (ID)
     - name: status
       required: true
       auto: PREDEFINED
