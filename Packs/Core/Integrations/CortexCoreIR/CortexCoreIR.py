@@ -88,6 +88,17 @@ class Client(CoreClient):
         return reply
 
     def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> dict[str, str]:
+        """
+        Submit a block-IP action for each address in ip_list using the Cortex Core API.
+
+        Args:
+            endpoint_id (str): The unique ID of the endpoint that support the action.
+            ip_list (list[str]): List of IP addresses to block.
+            duration (int): Duration in seconds for which the IP is blocked.
+
+        Returns:
+            dict[str, str]: Mapping of each IP address to its group_action_id.
+        """
         results = {}
         for ip_address in ip_list:
             response = self._http_request(
@@ -109,7 +120,7 @@ class Client(CoreClient):
 
         return results
 
-    def get_status_block_ip(self, ip_address: str, group_id: int, endpoint_id: str):
+    def get_status_block_ip(self, group_id: int, endpoint_id: str):
         """
         Poll get_status_block_ip_action until status is 'completed' or 'failed',
         or until timeout seconds have elapsed.
@@ -119,59 +130,24 @@ class Client(CoreClient):
         :returns: the final action_result dict
         """
         reply = self.action_status_get(group_id)
+        demisto.debug(f"Reply for {group_id} is: {reply}")
         data = reply.get("data") or {}
+        demisto.debug(f"Data: {data}")
         error_reasons = reply.get("errorReasons", {})
-
+        
+        endpoint_status = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
+        if not endpoint_status:
+            demisto.debug(f"endpoint {endpoint_id} disconnected")
+            return "Failure", "endpoint disconnected"
         for current_endpoint_id, status in data.items():
             if current_endpoint_id == endpoint_id:
                 if status == "FAILED":
-                    return "Failure", error_reasons.get("errorText", "")
+                    return "Failure", error_reasons.get("errorText","")
                 elif status == "COMPLETED_SUCCESSFULLY":
-                    return "Success", ""
+                    return "Success",""
                 return status, ""
-
+                
         return "Failure", "No action"
-    @polling_function(
-        name='block-ip-command',
-        interval=1,
-        timeout=60,
-        poll_message="Waiting for response"
-    )
-    def wait_for_block_ip_status(
-        self, ip_address: str, group_id: int, endpoint_id: str, timeout: float = 10.0, interval: float = 0.5
-    ):
-        """
-        Poll get_block_ip_action_status() until status is 'completed' or 'failed',
-        or until timeout seconds have elapsed.
-
-        :param timeout: total seconds to wait before giving up
-        :param interval: seconds between polls
-        :returns: the final action_result dict
-        """
-        start = time.time()
-        while True:
-            is_endpoint_connected = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
-            if not is_endpoint_connected:
-                demisto.debug(f"Endpoint disconnected {endpoint_id}")
-                return {"ip address": ip_address, "endpoint": endpoint_id, "status": "endpoint disconnected"}
-            status, message = self.get_status_block_ip(ip_address, group_id, endpoint_id)
-            demisto.debug(f"Polled status='{status}' for IP {ip_address};")
-
-            if status in {"Fail", "Success"}:
-                return PollResult(
-                    response = {
-                        "ip_address": ip_address,
-                        "Reason": "Success" if status == "Success" else f"Failure: {message}",
-                        "endpoint_id": endpoint_id,
-                    },
-                    continue_to_poll=False
-                    )
-
-            if time.time() - start >= timeout:
-                demisto.debug(f"Timeout waiting for action {group_id} on {endpoint_id}")
-                return {"ip address": ip_address, "Reason": "timeout", "endpoint_id": endpoint_id}
-
-
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get("file_hash")
@@ -600,22 +576,71 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     )
 
 
-def core_block_ip_command(client: Client, args: dict) -> CommandResults:
-    ip_list = argToList(args.get("ip_list", []))
-    demisto.debug(f"Blocking {len(ip_list)} addresses: {ip_list}")
-    endpoint_id_list = argToList(args.get("endpoint_id_list", []))
-    duration = arg_to_number(args.get("duration")) or 300
-    endpoint_group_dict = {}
-    for endpoint_id in endpoint_id_list:
-        endpoint_group_dict[endpoint_id] = client.block_ip_request(endpoint_id=endpoint_id, ip_list=ip_list, duration=duration)
-
-    results = []
-    for endpoint_id in endpoint_id_list:
+@polling_function('core-block-ip', interval=10, timeout=20)
+def polling_block_ip(args: dict, client: Client) -> PollResult:
+    """
+    This function will be called every `interval` seconds until:
+    - it returns a PollResult **without** a scheduled_command (i.e. continue_to_poll=False), or
+    - we hit the timeout.
+    """
+    ip_address = args.get("ip_address","")
+    group_id = int(args.get("group_id",0))
+    endpoint = args.get("endpoint_id","")
+    results = args.get("results", [])
+    for endpoint_id, endpoint_group in endpoint_group_dict:
         for ip_address, group_id in endpoint_group_dict[endpoint_id].items():
-            results.append(client.wait_for_block_ip_status(ip_address, int(group_id), endpoint_id))
+    status, message = client.get_status_block_ip(group_id, endpoint)
+    demisto.debug(f"Status of {group_id} is {status} with message {message}")
+    if status == 'Success':
+        return PollResult(CommandResults(raw_response=status))
 
+    if status == 'Failure':
+        return PollResult(CommandResults(raw_response=f"{status}: {message}"))
+    
+    error_response = CommandResults(raw_response=status,
+                                        readable_output='API Pending')
+    demisto.debug("Continue polling")
+    return PollResult(continue_to_poll=True,
+                      response=error_response,
+                      args_for_next_run={
+                          'ip_address':   ip_address,
+                          'group_id':     group_id,
+                          'endpoint_id':  endpoint,
+                      })
+    
+def core_block_ip_command(args: dict, client: Client) -> CommandResults:
+    ip_list = argToList(args.get('ip_list', []))
+    endpoint_list = argToList(args.get('endpoint_list', []))
+    duration = arg_to_number(args.get('duration', 300)) or 300
+
+    endpoint_group_dict = {}
+    for endpoint_id in endpoint_list:
+        endpoint_group_dict[endpoint_id] = client.block_ip_request(endpoint_id, ip_list, duration)
+    polling_args = {
+                **args,
+                'endpoint_group_dict': endpoint_group_dict,
+                'polling': True,
+                'results': [],
+            }
+    return polling_block_ip(polling_args, client)
+    results = []
+    for endpoint_id in endpoint_list:
+        for ip_address, group_id in endpoint_group_dict[endpoint_id].items():
+            polling_args = {
+                **args,
+                'ip_address': ip_address,
+                'group_id': group_id,
+                'endpoint_id': endpoint_id,
+                'polling': True,
+            }
+            
+            results.append({"ip_address": ip_address,
+                            "endpoint": endpoint_id,
+                            "reason":polling_block_ip(polling_args, client).raw_response})
+    
     hr = tableToMarkdown(name="Block IP Results", t=results)
     return CommandResults(readable_output=hr)
+
 
 
 def main():  # pragma: no cover
@@ -1009,7 +1034,7 @@ def main():  # pragma: no cover
             return_results(core_add_indicator_rule_command(client, args))
 
         elif command == "core-block-ip":
-            return_results(core_block_ip_command(client, args))
+            return_results(core_block_ip_command(args, client))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

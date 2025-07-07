@@ -4267,7 +4267,7 @@ script:
       type: List
   - arguments:
     - description: List of ID's of agents that supports the operation.
-      name: endpoint_id_list
+      name: endpoint_list
       required: true
     - description: List of IPv6 or IPv4 to blocklist.
       name: ip_list
@@ -4275,6 +4275,10 @@ script:
     - description: Number of minutes to block (Max 518,400 ).
       name: duration
       required: true
+    - description: poll arguments
+      name: args_for_next_run
+      hidden: true
+    polling: true
     name: core-block-ip
     description: Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
   runonce: false
