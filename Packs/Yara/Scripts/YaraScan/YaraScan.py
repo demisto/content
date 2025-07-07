@@ -14,14 +14,10 @@ def main():
     entries = []
     args = demisto.args()
     entryIDs = argToList(args.get("entryIDs"))
-    incident_id = args.get("incident_id")
 
     fileInfos = []
     for item in entryIDs:
-        command_args = {"id": item}
-        if incident_id:
-            command_args["incidentId"] = incident_id
-        res = demisto.executeCommand("getFilePath", command_args)
+        res = demisto.executeCommand("getFilePath", {"id": item, "incidentId": item.split("@")[1]})
         if is_error(res):
             return_error(get_error(res))
         if type(res[0]["Contents"]) is dict:
