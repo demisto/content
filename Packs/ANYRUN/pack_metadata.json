@@ -26,15 +26,3 @@
         "ENT_PLUS"
     ]
 }
-
-    "description": "Enhance SOAR workflows with ANY.RUN sandbox and threat intelligence",
-    "support": "partner",
-    "currentVersion": "2.0.0",
-    "author": "ANY.RUN",
-    "url": "https://any.run/",
-    "email": "anyrun-integrations@any.run",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Forensics & Malware Analysis",
-        "Data Enrichment & Threat Intelligence"
-    ],
