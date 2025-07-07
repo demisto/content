@@ -14,7 +14,10 @@
     "tags": [
         "IT"
     ],
-    "useCases": [],
+    "useCases": [
+        "Network Security",
+        "Identity and Access Management"
+    ],
     "keywords": [
         "netmotion",
         "vpn",
