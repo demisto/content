@@ -725,7 +725,7 @@ script:
       required: true
     - name: role_name
       description: The name of the role to remove.
-      required: true
+      required: false
 
   - name: aws-iam-access-key-update
     description: Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's access key as part of a key rotation workflow.
