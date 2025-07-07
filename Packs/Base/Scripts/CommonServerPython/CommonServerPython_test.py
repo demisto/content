@@ -10091,7 +10091,7 @@ def test_get_pack_version():
     Then: assert verify the correct version is returned.
     """
 
-    with __builtins__.open('CommonServerPython.py', encoding='utf-8') as f:
+    with open('CommonServerPython.py', 'r') as f:
         code = f.read()
 
     exec(code, globals())
