@@ -7385,7 +7385,7 @@ Run this command to get the missing security updates (KBs) from a specific machi
 ### microsoft-atp-list-auth-permissions
 
 ***
-Run this command to get the permissions from the decoded JSON Web Token (JWT) from the authentication process.
+This command gets the permissions from the current configured user's role. Use for permission issue detections.
 
 #### Base Command
 
