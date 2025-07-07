@@ -964,9 +964,9 @@ script:
               - Sender: ${issue.xdmemailsender}</p>
               <p>This message was deemed suspicious or malicious and has been automatically deleted to protect your account and our organization.</p>
               <p><strong>Important:</strong><br>
-              Please do <strong>not</strong> attempt to reopen retrieve or interact with the email if you have it cached or archived in any personal folders or devices</p>
-              <p>If you clicked any links or downloaded attachments from the original message or if you experience any suspicious system behavior please notify the Security Team immediately</p>
-              <p>Thank you for your cooperation in keeping our environment secure</p>
+              Please do not attempt to reopen retrieve or interact with the email if you have it cached or archived in any personal folders or devices.</p>
+              <p>If you clicked any links or downloaded attachments from the original message or if you experience any suspicious system behavior. Please notify the Security Team immediately.</p>
+              <p>Thank you for your cooperation in keeping our environment secure.</p>
               <p>—<br>Security Operations Team</p>
     - auto: PREDEFINED
       description: 'The body type of the email. Can be: "text", or "HTML".'
