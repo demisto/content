@@ -210,11 +210,15 @@ def test_fetch_notifications(requests_mock, mocker):
     assert incident_mock.call_args[0][0] == []
 
 
-def test_refresh_token(requests_mock, mocker):
+@pytest.mark.parametrize(
+    "error_code",
+    [(401), (403)],
+)
+def test_refresh_token(requests_mock, mocker, error_code):
     with pytest.raises(Exception):
         report_id = 12345
         headers1 = {"Authorization": "Bearer 123", "Content-Type": "application/json"}
-        requests_mock.get(f"{DLP_URL}/public/report/{report_id}?fetchSnippets=true", headers=headers1, status_code=403)
+        requests_mock.get(f"{DLP_URL}/public/report/{report_id}?fetchSnippets=true", headers=headers1, status_code=error_code)
 
         requests_mock.post(f"{DLP_URL}/public/oauth/refreshToken", json={"access_token": "abc"})
         credentials = (
@@ -278,7 +282,11 @@ def test_refresh_token_with_client_credentials(requests_mock):
     assert client.access_token == "abc"
 
 
-def test_handle_403(requests_mock, mocker):
+@pytest.mark.parametrize(
+    "error_code",
+    [(401), (403)],
+)
+def test_handle_4xx_errors(requests_mock, mocker, error_code):
     credentials = {
         "credential": "test credentials",
         "credentials": {
@@ -301,13 +309,13 @@ def test_handle_403(requests_mock, mocker):
     requests_mock.post(PAN_AUTH_URL, json={"access_token": "abc"})
     client = Client(DLP_URL, credentials, False, None)
     response_mock = mocker.MagicMock()
-    type(response_mock).status_code = mocker.PropertyMock(return_value=403)
-    client._handle_403_errors(response_mock)
+    response_mock.status_code = error_code  # mocker.PropertyMock(return_value=error_code)
+    client._handle_4xx_errors(response_mock)
     assert client.access_token == "abc"
 
     client = Client(DLP_URL, CREDENTIALS, False, None)
     tokens_mocker = mocker.patch.object(client, "_refresh_token")
-    client._handle_403_errors(response_mock)
+    client._handle_4xx_errors(response_mock)
     tokens_mocker.assert_called_with()
 
 

@@ -26,7 +26,6 @@ This integration was integrated and tested Proofpoint Email Security.
 ***
 Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
 
-
 ## Known Limitations
 
 The API does not allow use of the same token for more than one session at the same time. If you need to open more than one simultaneous connection to receive the same type of data, additional token(s) must be requested.
