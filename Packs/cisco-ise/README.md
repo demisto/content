@@ -23,7 +23,7 @@ Data normalization capabilities:
 
 ### Cisco ISE side
 
-To configure basic syslog collection follow the below steps:
+To configure basic Syslog collection, do the following:
 
 1. Go to **Administration** > **System** > **Logging** > **Remote Logging Targets**
 2. Click **Add** and then fill the required details.
@@ -32,18 +32,18 @@ To configure basic syslog collection follow the below steps:
 **Note:**
 To prevent log segmentation, set the Maximum Length of the log to **8096**.
 
-More information on remote logging configuration can be found [here](https://www.cisco.com/c/en/us/support/docs/security/identity-services-engine/222223-configure-external-syslog-server-on-ise.html).
+For more information on remote logging configuration, see [here](https://www.cisco.com/c/en/us/support/docs/security/identity-services-engine/222223-configure-external-syslog-server-on-ise.html).
 
 ### Cortex XSIAM side - Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM).
+To create or configure the Broker VM, see [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM).
 
-Follow the below steps to configure the Broker VM to receive Cisco ISE logs.
+Do the following to configure the Broker VM to ingest Cisco ISE logs.
 
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
-2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
+2. Under the **Brokers** tab go to the **APPS** column and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
-4. When configuring the Syslog Collector, set the following parameters:
+4. Set the Syslog Collector parameters::
 
     | Parameter    | Value                                                                                                                       |
     |:-------------|:----------------------------------------------------------------------------------------------------------------------------|
