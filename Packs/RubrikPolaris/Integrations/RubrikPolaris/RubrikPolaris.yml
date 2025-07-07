@@ -3788,7 +3788,7 @@ script:
     - contextPath: RubrikPolaris.AnomalyStatus.false_positive_reason
       description: The reason for marking the Anomaly detection snapshot as a false positive.
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.3823211
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.2072916
   isfetch: true
   runonce: false
   script: '-'
