@@ -178,7 +178,6 @@ var addPlaybookMetadataToRequest = function(body, command) {
 
 
 var sendRequest = function(method, uri, body, raw) {
-    isHosted()
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
