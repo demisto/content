@@ -11,11 +11,11 @@ This pack supports Syslog-based log ingestion from Netmotion VPN and includes pa
 
 ## Configuration on Netmotion VPN Side
 
-1. Log in to the **NetMotion Mobility console** as an administrator.  
-2. Navigate to: **Configure > Server Settings**.  
+1. Log in to the **NetMotion Mobility console** as an administrator.
+2. Navigate to: **Configure > Server Settings**.
 3. In the left pane, select:
-   - **Global Server Settings** (for all servers), or  
-   - A specific server name (to apply only to it).  
+   - **Global Server Settings** (for all servers), or
+   - A specific server name (to apply only to it).
 4. Enable Syslog forwarding:
    - **Select** “Syslog – On / Off” and **check** “Turn syslog event logging on.”
    - Set **Syslog – Server Host** to your Broker VM’s IP/hostname.
@@ -32,13 +32,13 @@ To create or configure the Broker VM, use the information described [here](https
 
 You can configure the specific vendor and product for this instance.
 
-1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
+1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, set the following values **(not relevant for CEF and LEEF formats)**:
     -----------------------------------------------------------------------------------------------------------------------------------------------------------
     | Parameter: :            | Value :                                                                                                                       |
-    |-------------------------|-------------------------------------------------------------------------------------------------------------------------------|                 
+    |-------------------------|-------------------------------------------------------------------------------------------------------------------------------|
     | `Protocol`              | Select **UDP** or **TCP**                                                                                                     |
     | `Port`                  | Enter the port that Cortex XSIAM Broker VM should listen on for receiving forwarded events                                    |
     | `Vendor`                | Enter `netmotion`                                                                                                             |
