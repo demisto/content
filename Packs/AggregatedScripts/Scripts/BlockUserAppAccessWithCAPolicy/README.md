@@ -15,14 +15,9 @@ Checks if a CA policy exists. If yes, adds the user if needed. If no, creates a 
 ---
 This script uses the following commands and scripts.
 
-* Microsoft Graph User
-* MicrosoftGraphApplications
 * MicrosoftGraphIdentityandAccess
-* msgraph-apps-service-principal-list
 * msgraph-identity-ca-policies-list
-* msgraph-identity-ca-policy-create
-* msgraph-identity-ca-policy-update
-* msgraph-user-get
+
 
 ## Inputs
 

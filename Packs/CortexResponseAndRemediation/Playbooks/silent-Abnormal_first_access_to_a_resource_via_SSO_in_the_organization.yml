@@ -2252,7 +2252,7 @@ tasks:
       id: 5feb8706-caf5-4363-8576-01b2f16b030d
       version: -1
       name: Add IP to BlockedIpZone
-      description: Checks if an IP is already covered by CIDR/range in Okta BlockedIpZone. If not, adds it.
+      description: Checks if an IP is already covered by CIDR/range in Okta BlockedIpZone. If not, it adds it.
       scriptName: AddIPToOktaBlockedZone
       type: regular
       iscommand: false
@@ -4822,7 +4822,7 @@ tasks:
       id: 14e2e01b-f48a-487b-a2f8-87d8880e27d7
       version: -1
       name: Add IP to BlockedIpZone
-      description: Checks if an IP is already covered by CIDR/range in Okta BlockedIpZone. If not, adds it.
+      description: Checks if an IP is already covered by CIDR/range in Okta BlockedIpZone. If not, it adds it.
       scriptName: AddIPToOktaBlockedZone
       type: regular
       iscommand: false

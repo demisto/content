@@ -10,6 +10,13 @@ Blocks an external IP via Azure Conditional Access using named IP location and p
 | Tags | Azure, Conditional Access, IP Blocking |
 | Cortex XSOAR Version | 6.10.0 |
 
+## Used In
+
+---
+This script is used in the following playbooks and scripts.
+
+* silent-Abnormal first access to a resource via SSO in the organization
+
 ## Inputs
 
 ---
