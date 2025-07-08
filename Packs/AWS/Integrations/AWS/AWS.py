@@ -1353,7 +1353,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     account_id: str = args.get("account_id", "")
     credentials: dict = {}
     if not params:
-        credentials: dict = get_cloud_credentials(CloudTypes.AWS.value, account_id)
+        credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
 
     service_client, _ = get_service_client(credentials, params, args, command)
     return COMMANDS_MAPPING[command](service_client, args)
