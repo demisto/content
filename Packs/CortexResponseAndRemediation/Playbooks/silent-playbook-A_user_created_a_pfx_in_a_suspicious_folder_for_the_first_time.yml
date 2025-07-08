@@ -724,10 +724,10 @@ tasks:
       id: 9e7e0271-9709-4816-804d-349c08c71f4c
       version: -1
       name: Analysis of the file is not available
+      description: If the PFX file is password-protected, the PFX analyzer cannot process it.
       type: condition
       iscommand: false
       brand: ""
-      description: "Error path for files that has password"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -751,7 +751,7 @@ tasks:
     task:
       id: 00147d5b-75bc-4aa5-8c39-089122952851
       version: -1
-      name: Unzip PFX file
+      name: Extract PFX from ZIP
       description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
@@ -1111,6 +1111,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
     scriptarguments:
       closeReason:
         simple: Resolved - True Positive
@@ -1253,6 +1256,34 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: f39406b6-9116-4dd0-8db7-061410e559a3
+    type: title
+    task:
+      id: f39406b6-9116-4dd0-8db7-061410e559a3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 783,
+          "y": 2751
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1270,7 +1301,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2642,
+        "height": 2750,
         "width": 1543,
         "x": 28,
         "y": 61
