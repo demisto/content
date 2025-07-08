@@ -254,6 +254,7 @@ alter
 /* --------------------------------------------------------------------------------
 Key_Values
    - EndPointMACAddress=
+   - MDMFailureReason=
    - MDMServerName=
    - ServerType=
    - SessionId=
@@ -266,6 +267,7 @@ alter
         Description = arrayindex(regextract(_raw_log, "\s+(?:DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)\s*([^,]+)"),0),
         EndPointMACAddress = arrayindex(regextract(_raw_log, "EndPointMACAddress\s*=\s*([^,]*),"),0),
         logSeverity = lowercase(arrayindex(regextract(_raw_log, "\s+(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)[\s:]+"),0)),
+        MDMFailureReason = arrayindex(regextract(_raw_log, "MDMFailureReason\s*=\s*([^,]*),"),0),
         MDMServerName = arrayindex(regextract(_raw_log, "MDMServerName\s*=\s*([^,]*),"),0),
         ServerType = arrayindex(regextract(_raw_log, "ServerType\s*=\s*([^,]*),"),0),
         SessionId = arrayindex(regextract(_raw_log, "SessionId\s*=\s*([^,]*),"),0)
@@ -275,6 +277,8 @@ alter
         xdm.event.original_event_type = arrayindex(regextract(_raw_log, "(\d+)\s(?:DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)"),0),
         xdm.event.description = Description,
         xdm.event.log_level = if(logSeverity ~= "debug", XDM_CONST.LOG_LEVEL_DEBUG, logSeverity ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, logSeverity ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, logSeverity ~= "error", XDM_CONST.LOG_LEVEL_ERROR, logSeverity = "fatal", XDM_CONST.LOG_LEVEL_EMERGENCY, logSeverity ~= "critical", XDM_CONST.LOG_LEVEL_CRITICAL, logSeverity ~= "notice", XDM_CONST.LOG_LEVEL_NOTICE, logSeverity = null, null, XDM_CONST.LOG_LEVEL_NOTICE),
+        xdm.event.outcome = if(Description ~= "[Ss][Uu][Cc][Cc][Ee]", XDM_CONST.OUTCOME_SUCCESS, Description ~= "[Ff][Aa][Ii][Ll]", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.event.outcome_reason = MDMFailureReason,
         xdm.source.host.mac_addresses = arraycreate(EndPointMACAddress),
         xdm.target.host.hostname = MDMServerName,
         xdm.target.host.device_category = ServerType,
