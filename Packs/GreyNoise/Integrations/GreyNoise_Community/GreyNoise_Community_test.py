@@ -42,7 +42,8 @@ def test_test_module(api_key, api_response, status_code, expected_output, mocker
     """
     Tests test_module for GreyNoise integration.
     """
-    client = GreyNoise_Community.Client(api_key, "dummy_server", 10, "proxy", False, "dummy_integration")
+    api_config = GreyNoise_Community.APIConfig(api_key, "dummy_server", 10, "proxy", False, "dummy_integration")
+    client = GreyNoise_Community.Client(api_config)
     if isinstance(api_key, str) and api_key == "true_key":
         mocker.patch("greynoise.GreyNoise._request", return_value=api_response)
         response = GreyNoise_Community.test_module(client)
@@ -63,7 +64,8 @@ def test_ip_reputation_command(args, test_scenario, api_response, status_code, e
     """
     Tests various combinations of vald and invalid responses for IPReputation command.
     """
-    client = GreyNoise_Community.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
+    api_config = GreyNoise_Community.APIConfig(api_key="true_api_key",api_server="dummy_server",cache_ttl=10,proxy="proxy",use_cache=False,integration_name="dummy_integration")
+    client = GreyNoise_Community.Client(api_config)
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
     reliability = "B - Usually reliable"
     if test_scenario == "positive":

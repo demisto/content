@@ -32,9 +32,16 @@ configuration:
   type: 1
   required: false
 - display: API Key
-  name: api_key
-  required: true
+  name: apikey
+  required: false
   type: 4
+  hidden: true
+- display: API Key
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
@@ -102,7 +109,7 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-  dockerimage: demisto/greynoise:1.0.0.117184
+  dockerimage: demisto/greynoise:1.0.0.3876899
   runonce: false
   script: '-'
   subtype: python3
