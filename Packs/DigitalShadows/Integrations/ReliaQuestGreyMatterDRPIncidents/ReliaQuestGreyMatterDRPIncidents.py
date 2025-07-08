@@ -900,7 +900,6 @@ def main() -> None:
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    demisto.info(f"input config------: {demisto.params()}")
     secretKey = demisto.params()["apiSecret"]["password"]
     accessKey = demisto.params()["apiKey"]["password"]
     accountId = demisto.params()["accountId"]
