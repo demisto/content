@@ -2799,6 +2799,57 @@ script:
       type: boolean
     - contextPath: MISP.Warninglist.EntryCount
       type: number
+  - arguments:
+    - name: id
+      description: ID of the warninglist to update.
+      required: true
+      type: number
+    - name: name
+      description: Updated name of the warninglist.
+    - name: type
+      description: Updated type of the warninglist.
+    - name: description
+      description: Updated description of the warninglist.
+    - name: enabled
+      description: Whether the warninglist should be enabled or disabled.
+      type: boolean
+    - name: version
+      description: Updated version number of the warninglist.
+    - name: default
+      description: Whether the warninglist should be set as default.
+      type: boolean
+    - name: values
+      description: Updated values of the warninglist.
+    - name: types
+      description: Updated valid attribute types for the warninglist.
+
+    description: Changes a warninglist in MISP.
+    name: misp-change-warninglist
+    outputs:
+    - contextPath: MISP.Warninglist.ID
+      description: The ID of the warninglist to be changed
+      type: number
+    - contextPath: MISP.Warninglist.Name
+      description: The updated warninglist name
+      type: string
+    - contextPath: MISP.Warninglist.Type
+      description: The updated warninglist type
+      type: string
+    - contextPath: MISP.Warninglist.Description
+      description: The updated description of the warninglist
+      type: string
+    - contextPath: MISP.Warninglist.Version
+      description: The updated warninglist version number
+      type: number
+    - contextPath: MISP.Warninglist.Enabled
+      description: The updated enabled/disabled status of the warninglist
+      type: boolean
+    - contextPath: MISP.Warninglist.Default
+      description: The updated default status of the warninglist
+      type: boolean
+    - contextPath: MISP.Warninglist.Category
+      description: The updated category of the warninglist
+      type: string
   dockerimage: demisto/pymisp2:2.5.10.3545364
   runonce: false
   script: ''

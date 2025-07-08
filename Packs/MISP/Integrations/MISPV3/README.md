@@ -4390,6 +4390,62 @@ Gets all warninglists from MISP
 >| 1 | List | string | An example list | 1 | true | true | false_positive | 2 | hostname |
 >| 2 | Another list | cidr | An example of another list | 42 | false | false | false_positive | 20 | url |
 
+### misp-change-warninglist
+
+***
+Changes a warninglist in MISP.
+This command only changes the values supplied through the parameters of this command (in a non idempotent way).
+
+#### Base Command
+
+`misp-change-warninglist`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the warninglist to update. | Required |
+| name | Updated name of the warninglist. | Optional |
+| type | Updated type of the warninglist. | Optional |
+| description | Updated description of the warninglist. | Optional |
+| version | Updated version number of the warninglist. | Optional |
+| default | Whether the warninglist should be set as default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Warninglist.ID | number | The ID of the warninglist to be changed |
+| MISP.Warninglist.Name | string | The updated warninglist name |
+| MISP.Warninglist.Type | string | The updated warninglist type |
+| MISP.Warninglist.Description | string | The updated description of the warninglist |
+| MISP.Warninglist.Version | number | The updated warninglist version number |
+| MISP.Warninglist.Enabled | boolean | The updated enabled/disabled status of the warninglist |
+| MISP.Warninglist.Default | boolean | The updated default status of the warninglist |
+| MISP.Warninglist.Category | string | The updated category of the warninglist |
+
+#### Command Example
+
+```!misp-change-warninglist id=1234 name="Changed list name" version=20250708 values="1.2.3.4,5.6.7.8" types="ip-src,ip-dst"```
+
+#### Human Readable Output
+>### MISP Warninglist
+>
+>|ID|Name|Type|Description}Version|Enabled|Default|Category|
+>|---|---|---|---|---|---|---|---|
+>| 1234 | Changed list name | string | An example of an existing description | 1 | true | true | false_positive |
+>
+>### Entries in MISP Warninglist
+>|Value|
+>|---|
+>|1.1.1.1 |
+>
+>### Valid Attributes in MISP Warninglist
+>|ID|Type|
+>|---|---|
+>|987|ip-src|
+>|567|ip-dst|
+
 ### misp-get-warninglist
 
 ***
@@ -4433,11 +4489,13 @@ Get a specific warninglist by its ID.
 >| 1234 | Example List Name | string | An example of a warninglist in MISP | 1 | true | true | false_positive |
 >
 >### Entries in MISP Warninglist
+>
 >|ID|Value|Description|
 >|---|---|---|
 >|123| hostname.example.local | An example of a hostname |
 >
 >### Valid Attributes in MISP Warninglist
+>
 >|ID|Type|
 >|---|---|
 >|987|hostname|
