@@ -2,6 +2,7 @@
  
 ## Overview
 A Web Application Firewall (WAF) is a security filter that protects against HTTP-based attacks by inspecting traffic before it reaches your application.
+Note: The Event Collector is planned for deprecation in 2.8 version release. Customers are advised to switch to the Native Collector for continued support and enhanced capabilities.
  
 ## This pack includes:
  
