@@ -1,6 +1,7 @@
 import demistomock as demisto
 import pytest
 
+
 def test_main__error(mocker):
     """
     Given: Invalid regex flags passed as argument
@@ -52,6 +53,7 @@ def test_main__match(mocker):
 
 def test_get_regex_matches(mocker):
     from RegexGroups import get_regex_matches
+
     args = {"value": "dev", "regex": "prod", "groups": "0"}
     mocker.patch.object(demisto, "args", return_value=args)
     try:
