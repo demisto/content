@@ -1917,7 +1917,7 @@ function GetShortHash($inputString, $length = 12) {
 function MakeSearchName([string]$internetMessageId, [string[]]$exchangeLocation, [string]$overrideName = $null) {
     if ($overrideName) { return $overrideName }
     $baseName = $internetMessageId -replace '[<>]', ''
-    if ($exchangeLocation -ne "All") {
+    if ($exchangeLocation -notcontains "All") {
         $hash = GetShortHash ($exchangeLocation -join ",")
         return "${baseName}:${hash}"
     }
