@@ -64,7 +64,14 @@ def test_ip_reputation_command(args, test_scenario, api_response, status_code, e
     """
     Tests various combinations of vald and invalid responses for IPReputation command.
     """
-    api_config = GreyNoise_Community.APIConfig(api_key="true_api_key",api_server="dummy_server",cache_ttl=10,proxy="proxy",use_cache=False,integration_name="dummy_integration")
+    api_config = GreyNoise_Community.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        cache_ttl=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise_Community.Client(api_config)
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
     reliability = "B - Usually reliable"

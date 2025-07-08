@@ -19,21 +19,28 @@ util.LOGGER.warning = util.LOGGER.debug
 
 """ CONSTANTS """
 
-PRETTY_KEY = {
+PRETTY_KEY = PRETTY_KEY = {
     "ip": "IP",
+    "first_seen": "First Seen",
+    "last_seen": "Last Seen",
     "last_seen_timestamp": "Last Seen Timestamp",
     "seen": "Internet Scanner",
     "tags": "Tags",
     "actor": "Actor",
     "spoofable": "Spoofable",
     "classification": "Classification",
+    "cve": "CVE",
     "metadata": "MetaData",
     "asn": "ASN",
     "city": "City",
+    "country": "Country",
+    "country_code": "Country Code",
     "destination_countries": "Destination Countries",
     "destination_country_codes": "Destination Country Codes",
     "organization": "Organization",
     "category": "Category",
+    "sensor_count": "Sensor Count",
+    "sensor_hits": "Sensor Hits",
     "source_country": "Source Country",
     "source_country_code": "Source Country Code",
     "tor": "Tor",
@@ -42,6 +49,20 @@ PRETTY_KEY = {
     "region": "Region",
     "vpn": "VPN",
     "vpn_service": "VPN Service",
+    "raw_data": "Raw Data",
+    "scan": "Scan",
+    "port": "Port",
+    "protocol": "Protocol",
+    "web": "Web",
+    "path": "Web Paths",
+    "useragent": "User-Agents",
+    "ja3": "JA3",
+    "fingerprint": "Fingerprint",
+    "hassh": "HASSH",
+    "bot": "BOT",
+    "ja4": "JA4",
+    "cipher": "Cipher",
+    "md5": "MD5",
 }
 IP_CONTEXT_HEADERS = [
     "IP",
@@ -57,14 +78,14 @@ IP_CONTEXT_HEADERS = [
     "Last Seen Timestamp",
 ]
 RIOT_HEADERS = [
-    "IP", 
-    "Business Service", 
-    "Category", 
-    "Name", 
-    "Trust Level", 
-    "Description", 
+    "IP",
+    "Business Service",
+    "Category",
+    "Name",
+    "Trust Level",
+    "Description",
     "Last Updated",
-    ]
+]
 EXCEPTION_MESSAGES = {
     "API_RATE_LIMIT": "API Rate limit hit. Try after sometime.",
     "UNAUTHENTICATED": "Unauthenticated. Check the configured API Key.",
@@ -203,7 +224,8 @@ def get_ip_reputation_score(classification: str) -> tuple[int, str]:
         return Common.DBotScore.BAD, "Bad"
     else:
         return Common.DBotScore.NONE, "Unknown"
-    
+
+
 def get_ip_tag_names(tags: list) -> list:
     """Get tag names from tags list.
 
@@ -322,7 +344,10 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
 
             human_readable += f"### IP: {ip} Not Associated with a Business Service\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise Business Service Intelligence Lookup", t=riot_tmp_response, headers=["IP", "Business Service"], removeNull=False
+                name="GreyNoise Business Service Intelligence Lookup",
+                t=riot_tmp_response,
+                headers=["IP", "Business Service"],
+                removeNull=False,
             )
 
             dbot_score = Common.DBotScore(
@@ -382,7 +407,10 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
 
             human_readable += f"### IP: {ip} No Mass-Internet Scanning Observed\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise Internet Scanner Intelligence Lookup", t=tmp_response, headers=["IP", "Internet Scanner"], removeNull=False
+                name="GreyNoise Internet Scanner Intelligence Lookup",
+                t=tmp_response,
+                headers=["IP", "Internet Scanner"],
+                removeNull=False,
             )
 
             dbot_score = Common.DBotScore(
@@ -452,7 +480,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
             }
 
             human_readable += f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
-            human_readable += f'#### Belongs to Common Business Service: {riot_response.get("name", "Unknown")}\n'
+            human_readable += f"#### Belongs to Common Business Service: {riot_response.get('name', 'Unknown')}\n"
             human_readable += tableToMarkdown(
                 name="GreyNoise Business Service Intelligence Lookup", t=riot_tmp_response, headers=RIOT_HEADERS, removeNull=False
             )
@@ -492,12 +520,18 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
 
             human_readable = f"### IP: {ip} No Mass-Internet Scanning Observed\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise Internet Scanner Intelligence Lookup", t=combo_tmp_response, headers=["IP", "Internet Scanner"], removeNull=True
+                name="GreyNoise Internet Scanner Intelligence Lookup",
+                t=combo_tmp_response,
+                headers=["IP", "Internet Scanner"],
+                removeNull=True,
             )
 
             human_readable += f"### IP: {ip} Not Associated with a Business Service\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise Business Service Intelligence Lookup", t=combo_tmp_response, headers=["IP", "Business Service"], removeNull=True
+                name="GreyNoise Business Service Intelligence Lookup",
+                t=combo_tmp_response,
+                headers=["IP", "Business Service"],
+                removeNull=True,
             )
 
             command_results.append(

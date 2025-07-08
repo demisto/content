@@ -1,5 +1,4 @@
 import json
-import os
 
 import demistomock as demisto
 import freezegun
@@ -64,7 +63,14 @@ def test_test_module(api_key, api_response, status_code, expected_output, mocker
     """
     Tests test_module for GreyNoise integration.
     """
-    api_config = GreyNoise.APIConfig(api_key=api_key, api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key=api_key,
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
     if isinstance(api_key, str) and api_key == "true_key":
         mocker.patch("greynoise.GreyNoise._request", return_value=api_response)
@@ -83,13 +89,20 @@ def test_ip_reputation_command(args, test_scenario, api_response, status_code, e
     """
     Tests various combinations of valid and invalid responses for IPReputation command.
     """
-    api_config = GreyNoise.APIConfig(api_key="true_api_key", api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
     reliability = "B - Usually reliable"
-    
+
     # Mock demisto.command() to return the correct command name
     mocker.patch.object(demisto, "command", return_value="ip")
-    
+
     if test_scenario == "positive":
         mocker.patch.object(client, "ip", return_value=api_response)
         response = GreyNoise.ip_reputation_command(client, args, reliability)
@@ -105,21 +118,23 @@ def test_ip_reputation_command(args, test_scenario, api_response, status_code, e
         elif status_code == 500:
             mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(500, {}))
         elif status_code == 400:
-            mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(400, {'error': 'invalid ip submitted'}))
+            mocker.patch.object(
+                client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(400, {"error": "invalid ip submitted"})
+            )
         else:
             # For cases where we want to test the "Invalid response from GreyNoise" wrapper
             # These are cases where the response is not a dict or doesn't have expected structure
             mocker.patch.object(client, "ip", return_value=api_response)
-        
+
         with pytest.raises(Exception) as err:
             _ = GreyNoise.ip_reputation_command(client, args, reliability)
-        
+
         # For the 405 case, the error message includes the command name
-       # if status_code == 405:
-       #     expected_error = f"Failed to execute ip command.\n Error: Dummy message"
-       # else:
+        # if status_code == 405:
+        #     expected_error = f"Failed to execute ip command.\n Error: Dummy message"
+        # else:
         expected_error = expected_output
-        
+
         assert str(err.value) == expected_error
 
 
@@ -128,12 +143,19 @@ def test_ip_quick_check_command(args, test_scenario, api_response, status_code, 
     """
     Tests various combinations of valid and invalid responses for ip-quick-check command.
     """
-    api_config = GreyNoise.APIConfig(api_key="true_api_key", api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
-    
+
     # Mock demisto.command() to return the correct command name
     mocker.patch.object(demisto, "command", return_value="greynoise-ip-quick-check")
-    
+
     if test_scenario == "positive":
         mocker.patch.object(client, "quick", return_value=api_response)
         response = GreyNoise.ip_quick_check_command(client, args)
@@ -164,16 +186,16 @@ def test_ip_quick_check_command(args, test_scenario, api_response, status_code, 
             mocker.patch.object(client, "quick", side_effect=GreyNoise.exceptions.RequestFailure(505, []))
         else:
             mocker.patch.object(client, "quick", return_value=api_response)
-        
+
         with pytest.raises(Exception) as err:
             _ = GreyNoise.ip_quick_check_command(client, args)
-        
+
         # For the 405 case, the error message includes the command name
         if status_code == 405:
-            expected_error = f"Failed to execute greynoise-ip-quick-check command.\n Error: Dummy message"
+            expected_error = "Failed to execute greynoise-ip-quick-check command.\n Error: Dummy message"
         else:
             expected_error = expected_output
-        
+
         assert str(err.value) == expected_error
 
     elif test_scenario == "custom":
@@ -197,12 +219,19 @@ def test_query_command(args, test_scenario, api_response, status_code, expected_
     """
     Tests various combinations of valid and invalid responses for query command.
     """
-    api_config = GreyNoise.APIConfig(api_key="true_api_key", api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
-    
+
     # Mock demisto.command() to return the correct command name
     mocker.patch.object(demisto, "command", return_value="greynoise-query")
-    
+
     if test_scenario == "positive":
         mocker.patch.object(client, "query", return_value=api_response)
         response = GreyNoise.query_command(client, args)
@@ -214,7 +243,10 @@ def test_query_command(args, test_scenario, api_response, status_code, expected_
             # Accept if either 'ip' or 'address' matches
             assert a.get("address", a.get("ip")) == e.get("address", e.get("ip"))
         # Check the rest of the output
-        assert response.outputs["GreyNoise.Query(val.query && val.query == obj.query)"] == expected_output["GreyNoise.Query(val.query && val.query == obj.query)"]
+        assert (
+            response.outputs["GreyNoise.Query(val.query && val.query == obj.query)"]
+            == expected_output["GreyNoise.Query(val.query && val.query == obj.query)"]
+        )
     else:
         # For error cases, we need to mock the query method to raise an exception
         if status_code == 401:
@@ -227,16 +259,16 @@ def test_query_command(args, test_scenario, api_response, status_code, expected_
             mocker.patch.object(client, "query", side_effect=GreyNoise.exceptions.RequestFailure(505, []))
         else:
             mocker.patch.object(client, "query", return_value=api_response)
-        
+
         with pytest.raises(Exception) as err:
             _ = GreyNoise.query_command(client, args)
-        
+
         # For the 405 case, the error message includes the command name
         if status_code == 405:
-            expected_error = f"Failed to execute greynoise-query command.\n Error: Dummy message"
+            expected_error = "Failed to execute greynoise-query command.\n Error: Dummy message"
         else:
             expected_error = expected_output
-        
+
         assert str(err.value) == expected_error
 
 
@@ -245,12 +277,19 @@ def test_stats_command(args, test_scenario, api_response, status_code, expected_
     """
     Tests various combinations of valid and invalid responses for stats command.
     """
-    api_config = GreyNoise.APIConfig(api_key="true_api_key", api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
-    
+
     # Mock demisto.command() to return the correct command name
     mocker.patch.object(demisto, "command", return_value="greynoise-stats")
-    
+
     if test_scenario == "positive":
         mocker.patch.object(client, "stats", return_value=api_response)
         response = GreyNoise.stats_command(client, args)
@@ -267,16 +306,16 @@ def test_stats_command(args, test_scenario, api_response, status_code, expected_
             mocker.patch.object(client, "stats", side_effect=GreyNoise.exceptions.RequestFailure(505, []))
         else:
             mocker.patch.object(client, "stats", return_value=api_response)
-        
+
         with pytest.raises(Exception) as err:
             _ = GreyNoise.stats_command(client, args)
-        
+
         # For the 405 case, the error message includes the command name
         if status_code == 405:
-            expected_error = f"Failed to execute greynoise-stats command.\n Error: Dummy message"
+            expected_error = "Failed to execute greynoise-stats command.\n Error: Dummy message"
         else:
             expected_error = expected_output
-        
+
         assert str(err.value) == expected_error
 
 
@@ -298,10 +337,17 @@ def test_riot_command(mocker, test_scenario, status_code, input_data, expected):
     """
     Test various inputs for riot command
     """
-    api_config = GreyNoise.APIConfig(api_key="true_api_key", api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
     reliability = "B - Usually reliable"
-    
+
     if test_scenario == "positive":
         mocker.patch.object(client, "ip", return_value=expected["output"])
         response = GreyNoise.riot_command(client, input_data, reliability)
@@ -330,10 +376,17 @@ def test_context_command(mocker, args, test_scenario, api_response, status_code,
     """
     Test various inputs for context command
     """
-    api_config = GreyNoise.APIConfig(api_key="true_api_key", api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
     reliability = "B - Usually reliable"
-    
+
     if test_scenario == "positive":
         mocker.patch.object(client, "ip", return_value=api_response)
         response = GreyNoise.context_command(client, args, reliability)
@@ -350,7 +403,7 @@ def test_context_command(mocker, args, test_scenario, api_response, status_code,
             mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(505, []))
         else:
             mocker.patch.object(client, "ip", return_value=api_response)
-        
+
         with pytest.raises(Exception) as err:
             _ = GreyNoise.context_command(client, args, reliability)
         assert str(err.value) == expected_output
@@ -361,12 +414,19 @@ def test_similar_command(mocker, args, test_scenario, api_response, status_code,
     """
     Test various inputs for context command
     """
-    api_config = GreyNoise.APIConfig(api_key="true_api_key", api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
-    
+
     # Mock demisto.command() to return the correct command name
     mocker.patch.object(demisto, "command", return_value="greynoise-similar")
-    
+
     if test_scenario == "positive":
         mocker.patch.object(client, "similar", return_value=expected_output)
         response = GreyNoise.similarity_command(client, args)
@@ -375,10 +435,10 @@ def test_similar_command(mocker, args, test_scenario, api_response, status_code,
         # For error cases, we need to mock the similar method to raise an exception
         if status_code == 404:
             mocker.patch.object(client, "similar", side_effect=GreyNoise.exceptions.RequestFailure(404, api_response))
-        
+
         with pytest.raises(Exception) as err:
             _ = GreyNoise.similarity_command(client, args)
-        
+
         assert str(err.value) == expected_output
 
 
@@ -387,12 +447,19 @@ def test_timeline_command(mocker, args, test_scenario, api_response, status_code
     """
     Test various inputs for context command
     """
-    api_config = GreyNoise.APIConfig(api_key="true_api_key", api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
-    
+
     # Mock demisto.command() to return the correct command name
     mocker.patch.object(demisto, "command", return_value="greynoise-timeline")
-    
+
     if test_scenario == "positive":
         mocker.patch.object(client, "timelinedaily", return_value=expected_output)
         response = GreyNoise.timeline_command(client, args)
@@ -401,10 +468,10 @@ def test_timeline_command(mocker, args, test_scenario, api_response, status_code
         # For error cases, we need to mock the timelinedaily method to raise an exception
         if status_code == 404:
             mocker.patch.object(client, "timelinedaily", side_effect=GreyNoise.exceptions.RequestFailure(404, api_response))
-        
+
         with pytest.raises(Exception) as err:
             _ = GreyNoise.timeline_command(client, args)
-        
+
         assert str(err.value) == expected_output
 
 
@@ -413,10 +480,17 @@ def test_cve_command(mocker, args, test_scenario, api_response, status_code, exp
     """
     Test various inputs for cve command
     """
-    api_config = GreyNoise.APIConfig(api_key="true_api_key", api_server="dummy_server", timeout=10, proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    api_config = GreyNoise.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
     client = GreyNoise.Client(api_config)
     reliability = "B - Usually reliable"
-    
+
     if test_scenario == "positive":
         mocker.patch.object(client, "cve", return_value=expected_output)
         response = GreyNoise.cve_command(client, args, reliability)
@@ -450,7 +524,6 @@ def test_get_api_key(mocker, demisto_params_result, expected_result):
     """
     mocker.patch.object(demisto, "params", return_value=demisto_params_result)
     mock_api_config = mocker.patch("GreyNoise.APIConfig")
-    mock_client = mocker.patch("GreyNoise.Client")
     # Call main()
     GreyNoise.main()
 
