@@ -408,7 +408,7 @@ class MirrorObject:
     def __post_init__(self) -> None:
         """
         Performs post-initialization validation.
-        Checks for missing mandatory fields 'object_url' and 'ticket_id'
+        Checks for missing mandatory fields 'object_url' and 'object_id'
         and logs a debug message if they are not set.
 
         :return: None
