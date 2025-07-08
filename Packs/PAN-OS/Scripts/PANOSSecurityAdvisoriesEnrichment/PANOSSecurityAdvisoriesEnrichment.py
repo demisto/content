@@ -23,7 +23,7 @@ class Client:
         url = f"{self.advisories_url}{cve_id}"
         response = requests.get(url)
         if response.status_code == 404:
-            raise DemistoException("CVE not found: This is not a valid Palo Alto Networks CVE ID.")
+            return_results("CVE not found: This is not a valid Palo Alto Networks CVE ID.")
         response.raise_for_status()
         return response.json()
 
