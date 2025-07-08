@@ -18,7 +18,11 @@
         "Malware",
         "Phishing"
     ],
-    "keywords": [],
+    "keywords": [
+        "barracuda",
+        "email",
+        "protection"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
