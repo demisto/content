@@ -9,6 +9,7 @@ from CortexCoreIR import (
     core_block_ip_command,
     polling_block_ip_status,
     Client,
+    core_get_contributing_event_command,
 )
 from freezegun import freeze_time
 
@@ -1173,3 +1174,51 @@ class TestBlockIp:
         # we get exactly the same args dict back
         assert calls["args"] == args
         assert spy.call_count == 0
+def test_core_get_contributing_event(mocker):
+    """
+    Given:
+        - A mock Client and alert ID
+    When:
+        - Calling `core-get-contributing-event`.
+    Then:
+        - Verify that results were correctly parsed.
+    """
+    client = get_mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={
+            "reply": {
+                "events": [
+                    {
+                        "Logon_Type": "1",
+                        "User_Name": "example",
+                        "Domain": "domain",
+                        "Source_IP": "1.1.1.1",
+                        "Process_Name": "C:\\Windows\\System32\\example.exe",
+                        "Host_Name": "WIN10X64",
+                        "Raw_Message": "An account was successfully logged on.",
+                        "_time": 1652982800000,
+                        "aaaaaa": "111111",
+                        "bbbbbb": 1652982800000,
+                        "cccccc": "222222",
+                        "dddddd": 2,
+                        "eeeeee": 1,
+                        "insert_timestamp": 1652982800001,
+                        "_vendor": "PANW",
+                        "_product": "XDR agent",
+                    }
+                ]
+            }
+        },
+    )
+
+    args = {
+        "alert_ids": "1",
+    }
+
+    result = core_get_contributing_event_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Contributing events" in result.readable_output
+    assert result.outputs[0]["alertID"] == "1"
