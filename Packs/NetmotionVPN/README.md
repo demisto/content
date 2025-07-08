@@ -11,13 +11,13 @@ This pack supports Syslog-based log ingestion from Netmotion VPN and includes pa
 
 ## Configure the Netmotion VPN Side
 
-
 1. Log in to the **NetMotion Mobility console** as an administrator.
 2. Navigate to **Configure > Server Settings**.
 3. In the left pane, select one of the following options:
 
- - For all servers, select Global Server Settings.
- - For a specific server, select the specific server name.
+- For all servers, select Global Server Settings.
+- For a specific server, select the specific server name.
+
 4. Enable Syslog forwarding.
    a. Select Syslog – On / Off and check Turn syslog event logging on.
    b. Set Syslog – Server Host to your Broker VM’s IP/hostname.
@@ -37,8 +37,10 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.
 3. Click **Add New**.
-4. When configuring the Syslog Collector, set the following values **(not relevant for CEF and LEEF formats)**:
+
+4. When configuring the Syslog Collector, set the following values **(not relevant for CEF and LEEF formats)**
     -----------------------------------------------------------------------------------------------------------------------------------------------------------
+
     | Parameter: :            | Value :                                                                                                                       |
     |-------------------------|-------------------------------------------------------------------------------------------------------------------------------|
     | `Protocol`              | Select **UDP** or **TCP**.                                                                                                    |
