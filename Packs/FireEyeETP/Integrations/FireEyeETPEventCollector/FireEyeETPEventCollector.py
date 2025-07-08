@@ -109,9 +109,9 @@ class Client(BaseClient):  # pragma: no cover
         if to_LastModifiedOn:
             time["to"] = to_LastModifiedOn
         else:
-            demisto.debug(f"{LOG_LINE} empty to_LastModifiedOn. Setting to tomorrow's date")
-            time_tomorrow = datetime.now(timezone.utc) + timedelta(days=1)  # Add 1 day as a margin of error
-            time["to"] = datetime.strftime(time_tomorrow, ACTIVITY_LOG_DATE_FORMAT)
+            demisto.debug(f"{LOG_LINE} empty to_LastModifiedOn. Setting to now.")
+            utc_now = datetime.now(timezone.utc)
+            time["to"] = datetime.strftime(utc_now, ACTIVITY_LOG_DATE_FORMAT)
 
         req_body = assign_params(
             size=size,

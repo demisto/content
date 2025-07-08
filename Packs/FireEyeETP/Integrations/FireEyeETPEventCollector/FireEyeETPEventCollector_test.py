@@ -384,7 +384,7 @@ def test_client_get_activity_log(mocker):
     When:
         - Calling `Client.get_activity_log`.
     Then:
-        - Assert "to" time is set as expected (one day later).
+        - Assert "to" time is set as expected (current UTC time).
     """
     client = mock_client()
     mock_http_request = mocker.patch.object(client, "_http_request")
@@ -393,7 +393,7 @@ def test_client_get_activity_log(mocker):
     size = 100
     client.get_activity_log(from_LastModifiedOn=from_time, to_LastModifiedOn="", size=size)
 
-    expected_to_time = "2025-07-08T17:00:00+0000Z"  # one day after frozen timestamp
+    expected_to_time = "2025-07-07T17:00:00+0000Z"  # Current UTC time (frozen timestamp)
     assert mock_http_request.call_args.kwargs == {
         "method": "POST",
         "url_suffix": "/api/v1/users/activitylogs/search",
