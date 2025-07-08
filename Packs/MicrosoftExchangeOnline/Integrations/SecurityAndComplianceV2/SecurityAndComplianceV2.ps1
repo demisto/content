@@ -1924,6 +1924,42 @@ function MakeSearchName([string]$internetMessageId, [string[]]$exchangeLocation,
     return $baseName
 }
 
+# function HandleSearchStatus($client, $search_name, $search, $kwargs, $entry_context, $polling_args, [bool]$polling_first_run) {
+#     switch ($search.Status) {
+#         "NotStarted" {
+#             $client.StartSearch($search_name)
+#             return $polling_first_run ? "$script:INTEGRATION_NAME - Search started." : "", $entry_context, $search, $polling_args
+#         }
+#         "Starting" {
+#             return $polling_first_run ? "$script:INTEGRATION_NAME - Search is already starting from a previous run." : "", $entry_context, $search, $polling_args
+#         }
+#         "Completed" {
+#             $demisto.debug("Search completed, items: $($search.Items)")
+#             if ($search.Items -eq 0) {
+#                 return $polling_first_run ? "$script:INTEGRATION_NAME - Search already completed with no results. Run again with force=true to retry." : "$script:INTEGRATION_NAME - No emails found.", $entry_context, $search
+#             }
+
+#             $action = $client.GetSearchAction("${search_name}_Purge", "SilentlyContinue")
+#             if (-not $action) {
+#                 $demisto.debug("Purge action missing, creating new")
+#                 $action = $client.NewSearchAction($search_name, "Purge", "SoftDelete",
+#                     $kwargs.share_point_archive_format, $kwargs.format, $kwargs.include_sharepoint_document_versions,
+#                     $kwargs.notify_email, $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
+#                 return $polling_first_run ? "$script:INTEGRATION_NAME - Search completed. Purge action created." : "", $entry_context, $action, $polling_args
+#             }
+
+#             $demisto.debug("Purge action status: $($action.Status)")
+#             switch ($action.Status) {
+#                 "InProgress" { return $polling_first_run ? "$script:INTEGRATION_NAME - Deletion in progress from previous run. Run again with force=true to retry." : "", $entry_context, $action, $polling_args }
+#                 "Starting"   { return $polling_first_run ? "$script:INTEGRATION_NAME - Deletion starting from previous run. Run again with force=true to retry."   : "", $entry_context, $action, $polling_args }
+#                 "Completed"  { return $polling_first_run ? "$script:INTEGRATION_NAME - Deletion already completed. Run again with force=true to retry."            : "$script:INTEGRATION_NAME - Deletion completed.", $entry_context }
+#                 default      { throw "Unhandled purge action status: $($action.Status)" }
+#             }
+#         }
+#         default { throw "Unhandled search status: $($search.Status)" }
+#     }
+# }
+
 function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     $demisto.debug("Received kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
     $description = "Search And Delete Email"
@@ -1936,7 +1972,6 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
     $polling_args = $kwargs
     $search_name = MakeSearchName $internet_message_id $exchange_location $kwargs.search_name
     $polling_args.search_name = $search_name
-    $search_action_name = "${search_name}_Purge"
     $demisto.debug("search_name: $search_name")
 
     if ($polling_first_run) {
@@ -1953,7 +1988,6 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
             $random_suffix = [System.Guid]::NewGuid().ToString("N").Substring(0, 6)
             $search_name = "$search_name-$random_suffix"
             $polling_args.search_name = $search_name
-            $search_action_name = "${search_name}_Purge"
             $demisto.debug("Force is true - creating new search with name: $search_name")
             $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), $null)
             $client.StartSearch($search_name)
@@ -1977,7 +2011,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 if ($search.Items -eq 0) {
                     return "$script:INTEGRATION_NAME - Search already completed with no results. Run again with force=true to retry.", $entry_context, $search
                 }
-                $action = $client.GetSearchAction($search_action_name, "SilentlyContinue")
+                $action = $client.GetSearchAction("${search_name}_Purge", "SilentlyContinue")
                 if (-not $action) {
                     $demisto.debug("No action found, creating purge action")
                     $action = $client.NewSearchAction($search_name, "Purge", "SoftDelete", $kwargs.share_point_archive_format, $kwargs.format, $kwargs.include_sharepoint_document_versions, $kwargs.notify_email, $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
@@ -2016,10 +2050,10 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
             }
 
             $demisto.debug("Checking purge action status")
-            $action = $client.GetSearchAction($search_action_name, "SilentlyContinue")
+            $action = $client.GetSearchAction("${search_name}_Purge", "SilentlyContinue")
             if (-not $action) {
                 $demisto.debug("Purge action missing, creating new")
-                $action = $client.NewSearchAction($search_name, "Purge", "SoftDelete", $kwargs.share_point_archive_format, $kwargs.format, $kwargs.include_sharepoint_document_versions, $kwargs.notify_email, $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
+                $action = $client.NewSearchAction($search_name, "Purge", "SoftDelete", $null, $null, $null, $null, $null, $null, $null)
                 $demisto.debug("Purge action created during polling.")
                 return "", $entry_context, $action, $polling_args
             }
