@@ -16,22 +16,6 @@ DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
 
-def arg_to_bool_or_none(value):
-    """
-    Converts a value to a boolean or None.
-
-    :type value: ``Any``
-    :param value: The value to convert to boolean or None.
-
-    :return: Returns None if the input is None, otherwise returns the boolean representation of the value using the argToBoolean function.
-    :rtype: ``bool`` or ``None``
-    """
-    if value is None:
-        return None
-    else:
-        return argToBoolean(value)
-
-
 def parse_resource_ids(resource_id: str | None) -> list[str]:
     if resource_id is None:
         raise ValueError("Resource ID cannot be empty")
@@ -1353,7 +1337,10 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
         CommandResults: Command execution results with outputs and status
     """
     account_id: str = args.get("account_id", "")
-    credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if True else {}
+    credentials = {}
+    if not params:
+        credentials: dict = get_cloud_credentials(CloudTypes.AWS.value, account_id)
+        
     service_client, _ = get_service_client(credentials, params, args, command)
     return COMMANDS_MAPPING[command](service_client, args)
 
