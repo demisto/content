@@ -2991,10 +2991,7 @@ def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> Com
         "severity": "priority",
     }
 
-    qa_preview_data = {
-        new_key: ticket_data.get(old_key, {}).get("display_value")
-        for new_key, old_key in key_map.items()
-    }
+    qa_preview_data = {new_key: ticket_data.get(old_key, {}).get("display_value") for new_key, old_key in key_map.items()}
 
     qa_preview = QuickActionPreview(**qa_preview_data)
 

@@ -1642,7 +1642,7 @@ def create_issue_fields(
             continue
 
         final_value: Any = value
-        parsed = False # Flag to indicate if we have already parsed the value
+        parsed = False  # Flag to indicate if we have already parsed the value
 
         if issue_arg == "labels":
             final_value = argToList(value)
@@ -1669,13 +1669,9 @@ def create_issue_fields(
         if not dotted_string and issue_arg.startswith("customfield"):
             dotted_string = f"fields.{issue_arg}"
 
-        create_fields_dict_from_dotted_string(
-            issue_fields=issue_fields, dotted_string=dotted_string, value=final_value
-        )
+        create_fields_dict_from_dotted_string(issue_fields=issue_fields, dotted_string=dotted_string, value=final_value)
         if dotted_string:
-            create_fields_dict_from_dotted_string(
-                issue_fields=issue_fields, dotted_string=dotted_string, value=final_value
-            )
+            create_fields_dict_from_dotted_string(issue_fields=issue_fields, dotted_string=dotted_string, value=final_value)
         else:
             demisto.debug(f"WARNING: Skipping field '{issue_arg}' because it was not found in the issue fields mapper.")
     return issue_fields
@@ -1943,9 +1939,7 @@ def apply_issue_transition(
     transitions_name = [transition.get("name", "") for transition in all_transitions]
     for i, transition in enumerate(transitions_name):
         if transition.lower() == transition_name.lower():
-            json_data = {
-                "transition": {"id": str(all_transitions[i].get("id", ""))}
-            }
+            json_data = {"transition": {"id": str(all_transitions[i].get("id", ""))}}
             if issue_fields:
                 json_data.update(issue_fields)
             demisto.debug(f"Final JSON payload for transition API call: {json_data}")
@@ -4577,12 +4571,7 @@ def update_remote_system_command(
 
                 demisto.debug(f"Transitioning issue to '{delta['status']}' and updating fields: {issue_fields_payload}")
 
-                apply_issue_transition(
-                    client=client,
-                    issue_id_or_key=remote_id,
-                    transition_name=delta["status"],
-                    issue_fields={}
-                )
+                apply_issue_transition(client=client, issue_id_or_key=remote_id, transition_name=delta["status"], issue_fields={})
                 if issue_fields_payload:
                     client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields_payload)
 
