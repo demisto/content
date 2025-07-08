@@ -62,12 +62,13 @@ class Client(BaseClient):  # pragma: no cover
             raise e
 
     def get_incident(self, incident_id: int) -> dict[str, Any]:
+        demisto.debug(f"Test-IronScales: going in get_incident with incident_id = {incident_id}")
         return self._http_request(
             method="GET",
             url_suffix=f"/incident/{self.company_id}/details/{incident_id}",
         )
 
-    def get_incident_ids(self, start_time: datetime, max_fetch: int, last_id: Optional[int]) -> List[int]:
+    def get_incident_ids(self, start_time: datetime) -> List[int]:
         """
         Navigate to the correct endpoint
         """
@@ -182,7 +183,7 @@ class Client(BaseClient):  # pragma: no cover
             incidents_ids_sorted_by_time = [incident.get("incidentID") for incident in incidents_sorted_by_time]
             return incidents_ids_sorted_by_time
         except Exception as e:
-            # Do I want to catch
+            # Do I want to catch?
             demisto.debug(f"Test-IronScales: Exception message:{e}")
             raise Exception("An error occured in get_all_incident_ids. check logs to see why")
 
@@ -252,7 +253,7 @@ def get_incident_ids_to_fetch(
     demisto.debug(f"Test-IronScales: going in get_incident_ids_to_fetch with param: first_fetch = {str(first_fetch)},\
                   last_id = {str(last_id)},\
                   max_fetch = max_fetch")
-    incident_ids: List[int] = client.get_incident_ids(first_fetch, max_fetch, last_id)
+    incident_ids: List[int] = client.get_incident_ids(first_fetch)
     if not incident_ids:
         demisto.debug("Test-IronScales: no new incident! returning empty list")
         return []
