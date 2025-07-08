@@ -8494,3 +8494,540 @@ def test_show_jobs_id_not_found(patched_run_op_command):
 
     with pytest.raises(DemistoException, match="The given ID 23 is not found in all devices of the topology."):
         UniversalCommand.show_jobs(topology=MockTopology(), id=23)
+
+
+@patch("Panorama.TemplateStack.refreshall")
+@patch("Panorama.Template.refreshall")
+@patch("Panorama.run_op_command")
+def test_pan_os_get_certificate_info_command(
+    patched_run_op_command, template_refreshall, template_stack_refreshall, mocker: MockerFixture, requests_mock: RequestsMock
+):
+    """
+    Test pan-os-get-certificate-expiration command.
+
+    This test validates that:
+    1. The command correctly fetches certificates from Panorama devices
+    2. The command correctly fetches certificates from Firewall devices
+    3. The command correctly fetches predefined certificates
+    4. The command returns appropriate output
+    """
+
+    from Panorama import pan_os_get_certificate_info_command
+
+    def side_effect_func(device, cmd, **kwargs):
+        if cmd == "request certificate show":
+            return load_xml_root_from_test_file("test_data/request_certificate_show.xml")
+        elif cmd == "show config running":
+            return load_xml_root_from_test_file("test_data/show_running_config.xml")
+        elif cmd == "show config pushed-template":
+            return load_xml_root_from_test_file("test_data/show_config_pushed_template.xml")
+        else:
+            return None
+
+    mock_template = MagicMock(spec=Template)
+    mock_template.devices = []
+    template_refreshall.return_value = [mock_template]
+
+    mock_template_stack = MagicMock(spec=TemplateStack)
+    mock_template_stack.devices = [MOCK_FIREWALL_1_SERIAL]
+    template_stack_refreshall.return_value = [mock_template_stack]
+
+    patched_run_op_command.side_effect = side_effect_func
+
+    # # Mock Panorama device
+    mock_panorama = MagicMock(spec=Panorama)
+    mock_panorama.hostname = "panorama.test"
+    mock_panorama_devices = [mock_panorama]
+
+    # # Mock Firewall device
+    mock_firewall = MagicMock(spec=Firewall)
+    mock_firewall.serial = MOCK_FIREWALL_1_SERIAL
+    mock_firewall.parent = MagicMock(get=lambda x: "panorama.test" if x == "hostname" else None)
+    mock_firewall_devices = [mock_firewall]
+
+    # Mock empty topology
+    mock_topology = MagicMock()
+    mock_topology.panorama_devices.return_value = mock_panorama_devices
+    mock_topology.firewall_devices.return_value = mock_firewall_devices
+
+    Panorama.URL = "https://1.1.1.1:443/api/"
+
+    # Define output of http request to "/config/predefined/certificate"
+    with open("test_data/config_predefined_certificate.txt") as f:
+        requests_mock.get(Panorama.URL, text=f.read())
+
+    result = pan_os_get_certificate_info_command(topology=mock_topology, args={"show_expired_only": False})
+
+    assert isinstance(result, CommandResults)
+
+    assert result.outputs == load_json("test_data/get_certificate_info_command.json")
+
+
+class TestDynamicUpdateCommands:
+    @pytest.mark.parametrize(
+        "update_type_str, expected_api_call",
+        [
+            ("APP_THREAT", "<request><content><upgrade><download><latest/></download></upgrade></content></request>"),
+            ("ANTIVIRUS", "<request><anti-virus><upgrade><download><latest/></download></upgrade></anti-virus></request>"),
+            ("WILDFIRE", "<request><wildfire><upgrade><download><latest/></download></upgrade></wildfire></request>"),
+            (
+                "GP",
+                "<request><global-protect-clientless-vpn><upgrade><download><latest/></download></upgrade></global-protect-clientless-vpn></request>",
+            ),
+        ],
+    )
+    def test_download_latest_dynamic_update_content(self, update_type_str, expected_api_call, mocker):
+        """Test that for each dynamic update type, the correct API call is made.
+
+        Args:
+            update_type_str (str): Type of dynamic update to download.
+            expected_api_call (str): Expected API call to download the given update type.
+        """
+        from Panorama import panorama_download_latest_dynamic_update_content
+        from Panorama import DynamicUpdateType
+
+        update_type = getattr(DynamicUpdateType, update_type_str)
+        mock_request = mocker.patch("Panorama.http_request", return_value={})
+        panorama_download_latest_dynamic_update_content(update_type=update_type, target="1337")
+        request_call_args = mock_request.call_args[1]
+        assert request_call_args["body"]["cmd"] == expected_api_call
+
+    def test_panorama_check_latest_dynamic_update_command(self, mocker):
+        """test_panorama_check_latest_dynamic_update_command Test function to check current status of dynamic updates.
+
+        Test the function that gathers information on latest available and currently installed dynamic updates using
+        sample PAN-OS API responses to ensure the data is processed and the function returns the expected reaponse.
+        """
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        # Side-effect function to return the proper NGFW API response for the requested dynamic update type
+        def side_effect_function(update_type, target):
+            if update_type.name == "APP_THREAT":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_app-threat.json")
+
+            elif update_type.name == "ANTIVIRUS":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_antivirus.json")
+
+            elif update_type.name == "WILDFIRE":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_wildfire.json")
+
+            elif update_type.name == "GP":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_gp.json")
+
+            else:
+                return None
+
+        mock_api_call = mocker.patch("Panorama.panorama_check_latest_dynamic_update_content")
+        mock_api_call.side_effect = side_effect_function
+
+        mock_return_results = mocker.patch("Panorama.return_results")
+
+        panorama_check_latest_dynamic_update_command({"args": {"target": "1337"}})
+
+        # Prepare results for comparison
+        returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+        expected_returned_output = load_json("test_data/pan-os-check-latest-dynamic-update-status_expected-returned-outputs.json")
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n| Content | True | 8987-9481 | 8987-9481 |\n| "
+            "AntiVirus | False | 5212-5732 | 5211-5731 |\n| WildFire | False | 986250-990242 | 986026-990018 |\n| GP | "
+            "True | 98-260 | 98-260 |\n\n\n**Total Content Types Outdated: 2**"
+        )
+
+        assert returned_commandresults.outputs == expected_returned_output
+        assert returned_commandresults.readable_output == expected_returned_readable
+
+    @pytest.mark.parametrize(
+        "update_phase, job_id, api_response_payload",
+        [
+            (
+                "start-no-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Download job enqueued with jobid 1309"}, "job": "1309"},
+                    },
+                },
+            ),
+            (
+                "start-with-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Download job enqueued with jobid 1309"}, "job": "1309"},
+                    },
+                },
+            ),
+            (
+                "check",
+                "1309",
+                {
+                    "response": {
+                        "@status": "success",
+                        "result": {
+                            "job": {
+                                "tenq": "2025/06/15 10:55:53",
+                                "tdeq": "(null)",
+                                "id": "1311",
+                                "user": None,
+                                "type": "Downld",
+                                "status": "PEND",
+                                "queued": "YES",
+                                "stoppable": "yes",
+                                "result": "PEND",
+                                "tfin": None,
+                                "description": None,
+                                "positionInQ": "0",
+                                "progress": "0",
+                                "details": None,
+                                "warnings": None,
+                            }
+                        },
+                    },
+                },
+            ),
+            (
+                "finished",
+                "1309",
+                {
+                    "response": {
+                        "@status": "success",
+                        "result": {
+                            "job": {
+                                "tenq": "2025/06/15 10:34:51",
+                                "tdeq": "10:34:51",
+                                "id": "1309",
+                                "user": None,
+                                "type": "Downld",
+                                "status": "FIN",
+                                "queued": "NO",
+                                "stoppable": "no",
+                                "result": "OK",
+                                "tfin": "2025/06/15 10:34:53",
+                                "description": None,
+                                "positionInQ": "0",
+                                "progress": "2025/06/15 10:34:53",
+                                "details": {
+                                    "line": [
+                                        "File successfully downloaded",
+                                        "Successfully downloaded",
+                                        "Applications and Threats version: 8988-9483",
+                                    ]
+                                },
+                                "warnings": None,
+                            },
+                        },
+                    },
+                },
+            ),
+        ],
+    )
+    def test_panorama_download_latest_dynamic_update_command(self, update_phase, job_id, api_response_payload, mocker):
+        from Panorama import DynamicUpdateType
+        from Panorama import panorama_download_latest_dynamic_update_command
+        from CommonServerPython import ScheduledCommand
+
+        mocker.patch("Panorama.panorama_download_latest_dynamic_update_content", return_value=api_response_payload)
+        mocker.patch("Panorama.panorama_content_update_download_status", return_value=api_response_payload)
+
+        mock_command_return = mocker.patch("Panorama.return_results")
+
+        if update_phase == "start-no-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains job info with no subsquent scheduled command.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "polling": "false"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert returned_results.scheduled_command is None
+            assert returned_results.readable_output == "Content download JobID 1309 started on device 1337."
+
+        elif update_phase == "start-with-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains a ScheduledCommand object to poll for job status.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+
+        elif update_phase == "check":
+            """
+            Run the command as if a download has been started and check for the status of it.
+            Verify that when the API response shows that the job is still pending that a ScheduledCommand
+            object is returned to continue to poll for the download to complete.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            returned_results = mock_command_return.call_args[0][0]
+            assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+
+        elif update_phase == "finished":
+            """
+            Run the command as if a download has been completed.
+            Verify that when the API response shows the job is finished that the function returns a CommandResult
+            that includes the expected outputs and does not continue to poll.
+            """
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            returned_results = mock_command_return.call_args[0][0]
+
+            assert isinstance(returned_results, dict)
+            assert returned_results["Contents"] == {
+                "response": {
+                    "@status": "success",
+                    "result": {
+                        "job": {
+                            "tenq": "2025/06/15 10:34:51",
+                            "tdeq": "10:34:51",
+                            "id": "1309",
+                            "user": None,
+                            "type": "Downld",
+                            "status": "FIN",
+                            "queued": "NO",
+                            "stoppable": "no",
+                            "result": "OK",
+                            "tfin": "2025/06/15 10:34:53",
+                            "description": None,
+                            "positionInQ": "0",
+                            "progress": "2025/06/15 10:34:53",
+                            "details": {
+                                "line": [
+                                    "File successfully downloaded",
+                                    "Successfully downloaded",
+                                    "Applications and Threats version: 8988-9483",
+                                ]
+                            },
+                            "warnings": None,
+                        }
+                    },
+                }
+            }
+            assert (
+                returned_results["HumanReadable"]
+                == "### AntiVirus update download status:\n|JobID|Status|Details|\n|---|---|---|\n| 1309 | Completed |"
+                " tenq: 2025/06/15 10:34:51<br>tdeq: 10:34:51<br>id: 1309<br>user: null<br>type: Downld<br>status: "
+                "FIN<br>queued: NO<br>stoppable: no<br>result: OK<br>tfin: 2025/06/15 10:34:53<br>description: "
+                'null<br>positionInQ: 0<br>progress: 2025/06/15 10:34:53<br>details: {"line": '
+                '["File successfully downloaded", "Successfully downloaded", "Applications and '
+                'Threats version: 8988-9483"]}<br>warnings: null |\n'
+            )
+            assert returned_results["EntryContext"] == {
+                "Panorama.AntiVirus.Download(val.JobID == obj.JobID)": {
+                    "JobID": "1309",
+                    "Status": "Completed",
+                    "Details": {
+                        "tenq": "2025/06/15 10:34:51",
+                        "tdeq": "10:34:51",
+                        "id": "1309",
+                        "user": None,
+                        "type": "Downld",
+                        "status": "FIN",
+                        "queued": "NO",
+                        "stoppable": "no",
+                        "result": "OK",
+                        "tfin": "2025/06/15 10:34:53",
+                        "description": None,
+                        "positionInQ": "0",
+                        "progress": "2025/06/15 10:34:53",
+                        "details": {
+                            "line": [
+                                "File successfully downloaded",
+                                "Successfully downloaded",
+                                "Applications and Threats version: 8988-9483",
+                            ]
+                        },
+                        "warnings": None,
+                    },
+                }
+            }
+
+    @pytest.mark.parametrize(
+        "install_phase, job_id, api_response_payload",
+        [
+            (
+                "start-no-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Content install job enqueued with jobid 1318"}, "job": "1318"},
+                    }
+                },
+            ),
+            (
+                "start-with-polling",
+                "",
+                {
+                    "response": {
+                        "@status": "success",
+                        "@code": "19",
+                        "result": {"msg": {"line": "Content install job enqueued with jobid 1318"}, "job": "1318"},
+                    }
+                },
+            ),
+            (
+                "check",
+                "1318",
+                {
+                    "response": {
+                        "@status": "success",
+                        "result": {
+                            "job": {
+                                "tenq": "2025/06/15 12:43:29",
+                                "tdeq": "12:43:29",
+                                "id": "1318",
+                                "user": None,
+                                "type": "Antivirus",
+                                "status": "ACT",
+                                "queued": "NO",
+                                "stoppable": "no",
+                                "result": "PEND",
+                                "tfin": None,
+                                "description": None,
+                                "positionInQ": "0",
+                                "progress": "20",
+                                "warnings": None,
+                                "details": None,
+                            }
+                        },
+                    }
+                },
+            ),
+            (
+                "finished",
+                "1318",
+                {
+                    "response": {
+                        "@status": "success",
+                        "result": {
+                            "job": {
+                                "tenq": "2025/06/15 12:43:29",
+                                "tdeq": "12:43:29",
+                                "id": "1318",
+                                "user": "admin",
+                                "type": "Antivirus",
+                                "status": "FIN",
+                                "queued": "NO",
+                                "stoppable": "no",
+                                "result": "OK",
+                                "tfin": "2025/06/15 12:44:21",
+                                "description": None,
+                                "positionInQ": "0",
+                                "progress": "2025/06/15 12:44:21",
+                                "details": {"line": "Job completed successfully"},
+                                "warnings": None,
+                            }
+                        },
+                    }
+                },
+            ),
+        ],
+    )
+    def test_panorama_install_latest_dynamic_update_command(self, install_phase, job_id, api_response_payload, mocker):
+        from Panorama import DynamicUpdateType
+        from Panorama import panorama_install_latest_dynamic_update_command
+        from CommonServerPython import ScheduledCommand
+
+        mocker.patch("Panorama.panorama_install_latest_dynamic_update", return_value=api_response_payload)
+        mocker.patch("Panorama.panorama_content_update_install_status", return_value=api_response_payload)
+
+        mock_command_return = mocker.patch("Panorama.return_results")
+
+        if install_phase == "start-no-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains job info with no subsequent scheduled command.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "polling": "false"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert returned_results.scheduled_command is None
+            assert returned_results.readable_output == "Content install JobID 1318 started on device 1337."
+
+        elif install_phase == "start-with-polling":
+            """
+            Run the command for the first time, with an API response indicating the job has been enqueued.
+            Verify that the response contains a ScheduledCommand object to poll for job status.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
+            returned_results = mock_command_return.call_args[0][0]
+            assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+
+        elif install_phase == "check":
+            """
+            Run the command as if an install has been started and check for the status of it.
+            Verify that when the API response shows that the job is still pending that a ScheduledCommand
+            object is returned to continue to poll for the install to complete.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            returned_results = mock_command_return.call_args[0][0]
+            assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+
+        elif install_phase == "finished":
+            """
+            Run the command as if an install has been completed.
+            Verify that when the API response shows the job is finished that the function returns a CommandResult
+            that includes the expected outputs and does not continue to poll.
+            """
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            returned_results = mock_command_return.call_args[0][0]
+
+            assert isinstance(returned_results, dict)
+            assert returned_results["Contents"] == {
+                "response": {
+                    "@status": "success",
+                    "result": {
+                        "job": {
+                            "tenq": "2025/06/15 12:43:29",
+                            "tdeq": "12:43:29",
+                            "id": "1318",
+                            "user": "admin",
+                            "type": "Antivirus",
+                            "status": "FIN",
+                            "queued": "NO",
+                            "stoppable": "no",
+                            "result": "OK",
+                            "tfin": "2025/06/15 12:44:21",
+                            "description": None,
+                            "positionInQ": "0",
+                            "progress": "2025/06/15 12:44:21",
+                            "details": {"line": "Job completed successfully"},
+                            "warnings": None,
+                        }
+                    },
+                }
+            }
+            assert (
+                returned_results["HumanReadable"]
+                == "### AntiVirus update install status:\n|JobID|Status|Details|\n|---|---|---|\n| 1318 | Completed | "
+                "tenq: 2025/06/15 12:43:29<br>tdeq: 12:43:29<br>id: 1318<br>user: admin<br>type: Antivirus<br>"
+                "status: FIN<br>queued: NO<br>stoppable: no<br>result: OK<br>tfin: 2025/06/15 12:44:21<br>"
+                'description: null<br>positionInQ: 0<br>progress: 2025/06/15 12:44:21<br>details: {"line": '
+                '"Job completed successfully"}<br>warnings: null |\n'
+            )
+            assert returned_results["EntryContext"] == {
+                "Panorama.AntiVirus.Install(val.JobID == obj.JobID)": {
+                    "JobID": "1318",
+                    "Status": "Completed",
+                    "Details": {
+                        "tenq": "2025/06/15 12:43:29",
+                        "tdeq": "12:43:29",
+                        "id": "1318",
+                        "user": "admin",
+                        "type": "Antivirus",
+                        "status": "FIN",
+                        "queued": "NO",
+                        "stoppable": "no",
+                        "result": "OK",
+                        "tfin": "2025/06/15 12:44:21",
+                        "description": None,
+                        "positionInQ": "0",
+                        "progress": "2025/06/15 12:44:21",
+                        "details": {"line": "Job completed successfully"},
+                        "warnings": None,
+                    },
+                }
+            }
