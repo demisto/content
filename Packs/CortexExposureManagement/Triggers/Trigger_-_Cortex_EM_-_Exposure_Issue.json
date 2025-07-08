@@ -43,14 +43,54 @@
                 {
                     "OR": [
                         {
-                            "SEARCH_FIELD": "alert_source",
+                            "SEARCH_FIELD": "xdm.finding_sources",
                             "SEARCH_TYPE": "EQ",
-                            "SEARCH_VALUE": "XPANSE"
+                            "SEARCH_VALUE": "CORTEX_AGENTLESS_SCANNER"
                         },
                         {
-                            "SEARCH_FIELD": "alert_source",
+                            "SEARCH_FIELD": "xdm.finding_sources",
                             "SEARCH_TYPE": "EQ",
-                            "SEARCH_VALUE": "VULNERABILITY_POLICY"
+                            "SEARCH_VALUE": "CORTEX_AGENT"
+                        },
+                        {
+                            "SEARCH_FIELD": "xdm.finding_sources",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "CORTEX_ATTACK_SURFACE_MANAGEMENT"
+                        },
+                        {
+                            "SEARCH_FIELD": "xdm.finding_sources",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "CORTEX_ATTACK_SURFACE_TESTING"
+                        },
+                        {
+                            "SEARCH_FIELD": "xdm.finding_sources",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "CORTEX_NETWORK_SCANNER"
+                        },
+                        {
+                            "SEARCH_FIELD": "xdm.finding_sources",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "QUALYS"
+                        },
+                        {
+                            "SEARCH_FIELD": "xdm.finding_sources",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "TENABLE"
+                        },
+                        {
+                            "SEARCH_FIELD": "xdm.finding_sources",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "CORTEX_CONTAINER_REGISTRY_SCANNER"
+                        },
+                        {
+                            "SEARCH_FIELD": "xdm.finding_sources",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "CORTEX_SERVERLESS_FUNCTION_SCANNER"
+                        },
+                        {
+                            "SEARCH_FIELD": "xdm.finding_sources",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "CORTEX_CLI_SCANNER"
                         }
                     ]
                 }

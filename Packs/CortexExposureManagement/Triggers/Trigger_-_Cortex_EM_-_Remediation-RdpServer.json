@@ -21,11 +21,6 @@
                             "SEARCH_FIELD": "alert_category",
                             "SEARCH_TYPE": "EQ",
                             "SEARCH_VALUE": "CONFIGURATION"
-                        },
-                        {
-                            "SEARCH_FIELD": "alert_source",
-                            "SEARCH_TYPE": "EQ",
-                            "SEARCH_VALUE": "XPANSE"
                         }
             ]
         }
