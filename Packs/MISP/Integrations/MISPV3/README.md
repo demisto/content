@@ -4389,3 +4389,55 @@ Gets all warninglists from MISP
 >|---|---|---|---|---|---|---|---|---|---|
 >| 1 | List | string | An example list | 1 | true | true | false_positive | 2 | hostname |
 >| 2 | Another list | cidr | An example of another list | 42 | false | false | false_positive | 20 | url |
+
+### misp-get-warninglist
+
+***
+Get a specific warninglist by its ID.
+
+#### Base Command
+
+`misp-get-warninglist`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the warninglist. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Warninglist.ID | number | The ID of the warninglist |
+| MISP.Warninglist.Name | string | The warninglist's name |
+| MISP.Warninglist.Type | string | MISP warninglist type |
+| MISP.Warninglist.Description | string | Description of the warninglist |
+| MISP.Warninglist.Version | number | The warninglist version number |
+| MISP.Warninglist.Enabled | boolean | Is the MISP warninglist enabled/disabled? |
+| MISP.Warninglist.Default | boolean | Is the MISP warninglist set as default? |
+| MISP.Warninglist.Category | string | The category of the MISP warninglist |
+| MISP.Warninglist.Entries | unknown | The warninglist entries |
+| MISP.Warninglist.ValidAttributes| unknown | The valid attribute types for this warninglist |
+
+#### Command Example
+
+```!misp-get-warninglist id=1234```
+
+#### Human Readable Output
+
+>### MISP Warninglist
+>
+>|ID|Name|Type|Description}Version|Enabled|Default|Category|
+>|---|---|---|---|---|---|---|---|
+>| 1234 | Example List Name | string | An example of a warninglist in MISP | 1 | true | true | false_positive |
+>
+>### Entries in MISP Warninglist
+>|ID|Value|Description|
+>|---|---|---|
+>|123| hostname.example.local | An example of a hostname |
+>
+>### Valid Attributes in MISP Warninglist
+>|ID|Type|
+>|---|---|
+>|987|hostname|

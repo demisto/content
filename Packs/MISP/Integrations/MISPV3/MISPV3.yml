@@ -2737,6 +2737,41 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
+  - arguments:
+    - description: ID of the warninglist
+      name: id
+      required: true
+    description: Get a specific warninglist by its ID.
+    name: misp-get-warninglist
+    outputs:
+    - contextPath: MISP.Warninglist.ID
+      description: The ID of the warninglist
+      type: number
+    - contextPath: MISP.Warninglist.Name
+      description: The warninglist's name
+      type: string
+    - contextPath: MISP.Warninglist.Type
+      description: MISP warninglist type
+      type: string
+    - contextPath: MISP.Warninglist.Description
+      description: Description of the warninglist
+      type: string
+    - contextPath: MISP.Warninglist.Version
+      description: The warninglist version number
+      type: number
+    - contextPath: MISP.Warninglist.Enabled
+      description: Is the MISP warninglist enabled/disabled?
+      type: boolean
+    - contextPath: MISP.Warninglist.Default
+      description: Is the MISP warninglist set as default?
+      type: boolean
+    - contextPath: MISP.Warninglist.Category
+      description: The category of the MISP warninglist
+      type: string
+    - contextPath: MISP.Warninglist.Entries
+      description: The warninglist entries
+    - contextPath: MISP.Warninglist.ValidAttributes
+      description: The valid attribute types for this warninglist
   - arguments: []
     description: Gets all warninglists from MISP
     name: misp-get-warninglists
