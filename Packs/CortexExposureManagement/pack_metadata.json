@@ -53,5 +53,5 @@
     "itemPrefix": [
         "EM"
     ],
-    "supportedModules": []
+    "supportedModules": ["email_security"]
 }
