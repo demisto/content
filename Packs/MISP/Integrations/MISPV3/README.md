@@ -4350,6 +4350,7 @@ Display role names and role ids.
 >|id|name|
 >|---|---|
 >| 1 | rolename |
+>
 ### misp-get-warninglists
 
 ***
@@ -4429,6 +4430,7 @@ This command only changes the values supplied through the parameters of this com
 ```!misp-change-warninglist id=1234 name="Changed list name" version=20250708 values="1.2.3.4,5.6.7.8" types="ip-src,ip-dst"```
 
 #### Human Readable Output
+>
 >### MISP Warninglist
 >
 >|ID|Name|Type|Description}Version|Enabled|Default|Category|
@@ -4436,11 +4438,13 @@ This command only changes the values supplied through the parameters of this com
 >| 1234 | Changed list name | string | An example of an existing description | 1 | true | true | false_positive |
 >
 >### Entries in MISP Warninglist
+>
 >|Value|
 >|---|
 >|1.1.1.1 |
 >
 >### Valid Attributes in MISP Warninglist
+>
 >|ID|Type|
 >|---|---|
 >|987|ip-src|
