@@ -1623,9 +1623,10 @@ def test_polling_args_command(args: dict, client: Client):
     if rows >= 5:
         return PollResult(continue_to_poll=False, response=CommandResults(readable_output=f"Polling finished at rows={rows}"))
 
-    rows = rows + 1
+    rows += 1
     args_for_next_run = {"rows": rows}
     print(f"{args_for_next_run=}")
+    
     return PollResult(
         continue_to_poll=True,
         args_for_next_run=args_for_next_run,
