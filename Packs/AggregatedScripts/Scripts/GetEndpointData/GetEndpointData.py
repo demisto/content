@@ -1,13 +1,34 @@
 from collections.abc import Callable
 from itertools import zip_longest
 from typing import Any
+from enum import Enum
 
 from CommonServerPython import *
 
 
-GENERIC_COMMAND_BRAND = "Generic Command"
 COMMAND_SUCCESS_MSG = "Command successful"
 COMMAND_FAILED_MSG = "Command failed - no endpoint found"
+
+
+class Brands(Enum):
+    """
+    Enum representing different integration brands.
+    """
+
+    ACTIVE_DIRECTORY_QUERY_V2 = "Active Directory Query v2"
+    MCAFEE_EPO_V2 = "McAfee ePO v2"
+    CROWDSTRIKE_FALCON = "CrowdstrikeFalcon"
+    CORTEX_XDR_IR = "Cortex XDR - IR"
+    CORTEX_CORE_IR = "Cortex Core - IR"
+    FIREEYE_HX_V2 = "FireEyeHX v2"
+    GENERIC_COMMAND = "Generic Command"
+
+    @classmethod
+    def get_all_values(cls) -> list[str]:
+        """
+        Returns a list of all string values defined in the Enum.
+        """
+        return [member.value for member in cls]
 
 
 class Command:
@@ -20,7 +41,7 @@ class Command:
         output_mapping: dict | Callable,
         not_found_checker: str = "No entries.",
         prepare_args_mapping: Callable[[dict[str, str]], dict[str, str]] | None = None,
-        post_processing: Callable[[list[dict[str, Any]], dict[str, str]], list[dict[str, Any]]] | None = None,
+        post_processing: Callable[[Any, list[dict[str, Any]], dict[str, str]], list[dict[str, Any]]] | None = None,
     ):
         """
         Initialize a MappedCommand object.
@@ -44,11 +65,6 @@ class Command:
         self.not_found_checker = not_found_checker
         self.prepare_args_mapping = prepare_args_mapping
         self.post_processing = post_processing
-
-        if not self.args_mapping and prepare_args_mapping is None:
-            raise ValueError(
-                "Either 'args_mapping' must be provided (not empty) or 'prepare_args_mapping' must be provided (not None)."
-            )
 
     def __repr__(self):
         return f"{{ name: {self.name}, brand: {self.brand} }}"
@@ -75,7 +91,7 @@ class ModuleManager:
         self._brands_to_run = brands_to_run
         self._enabled_brands = {
             module.get("brand") for module in self.modules_context.values() if module.get("state") == "active"
-        } | {GENERIC_COMMAND_BRAND}
+        } | {Brands.GENERIC_COMMAND.value}
 
     def is_brand_in_brands_to_run(self, command: Command) -> bool:
         """
@@ -228,7 +244,7 @@ class EndpointCommandRunner:
 
         if command.post_processing:
             demisto.debug(f"command with post processing: {command.name}")
-            endpoints = command.post_processing(endpoints, endpoint_args)
+            endpoints = command.post_processing(self, endpoints, endpoint_args)
 
         return human_readable, endpoints
 
@@ -421,7 +437,7 @@ def initialize_commands(
 
     single_args_commands = [
         Command(
-            brand="Cortex Core - IR",
+            brand=Brands.CORTEX_CORE_IR.value,
             name="core-get-endpoints",
             output_keys=["Endpoint", "Account", "Core.Endpoint"],
             args_mapping={"endpoint_id_list": "endpoint_id", "ip_list": "endpoint_ip", "hostname": "endpoint_hostname"},
@@ -434,7 +450,7 @@ def initialize_commands(
             },
         ),
         Command(
-            brand=GENERIC_COMMAND_BRAND,
+            brand=Brands.GENERIC_COMMAND.value,
             name="endpoint",
             output_keys=["Endpoint"],
             args_mapping={"id": "endpoint_id", "ip": "endpoint_ip", "hostname": "endpoint_hostname"},
@@ -446,9 +462,10 @@ def initialize_commands(
                 "IsIsolated": "IsIsolated",
                 "Vendor": "Brand",
             },
+            post_processing=generic_endpint_post,
         ),
         Command(
-            brand="Active Directory Query v2",
+            brand=Brands.ACTIVE_DIRECTORY_QUERY_V2.value,
             name="ad-get-computer",
             output_keys=["Endpoint", "ActiveDirectory.Computers"],
             args_mapping={"name": "endpoint_hostname"},
@@ -456,7 +473,7 @@ def initialize_commands(
             post_processing=active_directory_post,
         ),
         Command(
-            brand="McAfee ePO v2",
+            brand=Brands.MCAFEE_EPO_V2.value,
             name="epo-find-system",
             output_keys=["Endpoint", "McAfee.ePO.Endpoint"],
             args_mapping={},
@@ -465,7 +482,7 @@ def initialize_commands(
             not_found_checker="No systems found",
         ),
         Command(
-            brand="Cortex XDR - IR",
+            brand=Brands.CORTEX_XDR_IR.value,
             name="xdr-list-risky-hosts",
             output_keys=["PaloAltoNetworksXDR.RiskyHost"],
             args_mapping={"host_id": "endpoint_id"},
@@ -473,7 +490,7 @@ def initialize_commands(
             not_found_checker="was not found",
         ),
         Command(
-            brand="FireEyeHX v2",
+            brand=Brands.FIREEYE_HX_V2.value,
             name="fireeye-hx-get-host-information",
             output_keys=["FireEyeHX.Hosts"],
             args_mapping={"agentId": "endpoint_id", "hostName": "endpoint_hostname"},
@@ -489,7 +506,7 @@ def initialize_commands(
 
     list_args_commands = [
         Command(
-            brand="Cortex XDR - IR",
+            brand=Brands.CORTEX_XDR_IR.value,
             name="xdr-get-endpoints",
             output_keys=["Endpoint", "PaloAltoNetworksXDR.Endpoint"],
             args_mapping={"endpoint_id_list": "endpoint_id", "ip_list": "endpoint_ip", "hostname": "endpoint_hostname"},
@@ -502,14 +519,14 @@ def initialize_commands(
             },
         ),
         Command(
-            brand="Cortex Core - IR",
+            brand=Brands.CORTEX_CORE_IR.value,
             name="core-list-risky-hosts",
             output_keys=["Endpoint"],
             args_mapping={"host_id": "endpoint_id"},
             output_mapping={"id": "ID"},
         ),
         Command(
-            brand="CrowdstrikeFalcon",
+            brand=Brands.CROWDSTRIKE_FALCON.value,
             name="cs-falcon-search-device",
             output_keys=["Endpoint", "CrowdStrike.Device"],
             args_mapping={"ids": "endpoint_id", "hostname": "endpoint_hostname"},
@@ -680,7 +697,7 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
 
 
 def hr_to_command_results(
-    command_name: str, args: dict[str, Any], human_readable: str, entry_type: str = EntryType.NOTE
+    command_name: str, args: dict[str, Any], human_readable: str, entry_type: int = EntryType.NOTE
 ) -> CommandResults | None:
     """
     Converts human-readable output to CommandResults object for display in Demisto.
@@ -698,13 +715,13 @@ def hr_to_command_results(
         CommandResults | None: A CommandResults object with formatted output, or None if no human_readable text provided.
     """
     status_map = {
-        EntryType.ERROR: 'Error',
-        EntryType.WARNING: 'Warning',
+        EntryType.ERROR: "Error",
+        EntryType.WARNING: "Warning",
     }
     result = None
     if human_readable:
         command = f'!{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
-        result_message = f"#### {status_map.get(entry_type, "Result")} for {command}\n{human_readable}"
+        result_message = f"#### {status_map.get(entry_type, 'Result')} for {command}\n{human_readable}"
         result = CommandResults(readable_output=result_message, entry_type=entry_type, mark_as_note=True)
     return result
 
@@ -913,7 +930,9 @@ def get_endpoints_not_found_list(endpoints: list[dict[str, Any]], zipped_args: l
     return endpoints_not_found
 
 
-def active_directory_post(endpoints: list[dict[str, Any]], args: dict[str, Any]) -> list[dict[str, Any]]:
+def active_directory_post(
+    self: EndpointCommandRunner, endpoints: list[dict[str, Any]], args: dict[str, Any]
+) -> list[dict[str, Any]]:
     fixed_endpoints = []
     for endpoint in endpoints:
         endpoint_hostname = endpoint["Hostname"]
@@ -925,6 +944,20 @@ def active_directory_post(endpoints: list[dict[str, Any]], args: dict[str, Any])
         else:
             raise ValueError("Invalid hostname")
     return fixed_endpoints
+
+
+def generic_endpint_post(
+    self: EndpointCommandRunner, endpoints: list[dict[str, Any]], args: dict[str, Any]
+) -> list[dict[str, Any]]:
+    endpoints_to_return = []
+    for endpoint in endpoints:
+        brand = endpoint["Brand"]
+        if brand in Brands.get_all_values() and self.module_manager.is_brand_available(Command(brand, "", [], {}, {})):
+            # If the brand is in the brands, we dno't need if from the generic command
+            demisto.debug(f"Skipping generic endpoint with brand: '{brand}'")
+        else:
+            endpoints_to_return.append(endpoint)
+    return endpoints_to_return
 
 
 """ MAIN FUNCTION """
