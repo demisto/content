@@ -1907,7 +1907,7 @@ def get_warninglists_command(demisto_args: dict) -> CommandResults:
     warninglists_output = []
     for iter in response:
         res = {}
-        warninglist = iter["Warninglist"]  # type: ignore
+        warninglist: dict = iter["Warninglist"]  # type: ignore
         res["ID"] = warninglist.get("id")
         res["Name"] = warninglist.get("name")
         res["Type"] = warninglist.get("type")
