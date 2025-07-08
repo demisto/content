@@ -113,7 +113,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
 
     @abstractmethod
-    def test_instance_connection(self) -> None:
+    def jira_test_instance_connection(self) -> None:
         """This method is used to test the connectivity of each instance, each child will implement
         their own connectivity test
         """
@@ -909,7 +909,7 @@ class JiraCloudClient(JiraBaseClient):
             pat=pat,
         )
 
-    def test_instance_connection(self) -> None:
+    def jira_test_instance_connection(self) -> None:
         self.get_user_info()
 
     def oauth_start(self) -> str:
@@ -1190,7 +1190,7 @@ class JiraOnPremClient(JiraBaseClient):
         integration_context |= new_authorization_context
         set_integration_context(integration_context)
 
-    def test_instance_connection(self) -> None:
+    def jira_test_instance_connection(self) -> None:
         self.get_user_info()
 
     def get_attachment_content(self, attachment_id: str = "", attachment_content_url: str = "") -> str:
@@ -3460,7 +3460,7 @@ def oauth_complete_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comm
     )
 
 
-def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+def jira_test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
     """This command is used to test the connectivity of the Jira instance configured.
 
     Args:
@@ -3470,17 +3470,17 @@ def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    client.test_instance_connection()
+    client.jira_test_instance_connection()
     return CommandResults(readable_output="Successful connection.")
 
 
-def test_module(client: JiraBaseClient) -> str:
+def jira_test_module(client: JiraBaseClient) -> str:
     """This method will return an error since in order for the user to test the connectivity of the instance,
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
     if client.is_basic_auth or client.is_pat_auth:
-        client.test_instance_connection()  # raises on failure
+        client.jira_test_instance_connection()  # raises on failure
         return "ok"
     else:
         raise DemistoException(
@@ -4531,7 +4531,6 @@ def update_remote_system_command(
     )
     try:
         if delta and remote_args.incident_changed:
-            demisto.debug(f"Got the following delta object: {delta}")
             demisto.debug(f"Got the following delta keys {list(delta.keys())} to update JiraV3 Incident {remote_id}")
             # take the val from data as it's the updated value
             delta = {k: remote_args.data.get(k) for k in delta}
@@ -4574,6 +4573,7 @@ def update_remote_system_command(
             demisto.debug("Updated the entries (attachments and/or comments) of the remote system successfully")
     except Exception as e:
         demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \nError message: {e!s}")
+        return_error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id}", error=e)
     finally:
         return remote_id
 
@@ -4702,7 +4702,7 @@ def main():  # pragma: no cover
     commands: Dict[str, Callable] = {
         "jira-oauth-start": ouath_start_command,
         "jira-oauth-complete": oauth_complete_command,
-        "jira-oauth-test": test_authorization,
+        "jira-oauth-test": jira_test_authorization,
         "jira-get-comments": get_comments_command,
         "jira-get-issue": get_issue_command,
         "jira-create-issue": create_issue_command,
