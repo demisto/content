@@ -81,9 +81,16 @@ configuration:
   display: Tags
   type: 0
   additionalinfo: Supports CSV values.
-- name: tlp_color
-  display: Traffic Light Protocol Color
+- display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
   type: 15
+  required: false
+  section: Collect
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 description: Threat Intelligence Feeds provide data on the known indicators of compromise such as malicious IPs, URLs, Domains.
 display: ANY.RUN TI Feeds
