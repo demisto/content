@@ -281,113 +281,114 @@ def test_compute_subnet_update_private_access(mocker):
     )
 
 
-def test_compute_instance_metadata_add_new_item(mocker):
-    """
-    Given: Project metadata needs to be updated with a new key-value pair
-    When: compute_instance_metadata_add is called with new metadata
-    Then: The function should add the new item to existing metadata and call setMetadata with the updated list
-    """
-    from GCP import compute_instance_metadata_add
-
-    # Mock arguments
-    args = {
-        "project_id": "test-project",
-        "zone": "us-central1-c",
-        "resource_name": "gke-test-instance",
-        "metadata": "key=enable-oslogin,value=true",
-    }
-
-    # Mock credentials
-    mock_creds = mocker.Mock(spec=Credentials)
-
-    # Setup mock instance and response
-    mock_instance = {
-        "metadata": {"fingerprint": "test-fingerprint", "items": [{"key": "existing-key", "value": "existing-value"}]}
-    }
-
-    mock_response = {"id": "operation-123", "name": "operation-name", "status": "RUNNING"}
-
-    # Use MagicMock for compute
-    mock_compute = MagicMock()
-    mock_compute.instances().get().execute.return_value = mock_instance
-    mock_compute.instances().setMetadata().execute.return_value = mock_response
-
-    mocker.patch("GCP.build", return_value=mock_compute)
-
-    # Execute the function
-    result = compute_instance_metadata_add(mock_creds, args)
-
-    # Check call to setMetadata with correct body
-    called_args, called_kwargs = mock_compute.instances().setMetadata.call_args
-
-    assert called_kwargs["project"] == "test-project"
-    assert called_kwargs["zone"] == "us-central1-c"
-    assert called_kwargs["instance"] == "gke-test-instance"
-
-    # Check body has expected items
-    body = called_kwargs["body"]
-    assert body["fingerprint"] == "test-fingerprint"
-
-    # Convert items to dict for easier comparison
-    items_dict = {item["key"]: item["value"] for item in body["items"]}
-    assert items_dict["existing-key"] == "existing-value"
-    assert items_dict["enable-oslogin"] == "true"
-
-    # Check outputs
-    assert result.outputs_prefix == "GCP.Compute.Operations"
-    assert result.outputs == mock_response
-
-
-def test_compute_instance_metadata_add_update_existing(mocker):
-    """
-    Given: Project metadata needs to be updated where a key already exists
-    When: compute_instance_metadata_add is called with metadata containing an existing key
-    Then: The function should update the value of the existing key and preserve other metadata
-    """
-    from GCP import compute_instance_metadata_add
-
-    # Mock arguments
-    args = {
-        "project_id": "test-project",
-        "zone": "us-central1-c",
-        "resource_name": "gke-test-instance",
-        "metadata": "key=enable-oslogin,value=false;key=new-key,value=new-value",
-    }
-
-    # Mock credentials
-    mock_creds = mocker.Mock(spec=Credentials)
-
-    # Setup mock instance and response
-    mock_instance = {
-        "metadata": {
-            "fingerprint": "test-fingerprint",
-            "items": [{"key": "enable-oslogin", "value": "true"}, {"key": "existing-key", "value": "existing-value"}],
-        }
-    }
-
-    mock_response = {"id": "operation-123", "name": "operation-name", "status": "RUNNING"}
-
-    # Use MagicMock for compute
-    mock_compute = MagicMock()
-    mock_compute.instances().get().execute.return_value = mock_instance
-    mock_compute.instances().setMetadata().execute.return_value = mock_response
-
-    mocker.patch("GCP.build", return_value=mock_compute)
-
-    # Execute the function
-    result = compute_instance_metadata_add(mock_creds, args)
-
-    # Check body has expected items
-    called_args, called_kwargs = mock_compute.instances().setMetadata.call_args
-    body = called_kwargs["body"]
-
-    # Convert items to dict for easier comparison
-    items_dict = {item["key"]: item["value"] for item in body["items"]}
-    assert items_dict["enable-oslogin"] == "false"  # Should be updated
-    assert items_dict["existing-key"] == "existing-value"  # Should remain unchanged
-    assert items_dict["new-key"] == "new-value"  # Should be added
-
-    assert result.outputs == mock_response
+#
+# def test_compute_instance_metadata_add_new_item(mocker):
+#     """
+#     Given: Project metadata needs to be updated with a new key-value pair
+#     When: compute_instance_metadata_add is called with new metadata
+#     Then: The function should add the new item to existing metadata and call setMetadata with the updated list
+#     """
+#     from GCP import compute_instance_metadata_add
+#
+#     # Mock arguments
+#     args = {
+#         "project_id": "test-project",
+#         "zone": "us-central1-c",
+#         "resource_name": "gke-test-instance",
+#         "metadata": "key=enable-oslogin,value=true",
+#     }
+#
+#     # Mock credentials
+#     mock_creds = mocker.Mock(spec=Credentials)
+#
+#     # Setup mock instance and response
+#     mock_instance = {
+#         "metadata": {"fingerprint": "test-fingerprint", "items": [{"key": "existing-key", "value": "existing-value"}]}
+#     }
+#
+#     mock_response = {"id": "operation-123", "name": "operation-name", "status": "RUNNING"}
+#
+#     # Use MagicMock for compute
+#     mock_compute = MagicMock()
+#     mock_compute.instances().get().execute.return_value = mock_instance
+#     mock_compute.instances().setMetadata().execute.return_value = mock_response
+#
+#     mocker.patch("GCP.build", return_value=mock_compute)
+#
+#     # Execute the function
+#     result = compute_instance_metadata_add(mock_creds, args)
+#
+#     # Check call to setMetadata with correct body
+#     called_args, called_kwargs = mock_compute.instances().setMetadata.call_args
+#
+#     assert called_kwargs["project"] == "test-project"
+#     assert called_kwargs["zone"] == "us-central1-c"
+#     assert called_kwargs["instance"] == "gke-test-instance"
+#
+#     # Check body has expected items
+#     body = called_kwargs["body"]
+#     assert body["fingerprint"] == "test-fingerprint"
+#
+#     # Convert items to dict for easier comparison
+#     items_dict = {item["key"]: item["value"] for item in body["items"]}
+#     assert items_dict["existing-key"] == "existing-value"
+#     assert items_dict["enable-oslogin"] == "true"
+#
+#     # Check outputs
+#     assert result.outputs_prefix == "GCP.Compute.Operations"
+#     assert result.outputs == mock_response
+#
+#
+# def test_compute_instance_metadata_add_update_existing(mocker):
+#     """
+#     Given: Project metadata needs to be updated where a key already exists
+#     When: compute_instance_metadata_add is called with metadata containing an existing key
+#     Then: The function should update the value of the existing key and preserve other metadata
+#     """
+#     from GCP import compute_instance_metadata_add
+#
+#     # Mock arguments
+#     args = {
+#         "project_id": "test-project",
+#         "zone": "us-central1-c",
+#         "resource_name": "gke-test-instance",
+#         "metadata": "key=enable-oslogin,value=false;key=new-key,value=new-value",
+#     }
+#
+#     # Mock credentials
+#     mock_creds = mocker.Mock(spec=Credentials)
+#
+#     # Setup mock instance and response
+#     mock_instance = {
+#         "metadata": {
+#             "fingerprint": "test-fingerprint",
+#             "items": [{"key": "enable-oslogin", "value": "true"}, {"key": "existing-key", "value": "existing-value"}],
+#         }
+#     }
+#
+#     mock_response = {"id": "operation-123", "name": "operation-name", "status": "RUNNING"}
+#
+#     # Use MagicMock for compute
+#     mock_compute = MagicMock()
+#     mock_compute.instances().get().execute.return_value = mock_instance
+#     mock_compute.instances().setMetadata().execute.return_value = mock_response
+#
+#     mocker.patch("GCP.build", return_value=mock_compute)
+#
+#     # Execute the function
+#     result = compute_instance_metadata_add(mock_creds, args)
+#
+#     # Check body has expected items
+#     called_args, called_kwargs = mock_compute.instances().setMetadata.call_args
+#     body = called_kwargs["body"]
+#
+#     # Convert items to dict for easier comparison
+#     items_dict = {item["key"]: item["value"] for item in body["items"]}
+#     assert items_dict["enable-oslogin"] == "false"  # Should be updated
+#     assert items_dict["existing-key"] == "existing-value"  # Should remain unchanged
+#     assert items_dict["new-key"] == "new-value"  # Should be added
+#
+#     assert result.outputs == mock_response
 
 
 def test_container_cluster_security_update_master_auth_networks(mocker):

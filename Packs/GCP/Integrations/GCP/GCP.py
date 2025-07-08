@@ -144,10 +144,6 @@ COMMAND_REQUIREMENTS = {
             "compute.subnetworks.list",
         ],
     ),
-    "gcp-compute-instance-metadata-add": (
-        GCPServices.COMPUTE,
-        ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list", "iam.serviceAccounts.actAs"],
-    ),
     "gcp-compute-instance-service-account-set": (
         GCPServices.COMPUTE,
         ["compute.instances.setServiceAccount", "compute.instances.get"],
@@ -169,6 +165,10 @@ COMMAND_REQUIREMENTS = {
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     ),
     # The following commands are currently unsupported:
+    # "gcp-compute-instance-metadata-add": (
+    #     GCPServices.COMPUTE,
+    #     ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list", "iam.serviceAccounts.actAs"],
+    # ),
     # "gcp-iam-project-deny-policy-create": (
     #     GCPServices.IAM_V2,
     #     ["iam.denypolicies.create"]
@@ -429,51 +429,51 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=[response_patch, response_set])
 
 
-def compute_instance_metadata_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-    """
-    Adds metadata key-value pairs to a GCE instance.
-
-    Args:
-        creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and 'metadata' in key=value format.
-
-    Returns:
-        CommandResults: Result of the metadata update operation.
-    """
-    project_id = args.get("project_id")
-    zone = extract_zone_name(args.get("zone"))
-    resource_name = args.get("resource_name")
-    metadata_str: str = args.get("metadata", "")
-    compute = GCPServices.COMPUTE.build(creds)
-
-    instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
-    fingerprint = instance.get("metadata", {}).get("fingerprint")
-    existing_items = instance.get("metadata", {}).get("items", [])
-    existing_metadata = {item["key"]: item["value"] for item in existing_items}
-
-    new_items = parse_metadata_items(metadata_str)
-    for item in new_items:
-        existing_metadata[item["key"]] = item["value"]
-
-    body = {"fingerprint": fingerprint, "items": [{"key": k, "value": v} for k, v in existing_metadata.items()]}
-    response = (
-        compute.instances()  # pylint: disable=E1101
-        .setMetadata(
-            project=project_id,
-            zone=zone,
-            instance=resource_name,
-            body=body,
-        )
-        .execute()
-    )
-
-    hr = tableToMarkdown(
-        "Google Cloud Compute Project Metadata Update Operation Started Successfully",
-        t=response,
-        headers=OPERATION_TABLE,
-        removeNull=True,
-    )
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+# def compute_instance_metadata_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+#     """
+#     Adds metadata key-value pairs to a GCE instance.
+#
+#     Args:
+#         creds (Credentials): GCP credentials.
+#         args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and 'metadata' in key=value format.
+#
+#     Returns:
+#         CommandResults: Result of the metadata update operation.
+#     """
+#     project_id = args.get("project_id")
+#     zone = extract_zone_name(args.get("zone"))
+#     resource_name = args.get("resource_name")
+#     metadata_str: str = args.get("metadata", "")
+#     compute = GCPServices.COMPUTE.build(creds)
+#
+#     instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
+#     fingerprint = instance.get("metadata", {}).get("fingerprint")
+#     existing_items = instance.get("metadata", {}).get("items", [])
+#     existing_metadata = {item["key"]: item["value"] for item in existing_items}
+#
+#     new_items = parse_metadata_items(metadata_str)
+#     for item in new_items:
+#         existing_metadata[item["key"]] = item["value"]
+#
+#     body = {"fingerprint": fingerprint, "items": [{"key": k, "value": v} for k, v in existing_metadata.items()]}
+#     response = (
+#         compute.instances()  # pylint: disable=E1101
+#         .setMetadata(
+#             project=project_id,
+#             zone=zone,
+#             instance=resource_name,
+#             body=body,
+#         )
+#         .execute()
+#     )
+#
+#     hr = tableToMarkdown(
+#         "Google Cloud Compute Project Metadata Update Operation Started Successfully",
+#         t=response,
+#         headers=OPERATION_TABLE,
+#         removeNull=True,
+#     )
+#     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
 def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1249,7 +1249,6 @@ def main():  # pragma: no cover
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
             "gcp-compute-subnet-update": compute_subnet_update,
-            "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
             "gcp-compute-instance-service-account-set": compute_instance_service_account_set,
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
@@ -1262,6 +1261,8 @@ def main():  # pragma: no cover
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # The following commands are currently unsupported:
+            # # Compute Engine commands
+            # "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
             # "gcp-iam-project-deny-policy-create": iam_project_deny_policy_create,
             # "gcp-iam-service-account-delete": iam_service_account_delete,
             # "gcp-iam-group-membership-delete": iam_group_membership_delete,

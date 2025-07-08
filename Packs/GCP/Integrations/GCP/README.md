@@ -127,39 +127,6 @@ Enables flow logs or Private Google Access on a subnet.
 | GCP.Compute.Operations.secondaryIpRanges | Unknown | List of secondary IP ranges for the subnet. |
 | GCP.Compute.Operations.description | String | The description of the subnet. |
 
-### gcp-compute-instance-metadata-add
-
-***
-Sets metadata for the specified instance to the data included in the request.
-
-#### Base Command
-
-`gcp-compute-instance-metadata-add`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | GCP project ID. | Required |
-| zone | The name of the zone for this request. | Required |
-| resource_name | Name of the instance scoping this request. | Required |
-| metadata | Metadata to be made available to the guest operating system running on the instances. Each entry is a key/value pair separated by ';'. For example, key=abc,value=123;key=abc,value=123. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
-| GCP.Compute.Operations.insertTime | Date | The time that this operation was started by the server. |
-| GCP.Compute.Operations.selfLink | String | Server-defined URL for the project. |
-| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. |
-| GCP.Compute.Operations.name | String | Name of the operation. |
-| GCP.Compute.Operations.progress | number | Progress indicator that ranges from 0 to 100. |
-| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
-| GCP.Compute.Operations.startTime | String | The time that this operation was started by the server. |
-| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following PENDING, RUNNING, or DONE. |
-| GCP.Compute.Operations.kind | String | Type of the resource. Always compute\#operation. |
-
 ### gcp-container-cluster-security-update
 
 ***
