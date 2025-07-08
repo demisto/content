@@ -11,12 +11,12 @@ Please Contact your ANY.RUN account manager to get your basic token
 4. Insert ANY.RUN TI Feeds Basic Token into the **Password** parameter
 5. Click **Test** to validate the URLs, token, and connection.
 
-| **Parameter**    | **Description**                                                                                                                                             | **Required** |
-|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| Password         | Example. Basic с2vtio5fbl...l0RvUag==                                                                                                                       | True |
+| **Parameter**    | **Description**                                                                                                                                                | **Required** |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| Password         | Example. Basic с2vtio5fbl...l0Rvaag==                                                                                                                          | True |
 | Server's FQDN    | Go to Settings &amp; Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard. Inline it without http/https protocol | True |
-| XSOAR API-KEY ID | In the API Keys table, locate the ID field. Note your corresponding ID number                                                                               | True |
-| XSOAR API-KEY    | XSOAR API-KEY                                                                                                                                               | True |
+| XSOAR API-KEY ID | In the API Keys table, locate the ID field. Note your corresponding ID number                                                                                  | True |
+| XSOAR API-KEY    | XSOAR API-KEY                                                                                                                                                  | True |
 
 ## Commands
 

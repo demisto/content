@@ -346,11 +346,11 @@ Returns the analysis report summary.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_uuid | Sandbox task uuid. | Required | 
+| **Argument Name** | **Description**                                                             | **Required** |
+| --- |-----------------------------------------------------------------------------| --- |
+| task_uuid | Sandbox task uuid.                                                          | Required | 
 | report_format | Report format. Possible values are: summary, html, ioc. Default is summary. | Optional | 
-| incident_info | XSOAR Related icnident info. | Required | 
+| incident_info | XSOAR Related incident info.                                                | Required | 
 
 #### Context Output
 

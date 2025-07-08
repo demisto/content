@@ -1,4 +1,6 @@
 category: Forensics & Malware Analysis
+sectionOrder:
+- Connect
 commonfields:
   id: ANY.RUN Cloud Sandbox
   version: -1

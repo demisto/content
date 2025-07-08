@@ -1,5 +1,7 @@
 category: Data Enrichment & Threat Intelligence
-supportlevelheader: partner
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: ANY.RUN TI Feeds
   version: -1
@@ -80,6 +82,7 @@ configuration:
 - name: feedTags
   display: Tags
   type: 0
+  section: Collect
   additionalinfo: Supports CSV values.
 - display: Traffic Light Protocol Color
   name: tlp_color
