@@ -163,3 +163,61 @@ Describe 'StringRegexParse' {
         }
     }
 }
+
+Describe 'GetShortHash' {
+    Context "Hashing basics" {
+        It "Returns a hash of the requested length" {
+            $input = "hello world"
+            $length = 12
+            $hash = GetShortHash $input $length
+
+            $hash.Length | Should -Be $length
+        }
+        It "Returns the same hash for the same input" {
+            $input = "repeatable"
+            $hash1 = GetShortHash $input
+            $hash2 = GetShortHash $input
+
+            $hash1 | Should -Be $hash2
+        }
+        It "Returns different hashes for different input" {
+            $input1 = "input one"
+            $input2 = "input two"
+            $hash1 = GetShortHash $input1
+            $hash2 = GetShortHash $input2
+
+            $hash1 | Should -Not -Be $hash2
+        }
+    }
+}
+
+Describe 'MakeSearchName' {
+    Context "Override name is provided" {
+        It "Returns the override name directly" {
+            $result = MakeSearchName "<abc@domain.com>" @("Mailbox1") "CustomName"
+            $result | Should -Be "CustomName"
+        }
+    }
+
+    Context "ExchangeLocation is 'All'" {
+        It "Strips angle brackets and returns only base name" {
+            $result = MakeSearchName "<abc@domain.com>" @("All","Mailbox1")
+            $result | Should -Be "abc@domain.com"
+        }
+    }
+
+    Context "ExchangeLocation is a specific mailbox or list" {
+        It "Returns different hashes for different locations" {
+            $name1 = MakeSearchName "<abc@domain.com>" @("Mailbox1")
+            $name2 = MakeSearchName "<abc@domain.com>" @("Mailbox2")
+
+            $name1 | Should -Not -Be $name2
+        }
+        It "Returns same hash for same location input order" {
+            $name1 = MakeSearchName "<abc@domain.com>" @("Mailbox1", "Mailbox2")
+            $name2 = MakeSearchName "<abc@domain.com>" @("Mailbox1", "Mailbox2")
+
+            $name1 | Should -Be $name2
+        }
+    }
+}
