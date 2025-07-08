@@ -16,6 +16,21 @@ DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
 
+def arg_to_bool_or_none(value):
+    """
+    Converts a value to a boolean or None.
+
+    :type value: ``Any``
+    :param value: The value to convert to boolean or None.
+
+    :return: Returns None if the input is None, otherwise returns the boolean representation of the value using the argToBoolean function.
+    :rtype: ``bool`` or ``None``
+    """
+    if value is None:
+        return None
+    else:
+        return argToBoolean(value)
+
 
 def parse_resource_ids(resource_id: str | None) -> list[str]:
     if resource_id is None:
@@ -1220,10 +1235,10 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
         connector_id (str): Connector identifier
 
     Returns:
-        List of HealthCheckErrors (or a single error) if connectivity issues are found, None otherwise
+        Single HealthCheckError if connectivity issues are found, None otherwise
     """
     # List to collect all connectivity errors
-    connectivity_errors: list[HealthCheckError] = []
+    failed_services: list[str] = []
 
     try:
         # Connectivity check for services
@@ -1239,33 +1254,23 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
                 demisto.info(f"[AWS Automation Health Check] Successfully created client for {service.value}")
 
             except Exception as service_error:
-                error_msg = f"Failed to create client for {service.value}: {str(service_error)}"
-                demisto.error(error_msg)
+                demisto.error(f"[AWS Automation Health Check] Failed to create client for {service.value}: {str(service_error)}")
+                failed_services.append(service.value)
 
-                # Create a specific HealthCheckError for this service
-                service_error_obj = HealthCheckError(
-                    account_id=account_id,
-                    connector_id=connector_id,
-                    message=error_msg,
-                    error_type=ErrorType.CONNECTIVITY_ERROR,
-                )
-                connectivity_errors.append(service_error_obj)
+        # If any services failed, create a single aggregated error
+        if failed_services:
+            error_msg = f"Failed to connect to AWS services: {', '.join(failed_services)}"
+            connectivity_error = HealthCheckError(
+                account_id=account_id,
+                connector_id=connector_id,
+                message=error_msg,
+                error_type=ErrorType.CONNECTIVITY_ERROR,
+            )
+            demisto.info(f"[AWS Automation Health Check] Connectivity error: {error_msg}")
+            return connectivity_error
 
-        demisto.info(f"[AWS Automation Health Check] {connectivity_errors=}")
-        return connectivity_errors if connectivity_errors else None
-
-    except Exception as general_error:
-        demisto.error(f"[AWS Automation Health Check] Unexpected error during health check: {general_error}")
-
-        # Create a general internal error
-        internal_error = HealthCheckError(
-            account_id=account_id,
-            connector_id=connector_id,
-            message=f"Unexpected error during health check: {str(general_error)}",
-            error_type=ErrorType.INTERNAL_ERROR,
-        )
-
-        return internal_error
+        demisto.info("[AWS Automation Health Check] All services connected successfully")
+        return None
 
 
 def register_proxydome_header(boto_client: BotoClient) -> None:
