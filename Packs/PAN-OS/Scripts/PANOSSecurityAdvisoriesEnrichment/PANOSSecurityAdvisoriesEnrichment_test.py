@@ -92,16 +92,20 @@ class TestClient:
         assert result == {"cveId": "CVE-2023-1234"}
         mock_get.assert_called_once_with("https://security.paloaltonetworks.com/json/CVE-2023-1234")
 
-    @patch("requests.get")
-    def test_get_cve_404_error(self, mock_get):
-        """Test 404 error handling in get_cve"""
+    @patch("PANOSSecurityAdvisoriesEnrichment.requests.get")
+    def test_get_cve_error(self, mock_get):
+        """Test error handling in get_cve"""
         mock_response = Mock()
-        mock_response.status_code = 404
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"error": "no such entry"}
         mock_get.return_value = mock_response
 
         client = Client()
-        with pytest.raises(DemistoException, match="CVE not found"):
-            client.get_cve("INVALID-CVE")
+        result = client.get_cve("INVALID-CVE")
+
+        # Verify that return_results was called with the expected message
+        assert result == {"error": "no such entry"}
+        mock_get.assert_called_once_with(f"{client.advisories_url}INVALID-CVE")
 
     @patch("requests.get")
     def test_get_pan_sa_advisories_success(self, mock_get):
@@ -147,8 +151,8 @@ class TestEnrichCVE:
         assert result["ContentsFormat"] == formats["json"]
 
         # Check EntryContext structure
-        assert "PAN-OS_Security_Advisories.Advisory" in result["EntryContext"]
-        advisory = result["EntryContext"]["PAN-OS_Security_Advisories.Advisory"]
+        assert "PANOSSecurityAdvisories.Advisory" in result["EntryContext"]
+        advisory = result["EntryContext"]["PANOSSecurityAdvisories.Advisory"]
 
         # Assert specific advisory content
         assert advisory["cve_id"] == "CVE-2072-1234"
@@ -174,7 +178,7 @@ class TestEnrichCVE:
 
         # Assert
         assert isinstance(result, dict)
-        advisory = result["EntryContext"]["PAN-OS_Security_Advisories.Advisory"]
+        advisory = result["EntryContext"]["PANOSSecurityAdvisories.Advisory"]
 
         # Should contain the external CVE from sample_pan_sa_data
         assert len(advisory["external_cve_list"]) == 1
@@ -186,13 +190,14 @@ class TestEnrichCVE:
         mock_client.get_cve.assert_called_once_with(cve_id)
         mock_client.get_pan_sa_advisories.assert_called_once_with(cve_id)
 
-    def test_enrich_cve_404_error(self, mock_client):
-        """Test handling of 404 error when CVE not found"""
+    def test_enrich_cve_invalid_cve(self, mock_client):
+        """Test handling of error when CVE not found"""
         cve_id = "CVE-2023-INVALID"
-        mock_client.get_cve.side_effect = DemistoException("CVE not found: This is not a valid Palo Alto Networks CVE ID.")
+        mock_client.get_cve.side_effect = {"error": "no such entry"}
 
-        with pytest.raises(DemistoException, match="CVE not found"):
-            enrich_cve(mock_client, cve_id)
+        result = enrich_cve(mock_client, cve_id)
+        assert isinstance(result, dict)
+        assert result["Contents"] == {"error": "This is not a valid Palo Alto Networks CVE ID"}
 
 
 class TestVersionParsing:

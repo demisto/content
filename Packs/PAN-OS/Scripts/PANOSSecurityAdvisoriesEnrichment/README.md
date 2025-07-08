@@ -1,4 +1,4 @@
-# PAN-OS_Security_Advisories_Enrichment
+# PANOSSecurityAdvisories_Enrichment
 
 This script enriches CVEs published by Palo Alto Networks with detailed vulnerability information from the official Palo Alto Networks Security Advisories website <https://security.paloaltonetworks.com>.
 
@@ -16,33 +16,33 @@ The script retrieves comprehensive vulnerability data including CVSS scores, aff
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PAN-OS_Security_Advisories.Advisory.cve_id | String | CVE ID |
-| PAN-OS_Security_Advisories.Advisory.title | String | CVE Title |
-| PAN-OS_Security_Advisories.Advisory.description | String | Vulnerability description |
-| PAN-OS_Security_Advisories.Advisory.cve_url | String | Link to the PANW Security Advisories page |
-| PAN-OS_Security_Advisories.Advisory.cvss_score | Number | Base score of CVE |
-| PAN-OS_Security_Advisories.Advisory.cvss_severity | String | Base severity of CVE (LOW, MEDIUM, HIGH, CRITICAL) |
-| PAN-OS_Security_Advisories.Advisory.cvethreatscore | Number | Threat Score of the CVE |
-| PAN-OS_Security_Advisories.Advisory.cvethreatseverity | String | Threat Severity of CVE (LOW, MEDIUM, HIGH, CRITICAL) |
-| PAN-OS_Security_Advisories.Advisory.cvss_vector_string | String | CVSS Vector indicating metrics of attack |
-| PAN-OS_Security_Advisories.Advisory.cvss_table | Unknown | Metrics of the vulnerability |
-| PAN-OS_Security_Advisories.Advisory.affected_list | Unknown | List of affected products, their versions and changes introduced with fixes |
-| PAN-OS_Security_Advisories.Advisory.cveproductstatus | Unknown | List of affected products with platform information and fixed versions |
-| PAN-OS_Security_Advisories.Advisory.cpes | Unknown | Affected products defined by CPE |
-| PAN-OS_Security_Advisories.Advisory.published_date | Date | Date when it was published to the advisories page |
-| PAN-OS_Security_Advisories.Advisory.last_updated_date | Date | Date when it was last updated on the advisories page |
-| PAN-OS_Security_Advisories.Advisory.solution | String | Solution provided for the CVE |
-| PAN-OS_Security_Advisories.Advisory.workaround | String | Workaround for the CVE |
-| PAN-OS_Security_Advisories.Advisory.configurations | String | Required configurations for exploit |
-| PAN-OS_Security_Advisories.Advisory.exploits | String | Known exploits of this vulnerability in the field |
-| PAN-OS_Security_Advisories.Advisory.impact | String | Impact description of the vulnerability |
-| PAN-OS_Security_Advisories.Advisory.external_cve_list | Unknown | If input CVE is a PAN-SA advisory then list of related non-PANW CVEs |
+| PANOSSecurityAdvisories.Advisory.cve_id | String | CVE ID |
+| PANOSSecurityAdvisories.Advisory.title | String | CVE Title |
+| PANOSSecurityAdvisories.Advisory.description | String | Vulnerability description |
+| PANOSSecurityAdvisories.Advisory.cve_url | String | Link to the PANW Security Advisories page |
+| PANOSSecurityAdvisories.Advisory.cvss_score | Number | Base score of CVE |
+| PANOSSecurityAdvisories.Advisory.cvss_severity | String | Base severity of CVE (LOW, MEDIUM, HIGH, CRITICAL) |
+| PANOSSecurityAdvisories.Advisory.cvethreatscore | Number | Threat Score of the CVE |
+| PANOSSecurityAdvisories.Advisory.cvethreatseverity | String | Threat Severity of CVE (LOW, MEDIUM, HIGH, CRITICAL) |
+| PANOSSecurityAdvisories.Advisory.cvss_vector_string | String | CVSS Vector indicating metrics of attack |
+| PANOSSecurityAdvisories.Advisory.cvss_table | Unknown | Metrics of the vulnerability |
+| PANOSSecurityAdvisories.Advisory.affected_list | Unknown | List of affected products, their versions and changes introduced with fixes |
+| PANOSSecurityAdvisories.Advisory.cveproductstatus | Unknown | List of affected products with platform information and fixed versions |
+| PANOSSecurityAdvisories.Advisory.cpes | Unknown | Affected products defined by CPE |
+| PANOSSecurityAdvisories.Advisory.published_date | Date | Date when it was published to the advisories page |
+| PANOSSecurityAdvisories.Advisory.last_updated_date | Date | Date when it was last updated on the advisories page |
+| PANOSSecurityAdvisories.Advisory.solution | String | Solution provided for the CVE |
+| PANOSSecurityAdvisories.Advisory.workaround | String | Workaround for the CVE |
+| PANOSSecurityAdvisories.Advisory.configurations | String | Required configurations for exploit |
+| PANOSSecurityAdvisories.Advisory.exploits | String | Known exploits of this vulnerability in the field |
+| PANOSSecurityAdvisories.Advisory.impact | String | Impact description of the vulnerability |
+| PANOSSecurityAdvisories.Advisory.external_cve_list | Unknown | If input CVE is a PAN-SA advisory then list of related non-PANW CVEs |
 
 ## Context Example
 
 ```json
 {
-    "PAN-OS_Security_Advisories": {
+    "PANOSSecurityAdvisories": {
         "Advisory": {
             "cve_id": "CVE-2024-1234",
             "title": "OS Command Injection Vulnerability in PAN-OS",

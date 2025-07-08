@@ -2,7 +2,7 @@ import re
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-OUTPUT_PREFIX = "PAN-OS_Security_Advisories"
+OUTPUT_PREFIX = "PANOSSecurityAdvisories"
 BASE_URL = "https://security.paloaltonetworks.com"
 CVE_JSON = "/json/"
 CVE_CSAF = "/csaf/"
@@ -22,9 +22,8 @@ class Client:
         """
         url = f"{self.advisories_url}{cve_id}"
         response = requests.get(url)
-        if response.status_code == 404:
-            return_results("CVE not found: This is not a valid Palo Alto Networks CVE ID.")
-        response.raise_for_status()
+        if response.status_code != 404 and response.status_code != 200:
+            response.raise_for_status()
         return response.json()
 
     def get_pan_sa_advisories(self, pan_sa_id: str):
@@ -214,8 +213,10 @@ def enrich_cve(client: Client, cve_id: str) -> Dict:
         external_cves = get_external_cves(client, cve_id)
     else:
         external_cves = []  # Initialize as empty list instead of empty dict
-    advisory = flatten_advisory_dict(cve_data, external_cves)
-
+    if "error" not in cve_data:
+        advisory = flatten_advisory_dict(cve_data, external_cves)
+    else:
+        advisory = {"error": "This is not a valid Palo Alto Networks CVE ID"}
     return {
         "Type": entryTypes["note"],
         "EntryContext": {f"{OUTPUT_PREFIX}.Advisory": advisory},
@@ -234,7 +235,11 @@ def main():
     try:
         cve_ids = argToList(args.get("cve_id", ""))
         for cve_id in cve_ids:
-            return_results(enrich_cve(client, cve_id.upper()))
+            result = enrich_cve(client, cve_id.upper())
+            if "error" in result:
+                return_results(result.get("error"))
+            else:
+                return_results(result)
     except Exception as err:
         return_error(str(err))
 

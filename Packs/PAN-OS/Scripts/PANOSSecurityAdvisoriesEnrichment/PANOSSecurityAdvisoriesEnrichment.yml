@@ -13,67 +13,67 @@ enabled: true
 engineinfo: {}
 name: PAN-OS_Security_Advisories_Enrichment
 outputs:
-- contextPath: PAN-OS_Security_Advisories.Advisory.cve_id
+- contextPath: PANOSSecurityAdvisories.Advisory.cve_id
   description: CVE ID.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.cve_url
+- contextPath: PANOSSecurityAdvisories.Advisory.cve_url
   description: Link to the PANW Security Advisories page.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.affected_list
+- contextPath: PANOSSecurityAdvisories.Advisory.affected_list
   description: List of affected products, their versions and changes introduced with fixes.
   type: Unknown
-- contextPath: PAN-OS_Security_Advisories.Advisory.configurations
+- contextPath: PANOSSecurityAdvisories.Advisory.configurations
   description: Required configurations for exploit.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.cpes
+- contextPath: PANOSSecurityAdvisories.Advisory.cpes
   description: Affected products defined by CPE. This is an array of CPE values (vulnerable and not), we use an array so that we can make multiple statements about the same version and they are separate (if we used a JSON object we'd essentially be keying on the CPE name and they would have to overlap). Also, this allows things like cveDataVersion or cveDescription to be applied directly to the product entry. This also allows more complex statements such as "Product X between versions 10.2 and 10.8" to be put in a machine-readable format. As well since multiple statements can be used multiple branches of the same product can be defined here.
   type: Unknown
-- contextPath: PAN-OS_Security_Advisories.Advisory.cveproductstatus
+- contextPath: PANOSSecurityAdvisories.Advisory.cveproductstatus
   description: List of affected products with platform information and fixed versions.
   type: Unknown
-- contextPath: PAN-OS_Security_Advisories.Advisory.cvethreatscore
+- contextPath: PANOSSecurityAdvisories.Advisory.cvethreatscore
   description: Threat Score of the CVE.
   type: Number
-- contextPath: PAN-OS_Security_Advisories.Advisory.cvethreatseverity
+- contextPath: PANOSSecurityAdvisories.Advisory.cvethreatseverity
   description: Threat Severity of CVE. LOW, MEDIUM, HIGH or CRITICAL.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.cvss_score
+- contextPath: PANOSSecurityAdvisories.Advisory.cvss_score
   description: Base score of CVE.
   type: Number
-- contextPath: PAN-OS_Security_Advisories.Advisory.cvss_severity
+- contextPath: PANOSSecurityAdvisories.Advisory.cvss_severity
   description: Base severity of CVE. LOW, MEDIUM, HIGH or CRITICAL.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.cvss_table
+- contextPath: PANOSSecurityAdvisories.Advisory.cvss_table
   description: Metrics of the vulnerability.
   type: Unknown
-- contextPath: PAN-OS_Security_Advisories.Advisory.cvss_vector_string
+- contextPath: PANOSSecurityAdvisories.Advisory.cvss_vector_string
   description: CVSS Vector indicating metrics of attack.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.description
+- contextPath: PANOSSecurityAdvisories.Advisory.description
   description: Vulnerability description.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.exploits
+- contextPath: PANOSSecurityAdvisories.Advisory.exploits
   description: Known exploits of this vulnerability in the field.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.external_cve_list
+- contextPath: PANOSSecurityAdvisories.Advisory.external_cve_list
   description: If input CVE is a PAN-SA advisory then list of related non-PANW CVEs.
   type: Unknown
-- contextPath: PAN-OS_Security_Advisories.Advisory.impact
+- contextPath: PANOSSecurityAdvisories.Advisory.impact
   description: Impact of the CVE.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.last_updated_date
+- contextPath: PANOSSecurityAdvisories.Advisory.last_updated_date
   description: Date when it was last updated on the advisories page.
   type: Date
-- contextPath: PAN-OS_Security_Advisories.Advisory.published_date
+- contextPath: PANOSSecurityAdvisories.Advisory.published_date
   description: Date when it was published to the advisories page.
   type: Date
-- contextPath: PAN-OS_Security_Advisories.Advisory.solution
+- contextPath: PANOSSecurityAdvisories.Advisory.solution
   description: Solution provided for the CVE.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.title
+- contextPath: PANOSSecurityAdvisories.Advisory.title
   description: CVE Title.
   type: String
-- contextPath: PAN-OS_Security_Advisories.Advisory.workaround
+- contextPath: PANOSSecurityAdvisories.Advisory.workaround
   description: Workaround for the CVE.
   type: String
 runas: DBotWeakRole
