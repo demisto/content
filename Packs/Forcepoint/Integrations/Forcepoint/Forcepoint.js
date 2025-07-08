@@ -8,6 +8,8 @@ var USER_NAME = params.credentials.identifier;
 
 var PASSWORD = params.credentials.password;
 
+var VER_85 = params.versionCheck
+
 function sendRequest(url, method, body, transactionID) {
     var req = {
             Method: method,
@@ -23,9 +25,11 @@ function sendRequest(url, method, body, transactionID) {
         reqBody = body;
     }
     if (transactionID) {
-          reqBody['Transaction ID'] = transactionID;
+        reqBody['Transaction ID'] = transactionID;
     }
-    req.Body = JSON.stringify(reqBody);
+    if (method !== 'GET'){
+        req.Body = JSON.stringify(reqBody);
+    }
     var res = http(url, req, params.insecure, params.proxy);
     return res;
 }
@@ -293,6 +297,25 @@ function editAddressRequest(urls, ips, id, name, del){
     return parseResponse(res);
 }
 
+function deleteAddressRequest(urls, ips, id, name){
+    var url = SERVER_URL + 'categories/delete/urls';
+    var body = {};
+    if (id) {
+        body['Category ID'] = id;
+    }
+    else if(name){
+        body['Category Name'] = name;
+    }
+    if (urls) {
+        body.URLs = urls;
+    }
+    if (ips) {
+        body.IPs = ips;
+    }
+    var res =  transactionFlowRequest(url, 'POST', body);
+    return parseResponse(res);
+}
+
 function deleteAddress() {
     if (!args.ips && !args.urls) {
         throw 'Please pass an ip list, url list, or both.'
@@ -302,7 +325,12 @@ function deleteAddress() {
     }
     var urls = args.urls ? args.urls.split(',') : undefined;
     var ips = args.ips ? args.ips.split(',') : undefined;
-    var res = args.categoryID ? editAddressRequest(urls, ips, parseInt(args.categoryID), undefined, true) : editAddressRequest(urls, ips, undefined, args.categoryName, true);
+    if (VER_85){
+        var res = args.categoryID ? deleteAddressRequest(urls, ips, parseInt(args.categoryID), undefined) : deleteAddressRequest(urls, ips, undefined, args.categoryName);
+    }
+    else {
+        var res = args.categoryID ? editAddressRequest(urls, ips, parseInt(args.categoryID), undefined, true) : editAddressRequest(urls, ips, undefined, args.categoryName, true);
+    }
     var title = 'Forcepoint Delete Address From Category';
     var data = [
                     {to: 'CategoryID', from: 'Category ID'},
@@ -387,7 +415,15 @@ function deleteCategory() {
 }
 
 function deleteCategoryRequest(ids, names) {
-    var url = SERVER_URL + 'categories';
+    if (VER_85){
+        var url = SERVER_URL + 'categories/delete';
+        var method = 'POST';
+        logDebug('Using new post method to delete category');
+    }
+    else {
+        var url = SERVER_URL + 'categories';
+        method = 'DELETE';
+    }
     var body = {};
     if (ids) {
         body['Category IDs'] = ids;
@@ -395,7 +431,7 @@ function deleteCategoryRequest(ids, names) {
     else if (names) {
         body['Category Names'] = names;
     }
-    var res = transactionFlowRequest(url, 'DELETE', body);
+    var res = transactionFlowRequest(url, method, body);
     if (res.StatusCode !== 200) {
         var errResponse = JSON.stringify(res.Body);
         throwErrDetails(errResponse, res.StatusCode);
@@ -421,7 +457,7 @@ switch(command) {
     case 'fp-add-address-to-category':
         return addAddress();
     case 'fp-delete-address-from-category':
-        return deleteAddress();
+            return deleteAddress();
     case 'fp-delete-categories':
         return deleteCategory();
 }
