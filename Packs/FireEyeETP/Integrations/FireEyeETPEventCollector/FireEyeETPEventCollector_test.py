@@ -384,7 +384,7 @@ def test_client_get_activity_log(mocker):
     When:
         - Calling `Client.get_activity_log`.
     Then:
-        - Assert "to" time is set as expected (current UTC time).
+        - Assert "to" time is set as expected due to API requirement (current UTC time).
     """
     client = mock_client()
     mock_http_request = mocker.patch.object(client, "_http_request")

@@ -109,6 +109,7 @@ class Client(BaseClient):  # pragma: no cover
         if to_LastModifiedOn:
             time["to"] = to_LastModifiedOn
         else:
+            # API requires "to" time
             demisto.debug(f"{LOG_LINE} empty to_LastModifiedOn. Setting to now.")
             utc_now = datetime.now(timezone.utc)
             time["to"] = datetime.strftime(utc_now, ACTIVITY_LOG_DATE_FORMAT)
