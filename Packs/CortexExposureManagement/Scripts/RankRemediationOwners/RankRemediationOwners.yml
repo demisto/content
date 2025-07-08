@@ -19,7 +19,7 @@ comment: Recommend most likely remediation owners from those surfaced by other e
 commonfields:
   id: RankRemediationOwners
   version: -1
-dockerimage: demisto/xpanse-ml-ev2:1.0.0.2462237
+dockerimage: demisto/xpanse-ml-ev2:1.0.0.4101073
 enabled: true
 name: RankRemediationOwners
 runas: DBotWeakRole
