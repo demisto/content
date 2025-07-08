@@ -1118,7 +1118,7 @@ def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults
     return command_results
 
 
-def list_external_websites_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_websites_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     """
     asm-list-external-websites command: Get external websites.
 
@@ -1131,7 +1131,7 @@ def list_external_websites_command(client: Client, args: Dict[str, Any]) -> Comm
             ``args['next_page_token']`` String value of a page token to get the next page of results
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
+        CommandResults: A list of ``CommandResults`` objects that is then passed to ``return_results``
     """
     limit = int(args.get("limit", DEFAULT_SEARCH_LIMIT))
     searchFilter = args.get("authentication")

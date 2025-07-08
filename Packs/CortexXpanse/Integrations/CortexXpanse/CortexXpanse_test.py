@@ -600,8 +600,8 @@ def test_list_external_websites_command(requests_mock):
 
     response = list_external_websites_command(client, args)
 
-    assert response.outputs == EXTERNAL_WEBSITES_RESULTS.get("ExternalWebsite", {}).get("websites")
-    assert response.outputs_prefix == "ASM.ExternalWebsite"
+    assert response[0].outputs == EXTERNAL_WEBSITES_RESULTS.get("ExternalWebsite", {}).get("websites")
+    assert response[0].outputs_prefix == "ASM.ExternalWebsite"
 
 
 @pytest.mark.parametrize("command_name, method_name", [("asm-list-alerts", "list_alerts_command")])
