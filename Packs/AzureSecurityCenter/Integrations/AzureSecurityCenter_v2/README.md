@@ -91,13 +91,13 @@ Lists alerts for the subscription according to the specified filters.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. | 
-| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. | 
-| AzureSecurityCenter.Alert.Description | string | Description of the suspicious activity that was detected. | 
-| AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. | 
-| AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of this alert. | 
-| AzureSecurityCenter.Alert.State | string | The alert state \(Active, Dismissed, etc.\). | 
-| AzureSecurityCenter.Alert.ID | string | The alert ID. | 
+| AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. |
+| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. |
+| AzureSecurityCenter.Alert.Description | string | Description of the suspicious activity that was detected. |
+| AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. |
+| AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of this alert. |
+| AzureSecurityCenter.Alert.State | string | The alert state \(Active, Dismissed, etc.\). |
+| AzureSecurityCenter.Alert.ID | string | The alert ID. |
 
 ##### Command Example
 
@@ -567,18 +567,18 @@ Get an alert that is associated a resource group or a subscription.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. | 
-| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. | 
-| AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. | 
-| AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of the alert. | 
-| AzureSecurityCenter.Alert.State | string | The alert state \(Active, Dismissed, etc.\). | 
-| AzureSecurityCenter.Alert.RemediationSteps | string | Recommended steps to remediate the incident. | 
-| AzureSecurityCenter.Alert.VendorName | string | Name of the vendor that discovered the incident. | 
-| AzureSecurityCenter.Alert.AlertName | string | Name of the alert type. | 
-| AzureSecurityCenter.Alert.ID | string | The alert ID. | 
-| AzureSecurityCenter.Alert.Description | string | Description of the incident and what it means. | 
-| AzureSecurityCenter.Alert.ExtendedProperties | string | Changing set of properties depending on the alert type. | 
-| AzureSecurityCenter.Alert.Entities | string | Objects that are related to the alert. | 
+| AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. |
+| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. |
+| AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. |
+| AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of the alert. |
+| AzureSecurityCenter.Alert.State | string | The alert state \(Active, Dismissed, etc.\). |
+| AzureSecurityCenter.Alert.RemediationSteps | string | Recommended steps to remediate the incident. |
+| AzureSecurityCenter.Alert.VendorName | string | Name of the vendor that discovered the incident. |
+| AzureSecurityCenter.Alert.AlertName | string | Name of the alert type. |
+| AzureSecurityCenter.Alert.ID | string | The alert ID. |
+| AzureSecurityCenter.Alert.Description | string | Description of the incident and what it means. |
+| AzureSecurityCenter.Alert.ExtendedProperties | string | Changing set of properties depending on the alert type. |
+| AzureSecurityCenter.Alert.Entities | string | Objects that are related to the alert. |
 
 ##### Command Example
 
