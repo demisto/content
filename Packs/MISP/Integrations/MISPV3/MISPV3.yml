@@ -1672,6 +1672,10 @@ script:
       name: id
     - description: UUID of the attribute to add sighting to (Must be filled if ID is empty). Can be retrieved from the misp-search commands.
       name: uuid
+    - description: Value of the attribute
+      name: value
+    - description: Sighting source
+      name: source
     description: Add sighting to an attribute.
     name: misp-add-sighting
   - arguments:

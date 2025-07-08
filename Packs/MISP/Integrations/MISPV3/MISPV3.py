@@ -1465,11 +1465,19 @@ def add_sighting(demisto_args: dict):
     """Adds sighting to MISP attribute"""
     attribute_id = demisto_args.get("id")
     attribute_uuid = demisto_args.get("uuid")
+    attribute_value = demisto_args.get("value")
+    sighting_source = demisto_args.get("source")
     sighting_type = demisto_args["type"]  # mandatory arg
     att_id = attribute_id or attribute_uuid
     if not att_id:
         raise DemistoException("ID or UUID not specified")
-    sighting_args = {"id": attribute_id, "uuid": attribute_uuid, "type": SIGHTING_TYPE_NAME_TO_ID[sighting_type]}
+    sighting_args = {
+        "id": attribute_id,
+        "uuid": attribute_uuid,
+        "type": SIGHTING_TYPE_NAME_TO_ID[sighting_type],
+        "source": sighting_source,
+        "value": attribute_value,
+    }
     sigh_obj = MISPSighting()
     sigh_obj.from_dict(**sighting_args)
     response = PYMISP.add_sighting(sigh_obj, att_id)
