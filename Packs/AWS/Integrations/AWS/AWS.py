@@ -1255,7 +1255,19 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
 
         demisto.info("[AWS Automation Health Check] All services connected successfully")
         return None
+    
+     except Exception as err:
+        demisto.error(f"[AWS Automation Health Check] Unexpected error during health check: {err}")
 
+        # Create a general internal error
+        internal_error = HealthCheckError(
+            account_id=account_id,
+            connector_id=connector_id,
+            message=f"Unexpected error during health check: {str(err)}",
+            error_type=ErrorType.INTERNAL_ERROR,
+        )
+
+        return internal_error
 
 def register_proxydome_header(boto_client: BotoClient) -> None:
     """
