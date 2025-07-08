@@ -242,6 +242,7 @@ class Client(BaseClient):
 
     def get_batches_from_file(self, limit):
         demisto.info("RF: Reading from file")
+        csv.field_size_limit(sys.maxsize)
         # we do this try to make sure the file gets deleted at the end
         try:
             file_stream = open("response.txt")
