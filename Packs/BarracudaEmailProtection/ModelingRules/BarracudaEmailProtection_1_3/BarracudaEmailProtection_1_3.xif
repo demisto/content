@@ -11,5 +11,5 @@ alter
     xdm.email.recipients = arraymap(payload -> recipients[], "@element" -> email),
     xdm.source.sent_bytes = to_integer(payload -> size),
     xdm.source.ipv4 = payload -> src_ip,
-    xdm.source.user.username = arrayindex(regextract(payload -> hdr_from, "[\<\"]([^\>\"]+)[\>\"]"), 0),
+    xdm.source.user.username = arrayindex(regextract(payload -> hdr_from, "\"([^\"]+)\""), 0),
     xdm.event.description = to_string(payload -> recipients[]);
