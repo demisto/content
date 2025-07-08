@@ -36,6 +36,7 @@ This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, I
 
 #### Context Output
 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SilentPush.DensityLookup.qtype | String | The following qtypes are supported: nssrv, mxsrv. |
