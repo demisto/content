@@ -2017,7 +2017,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
     warninglist_enabled = demisto_args.get("enabled")
     warninglist_default = demisto_args.get("default")
     warninglist_category = demisto_args.get("category")
-    warninglist_version = demisto.args.get("version")
+    warninglist_version = demisto_args.get("version")
     warninglist_values = argToList(demisto_args.get("values"))
     warninglist_types = argToList(demisto_args.get("types"))
 
