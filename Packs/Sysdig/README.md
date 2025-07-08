@@ -13,6 +13,6 @@ This pack leverages the Sysdig Response Actions API to enable automated and manu
 
 These capabilities help streamline incident response and enhance security posture.
 
-_For more information, visit [Sysdig.](https://sysdig.com)_
+_For more information, visit [Sysdig](https://sysdig.com)_.
 
-[![Sysdig Overview](doc_files/Author_image.png)](https://sysdig.com)
+[![Sysdig Overview](././doc_files/Author_image.png)](https://sysdig.com)
