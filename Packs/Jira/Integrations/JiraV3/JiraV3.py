@@ -95,6 +95,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         "security": "fields.security.name",
         "components": "fields.components",
         "original_estimate": "fields.timetracking.originalEstimate",
+        "priority": "fields.priority",
     }
 
     AGILE_API_ENDPOINT = "rest/agile/1.0"
@@ -113,7 +114,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
 
     @abstractmethod
-    def test_instance_connection(self) -> None:
+    def jira_test_instance_connection(self) -> None:
         """This method is used to test the connectivity of each instance, each child will implement
         their own connectivity test
         """
@@ -909,7 +910,7 @@ class JiraCloudClient(JiraBaseClient):
             pat=pat,
         )
 
-    def test_instance_connection(self) -> None:
+    def jira_test_instance_connection(self) -> None:
         self.get_user_info()
 
     def oauth_start(self) -> str:
@@ -1190,7 +1191,7 @@ class JiraOnPremClient(JiraBaseClient):
         integration_context |= new_authorization_context
         set_integration_context(integration_context)
 
-    def test_instance_connection(self) -> None:
+    def jira_test_instance_connection(self) -> None:
         self.get_user_info()
 
     def get_attachment_content(self, attachment_id: str = "", attachment_content_url: str = "") -> str:
@@ -1580,33 +1581,26 @@ def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str,
     return fileResult(filename=attachment_file_name, data=res_attachment_content, file_type=EntryType.ENTRY_INFO_FILE)
 
 
-def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_string: str, value: Any) -> Dict[str, Any]:
-    """Create a nested dictionary from keys separated by dots(.), and insert the value as part of the last key in the dotted
-    string.
-    For example, dotted_string=key1.key2.key3 with value=jira results in {key1: {key2: {key3: jira}}}
-    This function is used to create the dictionary that will be sent when creating a new Jira issue. Let us look at the following
-    scenario, we get that we want to enter a value of `Dummy summary` for the dotted field `field.summary`, which will result
-    in {field: {summary: Dummy summary}}, but since we might have already created issue fields, for instance, we already added to
-    it the field label -> {fields: {labels: [dummy_label]}}, we pass the issue_fields argument so we can update what we have
-    already inserted, so when we come to add the new field that we want, the issue_fields will
-    be {fields: {labels: [dummy_label]}, {summary: Dummy summary}}, therefore we pass it to the function so we can insert the new
-    fields without overriding the previous iterations.
+def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_string: str, value: Any) -> None:
+    """
+    Modifies a dictionary in-place by creating a nested structure from a dot-separated string.
+
     Args:
-        dotted_string (str): A dotted string that holds the keys of the dictionary
-        value (Any): The value to insert in the nested dictionary
+        issue_fields (Dict[str, Any]): The dictionary to modify. This dictionary will be changed by the function.
+        dotted_string (str): The path for the value (e.g., 'fields.priority.name').
+        value (Any): The value to place at the end of the path.
     """
     if not dotted_string:
-        return {}
-    nested_dict: Dict[str, Any] = {}
-    keys = dotted_string.split(".")
-    for count, sub_key in enumerate(keys[::-1]):
-        inner_dict = demisto.get(issue_fields, ".".join(keys[: len(keys) - count]), defaultdict(dict))
-        if count == 0:
-            inner_dict[sub_key] = value
+        return
+
+    keys = dotted_string.split('.')
+    current_level = issue_fields
+
+    for i, key in enumerate(keys):
+        if i == len(keys) - 1:
+            current_level[key] = value
         else:
-            inner_dict = {sub_key: inner_dict | nested_dict}
-        nested_dict = inner_dict
-    return nested_dict
+            current_level = current_level.setdefault(key, {})
 
 
 def create_issue_fields(
@@ -1637,29 +1631,47 @@ def create_issue_fields(
             raise DemistoException("issue_json must be in a valid json format") from e
 
     for issue_arg, value in issue_args.items():
-        parsed_value: Any = ""  # This is used to hold any parsed arguments passed from the user, e.g the labels
-        # argument is provided as a string in CSV format, and the API expects to receive a list of labels.
+        if issue_arg == "status":
+            demisto.debug(f"Ignoring 'status' argument: '{value}'. Use a dedicated command for status transitions.")
+            continue
+
+        final_value: Any = value
+        parsed = False # Flag to indicate if we have already parsed the value
+
         if issue_arg == "labels":
-            parsed_value = argToList(value)
+            final_value = argToList(value)
+            parsed = True
         elif issue_arg == "components":
-            parsed_value = [{"name": component} for component in argToList(value)]
+            final_value = [{"name": component} for component in argToList(value)]
+            parsed = True
+        elif issue_arg == "priority":
+            final_value = {"name": value}
+            parsed = True
         elif issue_arg in ["description", "environment"]:
-            parsed_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
-        elif not (isinstance(value, dict | list)):
-            # If the value is not a list or a dictionary, we will try to parse it as a json object.
+            final_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
+            parsed = True
+
+        # Only attempt to parse as JSON if it's a string and hasn't been parsed by a specific rule above.
+        if not parsed and isinstance(value, str):
             try:
-                parsed_value = json.loads(value)
+                final_value = json.loads(value)
             except (json.JSONDecodeError, TypeError):
-                pass  # Some values should not be in a JSON format so it makes sense for them to fail parsing.
+                # If it's not a valid JSON, we stick with the original string value held in final_value
+                pass
+
         dotted_string = issue_fields_mapper.get(issue_arg, "")
         if not dotted_string and issue_arg.startswith("customfield"):
-            # This is used to deal with the case when the user creates a custom incident field, using
-            # the custom fields of Jira.
             dotted_string = f"fields.{issue_arg}"
 
-        issue_fields |= create_fields_dict_from_dotted_string(
-            issue_fields=issue_fields, dotted_string=dotted_string, value=parsed_value or value
+        create_fields_dict_from_dotted_string(
+            issue_fields=issue_fields, dotted_string=dotted_string, value=final_value
         )
+        if dotted_string:
+            create_fields_dict_from_dotted_string(
+                issue_fields=issue_fields, dotted_string=dotted_string, value=final_value
+            )
+        else:
+            demisto.debug(f"WARNING: Skipping field '{issue_arg}' because it was not found in the issue fields mapper.")
     return issue_fields
 
 
@@ -1918,15 +1930,22 @@ def apply_issue_transition(
         DemistoException: If the given transition was not found or not valid.
 
     Returns:
-        Any: Raw response of the API request.
+        requests.Response: Raw response of the API request.
     """
     res_transitions = client.get_transitions(issue_id_or_key=issue_id_or_key)
     all_transitions = res_transitions.get("transitions", [])
     transitions_name = [transition.get("name", "") for transition in all_transitions]
     for i, transition in enumerate(transitions_name):
         if transition.lower() == transition_name.lower():
-            json_data = {"transition": {"id": str(all_transitions[i].get("id", ""))}} | issue_fields
-            return client.transition_issue(issue_id_or_key=issue_id_or_key, json_data=json_data)
+            json_data = {
+                "transition": {"id": str(all_transitions[i].get("id", ""))}
+            }
+            if issue_fields:
+                json_data.update(issue_fields)
+            demisto.debug(f"Final JSON payload for transition API call: {json_data}")
+            res = client.transition_issue(issue_id_or_key=issue_id_or_key, json_data=json_data)
+            return res
+
     raise DemistoException(f'Transition "{transition_name}" not found. \nValid transitions are: {transitions_name} \n')
 
 
@@ -2351,12 +2370,14 @@ def create_issue_command(
     results.append(ticket_results)
 
     if is_quick_action:
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'MirrorObject created successfully.',
-            'ExtendedPayload': {'MirrorObject': mirror_obj}
-        })
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["text"],
+                "Contents": "MirrorObject created successfully.",
+                "ExtendedPayload": {"MirrorObject": mirror_obj},
+            }
+        )
 
     return results
 
@@ -3460,7 +3481,7 @@ def oauth_complete_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comm
     )
 
 
-def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+def jira_test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
     """This command is used to test the connectivity of the Jira instance configured.
 
     Args:
@@ -3470,17 +3491,17 @@ def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    client.test_instance_connection()
+    client.jira_test_instance_connection()
     return CommandResults(readable_output="Successful connection.")
 
 
-def test_module(client: JiraBaseClient) -> str:
+def jira_test_module(client: JiraBaseClient) -> str:
     """This method will return an error since in order for the user to test the connectivity of the instance,
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
     if client.is_basic_auth or client.is_pat_auth:
-        client.test_instance_connection()  # raises on failure
+        client.jira_test_instance_connection()  # raises on failure
         return "ok"
     else:
         raise DemistoException(
@@ -4532,18 +4553,44 @@ def update_remote_system_command(
     try:
         if delta and remote_args.incident_changed:
             demisto.debug(f"Got the following delta object: {delta}")
-            demisto.debug(f"Got the following delta keys {list(delta.keys())} to update JiraV3 Incident {remote_id}")
-            # take the val from data as it's the updated value
             delta = {k: remote_args.data.get(k) for k in delta}
-            demisto.debug(f"Sending the following data to edit the issue with: {delta}")
-            if issue_fields := create_issue_fields(
-                client=client,
-                issue_args=delta,
-                issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER,
-            ):
-                demisto.debug(f"Updating the issue with the following issue fields: {issue_fields}")
-                client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
-                demisto.debug("Updated the fields of the remote system successfully")
+            demisto.debug(f"Sending the following data to edit/transition the issue with: {delta}")
+
+            # If the status has changed, we must use a transition call.
+            if "status" in delta:
+                # Separate the fields to edit from the status itself.
+                fields_to_edit = {k: v for k, v in delta.items() if k != "status"}
+                issue_fields_payload = {}
+
+                if fields_to_edit:
+                    issue_fields_payload = create_issue_fields(
+                        client=client,
+                        issue_args=fields_to_edit,
+                        issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER,
+                    )
+
+                demisto.debug(f"Transitioning issue to '{delta['status']}' and updating fields: {issue_fields_payload}")
+
+                apply_issue_transition(
+                    client=client,
+                    issue_id_or_key=remote_id,
+                    transition_name=delta["status"],
+                    issue_fields={}
+                )
+                if issue_fields_payload:
+                    client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields_payload)
+
+                demisto.debug("Transitioned the issue and updated fields successfully in a single call.")
+            else:
+                issue_fields = create_issue_fields(
+                    client=client,
+                    issue_args=delta,
+                    issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER,
+                )
+                if issue_fields.get("fields"):
+                    demisto.debug(f"Updating the issue with the following issue fields: {issue_fields}")
+                    client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
+                    demisto.debug("Updated the fields of the remote system successfully")
 
         else:
             demisto.debug(f"Skipping updating remote incident fields [{remote_id}] as it is neither new nor changed")
@@ -4574,6 +4621,7 @@ def update_remote_system_command(
             demisto.debug("Updated the entries (attachments and/or comments) of the remote system successfully")
     except Exception as e:
         demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \nError message: {e!s}")
+        return_error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id}", error=e)
     finally:
         return remote_id
 
@@ -4702,7 +4750,7 @@ def main():  # pragma: no cover
     commands: Dict[str, Callable] = {
         "jira-oauth-start": ouath_start_command,
         "jira-oauth-complete": oauth_complete_command,
-        "jira-oauth-test": test_authorization,
+        "jira-oauth-test": jira_test_authorization,
         "jira-get-comments": get_comments_command,
         "jira-get-issue": get_issue_command,
         "jira-create-issue": create_issue_command,
@@ -4773,7 +4821,7 @@ def main():  # pragma: no cover
         demisto.debug(f"The configured Jira client is: {type(client)}")
 
         if command == "test-module":
-            return_results(test_module(client=client))
+            return_results(jira_test_module(client=client))
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == "fetch-incidents":
