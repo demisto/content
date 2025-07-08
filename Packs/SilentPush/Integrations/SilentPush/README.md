@@ -3,14 +3,12 @@ This integration was integrated and tested with version 4.2 of SilentPush.
 
 ## Configure SilentPush in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Base URL | True |
 | API Key | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
-
 
 ## Commands
 
@@ -35,7 +33,6 @@ This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, I
 | scope | Match level (optional). | Optional |
 
 #### Context Output
-
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
