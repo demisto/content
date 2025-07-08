@@ -9,7 +9,6 @@ Links two or more incidents.
 | Script Type | javascript |
 | Tags | DemistoAPI |
 
-
 ## Dependencies
 
 ---

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Alert Statuses: Action Required and Auto-Resolved are no longer supported."
+}
