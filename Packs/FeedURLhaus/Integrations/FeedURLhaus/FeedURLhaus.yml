@@ -11,7 +11,8 @@ configuration:
   name: credentials
   type: 9
   section: Connect
-  required: true
+  required: false
+  additionalinfo: Starting June 30th 2025 this parameter is mandatory.
 - name: feedTags
   display: Tags
   type: 0
