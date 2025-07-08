@@ -1,7 +1,8 @@
 import dateparser
 import demistomock as demisto
 import pytest
-from ForcepointEventCollector import Client, fetch_events, get_events_command, to_str_time
+from ForcepointEventCollector import (Client, fetch_events, get_events_command,
+                                      to_str_time)
 
 
 def mock_client():
