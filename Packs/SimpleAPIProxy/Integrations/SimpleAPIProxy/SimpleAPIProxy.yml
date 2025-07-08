@@ -1,4 +1,6 @@
 category: Utilities
+sectionOrder:
+- Connect
 commonfields:
   id: Simple API Proxy
   version: -1

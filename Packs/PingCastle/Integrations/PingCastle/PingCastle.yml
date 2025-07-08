@@ -1,4 +1,6 @@
 category: Vulnerability Management
+sectionOrder:
+- Connect
 commonfields:
   id: PingCastle
   version: -1

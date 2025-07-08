@@ -1,4 +1,6 @@
 category: Utilities
+sectionOrder:
+- Connect
 commonfields:
   id: XSOAR-Web-Server
   version: -1

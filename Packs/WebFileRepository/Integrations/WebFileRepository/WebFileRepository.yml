@@ -1,4 +1,6 @@
 category: Utilities
+sectionOrder:
+- Connect
 commonfields:
   id: Web File Repository
   version: -1

@@ -1,4 +1,6 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
 commonfields:
   id: Workday_IAM_Event_Generator
   version: -1
