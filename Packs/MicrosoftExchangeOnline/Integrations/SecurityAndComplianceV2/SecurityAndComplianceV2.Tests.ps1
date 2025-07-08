@@ -1,6 +1,26 @@
 BeforeAll {
     . $PSScriptRoot\demistomock.ps1
     . $PSScriptRoot\SecurityAndComplianceV2.ps1
+
+    class MockClient {
+        [object] NewSearch($name, $param2, $kql, $description, $bool1, $locations, $p1, $p2, $p3, $errAction) {
+            return @{ Name = $name; Status = "NotStarted"; Items = 1 }
+        }
+        [void] StartSearch($name) {
+            $script:SearchStarted = $true
+        }
+        [object] GetSearch($name) {
+            return @{ Name = $name; Status = "Completed"; Items = 2 }
+        }
+        [object] GetSearchAction($name, $errAction) {
+            return $null
+        }
+        [object] NewSearchAction($searchName, $type, $action, $format1, $format2, $versions, $email, $cc, $scenario, $scope) {
+            return @{ Status = "Starting" }
+        }
+    }
+
+    $mockClient = [MockClient]::new()
 }
 
 Describe 'StringRegexParse' {
@@ -218,6 +238,25 @@ Describe 'MakeSearchName' {
             $name2 = MakeSearchName "<abc@domain.com>" @("Mailbox1", "Mailbox2")
 
             $name1 | Should -Be $name2
+        }
+    }
+}
+
+Describe 'SearchAndDeleteEmailCommand' {
+    Context "Initial run - search creation" {
+        It "Creates and starts a new search" {
+            $kwargs = @{
+                polling_first_run = $true
+                force = $false
+                internet_message_id = "<abc@domain.com>"
+                exchange_location = @("user@domain.com")
+            }
+
+            $result = SearchAndDeleteEmailCommand -client $mockClient -kwargs $kwargs
+
+            $result[0] | Should -Match "Search created & started"
+            $result[2].Name | Should -Match "abc@domain.com"
+            $result[3].search_name | Should -Be $result[2].Name
         }
     }
 }
