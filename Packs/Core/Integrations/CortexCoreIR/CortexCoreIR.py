@@ -87,20 +87,28 @@ class Client(CoreClient):
         )
         return reply
 
-    def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> dict[str, str]:
+    def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> list[dict]:
         """
-        Submit a block-IP action for each address in ip_list using the Cortex Core API.
-
+        Block one or more IPs on a given endpoint and collect action IDs.
+        If endpoint disconnected/not exists the group id will be None.
         Args:
-            endpoint_id (str): The unique ID of the endpoint that support the action.
-            ip_list (list[str]): List of IP addresses to block.
-            duration (int): Duration in seconds for which the IP is blocked.
+            endpoint_id (str): ID of the endpoint to apply the block.
+            ip_list (list[str]): IP addresses to block.
+            duration (int): Block duration in seconds.
 
         Returns:
-            dict[str, str]: Mapping of each IP address to its group_action_id.
+            list[dict]: A list of action records, each containing:
+                - ip_address (str): The blocked IP.
+                - endpoint_id (str): The endpoint where the block was applied.
+                - group_id (str): ID of the block action for status polling.
         """
-        results = {}
+        results = []
+        endpoint_status = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
+        if not endpoint_status:
+            demisto.debug(f"endpoint {endpoint_id} disconnected")
+            return [{"ip_address": ip_address, "group_id": None, "endpoint_id": endpoint_id} for ip_address in ip_list]
         for ip_address in ip_list:
+            demisto.debug(f"Blocking ip address: {ip_address}")
             response = self._http_request(
                 method="POST",
                 headers=self._headers,
@@ -115,39 +123,52 @@ class Client(CoreClient):
                 },
             )
             group_id = response.get("reply", {}).get("group_action_id", "")
-            demisto.debug(f"Block request for {ip_address} returned with group_id {response}")
-            results[ip_address] = group_id
-
+            demisto.debug(f"Block request for {ip_address} returned with group_id {group_id}")
+            results.append(
+                {
+                    "ip_address": ip_address,
+                    "group_id": group_id,
+                    "endpoint_id": endpoint_id,
+                }
+            )
         return results
 
-    def get_status_block_ip(self, group_id: int, endpoint_id: str):
+    def fetch_block_status(self, group_id: int, endpoint_id: str) -> tuple[str, str]:
         """
-        Poll get_status_block_ip_action until status is 'completed' or 'failed',
-        or until timeout seconds have elapsed.
+        Check for status of blocking ip action.
 
-        :param timeout: total seconds to wait before giving up
-        :param interval: seconds between polls
-        :returns: the final action_result dict
+        Args:
+            group_id (int): The group id returned from the block request.
+            endpoint_id (str): The ID of the endpoint whose block status is being checked.
+
+        Returns:
+            tuple[str, str]:
+                - status: The returned status from the api.
+                - message: The returned error text.
         """
-        reply = self.action_status_get(group_id)
-        demisto.debug(f"Reply for {group_id} is: {reply}")
-        data = reply.get("data") or {}
-        demisto.debug(f"Data: {data}")
-        error_reasons = reply.get("errorReasons", {})
-        
         endpoint_status = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
-        if not endpoint_status:
+        if not endpoint_status or group_id is None:
             demisto.debug(f"endpoint {endpoint_id} disconnected")
-            return "Failure", "endpoint disconnected"
-        for current_endpoint_id, status in data.items():
-            if current_endpoint_id == endpoint_id:
-                if status == "FAILED":
-                    return "Failure", error_reasons.get("errorText","")
-                elif status == "COMPLETED_SUCCESSFULLY":
-                    return "Success",""
-                return status, ""
-                
-        return "Failure", "No action"
+            return "Failure", "Endpoint Disconnected"
+
+        reply = self.action_status_get(group_id)
+
+        data = reply.get("data") or {}
+        error_reasons = reply.get("errorReasons", {})
+
+        status = data.get(endpoint_id)
+
+        if status == "FAILED":
+            reason = error_reasons.get(endpoint_id, {})
+            text = reason.get("errorText")
+
+            return "Failure", text or "Unknown error"
+
+        if status == "COMPLETED_SUCCESSFULLY":
+            return "Success", ""
+
+        return status or "Unknown", ""
+
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get("file_hash")
@@ -576,71 +597,98 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     )
 
 
-@polling_function('core-block-ip', interval=10, timeout=20)
-def polling_block_ip(args: dict, client: Client) -> PollResult:
+def polling_block_ip_status(args, client) -> PollResult:
     """
-    This function will be called every `interval` seconds until:
-    - it returns a PollResult **without** a scheduled_command (i.e. continue_to_poll=False), or
-    - we hit the timeout.
+    Check action status for each endpoint id and ip address.
+    Due limitation of the polling each time will check all combinations.
+    Will stop polling when all statuses of the requests are Success/Failure.
+
+    Args:
+        args (dict):
+                ip_list list[str]: IPs to block.
+                endpoint_list list[str]: Endpoint IDs.
+                duration (int, optional): Block time in seconds (default: 300).
+                blocked_list list[str]: Action IDs to poll - First empty.
+            client (Client): Integration client.
     """
-    ip_address = args.get("ip_address","")
-    group_id = int(args.get("group_id",0))
-    endpoint = args.get("endpoint_id","")
-    results = args.get("results", [])
-    for endpoint_id, endpoint_group in endpoint_group_dict:
-        for ip_address, group_id in endpoint_group_dict[endpoint_id].items():
-    status, message = client.get_status_block_ip(group_id, endpoint)
-    demisto.debug(f"Status of {group_id} is {status} with message {message}")
-    if status == 'Success':
-        return PollResult(CommandResults(raw_response=status))
+    polling_queue = argToList(args.get("blocked_list", []))
+    demisto.debug(f"polling queue length:{len(polling_queue)}")
 
-    if status == 'Failure':
-        return PollResult(CommandResults(raw_response=f"{status}: {message}"))
-    
-    error_response = CommandResults(raw_response=status,
-                                        readable_output='API Pending')
-    demisto.debug("Continue polling")
-    return PollResult(continue_to_poll=True,
-                      response=error_response,
-                      args_for_next_run={
-                          'ip_address':   ip_address,
-                          'group_id':     group_id,
-                          'endpoint_id':  endpoint,
-                      })
-    
-def core_block_ip_command(args: dict, client: Client) -> CommandResults:
-    ip_list = argToList(args.get('ip_list', []))
-    endpoint_list = argToList(args.get('endpoint_list', []))
-    duration = arg_to_number(args.get('duration', 300)) or 300
-
-    endpoint_group_dict = {}
-    for endpoint_id in endpoint_list:
-        endpoint_group_dict[endpoint_id] = client.block_ip_request(endpoint_id, ip_list, duration)
-    polling_args = {
-                **args,
-                'endpoint_group_dict': endpoint_group_dict,
-                'polling': True,
-                'results': [],
-            }
-    return polling_block_ip(polling_args, client)
     results = []
-    for endpoint_id in endpoint_list:
-        for ip_address, group_id in endpoint_group_dict[endpoint_id].items():
-            polling_args = {
-                **args,
-                'ip_address': ip_address,
-                'group_id': group_id,
-                'endpoint_id': endpoint_id,
-                'polling': True,
-            }
-            
-            results.append({"ip_address": ip_address,
-                            "endpoint": endpoint_id,
-                            "reason":polling_block_ip(polling_args, client).raw_response})
-    
-    hr = tableToMarkdown(name="Block IP Results", t=results)
-    return CommandResults(readable_output=hr)
+    for polled_action in polling_queue:
+        demisto.debug(
+            f"Polled action: endpoint={polled_action['endpoint_id']}, "
+            f"group={polled_action['group_id']}, address={polled_action['ip_address']}"
+        )
+        status, message = client.fetch_block_status(polled_action["group_id"], polled_action["endpoint_id"])
+        demisto.debug(f"polled action status:{status}, with message:{message}")
+        if status == "Success":
+            results.append(
+                {"ip_address": polled_action["ip_address"], "endpoint_id": polled_action["endpoint_id"], "reason": "Success"}
+            )
 
+        elif status == "Failure":
+            results.append(
+                {
+                    "ip_address": polled_action["ip_address"],
+                    "endpoint_id": polled_action["endpoint_id"],
+                    "reason": f"{status}: {message}",
+                }
+            )
+
+        else:
+            demisto.debug("Polling continue")
+            return PollResult(
+                response=None,
+                partial_result=CommandResults(readable_output="Blocking in progress..."),
+                continue_to_poll=True,
+                args_for_next_run=args,
+            )
+
+    response = CommandResults(
+        readable_output=tableToMarkdown(
+            name="Results",
+            t=results,
+        ),
+        outputs_prefix="Core.ip_block_results",
+        outputs=results,
+    )
+
+    return PollResult(response=response, continue_to_poll=False, args_for_next_run=args)
+
+
+@polling_function("core-block-ip", interval=10, timeout=60, requires_polling_arg=False)
+def core_block_ip_command(args: dict, client: Client) -> PollResult:
+    """
+    Send block ip requests for each IP address foreach endpoint.
+    Polls status of the requests until all status are Success/Failure or until timeout.
+
+    Args:
+        args (dict):
+            ip_list list[str]: IPs to block.
+            endpoint_list list[str]: Endpoint IDs.
+            duration (int, optional): Block time in seconds (default: 300).
+            blocked_list list[dict]: list of dicts each {}
+        client (Client): client.
+
+    Returns:
+        PollResult: Schedules or returns poll status/result.
+    """
+    if not args.get("blocked_list", ""):
+        # First call when no block ip request has done
+        ip_list = argToList(args.get("ip_list", []))
+        endpoint_list = argToList(args.get("endpoint_list", []))
+        duration = arg_to_number(args.get("duration", 300)) or 300
+
+        blocked_list = []
+
+        for endpoint_id in endpoint_list:
+            blocked_list.extend(client.block_ip_request(endpoint_id, ip_list, duration))
+        args_for_next_run = {"blocked_list": blocked_list, **args}
+        return polling_block_ip_status(args_for_next_run, client)
+    else:
+        # all other calls after the block ip requests sent
+        return polling_block_ip_status(args, client)
 
 
 def main():  # pragma: no cover

@@ -3346,3 +3346,55 @@ Adding the same indicator, but with different parameters, will update the existi
 | Core.Indicator.class | String | String representing the indicator class. | 
 | Core.Indicator.vendors | List | List representing the vendors who reported this indicator. | 
 
+### core-block-ip
+
+***
+Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
+
+#### Base Command
+
+`core-block-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_list | List of ID's of agents that supports the operation. | Required | 
+| ip_list | List of IPv6 or IPv4 to blocklist. | Required | 
+| duration | Number of minutes to block (Max 518,400). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** | 
+| Core.ip_block_results | List | List of dictionaries each holds 3 fileds: ip_address, endpoint_id, reason. |
+
+#### Context Example
+
+```
+{
+    "Core.ip_block_results": [
+        {
+            "reason": "Success",
+            "ip_address": "1.1.1.1"
+            "endpoint_id": "1234"
+        },
+        {
+            "reason": "Failure: Endpoint Disconnected",
+            "ip_address": "1.1.1.1"
+            "endpoint_id": "12345"
+        },
+        {
+            "reason": "Failure: Failed blocking IP address for IP=2.2.2.2 with error code -197",
+            "ip_address": "2.2.2.2"
+            "endpoint_id": "1234"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+
+|Reason|endpoint_id|ip_address|
+|---|---|---|
+| Success | AAA | 1.1.1.1 |
+| Failure: Endpoint Disconnected | AAA | 2.2.2.2 |

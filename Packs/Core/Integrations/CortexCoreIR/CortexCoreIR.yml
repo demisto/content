@@ -4272,11 +4272,11 @@ script:
     - description: List of IPv6 or IPv4 to blocklist.
       name: ip_list
       required: true
-    - description: Number of minutes to block (Max 518,400 ).
+    - description: Number of minutes to block (Max 518,400).
       name: duration
       required: true
-    - description: poll arguments
-      name: args_for_next_run
+    - description: blocked ip lists required for the polling and not visible to user
+      name: blocked_list
       hidden: true
     polling: true
     name: core-block-ip
