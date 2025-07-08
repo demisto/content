@@ -44,6 +44,7 @@ configuration:
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   commands:
   - description: Manual command to fetch events from Orca Security.
