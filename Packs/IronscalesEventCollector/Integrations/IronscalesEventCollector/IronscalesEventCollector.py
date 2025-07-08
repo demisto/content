@@ -11,8 +11,8 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-VENDOR = "ironscales"
-PRODUCT = "ironscales"
+VENDOR = "ironscales_test"
+PRODUCT = "ironscales_test"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 1000
 DEFAULT_LIMIT = 10
@@ -158,7 +158,7 @@ class Client(BaseClient):  # pragma: no cover
                 ################################
                 new_incidents = response.get("incidents", [])
                 demisto.debug(f"Test-IronScales: new incidents for page num {str(page)}, incidents ids: \
-                              {str([incident.get('incidentID') for incident in response.get('incidents', [])])}")
+                {str([[i.get('incidentID'),i.get('created'), i.get('incidentType')] for i in response.get('incidents', [])])}")
                 page += 1
                 if new_incidents:
                     demisto.debug(
@@ -167,13 +167,22 @@ class Client(BaseClient):  # pragma: no cover
                     )
                 incidents.extend(new_incidents)
             demisto.debug(f"Test-IronScales: loop ended. fetched {str(len(incidents))} new ids")
+
+            def parse_datetime(dt_str):
+                try:
+                    return datetime.strptime(dt_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+                except ValueError:
+                    return datetime.strptime(dt_str, "%Y-%m-%dT%H:%M:%SZ")
+
             incidents_sorted_by_time = sorted(
                 incidents,
-                key=lambda incident: datetime.strptime(incident.get("created"), "%Y-%m-%dT%H:%M:%SZ"),
+                key=lambda incident: parse_datetime(incident.get("created")),
             )
+            demisto.debug("Test-IronScales: sorted sccessfully!")
             incidents_ids_sorted_by_time = [incident.get("incidentID") for incident in incidents_sorted_by_time]
             return incidents_ids_sorted_by_time
         except Exception as e:
+            # Do I want to catch
             demisto.debug(f"Test-IronScales: Exception message:{e}")
             raise Exception("An error occured in get_all_incident_ids. check logs to see why")
 
@@ -292,11 +301,18 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[CommandRes
     return result, events
 
 
-def get_new_last_id(last_timestamp, incident, new_last_ids):
+def get_new_last_id(last_timestamp, incident, new_last_ids, client: Client):
     demisto.debug("Test-IronScales: going into get_new_last_id")
-    incident_time = arg_to_datetime(incident.get("_time"))
+    incident_time = arg_to_datetime(incident.get("first_reported_date"))
     inc_id = incident.get("incident_id")
-    if last_timestamp is None or incident_time > last_timestamp:
+    demisto.debug(f"Test-IronScales: incident_time is:{incident_time}, last_timestamp is: {last_timestamp}")
+    incident_time = client.convert_time_iso_format(incident_time)
+    incident_time = arg_to_datetime(incident_time)
+    demisto.debug("Test-IronScales: converted incident_time!")
+    last_timestamp = client.convert_time_iso_format(last_timestamp)
+    last_timestamp = arg_to_datetime(last_timestamp)
+    demisto.debug("Test-IronScales: converted last_timestamp!")
+    if last_timestamp is None or incident_time > last_timestamp:  # type: ignore
         demisto.debug("Test-IronScales: started a new last ids set!")
         new_last_ids = {inc_id}
         last_timestamp = incident_time
@@ -307,7 +323,14 @@ def get_new_last_id(last_timestamp, incident, new_last_ids):
     return last_timestamp, new_last_ids
 
 
-def all_incidents_trimmer(incident_ids, client: Client, max_fetch, last_timestamp_ids, last_timestamp, last_id):
+def all_incidents_trimmer(
+    incident_ids: List[int],
+    client: Client,
+    max_fetch: int,
+    last_timestamp_ids: Optional[List[int]],
+    last_timestamp: datetime | None,
+    last_id: int | None,
+):
     """
     In all_incidents case, we will save a list of the ids that share the same timestamp as the last id.
     That way we will not return duplicates in each run.
@@ -321,31 +344,35 @@ def all_incidents_trimmer(incident_ids, client: Client, max_fetch, last_timestam
     """
     demisto.debug("Test-IronScales: going in all_incidents_trimmer")
     events: List[dict[str, Any]] = []
-    new_last_ids: set[int] = set()  # the new ids to save for the next run
+    new_last_ids: set[int] = set()  # type: ignore # the new ids to save for the next run
     if last_timestamp_ids:
-        last_timestamp_ids = set(last_timestamp_ids)  # for better runtime
+        last_timestamp_ids = set(last_timestamp_ids)  # type: ignore # for better runtime
         demisto.debug("Test-IronScales: cast ids list to set")
     demisto.debug("Test-IronScales: starting incidents enrichment loop")
     for i in incident_ids:
         # remove ids that already pulled
+        demisto.debug(f"Test-IronScales:incident id in loop is {i}")
         if last_timestamp_ids and i in last_timestamp_ids:
+            demisto.debug(f"Test-IronScales: already seen this id! id = {str(i)}")
             continue
         try:
             incident = client.get_incident(i)  # get incident details
-            events.extend(incident_to_events(incident))
-        except Exception:
-            demisto.debug(f"Test-IronScales: Error in getting incident id {i} details")
+            events.extend(incident_to_events(incident))  # incident_to_events returns a list of events!
+        except Exception as e:
+            demisto.debug(f"Test-IronScales: Error in getting incident id {i} details, error: {e}")
             # todo - need to print message to the customer
             continue
-        last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids)
+
+        last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids, client)  # type: ignore # we use the original
+        # incident! not the one with "_time" field
         if len(events) >= max_fetch:
             break
     demisto.debug("Test-IronScales: cast ids set to list")
     new_last_ids: list[int] = list(new_last_ids)
     demisto.debug(f"Test-IronScales: returned from all_incidents_trimmer with the values:\
                   events(only id): {str([event.get('incident_id') for event in events])}")
-
-    return events, new_last_ids[-1] if new_last_ids else last_id, new_last_ids
+    last_id = new_last_ids[-1] if new_last_ids else last_id
+    return events, last_id, new_last_ids
 
 
 def open_incidents_trimmer(incident_ids, client, max_fetch, last_id):
@@ -364,7 +391,7 @@ def fetch_events_command(
     first_fetch: datetime,
     max_fetch: int,
     last_id: Optional[int] = None,
-    last_timestamp_ids: Optional[List] = [],
+    last_timestamp_ids: Optional[List[int]] = [],
 ) -> tuple[List[dict[str, Any]], int, list[Any] | None]:
     """Fetches IRONSCALES incidents as events to XSIAM.
     Note: each report of incident will be considered as an event.
@@ -385,6 +412,7 @@ def fetch_events_command(
         client=client, first_fetch=first_fetch, last_id=last_id, max_fetch=max_fetch
     )
     demisto.debug(f"Test-IronScales: returned from get_incident_ids_to_fetch with {str(len(incident_ids))} new incidents")
+    demisto.debug(f"Test-IronScales: returned from get_incident_ids_to_fetch with the following incidents: {str(incident_ids)}")
     last_id = last_id or -1
     if client.all_incident:
         events, last_id, last_timestamp_ids = all_incidents_trimmer(
@@ -437,6 +465,7 @@ def main():
                 demisto.debug("Test-IronScales: last_run buffer is not empty. using other first_fetch time.")
                 first_fetch = arg_to_datetime(demisto.getLastRun().get("last_incident_time")) or first_fetch
                 demisto.debug(f'Test-IronScales: new time = {demisto.getLastRun().get("last_incident_time")}')
+            demisto.debug("Test-IronScales: going into fetch-events")
             events, last_id, last_timestamp_ids = fetch_events_command(
                 client=client,
                 first_fetch=first_fetch,
@@ -463,6 +492,7 @@ def main():
                     "last_timestamp_ids": last_timestamp_ids,
                 }
             )
+            demisto.debug("Test-IronScales: fetch finished in success!")
 
     # Log exceptions
     except Exception as e:

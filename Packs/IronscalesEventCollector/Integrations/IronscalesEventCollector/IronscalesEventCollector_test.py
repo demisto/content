@@ -197,8 +197,8 @@ def test_single_page_with_incidents(mocker):
         return_value={
             "total_pages": 1,
             "incidents": [
-                {"incidentID": 1, "created": "2019-08-24T14:15:22Z"},
-                {"incidentID": 2, "created": "2019-08-24T14:15:22Z"},
+                {"incidentID": 1, "created": "2025-07-04T10:39:05.260833Z"},
+                {"incidentID": 2, "created": "2025-07-04T10:39:05.260833Z"},
             ],
         },
     )
@@ -268,7 +268,7 @@ def test_respects_max_fetch(mocker):
 
     mocker.patch.object(client, "_http_request", side_effect=ids_generator())
     mocker.patch.object(
-        client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": f"{str(2019+x)}-08-24T14:15:22Z"}
+        client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22Z"}
     )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
@@ -320,7 +320,7 @@ def test_all_incidents_last_id(mocker):
 
     mocker.patch.object(client, "_http_request", side_effect=responses)
     mocker.patch.object(
-        client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": f"{str(2019+x)}-08-24T14:15:22Z"}
+        client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22Z"}
     )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
@@ -367,7 +367,7 @@ def test_all_incidents_last_id_complex(mocker):
 
     mocker.patch.object(client, "_http_request", side_effect=ids_generator())
     mocker.patch.object(
-        client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": f"{str(2019+x)}-08-24T14:15:22Z"}
+        client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22Z"}
     )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
@@ -449,7 +449,7 @@ def test_sort_incidents(mocker):
 
     mocker.patch.object(client, "_http_request", side_effect=responses)
     mocker.patch.object(
-        client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": f"{str(2019+x)}-08-24T14:15:22Z"}
+        client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22Z"}
     )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
@@ -496,7 +496,7 @@ def test_same_timestamp(mocker):
     times = ["2024-08-24T14:15:12Z", "2024-08-24T14:15:20Z", "2024-08-24T14:15:22Z", "2024-08-24T14:15:22Z"]
 
     mocker.patch.object(client, "_http_request", side_effect=responses)
-    mocker.patch.object(client, "get_incident", side_effect=lambda x: {"incident_id": x, "_time": times[x - 1]})
+    mocker.patch.object(client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": times[x - 1]})
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
     res, last_run, last_timestamp_ids = fetch_events_command(
@@ -548,7 +548,7 @@ def test_unknown_incident_id(mocker):
 
     def new_get_incident(incident):
         if incident != 3:
-            return {"incident_id": incident, "_time": times[incident - 1]}
+            return {"incident_id": incident, "first_reported_date": times[incident - 1]}
         raise ValueError("Incident 13500 not found for company")
 
     times = ["2024-08-24T14:15:12Z", "2024-08-24T14:15:20Z", "2024-08-24T14:15:22Z", "2024-08-24T14:15:22Z"]
