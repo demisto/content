@@ -2,7 +2,7 @@
     "name": "Common Scripts",
     "description": "Frequently used scripts pack.",
     "support": "xsoar",
-    "currentVersion": "1.19.74",
+    "currentVersion": "1.19.81",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -68,6 +68,7 @@
         "X5",
         "ENT_PLUS",
         "asm",
-        "exposure_management"
+        "exposure_management",
+        "agentix"
     ]
 }
