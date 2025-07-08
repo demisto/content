@@ -9,25 +9,30 @@ configuration:
   name: longRunning
   type: 8
   required: false
+  section: Connect
 - additionalinfo: "Runs the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for Simple API Proxy will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port."
   display: Listen Port
   name: longRunningPort
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
   required: false
+  section: Connect
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.
   display: Private Key (Required for HTTPS)
   name: key
   type: 14
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
@@ -46,25 +51,30 @@ configuration:
   - Bearer Token
   type: 15
   required: false
+  section: Connect
 - display: API credentials
   name: api_credentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: See example in detailed instructions.
   display: API Permission Definition
   name: api_permissions
   required: true
   type: 12
+  section: Connect
 - additionalinfo: Works when "API Credential Type" value is set to "Custom Header"
   display: Custom Auth Header
   name: custom_auth_header
   type: 0
   required: false
+  section: Connect
 - additionalinfo: Works when "API Credential Type" value is set to "Custom Header"
   display: Custom Auth Header value
   name: custom_auth_header_value
   type: 0
   required: false
+  section: Connect
 description: Provide a simple API proxy to restrict privileges or minimize the amount of credentials issued at the API.
 display: Simple API Proxy
 name: Simple API Proxy

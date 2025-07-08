@@ -12,21 +12,25 @@ configuration:
   name: longRunning
   type: 8
   required: false
+  section: Connect
 - display: Port mapping (<port> or <host port>:<docker port>)
   name: longRunningPort
   required: true
   type: 0
   additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a port, an unused port for Web File Repository will automatically be generated when the instance is saved. However, if using an engine, you must enter a port."
+  section: Connect
 - display: User ID for Read/Write
   displaypassword: Password
   name: rwCredentials
   type: 9
   required: false
+  section: Connect
 - display: User ID for Read-Only
   displaypassword: Password
   name: roCredentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Some of the browsers such as Chrome may not support Digest-sha256.
   display: Authentication Method
   name: authenticationMethod
@@ -36,12 +40,14 @@ configuration:
   - Digest-sha256
   type: 15
   required: false
-- additionalinfo: Authentication is not requiured for read access
+  section: Connect
+- additionalinfo: Authentication is not required for read access
   defaultvalue: "true"
   display: Public Read Access
   name: publicReadAccess
   type: 8
   required: false
+  section: Connect
 - additionalinfo: '"mime-type  extension [extension]*" for each line, wild-card file extensions are supported.'
   display: MIME Types for file extensions
   name: mimeTypes
