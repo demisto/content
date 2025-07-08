@@ -1504,7 +1504,7 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     name = args.get("name", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    enabled = args.get("enabled")
+    enabled = args.get("enabled", "")
     response = client.update_webapp_auth(name, subscription_id, resource_group_name, enabled)
     demisto.debug("Updated webapp auth settings.")
     outputs = [
