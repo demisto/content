@@ -118,7 +118,7 @@ class Client(BaseClient):  # pragma: no cover
             size=size,
             attributes=assign_params(time=time),
         )
-        demisto.debug(f"{LOG_LINE} request sent: {size=}, {time=}, {req_body=} ")
+
         return self._http_request(
             method="POST",
             url_suffix="/api/v1/users/activitylogs/search",
