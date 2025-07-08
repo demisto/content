@@ -6,3 +6,6 @@ IN126
 
 [file:Sysdig_Trigger_System_Capture_Playbook.yml]
 RM116
+
+[file:Sysdig_Trigger_System_Capture_Playbook.yml]
+ST110
