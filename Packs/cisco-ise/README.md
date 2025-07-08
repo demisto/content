@@ -43,7 +43,7 @@ Do the following to configure the Broker VM to ingest Cisco ISE logs.
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
 2. Under the **Brokers** tab go to the **APPS** column and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
-4. Set the Syslog Collector parameters::
+4. Set the Syslog Collector parameters:
 
     | Parameter    | Value                                                                                                                       |
     |:-------------|:----------------------------------------------------------------------------------------------------------------------------|
