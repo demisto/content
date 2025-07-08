@@ -439,3 +439,36 @@ def test_query_argument_with_unicode_escape(mocker):
     for _ in special_chars:
         mocker.patch.object(SearchIncidentsV2, "execute_command", side_effect=execute_get_incidents_command_side_effect(1))
         SearchIncidentsV2.main()
+
+
+def test_todate_set_and_pagination(mocker):
+    """
+    Given: Duplicated incidents from executing getIncidents command to the platform in 2 different requests in a row.
+    When: Running the command with limit that is larger than the page size.
+    Then: Validate that the command return incident list without duplications by changing the todate to
+     be the first incident time from the first run.
+    """
+    import SearchIncidentsV2
+
+    # Page 1 returns exactly page_size incidents
+    page1_incidents = [{"created": f"2025-01-01T10:0{i}:00Z", "id": i} for i in range(5)]
+    # Page 2 returns fewer, triggering end-of-pagination
+    page2_incidents = [{"created": f"2025-01-01T09:59:00Z", "id": 101}]
+
+    # Mock execute_command behavior
+    execute_command_mocker = mocker.patch.object(SearchIncidentsV2, "execute_command", side_effect= [
+        # 1st call: initial getIncidents
+        [{"Contents": {"data": page1_incidents}}],
+        # 2nd call: getIncidents inside loop (page2)
+        {"data": page2_incidents},
+    ])
+
+    args = {"limit": 10, "size": 5}
+    SearchIncidentsV2.search_incidents(args=args)
+
+    # After first page, todate should be set to the very first created timestamp
+    expected_todate = page1_incidents[0]["created"]
+
+    # Confirm that execute_command was called a second time with args including todate
+    _, second_call_kwargs = execute_command_mocker.call_args_list
+    assert second_call_kwargs[0][1]["todate"] == expected_todate
