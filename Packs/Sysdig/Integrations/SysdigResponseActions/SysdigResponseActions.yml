@@ -47,6 +47,16 @@ configuration:
   name: incidentType
   type: 13
   section: Collect
+- name: max_fetch
+  type: 0
+  defaultvalue: '50'
+  section: Collect
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
 description: 'This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture.'
 display: Sysdig Response Actions
 name: SysdigResponseActions
