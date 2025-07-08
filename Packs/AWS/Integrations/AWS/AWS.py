@@ -16,6 +16,7 @@ DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
 
+
 def parse_resource_ids(resource_id: str | None) -> list[str]:
     if resource_id is None:
         raise ValueError("Resource ID cannot be empty")
@@ -1255,8 +1256,8 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
 
         demisto.info("[AWS Automation Health Check] All services connected successfully")
         return None
-    
-     except Exception as err:
+
+    except Exception as err:
         demisto.error(f"[AWS Automation Health Check] Unexpected error during health check: {err}")
 
         # Create a general internal error
@@ -1268,6 +1269,7 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
         )
 
         return internal_error
+
 
 def register_proxydome_header(boto_client: BotoClient) -> None:
     """
@@ -1352,7 +1354,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     credentials = {}
     if not params:
         credentials: dict = get_cloud_credentials(CloudTypes.AWS.value, account_id)
-        
+
     service_client, _ = get_service_client(credentials, params, args, command)
     return COMMANDS_MAPPING[command](service_client, args)
 
