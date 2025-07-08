@@ -3742,6 +3742,13 @@ script:
     - contextPath: CarbonBlackDefense.Events.Results.watchlist_hit
       description: 'Indicates if the event matches a watchlist entry.'
       type: String
+  - name: test-polling-args
+    polling: true
+    arguments:
+      - name: rows
+        description: The number of rows (increments every polling iteration).
+        defaultValue: "1"
+    description: Simulates polling by incrementing the `rows` argument on each iteration.
   dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
