@@ -1878,6 +1878,62 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
         raw_response=response,
     )
 
+def get_warninglists_command(demisto_args: dict) -> CommandResults:
+    """
+    Gets warninglists from MISP
+    Args:
+        demisto_args: dict of arguments.
+
+    Returns:
+        CommandResults.
+    """
+    warninglist_headers = [
+        "ID",
+        "Name",
+        "Type",
+        "Description",
+        "Version",
+        "Enabled",
+        "Default",
+        "Category",
+        "EntryCount",
+        "ValidAttributes",
+    ]  # noqa: E501
+    response = PYMISP.warninglists()
+    if "errors" in response:
+        raise DemistoException(f"Warninglists: No warninglist have been found in MISP: \nError message: {response}")
+
+    warninglists_output = []
+    for iter in response:
+        res = {}
+        warninglist = iter["Warninglist"]  # type: ignore
+        # for item in warninglist: # type: ignore
+        #    res[item.capitalize()] = warninglist.get(item) # type: ignore
+        res["ID"] = warninglist.get("id")
+        res["Name"] = warninglist.get("name")
+        res["Type"] = warninglist.get("type")
+        res["Description"] = warninglist.get("description")
+        res["Version"] = warninglist.get("version")
+        res["Enabled"] = warninglist.get("enabled")
+        res["Default"] = warninglist.get("default")
+        res["Category"] = warninglist.get("category")
+        res["EntryCount"] = warninglist.get("warninglist_entry_count")
+        # Parse valid attributes from the "valid_attributes" field if present
+        valid_attributes = warninglist.get("valid_attributes", [])
+        res["ValidAttributes"] = valid_attributes.split(",")
+
+        warninglists_output.append(res)
+
+    human_readable = tableToMarkdown("MISP Warninglists", warninglists_output, headers=warninglist_headers, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="MISP.Warninglist",
+        outputs_key_field=["ID"],
+        outputs=warninglists_output,
+        readable_output=human_readable,
+        raw_response=response,
+    )
+
 
 def main():
     params = demisto.params()
@@ -2021,6 +2077,8 @@ def main():
             return_results(set_event_attributes_command(args))
         elif command == "misp-check-warninglist":
             return_results(warninglist_command(args))
+        elif command == "misp-get-warninglists":
+            return_results(get_warninglists_command(args))
         elif command == "misp-add-user":
             return_results(add_user_to_misp(args))
         elif command == "misp-get-organization-info":

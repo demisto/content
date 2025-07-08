@@ -4350,3 +4350,42 @@ Display role names and role ids.
 >|id|name|
 >|---|---|
 >| 1 | rolename |
+### misp-get-warninglists
+
+***
+Gets all warninglists from MISP
+
+#### Base Command
+
+`misp-get-warninglists`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Warninglist.ID | number | The ID of the warninglist |
+| MISP.Warninglist.Name | string | The warninglist's name |
+| MISP.Warninglist.Type | string | MISP warninglist type |
+| MISP.Warninglist.Description | string | Description of the warninglist |
+| MISP.Warninglist.Version | number | The warninglist version number |
+| MISP.Warninglist.Enabled | boolean | Is the MISP warninglist enabled/disabled? |
+| MISP.Warninglist.Default | boolean | Is the MISP warninglist set as default? |
+| MISP.Warninglist.EntryCount | number | The amount of entries (integer) in the warninglist |
+
+#### Command Example
+
+```!misp-get-warninglists```
+
+#### Human Readable Output
+
+>### MISP
+>
+>|ID|Name|Type|Description}Version|Enabled|Default|Category|EntryCount|ValidAttributes|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1 | List | string | An example list | 1 | true | true | false_positive | 2 | hostname |
+>| 2 | Another list | cidr | An example of another list | 42 | false | false | false_positive | 20 | url |
