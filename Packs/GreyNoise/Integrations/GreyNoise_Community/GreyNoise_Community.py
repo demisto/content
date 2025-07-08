@@ -539,7 +539,7 @@ def main() -> None:  # pragma: no cover
         if packs.get("name") == "GreyNoise_Community":
             pack_version = packs.get("currentVersion")
 
-    api_key = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")
+    api_key = demisto.params().get("credentials", {}).get("password") or demisto.params().get("api_key")
     if not api_key:
         return_error("Please provide a valid API token")
     proxy = demisto.params().get("proxy", False)

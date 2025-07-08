@@ -75,7 +75,7 @@ Runs reputation on IPs.
 | GreyNoise.IP.metadata.source_city | string | The city where the IP is geographically located. |
 | GreyNoise.IP.metadata.source_country | string | The full name of the IP source country. |
 | GreyNoise.IP.metadata.source_country_code | string | The country code of the IP source country. |
-| GreyNoise.IP.metadata.tor | boolean | Whether or not the device is a known Tor exit node. |
+| GreyNoise.IP.tor | boolean | Whether or not the device is a known Tor exit node. |
 | GreyNoise.IP.raw_data.hassh.fingerprint | string | HASSH hash fingerprint string. |
 | GreyNoise.IP.raw_data.hassh.port | number | TCP port connection where the HASSH hash was identified. |
 | GreyNoise.IP.raw_data.http.md5 | array | MD5 hashes of HTTP requests made by the device. |
@@ -85,7 +85,7 @@ Runs reputation on IPs.
 | GreyNoise.IP.raw_data.http.useragent | array | HTTP user-agents the device has been observed using. |
 | GreyNoise.IP.raw_data.ja3.fingerprint | string | The JA3 TLS/SSL fingerprint. |
 | GreyNoise.IP.raw_data.ja3.port | number | The corresponding TCP port for the given JA3 fingerprint. |
-| GreyNoise.IP.raw_data.ja4 | array | JA4 TLS/SSL fingerprints. |
+| GreyNoise.IP.raw_data.tls.ja4 | array | JA4 TLS/SSL fingerprints. |
 | GreyNoise.IP.raw_data.scan.port | number | The port number\(s\) the devices has been observed scanning. |
 | GreyNoise.IP.raw_data.scan.protocol | string | The protocol of the port the device has been observed scanning. |
 | GreyNoise.IP.raw_data.source.bytes | number | The number of bytes sent by the source. |
@@ -94,9 +94,17 @@ Runs reputation on IPs.
 | GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
 | GreyNoise.IP.seen | boolean | IP is in record with GreyNoise. |
 | GreyNoise.IP.spoofable | boolean | Boolean indicates if IP is spoofable. |
-| GreyNoise.IP.tags | array | A list of the tags the device has been assigned over the past 90 days. |
+| GreyNoise.IP.tags | array | A list of the tags the device has been assigned over the past 90 days along with their metadata. |
 | GreyNoise.IP.vpn | boolean | Whether the device is VPN endpoint or not. |
 | GreyNoise.IP.vpn_service | string | The name of the VPN service provider of the device. |
+| GreyNoise.IP.category | string | The category of the business service. |
+| GreyNoise.IP.description | string | Description of the business service. |
+| GreyNoise.IP.explanation | string | Explanation of why the IP is considered a business service. |
+| GreyNoise.IP.riot | boolean | Whether the IP is a common business service. |
+| GreyNoise.IP.last_updated | date | When the business service information was last updated. |
+| GreyNoise.IP.name | string | The name of the business service. |
+| GreyNoise.IP.reference | string | Reference link for the business service. |
+| GreyNoise.IP.trust_level | string | If the IP is a business service, how trustworthy is the IP. |
 | IP.Address | string | IP address. |
 | IP.ASN | string | The autonomous system name for the IP address. |
 | IP.Geo.Country | string | The country in which the IP address is located. |
@@ -106,18 +114,22 @@ Runs reputation on IPs.
 | IP.Malicious.Vendor | string | The vendor reporting the IP address as malicious. |
 
 ### IP: 64.39.108.148 found with Reputation: Good
+
 ### GreyNoise Internet Scanner Intelligence Lookup
+
 |IP|Internet Scanner|Classification|Actor|Tags|Spoofable|VPN|BOT|Tor|First Seen|Last Seen Timestamp|
 |---|---|---|---|---|---|---|---|---|---|---|
 | [64.39.108.148](https://viz.greynoise.io/ip/64.39.108.148) | true | benign | Qualys | Qualys (benign - actor) | true | false | false | false | 2025-05-25 | 2025-05-25 09:28:51 |
+
 ### IP: 64.39.108.148 found with Reputation: Good
+
 #### Belongs to Common Business Service: Qualys
+
 ### GreyNoise Business Service Intelligence Lookup
+
 |IP|Business Service|Category|Name|Trust Level|Description|Last Updated|
 |---|---|---|---|---|---|---|
 | [64.39.108.148](https://viz.greynoise.io/ip/64.39.108.148) | true | vulnerability_management | Qualys | 1 - Reasonably Ignore | Qualys Inc (Qualys) is a provider of cloud-based platform information security and compliance cloud solutions. The company's cloud platform offers private cloud platforms, private cloud platform appliances, public cloud integrations, and cloud agents. | 2025-06-26T13:10:55Z |
-
-
 
 ### greynoise-ip-quick-check
 
@@ -151,10 +163,10 @@ Check whether a given IP address is "Internet background noise", or has been obs
 #### Human Readable Output
 
 ### GreyNoise Quick IP Lookup Details
+
 |IP|Internet Scanner|Classification|Business Service|Trust Level|
 |---|---|---|---|---|
 | [64.39.108.148](https://viz.greynoise.io/ip/64.39.108.148) | true | benign | true | 1 |
-
 
 ### greynoise-query
 
@@ -256,20 +268,24 @@ Get the information of IP based on the providence filters.
 | GreyNoise.Query.scroll | string | Scroll token to paginate through results. |
 
 #### Command Example
+
 `!greynoise-query advanced_query=ip:64.39.108.148 spoofable=true`
 
 #### Human Readable Output
 
 ### GreyNoise Internet Scanner Intelligence
+
 #### Total findings: 1
+
 #### Query: (ip:64.39.108.148 spoofable:true) last_seen:90d
+
 ### GreyNoise Internet Scanner Intelligence
+
 |IP|Internet Scanner|Classification|Actor|Tags|Spoofable|VPN|BOT|Tor|First Seen|Last Seen Timestamp|
 |---|---|---|---|---|---|---|---|---|---|---|
 | [64.39.108.148](https://viz.greynoise.io/ip/64.39.108.148) | true | benign | Qualys | Qualys (benign - actor) | true | false | false | false | 2025-05-25 | 2025-05-25 09:28:51 |
 
 *To view the detailed query result please click [here](https://viz.greynoise.io/query/?gnql=(ip:64.39.108.148+spoofable:true)+last_seen:90d).*
-
 
 ### greynoise-stats
 
@@ -330,20 +346,28 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 #### Human Readable Output
 
 ### GreyNoise Internet Scanner Intelligence
-#### Stats Query: 
+
+#### Stats Query
+
 #### Total IP Count: 489889
+
 ### Classifications
+
 |Classification|Count|
 |---|---|
 | unknown | 248634 |
 | malicious | 127595 |
 | suspicious | 103741 |
 | benign | 9919 |
+
 ### Spoofable
+
 |Spoofable|Count|
 |---|---|
 | False | 489889 |
+
 ### Organizations
+
 |Organization|Count|
 |---|---|
 | Mobile Communication Company of Iran PLC | 58005 |
@@ -355,7 +379,9 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | Cloudflare, Inc. | 13137 |
 | DigitalOcean, LLC | 8490 |
 | Telecom International Myanmar Co., Ltd | 5160 |
+
 ### Actors
+
 |Actor|Count|
 |---|---|
 | Stretchoid | 2008 |
@@ -367,7 +393,9 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | BinaryEdge.io | 756 |
 | Driftnet | 609 |
 | ONYPHE | 576 |
+
 ### Source Countries
+
 |Country|Count|
 |---|---|
 | Iran | 106580 |
@@ -379,7 +407,9 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | Germany | 11446 |
 | Singapore | 7643 |
 | Brazil | 6892 |
+
 ### Destination Countries
+
 |Country|Count|
 |---|---|
 | United States | 407724 |
@@ -392,7 +422,9 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | Canada | 108688 |
 | Mexico | 104668 |
 | France | 103558 |
+
 ### Tags
+
 |Tag|Count|
 |---|---|
 | Web Crawler | 177741 |
@@ -405,7 +437,9 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | Generic IoT Default Password Attempt | 40313 |
 | Mirai | 33110 |
 | Mirai TCP Scanner | 30260 |
+
 ### Categories
+
 |Category|Count|
 |---|---|
 | isp | 307235 |
@@ -413,7 +447,9 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | business | 6373 |
 | education | 952 |
 | government | 421 |
+
 ### ASNs
+
 |ASN|Count|
 |---|---|
 | AS197207 | 58005 |
@@ -425,7 +461,6 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | AS13335 | 13100 |
 | AS14061 | 8490 |
 | AS136255 | 5160 |
-
 
 ### greynoise-riot
 
@@ -470,12 +505,14 @@ Identifies IPs from known benign services and organizations that commonly cause 
 #### Human Readable Output
 
 ### IP: 64.39.108.148 found with Reputation: Good
+
 #### Belongs to Common Business Service: Qualys
+
 ### GreyNoise Business Service Intelligence Lookup
+
 |IP|Business Service|Category|Name|Trust Level|Description|Last Updated|
 |---|---|---|---|---|---|---|
 | [64.39.108.148](https://viz.greynoise.io/ip/64.39.108.148) | true | vulnerability_management | Qualys | 1 - Reasonably Ignore | Qualys Inc (Qualys) is a provider of cloud-based platform information security and compliance cloud solutions. The company's cloud platform offers private cloud platforms, private cloud platform appliances, public cloud integrations, and cloud agents. | 2025-06-26T13:10:55Z |
-
 
 ### greynoise-context
 
@@ -502,71 +539,64 @@ Identifies IPs that have been observed mass-scanning the internet.
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | GreyNoise.IP.address | string | The IP address of the scanning device IP. |
-| GreyNoise.IP.business_service_intelligence.category | string | The category of the business service. |
-| GreyNoise.IP.business_service_intelligence.description | string | Description of the business service. |
-| GreyNoise.IP.business_service_intelligence.explanation | string | Explanation of why the IP is considered a business service. |
-| GreyNoise.IP.business_service_intelligence.found | boolean | Whether the IP is a common business service. |
-| GreyNoise.IP.business_service_intelligence.last_updated | date | When the business service information was last updated. |
-| GreyNoise.IP.business_service_intelligence.name | string | The name of the business service. |
-| GreyNoise.IP.business_service_intelligence.reference | string | Reference link for the business service. |
-| GreyNoise.IP.business_service_intelligence.trust_level | string | If the IP is a business service, how trustworthy is the IP. |
-| GreyNoise.IP.internet_scanner_intelligence.actor | string | The overt actor the device has been associated with. |
-| GreyNoise.IP.internet_scanner_intelligence.bot | Boolean | Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks. |
-| GreyNoise.IP.internet_scanner_intelligence.classification | string | Whether the device has been categorized as unknown, benign, or malicious. |
-| GreyNoise.IP.internet_scanner_intelligence.cve | array | CVEs associated with IP. |
-| GreyNoise.IP.internet_scanner_intelligence.first_seen | date | The date the device was first observed by GreyNoise. Format is ISO8601. |
-| GreyNoise.IP.internet_scanner_intelligence.found | boolean | Whether the IP was found in GreyNoise records. |
-| GreyNoise.IP.internet_scanner_intelligence.last_seen | date | The date the device was last observed by GreyNoise. Format is ISO8601. |
-| GreyNoise.IP.internet_scanner_intelligence.last_seen_timestamp | string | The timestamp when the device was last observed by GreyNoise. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.asn | string | The autonomous system identification number. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.carrier | string | The carrier information for the IP address. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.category | string | Whether the device belongs to a business, isp, hosting, education, or mobile network. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.city | string | The city the device is geographically located in. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.country | string | The full name of the country. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.country_code | string | The two-character country code of the country. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.datacenter | string | The datacenter information for the IP address. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.destination_asns | array | The list of ASNs targeted by scanning. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.destination_cities | array | The list of cities targeted by scanning. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.destination_countries | array | The list of countries targeted by scanning. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.destination_country_codes | array | The list of country codes targeted by scanning. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.domain | string | The domain associated with the IP address. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.latitude | number | The latitude coordinate of the IP address location. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.longitude | number | The longitude coordinate of the IP address location. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.mobile | boolean | Whether the device is on a mobile network. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.organization | string | The organization that owns the network that the IP address belongs to. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.os | string | The name of the operating system of the device. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.rdns | string | Reverse DNS lookup of the IP address. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.rdns_parent | string | The parent domain of the reverse DNS lookup. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.rdns_validated | boolean | Whether the reverse DNS lookup has been validated. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.region | string | The full name of the region the device is geographically located in. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.sensor_count | number | The number of sensors that observed activity from this IP. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.sensor_hits | number | The number of sensor events recorded from this IP. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.single_destination | boolean | Whether the IP targets a single destination. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.source_city | string | The city where the IP is geographically located. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.source_country | string | The full name of the IP source country. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.source_country_code | string | The country code of the IP source country. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.tor | boolean | Whether or not the device is a known Tor exit node. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.hassh.fingerprint | string | HASSH hash fingerprint string. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.hassh.port | number | TCP port connection where the HASSH hash was identified. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.http.md5 | array | MD5 hashes of HTTP requests made by the device. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.http.method | array | HTTP methods used by the device. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.http.path | array | HTTP paths the device has been observed accessing. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.http.request_header | array | HTTP request headers used by the device. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.http.useragent | array | HTTP user-agents the device has been observed using. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.ja3.fingerprint | string | The JA3 TLS/SSL fingerprint. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.ja3.port | number | The corresponding TCP port for the given JA3 fingerprint. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.scan.port | number | The port number\(s\) the device has been observed scanning. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.scan.protocol | string | The protocol of the port the device has been observed scanning. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.source.bytes | number | The number of bytes sent by the source. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.tls.cipher | array | TLS cipher suites used by the device. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.tls.ja4 | array | JA4 TLS/SSL fingerprints. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.web.paths | array | Any HTTP paths the device has been observed crawling the Internet for. |
-| GreyNoise.IP.internet_scanner_intelligence.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
-| GreyNoise.IP.internet_scanner_intelligence.seen | boolean | IP is in record with GreyNoise. |
-| GreyNoise.IP.internet_scanner_intelligence.spoofable | boolean | Boolean indicates if IP is spoofable. |
-| GreyNoise.IP.internet_scanner_intelligence.tags | array | A list of the tags the device has been assigned over the past 90 days. |
-| GreyNoise.IP.internet_scanner_intelligence.vpn | boolean | Whether the device is VPN endpoint or not. |
-| GreyNoise.IP.internet_scanner_intelligence.vpn_service | string | The name of the VPN service provider of the device. |
+| GreyNoise.IP.actor | string | The overt actor the device has been associated with. |
+| GreyNoise.IP.bot | Boolean | Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks. |
+| GreyNoise.IP.classification | string | Whether the device has been categorized as unknown, benign, or malicious. |
+| GreyNoise.IP.cve | array | CVEs associated with IP. |
+| GreyNoise.IP.first_seen | date | The date the device was first observed by GreyNoise. Format is ISO8601. |
+| GreyNoise.IP.found | boolean | Whether the IP was found in GreyNoise records. |
+| GreyNoise.IP.last_seen | date | The date the device was last observed by GreyNoise. Format is ISO8601. |
+| GreyNoise.IP.last_seen_timestamp | string | The timestamp when the device was last observed by GreyNoise. |
+| GreyNoise.IP.metadata.asn | string | The autonomous system identification number. |
+| GreyNoise.IP.metadata.carrier | string | The carrier information for the IP address. |
+| GreyNoise.IP.metadata.category | string | Whether the device belongs to a business, isp, hosting, education, or mobile network. |
+| GreyNoise.IP.metadata.city | string | The city the device is geographically located in. |
+| GreyNoise.IP.metadata.country | string | The full name of the country. |
+| GreyNoise.IP.metadata.country_code | string | The two-character country code of the country. |
+| GreyNoise.IP.metadata.datacenter | string | The datacenter information for the IP address. |
+| GreyNoise.IP.metadata.destination_asns | array | The list of ASNs targeted by scanning. |
+| GreyNoise.IP.metadata.destination_cities | array | The list of cities targeted by scanning. |
+| GreyNoise.IP.metadata.destination_countries | array | The list of countries targeted by scanning. |
+| GreyNoise.IP.metadata.destination_country_codes | array | The list of country codes targeted by scanning. |
+| GreyNoise.IP.metadata.domain | string | The domain associated with the IP address. |
+| GreyNoise.IP.metadata.latitude | number | The latitude coordinate of the IP address location. |
+| GreyNoise.IP.metadata.longitude | number | The longitude coordinate of the IP address location. |
+| GreyNoise.IP.metadata.mobile | boolean | Whether the device is on a mobile network. |
+| GreyNoise.IP.metadata.organization | string | The organization that owns the network that the IP address belongs to. |
+| GreyNoise.IP.metadata.os | string | The name of the operating system of the device. |
+| GreyNoise.IP.metadata.rdns | string | Reverse DNS lookup of the IP address. |
+| GreyNoise.IP.metadata.rdns_parent | string | The parent domain of the reverse DNS lookup. |
+| GreyNoise.IP.metadata.rdns_validated | boolean | Whether the reverse DNS lookup has been validated. |
+| GreyNoise.IP.metadata.region | string | The full name of the region the device is geographically located in. |
+| GreyNoise.IP.metadata.sensor_count | number | The number of sensors that observed activity from this IP. |
+| GreyNoise.IP.metadata.sensor_hits | number | The number of sensor events recorded from this IP. |
+| GreyNoise.IP.metadata.single_destination | boolean | Whether the IP targets a single destination. |
+| GreyNoise.IP.metadata.source_city | string | The city where the IP is geographically located. |
+| GreyNoise.IP.metadata.source_country | string | The full name of the IP source country. |
+| GreyNoise.IP.metadata.source_country_code | string | The country code of the IP source country. |
+| GreyNoise.IP.tor | boolean | Whether or not the device is a known Tor exit node. |
+| GreyNoise.IP.raw_data.hassh.fingerprint | string | HASSH hash fingerprint string. |
+| GreyNoise.IP.raw_data.hassh.port | number | TCP port connection where the HASSH hash was identified. |
+| GreyNoise.IP.raw_data.http.md5 | array | MD5 hashes of HTTP requests made by the device. |
+| GreyNoise.IP.raw_data.http.method | array | HTTP methods used by the device. |
+| GreyNoise.IP.raw_data.http.path | array | HTTP paths the device has been observed accessing. |
+| GreyNoise.IP.raw_data.http.request_header | array | HTTP request headers used by the device. |
+| GreyNoise.IP.raw_data.http.useragent | array | HTTP user-agents the device has been observed using. |
+| GreyNoise.IP.raw_data.ja3.fingerprint | string | The JA3 TLS/SSL fingerprint. |
+| GreyNoise.IP.raw_data.ja3.port | number | The corresponding TCP port for the given JA3 fingerprint. |
+| GreyNoise.IP.raw_data.tls.ja4 | array | JA4 TLS/SSL fingerprints. |
+| GreyNoise.IP.raw_data.scan.port | number | The port number\(s\) the device has been observed scanning. |
+| GreyNoise.IP.raw_data.scan.protocol | string | The protocol of the port the device has been observed scanning. |
+| GreyNoise.IP.raw_data.source.bytes | number | The number of bytes sent by the source. |
+| GreyNoise.IP.raw_data.tls.cipher | array | TLS cipher suites used by the device. |
+| GreyNoise.IP.raw_data.tls.ja4 | array | JA4 TLS/SSL fingerprints. |
+| GreyNoise.IP.raw_data.web.paths | array | Any HTTP paths the device has been observed crawling the Internet for. |
+| GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
+| GreyNoise.IP.seen | boolean | IP is in record with GreyNoise. |
+| GreyNoise.IP.spoofable | boolean | Boolean indicates if IP is spoofable. |
+| GreyNoise.IP.tags | array | A list of the tags the device has been assigned over the past 90 days. |
+| GreyNoise.IP.vpn | boolean | Whether the device is VPN endpoint or not. |
+| GreyNoise.IP.vpn_service | string | The name of the VPN service provider of the device. |
 
 #### Example Command
 
@@ -575,11 +605,12 @@ Identifies IPs that have been observed mass-scanning the internet.
 #### Human Readable Output
 
 ### IP: 64.39.108.148 found with Reputation: Good
+
 ### GreyNoise Internet Scanner Intelligence Lookup
+
 |IP|Internet Scanner|Classification|Actor|Tags|Spoofable|VPN|BOT|Tor|First Seen|Last Seen Timestamp|
 |---|---|---|---|---|---|---|---|---|---|---|
 | [64.39.108.148](https://viz.greynoise.io/ip/64.39.108.148) | true | benign | Qualys | Qualys (benign - actor) | true | false | false | false | 2025-05-25 | 2025-05-25 09:28:51 |
-
 
 ### greynoise-similarity
 
@@ -676,7 +707,6 @@ Internet Scanner Timeline Details - Daily Activity Summary
 |---------|----------------|-------------|-------------|--------------|---------|----------------------|------------|-----------------|
 | 1.2.3.4 | malicious      | BruteForcer | me.acme.lcl | Acme, Inc    | AS12345 | ports,spoofable_bool | /root/home | MozillaFirefox  |
 
-
 #### Human Readable Output - No Results
 
 GreyNoise IP Timeline Returned No Results.
@@ -737,24 +767,33 @@ Queries GreyNoise for CVE Vuln Intelligence.
 #### Human Readable Output
 
 ### CVE: CVE-2021-26086 is found
+
 ### GreyNoise CVE Lookup
+
 |CVE ID|CVSS|Vendor|Product|Published to NVD|
 |---|---|---|---|---|
 | CVE-2021-26086 | 5.3 | Atlassian | Jira Server and Data Center | true |
+
 ### Timeline Details
+
 |Added to Kev|Last Updated|CVE Published|First Published|
 |---|---|---|---|
 | 2024-11-12 | 2025-02-09 | 2021-08-16 | 2023-11-18 |
+
 ### Exploitation Details
+
 |Attack Vector|EPSS Base Score|Exploit Found|Exploit Registered in KEV|
 |---|---|---|---|
 | NETWORK | 0.94247 | true | true |
+
 ### Exploitation Stats
+
 |# of Available Exploits|# of Botnets Exploiting|# of Threat Actors Exploiting|
 |---|---|---|
 | 4 | 1 | 1 |
+
 ### Exploitation Activity - GreyNoise Insights
+
 |GreyNoise Observed Activity|# of Benign IPs - Last Day|# of Benign IPs - Last 10 Days|# of Benign IPs - Last 30 Days|# of Threat IPs - Last Day|# of Threat IPs - Last 10 Days|# of Threat IPs - Last 30 Days|
 |---|---|---|---|---|---|---|
 | true | 14 | 15 | 15 | 126 | 164 | 261 |
-

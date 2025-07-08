@@ -73,7 +73,6 @@ Queries IPs in the GreyNoise Community API.
 | GreyNoise.IP.vpn | boolean | Indicates if the IP is associated with a knwon VPN service. |
 | GreyNoise.IP.vpn_service | string | If the IP is part of a VPN, provides the name of the service. |
 
-
 #### Command Example
 
 ``` !greynoise-community-lookup ips=1.1.1.1 ```
@@ -82,13 +81,19 @@ Queries IPs in the GreyNoise Community API.
 #### Human Readable Output
 
 ### IP: 1.1.1.1 found with Reputation: Good
+
 #### Belongs to Common Business Service: Cloudflare Public DNS
+
 ### GreyNoise Business Service Intelligence Lookup
+
 |IP|Business Service|Category|Name|Trust Level|Description|Last Updated|
 |---|---|---|---|---|---|---|
 | [1.1.1.1](https://viz.greynoise.io/ip/1.1.1.1) | true | public_dns | Cloudflare Public DNS | 1 - Reasonably Ignore | Cloudflare, Inc. is an American web infrastructure and website security company, providing content delivery network (CDN) services, distributed denial of service (DDoS) mitigation, Internet security, and distributed domain name system (DNS) services. This is their public DNS offering. | 2025-06-26T09:10:56Z |
+
 ### IP: 1.1.1.1 No Mass-Internet Scanning Observed
+
 ### GreyNoise Internet Scanner Intelligence Lookup
+
 |IP|Internet Scanner|
 |---|---|
 | 1.1.1.1 | false |
