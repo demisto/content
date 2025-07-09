@@ -114,7 +114,7 @@
 			}
 		},
         "Malware Investigation and Response": {
-			"dontMapEventToLabels": false,
+			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"close_reason": {
 					"simple": "closeReason"
