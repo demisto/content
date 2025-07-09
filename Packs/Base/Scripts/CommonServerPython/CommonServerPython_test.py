@@ -10060,7 +10060,7 @@ class TestMirrorObjectInitialization:
         assert mirror_obj.object_id == object_id, "ticket_id should be initialized correctly."
         mock_demisto_debug.assert_not_called()
 
-    def test_initialization_with_no_fields(self, mocker: MagicMock):
+    def test_initialization_with_no_fields(self, mocker):
         """
         Given: No object_url and no ticket_id (both None).
         When:  MirrorObject is initialized.
@@ -10079,7 +10079,7 @@ class TestMirrorObjectInitialization:
         assert mirror_obj.object_name is None, "object_name should be None."
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
-    def test_initialization_with_only_ticket_url(self, mocker: MagicMock):
+    def test_initialization_with_only_ticket_url(self, mocker):
         """
         Given: Only object_url is provided (ticket_id is None).
         When:  MirrorObject is initialized.
@@ -10098,7 +10098,7 @@ class TestMirrorObjectInitialization:
         assert mirror_obj.object_id is None
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
-    def test_initialization_with_only_ticket_id(self, mocker: MagicMock):
+    def test_initialization_with_only_ticket_id(self, mocker):
         """
         Given: Only ticket_id is provided (object_url is None).
         When:  MirrorObject is initialized.
@@ -10128,12 +10128,12 @@ class TestMirrorObjectInitialization:
     )
     def test_post_init_logging_parametrized(
         self,
-        mocker: MagicMock,
-        ticket_url_in: Optional[str],
-        ticket_id_in: Optional[str],
-        ticket_name_in: Optional[str],
-        expected_missing_fields: List[str],
-        should_log: bool,
+        mocker,
+        ticket_url_in,
+        ticket_id_in,
+        ticket_name_in,
+        expected_missing_fields,
+        should_log,
     ):
         """
         Given: Various combinations of object_url and ticket_id.
@@ -10177,10 +10177,10 @@ class TestMirrorObjectToContext:
     )
     def test_to_context_various_inputs(
         self,
-        mocker: MagicMock, # Add mocker to patch demisto.debug even if not directly testing its call
-        object_url: Optional[str],
-        object_id: Optional[str],
-        expected_dict: Dict[str, Any],
+        mocker,
+        object_url,
+        object_id,
+        expected_dict,
     ):
         """
         Given: A MirrorObject initialized with various combinations of object_url and ticket_id.
@@ -10196,7 +10196,7 @@ class TestMirrorObjectToContext:
         # Then
         assert context_dict == expected_dict, "The context dictionary does not match the expected output."
 
-    def test_to_context_returns_dict(self, mocker: MagicMock):
+    def test_to_context_returns_dict(self, mocker):
         """
         Given: A MirrorObject.
         When:  to_context() is called.
@@ -10366,8 +10366,8 @@ class TestQuickActionPreviewInitialization:
     def test_post_init_logging_parametrized(
         self,
         mocker,
-        init_kwargs: Dict[str, Optional[str]],
-        expected_logged_missing_fields: List[str]
+        init_kwargs,
+        expected_logged_missing_fields
     ):
         """
         Given: Various combinations of field initializations for QuickActionPreview.
@@ -10427,8 +10427,8 @@ class TestQuickActionPreviewToContext:
     def test_to_context_returns_correct_dictionary(
         self,
         mocker,
-        init_kwargs: Dict[str, Optional[str]],
-        expected_dict: Dict[str, Any]
+        init_kwargs,
+        expected_dict
     ):
         """
         Given: A QuickActionPreview initialized with various field values.
