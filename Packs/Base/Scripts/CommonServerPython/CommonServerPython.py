@@ -172,7 +172,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, cast, Text
+    from typing import Optional, Dict, List, Any, Union, Set, cast
 
     from urllib3 import disable_warnings
 
@@ -341,7 +341,7 @@ class QuickActionPreview(object):
     A container class for storing quick action data previews.
     This class is intended to be populated by commands like `!get-remote-data-preview`
     and placed directly into the root context under `QuickActionPreview`.
-    
+
     :return: None
     :rtype: ``None``.
     """
