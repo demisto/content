@@ -1,5 +1,6 @@
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
+from typing import Any
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -37,52 +38,6 @@ class Command:
         self.brand: str | None = brand
         self.name: str = name
         self.args: dict = args
-
-    def has_specified_quarantine_brand(self, quarantine_brands: list[str]) -> bool:
-        """
-        Checks if command source brand is in the list of quarantine brands.
-
-        Args:
-            quarantine_brands (list[str]): List of brand names to run, as given in the `quarantine_brands` argument.
-
-        Returns:
-            bool: True if the command brand is in the quarantine brands list. Otherwise, False.
-        """
-        if not self.brand:
-            demisto.debug(f"Command: {self} is not associated with any integration brand.")
-            return True
-
-        if not quarantine_brands:
-            demisto.debug(f"No specified quarantine brands. Command {self} can run if it has an enabled integration instance.")
-            return True
-
-        if self.brand in quarantine_brands:
-            demisto.debug(f"Command: {self} with brand {self.brand} is in quarantine brands.")
-            return True
-
-        demisto.debug(f"Command: {self} with brand {self.brand} is not in quarantine brands.")
-        return False
-
-    def has_enabled_instance(self, enabled_brands: list[str]) -> bool:
-        """
-        Checks if command source brand has an enabled integration instance.
-
-        Args:
-            enabled_brands (list[str]): Set of enabled integration brands.
-
-        Returns:
-            bool: True if the command brand has an enabled instance. Otherwise, False.
-        """
-        if not self.brand:
-            demisto.debug(f"Command: {self} is not associated with any integration brand.")
-            return True
-
-        if self.brand in enabled_brands:
-            demisto.debug(f"Command: {self} with brand {self.brand} has an enabled instance.")
-            return True
-
-        demisto.debug(f"Command: {self} with brand {self.brand} has an no enabled instance.")
-        return False
 
     def prepare_human_readable(self, human_readable: str, is_error: bool = False) -> CommandResults:
         """
@@ -415,7 +370,7 @@ def xdr_quarantine_file(
 """ SCRIPT FUNCTION """
 
 
-def quarantine_file_script(args: Dict[str, Any]) -> list[CommandResults]:
+def quarantine_file_script(args: dict[str, Any]) -> list[CommandResults]:
     """
     implements the !quarantine-file command by identify which integration to use
     and use it's quarantine-file custom command to reflect the result of the quarantine status to the user
@@ -458,23 +413,19 @@ def quarantine_file_script(args: Dict[str, Any]) -> list[CommandResults]:
         raise DemistoException(
             "None of the quarantine brands has an enabled integration instance. Ensure valid integration IDs are specified."
         )
+
+    integration_for_hash = INTEGRATION_FOR_SHA256 if hash_type == HASH_SHA256 else INTEGRATION_FOR_SHA1
+    supported_brands = list(set(quarantine_brands) & set(integration_for_hash)) if quarantine_brands else integration_for_hash
+    quarantine_brands = list(set(supported_brands) & set(enabled_brands))
+    if not quarantine_brands:
+        demisto.error(f"Could not find enabled integrations for {hash_type}." "Please enable the required integratoin")
+        raise DemistoException("Could Not find supported integration for this file hash type.")
     if hash_type == HASH_SHA1:
         # supported only by MDE
-        if quarantine_brands and BRAND_MDE not in quarantine_brands or BRAND_MDE not in enabled_brands:
-            demisto.error(f"Hash_type {HASH_SHA1} supported only by {INTEGRATION_FOR_SHA1} integration.")
-            raise DemistoException("Not found supported integration for this file hash type.")
         Microsoft_atp_quarantine_file(args, readable_context, context, verbose_command_results)
 
     elif hash_type == HASH_SHA256:  # noqa: SIM102
         # supported by Core or XDR
-        quarantine_brands = list(set({BRAND_CORE_IR, BRAND_XDR_IR}) & set(enabled_brands))
-        if not quarantine_brands:
-            demisto.error(
-                f"Hash_type {HASH_SHA256} supported by {INTEGRATION_FOR_SHA256} integrations."
-                "Please enable the required integratoin"
-            )
-            raise DemistoException("Not found supported integration for this file hash type.")
-
         command_prefix = CORE_COMMAND_PREFIX if BRAND_CORE_IR in quarantine_brands else XDR_COMMAND_PREFIX
         xdr_quarantine_file(command_prefix, args, readable_context, context, verbose_command_results)
 
