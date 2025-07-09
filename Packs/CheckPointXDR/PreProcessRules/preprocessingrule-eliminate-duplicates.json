@@ -1,26 +1,10 @@
 {
     "id": "686bab0b-e6e2-4dbb-8c50-4895d21eca57",
-    "version": 1,
-    "cacheVersn": 0,
-    "modified": "2025-07-08T12:44:52.182377239+03:00",
-    "created": "0001-01-01T00:00:00Z",
-    "sizeInBytes": 0,
+    "version": -1,
     "packID": "",
-    "packName": "",
     "itemVersion": "",
-    "fromServerVersion": "",
     "toServerVersion": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "definitionId": "",
-    "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "name": "Drop-Duplicates",
-    "newEventFilters": [],
-    "readyNewEventFilters": [],
     "existingEventsFilters": [
         [
             {
@@ -69,10 +53,9 @@
     "action": "dropAndUpdate",
     "linkTo": "oldest",
     "scriptName": "",
-    "scriptID": "",
     "enabled": true,
     "index": 1,
     "locked": false,
-    "prevName": "Drop-Duplicates",
-    "system": false
+    "system": false,
+    "fromVersion": "6.10.0"
 }
