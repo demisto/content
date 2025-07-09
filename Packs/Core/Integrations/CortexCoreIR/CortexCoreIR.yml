@@ -4295,7 +4295,6 @@ script:
       required: true
     - description: Number of minutes to block (Max 518,400).
       name: duration
-      required: true
     - description: The blocked IP address lists required for polling that are not visible to the user.
       name: blocked_list
       hidden: true

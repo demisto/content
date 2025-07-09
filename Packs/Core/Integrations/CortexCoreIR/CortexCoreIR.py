@@ -682,7 +682,7 @@ def polling_block_ip_status(args, client) -> PollResult:
             ip_list list[str]: IPs to block.
             endpoint_list list[str]: Endpoint IDs.
             duration (int, optional): Block time in seconds (default: 300).
-            blocked_list list[str]: Action IDs to poll - First empty.
+            blocked_list list[str]: Action IDs to poll.
         client (Client): Integration client.
     """
     polling_queue = argToList(args.get("blocked_list", []))
@@ -755,6 +755,8 @@ def core_block_ip_command(args: dict, client: Client) -> PollResult:
         endpoint_list = argToList(args.get("endpoint_list", []))
         duration = arg_to_number(args.get("duration")) or 300
 
+        if duration <= 0 or duration >= 518400:
+            return_error(message="Duration must be greater than 0 and less than 518,400 minutes (approx 12 months).")
         blocked_list = []
 
         for endpoint_id in endpoint_list:
@@ -763,9 +765,6 @@ def core_block_ip_command(args: dict, client: Client) -> PollResult:
         return polling_block_ip_status(args_for_next_run, client)
     else:
         # all other calls after the block ip requests sent
-        duration = arg_to_number(args.get("duration")) or 300
-        if duration < 0 or duration >= 518400:
-            return_error("Duration must be greater than 0 and less than 518,400 minutes (approx 12 months).")
         return polling_block_ip_status(args, client)
 
 
