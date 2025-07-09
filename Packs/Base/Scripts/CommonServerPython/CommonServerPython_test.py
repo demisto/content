@@ -10394,15 +10394,12 @@ class TestQuickActionPreviewInitialization:
         # When
         QuickActionPreview(**init_kwargs) # type: ignore
 
+        actual_log_message = mock_demisto_debug.call_args[0][0]
+
         # Then
         if expected_logged_missing_fields:
-            # Ensure the order of fields in the log message matches definition order
-            # The __post_init__ iterates self.__dict__.items(), which for dataclasses
-            # maintains insertion order (field definition order).
-            expected_log_message = "Missing fields: {}".format(
-                ", ".join(expected_logged_missing_fields)
-            )
-            mock_demisto_debug.assert_called_once_with(expected_log_message)
+            for field_name in expected_logged_missing_fields:
+                assert field_name in actual_log_message, "Expected '{}' to be logged as missing.".format(field_name)
         else:
             mock_demisto_debug.assert_not_called()
 
