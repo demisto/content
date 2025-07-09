@@ -110,9 +110,9 @@ def get_war_room_url(url: str) -> str:
             # Executed from the incident War Room
             case_id = incident_id.split("-")[-1]
             return f"{base_url}/incidents/war_room?caseId={case_id}"
-        else:
-            # Executed from the alert War Room
-            return f"{base_url}/incidents/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+
+        # Executed from the alert War Room
+        return f"{base_url}/incidents/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
 
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-183586
     if is_platform():
@@ -120,9 +120,9 @@ def get_war_room_url(url: str) -> str:
             # Executed from the cases War Room
             case_id = incident_id.split("-")[-1]
             return f"{base_url}/cases/war_room?caseId={case_id}"
-        else:
-            # Executed from the issue War Room
-            return f"{base_url}/issue-view/{incident_id}"
+
+        # Executed from the issue War Room
+        return f"{base_url}/issue-view/{incident_id}"
 
     return url
 
