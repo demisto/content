@@ -1997,6 +1997,20 @@ def argToBoolean(value):
     else:
         raise ValueError('Argument is neither a string nor a boolean')
 
+def arg_to_bool_or_none(value):
+    """
+    Converts a value to a boolean or None.
+
+    :type value: ``Any``
+    :param value: The value to convert to boolean or None.
+
+    :return: Returns None if the input is None, otherwise returns the boolean representation of the value using the argToBoolean function.
+    :rtype: ``bool`` or ``None``
+    """
+    if value is None:
+        return None
+    else:
+        return argToBoolean(value)
 
 def appendContext(key, data, dedup=False):
     """
