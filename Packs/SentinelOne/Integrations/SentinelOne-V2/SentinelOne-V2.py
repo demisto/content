@@ -397,6 +397,9 @@ class Client(BaseClient):
         return response.get("data", {})
 
     def get_agent_request(self, agent_ids):
+        # Accepts a comma-separated string
+        if isinstance(agent_ids, list):
+            agent_ids = ",".join(agent_ids)
         params = {"ids": agent_ids}
 
         response = self._http_request(method="GET", url_suffix="agents", params=params)
