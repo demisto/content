@@ -323,7 +323,7 @@ Returns the details of an agent according to the agent ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | A comma-separated list of agent IDs. | Required |
+| agent_id | A comma-separated string of agent IDs. | Required |
 
 #### Context Output
 
