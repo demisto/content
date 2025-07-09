@@ -1742,7 +1742,7 @@ def test_exception_in_return_error(mocker):
     expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(IntegrationLogger, '__call__', return_value='Message')
-    with raises(SystemExit, match='0'):
+    with pytest.raises(SystemExit, match='0'):
         return_error("Message", error=ValueError("Error!"))
     results = demisto.results.call_args[0][0]
     assert expected == results
@@ -1755,7 +1755,7 @@ def test_return_error_get_modified_remote_data(mocker):
     mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
     mocker.patch.object(demisto, 'results')
     err_msg = 'Test Error'
-    with raises(SystemExit):
+    with pytest.raises(SystemExit):
         return_error(err_msg)
     assert demisto.results.call_args[0][0]['Contents'] == 'skip update. error: ' + err_msg
 
@@ -1765,7 +1765,7 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
     mocker.patch.object(demisto, 'results')
     err_msg = 'Test Error'
-    with raises(SystemExit):
+    with pytest.raises(SystemExit):
         try:
             raise NotImplementedError('Command not implemented')
         except:
@@ -1846,17 +1846,17 @@ class TestBuildDBotEntry(object):
 
     def test_build_malicious_dbot_entry_wrong_indicator_type(self):
         from CommonServerPython import build_malicious_dbot_entry, DemistoException
-        with raises(DemistoException, match='Wrong indicator type'):
+        with pytest.raises(DemistoException, match='Wrong indicator type'):
             build_malicious_dbot_entry('8.8.8.8', 'notindicator', 'Vendor', 'Google DNS')
 
     def test_illegal_dbot_score(self):
         from CommonServerPython import build_dbot_entry, DemistoException
-        with raises(DemistoException, match='illegal DBot score'):
+        with pytest.raises(DemistoException, match='illegal DBot score'):
             build_dbot_entry('1', 'ip', 'Vendor', 8)
 
     def test_illegal_indicator_type(self):
         from CommonServerPython import build_dbot_entry, DemistoException
-        with raises(DemistoException, match='illegal indicator type'):
+        with pytest.raises(DemistoException, match='illegal indicator type'):
             build_dbot_entry('1', 'NOTHING', 'Vendor', 2)
 
     def test_file_indicators(self):
@@ -2842,7 +2842,7 @@ class TestBaseClient:
             -  An unsuccessful request returns a DemistoException regardless the bad status code.
         """
         from CommonServerPython import DemistoException
-        with raises(DemistoException, match='{}'.format(status)):
+        with pytest.raises(DemistoException, match='{}'.format(status)):
             self.client._http_request(method,
                                       '',
                                       full_url='http://httpbin.org/status/{}'.format(status),
@@ -2858,7 +2858,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         text = 'notjson'
         requests_mock.get('http://example.com/api/v2/event', text=text)
-        with raises(DemistoException, match="Failed to parse json") as exception:
+        with pytest.raises(DemistoException, match="Failed to parse json") as exception:
             self.client._http_request('get', 'event')
         assert exception.value.res
         assert exception.value.res.text == text
@@ -3000,7 +3000,7 @@ class TestBaseClient:
     def test_http_request_not_ok(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500)
-        with raises(DemistoException, match="[500]"):
+        with pytest.raises(DemistoException, match="[500]"):
             self.client._http_request('get', 'event')
 
     def test_http_request_not_ok_but_ok(self, requests_mock):
@@ -3011,13 +3011,13 @@ class TestBaseClient:
     def test_http_request_not_ok_with_json(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             self.client._http_request('get', 'event')
 
     def test_http_request_not_ok_with_json_parsing(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
-        with raises(DemistoException) as exception:
+        with pytest.raises(DemistoException) as exception:
             self.client._http_request('get', 'event')
         message = str(exception.value)
         response_json_error = json.loads(message.split('\n')[1])
@@ -3026,25 +3026,25 @@ class TestBaseClient:
     def test_http_request_timeout(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
-        with raises(DemistoException, match="Connection Timeout Error"):
+        with pytest.raises(DemistoException, match="Connection Timeout Error"):
             self.client._http_request('get', 'event')
 
     def test_http_request_ssl_error(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
-        with raises(DemistoException, match="SSL Certificate Verification Failed"):
+        with pytest.raises(DemistoException, match="SSL Certificate Verification Failed"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_ssl_error_insecure(cls, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError('test ssl'))
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(requests.exceptions.SSLError, match="^test ssl$"):
+        with pytest.raises(requests.exceptions.SSLError, match="^test ssl$"):
             client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_proxy_error(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError)
-        with raises(DemistoException, match="Proxy Error"):
+        with pytest.raises(DemistoException, match="Proxy Error"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_connection_error_with_errno(self, requests_mock):
@@ -3053,13 +3053,13 @@ class TestBaseClient:
         err.errno = 104
         err.strerror = "Connection reset by peer test"
         requests_mock.get('http://example.com/api/v2/event', exc=err)
-        with raises(DemistoException, match="Error Number: \[104\]\\nMessage: Connection reset by peer test"):
+        with pytest.raises(DemistoException, match="Error Number: \[104\]\\nMessage: Connection reset by peer test"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_connection_error_without_errno(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError("Generic error"))
-        with raises(DemistoException, match="Generic error"):
+        with pytest.raises(DemistoException, match="Generic error"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_text_exception_parsing(self, requests_mock):
@@ -3070,7 +3070,7 @@ class TestBaseClient:
                           status_code=400,
                           reason=reason,
                           text=text)
-        with raises(DemistoException, match='- {}\n{}'.format(reason, text)):
+        with pytest.raises(DemistoException, match='- {}\n{}'.format(reason, text)):
             self.client._http_request('get', 'event', resp_type='text')
 
     def test_json_exception_parsing(self, requests_mock):
@@ -3081,7 +3081,7 @@ class TestBaseClient:
                           status_code=400,
                           reason=reason,
                           json=json_response)
-        with raises(DemistoException, match='- {}\n.*{}'.format(reason, json_response["error"])):
+        with pytest.raises(DemistoException, match='- {}\n.*{}'.format(reason, json_response["error"])):
             self.client._http_request('get', 'event', resp_type='text')
 
     def test_exception_response_json_parsing_when_ok_code_is_invalid(self, requests_mock):
@@ -3255,7 +3255,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.timeout_error == 1
 
@@ -3270,7 +3270,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.ssl_error == 1
 
@@ -3285,7 +3285,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.proxy_error == 1
 
@@ -3300,7 +3300,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.connection_error == 1
 
@@ -3315,7 +3315,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.RetryError)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.retry_error == 1
 
@@ -3330,7 +3330,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=401, text="err")
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         assert client.execution_metrics.auth_error == 1
 
@@ -3345,7 +3345,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=429, text="err")
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         assert client.execution_metrics.quota_error == 1
 
@@ -3360,7 +3360,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500, text="err")
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         assert client.execution_metrics.service_error == 1
 
@@ -3375,7 +3375,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         assert client.execution_metrics.general_error == 1
 
@@ -3408,7 +3408,7 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
         demisto_results_mock = mocker.patch.object(demisto, 'results')
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         del client
         demisto_results_mock.assert_called_once
@@ -3432,7 +3432,7 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
         demisto_results_mock = mocker.patch.object(demisto, 'results')
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event')
         del client
         demisto_results_mock.assert_not_called
@@ -3983,12 +3983,12 @@ def test_append_context(mocker, context_mock, data_mock, key, expected_answer):
     mocker.patch.object(demisto, 'results')
 
     if "TypeError" not in expected_answer:
-        with raises(SystemExit, match='0'):
+        with pytest.raises(SystemExit, match='0'):
             appendContext(key, data_mock)
             assert expected_answer in demisto.results.call_args[0][0]['Contents']
 
     else:
-        with raises(TypeError) as e:
+        with pytest.raises(TypeError) as e:
             appendContext(key, data_mock)
             assert expected_answer in e.value
 
@@ -4985,7 +4985,7 @@ class TestExecuteCommand:
 
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand', return_value=error_entries)
 
-        with raises(DemistoException, match='Failed to execute'):
+        with pytest.raises(DemistoException, match='Failed to execute'):
             execute_command('bad', {'arg1': 'value'})
 
         assert demisto_execute_mock.call_count == 1
@@ -4995,7 +4995,7 @@ class TestExecuteCommand:
         from CommonServerPython import execute_command
         monkeypatch.delattr(demisto, 'executeCommand')
 
-        with raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
+        with pytest.raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
             execute_command('bad', {'arg1': 'value'})
 
     @staticmethod
@@ -7670,7 +7670,7 @@ class TestIsDemistoServerGE:
         get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
         assert not is_demisto_version_ge('5.0.0')
         assert not is_demisto_version_ge('6.0.0')
-        with raises(AttributeError, match='simulate missing demistoVersion'):
+        with pytest.raises(AttributeError, match='simulate missing demistoVersion'):
             is_demisto_version_ge('4.5.0')
 
     def test_is_demisto_version_ge_dev_version(self, mocker):
@@ -8021,7 +8021,7 @@ class TestSetAndGetLastMirrorRun:
         from CommonServerPython import get_last_mirror_run
         mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
         get_last_run = mocker.patch.object(demisto, 'getLastMirrorRun')
-        with raises(DemistoException, match='You cannot use getLastMirrorRun as your version is below 6.6.0'):
+        with pytest.raises(DemistoException, match='You cannot use getLastMirrorRun as your version is below 6.6.0'):
             get_last_mirror_run()
             assert get_last_run.called is False
 
@@ -8048,7 +8048,7 @@ class TestSetAndGetLastMirrorRun:
         from CommonServerPython import set_last_mirror_run
         mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
         set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
-        with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
+        with pytest.raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
             set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
             assert set_last_run.called is False
 
