@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Script file added to startup-related Registry keys
 description: |-
-  This playbook is designed to handle "Script file added to startup-related Registry keys" alerts.
+  This playbook handles "Script file added to startup-related Registry keys" alerts.
 
   Playbook Stages:
 
@@ -15,7 +15,7 @@ description: |-
 
   Investigation:
 
-  - Searches for related XSIAM alerts to identify potential attack patterns.
+  - Searches for related Cortex XSIAM alerts to identify potential attack patterns.
   - Retrieves the script file and relevant details for investigation.
   - Analyzes the script for malicious or suspicious parameters:
     - If malicious parameters are found, proceed to remediation.
@@ -31,7 +31,7 @@ description: |-
   - Calculates the script file’s SHA256 hash if not already available.
   - Deletes the Registry key value (Requires analyst approval).
   - Adds the script file hash to the blocklist (Requires analyst approval).
-  - Automatically Close the alert.
+  - Automatically close the alert.
 tags:
 - TA0003 - Persistence
 - T1547 - Boot or Logon Autostart Execution
@@ -340,7 +340,7 @@ tasks:
       id: 678cb554-5537-4e26-8868-59600f237faf
       version: -1
       name: Terminate Causality Process
-      description: Terminate a process tree by its causality ID. Available only from Cortex XSIAM 2.4.
+      description: Terminates a process tree by its causality ID. Available only from Cortex XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -1317,7 +1317,7 @@ tasks:
       id: 59938bae-9c90-4bb9-8514-6737aa9bb63a
       version: -1
       name: Execute shell command to get the script file hash
-      description: Calculate the Office file hash by executing shell commands.
+      description: Calculate the file hash by executing shell commands.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
@@ -1369,7 +1369,7 @@ tasks:
       id: 232a106f-216c-4b83-8d82-87ed853edce3
       version: -1
       name: Get script execution results
-      description: Retrieve the results of a script execution action.
+      description: Retrieves the results of a script execution action.
       script: '|||core-get-script-execution-results'
       type: regular
       iscommand: true
@@ -1409,7 +1409,7 @@ tasks:
       id: 8996323f-70fe-450a-9ba2-2124d49ab33e
       version: -1
       name: Set commands to get Script SHA256
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.9 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2027,7 +2027,7 @@ tasks:
       id: b776cbc4-d0d6-4bd1-87ab-687fc48ccda4
       version: -1
       name: Execute shell command to get the script file hash
-      description: Calculate the Office file hash by executing shell commands.
+      description: Calculate the file hash by executing shell commands.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
@@ -2308,7 +2308,7 @@ tasks:
       id: 687933c2-6a9c-4ac2-9ebb-38b89cf4b75e
       version: -1
       name: Set Script SHA256
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.9 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2756,7 +2756,7 @@ tasks:
       version: -1
       name: Wildfire Sandbox - Detonate and Analyze File
       description: |
-        This playbook uploads, detonates, and analyzes files for the Wildfire sandbox.
+        This playbook uploads, detonates, and analyzes files for Wildfire sandbox.
       playbookName: Wildfire Detonate and Analyze File
       type: playbook
       iscommand: false
