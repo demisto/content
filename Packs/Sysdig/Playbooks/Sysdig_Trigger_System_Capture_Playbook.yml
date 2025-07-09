@@ -212,6 +212,7 @@ tasks:
       id: 05365e6b-d46d-46f2-ab1f-00481dda4cd0
       version: -1
       name: Check Sysdig fields
+      description: Check Sysdig fields
       type: condition
       iscommand: false
       brand: ""
