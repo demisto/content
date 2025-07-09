@@ -27,7 +27,6 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
 
-from dataclasses import asdict, dataclass
 from distutils.version import LooseVersion
 from threading import Lock
 from functools import wraps
@@ -173,7 +172,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, cast
+    from typing import Optional, Dict, List, Any, Union, Set, cast, Text
 
     from urllib3 import disable_warnings
 
@@ -337,83 +336,65 @@ class FileAttachmentType(object):
     ATTACHED = "attached_file"
 
 
-@dataclass
-class QuickActionPreview:
+class QuickActionPreview(object):
     """
     A container class for storing quick action data previews.
     This class is intended to be populated by commands like `!get-remote-data-preview`
     and placed directly into the root context under `QuickActionPreview`.
-
-    Attributes:
-        id (Optional[str]): The ID of the ticket.
-        title (Optional[str]): The title or summary of the ticket or action.
-        description (Optional[str]): A brief description or details about the action.
-        status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
-        assignee (Optional[str]): The user or entity assigned to the action.
-        creation_date (Optional[str]): The date and time when the item was created.
-        severity (Optional[str]): Indicates the priority or severity level.
-
-    :return: None
-    :rtype: ``None``
     """
-    id: None
-    title: None
-    description: None
-    status: None
-    assignee: None
-    creation_date: None
-    severity: None
-
-    def __post_init__(self):
+    def __init__(self, id=None, title=None, description=None, status=None,
+                 assignee=None, creation_date=None, severity=None):
         """
-          Performs post-initialization checks for missing field values.
-          Logs a debug message if any of the defined fields are None.
+        Initializes the QuickActionPreview object.
 
-        :return: None
-        :rtype: ``None``
+        :param id: The ID of the ticket.
+        :param title: The title or summary of the ticket or action.
+        :param description: A brief description or details about the action.
+        :param status: Current status (e.g., Open, In Progress, Closed).
+        :param assignee: The user or entity assigned to the action.
+        :param creation_date: The date and time when the item was created.
+        :param severity: Indicates the priority or severity level.
         """
+        self.id = id
+        self.title = title
+        self.description = description
+        self.status = status
+        self.assignee = assignee
+        self.creation_date = creation_date
+        self.severity = severity
+
         missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
-
         if missing_fields:
-            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+            demisto.debug("Missing fields: {}".format(', '.join(missing_fields)))
 
     def to_context(self):
         """
-        Converts the dataclass instance to a dictionary.
+        Converts the instance to a dictionary.
 
         :return: Dictionary representation of the QuickActionPreview instance.
-        :rtype: ``Dict[str, Any]``
+        :rtype: dict
         """
-        return asdict(self)
+        return self.__dict__
 
 
-@dataclass
-class MirrorObject:
+class MirrorObject(object):
     """
     A container class for storing ticket metadata used in mirroring integrations.
     This class is intended to be populated by commands like `!jira-create-issue`
     and placed directly into the root context under `MirrorObject`.
-
-    Attributes:
-        object_url (Optional[str]): Direct URL to the created ticket for preview/use.
-        object_id (Optional[str]): Unique identifier of the created ticket.
-
-    :return: None
-    :rtype: ``None``.
     """
-    object_url: None
-    object_id: None
-    object_name: None
-
-    def __post_init__(self):
+    def __init__(self, object_url=None, object_id=None, object_name=None):
         """
-        Performs post-initialization validation.
-        Checks for missing mandatory fields 'object_url' and 'object_id'
-        and logs a debug message if they are not set.
+        Initializes the MirrorObject.
 
-        :return: None
-        :rtype: ``None``
+        :param object_url: Direct URL to the created ticket for preview/use.
+        :param object_id: Unique identifier of the created ticket.
+        :param object_name: The display name or key of the created ticket.
         """
+        self.object_url = object_url
+        self.object_id = object_id
+        self.object_name = object_name
+
         missing_fields_list = []
         if self.object_url is None:
             missing_fields_list.append('object_url')
@@ -423,16 +404,17 @@ class MirrorObject:
             missing_fields_list.append('object_name')
 
         if missing_fields_list:
-            demisto.debug(f"MirrorObject: Initialized with missing mandatory fields: {', '.join(missing_fields_list)}")
+            debug_message = "MirrorObject: Initialized with missing mandatory fields: {}"
+            demisto.debug(debug_message.format(', '.join(missing_fields_list)))
 
     def to_context(self):
         """
-        Converts the dataclass instance to a dictionary.
+        Converts the instance to a dictionary.
 
         :return: Dictionary representation of the MirrorObject instance.
-        :rtype: ``Dict[str, Any]``
+        :rtype: dict
         """
-        return asdict(self)
+        return self.__dict__
 
 
 brands = {

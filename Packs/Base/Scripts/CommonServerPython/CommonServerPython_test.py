@@ -21,7 +21,6 @@ except ImportError:
 
 import dateparser
 from freezegun import freeze_time
-import pytest
 import pytz
 import requests
 import pytest
