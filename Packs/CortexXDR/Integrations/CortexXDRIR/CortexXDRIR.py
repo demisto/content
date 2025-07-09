@@ -1062,7 +1062,7 @@ def update_remote_system_command(client, args):
         f"incident_changed: {parsed_args.incident_changed}, "
         f"remote_incident_id: {parsed_args.remote_incident_id}, "
         f"inc_status: {parsed_args.inc_status}, "
-        f"delta: {parsed_args.delta}"
+        f"delta: {parsed_args.delta}" 
     )
 
     try:
