@@ -10,7 +10,9 @@
     "categories": [
         "Email"
     ],
-    "tags": [],
+    "tags": [
+        "Email"
+    ],
     "useCases": [],
     "keywords": [
         "Fortinet"
