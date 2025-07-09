@@ -1960,7 +1960,7 @@ function MakeSearchName([string]$internetMessageId, [string[]]$exchangeLocation,
 #     }
 # }
 
-function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+function SearchAndDeleteEmailCommand($client, [hashtable]$kwargs) {
     $demisto.debug("Received kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
     $description = "Search And Delete Email"
     $entry_context = @{}
@@ -2113,6 +2113,7 @@ function Main {
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )
+        
 
         # Executing command
         switch ($command) {
