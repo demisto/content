@@ -1789,6 +1789,54 @@ def test_get_agent_request(mocker, requests_mock):
     assert result[0]["networkInterfaces"][0]["inet"] == "192.168.1.10"
 
 
+def test_get_agent_request_multiple_ids(mocker, requests_mock):
+    """
+    Test get_agent_request returns agent details for multiple agent_ids.
+    """
+    # Arrange
+    agent_ids = "1234567890,1475812345"
+    api_response = {
+        "data": [
+            {
+                "id": "1234567890",
+                "computerName": "test-computer-1",
+                "networkInterfaces": [{"int_name": "eth0", "inet": "192.168.1.10", "physical": "00:11:22:33:44:55"}],
+            },
+            {
+                "id": "1475812345",
+                "computerName": "test-computer-2",
+                "networkInterfaces": [{"int_name": "eth1", "inet": "10.0.0.5", "physical": "66:77:88:99:AA:BB"}],
+            },
+        ]
+    }
+    # Patch the GET request to the agents endpoint
+    requests_mock.get(
+        f"https://usea1.sentinelone.net/web/api/v2.1/agents?ids={agent_ids}",
+        json=api_response,
+    )
+
+    # Patch demisto params and command context
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    client = sentinelone_v2.Client(base_url="https://usea1.sentinelone.net/web/api/v2.1", verify=False, proxy=False, headers={})
+
+    # Act
+    result = client.get_agent_request(agent_ids)
+
+    # Assert
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0]["id"] == "1234567890"
+    assert result[1]["id"] == "1475812345"
+    assert result[0]["computerName"] == "test-computer-1"
+    assert result[1]["computerName"] == "test-computer-2"
+    assert result[0]["networkInterfaces"][0]["inet"] == "192.168.1.10"
+    assert result[1]["networkInterfaces"][0]["inet"] == "10.0.0.5"
+
+
 def test_get_agent_mac(mocker, requests_mock):
     """
     Given: agentId
