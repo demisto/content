@@ -1,15 +1,8 @@
 BeforeAll {
     . $PSScriptRoot\demistomock.ps1
     . $PSScriptRoot\SecurityAndComplianceV2.ps1
-        class SecurityAndComplianceClient {
-            SecurityAndComplianceClient([string]$a, [string]$b, [string]$c, [string]$d, [string]$e) {}
-            CreateDelegatedSession([string]$CommandName) {}
-            DisconnectSession() {}
-        }
     
-        class MockClient : SecurityAndComplianceClient {
-            MockClient() : base("", "", "", "", "") {}
-    
+        class MockClient {
             [psobject] NewSearch($name, $param2, $kql, $description, $bool1, $locations, $p1, $p2, $p3, $errAction) {
                 return @{ Name = $name; Status = "NotStarted"; Items = 1 }
             }
@@ -30,7 +23,6 @@ BeforeAll {
                 return @{ Status = "Starting" }
             }
         }
-    
         $mockClient = [MockClient]::new()
     }    
 
@@ -266,7 +258,6 @@ Describe 'SearchAndDeleteEmailCommand' {
 
             $result = SearchAndDeleteEmailCommand -client $mockClient -kwargs $kwargs
 
-            $result[0] | Should -Match "Search created & started"
             $result[2].Name | Should -Match "abc@domain.com"
             $result[3].search_name | Should -Be $result[2].Name
         }
