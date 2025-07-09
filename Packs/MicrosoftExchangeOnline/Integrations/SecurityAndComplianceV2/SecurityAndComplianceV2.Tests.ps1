@@ -253,7 +253,7 @@ Describe 'SearchAndDeleteEmailCommand' {
                 polling_first_run = $true
                 force = $false
                 internet_message_id = "<abc@domain.com>"
-                exchange_location = @("user@domain.com")
+                exchange_location = @("All")
             }
 
             $result = SearchAndDeleteEmailCommand -client $mockClient -kwargs $kwargs
