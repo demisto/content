@@ -3461,8 +3461,8 @@ Command to quickly block malicious or suspicious IP addresses directly from the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_list | List of ID's of agents that supports the operation. | Required |
-| addresses | List of IPv6 or IPv4 to blocklist. | Required |
+| endpoint_list | List of agent IDs that support the operation. | Required |
+| addresses | List of IPv6 or IPv4 addresses to be added to the blocklist. | Required |
 | duration | Number of minutes to block (Max 518,400). | Required |
 
 #### Context Output
@@ -3486,7 +3486,7 @@ Command to quickly block malicious or suspicious IP addresses directly from the 
             "endpoint_id": "12345"
         },
         {
-            "reason": "Failure: Failed blocking IP address for IP=2.2.2.2 with error code -197",
+            "reason": "Failure: Unknown error",
             "ip_address": "2.2.2.2"
             "endpoint_id": "1234"
         }

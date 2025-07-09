@@ -87,6 +87,13 @@ class Client(CoreClient):
         )
         return reply
 
+    def _is_endpoint_connected(self, endpoint_id: str) -> bool:
+        """
+        Helper method to check if an endpoint is connected
+        """
+        endpoint_status = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
+        return bool(endpoint_status)
+
     def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> list[dict]:
         """
         Block one or more IPs on a given endpoint and collect action IDs.
@@ -103,9 +110,8 @@ class Client(CoreClient):
                 - group_id (str): ID of the block action for status polling.
         """
         results = []
-        endpoint_status = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
-        if not endpoint_status:
-            demisto.debug(f"endpoint {endpoint_id} disconnected")
+        if self._is_endpoint_connected(endpoint_id):
+            demisto.debug(f"Cannot block ip list. Endpoint {endpoint_id} is not connected.")
             return [{"ip_address": ip_address, "group_id": None, "endpoint_id": endpoint_id} for ip_address in ip_list]
         for ip_address in ip_list:
             demisto.debug(f"Blocking ip address: {ip_address}")
@@ -146,17 +152,13 @@ class Client(CoreClient):
                 - status: The returned status from the api.
                 - message: The returned error text.
         """
-        endpoint_status = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
-        if not endpoint_status or group_id is None:
-            demisto.debug(f"endpoint {endpoint_id} disconnected")
+        if self._is_endpoint_connected(endpoint_id):
+            demisto.debug(f"Cannot fetch status. Endpoint {endpoint_id} is not connected.")
             return "Failure", "Endpoint Disconnected"
 
         reply = self.action_status_get(group_id)
-        data = reply.get("data") or {}
+        status = reply.get("data", {}).get(endpoint_id)
         error_reasons = reply.get("errorReasons", {})
-
-        status = data.get(endpoint_id)
-
         if status == "FAILED":
             reason = error_reasons.get(endpoint_id, {})
             text = reason.get("errorText")

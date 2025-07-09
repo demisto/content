@@ -4287,24 +4287,24 @@ script:
       description: The contributing events.
       type: Unknown
   - arguments:
-    - description: List of ID's of agents that supports the operation.
+    - description: List of agent IDs that support the operation.
       name: endpoint_list
       required: true
-    - description: List of IPv6 or IPv4 to blocklist.
+    - description: List of IPv6 or IPv4 addresses to be added to the blocklist.
       name: addresses
       required: true
     - description: Number of minutes to block (Max 518,400).
       name: duration
       required: true
-    - description: blocked ip lists required for the polling and not visible to user.
+    - description: The blocked IP address lists required for polling that are not visible to the user.
       name: blocked_list
       hidden: true
     polling: true
     name: core-block-ip
-    description: Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
+    description: Block malicious or suspicious IP addresses.  
     outputs:
     - contextPath: Core.ip_block_results
-      description: List of Dictionaries each conatin ip_address, end_point, reason (status amd error message).
+      description: List of Dictionaries, each containing ip_address, end_point, and reason (status and error message).
       type: List
   runonce: false
   script: '-'
