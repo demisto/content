@@ -2,7 +2,8 @@
 const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
 const PLAYBOOK_METADATA = 'playbook_metadata';
 const INTEGRATION_NAME = 'CoreRESTAPI';
-
+const xsoar_hosted = ['xsoar', 'xsoar_hosted']
+const platform_hosted = ['x2', 'unified_platform']
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
@@ -12,7 +13,7 @@ if (serverURL.slice(-1) === '/') {
 isHosted = function () {
     res = getDemistoVersion();
     platform = res.platform;
-    if  (((platform === "xsoar" || platform === "xsoar_hosted") && (isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION))) || platform === "x2") {
+    if  ((xsoar_hosted.includes(platform) && isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION)) || platform_hosted.includes(platform)) {
         return true
     }
     return false
