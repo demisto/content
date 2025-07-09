@@ -1052,7 +1052,7 @@ def get_remote_data_command(client, args, excluded_alert_fields=[], remove_nulls
         return GetRemoteDataResponse(mirrored_object=incident_data, entries=[])
 
 
-def update_remote_system_command(client, args): 
+def update_remote_system_command(client, args):
     parsed_args = UpdateRemoteSystemArgs(args)
     demisto.debug(
         f"update_remote_system_command command args are:"
