@@ -8,6 +8,7 @@ Notes:
 - The pack currently supports the following data source: **Security (Provider "Microsoft-Windows-Security-*)**, **Firewall**, **System**, **Application** and **Powershell**.
 
 To view logs only from the Windows Event log, apply any of the following filters to your datamodel query:
+
 - `| filter xdm.observer.type="Microsoft-Windows-Security-*"`
 - `| filter xdm.observer.type="Microsoft-Windows-TaskScheduler"`
 - `| filter xdm.observer.type="Microsoft-Windows-Windows Firewall With Advanced Security"`
@@ -16,6 +17,7 @@ To view logs only from the Windows Event log, apply any of the following filters
 
 **Pay Attention**:
 This pack excludes several events for the Sysmon, DNS, ADFS and AMSI Windows services according to the *provider_name* field:
+
 - AD FS Auditing
 - Microsoft-Windows-Sysmon
 - Microsoft-Windows-DNSServer
@@ -23,6 +25,7 @@ This pack excludes several events for the Sysmon, DNS, ADFS and AMSI Windows ser
 - Microsoft-Antimalware-Scan-Interface
 
 Should you wish to collect those logs as well, the installation of the following packs is required:
+
 - Microsoft DNS
 - Microsoft Windows AMSI
 - Microsoft Windows Sysmon
@@ -36,13 +39,13 @@ In order to use the collector, you can use one of the following options:
 
 ### Broker VM (Windows Event Collector)
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
-To connect and use Windows Event Collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Activate-the-Windows-Event-Collector).
+To connect and use Windows Event Collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Activate-Windows-Event-Collector).
 
 ### XDRC (XDR Collector)
 
-To create or configure the Filebeat collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/XDR-Collectors).
+To create or configure the Filebeat collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/XDR-Collectors).
 
 As Cortex XSIAM provides a YAML template for Windows Security Event Logs, you can use the following steps to create a collection profile:
 
