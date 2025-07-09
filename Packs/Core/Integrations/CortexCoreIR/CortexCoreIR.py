@@ -110,7 +110,7 @@ class Client(CoreClient):
                 - group_id (str): ID of the block action for status polling.
         """
         results = []
-        if self._is_endpoint_connected(endpoint_id):
+        if not self._is_endpoint_connected(endpoint_id):
             demisto.debug(f"Cannot block ip list. Endpoint {endpoint_id} is not connected.")
             return [{"ip_address": ip_address, "group_id": None, "endpoint_id": endpoint_id} for ip_address in ip_list]
         for ip_address in ip_list:
@@ -152,7 +152,7 @@ class Client(CoreClient):
                 - status: The returned status from the api.
                 - message: The returned error text.
         """
-        if self._is_endpoint_connected(endpoint_id):
+        if not self._is_endpoint_connected(endpoint_id):
             demisto.debug(f"Cannot fetch status. Endpoint {endpoint_id} is not connected.")
             return "Failure", "Endpoint Disconnected"
 
