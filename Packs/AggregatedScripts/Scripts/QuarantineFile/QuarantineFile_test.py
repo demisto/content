@@ -35,7 +35,10 @@ def test_quarantine_file_script_invalid_input(endpoint_ids: str, file_hash: str,
     Then:
         - A ValueError is raised, indicating that the input validation failed as expected
     """
-    with pytest.raises(ValueError):
+    required_is_missing_msg = "Missing required fields"
+    invalid_hash_msg = "A valid file hash must be provided. Supported types are: SHA1 and SHA256"
+    err_msg = invalid_hash_msg if endpoint_ids and file_hash and file_path else required_is_missing_msg
+    with pytest.raises(ValueError, match=err_msg):
         quarantine_file_script({"endpoint_ids": endpoint_ids, "file_hash": file_hash, "file_path": file_path})
 
 
@@ -154,12 +157,12 @@ def test_quarantine_file_script_valid_quarantine_brand(file_hash: str, excpected
         ),
         (
             SHA_1_HASH,
-            "",
-        ),  # No brand specified to trigger auto-selection logic
+            "",  # No brand specified to trigger auto-selection logic
+        ),
         (
             SHA_256_HASH,
-            "",
-        ),  # No brand specified to trigger auto-selection logic
+            "",  # No brand specified to trigger auto-selection logic
+        ),
     ],
 )
 def test_quarantine_file_script_inactive_brands(file_hash: str, quarantine_brands: str):
@@ -173,12 +176,17 @@ def test_quarantine_file_script_inactive_brands(file_hash: str, quarantine_brand
     Then:
         - A DemistoException is raised because no active integration is available to handle the request
     """
+    with_brands_msg = (
+        "None of the quarantine brands has an enabled integration instance. Ensure valid integration IDs are specified."
+    )
+    without_brands_msg = "Could not find enabled integrations for the requested hash type."
+    err_msg = with_brands_msg if quarantine_brands else without_brands_msg
     fake_modules = [{"brand": brand, "state": "inactive"} for brand in SUPPORTED_BRANDS]
+
     with patch("QuarantineFile.demisto.getModules") as mock_getModules:
         mock_getModules.return_value.values.return_value = fake_modules
-
         args = {"endpoint_ids": "ids", "file_hash": file_hash, "file_path": "file_path", "quarantine_brands": quarantine_brands}
-        with pytest.raises(DemistoException):
+        with pytest.raises(DemistoException, match=err_msg):
             quarantine_file_script(args)
 
 
@@ -216,7 +224,7 @@ def test_quarantine_file_script_invalid_hash_for_brands(file_hash: str, quaranti
         mock_getModules.return_value.values.return_value = fake_modules
 
         args = {"endpoint_ids": "ids", "file_hash": file_hash, "file_path": "file_path", "quarantine_brands": quarantine_brands}
-        with pytest.raises(DemistoException):
+        with pytest.raises(DemistoException, match="Could not find enabled integrations for the requested hash type."):
             quarantine_file_script(args)
 
 

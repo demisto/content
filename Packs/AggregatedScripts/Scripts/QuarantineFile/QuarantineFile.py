@@ -391,8 +391,8 @@ def quarantine_file_script(args: dict[str, Any]) -> list[CommandResults]:
     file_path: str = args.get("file_path", "")
 
     if not (endpoint_ids and file_hash and file_path):
-        demisto.error(f"Missing required fields {endpoint_ids=} {file_hash=}, {file_path=}")
-        raise ValueError(f"Missing required fields {endpoint_ids=} {file_hash=}, {file_path=}")
+        demisto.debug(f"Missing required fields {endpoint_ids=}, {file_hash=}, {file_path=}")
+        raise ValueError("Missing required fields")
 
     hash_type: str = get_hash_type(file_hash).casefold()
     demisto.debug(f"hash type is {hash_type}")
@@ -409,7 +409,7 @@ def quarantine_file_script(args: dict[str, Any]) -> list[CommandResults]:
     enabled_brands = list({module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"})
     demisto.debug(f"Validating overlap between {quarantine_brands=} and {enabled_brands=}.")
     if quarantine_brands and not set(quarantine_brands).intersection(enabled_brands):
-        demisto.error(f"Could not found overlap between {quarantine_brands=} and {enabled_brands=}.")
+        demisto.debug(f"Could not found overlap between {quarantine_brands=} and {enabled_brands=}.")
         raise DemistoException(
             "None of the quarantine brands has an enabled integration instance. Ensure valid integration IDs are specified."
         )
@@ -418,8 +418,7 @@ def quarantine_file_script(args: dict[str, Any]) -> list[CommandResults]:
     supported_brands = list(set(quarantine_brands) & set(integration_for_hash)) if quarantine_brands else integration_for_hash
     quarantine_brands = list(set(supported_brands) & set(enabled_brands))
     if not quarantine_brands:
-        demisto.error(f"Could not find enabled integrations for {hash_type}." "Please enable the required integratoin")
-        raise DemistoException("Could Not find supported integration for this file hash type.")
+        raise DemistoException("Could not find enabled integrations for the requested hash type.")
     if hash_type == HASH_SHA1:
         # supported only by MDE
         Microsoft_atp_quarantine_file(args, readable_context, context, verbose_command_results)
