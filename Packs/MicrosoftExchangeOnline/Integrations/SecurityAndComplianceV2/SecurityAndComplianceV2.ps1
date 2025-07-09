@@ -2004,79 +2004,11 @@ function SearchAndDeleteEmailCommand($client, [hashtable]$kwargs) {
             $client.StartSearch($search_name)
             return "$script:INTEGRATION_NAME - Forced search created & started.", $entry_context, $search, $polling_args
         }
-
-        $search = $client.GetSearch($search_name)
-        $status = $search.Status
-        $demisto.debug("GetSearch status: $status")
-
-        switch ($status) {
-            "NotStarted" {
-                $client.StartSearch($search_name)
-                return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
-            }
-            "Starting" {
-                return "$script:INTEGRATION_NAME - Search is already starting from a previous run.", $entry_context, $search
-            }
-            "Completed" {
-                $demisto.debug("Search completed, items: $($search.Items)")
-                if ($search.Items -eq 0) {
-                    return "$script:INTEGRATION_NAME - Search already completed with no results. Run again with force=true to retry.", $entry_context, $search
-                }
-                $action = $client.GetSearchAction("${search_name}_Purge", "SilentlyContinue")
-                if (-not $action) {
-                    $demisto.debug("No action found, creating purge action")
-                    $action = $client.NewSearchAction($search_name, "Purge", "SoftDelete", $kwargs.share_point_archive_format, $kwargs.format, $kwargs.include_sharepoint_document_versions, $kwargs.notify_email, $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
-                    return "$script:INTEGRATION_NAME - Search completed. Purge action created.", $entry_context, $action, $polling_args
-                }
-                $demisto.debug("GetSearchAction status: $($action.Status)")
-                switch ($action.Status) {
-                    "InProgress" { return "$script:INTEGRATION_NAME - Deletion in progress from previous run. Run again with force=true to retry.", $entry_context, $action }
-                    "Starting"   { return "$script:INTEGRATION_NAME - Deletion starting from previous run. Run again with force=true to retry.", $entry_context, $action }
-                    "Completed"  { return "$script:INTEGRATION_NAME - Deletion already completed. Run again with force=true to retry.", $entry_context }
-                }
-            }
-            default { throw "Unhandled search status: $status" }
-        }
     }
-
-    ### Polling Loop
-    $demisto.debug("Polling for search: $search_name")
     $search = $client.GetSearch($search_name)
-    $demisto.debug("GetSearch status: $($search.Status)")
-
-    switch ($search.Status) {
-        "NotStarted" {
-            $demisto.debug("Starting search during polling")
-            $client.StartSearch($search_name)
-            return "", $entry_context, $search, $polling_args
-        }
-        "Starting" {
-            $demisto.debug("Search is still starting.")
-            return "", $entry_context, $search, $polling_args
-        }
-        "Completed" {
-            $demisto.debug("Search completed, items: $($search.Items)")
-            if ($search.Items -eq 0) {
-                return "$script:INTEGRATION_NAME - No emails found.", $entry_context, $search
-            }
-
-            $demisto.debug("Checking purge action status")
-            $action = $client.GetSearchAction("${search_name}_Purge", "SilentlyContinue")
-            if (-not $action) {
-                $demisto.debug("Purge action missing, creating new")
-                $action = $client.NewSearchAction($search_name, "Purge", "SoftDelete", $null, $null, $null, $null, $null, $null, $null)
-                $demisto.debug("Purge action created during polling.")
-                return "", $entry_context, $action, $polling_args
-            }
-            $demisto.debug("Purge action status: $($action.Status)")
-            switch ($action.Status) {
-                "InProgress"  { return "", $entry_context, $action, $polling_args }
-                "Starting"    { return "", $entry_context, $action, $polling_args }
-                "Completed"   { return "$script:INTEGRATION_NAME - Deletion completed.", $entry_context }
-            }
-        }
-        default { throw "Unhandled polling search status: $($search.Status)" }
-    }
+    $status = $search.Status
+    $demisto.debug("GetSearch status: $status")
+    return HandleSearchStatus $client $search_name $search $entry_context $polling_args $polling_first_run
 }
 
 
