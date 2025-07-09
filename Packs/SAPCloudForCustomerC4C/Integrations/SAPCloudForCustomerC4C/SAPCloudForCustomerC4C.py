@@ -219,9 +219,9 @@ def get_events(
         Optional[List[Dict[str, Any]]]: A list of events, or None if an error occurs.
     """
 
-    filter = f"CTIMESTAMP ge '{start_date} INDIA'"
+    filter = f"CTIMESTAMP ge '{start_date}'"
     if end_date:
-        filter += f" and CTIMESTAMP le '{end_date} INDIA'"
+        filter += f" and CTIMESTAMP le '{end_date}'"
     params = {"$filter": filter, "$skip": skip, "$top": top, "$format": "json", "$inlinecount": "allpages"}
 
     res = client.http_request(

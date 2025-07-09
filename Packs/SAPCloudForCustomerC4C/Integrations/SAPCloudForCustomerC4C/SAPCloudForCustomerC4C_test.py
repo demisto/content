@@ -104,7 +104,7 @@ def test_get_events_success_without_end_date(mocker):
         - The `http_request` method of the mocked client is called exactly once.
         - The `http_request` call includes the correct `url_suffix` and `params`.
         - The `$filter` parameter in the `http_request` call correctly specifies
-          `CTIMESTAMP ge '{start_date} INDIA'`.
+          `CTIMESTAMP ge '{start_date}'`.
         - The `$filter` parameter explicitly *does not* contain an "and CTIMESTAMP le"
           clause, confirming no end date filter was applied.
         - The returned `result` from `get_events` matches the `expected_events`
@@ -134,7 +134,7 @@ def test_get_events_success_without_end_date(mocker):
     mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": expected_events}})
     result = get_events(mock_client_instance, report_id, skip, top, start_date)
 
-    expected_filter = f"CTIMESTAMP ge '{start_date} INDIA'"
+    expected_filter = f"CTIMESTAMP ge '{start_date}'"
     mock_client_instance.http_request.assert_called_once_with(
         method="GET",
         url_suffix=f"{URL_SUFFIX}{report_id}?",
@@ -163,7 +163,7 @@ def test_get_events_success_with_end_date(mocker):
         - The `http_request` method of the mocked client is called exactly once.
         - The `http_request` call includes the correct `url_suffix` and `params`.
         - The `$filter` parameter in the `http_request` call correctly specifies
-          `CTIMESTAMP ge '{start_date} INDIA' and CTIMESTAMP le '{end_date} INDIA'`.
+          `CTIMESTAMP ge '{start_date}' and CTIMESTAMP le '{end_date}'`.
         - The `$filter` parameter explicitly *does* contain an "and CTIMESTAMP le"
           clause, confirming the end date filter was applied.
         - The returned `result` from `get_events` matches the `expected_events`
@@ -194,7 +194,7 @@ def test_get_events_success_with_end_date(mocker):
     mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": expected_events}})
     result = get_events(mock_client_instance, report_id, skip, top, start_date, end_date)
 
-    expected_filter = f"CTIMESTAMP ge '{start_date} INDIA' and CTIMESTAMP le '{end_date} INDIA'"
+    expected_filter = f"CTIMESTAMP ge '{start_date}' and CTIMESTAMP le '{end_date}'"
     mock_client_instance.http_request.assert_called_once_with(
         method="GET",
         url_suffix=f"{URL_SUFFIX}{report_id}?",
