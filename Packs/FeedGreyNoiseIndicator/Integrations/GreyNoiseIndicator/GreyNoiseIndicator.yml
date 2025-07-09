@@ -43,7 +43,9 @@ configuration:
   options:
   - Benign
   - Malicious
+  - Suspicious
   - Benign + Malicious
+  - Benign + Malicious + Suspicious
   - All
   required: true
   type: 15
@@ -113,7 +115,7 @@ script:
     - contextPath: GreyNoiseFeed.Indicators.Tags
       description: 'The GreyNoise tags associated with the indicator.'
       type: String
-  dockerimage: demisto/greynoise:1.0.0.117184
+  dockerimage: demisto/greynoise:1.0.0.3876899
   feed: true
   runonce: false
   script: '-'
