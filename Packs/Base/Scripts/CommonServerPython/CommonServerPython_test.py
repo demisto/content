@@ -8,15 +8,24 @@ import sys
 import urllib
 import uuid
 import warnings
-from typing import Optional, List, Any, Dict
-from unittest.mock import MagicMock
+# Typing imports are not available in Python 2.7; remove for compatibility
+try:
+    from typing import Optional, List, Any, Dict
+except ImportError:
+    Optional = List = Any = Dict = None
+
+try:
+    from unittest.mock import MagicMock  # Python 3
+except ImportError:
+    from mock import MagicMock  # Python 2, requires 'mock' package
+
 
 import dateparser
 from freezegun import freeze_time
 import pytest
 import pytz
 import requests
-from pytest import raises, mark
+import pytest  # Use pytest.raises and pytest.mark for py2 compatibility
 
 import CommonServerPython
 import demistomock as demisto
@@ -10150,8 +10159,9 @@ class TestMirrorObjectInitialization:
         if should_log:
             assert mock_demisto_debug.call_count == 1, "demisto.debug should have been called once."
             logged_message = mock_demisto_debug.call_args[0][0]
-            assert f"MirrorObject: Initialized with missing mandatory fields: {', '.join(expected_missing_fields)}" == logged_message, \
-                "The debug log message was not as expected."
+            assert "MirrorObject: Initialized with missing mandatory fields: {}".format(
+                ", ".join(expected_missing_fields)
+            ) == logged_message, "The debug log message was not as expected."
         else:
             mock_demisto_debug.assert_not_called()
 
@@ -10244,7 +10254,7 @@ class TestQuickActionPreviewInitialization:
 
         # Then
         for field_name, expected_value in field_values.items():
-            assert getattr(preview, field_name) == expected_value, f"{field_name} was not initialized correctly."
+            assert getattr(preview, field_name) == expected_value, "{} was not initialized correctly.".format(field_name)
         mock_demisto_debug.assert_not_called()
 
     def test_initialization_with_all_fields_none(self, mocker):
@@ -10255,14 +10265,16 @@ class TestQuickActionPreviewInitialization:
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
-        expected_log_message = f"Missing fields: {', '.join(self.ALL_QA_PREVIEW_FIELD_NAMES)}"
+        expected_log_message = "Missing fields: {}".format(
+            ", ".join(self.ALL_QA_PREVIEW_FIELD_NAMES)
+        )
 
         # When
         preview = QuickActionPreview() # All fields default to None
 
         # Then
         for field_name in self.ALL_QA_PREVIEW_FIELD_NAMES:
-            assert getattr(preview, field_name) is None, f"{field_name} should be None."
+            assert getattr(preview, field_name) is None, "{} should be None.".format(field_name)
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
     def test_initialization_with_some_fields_none(self, mocker):
@@ -10285,7 +10297,9 @@ class TestQuickActionPreviewInitialization:
         }
         # Expected missing fields in definition order
         expected_missing = ["title", "status", "creation_date"]
-        expected_log_message = f"Missing fields: {', '.join(expected_missing)}"
+        expected_log_message = "Missing fields: {}".format(
+            ", ".join(expected_missing)
+        )
 
         # When
         preview = QuickActionPreview(**field_values) # type: ignore
@@ -10319,7 +10333,9 @@ class TestQuickActionPreviewInitialization:
         }
         # Expected missing fields in definition order (only None values)
         expected_missing = ["description", "severity"]
-        expected_log_message = f"Missing fields: {', '.join(expected_missing)}"
+        expected_log_message = "Missing fields: {}".format(
+            ", ".join(expected_missing)
+        )
 
         # When
         preview = QuickActionPreview(**field_values) # type: ignore
@@ -10386,7 +10402,9 @@ class TestQuickActionPreviewInitialization:
             # Ensure the order of fields in the log message matches definition order
             # The __post_init__ iterates self.__dict__.items(), which for dataclasses
             # maintains insertion order (field definition order).
-            expected_log_message = f"Missing fields: {', '.join(expected_logged_missing_fields)}"
+            expected_log_message = "Missing fields: {}".format(
+                ", ".join(expected_logged_missing_fields)
+            )
             mock_demisto_debug.assert_called_once_with(expected_log_message)
         else:
             mock_demisto_debug.assert_not_called()
