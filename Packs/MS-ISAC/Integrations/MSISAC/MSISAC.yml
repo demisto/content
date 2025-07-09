@@ -287,9 +287,9 @@ script:
   - name: msisac-retrieve-cases
     arguments:
     - name: timestamp
-      description: Format is "2025-07-01T00:00:00", and is in UTC. If no timestamp is given, will return last 72 hours of cases.
+      description: Needs to be in "2025-07-01T00:00:00" format, in UTC. If no timestamp is given, command will return cases from the last 72 hours.
       required: false
-    description: Retrieves a list of MS-ISAC cases since the given timestamp. If no timestamp is given, will return last 72 hours of cases.
+    description: Retrieves a list of MS-ISAC cases since the given timestamp. If no timestamp is given, command will return cases from the last 72 hours.
     outputs:
     - contextPath: MSISAC.RetrievedCases.caseId
       description: ID for the retrieved MS-ISAC case.

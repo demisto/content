@@ -60,7 +60,7 @@ Retrieve alert data by its ID
 ### msisac-retrieve-cases
 
 ***
-Retrieves a list of MS-ISAC cases since the given timestamp.
+Retrieves a list of MS-ISAC cases created since the given timestamp.
 
 #### Base Command
 
@@ -70,7 +70,7 @@ Retrieves a list of MS-ISAC cases since the given timestamp.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| timestamp | Format is "2025-07-01T00:00:00", and is in UTC. If no timestamp is given, will return last 72 hours of cases. | False |
+| timestamp | Needs to be in "2025-07-01T00:00:00" format, in UTC. If no timestamp is given, command will return cases from the last 72 hours. | False |
 
 #### Context Output
 
