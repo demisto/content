@@ -85,14 +85,14 @@ class Client(BaseClient):
         params: dict | None = None,
         data: dict | None = None,
     ) -> Any:
-        """
-        Function to make http requests using inbuilt _http_request() method.
-        Handles token expiration case and makes request using secret key.
+        """Makes HTTP requests. Forces the generation of a new access token using the API key if an HTTP 401 (Unauthorized)
+        error is returned on the first attempt.
+
         Args:
             method (str): HTTP method to use. Defaults to "GET".
             url_suffix (str): URL suffix to append to base_url. Defaults to None.
             resp_type (str): Response type. Defaults to "json".
-            timeout (int): Maximum time (in seconds) to establish a connection to the API server.
+            timeout (int): Maximum time (in seconds) to establish a connection to the API server. Default to 180.
             headers (dict): Headers to include in the request. Defaults to None.
             json_data (dict): JSON data to include in the request body. Defaults to None.
             params (dict): Parameters to include in the request. Defaults to None.
@@ -133,6 +133,11 @@ class Client(BaseClient):
                 raise
 
     def is_token_expired(self) -> bool:
+        """Checks if the token is in the integration context and then compares the expiration time to the current time.
+
+        Returns:
+            bool: True if the token is expired, False otherwise.
+        """
         demisto.debug("Checking if token is expired")
         token_expiration = get_integration_context().get("token_expiration", None)
         if not token_expiration:
@@ -144,8 +149,8 @@ class Client(BaseClient):
         return expire_time < current_time
 
     def _get_token(self, force_new: bool = False):
-        """
-        Returns an existing access token if a valid one is available and creates one if not
+        """Returns an existing access token if a valid one is available and creates one if not.
+
         Args:
             force_new (bool): create a new access token even if an existing one is available
         Returns:
@@ -168,6 +173,14 @@ class Client(BaseClient):
         return token
 
     def perform_fetch(self, params: dict):
+        """Performs a filtered search based on an AQL query.
+
+        Args:
+            params (dict): Get request query params, including the AQL query.
+
+        Returns:
+            Any: Response from the request.
+        """
         return self.http_request(
             url_suffix="/search/",
             method="GET",
@@ -176,7 +189,7 @@ class Client(BaseClient):
             timeout=API_TIMEOUT,
         )
 
-    def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = "time"):
+    def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = "time") -> list[dict]:
         """Fetches events using AQL query.
 
         Args:
@@ -198,7 +211,7 @@ class Client(BaseClient):
         order_by: str = "time",
         from_param: None | int = None,
         before: Optional[datetime] = None,
-    ):
+    ) -> tuple[list[dict], int]:
         """Fetches events using AQL query.
 
         Args:

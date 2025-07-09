@@ -58,7 +58,7 @@ class TestClientFunctions:
             "resp_type": "json",
             "raise_on_status": True,
         }
-        mocked_get_token = mocker.patch.object(Client, "_get_token", return_value=access_token)
+        mocker.patch.object(Client, "_get_token", return_value=access_token)
         mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=[first_response, second_response])
         assert dummy_client.fetch_by_aql_query("example_query", 2, (datetime.now() - timedelta(minutes=1))) == (
             expected_result,
@@ -112,7 +112,7 @@ class TestClientFunctions:
             "raise_on_status": True,
         }
         from_arg = arg_to_datetime("2023-01-01T01:00:01")
-        mocked_get_token = mocker.patch.object(Client, "_get_token", return_value=access_token)
+        mocker.patch.object(Client, "_get_token", return_value=access_token)
         mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=[first_response, second_response])
         assert dummy_client.fetch_by_aql_query("example_query", 3, from_arg) == (expected_result, 0)
 
