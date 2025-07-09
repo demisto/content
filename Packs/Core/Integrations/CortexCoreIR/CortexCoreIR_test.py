@@ -1127,7 +1127,7 @@ class TestBlockIp:
         spy = mocker.spy(client, "block_ip_request")
 
         args = {
-            "ip_list": ["1.1.1.1"],
+            "addresses": ["1.1.1.1"],
             "endpoint_list": "endpoint1",
             "duration": "123",
         }
