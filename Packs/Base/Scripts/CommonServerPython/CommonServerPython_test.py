@@ -8,16 +8,15 @@ import sys
 import urllib
 import uuid
 import warnings
-# Typing imports are not available in Python 2.7; remove for compatibility
 try:
     from typing import Optional, List, Any, Dict
 except ImportError:
     Optional = List = Any = Dict = None
 
 try:
-    from unittest.mock import MagicMock  # Python 3
+    from unittest.mock import MagicMock
 except ImportError:
-    from mock import MagicMock  # Python 2, requires 'mock' package
+    from mock import MagicMock
 
 
 import dateparser
@@ -25,7 +24,7 @@ from freezegun import freeze_time
 import pytest
 import pytz
 import requests
-import pytest  # Use pytest.raises and pytest.mark for py2 compatibility
+import pytest
 
 import CommonServerPython
 import demistomock as demisto
@@ -1296,7 +1295,7 @@ def test_get_error_need_raise_error_on_non_error_input():
     assert False
 
 
-@mark.parametrize('data,data_expected,filename', [
+@pytest.mark.parametrize('data,data_expected,filename', [
     ("this is a test", b"this is a test", "test.txt"),
     ("this is a test", b"this is a test", "../../../test.txt"),
     (u"עברית", u"עברית".encode('utf-8'), "test.txt"),
