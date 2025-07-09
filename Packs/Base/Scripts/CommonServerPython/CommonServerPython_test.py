@@ -10394,8 +10394,6 @@ class TestQuickActionPreviewInitialization:
         # When
         QuickActionPreview(**init_kwargs) # type: ignore
 
-
-
         # Then
         if expected_logged_missing_fields:
             actual_log_message = mock_demisto_debug.call_args[0][0]
