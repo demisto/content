@@ -1750,6 +1750,45 @@ def test_get_dv_query_status(mocker, requests_mock):
     assert command_results.outputs.get("responseState") == "FINISHED"
 
 
+def test_get_agent_request(mocker, requests_mock):
+    """
+    Test get_agent_request returns agent details for a valid agent_id.
+    """
+    # Arrange
+    agent_id = "1234567890"
+    api_response = {
+        "data": [
+            {
+                "id": agent_id,
+                "computerName": "test-computer",
+                "networkInterfaces": [{"int_name": "eth0", "inet": "192.168.1.10", "physical": "00:11:22:33:44:55"}],
+            }
+        ]
+    }
+    # Patch the GET request to the agents endpoint
+    requests_mock.get(
+        f"https://usea1.sentinelone.net/web/api/v2.1/agents?ids={agent_id}",
+        json=api_response,
+    )
+
+    # Patch demisto params and command context
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    client = sentinelone_v2.Client(base_url="https://usea1.sentinelone.net/web/api/v2.1", verify=False, proxy=False, headers={})
+
+    # Act
+    result = client.get_agent_request(agent_id)
+
+    # Assert
+    assert isinstance(result, list)
+    assert result[0]["id"] == agent_id
+    assert result[0]["computerName"] == "test-computer"
+    assert result[0]["networkInterfaces"][0]["inet"] == "192.168.1.10"
+
+
 def test_get_agent_mac(mocker, requests_mock):
     """
     Given: agentId
