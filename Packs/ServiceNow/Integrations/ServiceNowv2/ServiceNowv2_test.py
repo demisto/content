@@ -2480,7 +2480,14 @@ TICKET_FIELDS = {
 
 def ticket_fields(*args, **kwargs):
     state = "7" if kwargs.get("ticket_type") == "incident" else "3"
-    assert args[0] == {"state": state}
+    if state == "7":
+        assert args[0] == {
+            "close_code": "Resolved by caller",
+            "close_notes": "This is the resolution note required by ServiceNow to move " "the incident to the Resolved state.",
+            "state": state,
+        }
+    else:
+        assert args[0] == {"state": state}
 
     return {"state": "3"}
 
@@ -3041,7 +3048,14 @@ def test_converts_close_code_or_state_to_close_reason(
 
 def ticket_fields_mocker(*args, **kwargs):
     state = "88" if kwargs.get("ticket_type") == "incident" else "90"
-    fields = {"state": state}
+    if state == "88":
+        fields = {
+            "close_code": "Resolved by caller",
+            "close_notes": "This is the resolution note required by ServiceNow to move " "the incident to the Resolved state.",
+            "state": state,
+        }
+    else:
+        fields = {"state": state}
     assert fields == args[0]
     return fields
 

@@ -285,15 +285,15 @@ def test_test_module_basic_auth(mocker):
     Given:
         - mock client with username and api_key (basic auth)
     When:
-        - run `test_module` function
+        - run `jira_test_module` function
     Then:
         - Ensure no error is raised, and return `ok`
     """
-    from JiraV3 import test_module
+    from JiraV3 import jira_test_module
 
     client = jira_base_client_mock("dummy_username", "dummy_api_key")
-    mocker.patch.object(client, "test_instance_connection")
-    assert test_module(client) == "ok"
+    mocker.patch.object(client, "jira_test_instance_connection")
+    assert jira_test_module(client) == "ok"
 
 
 def test_test_module_pat(mocker):
@@ -301,15 +301,15 @@ def test_test_module_pat(mocker):
     Given:
         - mock client with personal access token (pat)
     When:
-        - run `test_module` function
+        - run `jira_test_module` function
     Then:
         - Ensure no error is raised, and return `ok`
     """
-    from JiraV3 import test_module
+    from JiraV3 import jira_test_module
 
     client = jira_base_client_mock(pat="dummy_pat")
-    mocker.patch.object(client, "test_instance_connection")
-    assert test_module(client) == "ok"
+    mocker.patch.object(client, "jira_test_instance_connection")
+    assert jira_test_module(client) == "ok"
 
 
 def test_module_oauth2(mocker):
@@ -317,16 +317,16 @@ def test_module_oauth2(mocker):
     Given:
         - mock client without username and api_key (oauth2)
     When:
-        - run `test_module` function
+        - run `jira_test_module` function
     Then:
         - Ensure that error msg is raised, with a guide how to connect through oauth2
     """
-    from JiraV3 import test_module
+    from JiraV3 import jira_test_module
 
     client = jira_base_client_mock()
-    mocker.patch.object(client, "test_instance_connection")
+    mocker.patch.object(client, "jira_test_instance_connection")
     with pytest.raises(DemistoException, match="In order to authorize the instance, first run the command `!jira-oauth-start`."):
-        test_module(client)
+        jira_test_module(client)
 
 
 @pytest.mark.parametrize(

@@ -1669,9 +1669,10 @@ def create_issue_fields(
         if not dotted_string and issue_arg.startswith("customfield"):
             dotted_string = f"fields.{issue_arg}"
 
-        create_fields_dict_from_dotted_string(issue_fields=issue_fields, dotted_string=dotted_string, value=final_value)
         if dotted_string:
-            create_fields_dict_from_dotted_string(issue_fields=issue_fields, dotted_string=dotted_string, value=final_value)
+            issue_fields |= create_fields_dict_from_dotted_string(
+                issue_fields=issue_fields, dotted_string=dotted_string, value=final_value
+            )
         else:
             demisto.debug(f"WARNING: Skipping field '{issue_arg}' because it was not found in the issue fields mapper.")
     return issue_fields
