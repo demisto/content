@@ -35,7 +35,7 @@ Follow the below steps to configure the Broker VM to receive Oracle OAM logs.
     | `Vendor`     | Enter oracle.                                                                                                                                 |
     | `Product`    | Enter oam.                                                                                                                                |
 
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Activate-Database-Collector).\
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Activate-Database-Collector).
 When configuring the `Database Connection` the `SQL Query` should look as follows:
 
 ``` sql
