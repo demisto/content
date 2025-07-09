@@ -3360,6 +3360,10 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 `core-get-contributing-event`
 
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 | alert_ids | The alert ID's from where to retrieve the contributing events. | Required |
 | limit | The maximum number of contributing events to retrieve. Default is 50. | Optional |
 | page_number | The page number to retrieve. Minimum is 1. Default is 1. | Optional |

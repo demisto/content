@@ -152,7 +152,6 @@ class Client(CoreClient):
             return "Failure", "Endpoint Disconnected"
 
         reply = self.action_status_get(group_id)
-
         data = reply.get("data") or {}
         error_reasons = reply.get("errorReasons", {})
 
@@ -161,7 +160,12 @@ class Client(CoreClient):
         if status == "FAILED":
             reason = error_reasons.get(endpoint_id, {})
             text = reason.get("errorText")
-
+            if not text and reason.get("errorData"):
+                try:
+                    payload = json.loads(reason["errorData"])
+                    text = payload.get("errorText")
+                except (ValueError, TypeError):
+                    text = reason["errorData"]
             return "Failure", text or "Unknown error"
 
         if status == "COMPLETED_SUCCESSFULLY":
@@ -747,7 +751,7 @@ def core_block_ip_command(args: dict, client: Client) -> PollResult:
         # First call when no block ip request has done
         ip_list = argToList(args.get("addresses", []))
         endpoint_list = argToList(args.get("endpoint_list", []))
-        duration = arg_to_number(args.get("duration", 300)) or 300
+        duration = arg_to_number(args.get("duration")) or 300
 
         blocked_list = []
 
@@ -757,6 +761,9 @@ def core_block_ip_command(args: dict, client: Client) -> PollResult:
         return polling_block_ip_status(args_for_next_run, client)
     else:
         # all other calls after the block ip requests sent
+        duration = arg_to_number(args.get("duration")) or 300
+        if duration < 0 or duration >= 518400:
+            return_error("Duration must be greater than 0 and less than 518,400 minutes (approx 12 months).")
         return polling_block_ip_status(args, client)
 
 
