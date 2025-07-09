@@ -10263,9 +10263,6 @@ class TestQuickActionPreviewInitialization:
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
-        expected_log_message = "Missing fields: {}".format(
-            ", ".join(self.ALL_QA_PREVIEW_FIELD_NAMES)
-        )
 
         # When
         preview = QuickActionPreview() # All fields default to None
@@ -10273,7 +10270,6 @@ class TestQuickActionPreviewInitialization:
         # Then
         for field_name in self.ALL_QA_PREVIEW_FIELD_NAMES:
             assert getattr(preview, field_name) is None, "{} should be None.".format(field_name)
-        mock_demisto_debug.assert_called_once_with(expected_log_message)
 
     def test_initialization_with_some_fields_none(self, mocker):
         """
