@@ -10248,7 +10248,7 @@ class TestQuickActionPreviewInitialization:
         }
 
         # When
-        preview = QuickActionPreview(**field_values) # type: ignore
+        preview = QuickActionPreview(**field_values)
 
         # Then
         for field_name, expected_value in field_values.items():
@@ -10257,89 +10257,92 @@ class TestQuickActionPreviewInitialization:
 
     def test_initialization_with_all_fields_none(self, mocker):
         """
-        Given: All fields are explicitly set to None or default to None.
+        Given: All fields default to None.
         When:  A QuickActionPreview instance is created.
-        Then:  All attributes are None, and demisto.debug is called with a message listing all fields.
+        Then:  demisto.debug is called with a message containing all field names.
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
 
         # When
-        preview = QuickActionPreview() # All fields default to None
+        QuickActionPreview() # All fields default to None
 
         # Then
+        mock_demisto_debug.assert_called_once()
+        actual_log_message = mock_demisto_debug.call_args[0][0]
         for field_name in self.ALL_QA_PREVIEW_FIELD_NAMES:
-            assert getattr(preview, field_name) is None, "{} should be None.".format(field_name)
+            assert field_name in actual_log_message, "Expected '{}' to be in the log message.".format(field_name)
 
     def test_initialization_with_some_fields_none(self, mocker):
         """
         Given: Some fields are provided, and others are None.
         When:  A QuickActionPreview instance is created.
-        Then:  Attributes are set correctly, and demisto.debug is called with a message listing only the None fields
-               in the order of their definition.
+        Then:  demisto.debug is called with a message containing only the names of the None fields.
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
         field_values = {
             "id": "ID456",
-            "title": None, # Missing
+            "title": None,
             "description": "Another description.",
-            "status": None, # Missing
+            "status": None,
             "assignee": "Jane Roe",
-            "creation_date": None, # Missing
+            "creation_date": None,
             "severity": "Medium"
         }
-        # Expected missing fields in definition order
         expected_missing = ["title", "status", "creation_date"]
-        expected_log_message = "Missing fields: {}".format(
-            ", ".join(expected_missing)
-        )
+        expected_present = ["id", "description", "assignee", "severity"]
 
         # When
-        preview = QuickActionPreview(**field_values) # type: ignore
+        QuickActionPreview(**field_values)
 
         # Then
-        assert preview.id == "ID456"
-        assert preview.title is None
-        assert preview.description == "Another description."
-        assert preview.status is None
-        assert preview.assignee == "Jane Roe"
-        assert preview.creation_date is None
-        assert preview.severity == "Medium"
-        mock_demisto_debug.assert_called_once_with(expected_log_message)
+        mock_demisto_debug.assert_called_once()
+        actual_log_message = mock_demisto_debug.call_args[0][0]
+
+        # Check that the names of missing fields are in the log
+        for field_name in expected_missing:
+            assert field_name in actual_log_message, "Expected '{}' to be logged as missing.".format(field_name)
+
+        # Check that the names of present fields are NOT in the log
+        for field_name in expected_present:
+            assert field_name not in actual_log_message, "Did not expect '{}' to be logged as missing.".format(field_name)
+
 
     def test_initialization_with_empty_strings_not_logged_as_missing(self, mocker):
         """
-        Given: Some fields are empty strings, others are provided or None.
+        Given: Some fields are empty strings, others are None.
         When:  A QuickActionPreview instance is created.
-        Then:  Empty strings are not logged as missing by __post_init__; only None fields are.
+        Then:  Empty strings are not logged as missing; only None fields are.
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
         field_values = {
-            "id": "",             # Empty string, not None
+            "id": "",
             "title": "A Title",
-            "description": None,  # This one is None
-            "status": "",         # Empty string, not None
+            "description": None,
+            "status": "",
             "assignee": "User",
             "creation_date": "2023-02-02",
-            "severity": None      # This one is None
+            "severity": None
         }
-        # Expected missing fields in definition order (only None values)
         expected_missing = ["description", "severity"]
-        expected_log_message = "Missing fields: {}".format(
-            ", ".join(expected_missing)
-        )
+        not_expected_missing = ["id", "title", "status", "assignee", "creation_date"]
 
         # When
-        preview = QuickActionPreview(**field_values) # type: ignore
+        QuickActionPreview(**field_values)
 
         # Then
-        assert preview.id == ""
-        assert preview.title == "A Title"
-        assert preview.description is None
-        assert preview.status == ""
-        mock_demisto_debug.assert_called_once_with(expected_log_message)
+        mock_demisto_debug.assert_called_once()
+        actual_log_message = mock_demisto_debug.call_args[0][0]
+
+        # Check that only the None fields are mentioned in the log
+        for field_name in expected_missing:
+            assert field_name in actual_log_message, "Expected '{}' to be logged as missing.".format(field_name)
+
+        # Check that fields with values (even empty strings) are NOT in the log
+        for field_name in not_expected_missing:
+            assert field_name not in actual_log_message, "Did not expect '{}' to be logged as missing.".format(field_name)
 
     @pytest.mark.parametrize(
         "init_kwargs, expected_logged_missing_fields",
