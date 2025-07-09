@@ -4302,6 +4302,10 @@ script:
     polling: true
     name: core-block-ip
     description: Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
+    outputs:
+    - contextPath: Core.ip_block_results
+      description: List of Dictionaries each conatin ip_address, end_point, reason (status amd error message).
+      type: List
   runonce: false
   script: '-'
   subtype: python3
