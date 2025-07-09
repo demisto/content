@@ -1650,9 +1650,6 @@ def create_issue_fields(
         elif issue_arg == "components":
             final_value = [{"name": component} for component in argToList(value)]
             parsed = True
-        elif issue_arg == "priority":
-            final_value = {"name": value}
-            parsed = True
         elif issue_arg in ["description", "environment"]:
             final_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
             parsed = True
