@@ -4,7 +4,8 @@
         "Guardicore Incident",
         "Graph Security Alert",
         "CrowdStrike Falcon IDP Detection",
-        "Exabeam Notable User"
+        "Exabeam Notable User",
+        "CrowdStrike Falcon NGSIEM Detection"
     ],
     "breachScript": "",
     "caseInsensitive": true,
