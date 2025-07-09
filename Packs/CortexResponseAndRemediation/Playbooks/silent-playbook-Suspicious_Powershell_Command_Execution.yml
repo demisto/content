@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 507,
-          "y": -470
+          "x": -407,
+          "y": -160
         }
       }
     note: false
@@ -117,8 +117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 507,
-          "y": -304
+          "x": -407,
+          "y": -26
         }
       }
     note: false
@@ -164,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 507,
-          "y": 210
+          "x": -143,
+          "y": 238
         }
       }
     note: false
@@ -209,8 +209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 507,
-          "y": -93
+          "x": -407,
+          "y": 97
         }
       }
     note: false
@@ -253,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 507,
-          "y": 392
+          "x": -143,
+          "y": 360
         }
       }
     note: false
@@ -396,8 +396,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -932,
-          "y": 1943
+          "x": -937,
+          "y": 1954
         }
       }
     note: false
@@ -435,8 +435,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -337,
-          "y": 2094
+          "x": -121,
+          "y": 2209
         }
       }
     note: false
@@ -494,8 +494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 506,
-          "y": 2218
+          "x": 507,
+          "y": 2338
         }
       }
     note: false
@@ -765,309 +765,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: b26523e8-5627-447c-8977-5a1b3fe88699
-    type: playbook
-    task:
-      id: b26523e8-5627-447c-8977-5a1b3fe88699
-      version: -1
-      name: Block Indicators - Generic v3
-      description: |-
-        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic v2
-        - Block Account - Generic v2
-        - Block IP - Generic v3
-        - Block File - Generic v2
-        - Block Email - Generic v2
-        - Block Domain - Generic v2.
-      playbookName: Block Indicators - Generic v3
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      AutoBlockIndicators:
-        simple: "True"
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: XSOAR Remediation - Malicious URLs
-      DomainToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: domain
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      EmailToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: email
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      FilesToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      IP:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      InputEnrichment:
-        simple: "False"
-      InternalRange:
-        complex:
-          root: lists
-          accessor: PrivateIPs
-          transformers:
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
-              unpack_matches: {}
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-      MD5:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block Indicators playbook - ${alert.id}
-      SHA256:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      Tag:
-        simple: Blocked Indicator In Systems
-      URL:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      UserVerification:
-        simple: "True"
-      Username:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -337,
-          "y": 1943
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "33":
     id: "33"
     taskid: 4c15e179-0b52-4cfa-852e-52487cfc2670
@@ -1153,8 +850,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 94,
-          "y": 1943
+          "x": -121,
+          "y": 1954
         }
       }
     note: false
@@ -1428,8 +1125,9 @@ tasks:
       '#default#':
       - "13"
       "yes":
-      - "32"
       - "34"
+      - "40"
+      - "41"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1457,6 +1155,172 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 027bae64-d67d-45ed-bdcc-79aeedd58110
+    type: regular
+    task:
+      id: 027bae64-d67d-45ed-bdcc-79aeedd58110
+      version: -1
+      name: Block IP
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      ip_list:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: IP
+              ignorecase: true
+          accessor: Indicator
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -535,
+          "y": 1954
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 10f5a4e3-9803-4558-aab1-4e12b68a48b0
+    type: condition
+    task:
+      id: 10f5a4e3-9803-4558-aab1-4e12b68a48b0
+      version: -1
+      name: 'Domain/URL Exist to Block '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualNumber
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                    ignorecase: true
+                accessor: Indicator
+                transformers:
+                - operator: uniq
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 286,
+          "y": 1954
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 8b09208c-b965-4839-8457-b02ac0179a5b
+    type: regular
+    task:
+      id: 8b09208c-b965-4839-8457-b02ac0179a5b
+      version: -1
+      name: Block Malicious Domain/URL
+      description: |-
+        The following indicators were found to be malicious and needs to be blocked manually:
+
+        - ${DBotScore(val.Score == 3 && ['domain','url'].includes(val.Type)).Indicator}
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 286,
+          "y": 2084
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1464,14 +1328,16 @@ view: |-
       "23_10_Malicious": 0.47,
       "33_31_yes": 0.5,
       "39_13_#default#": 0.12,
+      "3_10_Malicious": 0.16,
+      "3_2_#default#": 0.4,
       "5_6_#default#": 0.32
     },
     "paper": {
       "dimensions": {
-        "height": 2748,
-        "width": 2400,
-        "x": -932,
-        "y": -470
+        "height": 2558,
+        "width": 2405,
+        "x": -937,
+        "y": -160
       }
     }
   }
