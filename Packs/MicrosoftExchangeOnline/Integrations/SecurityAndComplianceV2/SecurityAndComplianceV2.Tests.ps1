@@ -1,7 +1,6 @@
 BeforeAll {
     . $PSScriptRoot\demistomock.ps1
     . $PSScriptRoot\SecurityAndComplianceV2.ps1
-    BeforeAll {
         class SecurityAndComplianceClient {
             SecurityAndComplianceClient([string]$a, [string]$b, [string]$c, [string]$d, [string]$e) {}
             CreateDelegatedSession([string]$CommandName) {}
@@ -34,7 +33,7 @@ BeforeAll {
     
         $mockClient = [MockClient]::new()
     }    
-}
+
 
 Describe 'StringRegexParse' {
     Context "SuccesResults" {
