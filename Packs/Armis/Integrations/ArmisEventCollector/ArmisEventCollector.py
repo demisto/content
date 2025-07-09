@@ -132,14 +132,18 @@ class Client(BaseClient):
                 # Some other unknown / unexpected error
                 raise
 
-    def is_token_expired(self) -> bool:
+    @staticmethod
+    def is_token_expired(integration_context: dict) -> bool:
         """Checks if the token is in the integration context and then compares the expiration time to the current time.
+
+        Args:
+            integration_context (dict): The integration context cache of the instance.
 
         Returns:
             bool: True if the token is expired, False otherwise.
         """
         demisto.debug("Checking if token is expired")
-        token_expiration = get_integration_context().get("token_expiration", None)
+        token_expiration = integration_context.get("token_expiration", None)
         if not token_expiration:
             return True
 
@@ -152,12 +156,14 @@ class Client(BaseClient):
         """Returns an existing access token if a valid one is available and creates one if not.
 
         Args:
-            force_new (bool): create a new access token even if an existing one is available
+            force_new (bool): Create a new access token even if an existing one is available.
+
         Returns:
             str: A valid Access Token to authorize requests
         """
-        token = get_integration_context().get("token", None)
-        if token and not force_new and not self.is_token_expired():
+        integration_context = get_integration_context()
+        token = integration_context.get("token")
+        if token and not force_new and not self.is_token_expired(integration_context):
             demisto.debug("Got valid token from integration context.")
             return token
 

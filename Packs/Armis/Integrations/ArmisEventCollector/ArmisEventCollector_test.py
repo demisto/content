@@ -1,6 +1,7 @@
 import requests
 from ArmisEventCollector import Client, datetime, timedelta, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES, Any
 import pytest
+from pytest_mock import MockerFixture
 from freezegun import freeze_time
 
 
@@ -14,6 +15,48 @@ def dummy_client(mocker):
 
 
 class TestClientFunctions:
+    @freeze_time("2023-01-01T01:00:00")
+    @pytest.mark.parametrize(
+        "force_new, token_expiration, expected_request_context_set_calls",
+        [
+            pytest.param(True, "2023-01-01T04:00:00", 1, id="Force new"),
+            pytest.param(False, "2023-01-01T04:00:00", 0, id="Take existing, unexpired"),
+            pytest.param(False, "2023-01-01T00:00:00", 1, id="Take existing, expired"),
+        ],
+    )
+    def test_get_token(
+        self,
+        mocker: MockerFixture,
+        force_new: bool,
+        token_expiration: str,
+        expected_request_context_set_calls: int,
+    ):
+        """
+        Given:
+            - Integration context containing an access token and a token expiration date.
+
+        When:
+            - Calling Client._get_token.
+
+        Then:
+            - Ensure an HTTP request is made and a new integration context is set only if force_new is True.
+        """
+        client = Client(base_url="test_base_url", api_key="test_api_key", verify=False, proxy=False)
+        integration_context = {"token": "test_access_token", "token_expiration": token_expiration}
+        access_token_api_response = {"data": {"access_token": "test_access_token", "expiration_utc": "2023-01-01T09:00:00"}}
+
+        mock_get_integration_context = mocker.patch(
+            "ArmisEventCollector.get_integration_context", return_value=integration_context
+        )
+        mock_set_integration_context = mocker.patch("ArmisEventCollector.set_integration_context")
+        mock_http_request = mocker.patch.object(Client, "_http_request", return_value=access_token_api_response)
+
+        client._get_token(force_new)
+
+        assert mock_get_integration_context.call_count == 1  # always called
+        assert mock_http_request.call_count == expected_request_context_set_calls
+        assert mock_set_integration_context.call_count == expected_request_context_set_calls
+
     @freeze_time("2023-01-01T01:00:00")
     def test_initial_fetch_by_aql_query(self, mocker, dummy_client):
         """
