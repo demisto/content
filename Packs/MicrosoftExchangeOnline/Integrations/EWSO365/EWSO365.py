@@ -1616,7 +1616,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                 if item.message_id:
                     demisto.debug(f"received: {item.datetime_created.ewsformat()}, modified: {item.last_modified_time.ewsformat()}")
                     current_fetch_ids[
-                        item.message_id] = item.datetime_created.ewsformat() if RECEIVED_FILTER else item.last_modified_time.ewsformat()
+                        item.message_id] = item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()
                     incident = parse_incident_from_item(item)
                     incidents.append(incident)
 
@@ -1747,12 +1747,12 @@ def fetch_last_emails(
             if item.message_id in exclude_ids:
                 demisto.debug(f"prev: {exclude_ids.get(item.message_id)}, current: {item.last_modified_time.ewsformat()}")
                 if exclude_ids.get(item.message_id) >= (
-                item.datetime_created.ewsformat() if RECEIVED_FILTER else item.last_modified_time.ewsformat()):
+                item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()):
                     # If the item already fetched and its received/modification time hasn't changed since the previous fetch
                     demisto.debug(
                         f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
                         f"{exclude_ids.get(item.message_id)}, current fetch time: "
-                        f"{item.datetime_created.ewsformat() if RECEIVED_FILTER else item.last_modified_time.ewsformat()}")
+                        f"{item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()}")
                     continue
             result.append(item)
             if len(result) >= client.max_fetch:
