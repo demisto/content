@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
+from http import HTTPStatus
 from typing import Any
 import itertools
 from dateutil import parser
@@ -68,36 +69,112 @@ API_TIMEOUT = BaseClient.REQUESTS_TIMEOUT * 3
 class Client(BaseClient):
     """Client class to interact with Armis API - this Client implements API calls"""
 
-    def __init__(self, base_url, api_key, access_token, verify=False, proxy=False):
+    def __init__(self, api_key: str, base_url: str, verify: bool, proxy: bool):
+        super().__init__(base_url, verify=verify, proxy=proxy)
         self._api_key = api_key
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        if not access_token or not self.is_valid_access_token(access_token):
-            access_token = self.get_access_token()
-        self.update_access_token(access_token)
+        self._headers = {"Accept": "application/json"}
 
-    def update_access_token(self, access_token=None):
-        if not access_token:
-            access_token = self.get_access_token()
-        headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
-        self._headers = headers
-        self._access_token = access_token
+    def http_request(
+        self,
+        method: str,
+        url_suffix: str,
+        resp_type: str = "json",
+        timeout: int = API_TIMEOUT,
+        headers: dict | None = None,
+        json_data: dict | None = None,
+        params: dict | None = None,
+        data: dict | None = None,
+    ) -> Any:
+        """
+        Function to make http requests using inbuilt _http_request() method.
+        Handles token expiration case and makes request using secret key.
+        Args:
+            method (str): HTTP method to use. Defaults to "GET".
+            url_suffix (str): URL suffix to append to base_url. Defaults to None.
+            resp_type (str): Response type. Defaults to "json".
+            timeout (int): Maximum time (in seconds) to establish a connection to the API server.
+            headers (dict): Headers to include in the request. Defaults to None.
+            json_data (dict): JSON data to include in the request body. Defaults to None.
+            params (dict): Parameters to include in the request. Defaults to None.
+            data (dict): Data to include in the request body. Defaults to None.
+        Returns:
+            Any: Response from the request.
+        """
+        headers = headers or {}
+        request_args = assign_params(
+            method=method,
+            url_suffix=url_suffix,
+            timeout=timeout,
+            params=params,
+            data=data,
+            json_data=json_data,
+            headers=headers,
+            resp_type=resp_type,
+            raise_on_status=True,
+            # Only ignore None values
+            values_to_ignore=(None,),
+        )
 
-    def perform_fetch(self, params):
         try:
-            raw_response = self._http_request(
-                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
-            )
-        except Exception as e:
-            if "Invalid access token" in str(e):
-                demisto.debug("debug-log: Invalid access token")
-                self.update_access_token()
-                raw_response = self._http_request(
-                    url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
-                )
+            token = self._get_token()
+            request_args["headers"] |= {"Authorization": str(token)}
+            return self._http_request(**request_args)
+        except DemistoException as e:
+            error_status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
+
+            if error_status_code == HTTPStatus.UNAUTHORIZED:
+                demisto.debug("Generating a new token after getting unauthorized error.")
+                token = self._get_token(force_new=True)
+                request_args["headers"] |= {"Authorization": str(token)}
+                return self._http_request(**request_args)
+
             else:
-                demisto.debug(f"debug-log: Error occurred while fetching events: {e}")
-                raise e
-        return raw_response
+                # Some other unknown / unexpected error
+                raise
+
+    def is_token_expired(self) -> bool:
+        demisto.debug("Checking if token is expired")
+        token_expiration = get_integration_context().get("token_expiration", None)
+        if not token_expiration:
+            return True
+
+        expire_time = dateparser.parse(token_expiration).replace(tzinfo=datetime.now().tzinfo)  # type: ignore
+        current_time = datetime.now() - timedelta(seconds=30)
+        demisto.debug(f"Comparing current time: {current_time} with expire time: {expire_time}")
+        return expire_time < current_time
+
+    def _get_token(self, force_new: bool = False):
+        """
+        Returns an existing access token if a valid one is available and creates one if not
+        Args:
+            force_new (bool): create a new access token even if an existing one is available
+        Returns:
+            str: A valid Access Token to authorize requests
+        """
+        token = get_integration_context().get("token", None)
+        if token and not force_new and not self.is_token_expired():
+            demisto.debug("Got valid token from integration context.")
+            return token
+
+        demisto.debug("Creating a new access token")
+        response = self._http_request("POST", "/access_token/", data={"secret_key": self._api_key})
+        token = response.get("data", {}).get("access_token")
+        expiration = response.get("data", {}).get("expiration_utc")
+        expiration_date = dateparser.parse(expiration)
+        assert expiration_date is not None, f"failed parsing {expiration}"
+
+        demisto.debug(f"Setting new token to integration context with expiration time: {expiration_date}.")
+        set_integration_context({"token": token, "token_expiration": str(expiration_date)})
+        return token
+
+    def perform_fetch(self, params: dict):
+        return self.http_request(
+            url_suffix="/search/",
+            method="GET",
+            params=params,
+            headers=self._headers,
+            timeout=API_TIMEOUT,
+        )
 
     def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = "time"):
         """Fetches events using AQL query.
@@ -161,39 +238,6 @@ class Client(BaseClient):
             demisto.info(f"info-log: caught an exception during pagination:\n{str(e)}")  # noqa: E231
 
         return results, next
-
-    def is_valid_access_token(self, access_token):
-        """Checks if current available access token is valid.
-
-        Args:
-            access_token (str): Access token to validate.
-
-        Returns:
-            Boolean: True if access token is valid, False otherwise.
-        """
-        try:
-            headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
-            params = {"aql": 'in:alerts timeFrame:"1 seconds"', "includeTotal": "false", "length": 1, "orderBy": "time"}
-            self._http_request(url_suffix="/search/", method="GET", params=params, headers=headers)
-        except Exception:
-            return False
-        return True
-
-    def get_access_token(self):
-        """Generates access token for Armis API.
-
-        Raises:
-            DemistoException: If access token could not be generated.
-        Returns:
-            str: Access token.
-        """
-        headers = {"Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json"}
-        params = {"secret_key": self._api_key}
-        response = self._http_request(url_suffix="/access_token/", method="POST", params=params, headers=headers)
-        if access_token := response.get("data", {}).get("access_token"):
-            return access_token
-        else:
-            raise DemistoException("Could not generate access token.")
 
 
 """ TEST MODULE """
@@ -498,8 +542,6 @@ def fetch_events(
             fetch_delay=fetch_delay,
         )
 
-    next_run["access_token"] = client._access_token
-
     demisto.debug(f"debug-log: events: {events}")
     return events, next_run
 
@@ -622,7 +664,6 @@ def main():  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     last_run = demisto.getLastRun()
-    access_token = last_run.get("access_token")
     api_key = params.get("credentials", {}).get("password")
     base_url = urljoin(params.get("server_url"), API_V1_ENDPOINT)
     verify_certificate = not params.get("insecure", True)
@@ -641,7 +682,7 @@ def main():  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
 
     try:
-        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, api_key=api_key, access_token=access_token)
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, api_key=api_key)
 
         if command == "test-module":
             return_results(test_module(client))
