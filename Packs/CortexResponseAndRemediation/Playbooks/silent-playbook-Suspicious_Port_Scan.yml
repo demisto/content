@@ -3533,7 +3533,7 @@ tasks:
         - simple: "Yes"
         fieldassociated: ""
         placeholder: ""
-        tooltip: This action will isolate the endpoint and is recommended to prevent the attacker from executing lateral movement.
+        tooltip: This approval will allow blocking the source IP address to prevent the attacker from executing lateral movement.
         readonly: false
       title: BlockIpApproval
       description: |+
