@@ -1,6 +1,6 @@
-id: Windows LOLBIN scripting engine connected to a rare external host
+id: silent-Windows LOLBIN scripting engine connected to a rare external host
 version: -1
-name: Windows LOLBIN scripting engine connected to a rare external host
+name: silent-Windows LOLBIN scripting engine connected to a rare external host
 description: |-
   This playbook handles "Windows LOLBIN scripting engine connected to a rare external host" alerts.
 
