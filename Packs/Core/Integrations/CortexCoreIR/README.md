@@ -3462,7 +3462,7 @@ Command to quickly block malicious or suspicious IP addresses directly from the 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_list | List of ID's of agents that supports the operation. | Required |
-| ip_list | List of IPv6 or IPv4 to blocklist. | Required |
+| addresses | List of IPv6 or IPv4 to blocklist. | Required |
 | duration | Number of minutes to block (Max 518,400). | Required |
 
 #### Context Output
