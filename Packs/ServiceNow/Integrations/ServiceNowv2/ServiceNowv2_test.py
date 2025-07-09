@@ -3557,7 +3557,7 @@ def mock_client():
     This provides a fresh mock for each test function.
     """
     client = MagicMock(spec=Client)
-    client.ticket_type = 'incident'
+    client.ticket_type = "incident"
     client.use_display_value = False
     client.display_date_format = None
     client.sys_param_limit = 50
@@ -3604,7 +3604,7 @@ def test_get_remote_data_ticket_not_found(mock_client: MagicMock, mock_params) -
     mock_client.get.assert_called_once_with(mock_client.ticket_type, ticket_id, use_display_value=False)
 
 
-@patch('ServiceNowv2.is_new_incident', return_value=False)
+@patch("ServiceNowv2.is_new_incident", return_value=False)
 def test_get_remote_data_no_updates(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
     """
     Tests that the function returns an empty dictionary if the ticket has not been updated
@@ -3624,14 +3624,16 @@ def test_get_remote_data_no_updates(mock_is_new_incident: MagicMock, mock_client
     args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
 
     ticket_data = {
-        "result": [{
-            "sys_id": ticket_id,
-            "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
-        }]
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        ]
     }
     mock_client.get.return_value = ticket_data
 
-    with patch('ServiceNowv2.demisto') as mock_demisto:
+    with patch("ServiceNowv2.demisto") as mock_demisto:
         # isFetch is a parameter of the integration, so we mock it here
         mock_demisto.params.return_value = {"isFetch": True}
 
@@ -3642,9 +3644,8 @@ def test_get_remote_data_no_updates(mock_is_new_incident: MagicMock, mock_client
         assert result == [{}]  # An empty dict inside a list indicates no incident update
 
 
-@patch('ServiceNowv2.is_new_incident', return_value=False)
-def test_get_remote_data_with_new_comments(mock_is_new_incident: MagicMock, mock_client: MagicMock,
-                                           mock_params) -> None:
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_with_new_comments(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
     """
     Tests that new comments are correctly fetched and formatted into entries when a ticket is updated.
 
@@ -3661,11 +3662,13 @@ def test_get_remote_data_with_new_comments(mock_is_new_incident: MagicMock, mock
     args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
 
     ticket_data = {
-        "result": [{
-            "sys_id": ticket_id,
-            "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
-            "short_description": "Updated description",
-        }]
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+                "short_description": "Updated description",
+            }
+        ]
     }
 
     comments_data = {
@@ -3674,7 +3677,7 @@ def test_get_remote_data_with_new_comments(mock_is_new_incident: MagicMock, mock
                 "element": "comments",
                 "sys_created_by": "abel.tuter",
                 "sys_created_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
-                "value": "This is a new comment."
+                "value": "This is a new comment.",
             }
         ]
     }
@@ -3683,7 +3686,7 @@ def test_get_remote_data_with_new_comments(mock_is_new_incident: MagicMock, mock
     mock_client.get_ticket_attachment_entries.return_value = []
     mock_client.query.return_value = comments_data
 
-    with patch('ServiceNowv2.demisto') as mock_demisto:
+    with patch("ServiceNowv2.demisto") as mock_demisto:
         mock_demisto.params.return_value = {"isFetch": True}
 
         # Act
@@ -3696,17 +3699,16 @@ def test_get_remote_data_with_new_comments(mock_is_new_incident: MagicMock, mock
 
         # Check incident data
         updated_incident = result[0]
-        assert updated_incident['short_description'] == "Updated description"
+        assert updated_incident["short_description"] == "Updated description"
 
         # Check entry data
         comment_entry = result[1]
-        assert "This is a new comment." in comment_entry['Contents']
-        assert comment_entry['Note'] is True
+        assert "This is a new comment." in comment_entry["Contents"]
+        assert comment_entry["Note"] is True
 
 
-@patch('ServiceNowv2.is_new_incident', return_value=False)
-def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mock_client: MagicMock,
-                                             mock_params) -> None:
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
     """
     Tests that new file attachments are fetched and formatted correctly.
 
@@ -3723,23 +3725,21 @@ def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mo
     args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
 
     ticket_data = {
-        "result": [{
-            "sys_id": ticket_id,
-            "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
-        }]
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        ]
     }
 
-    attachment_entry = {
-        'File': 'evidence.txt',
-        'FileID': 'mock_file_id',
-        'Tags': [mock_params['file_tag_from_service_now']]
-    }
+    attachment_entry = {"File": "evidence.txt", "FileID": "mock_file_id", "Tags": [mock_params["file_tag_from_service_now"]]}
 
     mock_client.get.return_value = ticket_data
     mock_client.get_ticket_attachment_entries.return_value = [attachment_entry]
     mock_client.query.return_value = {"result": []}  # No new comments
 
-    with patch('ServiceNowv2.demisto') as mock_demisto:
+    with patch("ServiceNowv2.demisto") as mock_demisto:
         mock_demisto.params.return_value = {"isFetch": True}
 
         # Act
@@ -3748,13 +3748,12 @@ def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mo
         # Assert
         assert isinstance(result, list)
         assert len(result) == 2
-        assert result[1]['File'] == 'evidence.txt'
-        assert result[1]['Tags'] == [mock_params['file_tag_from_service_now']]
+        assert result[1]["File"] == "evidence.txt"
+        assert result[1]["Tags"] == [mock_params["file_tag_from_service_now"]]
 
 
-@patch('ServiceNowv2.is_new_incident', return_value=False)
-def test_get_remote_data_incident_closed(mock_is_new_incident: MagicMock, mock_client: MagicMock,
-                                         mock_params) -> None:
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_incident_closed(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
     """
     Tests that a closing entry is created when a ticket is found to be closed in ServiceNow.
 
@@ -3771,20 +3770,22 @@ def test_get_remote_data_incident_closed(mock_is_new_incident: MagicMock, mock_c
 
     # state '7' corresponds to 'Closed' in the TICKET_STATES mapping
     ticket_data = {
-        "result": [{
-            "sys_id": ticket_id,
-            "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
-            "state": "7",
-            "close_notes": "Issue resolved.",
-            "closed_at": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
-        }]
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+                "state": "7",
+                "close_notes": "Issue resolved.",
+                "closed_at": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        ]
     }
 
     mock_client.get.return_value = ticket_data
     mock_client.get_ticket_attachment_entries.return_value = []
     mock_client.query.return_value = {"result": []}
 
-    with patch('ServiceNowv2.demisto') as mock_demisto:
+    with patch("ServiceNowv2.demisto") as mock_demisto:
         mock_demisto.params.return_value = {"isFetch": True}
 
         # Act
@@ -3797,17 +3798,21 @@ def test_get_remote_data_incident_closed(mock_is_new_incident: MagicMock, mock_c
         # Find the closing entry
         closing_entry = None
         for entry in result:
-            if isinstance(entry, dict) and entry.get('Type') == EntryType.NOTE:
-                if isinstance(entry.get('Contents'), dict) and entry['Contents'].get('dbotIncidentClose'):
-                    closing_entry = entry
-                    break
+            if (
+                isinstance(entry, dict)
+                and entry.get("Type") == EntryType.NOTE
+                and isinstance(entry.get("Contents"), dict)
+                and entry["Contents"].get("dbotIncidentClose")
+            ):
+                closing_entry = entry
+                break
 
         assert closing_entry is not None
-        assert closing_entry['Type'] == EntryType.NOTE
-        assert closing_entry['ContentsFormat'] == EntryFormat.JSON
-        assert closing_entry['Contents']['dbotIncidentClose'] is True
-        assert closing_entry['Contents']['closeNotes'] == "Issue resolved."
-        assert closing_entry['Contents']['closeReason'] == "Resolved"
+        assert closing_entry["Type"] == EntryType.NOTE
+        assert closing_entry["ContentsFormat"] == EntryFormat.JSON
+        assert closing_entry["Contents"]["dbotIncidentClose"] is True
+        assert closing_entry["Contents"]["closeNotes"] == "Issue resolved."
+        assert closing_entry["Contents"]["closeReason"] == "Resolved"
 
 
 def test_get_remote_data_preview_missing_id(mock_client: MagicMock) -> None:
@@ -3825,7 +3830,7 @@ def test_get_remote_data_preview_missing_id(mock_client: MagicMock) -> None:
         ServiceNowv2.get_remote_data_preview_command(mock_client, args)
 
 
-@patch('ServiceNowv2.DemistoException', DemistoException)  # Use the real exception for checking
+@patch("ServiceNowv2.DemistoException", DemistoException)  # Use the real exception for checking
 def test_get_remote_data_preview_api_error(mock_client: MagicMock) -> None:
     """
     Tests that the function raises a DemistoException when the client API call fails.
@@ -3842,8 +3847,8 @@ def test_get_remote_data_preview_api_error(mock_client: MagicMock) -> None:
         ServiceNowv2.get_remote_data_preview_command(mock_client, args)
 
 
-@patch('ServiceNowv2.CommandResults', CommandResults)  # Use the real class to build the object
-@patch('ServiceNowv2.QuickActionPreview', QuickActionPreview)  # Use the real class to build the object
+@patch("ServiceNowv2.CommandResults", CommandResults)  # Use the real class to build the object
+@patch("ServiceNowv2.QuickActionPreview", QuickActionPreview)  # Use the real class to build the object
 def test_get_remote_data_preview_success(mock_client: MagicMock) -> None:
     """
     Tests the successful generation of a ticket preview.
@@ -3874,9 +3879,7 @@ def test_get_remote_data_preview_success(mock_client: MagicMock) -> None:
 
     # Assert
     # 1. Check that the client's get method was called correctly
-    mock_client.get.assert_called_once_with(
-        mock_client.ticket_type, ticket_id, use_display_value=True
-    )
+    mock_client.get.assert_called_once_with(mock_client.ticket_type, ticket_id, use_display_value=True)
 
     # 2. Check the returned CommandResults object and its contents
     assert isinstance(result, CommandResults)
@@ -3885,13 +3888,13 @@ def test_get_remote_data_preview_success(mock_client: MagicMock) -> None:
 
     # 3. Check the outputs, which should be the context from QuickActionPreview
     expected_outputs = {
-        'id': 'INC0010005',
-        'title': 'Email server is down',
-        'description': 'Users are unable to send or receive emails.',
-        'status': 'In Progress',
-        'assignee': 'Beth Anglin',
-        'creation_date': '2024-01-01 10:00:00',
-        'severity': '1 - Critical',
+        "id": "INC0010005",
+        "title": "Email server is down",
+        "description": "Users are unable to send or receive emails.",
+        "status": "In Progress",
+        "assignee": "Beth Anglin",
+        "creation_date": "2024-01-01 10:00:00",
+        "severity": "1 - Critical",
     }
     assert result.outputs == expected_outputs
 
@@ -3899,8 +3902,8 @@ def test_get_remote_data_preview_success(mock_client: MagicMock) -> None:
     assert result.raw_response == mock_api_response
 
 
-@patch('ServiceNowv2.CommandResults', CommandResults)
-@patch('ServiceNowv2.QuickActionPreview', QuickActionPreview)
+@patch("ServiceNowv2.CommandResults", CommandResults)
+@patch("ServiceNowv2.QuickActionPreview", QuickActionPreview)
 def test_get_remote_data_preview_success_with_list_response(mock_client: MagicMock) -> None:
     """
     Tests successful preview generation when the API returns a list with one item.
@@ -3930,6 +3933,6 @@ def test_get_remote_data_preview_success_with_list_response(mock_client: MagicMo
 
     # Assert
     assert isinstance(result, CommandResults)
-    assert result.outputs['id'] == ticket_id
-    assert result.outputs['title'] == "Network printer offline"
-    assert result.outputs['status'] == "New"
+    assert result.outputs["id"] == ticket_id
+    assert result.outputs["title"] == "Network printer offline"
+    assert result.outputs["status"] == "New"
