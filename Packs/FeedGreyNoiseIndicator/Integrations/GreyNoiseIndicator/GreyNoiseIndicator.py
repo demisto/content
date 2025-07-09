@@ -93,27 +93,31 @@ def get_ip_tag_names(tags: list) -> list:
     :rtype: ``list``
     """
     tag_names = []
-    for tag in tags:
-        tag_name = tag.get("name")
-        tag_names.append(tag_name)
+    if tags != []:
+        for tag in tags:
+            tag_name = tag.get("name")
+            tag_names.append(tag_name)
 
     return tag_names
 
 
 def format_indicator(indicator, tlp_color: str):
-    tags = get_ip_tag_names(indicator.get("internet_scanner_intelligence", {}).get("tags"))
+    tags = get_ip_tag_names(indicator.get("internet_scanner_intelligence", {}).get("tags", []))
     tag_string = ",".join(tags)
-    if tags == "":
+    if tag_string == "":
         tags = "INTERNET SCANNER"
     else:
         tags = "INTERNET SCANNER," + tag_string
     if "metadata" in indicator.get("internet_scanner_intelligence", {}):
         country_code = indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("source_country", "")
-        lat_long = (
-            str(indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("latitude", ""))
-            + ","
-            + str(indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("longitude", ""))
-        )
+        if "latitude" in indicator.get("internet_scanner_intelligence", {}).get("metadata", {}) and "longitude" in indicator.get("internet_scanner_intelligence", {}).get("metadata", {}):
+            lat_long = (
+                str(indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("latitude", ""))
+                + ","
+                + str(indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("longitude", ""))
+            )
+        else:
+            lat_long = ""
     else:
         country_code = ""
         lat_long = ""
