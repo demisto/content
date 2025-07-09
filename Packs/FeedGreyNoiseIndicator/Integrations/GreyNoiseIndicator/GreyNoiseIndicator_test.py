@@ -29,6 +29,8 @@ GET_IP_REPUTATION_SCORE_DATA = [
     ("dummy", 0),
 ]
 
+GET_IP_TAG_NAMES_DATA = [([], []), ([{"name": "Mirai"}], ["Mirai"])]
+
 FORMAT_TIMESTAMP_DATA = [("2023-11-23", "2023-11-23T00:00:00Z")]
 
 FORMAT_INDICATOR_DATA = [
@@ -235,6 +237,15 @@ def test_get_ip_reputation_score(input_data, expected_output):
     Tests various combinations of GreyNoise classification data.
     """
     response = GreyNoiseIndicator.get_ip_reputation_score(input_data)
+    assert response == expected_output
+
+
+@pytest.mark.parametrize("input_data, expected_output", GET_IP_TAG_NAMES_DATA)
+def test_get_ip_tag_names(input_data, expected_output):
+    """
+    Tests various combinations of GreyNoise classification data.
+    """
+    response = GreyNoiseIndicator.get_ip_tag_names(input_data)
     assert response == expected_output
 
 

@@ -102,15 +102,17 @@ def get_ip_tag_names(tags: list) -> list:
 
 
 def format_indicator(indicator, tlp_color: str):
-    tags = get_ip_tag_names(indicator.get("internet_scanner_intelligence", {}).get("tags", []))
-    tag_string = ",".join(tags)
+    tag_names = get_ip_tag_names(indicator.get("internet_scanner_intelligence", {}).get("tags", []))
+    tag_string = ",".join(tag_names)
     if tag_string == "":
         tags = "INTERNET SCANNER"
     else:
         tags = "INTERNET SCANNER," + tag_string
     if "metadata" in indicator.get("internet_scanner_intelligence", {}):
         country_code = indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("source_country", "")
-        if "latitude" in indicator.get("internet_scanner_intelligence", {}).get("metadata", {}) and "longitude" in indicator.get("internet_scanner_intelligence", {}).get("metadata", {}):
+        if "latitude" in indicator.get("internet_scanner_intelligence", {}).get("metadata", {}) and "longitude" in indicator.get(
+            "internet_scanner_intelligence", {}
+        ).get("metadata", {}):
             lat_long = (
                 str(indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("latitude", ""))
                 + ","
