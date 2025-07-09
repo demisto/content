@@ -250,7 +250,12 @@ class Client(BaseClient):
         Returns:
             dict: dict containing whether the assignment request was successful.
         """
-        request_data = {"request_data": {"incident_id": incident_id}}
+        request_data = {
+            "request_data": {
+                "incident_id": incident_id,
+                "full_alert_fields": True,
+            },
+        }
         response = self._http_request("POST", f"{V1_URL_SUFFIX}/incidents/get_incident_extra_data/", json_data=request_data)
 
         return response
