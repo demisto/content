@@ -10048,16 +10048,16 @@ class TestMirrorObjectInitialization:
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
-        ticket_url: Optional[str] = "http://example.com/ticket/123"
-        ticket_id: Optional[str] = "JIRA-123"
-        object_name: Optional[str] = "TicketName"
+        object_url = "http://example.com/ticket/123"
+        object_id = "JIRA-123"
+        object_name = "TicketName"
 
         # When
-        mirror_obj = MirrorObject(object_url=ticket_url, object_id=ticket_id, object_name=object_name)
+        mirror_obj = MirrorObject(object_url=object_url, object_id=object_id, object_name=object_name)
 
         # Then
-        assert mirror_obj.object_url == ticket_url, "object_url should be initialized correctly."
-        assert mirror_obj.object_id == ticket_id, "ticket_id should be initialized correctly."
+        assert mirror_obj.object_url == object_url, "object_url should be initialized correctly."
+        assert mirror_obj.object_id == object_id, "ticket_id should be initialized correctly."
         mock_demisto_debug.assert_not_called()
 
     def test_initialization_with_no_fields(self, mocker: MagicMock):
@@ -10087,14 +10087,14 @@ class TestMirrorObjectInitialization:
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
-        ticket_url: Optional[str] = "http://example.com/ticket/123"
+        object_url = "http://example.com/ticket/123"
         expected_log_message = "MirrorObject: Initialized with missing mandatory fields: object_id, object_name"
 
         # When
-        mirror_obj = MirrorObject(object_url=ticket_url, object_id=None)
+        mirror_obj = MirrorObject(object_url=object_url, object_id=None)
 
         # Then
-        assert mirror_obj.object_url == ticket_url
+        assert mirror_obj.object_url == object_url
         assert mirror_obj.object_id is None
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
@@ -10106,15 +10106,15 @@ class TestMirrorObjectInitialization:
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
-        ticket_id: Optional[str] = "JIRA-123"
+        object_id = "JIRA-123"
         expected_log_message = "MirrorObject: Initialized with missing mandatory fields: object_url, object_name"
 
         # When
-        mirror_obj = MirrorObject(object_url=None, object_id=ticket_id)
+        mirror_obj = MirrorObject(object_url=None, object_id=object_id)
 
         # Then
         assert mirror_obj.object_url is None
-        assert mirror_obj.object_id == ticket_id
+        assert mirror_obj.object_id == object_id
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
     @pytest.mark.parametrize(
@@ -10149,7 +10149,7 @@ class TestMirrorObjectInitialization:
         # Then
         if should_log:
             assert mock_demisto_debug.call_count == 1, "demisto.debug should have been called once."
-            logged_message: str = mock_demisto_debug.call_args[0][0]
+            logged_message = mock_demisto_debug.call_args[0][0]
             assert f"MirrorObject: Initialized with missing mandatory fields: {', '.join(expected_missing_fields)}" == logged_message, \
                 "The debug log message was not as expected."
         else:
@@ -10178,8 +10178,8 @@ class TestMirrorObjectToContext:
     def test_to_context_various_inputs(
         self,
         mocker: MagicMock, # Add mocker to patch demisto.debug even if not directly testing its call
-        ticket_url_in: Optional[str],
-        ticket_id_in: Optional[str],
+        object_url: Optional[str],
+        object_id: Optional[str],
         expected_dict: Dict[str, Any],
     ):
         """
@@ -10188,10 +10188,10 @@ class TestMirrorObjectToContext:
         Then:  A dictionary representation of the object is returned with the correct key-value pairs.
         """
         # Given
-        mirror_obj = MirrorObject(object_url=ticket_url_in, object_id=ticket_id_in)
+        mirror_obj = MirrorObject(object_url=object_url, object_id=object_id)
 
         # When
-        context_dict: Dict[str, Any] = mirror_obj.to_context()
+        context_dict = mirror_obj.to_context()
 
         # Then
         assert context_dict == expected_dict, "The context dictionary does not match the expected output."
@@ -10217,7 +10217,7 @@ class TestQuickActionPreviewInitialization:
     """
     Test suite for the initialization and __post_init__ logic of the QuickActionPreview class.
     """
-    ALL_QA_PREVIEW_FIELD_NAMES: List[str] = [
+    ALL_QA_PREVIEW_FIELD_NAMES = [
         'id', 'title', 'description', 'status', 'assignee', 'creation_date', 'severity'
     ]
 
@@ -10441,7 +10441,7 @@ class TestQuickActionPreviewToContext:
         preview = QuickActionPreview(**init_kwargs) # type: ignore
 
         # When
-        actual_context_dict: Dict[str, Any] = preview.to_context()
+        actual_context_dict = preview.to_context()
 
         # Then
         assert actual_context_dict == expected_dict, \
@@ -10458,7 +10458,7 @@ class TestQuickActionPreviewToContext:
         preview = QuickActionPreview()
 
         # When
-        result: Any = preview.to_context()
+        result = preview.to_context()
 
         # Then
         assert isinstance(result, dict), "The to_context() method should always return a dict."
