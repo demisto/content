@@ -312,3 +312,23 @@ valid_ip_context_data["address"] = valid_ip_context_data["ip"]
 valid_ip_context_data["ip"] = valid_ip_context_data["ip"]
 
 get_ip_context_data_data = [([valid_ip_context_data], valid_ip_context_data_response)]
+
+valid_tag_data = [
+            {
+                "id": "36c75a5a-d4f8-46b3-b597-e0cbbf1ac3a0",
+                "slug": "adb-check",
+                "name": "ADB Check",
+                "description": "IP addresses with this tag have been observed checking for the existence of the Android Debug Bridge protocol.",
+                "category": "activity",
+                "intention": "suspicious",
+                "references": [],
+                "cves": [],
+                "recommend_block": False,
+                "created": "2021-08-26",
+                "updated_at": "2025-06-24T21:35:56.342633Z",
+            }
+        ]
+
+valid_tag_data_response = ["ADB Check (suspicious - activity)"]
+
+get_ip_tag_names_data = [(valid_tag_data, valid_tag_data_response)]

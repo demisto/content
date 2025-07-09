@@ -452,6 +452,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
         else:
             response = {}
             riot_response = {}
+            tmp_response = []
 
         original_response = copy.deepcopy(api_response)
 
