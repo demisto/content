@@ -106,29 +106,23 @@ def get_war_room_url(url: str) -> str:
 
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
     if is_xsiam():
-        war_room_url = f"{base_url}/incidents"
-
         if incident_id and incident_id.startswith("INCIDENT-"):
             # Executed from the incident War Room
             case_id = incident_id.split("-")[-1]
-            war_room_url += f"/war_room?caseId={case_id}"
+            return f"{base_url}/incidents/war_room?caseId={case_id}"
         else:
             # Executed from the alert War Room
-            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
-
-        return war_room_url
+            return f"{base_url}/incidents/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
 
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-183586
     if is_platform():
         if incident_id and incident_id.startswith("INCIDENT-"):
             # Executed from the cases War Room
             case_id = incident_id.split("-")[-1]
-            war_room_url = f"{base_url}/cases/war_room?caseId={case_id}"
+            return f"{base_url}/cases/war_room?caseId={case_id}"
         else:
             # Executed from the issue War Room
-            war_room_url = f"{base_url}/issue-view/{incident_id}"
-
-        return war_room_url
+            return f"{base_url}/issue-view/{incident_id}"
 
     return url
 
