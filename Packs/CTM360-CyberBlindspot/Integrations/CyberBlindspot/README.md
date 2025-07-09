@@ -239,13 +239,13 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.operating_system | unknown | The operating system of the compromised device. | 
 | CyberBlindspot.RemoteIncident.malware_path | unknown | The path of the in which the malware was installed on the compromised device. | 
 | CyberBlindspot.RemoteIncident.url_path | unknown | The path of the URL. | 
-| CyberBlindspot.RemoteIncident.masked_password | unknown | The masked password of the compromised account. |
+| CyberBlindspot.RemoteIncident.masked_password | unknown | The masked password of the compromised account. | 
 | CyberBlindspot.RemoteIncident.software | unknown | The software that was compromised. | 
 | CyberBlindspot.RemoteIncident.user | unknown | The user of the compromised account. | 
 | CyberBlindspot.RemoteIncident.user_domain | unknown | The domain of the compromised user. | 
-| CyberBlindspot.RemoteIncident.website | unknown | The website of the malware. | 
-| CyberBlindspot.RemoteIncident.sources | unknown | The sources of the malware. | 
-| CyberBlindspot.RemoteIncident.source_uri | unknown | The source URI of the malware. | 
+| CyberBlindspot.RemoteIncident.website | unknown | The website compromised. | 
+| CyberBlindspot.RemoteIncident.sources | unknown | The sources reporting the compromise. | 
+| CyberBlindspot.RemoteIncident.source_uri | unknown | The source URI of the compromise report. | 
 | CyberBlindspot.RemoteIncident.hostname | unknown | The hostname of the compromised device. | 
 | CyberBlindspot.RemoteIncident.stealer_family | unknown | The family of the malware. | 
 | CyberBlindspot.RemoteIncident.external_link | unknown | The external link to the remote platform. | 
