@@ -356,13 +356,13 @@ class QuickActionPreview:
     :return: None
     :rtype: ``None``
     """
-    id: Optional[str] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[str] = None
-    assignee: Optional[str] = None
-    creation_date: Optional[str] = None
-    severity: Optional[str] = None
+    id = None
+    title = None
+    description = None
+    status = None
+    assignee = None
+    creation_date = None
+    severity = None
 
     def __post_init__(self):
         """
@@ -377,7 +377,7 @@ class QuickActionPreview:
         if missing_fields:
             demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
 
-    def to_context(self) -> Dict[str, Any]:
+    def to_context(self):
         """
         Converts the dataclass instance to a dictionary.
 
@@ -401,11 +401,11 @@ class MirrorObject:
     :return: None
     :rtype: ``None``.
     """
-    object_url: Optional[str] = None
-    object_id: Optional[str] = None
-    object_name: Optional[str] = None
+    object_url = None
+    object_id = None
+    object_name = None
 
-    def __post_init__(self) -> None:
+    def __post_init__(self):
         """
         Performs post-initialization validation.
         Checks for missing mandatory fields 'object_url' and 'object_id'
@@ -425,7 +425,7 @@ class MirrorObject:
         if missing_fields_list:
             demisto.debug(f"MirrorObject: Initialized with missing mandatory fields: {', '.join(missing_fields_list)}")
 
-    def to_context(self) -> Dict[str, Any]:
+    def to_context(self):
         """
         Converts the dataclass instance to a dictionary.
 
