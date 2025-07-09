@@ -181,33 +181,27 @@ def parse_incidents(xdr_incidents: list[dict[str, Any]], mirroring_fields: dict,
             'dbotMirrorInstance': get_instances_id(),
             'rawJSON': json.dumps(incident)
         })
-    incidents = sorted(
-        incidents,
-        key=lambda x: parser.isoparse(x['updated']) if x.get('updated') else datetime.utcfromtimestamp(startTS / 1000)
-    )
+
     last_time = (
-        parser.isoparse(incidents[-1]['updated']).isoformat()
-        if len(incidents) > 0 and incidents[-1].get('updated')
+        json.loads(incidents[0]['rawJSON']).get('updated_at')
+        if incidents and incidents[0].get('rawJSON')
         else datetime.utcfromtimestamp(startTS / 1000).isoformat()
     )
-
-    demisto.debug(f"Made {len(incidents)} XSOAR incidents")
+    demisto.debug(f"Last incident time: {last_time}")
     return incidents, last_time
 
 
 def fetch_incidents(client: Client, mirroring_fields: dict, last_run: dict[str, str], first_fetch: datetime, max_fetch: int):
-    # Myabe send one second after and 
     last_fetch = last_run.get('last_fetch', first_fetch.isoformat())
     last_fetch_time = dateparser.parse(last_fetch)
     if not last_fetch_time:
         raise Exception(f"Invalid last fetch time value '{last_fetch}'")
-    formatted_fetch = last_fetch_time.strftime('%Y-%m-%d %H:%M:%S')
     startTS = int(last_fetch_time.timestamp() * 1000)
     demisto.debug(f"Fetching incidents since {last_fetch} (timestamp: {startTS})")
-    xdr_incidents = client.get_incidents(formatted_fetch, max_fetch)
-    incidents, last_insight_time = parse_incidents(xdr_incidents, mirroring_fields, startTS, max_fetch)
+    xdr_incidents = client.get_incidents(last_fetch, max_fetch)
+    incidents, last_incident_time = parse_incidents(xdr_incidents, mirroring_fields, startTS, max_fetch)
 
-    return {'last_fetch': last_insight_time}, incidents
+    return {'last_fetch': last_incident_time}, incidents
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
