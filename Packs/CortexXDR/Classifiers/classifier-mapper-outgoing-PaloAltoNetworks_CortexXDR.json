@@ -128,7 +128,7 @@
 			}
 		},
 		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
+			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"assigned_user_mail": {
 					"simple": "xdrassigneduseremail"
