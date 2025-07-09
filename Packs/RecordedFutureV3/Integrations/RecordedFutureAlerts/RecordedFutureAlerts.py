@@ -1,19 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 import concurrent.futures
 import platform
 from typing import Any, Union, Optional
@@ -299,7 +283,7 @@ class Actions:
                            f"(truncated)")
             file_name = self._get_file_name_from_image_id(image_id)
             file_result_obj = fileResult(file_name, image_content)
-            demisto.results(file_result_obj)  # Important
+            return_results(file_result_obj)  # Important
             attachment = {
                 "description": "Alert image",
                 "name": file_result_obj.get("File"),

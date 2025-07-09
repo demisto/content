@@ -12,25 +12,21 @@ configuration:
   type: 8
   required: false
   section: Collect
-
 - display: Incident type
   name: incidentType
   type: 13
   required: false
   section: Collect
-
 - defaultvalue: https://api.recordedfuture.com/gw/xsoar/
   display: Your server URL
   name: url
   required: true
   type: 0
-
 - display: API Key
   additionalinfo: The API Key to use for the connection
   name: apikey
   required: true
   type: 4
-
 - name: integrationReliability
   display: 'Source Reliability'
   defaultvalue: B - Usually reliable
@@ -46,15 +42,12 @@ configuration:
   required: false
   additionalinfo: Reliability of the source providing the intelligence data.
   section: Collect
-
-
 - display: Incidents fetch interval
   defaultvalue: '1'
   name: incidentFetchInterval
   type: 19
   required: false
   section: Collect
-
 - display: Maximum number of incidents per fetch
   additionalinfo: 'The max number of incidents to fetch per run. Cannot be bigger than 50.'
   name: max_fetch
@@ -62,7 +55,6 @@ configuration:
   type: 0
   required: false
   section: Collect
-
 - display: 'First fetch time'
   additionalinfo: 'How far back we should fetch alerts on the first incident fetch. This value is not used for subsequent fetches. Cannot be bigger than 90 days.'
   defaultvalue: '1440' # 1 day
@@ -70,21 +62,18 @@ configuration:
   type: 19
   required: false
   section: Collect
-
 - display: 'Enable Classic Alerts'
   name: classic_alerts_enabled
   type: 8
   defaultvalue: 'true'
   required: false
   section: Collect
-
 - display: 'Classic Alerts: Rule names to fetch'
   name: classic_alert_rule_names
   type: 12
   additionalinfo: 'Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched.'
   required: false
   section: Collect
-
 - display: 'Classic Alerts: Statuses to fetch'
   name: classic_alert_statuses
   type: 16
@@ -97,15 +86,12 @@ configuration:
   required: true
   advanced: true
   section: Collect
-
-
 - display: 'Enable Playbook Alerts'
   name: playbook_alerts_enabled
   type: 8
   defaultvalue: 'true'
   required: false
   section: Collect
-
 - display: 'Playbook Alerts: Priority to fetch'
   name: playbook_alert_priority
   type: 15
@@ -117,7 +103,6 @@ configuration:
     - High
   required: false
   section: Collect
-
 - display: 'Playbook Alerts: Categories to fetch'
   name: playbook_alert_categories
   additionalinfo: 'Playbook Alert categories to filter by. If empty, all alerts will be fetched. Note that your Recorded Future licensing also affects which Playbook Alerts are available.'
@@ -131,7 +116,6 @@ configuration:
   - geopolitics_facility
   required: false
   section: Collect
-
 - display: 'Playbook Alerts: Statuses to fetch'
   name: playbook_alert_statuses
   type: 16
@@ -144,8 +128,6 @@ configuration:
   required: true
   advanced: true
   section: Collect
-
-
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -154,7 +136,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-
 description: 'Fetch and triage alerts from Recorded Future'
 display: Recorded Future Alerts
 name: RecordedFutureAlerts
@@ -181,7 +162,6 @@ script:
         - contextPath: RecordedFutureAlerts.AlertRule.name
           description: Alert rule name.
           type: string
-
     - name: rf-alert-update
       description: Update an alert in the Recorded Future platform.
       arguments:
@@ -220,7 +200,6 @@ script:
         - contextPath: RecordedFutureAlerts.Alert.comment
           description: Note (Classic) or comment (Playbook) that was just applied.
           type: string
-
     - name: rf-alerts
       description: List Classic or Playbook alerts.
       arguments:
@@ -333,8 +312,6 @@ script:
         - contextPath: RecordedFutureAlerts.Alert.playbook_alert_priority
           description: If alert is a playbook alert, this is the priority of the alert.
           type: string
-
-
   isfetch: true
   runonce: false
   script: '-'

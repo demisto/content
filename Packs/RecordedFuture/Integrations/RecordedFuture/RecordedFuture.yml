@@ -2686,7 +2686,7 @@ script:
       type: Number
 
   - name: recordedfuture-single-alert
-    description: Get detailed information from vulnerability, typosquat and credential alerts.
+    description: 'Get detailed information from vulnerability, typosquat and credential alerts. Deprecated in favor of "Recorded Future Alerts" integration in "Recorded Future" pack.'
     deprecated: true
     arguments:
     - name: id
