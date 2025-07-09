@@ -1885,7 +1885,7 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
         # in the `-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
         # in the `endpoint` command we use the standard
         if ip_as_string and ip and isinstance(ip, list):
-            ip = ", ".join(ip)
+            ip = ip[0]
         os_type = convert_os_to_standard(single_endpoint.get("os_type", ""))
         endpoint = Common.Endpoint(
             id=single_endpoint.get("endpoint_id"),
@@ -2730,6 +2730,7 @@ def endpoint_command(client, args):
     endpoint_id_list = argToList(args.get("id"))
     endpoint_ip_list = argToList(args.get("ip"))
     endpoint_hostname_list = argToList(args.get("hostname"))
+    ip_as_string = args.get("ip_as_string", True)
 
     if not any((endpoint_id_list, endpoint_ip_list, endpoint_hostname_list)):
         raise DemistoException(
@@ -2742,7 +2743,7 @@ def endpoint_command(client, args):
         ip_list=endpoint_ip_list,
         hostname=endpoint_hostname_list,
     )
-    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True, args.get("integration_name", "CoreApiModule"))
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, ip_as_string, args.get("integration_name", "CoreApiModule"))
     command_results = []
     if standard_endpoints:
         for endpoint in standard_endpoints:
