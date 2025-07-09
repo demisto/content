@@ -134,7 +134,7 @@ def main():  # pragma: no cover
     last_run = demisto.getLastRun()
     demisto.debug(f"{last_run=}")
     if last_run:
-        next_page_number = last_run.get('next_page_number')
+        next_page_number = last_run.get('next_page_number', 1)
         if next_page_number > 1:
             after = last_run.get('after')
             before = last_run.get('before')
