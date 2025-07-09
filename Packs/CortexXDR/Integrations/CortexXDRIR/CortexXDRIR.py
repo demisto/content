@@ -1054,7 +1054,7 @@ def get_remote_data_command(client, args, excluded_alert_fields=[], remove_nulls
 
 def update_remote_system_command(client, args):
     parsed_args = UpdateRemoteSystemArgs(args)
-    demisto.debug(
+    demisto.debug( 
         f"update_remote_system_command command args are:"
         f"id: {parsed_args.remote_incident_id}, "
         f"data: {parsed_args.data}, "
