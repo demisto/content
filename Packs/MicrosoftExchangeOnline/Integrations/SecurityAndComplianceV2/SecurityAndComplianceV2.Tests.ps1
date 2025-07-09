@@ -1,26 +1,39 @@
 BeforeAll {
     . $PSScriptRoot\demistomock.ps1
     . $PSScriptRoot\SecurityAndComplianceV2.ps1
-
-    class MockClient {
-        [object] NewSearch($name, $param2, $kql, $description, $bool1, $locations, $p1, $p2, $p3, $errAction) {
-            return @{ Name = $name; Status = "NotStarted"; Items = 1 }
+    BeforeAll {
+        class SecurityAndComplianceClient {
+            SecurityAndComplianceClient([string]$a, [string]$b, [string]$c, [string]$d, [string]$e) {}
+            CreateDelegatedSession([string]$CommandName) {}
+            DisconnectSession() {}
         }
-        [void] StartSearch($name) {
-            $script:SearchStarted = $true
+    
+        class MockClient : SecurityAndComplianceClient {
+            MockClient() : base("", "", "", "", "") {}
+    
+            [psobject] NewSearch($name, $param2, $kql, $description, $bool1, $locations, $p1, $p2, $p3, $errAction) {
+                return @{ Name = $name; Status = "NotStarted"; Items = 1 }
+            }
+    
+            [void] StartSearch($name) {
+                $script:SearchStarted = $true
+            }
+    
+            [psobject] GetSearch($name) {
+                return @{ Name = $name; Status = "Completed"; Items = 2 }
+            }
+    
+            [psobject] GetSearchAction($name, $errAction) {
+                return $null
+            }
+    
+            [psobject] NewSearchAction($a, $b, $c, $d, $e, $f, $g, $h, $i, $j) {
+                return @{ Status = "Starting" }
+            }
         }
-        [object] GetSearch($name) {
-            return @{ Name = $name; Status = "Completed"; Items = 2 }
-        }
-        [object] GetSearchAction($name, $errAction) {
-            return $null
-        }
-        [object] NewSearchAction($searchName, $type, $action, $format1, $format2, $versions, $email, $cc, $scenario, $scope) {
-            return @{ Status = "Starting" }
-        }
-    }
-
-    $mockClient = [MockClient]::new()
+    
+        $mockClient = [MockClient]::new()
+    }    
 }
 
 Describe 'StringRegexParse' {
@@ -259,4 +272,5 @@ Describe 'SearchAndDeleteEmailCommand' {
             $result[3].search_name | Should -Be $result[2].Name
         }
     }
+
 }
