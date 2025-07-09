@@ -10162,7 +10162,7 @@ class TestMirrorObjectToContext:
     """
 
     @pytest.mark.parametrize(
-        "ticket_url_in, ticket_id_in, expected_dict",
+        "object_url, object_id, expected_dict",
         [
             (
                 "http://example.com/ticket/123",
