@@ -341,19 +341,26 @@ class QuickActionPreview(object):
     A container class for storing quick action data previews.
     This class is intended to be populated by commands like `!get-remote-data-preview`
     and placed directly into the root context under `QuickActionPreview`.
+    
+    :return: None
+    :rtype: ``None``.
     """
     def __init__(self, id=None, title=None, description=None, status=None,
                  assignee=None, creation_date=None, severity=None):
         """
-        Initializes the QuickActionPreview object.
-
-        :param id: The ID of the ticket.
-        :param title: The title or summary of the ticket or action.
-        :param description: A brief description or details about the action.
-        :param status: Current status (e.g., Open, In Progress, Closed).
-        :param assignee: The user or entity assigned to the action.
-        :param creation_date: The date and time when the item was created.
-        :param severity: Indicates the priority or severity level.
+        A container class for storing quick action data previews.
+        This class is intended to be populated by commands like `!get-remote-data-preview`
+        and placed directly into the root context under `QuickActionPreview`.
+        Attributes:
+            id (Optional[str]): The ID of the ticket.
+            title (Optional[str]): The title or summary of the ticket or action.
+            description (Optional[str]): A brief description or details about the action.
+            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
+            assignee (Optional[str]): The user or entity assigned to the action.
+            creation_date (Optional[str]): The date and time when the item was created.
+            severity (Optional[str]): Indicates the priority or severity level.
+        :return: None
+        :rtype: ``None``
         """
         self.id = id
         self.title = title
@@ -382,14 +389,20 @@ class MirrorObject(object):
     A container class for storing ticket metadata used in mirroring integrations.
     This class is intended to be populated by commands like `!jira-create-issue`
     and placed directly into the root context under `MirrorObject`.
+
+    :return: None
+    :rtype: ``None``.
     """
     def __init__(self, object_url=None, object_id=None, object_name=None):
         """
-        Initializes the MirrorObject.
-
-        :param object_url: Direct URL to the created ticket for preview/use.
-        :param object_id: Unique identifier of the created ticket.
-        :param object_name: The display name or key of the created ticket.
+        A container class for storing ticket metadata used in mirroring integrations.
+        This class is intended to be populated by commands like `!jira-create-issue`
+        and placed directly into the root context under `MirrorObject`.
+        Attributes:
+            object_url (Optional[str]): Direct URL to the created ticket for preview/use.
+            object_id (Optional[str]): Unique identifier of the created ticket.
+        :return: None
+        :rtype: ``None``.
         """
         self.object_url = object_url
         self.object_id = object_id
