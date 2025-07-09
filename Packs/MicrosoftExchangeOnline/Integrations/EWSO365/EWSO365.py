@@ -1631,7 +1631,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                     if len(incidents) >= client.max_fetch:
                         break
                 else:
-                    demisto.debug(f"Skip item: item with no message_id {item=}")
+                    demisto.debug(f"Skipped item: item with no message_id {item=}")
             except Exception as e:
                 if not skip_unparsable_emails:  # default is to raise and exception and fail the command
                     raise
@@ -1663,9 +1663,9 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
             f"last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####"
         )
 
+        demisto.debug(f"{current_fetch_ids=}, {excluded_ids=} ")
         # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
         # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
-        demisto.debug(f"{current_fetch_ids=}, {excluded_ids=} ")
         if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
             ids = current_fetch_ids
         else:
@@ -1746,8 +1746,13 @@ def fetch_last_emails(
         if isinstance(item, Message):
             if item.message_id in exclude_ids:
                 demisto.debug(f"prev: {exclude_ids.get(item.message_id)}, current: {item.last_modified_time.ewsformat()}")
-                if exclude_ids.get(item.message_id) >= (item.datetime_created.ewsformat() if RECEIVED_FILTER else item.last_modified_time.ewsformat()):
-                    # If the item was fetched before and its received/modification time hasn't changed since the previous fetch
+                if exclude_ids.get(item.message_id) >= (
+                item.datetime_created.ewsformat() if RECEIVED_FILTER else item.last_modified_time.ewsformat()):
+                    # If the item already fetched and its received/modification time hasn't changed since the previous fetch
+                    demisto.debug(
+                        f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
+                        f"{exclude_ids.get(item.message_id)}, current fetch time: "
+                        f"{item.datetime_created.ewsformat() if RECEIVED_FILTER else item.last_modified_time.ewsformat()}")
                     continue
             result.append(item)
             if len(result) >= client.max_fetch:
