@@ -14,7 +14,7 @@ VERSION = "PA-XSOAR:2.0.0"
 def test_module(params: dict) -> str:
     """Performs ANY.RUN API call to verify integration is operational"""
     try:
-        with FeedsConnector(params.get("anyrun_auth_token", {}).get("password")) as connector:
+        with FeedsConnector(params.get("credentials", {}).get("password")) as connector:
             connector.check_authorization()
             return "ok"
     except RunTimeException as exception:
@@ -77,7 +77,7 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
 
         indicator_payload = {
             "value": indicator_value,
-            "type": {"ipv4-addr": "Ip", "url": "URL", "domain-name": "Domain"}.get(indicator_type),
+            "type": {"ipv4-addr": "IP", "url": "URL", "domain-name": "Domain"}.get(indicator_type),
             "fields": {
                 "firstseenbysource": indicator.get("created"),
                 "first_seen": indicator.get("created"),
@@ -101,7 +101,7 @@ def fetch_indicators_command(params: dict) -> None:
     """
     modified_after = get_timestamp(params)
 
-    with FeedsConnector(params.get("anyrun_auth_token", {}).get("password"), integration=VERSION) as connector:
+    with FeedsConnector(params.get("credentials", {}).get("password"), integration=VERSION) as connector:
         connector._taxii_delta_timestamp = None
         for chunk in FeedsIterator.taxii_stix(
             connector, match_type="indicator", match_version="all", modified_after=modified_after, limit=10000, chunk_size=10000
