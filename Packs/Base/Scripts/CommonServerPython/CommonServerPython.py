@@ -356,13 +356,13 @@ class QuickActionPreview:
     :return: None
     :rtype: ``None``
     """
-    id = None
-    title = None
-    description = None
-    status = None
-    assignee = None
-    creation_date = None
-    severity = None
+    id: None
+    title: None
+    description: None
+    status: None
+    assignee: None
+    creation_date: None
+    severity: None
 
     def __post_init__(self):
         """
@@ -401,9 +401,9 @@ class MirrorObject:
     :return: None
     :rtype: ``None``.
     """
-    object_url = None
-    object_id = None
-    object_name = None
+    object_url: None
+    object_id: None
+    object_name: None
 
     def __post_init__(self):
         """
