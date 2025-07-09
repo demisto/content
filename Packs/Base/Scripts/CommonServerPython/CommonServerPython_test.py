@@ -10040,7 +10040,7 @@ class TestMirrorObjectInitialization:
     Tests for the MirrorObject dataclass initialization and __post_init__ logic.
     """
 
-    def test_initialization_with_all_fields(self, mocker) -> None:
+    def test_initialization_with_all_fields(self, mocker):
         """
         Given: Valid object_url and ticket_id.
         When:  MirrorObject is initialized.
@@ -10060,7 +10060,7 @@ class TestMirrorObjectInitialization:
         assert mirror_obj.object_id == ticket_id, "ticket_id should be initialized correctly."
         mock_demisto_debug.assert_not_called()
 
-    def test_initialization_with_no_fields(self, mocker: MagicMock) -> None:
+    def test_initialization_with_no_fields(self, mocker: MagicMock):
         """
         Given: No object_url and no ticket_id (both None).
         When:  MirrorObject is initialized.
@@ -10079,7 +10079,7 @@ class TestMirrorObjectInitialization:
         assert mirror_obj.object_name is None, "object_name should be None."
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
-    def test_initialization_with_only_ticket_url(self, mocker: MagicMock) -> None:
+    def test_initialization_with_only_ticket_url(self, mocker: MagicMock):
         """
         Given: Only object_url is provided (ticket_id is None).
         When:  MirrorObject is initialized.
@@ -10098,7 +10098,7 @@ class TestMirrorObjectInitialization:
         assert mirror_obj.object_id is None
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
-    def test_initialization_with_only_ticket_id(self, mocker: MagicMock) -> None:
+    def test_initialization_with_only_ticket_id(self, mocker: MagicMock):
         """
         Given: Only ticket_id is provided (object_url is None).
         When:  MirrorObject is initialized.
@@ -10134,7 +10134,7 @@ class TestMirrorObjectInitialization:
         ticket_name_in: Optional[str],
         expected_missing_fields: List[str],
         should_log: bool,
-    ) -> None:
+    ):
         """
         Given: Various combinations of object_url and ticket_id.
         When:  MirrorObject is initialized.
@@ -10181,7 +10181,7 @@ class TestMirrorObjectToContext:
         ticket_url_in: Optional[str],
         ticket_id_in: Optional[str],
         expected_dict: Dict[str, Any],
-    ) -> None:
+    ):
         """
         Given: A MirrorObject initialized with various combinations of object_url and ticket_id.
         When:  The to_context() method is called.
@@ -10196,7 +10196,7 @@ class TestMirrorObjectToContext:
         # Then
         assert context_dict == expected_dict, "The context dictionary does not match the expected output."
 
-    def test_to_context_returns_dict(self, mocker: MagicMock) -> None:
+    def test_to_context_returns_dict(self, mocker: MagicMock):
         """
         Given: A MirrorObject.
         When:  to_context() is called.
@@ -10221,7 +10221,7 @@ class TestQuickActionPreviewInitialization:
         'id', 'title', 'description', 'status', 'assignee', 'creation_date', 'severity'
     ]
 
-    def test_initialization_with_all_fields_provided_non_none(self, mocker) -> None:
+    def test_initialization_with_all_fields_provided_non_none(self, mocker):
         """
         Given: All fields are provided with non-None string values.
         When:  A QuickActionPreview instance is created.
@@ -10247,7 +10247,7 @@ class TestQuickActionPreviewInitialization:
             assert getattr(preview, field_name) == expected_value, f"{field_name} was not initialized correctly."
         mock_demisto_debug.assert_not_called()
 
-    def test_initialization_with_all_fields_none(self, mocker) -> None:
+    def test_initialization_with_all_fields_none(self, mocker):
         """
         Given: All fields are explicitly set to None or default to None.
         When:  A QuickActionPreview instance is created.
@@ -10265,7 +10265,7 @@ class TestQuickActionPreviewInitialization:
             assert getattr(preview, field_name) is None, f"{field_name} should be None."
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
-    def test_initialization_with_some_fields_none(self, mocker) -> None:
+    def test_initialization_with_some_fields_none(self, mocker):
         """
         Given: Some fields are provided, and others are None.
         When:  A QuickActionPreview instance is created.
@@ -10300,7 +10300,7 @@ class TestQuickActionPreviewInitialization:
         assert preview.severity == "Medium"
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
-    def test_initialization_with_empty_strings_not_logged_as_missing(self, mocker) -> None:
+    def test_initialization_with_empty_strings_not_logged_as_missing(self, mocker):
         """
         Given: Some fields are empty strings, others are provided or None.
         When:  A QuickActionPreview instance is created.
@@ -10368,7 +10368,7 @@ class TestQuickActionPreviewInitialization:
         mocker,
         init_kwargs: Dict[str, Optional[str]],
         expected_logged_missing_fields: List[str]
-    ) -> None:
+    ):
         """
         Given: Various combinations of field initializations for QuickActionPreview.
         When:  A QuickActionPreview instance is created.
@@ -10429,7 +10429,7 @@ class TestQuickActionPreviewToContext:
         mocker,
         init_kwargs: Dict[str, Optional[str]],
         expected_dict: Dict[str, Any]
-    ) -> None:
+    ):
         """
         Given: A QuickActionPreview initialized with various field values.
         When:  The to_context() method is called.
@@ -10447,7 +10447,7 @@ class TestQuickActionPreviewToContext:
         assert actual_context_dict == expected_dict, \
             "The dictionary from to_context() does not match the expected output."
 
-    def test_to_context_return_type_is_dict(self, mocker) -> None:
+    def test_to_context_return_type_is_dict(self, mocker):
         """
         Given: Any QuickActionPreview instance.
         When:  The to_context() method is called.
