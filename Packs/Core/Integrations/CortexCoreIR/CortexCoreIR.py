@@ -168,6 +168,7 @@ class Client(CoreClient):
             return "Success", ""
 
         return status or "Unknown", ""
+
     def get_contributing_event_by_alert_id(self, alert_id: int):
         """_summary_
 
@@ -625,7 +626,6 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     )
 
 
-
 def core_get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
     """Gets the contributing events for specific alert IDs.
 
@@ -663,6 +663,7 @@ def core_get_contributing_event_command(client: Client, args: Dict) -> CommandRe
         outputs=alerts,
         raw_response=alerts,
     )
+
 
 def polling_block_ip_status(args, client) -> PollResult:
     """
@@ -756,6 +757,7 @@ def core_block_ip_command(args: dict, client: Client) -> PollResult:
     else:
         # all other calls after the block ip requests sent
         return polling_block_ip_status(args, client)
+
 
 def main():  # pragma: no cover
     """
@@ -1152,7 +1154,7 @@ def main():  # pragma: no cover
 
         elif command == "core-block-ip":
             return_results(core_block_ip_command(args, client))
-            
+
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
 

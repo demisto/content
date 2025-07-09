@@ -4264,21 +4264,6 @@ script:
       description: List representing the vendors who reported this indicator.
       type: List
   - arguments:
-    - description: List of ID's of agents that supports the operation.
-      name: endpoint_list
-      required: true
-    - description: List of IPv6 or IPv4 to blocklist.
-      name: ip_list
-      required: true
-    - description: Number of minutes to block (Max 518,400).
-      name: duration
-      required: true
-    - description: blocked ip lists required for the polling and not visible to user
-      name: blocked_list
-      hidden: true
-    polling: true
-    name: core-block-ip
-    description: Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
     - description: The alert ID's from where to retrieve the contributing events.
       isArray: true
       name: alert_ids
@@ -4301,6 +4286,22 @@ script:
     - contextPath: Core.ContributingEvent.events
       description: The contributing events.
       type: Unknown
+  - arguments:
+    - description: List of ID's of agents that supports the operation.
+      name: endpoint_list
+      required: true
+    - description: List of IPv6 or IPv4 to blocklist.
+      name: ip_list
+      required: true
+    - description: Number of minutes to block (Max 518,400).
+      name: duration
+      required: true
+    - description: blocked ip lists required for the polling and not visible to user
+      name: blocked_list
+      hidden: true
+    polling: true
+    name: core-block-ip
+    description: Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
   runonce: false
   script: '-'
   subtype: python3

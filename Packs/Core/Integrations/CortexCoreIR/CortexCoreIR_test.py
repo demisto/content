@@ -1174,6 +1174,8 @@ class TestBlockIp:
         # we get exactly the same args dict back
         assert calls["args"] == args
         assert spy.call_count == 0
+
+
 def test_core_get_contributing_event(mocker):
     """
     Given:
