@@ -171,8 +171,10 @@ class Client(BaseClient):  # pragma: no cover
 
             def parse_datetime(dt_str):
                 try:
+                    demisto.debug("Test-IronScales: going in parse_datetime")
                     return datetime.strptime(dt_str, "%Y-%m-%dT%H:%M:%S.%fZ")
                 except ValueError:
+                    demisto.debug("Test-IronScales: parse_datetime Exception triggered")
                     return datetime.strptime(dt_str, "%Y-%m-%dT%H:%M:%SZ")
 
             incidents_sorted_by_time = sorted(
@@ -329,7 +331,7 @@ def all_incidents_trimmer(
     client: Client,
     max_fetch: int,
     last_timestamp_ids: Optional[List[int]],
-    last_timestamp: datetime | None,
+    last_timestamp: datetime,
     last_id: int | None,
 ):
     """
