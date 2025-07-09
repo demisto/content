@@ -735,7 +735,7 @@ def core_block_ip_command(args: dict, client: Client) -> PollResult:
             ip_list list[str]: IPs to block.
             endpoint_list list[str]: Endpoint IDs.
             duration (int, optional): Block time in seconds (default: 300).
-            blocked_list list[dict]: list of dicts each {}
+            blocked_list list[dict]: list of dicts each holds 3 fields: ip_address, group_id, endpoint_id.
         client (Client): client.
 
     Returns:
