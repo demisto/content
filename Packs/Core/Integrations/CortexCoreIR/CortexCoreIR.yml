@@ -4291,12 +4291,12 @@ script:
       name: endpoint_list
       required: true
     - description: List of IPv6 or IPv4 to blocklist.
-      name: ip_list
+      name: addresses
       required: true
     - description: Number of minutes to block (Max 518,400).
       name: duration
       required: true
-    - description: blocked ip lists required for the polling and not visible to user
+    - description: blocked ip lists required for the polling and not visible to user.
       name: blocked_list
       hidden: true
     polling: true

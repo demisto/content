@@ -1023,7 +1023,7 @@ class TestBlockIp:
     def test_polling_all_success(self):
         """
         Given:
-            - A blocked_list with one action (g1 on ep1).
+            - A blocked_list with one action (gid1 on endpoint_id1).
         When:
             - polling_block_ip_status returns Success for that action.
         Then:
@@ -1042,7 +1042,7 @@ class TestBlockIp:
     def test_polling_failure(self):
         """
         Given:
-            - A blocked_list with one action (g2 on ep2).
+            - A blocked_list with one action (gid1 on endpoint1).
         When:
             - polling_block_ip_status returns Failure with a message.
         Then:

@@ -673,11 +673,11 @@ def polling_block_ip_status(args, client) -> PollResult:
 
     Args:
         args (dict):
-                ip_list list[str]: IPs to block.
-                endpoint_list list[str]: Endpoint IDs.
-                duration (int, optional): Block time in seconds (default: 300).
-                blocked_list list[str]: Action IDs to poll - First empty.
-            client (Client): Integration client.
+            ip_list list[str]: IPs to block.
+            endpoint_list list[str]: Endpoint IDs.
+            duration (int, optional): Block time in seconds (default: 300).
+            blocked_list list[str]: Action IDs to poll - First empty.
+        client (Client): Integration client.
     """
     polling_queue = argToList(args.get("blocked_list", []))
     demisto.debug(f"polling queue length:{len(polling_queue)}")
@@ -728,23 +728,24 @@ def polling_block_ip_status(args, client) -> PollResult:
 @polling_function("core-block-ip", interval=10, timeout=60, requires_polling_arg=False)
 def core_block_ip_command(args: dict, client: Client) -> PollResult:
     """
-    Send block ip requests for each IP address foreach endpoint.
+    Send block IP requests for each IP address on each endpoint.
     Polls status of the requests until all status are Success/Failure or until timeout.
 
     Args:
         args (dict):
-            ip_list list[str]: IPs to block.
+            addresses list[str]: IPs to block.
             endpoint_list list[str]: Endpoint IDs.
             duration (int, optional): Block time in seconds (default: 300).
-            blocked_list list[dict]: list of dicts each holds 3 fields: ip_address, group_id, endpoint_id.
+            blocked_list list[dict]: list of dicts each holds 3 fields: ip_address, group_id, endpoint_id
+            for polling status of requests only.
         client (Client): client.
 
     Returns:
         PollResult: Schedules or returns poll status/result.
     """
-    if not args.get("blocked_list", ""):
+    if not args.get("blocked_list"):
         # First call when no block ip request has done
-        ip_list = argToList(args.get("ip_list", []))
+        ip_list = argToList(args.get("addresses", []))
         endpoint_list = argToList(args.get("endpoint_list", []))
         duration = arg_to_number(args.get("duration", 300)) or 300
 
