@@ -135,6 +135,20 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: Third Party Detection fetch query
+  name: third_party_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM Detection fetch query
+  name: ngsiem_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -228,6 +242,8 @@ configuration:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
+  - Third Party Detection
+  - NGSIEM Detection
   hidden:
   - marketplacev2
   - platform
@@ -466,6 +482,7 @@ script:
         For example, filter="device.hostname:'CS-SE-TG-W7-01'"
         For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
       name: filter
+      defaultValue: "product:'epp'+type:'ldt'"
     - auto: PREDEFINED
       description: Whether to get additional data such as device and behaviors processed.
       name: extended_data
