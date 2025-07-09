@@ -146,7 +146,7 @@ script:
     - contextPath: AnthropicClaude.Conversation
       description: Entire conversation (if not reset) between the user and the Claude model.
       type: Dictionary
-  dockerimage: demisto/parse-emails:1.0.0.2147169
+  dockerimage: demisto/parse-emails:1.0.0.3555598
   runonce: false
   script: ''
   subtype: python3
