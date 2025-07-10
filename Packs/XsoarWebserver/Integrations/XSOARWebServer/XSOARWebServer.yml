@@ -1,6 +1,7 @@
 category: Utilities
 sectionOrder:
 - Connect
+- Collect
 commonfields:
   id: XSOAR-Web-Server
   version: -1
@@ -9,6 +10,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Long running instance
   name: longRunning
   type: 8

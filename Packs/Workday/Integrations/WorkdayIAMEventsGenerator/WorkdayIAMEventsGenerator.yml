@@ -1,6 +1,7 @@
 category: Analytics & SIEM
 sectionOrder:
 - Connect
+- Collect
 commonfields:
   id: Workday_IAM_Event_Generator
   version: -1
@@ -20,6 +21,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 description: Generates mock reports and events for Workday IAM. Use these for testing and development.
 display: Workday IAM Event Generator (Beta)
 name: Workday_IAM_Event_Generator

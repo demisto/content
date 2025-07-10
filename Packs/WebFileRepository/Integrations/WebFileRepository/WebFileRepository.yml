@@ -1,6 +1,7 @@
 category: Utilities
 sectionOrder:
 - Connect
+- Collect
 commonfields:
   id: Web File Repository
   version: -1
@@ -9,6 +10,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: "true"
   display: Long running instance
   name: longRunning
@@ -55,17 +57,20 @@ configuration:
   name: mimeTypes
   type: 12
   required: false
+  section: Collect
 - additionalinfo: Set true to merge the specified types with the default settings, false to replace them
   defaultvalue: "true"
   display: Merge with Default MIME Types
   name: mergeMimeTypes
   type: 8
   required: false
+  section: Collect
 - additionalinfo: List of extensions to set "attachment" to Content-Disposition
   display: Attachment extensions
   name: attachmentExtensions
   type: 0
   required: false
+  section: Collect
 - defaultvalue: read/write
   display: Storage Protection
   name: storageProtection
@@ -75,16 +80,19 @@ configuration:
   - sandbox
   required: true
   type: 15
+  section: Collect
 - defaultvalue: 100MB
   display: The maximum repository size
   name: maxStorageSize
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 1GB
   display: The maximum sandbox repository size
   name: maxSandboxSize
   type: 0
   required: false
+  section: Collect
 description: |-
   Simple web server with a file uploading console to store small files.
   This is helpful to make your environment ready for testing purpose for your playbooks or automations to download files from a web server.

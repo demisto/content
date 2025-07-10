@@ -1,6 +1,7 @@
 category: Utilities
 sectionOrder:
 - Connect
+- Collect
 commonfields:
   id: Publish List
   version: -1
@@ -39,23 +40,27 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - additionalinfo: 'Comma separated list of list names to publish. Example: mylist1,mylist2,mylist3'
   display: Lists to Publish
   name: listsToPublish
   required: true
   type: 12
+  section: Collect
 - additionalinfo: 'For standard lists that are comma delimited, this puts each list item on a new line. '
   defaultvalue: 'false'
   display: List Items on Individual Lines
   name: commaToLineBreak
   type: 8
   required: false
+  section: Collect
 - additionalinfo: If selected, the comment "# Empty list" will be added to an empty list.
   defaultvalue: 'false'
   display: Add comment to empty list
   name: add_comment_if_empty
   type: 8
   required: false
+  section: Collect
 description: The Publish List integration is used to publish XSOAR lists for external consumption.
 display: Publish List
 name: Publish List
