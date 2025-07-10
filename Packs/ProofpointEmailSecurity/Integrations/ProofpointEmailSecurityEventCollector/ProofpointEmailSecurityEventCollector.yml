@@ -56,6 +56,7 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: message,maillog,audit
+  
 script:
   script: ""
   type: python
