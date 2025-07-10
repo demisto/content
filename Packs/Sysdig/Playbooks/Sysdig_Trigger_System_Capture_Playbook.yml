@@ -1,0 +1,370 @@
+id: Sysdig Trigger System Capture
+version: -1
+name: Sysdig Trigger System Capture
+description: Example playbook on how to manage different response actions based on
+  incident fields.
+tags:
+- Runtime
+- Sysdig
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0f451a9b-0e95-4119-8818-b6b8cae67099
+    type: start
+    task:
+      id: 0f451a9b-0e95-4119-8818-b6b8cae67099
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 358fe5fe-ccab-40e2-8001-7c6c05544a69
+    type: condition
+    task:
+      id: 358fe5fe-ccab-40e2-8001-7c6c05544a69
+      version: -1
+      name: Should we trigger a system capture?
+      description: |-
+        Condition to trigger or not a system capture based on the Incident fields.
+
+        Check if the following fields are part of the incident:
+        * Sysdig Agent ID
+        * Sysdig Container ID
+        * Sysdig Customer ID
+        * Host Name
+        * Machine ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    sla:
+      minutes: 30
+      hours: 0
+      days: 0
+      weeks: 0
+    slareminder:
+      minutes: 15
+      hours: 0
+      days: 0
+      weeks: 0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c801bdb3-ada0-4277-8558-51883aac8111
+    type: regular
+    task:
+      id: c801bdb3-ada0-4277-8558-51883aac8111
+      version: -1
+      name: Create system capture
+      description: Command to trigger a system capture, it will record all system
+        calls at the host level.
+      script: SysdigResponseActions|||create-system-capture
+      type: regular
+      iscommand: true
+      brand: SysdigResponseActions
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      agent_id:
+        simple: ${incident.sysdigagentid}
+      capture_name:
+        simple: xsoar-capture-${incident.id}
+      container_id:
+        simple: ${incident.sysdigcontainerid}
+      customer_id:
+        simple: ${incident.sysdigcustomerid}
+      host_name:
+        simple: ${incident.sourcehostname}
+      machine_id:
+        simple: ${incident.macaddress}
+      scan_duration:
+        simple: "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2fc220ea-08a9-479b-9664-4a17d54b06b5
+    type: regular
+    task:
+      id: 2fc220ea-08a9-479b-9664-4a17d54b06b5
+      version: -1
+      name: Save Capture
+      description: Command to download a system capture based on the capture ID.
+      script: SysdigResponseActions|||get-capture-file
+      type: regular
+      iscommand: true
+      brand: SysdigResponseActions
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      capture_id:
+        simple: ${create_system_capture.Output.capture.id}
+      retry-count:
+        simple: "2"
+      retry-interval:
+        simple: "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4eceb9f5-3d25-4771-9c3e-fe18bd8705d6
+    type: title
+    task:
+      id: 4eceb9f5-3d25-4771-9c3e-fe18bd8705d6
+      version: -1
+      name: Done
+      description: 'Playbook completed'
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 05365e6b-d46d-46f2-ab1f-00481dda4cd0
+    type: condition
+    task:
+      id: 05365e6b-d46d-46f2-ab1f-00481dda4cd0
+      version: -1
+      name: Check Sysdig fields
+      description: Check Sysdig fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sysdigagentid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sysdigcontainerid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sysdigcustomerid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sourcehostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.macaddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e0b9d9c3-484f-4641-8178-6a554d95305b
+    type: regular
+    task:
+      id: e0b9d9c3-484f-4641-8178-6a554d95305b
+      version: -1
+      name: Error Checking Incident Fields
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: |-
+          Required incident fields to trigger a system capture are not present. Current fields:
+          * Sysdig Agent ID: ${incident.sysdigagentid}
+          * Sysdig Container ID: ${incident.sysdigcontainerid}
+          * Sysdig Customer ID: ${incident.sysdigcustomerid}
+          * Event Source Hostname: ${incident.sourcehostname}
+          * Event MAC Address: ${incident.macaddress}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1ff599e5-37a2-4efe-9b76-98cd7ed956a5
+    type: condition
+    task:
+      id: 1ff599e5-37a2-4efe-9b76-98cd7ed956a5
+      version: -1
+      name: Save Capture?
+      description: Do you want to save the capture .scap file for later analysis?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "Yes":
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.44,
+      "1_4_#default#": 0.37,
+      "7_4_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 920,
+        "width": 1090,
+        "x": -490,
+        "y": -350
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
