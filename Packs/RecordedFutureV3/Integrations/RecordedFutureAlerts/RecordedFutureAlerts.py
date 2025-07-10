@@ -247,7 +247,6 @@ class Actions:
 
         demisto.incidents(incidents)
         demisto.setLastRun(next_query)
-        return None
 
     def alert_search_command(self) -> Union[dict, list[CommandResults]]:
         return self.client.alert_search()
@@ -279,8 +278,9 @@ class Actions:
                 image_id=image_id,
                 alert_subtype=alert_subtype,
             )
-            return_results(f"Fetched {image_id=} ({alert_type=} {alert_subtype=} {alert_id=}): {str(image_content[:50])} "
-                           f"(truncated)")
+            return_results(
+                f"Fetched {image_id=} ({alert_type=} {alert_subtype=} {alert_id=}): {str(image_content[:50])} " f"(truncated)"
+            )
             file_name = self._get_file_name_from_image_id(image_id)
             file_result_obj = fileResult(file_name, image_content)
             return_results(file_result_obj)  # Important

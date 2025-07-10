@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Dict
 
 import demistomock as demisto
 import pytest
@@ -14,19 +14,13 @@ CommandResults = RecordedFutureAlerts.CommandResults
 # Test Client
 
 
-def _capture_http_call(
-    monkeypatch: pytest.MonkeyPatch, method_name: str
-) -> dict[str, Any]:
+def _capture_http_call(monkeypatch: pytest.MonkeyPatch, method_name: str) -> Dict[str, Any]:
     """Patch Client.*method_name* and capture arguments."""
 
-    captured: dict[str, Any] = {}
+    captured: Dict[str, Any] = {}
 
-    def _fake_http(
-        self, *, url_suffix: str, params=None, json_data=None, **kwargs
-    ):
-        captured.update(
-            url_suffix=url_suffix, params=params, json_data=json_data
-        )
+    def _fake_http(self, *, url_suffix: str, params=None, json_data=None, **kwargs):
+        captured.update(url_suffix=url_suffix, params=params, json_data=json_data)
         return {"ok": True}
 
     monkeypatch.setattr(Client, method_name, _fake_http, raising=True)
@@ -37,7 +31,7 @@ def test_client_whoami_delegates_to_get(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(demisto, "args", dict, raising=True)
     captured = _capture_http_call(monkeypatch, "_get")
 
-    client = Client(base_url="https://unit.test", verify=False, headers={})
+    client = Client(base_url="https://test", verify=False, headers={})
     client.whoami()
 
     assert captured["url_suffix"] == "/info/whoami"
@@ -53,7 +47,7 @@ def test_client_alert_search_delegates_to_get(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(demisto, "args", lambda: expected_args, raising=True)
     captured = _capture_http_call(monkeypatch, "_get")
 
-    client = Client(base_url="https://unit.test", verify=False, headers={})
+    client = Client(base_url="https://test", verify=False, headers={})
     client.alert_search()
 
     assert captured["url_suffix"] == "/v3/alert/search"
@@ -67,7 +61,7 @@ def test_client_alert_rule_search_delegates_to_get(
     monkeypatch.setattr(demisto, "args", lambda: expected_args, raising=True)
     captured = _capture_http_call(monkeypatch, "_get")
 
-    client = Client(base_url="https://unit.test", verify=False, headers={})
+    client = Client(base_url="https://test", verify=False, headers={})
     client.alert_rule_search()
 
     assert captured["url_suffix"] == "/v3/alert/rules"
@@ -86,7 +80,7 @@ def test_client_alert_update_delegates_to_post(
     monkeypatch.setattr(demisto, "args", lambda: expected_json, raising=True)
     captured = _capture_http_call(monkeypatch, "_post")
 
-    client = Client(base_url="https://unit.test", verify=False, headers={})
+    client = Client(base_url="https://test", verify=False, headers={})
     client.alert_update()
 
     assert captured["url_suffix"] == "/v3/alert/update"
@@ -96,7 +90,7 @@ def test_client_alert_update_delegates_to_post(
 def test_client_alert_lookup_delegates_to_get(monkeypatch: pytest.MonkeyPatch):
     captured = _capture_http_call(monkeypatch, "_get")
 
-    client = Client(base_url="https://unit.test", verify=False, headers={})
+    client = Client(base_url="https://test", verify=False, headers={})
     client.alert_lookup("42")
 
     assert captured["url_suffix"] == "/v3/alert/lookup"
@@ -106,21 +100,17 @@ def test_client_alert_lookup_delegates_to_get(monkeypatch: pytest.MonkeyPatch):
 def test_client_get_alert_image_calls_http_request(
     monkeypatch: pytest.MonkeyPatch,
 ):
-    captured: dict[str, Any] = {}
+    captured: Dict[str, Any] = {}
 
     image_data = b"bytes"
 
-    def _fake_http(
-        self, *, url_suffix: str, params=None, resp_type=None, **kwargs
-    ):
-        captured.update(
-            url_suffix=url_suffix, params=params, resp_type=resp_type
-        )
+    def _fake_http(self, *, url_suffix: str, params=None, resp_type=None, **kwargs):
+        captured.update(url_suffix=url_suffix, params=params, resp_type=resp_type)
         return image_data
 
     monkeypatch.setattr(Client, "_http_request", _fake_http, raising=True)
 
-    client = Client(base_url="https://unit.test", verify=False, headers={})
+    client = Client(base_url="https://test", verify=False, headers={})
     result = client.get_alert_image(
         alert_type="classic-alert",
         alert_id="1234",
@@ -154,13 +144,11 @@ def test_client_fetch_incidents_delegates_to_post(
     )
 
     integration_conf = {"first_fetch": 60, "max_fetch": 10}
-    monkeypatch.setattr(
-        demisto, "params", lambda: integration_conf, raising=True
-    )
+    monkeypatch.setattr(demisto, "params", lambda: integration_conf, raising=True)
 
     captured = _capture_http_call(monkeypatch, "_post")
 
-    client = Client(base_url="https://unit.test", verify=False, headers={})
+    client = Client(base_url="https://test", verify=False, headers={})
     client.fetch_incidents()
 
     assert captured["url_suffix"] == "/v3/alert/fetch"
@@ -176,13 +164,9 @@ def test_client_fetch_incidents_delegates_to_post(
 
 def test_actions_alert_search_pass_through(monkeypatch: pytest.MonkeyPatch):
     expected: list[CommandResults] = [CommandResults(readable_output="hi")]
-    monkeypatch.setattr(
-        Client, "alert_search", lambda *_: expected, raising=True
-    )
+    monkeypatch.setattr(Client, "alert_search", lambda *_: expected, raising=True)
 
-    actions = Actions(
-        Client(base_url="https://unit.test", verify=False, headers={})
-    )
+    actions = Actions(Client(base_url="https://test", verify=False, headers={}))
     assert actions.alert_search_command() is expected
 
 
@@ -190,25 +174,17 @@ def test_actions_alert_rule_search_pass_through(
     monkeypatch: pytest.MonkeyPatch,
 ):
     expected: list[CommandResults] = [CommandResults(readable_output="hi")]
-    monkeypatch.setattr(
-        Client, "alert_rule_search", lambda *_: expected, raising=True
-    )
+    monkeypatch.setattr(Client, "alert_rule_search", lambda *_: expected, raising=True)
 
-    actions = Actions(
-        Client(base_url="https://unit.test", verify=False, headers={})
-    )
+    actions = Actions(Client(base_url="https://test", verify=False, headers={}))
     assert actions.alert_rule_search_command() is expected
 
 
 def test_actions_alert_update_pass_through(monkeypatch: pytest.MonkeyPatch):
     expected: list[CommandResults] = [CommandResults(readable_output="hi")]
-    monkeypatch.setattr(
-        Client, "alert_update", lambda *_: expected, raising=True
-    )
+    monkeypatch.setattr(Client, "alert_update", lambda *_: expected, raising=True)
 
-    actions = Actions(
-        Client(base_url="https://unit.test", verify=False, headers={})
-    )
+    actions = Actions(Client(base_url="https://test", verify=False, headers={}))
     assert actions.alert_update_command() is expected
 
 
@@ -239,21 +215,13 @@ def test_actions_fetch_incidents_builds_incident_objects(
             "next_query_playbook": mock_next,
         }
 
-    monkeypatch.setattr(
-        Client, "fetch_incidents", _fake_fetch_incidents, raising=True
-    )
+    monkeypatch.setattr(Client, "fetch_incidents", _fake_fetch_incidents, raising=True)
 
     captured_incidents = {}
-    monkeypatch.setattr(
-        demisto, "incidents", lambda i: captured_incidents.update(i=i)
-    )
-    monkeypatch.setattr(
-        demisto, "setLastRun", lambda v: captured_incidents.update(last=v)
-    )
+    monkeypatch.setattr(demisto, "incidents", lambda i: captured_incidents.update(i=i))
+    monkeypatch.setattr(demisto, "setLastRun", lambda v: captured_incidents.update(last=v))
 
-    actions = Actions(
-        Client(base_url="https://unit.test", verify=False, headers={})
-    )
+    actions = Actions(Client(base_url="https://test", verify=False, headers={}))
     actions.fetch_incidents()
 
     assert len(captured_incidents["i"]) == 2
@@ -284,13 +252,9 @@ def test_actions_get_alert_images_no_images(monkeypatch: pytest.MonkeyPatch):
 
     monkeypatch.setattr(demisto, "context", dict)
 
-    res = Actions(
-        Client(base_url="https://unit.test", verify=False, headers={})
-    ).get_alert_images_command()
+    res = Actions(Client(base_url="https://test", verify=False, headers={})).get_alert_images_command()
 
-    assert res[0].readable_output.startswith(
-        "No screenshots found in alert details."
-    )
+    assert res[0].readable_output.startswith("No screenshots found in alert details.")
 
 
 def test_actions_get_alert_images_fetches_missing(
@@ -335,9 +299,7 @@ def test_actions_get_alert_images_fetches_missing(
         raising=True,
     )
 
-    res = Actions(
-        Client(base_url="https://unit.test", verify=False, headers={})
-    ).get_alert_images_command()
+    res = Actions(Client(base_url="https://test", verify=False, headers={})).get_alert_images_command()
 
     # Ensure both images attempted.
     assert len(calls) == len(img_ids)
@@ -387,9 +349,7 @@ def test_actions_get_alert_images_fetches_only_missing(
         raising=True,
     )
 
-    res = Actions(
-        Client(base_url="https://unit.test", verify=False, headers={})
-    ).get_alert_images_command()
+    res = Actions(Client(base_url="https://test", verify=False, headers={})).get_alert_images_command()
 
     assert len(calls) == 1
     assert "Fetched 1 new image" in res[0].readable_output
@@ -398,16 +358,14 @@ def test_actions_get_alert_images_fetches_only_missing(
 # Test Main
 
 
-def _exercise_main(
-    monkeypatch: pytest.MonkeyPatch, command: str, actions_attr: str
-):
+def _exercise_main(monkeypatch: pytest.MonkeyPatch, command: str, actions_attr: str):
     """Utility to run *main* with *command* and record side-effects."""
 
     monkeypatch.setattr(demisto, "command", lambda: command, raising=True)
     monkeypatch.setattr(
         demisto,
         "params",
-        lambda: {"url": "https://unit.test", "apikey": "token"},
+        lambda: {"url": "https://test", "apikey": "token"},
         raising=True,
     )
 
@@ -420,7 +378,7 @@ def _exercise_main(
 
     monkeypatch.setattr(Actions, actions_attr, _fake_action, raising=True)
 
-    captured: dict[str, Any] = {}
+    captured: Dict[str, Any] = {}
     monkeypatch.setattr(
         RecordedFutureAlerts,
         "return_results",
@@ -435,9 +393,7 @@ def _exercise_main(
 
 
 def test_main_dispatch_rf_alerts(monkeypatch: pytest.MonkeyPatch):
-    _exercise_main(
-        monkeypatch, command="rf-alerts", actions_attr="alert_search_command"
-    )
+    _exercise_main(monkeypatch, command="rf-alerts", actions_attr="alert_search_command")
 
 
 def test_main_dispatch_rf_alert_rules(monkeypatch: pytest.MonkeyPatch):
