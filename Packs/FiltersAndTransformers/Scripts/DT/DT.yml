@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - transformer
 - general
-comment: This automation allows the usage of DT scripts within playbooks transformers
+comment: This automation allows the usage of DT scripts within playbooks transformers.
 enabled: true
 args:
 - name: value
