@@ -4302,3 +4302,5 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- asm
+- exposure_management
