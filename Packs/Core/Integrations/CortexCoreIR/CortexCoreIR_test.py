@@ -2,8 +2,14 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-from CommonServerPython import CommandResults
-from CortexCoreIR import core_execute_command_reformat_args
+from CommonServerPython import *
+from CortexCoreIR import (
+    core_execute_command_reformat_args,
+    core_add_indicator_rule_command,
+    Client,
+    core_get_contributing_event_command,
+)
+from freezegun import freeze_time
 
 Core_URL = "https://api.xdrurl.com"
 STATUS_AMOUNT = 6
@@ -529,3 +535,369 @@ def test_reformat_readable():
 | dummy_id2 | echo hello | hello | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
 """
     assert reformatted_readable_output == excepted_output
+
+
+@freeze_time("2024-01-01T12:00:00Z")
+def test_parse_expiration_date():
+    """
+    Given:
+        - an expiration to representing a date be parsed.
+    When:
+        - Calling `parse_expiration_date`.
+    Then:
+        - Verify that parsed date comes back as expected.
+    """
+    from CortexCoreIR import parse_expiration_date
+
+    def get_epoch_millis(dt: datetime) -> int:
+        """Convert datetime to epoch milliseconds."""
+        return int(dt.timestamp() * 1000)
+
+    fixed_now = datetime(2024, 1, 1, 12, 0, 0)
+    fixed_now_epoch_milli = get_epoch_millis(fixed_now)
+
+    # Case 1: Epoch time in the past
+    epoch_past = fixed_now_epoch_milli - 100000
+    result = parse_expiration_date(str(epoch_past))
+    assert result == epoch_past
+
+    # Case 2: Epoch time in the future
+    epoch_future = fixed_now_epoch_milli + 100000
+    result = parse_expiration_date(str(epoch_future))
+    assert result == epoch_future
+
+    # Case 3: Relative time: "3 days"
+    result = parse_expiration_date("3 days")
+    expected = get_epoch_millis(fixed_now + timedelta(days=3))
+    assert result == expected  # Tolerance of a few seconds
+
+    # Case 4: ISO time in the past
+    iso_past = "2023-12-31T12:00:00"
+    iso_past_epoch = get_epoch_millis(datetime(2023, 12, 31, 12, 0, 0))
+    result = parse_expiration_date(iso_past)
+    assert result == iso_past_epoch
+
+    # Case 5: ISO time in the future
+    iso_future = "2024-01-03T12:00:00"
+    iso_future_epoch = get_epoch_millis(datetime(2024, 1, 3, 12, 0, 0))
+    result = parse_expiration_date(iso_future)
+    assert result == iso_future_epoch
+
+    # Case 6: "Never"
+    result = parse_expiration_date("Never")
+    assert result == "Never"
+
+    # Case 7: "Broken Never"
+    result = parse_expiration_date("never")
+    assert result == "Never"
+
+    # Case 8: "Broken String"
+    result = parse_expiration_date("brokenstring")
+    assert result == "brokenstring"
+
+    # Case 9: None
+    result = parse_expiration_date(None)
+    assert result is None
+
+
+def test_prepare_ioc_to_output():
+    """
+    Given:
+        - an ioc params that had been sent to XSIAM create IOC API.
+    When:
+        - Calling `prepare_ioc_to_output`.
+    Then:
+        - Verify that parsed data come back as dictionary to be sent to XSIAM Context.
+    """
+
+    from CortexCoreIR import prepare_ioc_to_output
+
+    # Case 1: input_format is JSON → return as-is
+    json_input = {"indicator": "1.2.3.4", "type": "IP", "severity": "HIGH"}
+    assert prepare_ioc_to_output(json_input, "JSON") == json_input
+
+    # Case 2: input_format is CSV → single vendor, return as dict
+    csv_input_single_vendor = (
+        "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class\n"
+        "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,VirusTotal,A,GOOD,Malware"
+    )
+    expected_output_single = {
+        "indicator": "1.2.3.4",
+        "type": "IP",
+        "severity": "HIGH",
+        "expiration_date": 1794894791000,
+        "comment": "test",
+        "reputation": "SUSPICIOUS",
+        "reliability": "D",
+        "class": "Malware",
+        "vendors": [{"vendor_name": "VirusTotal", "reliability": "A", "reputation": "GOOD"}],
+    }
+    assert prepare_ioc_to_output(csv_input_single_vendor, "CSV") == expected_output_single
+
+    # Case 3: input_format is CSV → multiple vendors, only last one taken
+    csv_input_multi_vendor = (
+        "indicator,type,severity,expiration_date,comment,reputation,reliability,"
+        "vendor.name,vendor.reliability,vendor.reputation,"
+        "vendor.name,vendor.reliability,vendor.reputation,class\n"
+        "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,"
+        "VirusTotalV3,A,GOOD,"
+        "VirusTotalV5,B,SUSPICIOUS,Malware"
+    )
+    expected_output_multi = {
+        "indicator": "1.2.3.4",
+        "type": "IP",
+        "severity": "HIGH",
+        "expiration_date": 1794894791000,
+        "comment": "test",
+        "reputation": "SUSPICIOUS",
+        "reliability": "D",
+        "class": "Malware",
+        "vendors": [{"vendor_name": "VirusTotalV5", "reliability": "B", "reputation": "SUSPICIOUS"}],
+    }
+    assert prepare_ioc_to_output(csv_input_multi_vendor, "CSV") == expected_output_multi
+
+
+def get_mock_client():
+    return Client(
+        base_url="https://example.com", proxy=False, verify=False, headers={"Authorization": "Bearer dummy"}, timeout=10
+    )
+
+
+class TestCoreAddIndicator:
+    def test_core_add_indicator_rule_json(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+            - Verify that the API call was sent with the correct params.
+        """
+
+        client = get_mock_client()
+        mock_post = mocker.patch.object(
+            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
+
+        args = {
+            "indicator": "1.2.3.4",
+            "type": "IP",
+            "severity": "HIGH",
+            "expiration_date": "3 days",
+            "comment": "test comment",
+            "reputation": "SUSPICIOUS",
+            "reliability": "A",
+            "class": "Malware",
+            "vendor_name": "VirusTotal",
+            "vendor_reliability": "A",
+            "vendor_reputation": "GOOD",
+            "input_format": "JSON",
+        }
+
+        result = core_add_indicator_rule_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert "1.2.3.4" in result.readable_output
+        assert result.outputs["indicator"] == "1.2.3.4"
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        assert kwargs["suffix"] == "indicators/insert_jsons"
+
+    def test_core_add_indicator_rule_success_minimal_args(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command - the minimal required arguments.
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+        """
+        client = get_mock_client()
+        mocker.patch.object(
+            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
+
+        args = {"indicator": "example.com", "type": "DOMAIN_NAME", "severity": "LOW"}
+
+        result = core_add_indicator_rule_command(client, args)
+        assert isinstance(result, CommandResults)
+        assert "example.com" in result.readable_output
+
+    def test_core_add_indicator_rule_csv(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+            - IOC object argument
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+            - Verify that the API call was sent with the correct params.
+        """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(
+            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
+
+        csv_payload = (
+            "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation"
+            ",class\\n"
+            "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,VirusTotal,A,GOOD,Malware"
+        )
+
+        args = {
+            "ioc_object": csv_payload,
+            "input_format": "CSV",
+            "indicator": "ignored",
+            "type": "ignored",
+            "severity": "ignored",
+        }
+
+        result = core_add_indicator_rule_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["indicator"] == "1.2.3.4"
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        assert kwargs["suffix"] == "indicators/insert_csv"
+
+    def test_core_add_indicator_rule_ioc_object_precedence(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+            - IOC object argument
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+            - Verify that the API call was sent with the correct params.
+        """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(
+            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
+
+        args = {
+            "ioc_object": '{"indicator": "5.5.5.5", "type": "IP", "severity": "LOW"}',
+            "input_format": "JSON",
+            "indicator": "should_not_use_this",
+            "type": "should_not_use_this",
+            "severity": "should_not_use_this",
+        }
+
+        result = core_add_indicator_rule_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["indicator"] == "5.5.5.5"
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        assert kwargs["suffix"] == "indicators/insert_jsons"
+
+    def test_core_add_indicator_rule_invalid_ioc_object_raises_error(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+            - IOC object argument malformed
+        When:
+            - Calling `core_add_indicator_rule`.
+        Then:
+            - Verify an error has been raised and that the error message is correct.
+        """
+        client = get_mock_client()
+        args = {"ioc_object": "not a json or csv string"}
+        with pytest.raises(
+            DemistoException,
+            match="Core Add Indicator Rule Command: The IOC object provided isn't in a valid JSON format.",
+        ):
+            core_add_indicator_rule_command(client, args)
+
+    def test_core_add_indicator_rule_failure_response(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving bad response.
+        Then:
+            - Verify an error has been raised and that the error message is correct.
+        """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(
+            client,
+            "create_indicator_rule_request",
+            return_value={
+                "reply": {
+                    "success": False,
+                    "validation_errors": [{"indicator": "dummy", "error": "error1"}, {"indicator": "dummy", "error": "error2"}],
+                }
+            },
+        )
+
+        args = {"indicator": "dummy", "type": "IP", "severity": "HIGH"}
+
+        with pytest.raises(DemistoException) as exc_info:
+            core_add_indicator_rule_command(client, args)
+
+        assert "Core Add Indicator Rule Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
+        mock_post.assert_called_once()
+
+
+def test_core_get_contributing_event(mocker):
+    """
+    Given:
+        - A mock Client and alert ID
+    When:
+        - Calling `core-get-contributing-event`.
+    Then:
+        - Verify that results were correctly parsed.
+    """
+    client = get_mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={
+            "reply": {
+                "events": [
+                    {
+                        "Logon_Type": "1",
+                        "User_Name": "example",
+                        "Domain": "domain",
+                        "Source_IP": "1.1.1.1",
+                        "Process_Name": "C:\\Windows\\System32\\example.exe",
+                        "Host_Name": "WIN10X64",
+                        "Raw_Message": "An account was successfully logged on.",
+                        "_time": 1652982800000,
+                        "aaaaaa": "111111",
+                        "bbbbbb": 1652982800000,
+                        "cccccc": "222222",
+                        "dddddd": 2,
+                        "eeeeee": 1,
+                        "insert_timestamp": 1652982800001,
+                        "_vendor": "PANW",
+                        "_product": "XDR agent",
+                    }
+                ]
+            }
+        },
+    )
+
+    args = {
+        "alert_ids": "1",
+    }
+
+    result = core_get_contributing_event_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Contributing events" in result.readable_output
+    assert result.outputs[0]["alertID"] == "1"

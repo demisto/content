@@ -118,6 +118,7 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
   defaultvalue: 'false'
@@ -128,6 +129,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Additional Splunk status labels to close on mirror (Incoming Mirroring)
   name: close_extra_labels
@@ -150,6 +152,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
+  - platform
   additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
   defaultvalue: 'false'
   required: false
@@ -697,7 +700,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.2074112
+  dockerimage: demisto/splunksdk-py3:1.0.0.3534043
   isfetch: true
   ismappable: true
   isremotesyncin: true

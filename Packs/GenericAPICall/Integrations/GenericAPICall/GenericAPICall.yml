@@ -1,0 +1,237 @@
+category: Utilities
+sectionorder: 
+- Connect
+commonfields:
+  id: GenericAPICall
+  version: -1
+configuration:
+  - name: base_url
+    display: Base API Endpoint URL (https:// with no trailing slash)
+    required: true
+    type: 0
+    section: Connect
+  - name: credentials
+    display: Username (Blank when using API key)
+    required: false
+    type: 9
+    additionalinfo: >-
+      For basic authorization, specify both username and password or select the
+      appropriate credential object.
+
+
+      For API key authorization, fill in the password field only or use only the password field in a credential object. 
+    displaypassword: Password/API Key
+    hiddenusername: false
+    section: Connect
+  - name: is_auth
+    display: "API call is authenticated (Default: False)"
+    required: false
+    defaultvalue: "false"
+    type: 8
+    section: Connect
+    additionalinfo: Does this API call require authentication (Basic, API key, etc.)?
+  - name: apikey_in_header
+    display: API Key supplied in header
+    required: false
+    defaultvalue: "false"
+    type: 8
+    section: Connect
+    additionalinfo: >-
+      Is the API key used for each call provided in the header or as a
+      parameter?
+
+      Default it set to false (key is provided as a parameter). Unchecking this will pass the API key as a call header
+  - name: api_call_key
+    display: Authentication Header
+    required: false
+    type: 0
+    section: Connect
+    additionalinfo: >-
+      Specify the value to use when passing the API key as a header or parameter
+      value.
+
+      e.g., X-PAN-KEY: API_KEY_HERE (X-PAN-KEY is the value specified in this field) 
+
+      - For a parameterized call, this would be appended to the URL as &X-PAN-KEY=KEY_HERE - 
+
+      - For a header-based call, this would appear in the header as 'X-PAN-KEY': KEY_HERE
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    defaultvalue: "false"
+    type: 8
+    additionalinfo: ""
+    section: Connect
+    advanced: true
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    defaultvalue: "false"
+    type: 8
+    section: Connect
+    advanced: true
+description: Integration version of the httpv2 automation used to send HTTP
+  requests for API calls to endpoints not associated with an existing XSOAR
+  integration.
+display: GenericAPICall
+name: GenericAPICall
+script:
+  commands:
+    - name: generic-api-call
+      description: Generic HTTPS request to a specified API endpoint.
+      deprecated: false
+      arguments:
+        - name: method
+          description: Specify the HTTP method to use (GET, POST, PUT, PATCH, DELETE, HEAD).
+          auto: PREDEFINED
+          required: true
+          isArray: false
+          predefined:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - HEAD
+        - name: urlpath
+          description: The URL path, including preceeding slash, to the API endpoint.
+          required: true
+          isArray: false
+          defaultValue: /
+        - name: parse_response_as
+          description: Specify the type of data expected in the API response.
+          required: true
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - json
+            - text
+            - xml
+            - raw_response
+        - name: body
+          description: Specify the body of the request.
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: request_content_type
+          description: "Specify the Content-Type header for the request.Shorthands are
+            provided for the following common content types:json
+            (application/json)xml (text/xml)form
+            (application/x-www-form-urlencoded)data (multipart/form-data)If you
+            choose to define a different type, please include the full type
+            name, e.g: application/pdf."
+          required: false
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - application/json
+            - application/pdf
+            - application/x-www-form-urlencoded
+            - application/xml
+            - multipart/form-data
+            - text/csv
+            - text/plain
+            - text/xml
+        - name: response_content_type
+          description: "Specify the Accept header for the request - the response content
+            type.Shorthands are provided for the following common content
+            types:json (application/json)xml (text/xml)form
+            (application/x-www-form-urlencoded)data (multipart/form-data)If you
+            choose to define a different type, please include the full type
+            name, e.g: application/pdf."
+          required: false
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - application/json
+            - application/pdf
+            - application/x-www-form-urlencoded
+            - application/xml
+            - multipart/form-data
+            - text/csv
+            - text/plain
+            - text/xml
+        - name: params
+          description: URL parameters to specify the query.
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: save_as_file
+          description: "Save the response in a file (Default: false)."
+          required: false
+          isArray: false
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
+        - name: file_name
+          description: Name of file to save response as.
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: timeout
+          description: Specify the timeout of the HTTP request in seconds. Defaults to 10.
+            seconds.
+          required: false
+          isArray: false
+          defaultValue: "10"
+        - name: timeout_between_retries
+          description: Specify the timeout between each retry in seconds. Defaults to 5.
+          required: false
+          isArray: false
+          defaultValue: "5"
+        - name: retry_count
+          description: Specify the number or retries to be made in case of a failure.
+            Defaults to 3.
+          required: false
+          isArray: false
+          defaultValue: "3"
+        - name: retry_on_status
+          description: "Specify the array of status codes that should cause a retry. For
+            example: 301-303,400,402."
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: enable_redirect
+          description: "The request will be called again with the new URL (Default: false)."
+          required: false
+          isArray: false
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
+      outputs:
+        - contextPath: APICall.StatusCode
+          description: The number that indicates the status of the request.
+          type: String
+        - contextPath: APICall.StatusText
+          description: The text corresponding to the status code.
+          type: String
+        - contextPath: APICall.URL
+          description: The URL of the API call.
+          type: String
+        - contextPath: APICall.ParsedBody
+          description: The parsed response, formatted according to `parse_response_as`
+            argument.
+          type: String
+        - contextPath: APICall.Headers
+          description: The response headers.
+          type: String
+        - contextPath: APICall.Body
+          description: The response data.
+          type: String
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.3296088
+  feed: false
+  isfetch: false
+fromversion: 5.5.0
+tests:
+  - No tests (auto formatted)

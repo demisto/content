@@ -27,11 +27,17 @@ def main():
         },
     }
 
+    auth_key = demisto.params().get("credentials", {}).get("password")
+    if not auth_key:
+        raise ValueError("Missing required parameter Auth Key. Please set this parameter in the instance configuration.")
+
     params = {k: v for k, v in demisto.params().items() if v is not None}
     params["feed_url_to_config"] = feed_url_to_config
     params["ignore_regex"] = r"^#"
     params["delimiter"] = ","
     params["create_relationships"] = True
+
+    params["credentials"] = {"password": auth_key, "identifier": "_header:Auth-Key"}
 
     # Main execution of the CSV API Module.
     # This function allows to add to or override this execution.

@@ -4146,7 +4146,7 @@ def main():
     global IS_VERSION_2_1
 
     params = demisto.params()
-    token = params.get("token") or params.get("credentials", {}).get("password")
+    token = params.get("credentials", {}).get("password") or params.get("token")
     if not token:
         raise ValueError("The API Token parameter is required.")
     api_version = params.get("api_version", "2.1")
