@@ -38,7 +38,7 @@ This integration utilizes the Asimily Insight RESTful APIs to provide seamless a
 
 #### Resetting the "Last Run" Timestamp
 
-If you modify any of the fetch filters (*Fetch Anomaly Alerts*, *Fetch Device CVEs*, *Device Family Filter*, *Device Tags Filter*, *Fetch Anomaly Criticality*, *Fetch CVE Score*), this means there may be new devices included to fetch incidents or there will be new incidents included for existing devices. It is strongly recommended to **Reset the "last run" timestamp**. 
+If you modify any of the fetch filters (*Fetch Anomaly Alerts*, *Fetch Device CVEs*, *Device Family Filter*, *Device Tags Filter*, *Fetch Anomaly Criticality*, *Fetch CVE Score*), this means there may be new devices included to fetch incidents or there will be new incidents included for existing devices. It is strongly recommended to **Reset the "last run" timestamp**.
 
 To reset:
 
@@ -53,7 +53,7 @@ This ensures that incidents related to newly included devices and updated filter
 
 ## Configure Pre-Process Rules
 
-The integration pulls in assets information, anomaly alerts, CVEs from Asimily Insight based on its updates or upon query, creating the need for a preprocessing rule that drops the incoming incident if it's a duplication. 
+The integration pulls in assets information, anomaly alerts, CVEs from Asimily Insight based on its updates or upon query, creating the need for a preprocessing rule that drops the incoming incident if it's a duplication.
 
 Follow the guidelines below to configure the preprocessing rule.
 
@@ -79,7 +79,6 @@ Alternative rule settings can be:
     - **Link to** - **Oldest incident** - **Created within the last** - *Your desired timeframe*
     - **DbotMirrorId** - **Is identical (Incoming Incident)** - **to incoming incident**
 
-
 ## Commands
 
 You can run these commands from the Cortex XSOAR CLI, as part of an automation, or within a playbook.
@@ -104,7 +103,6 @@ Fetch assets details from Asimily Insight. You can add argument filters.
 | facility | The Facility of Asimily Asset | Optional | No |
 | asimily_device_id | Asimily Insight given ID for devices | Optional | No |
 | limit | Maximum amount of items to fetch. | Optional | No |
-
 
 #### Context Output
 
@@ -192,7 +190,7 @@ Fetch anomaly alerts from Asimily Insight. You can add argument filters.
 | AsimilyInsight.Anomaly.asimilyanomalyfixby | string | Asimily Anomaly Fix By |
 | AsimilyInsight.Anomaly.asimilyanomalycriticalityscore | number | Asimily Anomaly Criticality Score |
 | AsimilyInsight.Anomaly.asimilyanomalymitretactic | string | Asimily Anomaly Mitre Tactic |
-| AsimilyInsight.Anomaly.asimilyanomalymitrecategory | string | Asimily Anomaly Mitre Category |
+| AsimilyInsight.Anomaly.asimilyanomalymitretechnique | string | Asimily Anomaly Mitre Technique |
 | AsimilyInsight.Anomaly.asimilyanomalycategory | string | Asimily Anomaly Category |
 | AsimilyInsight.Anomaly.asimilyanomalydescription | string | Asimily Anomaly Description |
 | AsimilyInsight.Anomaly.asimilydeviceid | number | Asimily Device ID |
@@ -262,27 +260,32 @@ Fetch device CVEs from Asimily Insight. You can add argument filters.
 
 #### Incident Search
 
-1. System searchable fields: `macaddress`, `devicelocalip`, `devicemodel`, `hostnames`
-2. Asimily Insight Custom searchable fields: `asimilyanomalyname`, `asimilycvename`, `asimilydeviceid`
+1. System searchable fields: `macaddress`, `devicelocalip`, `devicemodel`, `hostnames`, `deviceid`
+2. Asimily Insight Custom searchable fields: `asimilyanomalyname`, `asimilycvename`
+
+#### Incident Name
+
+1. For `Asimily Anomaly` incident, name will be `anomalyname|hostname|ip|mac`
+2. For `Asimily CVE` incident, name will be `cvename|hostname|ip|mac`
 
 #### Incident Criticality Mapping
 
 1. XSOAR incidents have 4 levels of criticality:
     - Informational (0)
-    - Low (1) 
-    - Medium (2) 
+    - Low (1)
+    - Medium (2)
     - High (3)
     - Critical (4)
 2. Asimily Anomaly Alerts have 3 levels of criticality (Low/Medium/High). When creating incidents, we populate the incident criticality using the respective anomaly alert criticality.
-3. Asimily Asset CVEs have Asimily Calculated CVE score (Range: 0-10). When creating incidents, we populate the incident criticality using the respective CVE scores. 
-    - Low (CVE score: &lt; 3.5) 
-    - Medium (CVE score: &lt; 7.5) 
-    - High (CVE score: &lt; 10) 
+3. Asimily Asset CVEs have Asimily Calculated CVE score (Range: 0-10). When creating incidents, we populate the incident criticality using the respective CVE scores.
+    - Low (CVE score: &lt; 3.5)
+    - Medium (CVE score: &lt; 7.5)
+    - High (CVE score: &lt; 10)
 
 #### Default Playbook
 
-To enrich incidents with corresponding asset information, we've published a default playbook for two custom incident types. This playbook calls `asimily-get-asset-details` to retrieve asset information and stores it in Context Data (under `Asimily` > `Asset`). 
+To enrich incidents with corresponding asset information, we've published a default playbook for two custom incident types. This playbook calls `asimily-get-asset-details` to retrieve asset information and stores it in Context Data (under `Asimily` > `Asset`).
 
-We've also added a section to custom incident layouts to display this information. 
+We've also added a section to custom incident layouts to display this information.
 
 Users can modify this playbook or create similar ones. We recommend using the device ID or MAC address as a unique identifier when querying asset details.

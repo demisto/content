@@ -127,6 +127,8 @@ configuration:
 description: Integrate Asimily Insight to ingest security anomalies, CVEs, and leverage detailed asset data for streamlined incident investigation.
 display: Asimily Insight
 name: Asimily Insight
+defaultclassifier: Asimily_Insight - Classifier
+defaultmapperin: Asimily_Insight - Incoming Mapper
 script:
   commands:
   - arguments:
@@ -336,8 +338,8 @@ script:
     - contextPath: AsimilyInsight.Anomaly.asimilyanomalymitretactic
       description: Asimily Anomaly Mitre Tactic.
       type: string
-    - contextPath: AsimilyInsight.Anomaly.asimilyanomalymitrecategory
-      description: Asimily Anomaly Mitre Category.
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalymitretechnique
+      description: Asimily Anomaly Mitre Technique.
       type: string
     - contextPath: AsimilyInsight.Anomaly.asimilyanomalycategory
       description: Asimily Anomaly Category.

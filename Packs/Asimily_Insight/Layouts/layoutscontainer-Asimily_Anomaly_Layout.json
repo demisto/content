@@ -87,13 +87,11 @@
                 "startCol": 0
               },
               {
-                "dropEffect": "move",
                 "endCol": 2,
-                "fieldId": "asimilydeviceid",
+                "fieldId": "deviceid",
                 "height": 26,
-                "id": "4e0cd1d2-5cc2-4ba5-9830-7f0d71af8fe0",
-                "index": 4,
-                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                "id": "05d93cde-7bb3-46c2-9742-3f225d7b8a3e",
+                "index": 5,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -102,7 +100,7 @@
                 "fieldId": "asimilyanomalyname",
                 "height": 26,
                 "id": "c9cf16c8-bee5-480c-b6ef-1af52756cfdd",
-                "index": 5,
+                "index": 4,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -522,7 +520,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "asimilyanomalymitrecategory",
+                "fieldId": "asimilyanomalymitretechnique",
                 "height": 26,
                 "id": "07fbca14-0e64-4dfc-914d-b2a61a0e4631",
                 "index": 10,
@@ -706,7 +704,7 @@
             "isVisible": true
           },
           {
-            "fieldId": "incident_asimilyanomalymitrecategory",
+            "fieldId": "incident_asimilyanomalymitretechnique",
             "isVisible": true
           },
           {
@@ -752,6 +750,10 @@
       {
         "description": "",
         "fields": [
+          {
+            "fieldId": "incident_deviceid",
+            "isVisible": true
+          },
           {
             "fieldId": "incident_macaddress",
             "isVisible": true
@@ -905,7 +907,7 @@
             "isVisible": true
           },
           {
-            "fieldId": "incident_asimilyanomalymitrecategory",
+            "fieldId": "incident_asimilyanomalymitretechnique",
             "isVisible": true
           },
           {
@@ -955,6 +957,10 @@
       {
         "description": "",
         "fields": [
+          {
+            "fieldId": "incident_deviceid",
+            "isVisible": true
+          },
           {
             "fieldId": "incident_macaddress",
             "isVisible": true

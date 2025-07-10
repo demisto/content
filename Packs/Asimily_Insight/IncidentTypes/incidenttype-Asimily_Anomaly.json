@@ -8,13 +8,6 @@
     "disabled": false,
     "extractSettings": {
         "fieldCliNameToExtractSettings": {
-            "asimilyanomalymitretactic": {
-                "extractAsIsIndicatorTypeId": "",
-                "extractIndicatorTypesIDs": [
-                    "Tactic"
-                ],
-                "isExtractingAllIndicatorTypes": false
-            },
             "asimilyanomalyurls": {
                 "extractAsIsIndicatorTypeId": "",
                 "extractIndicatorTypesIDs": [

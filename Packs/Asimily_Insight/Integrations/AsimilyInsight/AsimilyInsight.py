@@ -1,6 +1,7 @@
 from typing import Any, TypeAlias
 from collections.abc import Callable
 import urllib3
+import copy
 import dateparser
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -112,7 +113,7 @@ ASIMILY_ANOMALY_CONTEXT_OUTPUT_KEY_ORDER = [
     "asimilyanomalyfixby",
     "asimilyanomalycriticalityscore",
     "asimilyanomalymitretactic",
-    "asimilyanomalymitrecategory",
+    "asimilyanomalymitretechnique",
     "asimilyanomalycategory",
     "asimilyanomalydescription",
     "asimilydeviceid",
@@ -426,8 +427,10 @@ def populate_asimily_asset_anomaly_incident_system_field(incident, raw_data, dev
         ("|" + str(device_data.get("deviceId"))) if device_data.get("deviceId") else ""
     )
 
-    # anomalyname|hostname|ip|mac TODO: hostname not provided yet
+    # anomalyname|hostname|ip|mac
     incident["name"] = raw_data.get("anomaly") if raw_data.get("anomaly") else ""
+    if device_data.get("hostName"):
+        incident["name"] = incident["name"] + "|" + device_data.get("hostName")
     if device_data.get("ipAddr"):
         incident["name"] = incident["name"] + "|" + device_data.get("ipAddr")
     if device_data.get("macAddr"):
@@ -441,12 +444,14 @@ def populate_asimily_asset_cve_incident_system_field(incident, raw_data, device_
     incident["type"] = "Asimily CVE"
     incident["severity"] = calculate_asimily_cve_incident_criticality(raw_data.get("score"))
 
-    # cvename|hostname|ip|mac TODO: hostname not provided yet
+    # cvename|hostname|ip|mac
     incident["name"] = raw_data.get("cveName") if raw_data.get("cveName") else ""
     incident["dbotMirrorId"] = incident["name"] + (
         ("|" + str(device_data.get("deviceId"))) if device_data.get("deviceId") else ""
     )
 
+    if device_data.get("hostName"):
+        incident["name"] = incident["name"] + "|" + device_data.get("hostName")
     if device_data.get("ipAddr"):
         incident["name"] = incident["name"] + "|" + device_data.get("ipAddr")
     if device_data.get("macAddr"):
@@ -733,6 +738,7 @@ def get_asset_anomalies_cves_asimily_device_fields(device_obj):
     device_fields["macaddress"] = device_obj.get("macAddr")  # searchable
     device_fields["devicemodel"] = device_obj.get("deviceModel")  # searchable
     device_fields["hostnames"] = device_obj.get("hostName")  # searchable
+    device_fields["deviceid"] = str(device_obj.get("deviceId") or "")  # searchable
 
     return device_fields
 
@@ -756,7 +762,7 @@ def populate_asset_anomalies_asimily_anomaly_fields(incident, anomaly_obj):
     anomaly_fields["asimilyanomalyfixby"] = anomaly_obj.get("fixBy")
     anomaly_fields["asimilyanomalycriticalityscore"] = anomaly_obj.get("anomalyScore")
     anomaly_fields["asimilyanomalymitretactic"] = anomaly_obj.get("mitreTactic")
-    anomaly_fields["asimilyanomalymitrecategory"] = anomaly_obj.get("mitreCategory")
+    anomaly_fields["asimilyanomalymitretechnique"] = anomaly_obj.get("mitreTechnique")
     anomaly_fields["asimilyanomalycategory"] = anomaly_obj.get("anomalyCategory")
     if incident.get("customFields") is None:
         incident["customFields"] = anomaly_fields
@@ -1086,7 +1092,9 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    print_debug_msg(params)
+    print_params = copy.deepcopy(params)
+    print_params.get("asimilycred", {}).pop("password", None)
+    print_debug_msg(print_params)
 
     base_url = params.get("url")
     api_key = params["asimilycred"]["password"]

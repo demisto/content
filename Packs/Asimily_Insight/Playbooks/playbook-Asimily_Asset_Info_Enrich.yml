@@ -1,5 +1,4 @@
 id: Asimily Asset Info Enrich
-inputs: []
 name: Asimily Asset Info Enrich
 outputs: []
 starttaskid: "0"
@@ -18,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 62,
-          "y": -144
+          "y": -394
         }
       }
     note: false
@@ -142,20 +141,74 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3ebdff85-b7e2-4e7f-ace4-0a7e9f951c90
+    type: condition
+    task:
+      id: 3ebdff85-b7e2-4e7f-ace4-0a7e9f951c90
+      version: -1
+      name: Is "Asimily Insight" integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Asimily Insight
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 62,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_#default#": 0.7
+      "1_2_#default#": 0.7,
+      "4_2_#default#": 0.9
     },
     "paper": {
       "dimensions": {
-        "height": 546,
-        "width": 662,
+        "height": 796,
+        "width": 661,
         "x": 62,
-        "y": -144
+        "y": -394
       }
     }
   }
+inputs:
+- key: Check if Asimily Insight Integration is enabled.
+  value:
+    simple: ${ConfiguredModules}
+  required: false
+  description: ""
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - Check if Asimily Insight Integration is enabled.
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0

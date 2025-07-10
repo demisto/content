@@ -87,22 +87,22 @@
                 "startCol": 0
               },
               {
-                "endCol": 2,
-                "fieldId": "asimilydeviceid",
-                "height": 26,
-                "id": "98a86f70-bfb4-483c-83b4-d8f96c609d8c",
-                "index": 4,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
                 "dropEffect": "move",
                 "endCol": 2,
                 "fieldId": "asimilycvename",
                 "height": 26,
                 "id": "34d571ef-7237-4235-ae0b-bb3a06ac0f5c",
-                "index": 5,
+                "index": 4,
                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "deviceid",
+                "height": 26,
+                "id": "0504138e-5ece-4eee-b4b6-46efa24212ca",
+                "index": 5,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -773,6 +773,10 @@
         "description": "",
         "fields": [
           {
+            "fieldId": "incident_deviceid",
+            "isVisible": true
+          },
+          {
             "fieldId": "incident_macaddress",
             "isVisible": true
           },
@@ -983,6 +987,10 @@
       {
         "description": "",
         "fields": [
+          {
+            "fieldId": "incident_deviceid",
+            "isVisible": true
+          },
           {
             "fieldId": "incident_macaddress",
             "isVisible": true

@@ -12,6 +12,7 @@ This integration utilizes the Asimily Insight RESTful APIs to provide seamless a
 - **Incident Creation in Cortex XSOAR**: All synced data—whether alerts, or vulnerabilities is automatically converted into incidents within the Cortex XSOAR platform for streamlined investigation and response workflows. Asset info can be automatically queried and stored by using Playbook to call the `asimily-get-asset-details` command.
 
 ## What does this pack include?
+
 Specifically, this pack includes:
 
 - **Asimily Insight Integration**: A dedicated integration that connects Cortex XSOAR with Asimily Insight via its RESTful APIs. This allows for on-demand retrieval of detailed device information (using parameters like IP address, MAC address, facility, or device ID), and synchronized fetching of anomaly alerts and device vulnerabilities (CVEs).
