@@ -1,4 +1,4 @@
-description: This playbook handles remediation of exposure issues.
+description: This playbook handles exposure issue remediation.
 id: Cortex EM - Remediation
 inputSections:
 - description: Generic group for inputs
@@ -6,7 +6,7 @@ inputSections:
   - AWSAssumeRoleName
   name: General (Inputs group)
 inputs:
-- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
+- description: The name of the role to assume for AWS (should be the same for all organizations).
   key: AWSAssumeRoleName
   playbookInputQuery:
   required: false
@@ -103,7 +103,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Given the IP address this playbook enriches EC2 and IAM information.
+      description: This playbook enriches EC2 and IAM information for a given IP address.
       id: e5e27b20-8203-42f3-b823-dfee26f0a7cd
       iscommand: false
       name: AWS - Enrichment
@@ -153,7 +153,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+      description: This playbook helps secure EC2 instances by identifying and fixing overly permissive security groups. For a given EC2 instance ID and public IP, specific port, and protocol, the playbook finds security groups on the instance's primary network interface that expose sensitive ports (like SSH or RDP) to the internet via IPv4. It automatically replaces these with a corrected copy of the security group, removing only the overly permissive rules.
       id: 6ef23039-6b0b-40ac-ba05-a2c1d2cb7925
       iscommand: false
       name: AWS - Security Group Remediation v2
@@ -319,7 +319,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Remediation wasn't completed possibly because appropriate integrations (AWS) weren't configured, cloud instance wasn't found or for other reasons.  Further investigation needed.
+      description: Remediation didn't complete. This could be due to missing cloud integrations or instances (such as AWS), or other issues. Please investigate further to determine the exact cause.
       id: 41dd00fb-8e81-4a0d-99c7-ecec209beed8
       iscommand: false
       name: Remediation incomplete

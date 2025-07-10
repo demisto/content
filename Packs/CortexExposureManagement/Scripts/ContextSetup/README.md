@@ -1,4 +1,4 @@
-Automation used to more easily populate Cortex XSOAR context. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+This script simplifies how you add data to Cortex XSOAR's context. Use it to set static values or to map different values to existing context paths. Instead of a value you can enter TIMESTAMP to get the current timestamp in ISO format. For example:
 `!ContextSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" context_key="key"`.
 
 ## Script Data
@@ -9,7 +9,7 @@ Automation used to more easily populate Cortex XSOAR context. This is necessary 
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility |
-| Cortex XSOAR Version | 6.5.0 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Dependencies
 
@@ -18,13 +18,21 @@ This script uses the following commands and scripts.
 
 * Set
 
+## Used In
+
+---
+This script is used in the following playbooks and scripts.
+
+* Cortex EM - Exposure Issue
+* Cortex EM - ServiceNow CMDB
+
 ## Inputs
 
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| keys | columns for the context key in comma separated format. |
+| keys | A comma-separated list of columns for the context key. |
 | val1 | A value for the 1st key. \(Can be a string or context path or \`TIMESTAMP\` to get the current timestamp in ISO format.\) |
 | val2 | A value for the 2nd key. \(Can be a string or context path or \`TIMESTAMP\` to get the current timestamp in ISO format.\) |
 | val3 | A value for the 3rd key. \(Can be a string or context path or \`TIMESTAMP\` to get the current timestamp in ISO format.\) |
@@ -46,7 +54,7 @@ This script uses the following commands and scripts.
 | val19 | A value for the 19th key. \(Can be a string or context path or \`TIMESTAMP\` to get the current timestamp in ISO format.\) |
 | val20 | A value for the 20th key. \(Can be a string or context path or \`TIMESTAMP\` to get the current timestamp in ISO format.\) |
 | context_key | Context key to populate. |
-| overwrite | Whether to overwrite what is in the context key or not \(default is to append\). |
+| overwrite | Whether to overwrite \(true\) or append \(false\) what is in the context key \(default is false\). |
 
 ## Outputs
 

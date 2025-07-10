@@ -1,4 +1,4 @@
-This playbook handles remediation of exposure issues.
+This playbook handles exposure issue remediation.
 
 ## Dependencies
 
@@ -28,7 +28,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AWSAssumeRoleName | If assuming roles for AWS, this is the name of the role to assume \(should be the same for all organizations\). |  | Optional |
+| AWSAssumeRoleName | The name of the role to assume for AWS \(should be the same for all organizations\). |  | Optional |
 
 ## Playbook Outputs
 

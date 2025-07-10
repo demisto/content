@@ -6,16 +6,16 @@ args:
   isArray: true
   name: system_ids
 - defaultValue: xdmremediationowners
-  description: The field of the alert or issue in which the owners should be stored.
+  description: The alert or issue field for the remediation owners.
   name: ownerrelatedfield
 - defaultValue: "False"
-  description: False will use !setAlert, True will use !setIssue.
+  description: For alerts (False), use !setAlert, for issues (True), use !setIssue.
   name: tenantcommand
   auto: PREDEFINED
   predefined:
   - "True"
   - "False"
-comment: Recommend most likely remediation owners from those surfaced by other enrichments.
+comment: This script determines the most likely remediation owners from those surfaced by other enrichments.
 commonfields:
   id: RankRemediationOwners
   version: -1

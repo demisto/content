@@ -124,9 +124,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        For Cortex.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
-        For Cortex Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
-        For Cortex on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
+        For Cortex XSOAR 6, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.14/Cortex-XSOAR-Administrator-Guide/Automations
+        For Cortex XSOAR Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+        For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.9/Cortex-XSOAR-On-prem-Documentation/Scripts
         For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
       id: 468b6cf6-d915-4721-862f-b19f471bf1be
       iscommand: false
@@ -282,7 +282,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'Given provided indicators (IPs, Hostnames, FQDNs, etc.), enriches ServiceNow CMDB information relevant to exposre issues.'
+      description: This playbook enriches ServiceNow CMDB data related to exposure issues by using provided indicators such as IPs, hostnames, and FQDNs.
       id: d133b001-0e41-4502-8229-58a792e73e2b
       iscommand: false
       name: Cortex EM - ServiceNow CMDB
@@ -481,7 +481,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Recommend most likely remediation owners from those surfaced by other enrichments.
+      description: This script determines the most likely remediation owners from those surfaced by other enrichments.
       id: 0ef0668b-b744-49d1-995a-3f29960da6df
       iscommand: false
       name: RankRemediationOwners
@@ -692,7 +692,7 @@ tasks:
     task:
       brand: Builtin
       description: |-
-        Automation used to more easily populate XSOAR context.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        This script simplifies how you add data to Cortex XSOAR's context. Use it to set static values or to map different values to existing context paths. Instead of a value you can enter TIMESTAMP to get the current timestamp in ISO format. For example:
         `!ContextSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" context_key="key"`.
       id: e7a47f11-f644-41c1-878d-4519f4496634
       iscommand: false

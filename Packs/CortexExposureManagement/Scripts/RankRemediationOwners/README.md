@@ -1,4 +1,4 @@
-Recommend most likely remediation owners from those surfaced by other enrichments.
+This script determines the most likely remediation owners from those surfaced by other enrichments.
 
 ## Script Data
 
@@ -31,8 +31,8 @@ This script is used in the following playbooks and scripts.
 | --- | --- |
 | owners | List of potential remediation owners. |
 | system_ids | System IDs or names associated with the compute instance. |
-| ownerrelatedfield | The field of the alert or issue in which the owners should be stored. |
-| tenantcommand | False will use \!setAlert, True will use \!setIssue. |
+| ownerrelatedfield | The alert or issue field for the remediation owners. |
+| tenantcommand | For alerts \(False\), use \!setAlert, for issues \(True\), use \!setIssue. |
 
 ## Outputs
 
