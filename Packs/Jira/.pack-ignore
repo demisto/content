@@ -1,8 +1,11 @@
 [file:JiraV2.yml]
 ignore=IN126,IN145
 
+[file:JiraV3.yml]
+ignore=RM110
+
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM110
 
 [file:ScriptJiraChangeTransition.yml]
 ignore=BA110,BA124
