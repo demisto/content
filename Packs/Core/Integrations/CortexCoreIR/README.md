@@ -3452,6 +3452,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 ***
 Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
+Note: This action is only supported on XDR Agent version 8.9 and above.
 
 #### Base Command
 
