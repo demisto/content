@@ -105,7 +105,7 @@ class Client(CoreClient):
         endpoint_status = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
         return bool(endpoint_status)
 
-    def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> list[dict]:
+    def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> list[dict[str, Any]]:
         """
         Block one or more IPs on a given endpoint and collect action IDs.
         If endpoint disconnected/not exists the group id will be None.
@@ -125,29 +125,32 @@ class Client(CoreClient):
             demisto.debug(f"Cannot block ip list. Endpoint {endpoint_id} is not connected.")
             return [{"ip_address": ip_address, "group_id": None, "endpoint_id": endpoint_id} for ip_address in ip_list]
         for ip_address in ip_list:
-            demisto.debug(f"Blocking ip address: {ip_address}")
-            response = self._http_request(
-                method="POST",
-                headers=self._headers,
-                url_suffix="/endpoints/block_ip",
-                json_data={
-                    "request_data": {
-                        "addresses": [ip_address],
-                        "endpoint_id": endpoint_id,
-                        "direction": "both",
-                        "duration": duration,
-                    }
-                },
-            )
-            group_id = response.get("reply", {}).get("group_action_id", "")
-            demisto.debug(f"Block request for {ip_address} returned with group_id {group_id}")
-            results.append(
-                {
-                    "ip_address": ip_address,
-                    "group_id": group_id,
-                    "endpoint_id": endpoint_id,
-                }
-            )
+            result = {
+                "ip_address": ip_address,
+                "endpoint_id": endpoint_id,
+            }
+            if is_ipv6_valid(ip_address) or is_ip_valid(ip_address):
+                demisto.debug(f"Blocking ip address: {ip_address}")
+                response = self._http_request(
+                    method="POST",
+                    headers=self._headers,
+                    url_suffix="/endpoints/block_ip",
+                    json_data={
+                        "request_data": {
+                            "addresses": [ip_address],
+                            "endpoint_id": endpoint_id,
+                            "direction": "both",
+                            "duration": duration,
+                        }
+                    },
+                )
+                group_id = response.get("reply", {}).get("group_action_id")
+                demisto.debug(f"Block request for {ip_address} returned with group_id {group_id}")
+                result["group_id"] = group_id
+            else:
+                result["group_id"] = "INVALID_IP"
+            results.append(result)
+
         return results
 
     def fetch_block_status(self, group_id: int, endpoint_id: str) -> tuple[str, str]:
@@ -163,9 +166,12 @@ class Client(CoreClient):
                 - status: The returned status from the api.
                 - message: The returned error text.
         """
-        if not self._is_endpoint_connected(endpoint_id):
+        if not self._is_endpoint_connected(endpoint_id) or not group_id:
             demisto.debug(f"Cannot fetch status. Endpoint {endpoint_id} is not connected.")
             return "Failure", "Endpoint Disconnected"
+
+        if group_id == "INVALID_IP":
+            return "Failure", "INVALID_IP"
 
         reply = self.action_status_get(group_id)
         status = reply.get("data", {}).get(endpoint_id)
