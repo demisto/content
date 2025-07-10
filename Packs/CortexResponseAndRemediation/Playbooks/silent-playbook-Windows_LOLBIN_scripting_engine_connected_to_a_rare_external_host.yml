@@ -619,6 +619,7 @@ tasks:
       url:
         simple: ${CommandLineAnalysis.analysis.original.indicators.URL}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1318,6 +1319,7 @@ tasks:
       domain:
         simple: ${CommandLineAnalysis.analysis.original.indicators.Domain}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
