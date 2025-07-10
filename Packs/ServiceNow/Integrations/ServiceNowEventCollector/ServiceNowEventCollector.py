@@ -18,7 +18,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSIAM
 class LogType(Enum):
     """Enum to hold all configuration for different log types."""
 
-    AUDIT = ("audit","Audit", "/api/now/", "table/sys_audit", "last_fetch_time", "previous_run_ids")
+    AUDIT = ("audit", "Audit", "/api/now/", "table/sys_audit", "last_fetch_time", "previous_run_ids")
     SYSLOG_TRANSACTIONS = (
         "syslog transactions",
         "Syslog Transactions",
@@ -29,7 +29,9 @@ class LogType(Enum):
     )
     CASE = ("case", "Case", "/api/sn_customerservice/", "case", "last_fetch_time_case", "previous_run_ids_case")
 
-    def __init__(self, type_string: str,title: str, api_base: str, api_endpoint: str, last_fetch_time_key: str, previous_ids_key: str ):
+    def __init__(
+        self, type_string: str, title: str, api_base: str, api_endpoint: str, last_fetch_time_key: str, previous_ids_key: str
+    ):
         self.type_string = type_string
         self.title = title
         self.api_base = api_base
@@ -157,8 +159,7 @@ def get_log_types_from_titles(event_types_to_fetch: List[str]) -> List[LogType]:
     if invalid_types:
         valid_options = ", ".join(valid_titles)
         raise DemistoException(
-            f"Invalid event type(s) provided: {invalid_types}. "
-            f"Please select from the following list: {valid_options}"
+            f"Invalid event type(s) provided: {invalid_types}. " f"Please select from the following list: {valid_options}"
         )
 
     # Return matching LogType members
