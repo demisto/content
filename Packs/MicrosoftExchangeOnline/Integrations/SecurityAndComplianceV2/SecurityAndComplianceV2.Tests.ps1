@@ -4,7 +4,7 @@ BeforeAll {
     
         class MockClient {
             [psobject] NewSearch($name, $param2, $kql, $description, $bool1, $locations, $p1, $p2, $p3, $errAction) {
-                return @{ Name = $name; Status = "NotStarted"; Items = 1 }
+                return @{ Name = $name; Status = "NotStarted"}
             }
     
             [void] StartSearch($name) {
