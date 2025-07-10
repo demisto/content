@@ -26,6 +26,7 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+
 from distutils.version import LooseVersion
 from threading import Lock
 from functools import wraps
@@ -42,7 +43,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 46, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -333,6 +334,100 @@ class FileAttachmentType(object):
     :rtype: ``str``
     """
     ATTACHED = "attached_file"
+
+
+class QuickActionPreview(object):
+    """
+    A container class for storing quick action data previews.
+    This class is intended to be populated by commands like `!get-remote-data-preview`
+    and placed directly into the root context under `QuickActionPreview`.
+
+    :return: None
+    :rtype: ``None``.
+    """
+    def __init__(self, id=None, title=None, description=None, status=None,
+                 assignee=None, creation_date=None, severity=None):
+        """
+        A container class for storing quick action data previews.
+        This class is intended to be populated by commands like `!get-remote-data-preview`
+        and placed directly into the root context under `QuickActionPreview`.
+        Attributes:
+            id (Optional[str]): The ID of the ticket.
+            title (Optional[str]): The title or summary of the ticket or action.
+            description (Optional[str]): A brief description or details about the action.
+            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
+            assignee (Optional[str]): The user or entity assigned to the action.
+            creation_date (Optional[str]): The date and time when the item was created.
+            severity (Optional[str]): Indicates the priority or severity level.
+        :return: None
+        :rtype: ``None``
+        """
+        self.id = id
+        self.title = title
+        self.description = description
+        self.status = status
+        self.assignee = assignee
+        self.creation_date = creation_date
+        self.severity = severity
+
+        missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
+        if missing_fields:
+            demisto.debug("Missing fields: {}".format(', '.join(missing_fields)))
+
+    def to_context(self):
+        """
+        Converts the instance to a dictionary.
+
+        :return: Dictionary representation of the QuickActionPreview instance.
+        :rtype: dict
+        """
+        return self.__dict__
+
+
+class MirrorObject(object):
+    """
+    A container class for storing ticket metadata used in mirroring integrations.
+    This class is intended to be populated by commands like `!jira-create-issue`
+    and placed directly into the root context under `MirrorObject`.
+
+    :return: None
+    :rtype: ``None``.
+    """
+    def __init__(self, object_url=None, object_id=None, object_name=None):
+        """
+        A container class for storing ticket metadata used in mirroring integrations.
+        This class is intended to be populated by commands like `!jira-create-issue`
+        and placed directly into the root context under `MirrorObject`.
+        Attributes:
+            object_url (Optional[str]): Direct URL to the created ticket for preview/use.
+            object_id (Optional[str]): Unique identifier of the created ticket.
+        :return: None
+        :rtype: ``None``.
+        """
+        self.object_url = object_url
+        self.object_id = object_id
+        self.object_name = object_name
+
+        missing_fields_list = []
+        if self.object_url is None:
+            missing_fields_list.append('object_url')
+        if self.object_id is None:
+            missing_fields_list.append('object_id')
+        if self.object_name is None:
+            missing_fields_list.append('object_name')
+
+        if missing_fields_list:
+            debug_message = "MirrorObject: Initialized with missing mandatory fields: {}"
+            demisto.debug(debug_message.format(', '.join(missing_fields_list)))
+
+    def to_context(self):
+        """
+        Converts the instance to a dictionary.
+
+        :return: Dictionary representation of the MirrorObject instance.
+        :rtype: dict
+        """
+        return self.__dict__
 
 
 brands = {
@@ -7236,6 +7331,9 @@ class CommandResults:
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
+    :type extended_payload: ``dict``
+    :param extended_payload: (Optional) A dictionary representing the contents of ExtendedPayload for synchronization.
+
     :type execution_metrics: ``ExecutionMetrics``
     :param execution_metrics: contains metric data about a command's execution
 
@@ -7269,9 +7367,10 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
+                 extended_payload=None,
                  execution_metrics=None,
                  replace_existing=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, dict, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -7312,6 +7411,7 @@ class CommandResults:
         self.tags = tags
         self.scheduled_command = scheduled_command
         self.relationships = relationships
+        self.extended_payload = extended_payload
         self.execution_metrics = execution_metrics
         self.replace_existing = replace_existing
 
@@ -7407,6 +7507,10 @@ class CommandResults:
             'Note': mark_as_note,
             'Relationships': relationships
         }
+
+        if self.extended_payload:
+            return_entry['ExtendedPayload'] = self.extended_payload
+
         if tags:
             # This is for backward compatibility reasons
             return_entry['Tags'] = tags
