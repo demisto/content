@@ -13,9 +13,7 @@
                 "opened_at": {
                     "complex": {
                         "accessor": "[0]",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "created",
                         "transformers": [
                             {

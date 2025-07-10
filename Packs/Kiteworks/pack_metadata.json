@@ -9,7 +9,10 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": ["IT","Network"],
+    "tags": [
+        "IT",
+        "Network"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

@@ -209,7 +209,8 @@
                                 },
                                 "operator": "join"
                             }
-                        ]                    },
+                        ]
+                    },
                     "simple": ""
                 },
                 "Email Return Path": {

@@ -248,7 +248,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "\u003c\u003e"
+                                            "simple": "<>"
                                         }
                                     }
                                 },

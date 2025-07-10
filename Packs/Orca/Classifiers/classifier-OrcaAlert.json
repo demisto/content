@@ -3,9 +3,7 @@
     "description": "Classifies Orca Alert incidents.",
     "feed": false,
     "id": "Orca",
-    "keyTypeMap": {
-
-    },
+    "keyTypeMap": {},
     "name": "Orca Alert - Classification",
     "transformer": {
         "complex": null,
