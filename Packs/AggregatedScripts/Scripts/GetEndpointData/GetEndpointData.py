@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from itertools import zip_longest
 from typing import Any
-from enum import Enum
+from enum import StrEnum
 
 from CommonServerPython import *
 
@@ -10,7 +10,7 @@ COMMAND_SUCCESS_MSG = "Command successful"
 COMMAND_FAILED_MSG = "Command failed - no endpoint found"
 
 
-class Brands(Enum):
+class Brands(StrEnum):
     """
     Enum representing different integration brands.
     """
@@ -38,7 +38,8 @@ class Command:
         name: str,
         output_keys: List[str],
         args_mapping: dict[str, Any],
-        output_mapping: dict | Callable,
+        output_mapping: dict,
+        get_endpoint_output: bool = False,
         not_found_checker: str = "No entries.",
         prepare_args_mapping: Callable[[dict[str, str]], dict[str, str]] | None = None,
         post_processing: Callable[[Any, list[dict[str, Any]], dict[str, str]], list[dict[str, Any]]] | None = None,
@@ -51,7 +52,8 @@ class Command:
             name (str): The name of the command.
             output_keys (List[str]): List of keys to extract from command output.
             args_mapping (dict): A dictionary containing the command arguments
-            output_mapping (dict | Callable): A mapping of command output keys to endpoint keys.
+            output_mapping (dict): A mapping of command output keys to endpoint keys.
+            get_endpoint_output (bool, optional): Flag to indicate if the command retrieves endpoint output. Defaults to False.
             not_found_checker (str, optional): A string to check if no entries are found. Defaults to "No entries.".
             prepare_args_mapping (Callable[[dict[str, str]], dict[str, str]], optional):
                 A function to prepare arguments mapping. Defaults to None.
@@ -62,6 +64,7 @@ class Command:
         self.output_keys = output_keys
         self.args_mapping = args_mapping
         self.output_mapping = output_mapping
+        self.get_endpoint_output = get_endpoint_output
         self.not_found_checker = not_found_checker
         self.prepare_args_mapping = prepare_args_mapping
         self.post_processing = post_processing
@@ -91,7 +94,7 @@ class ModuleManager:
         self._brands_to_run = brands_to_run
         self._enabled_brands = {
             module.get("brand") for module in self.modules_context.values() if module.get("state") == "active"
-        } | {Brands.GENERIC_COMMAND.value}
+        } | {Brands.GENERIC_COMMAND}
 
     def is_brand_in_brands_to_run(self, command: Command) -> bool:
         """
@@ -193,7 +196,7 @@ def get_endpoint_not_found(
     if command.not_found_checker in human_readable or (endpoints and (len(endpoints) < len(zipped_args))):
         return [
             create_endpoint(
-                endpoint_not_found, {"ID": "ID", "Hostname": "Hostname", "IPAddress": "IPAddress"}, command.brand, False, True
+                endpoint_not_found, {"ID": "ID", "Hostname": "Hostname", "IPAddress": "IPAddress"}, command.brand, False, {}, True
             )
             for endpoint_not_found in endpoints_not_found_list
         ]
@@ -437,9 +440,9 @@ def initialize_commands(
 
     single_args_commands = [
         Command(
-            brand=Brands.CORTEX_CORE_IR.value,
+            brand=Brands.CORTEX_CORE_IR,
             name="core-get-endpoints",
-            output_keys=["Endpoint", "Account", "Core.Endpoint"],
+            output_keys=["Core.Endpoint"],
             args_mapping={"endpoint_id_list": "endpoint_id", "ip_list": "endpoint_ip", "hostname": "endpoint_hostname"},
             output_mapping={
                 "ID": "ID",
@@ -448,9 +451,10 @@ def initialize_commands(
                 "Status": "Status",
                 "IsIsolated": "IsIsolated",
             },
+            get_endpoint_output=True,
         ),
         Command(
-            brand=Brands.GENERIC_COMMAND.value,
+            brand=Brands.GENERIC_COMMAND,
             name="endpoint",
             output_keys=["Endpoint"],
             args_mapping={"id": "endpoint_id", "ip": "endpoint_ip", "hostname": "endpoint_hostname"},
@@ -465,24 +469,25 @@ def initialize_commands(
             post_processing=generic_endpint_post,
         ),
         Command(
-            brand=Brands.ACTIVE_DIRECTORY_QUERY_V2.value,
+            brand=Brands.ACTIVE_DIRECTORY_QUERY_V2,
             name="ad-get-computer",
-            output_keys=["Endpoint", "ActiveDirectory.Computers"],
+            output_keys=["ActiveDirectory.Computers"],
             args_mapping={"name": "endpoint_hostname"},
-            output_mapping={"ID": "ID", "Hostname": "Hostname"},
+            output_mapping={"dn": "ID", "name": "Hostname"},
             post_processing=active_directory_post,
         ),
         Command(
-            brand=Brands.MCAFEE_EPO_V2.value,
+            brand=Brands.MCAFEE_EPO_V2,
             name="epo-find-system",
-            output_keys=["Endpoint", "McAfee.ePO.Endpoint"],
+            output_keys=["McAfee.ePO.Endpoint"],
             args_mapping={},
             prepare_args_mapping=prepare_epo_args,
             output_mapping={"ID": "ID", "Hostname": "Hostname", "IPAddress": "IPAddress"},
+            get_endpoint_output=True,
             not_found_checker="No systems found",
         ),
         Command(
-            brand=Brands.CORTEX_XDR_IR.value,
+            brand=Brands.CORTEX_XDR_IR,
             name="xdr-list-risky-hosts",
             output_keys=["PaloAltoNetworksXDR.RiskyHost"],
             args_mapping={"host_id": "endpoint_id"},
@@ -490,7 +495,7 @@ def initialize_commands(
             not_found_checker="was not found",
         ),
         Command(
-            brand=Brands.FIREEYE_HX_V2.value,
+            brand=Brands.FIREEYE_HX_V2,
             name="fireeye-hx-get-host-information",
             output_keys=["FireEyeHX.Hosts"],
             args_mapping={"agentId": "endpoint_id", "hostName": "endpoint_hostname"},
@@ -506,9 +511,9 @@ def initialize_commands(
 
     list_args_commands = [
         Command(
-            brand=Brands.CORTEX_XDR_IR.value,
+            brand=Brands.CORTEX_XDR_IR,
             name="xdr-get-endpoints",
-            output_keys=["Endpoint", "PaloAltoNetworksXDR.Endpoint"],
+            output_keys=["PaloAltoNetworksXDR.Endpoint"],
             args_mapping={"endpoint_id_list": "endpoint_id", "ip_list": "endpoint_ip", "hostname": "endpoint_hostname"},
             output_mapping={
                 "ID": "ID",
@@ -517,18 +522,19 @@ def initialize_commands(
                 "Status": "Status",
                 "IsIsolated": "IsIsolated",
             },
+            get_endpoint_output=True,
         ),
         Command(
-            brand=Brands.CORTEX_CORE_IR.value,
+            brand=Brands.CORTEX_CORE_IR,
             name="core-list-risky-hosts",
             output_keys=["Endpoint"],
             args_mapping={"host_id": "endpoint_id"},
             output_mapping={"id": "ID"},
         ),
         Command(
-            brand=Brands.CROWDSTRIKE_FALCON.value,
+            brand=Brands.CROWDSTRIKE_FALCON,
             name="cs-falcon-search-device",
-            output_keys=["Endpoint", "CrowdStrike.Device"],
+            output_keys=["CrowdStrike.Device"],
             args_mapping={"ids": "endpoint_id", "hostname": "endpoint_hostname"},
             prepare_args_mapping=prepare_cs_falcon_args,
             output_mapping={
@@ -538,6 +544,7 @@ def initialize_commands(
                 "Status": "Status",
                 "IsIsolated": "IsIsolated",
             },
+            get_endpoint_output=True,
             not_found_checker="Could not find any devices.",
         ),
     ]
@@ -637,6 +644,7 @@ def create_endpoint(
     output_mapping: dict[str, str],
     brand: str,
     add_additional_fields: bool,
+    endpoint_output: dict[str, Any],
     is_failed: bool = False,
 ) -> dict[str, Any]:
     """
@@ -648,10 +656,11 @@ def create_endpoint(
 
     Args:
         command_output (dict[str, Any]): The output from a command execution.
-        output_mapping (dict[str, str] | Callable): A mapping of command output keys to endpoint keys.
+        output_mapping (dict[str, str]): A mapping of command output keys to endpoint keys.
             If a function is passed, the function does nothing and returns the result of the passed function.
         brand (str): The brand of the data.
         add_additional_fields (bool): Flag to include additional fields in the endpoint dictionary.
+        endpoint_output (dict[str, Any]): The endpoint output dictionary.
         is_failed (bool, optional): Flag to indicate if the command failed. Defaults to False.
 
     Returns:
@@ -663,11 +672,19 @@ def create_endpoint(
     endpoint: dict[str, Any] = {"Message": message}
     additional_fields = {}
 
-    for key, value in command_output.items():
-        if mapped_key := output_mapping.get(key):
-            endpoint[mapped_key] = value
-        else:
-            additional_fields[key] = value
+    if endpoint_output:
+        for key, value in endpoint_output.items():
+            if mapped_key := output_mapping.get(key):
+                endpoint[mapped_key] = value
+        if add_additional_fields:
+            additional_fields = command_output
+    else:
+        for key, value in command_output.items():
+            if mapped_key := output_mapping.get(key):
+                endpoint[mapped_key] = value
+            else:
+                additional_fields[key] = value
+
     if "Brand" not in endpoint:  # in case of not "Generic Command"
         endpoint["Brand"] = brand
     if add_additional_fields:
@@ -860,23 +877,29 @@ def get_raw_endpoints(output_keys: list[str], raw_context: list[dict[str, Any]])
 
 
 def create_endpoints(
-    raw_endpoints: list[dict[str, Any]], output_mapping: dict | Callable, brand: str, add_additional_fields: bool
+    raw_endpoints: list[dict[str, Any]],
+    output_mapping: dict,
+    brand: str,
+    add_additional_fields: bool,
+    raw_endpoints_output: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     """
     Creates a list of endpoint dictionaries from the raw endpoint data.
     Args:
         raw_endpoints (list[dict[str, Any]]): The raw endpoint data to be processed.
-        output_mapping (dict | Callable): A dictionary or a callable that maps the raw data to the desired output format.
+        output_mapping (dict): A dictionary or a callable that maps the raw data to the desired output format.
         brand (str): The brand associated with the endpoints.
         add_additional_fields (bool): Flag to determine whether to add additional fields to the endpoint.
+        raw_endpoints_output (list[dict[str, Any]]): The raw endpoint data to be processed.
 
     Returns:
         list[dict[str, Any]]: A list of endpoint dictionaries.
     """
     endpoints = []
-    for raw_endpoint in raw_endpoints:
-        output_map = output_mapping(raw_endpoint) if callable(output_mapping) else output_mapping
-        endpoints.append(create_endpoint(raw_endpoint, output_map, brand, add_additional_fields))
+    if not raw_endpoints_output:
+        raw_endpoints_output = [{} for _ in raw_endpoints]
+    for raw_endpoint, raw_endpoint_output in zip(raw_endpoints, raw_endpoints_output):
+        endpoints.append(create_endpoint(raw_endpoint, output_mapping, brand, add_additional_fields, raw_endpoint_output))
     return endpoints
 
 
@@ -892,7 +915,11 @@ def entry_context_to_endpoints(command: Command, entry_context: list, add_additi
         list[dict[str, Any]]: A list of endpoint dictionaries generated from the entry context.
     """
     raw_endpoints = get_raw_endpoints(command.output_keys, entry_context)
-    endpoints = create_endpoints(raw_endpoints, command.output_mapping, command.brand, add_additional_fields)
+    endpoint_raw_data = []
+    if command.get_endpoint_output:
+        endpoint_raw_data = get_raw_endpoints(["Endpoint"], entry_context)
+
+    endpoints = create_endpoints(raw_endpoints, command.output_mapping, command.brand, add_additional_fields, endpoint_raw_data)
     demisto.debug(f"Returning {len(endpoints)} endpoints")
     return endpoints
 
@@ -1010,7 +1037,7 @@ def main():
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="EndpointData",
-                    outputs_key_field=["Brand", "ID", "Hostname"],  # TODO, "IPAddress"],
+                    outputs_key_field=["Brand", "ID", "Hostname"],  # TODO: , "IPAddress"],
                     outputs=endpoint_outputs_list,
                     readable_output=tableToMarkdown(
                         name="Endpoint(s) data",
