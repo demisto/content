@@ -1,6 +1,7 @@
 import mimetypes
 import re
 from collections.abc import Callable, Iterable
+from urllib.parse import quote
 
 import demistomock as demisto  # noqa: F401
 
@@ -1333,6 +1334,10 @@ class Client(BaseClient):
         """
         return self.send_request(f"change/{sys_id}/task", "GET", cr_api=True)
 
+    @property
+    def base_url(self):
+        return self._base_url
+
 
 def get_ticket_command(client: Client, args: dict):
     """Get a ticket.
@@ -1462,12 +1467,13 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     return human_readable, entry_context, result, True
 
 
-def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def create_ticket_command(client: Client, args: dict, is_quick_action: bool = False) -> tuple[str, dict, dict, bool]:
     """Create a ticket.
 
     Args:
         client: Client object with request.
         args: Usually demisto.args()
+        is_quick_action: Whether the command is a quick action
 
     Returns:
         Demisto Outputs.
@@ -1528,11 +1534,33 @@ def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
     else:
         additional_fields_keys = list(args.keys())
 
+    instance_url = client.base_url.replace("/api/now/", "/")
+
+    ticket_type = ticket.get("sys_class_name")
+    ticket_sys_id = ticket.get("sys_id")
+    ticket_name = ticket.get("number")
+
+    target_uri_path = f"{ticket_type}.do?sys_id={ticket_sys_id}"
+
+    encoded_uri = quote(target_uri_path)
+
+    ticket_url = f"{instance_url}nav_to.do?uri={encoded_uri}"
+    mirror_obj = MirrorObject(object_url=ticket_url, object_id=ticket_sys_id, object_name=ticket_name).to_context()
+
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
         "Ticket(val.ID===obj.ID)": created_ticket_context,
         "ServiceNow.Ticket(val.ID===obj.ID)": created_ticket_context,
     }
+    if is_quick_action:
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["text"],
+                "Contents": "MirrorObject created successfully.",
+                "ExtendedPayload": {"MirrorObject": mirror_obj},
+            }
+        )
 
     return human_readable, entry_context, result, True
 
@@ -2909,6 +2937,69 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
     return offset
 
 
+def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    get-remote-data-preview command: Returns a standardized preview of a ServiceNow ticket.
+
+    Args:
+        client: XSOAR client to use.
+        args: Dictionary containing command arguments:
+            id (str): The ServiceNow ticket number or sys_id to retrieve the preview for.
+        params: Dictionary containing integration parameters.
+
+    Returns:
+        CommandResults: Object containing the QuickActionPreview data formatted for XSOAR context.
+
+    Raises:
+        ValueError: If the 'id' argument is missing.
+        DemistoException: If the ticket cannot be found in ServiceNow.
+    """
+    ticket_id = args.get("id")
+    if not ticket_id:
+        raise ValueError("ServiceNow Ticket ID ('id') is required for preview.")
+
+    demisto.debug(f"Getting preview for ServiceNow ticket {ticket_id=}")
+
+    ticket_type = client.ticket_type
+    try:
+        result = client.get(ticket_type, ticket_id, use_display_value=True)
+    except Exception as e:
+        raise DemistoException(f"Failed to fetch ticket {ticket_id} from ServiceNow. Error: {e}")
+
+    if not result or "result" not in result:
+        raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result empty or missing).")
+
+    if isinstance(result["result"], list):
+        if len(result["result"]) == 0:
+            raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result list empty).")
+        ticket_data = result["result"][0]
+    else:
+        ticket_data = result["result"]
+
+    if not ticket_data:
+        raise DemistoException(f"Ticket data for {ticket_id=} is empty after fetch.")
+
+    demisto.debug(f"Raw ticket data for preview: {ticket_data}")
+
+    key_map = {
+        "id": "number",
+        "title": "short_description",
+        "description": "description",
+        "status": "state",
+        "assignee": "assigned_to",
+        "creation_date": "sys_created_on",
+        "severity": "priority",
+    }
+
+    qa_preview_data = {new_key: ticket_data.get(old_key, {}).get("display_value") for new_key, old_key in key_map.items()}
+
+    qa_preview = QuickActionPreview(**qa_preview_data)
+
+    return CommandResults(
+        outputs_prefix="QuickActionPreview", outputs=qa_preview.to_context(), outputs_key_field="id", raw_response=result
+    )
+
+
 def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) -> Union[list[dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -3121,10 +3212,21 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
 
     """
     parsed_args = UpdateRemoteSystemArgs(args)
+    if isinstance(parsed_args.delta, str) and parsed_args.delta:
+        demisto.debug(f"Delta argument was a string, attempting to parse as JSON: {parsed_args.delta}")
+        try:
+            parsed_args.delta = json.loads(parsed_args.delta.replace("'", '"'))
+        except json.JSONDecodeError as e:
+            raise ValueError(f"The 'delta' argument is a malformed string and could not be parsed as JSON. Error: {e}")
+    if parsed_args.data is None:
+        demisto.debug("The 'data' argument was missing. Defaulting to an empty dictionary.")
+        parsed_args.data = {}
+    if not parsed_args.delta:
+        parsed_args.delta = {}
     if parsed_args.delta:
         demisto.debug(f"Got the following delta {parsed_args.delta}")
         demisto.debug(
-            f"The following keys appears in data but not in delta {set(parsed_args.data.keys())-set(parsed_args.delta.keys())}"
+            f"The following keys appear in data but not in delta {set(parsed_args.data.keys()) - set(parsed_args.delta.keys())}"
         )
 
     ticket_type = client.ticket_type
@@ -3136,15 +3238,25 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     demisto.debug(f"state will change to= {parsed_args.delta.get('state')}")
     if parsed_args.incident_changed:
         demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
-        if parsed_args.inc_status == IncidentStatus.DONE:
+        if (parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta):
             demisto.debug("Closing incident by closure case")
-            if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
+            if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta.get(
+                "state"
+            ) == "3":
                 parsed_args.delta["state"] = "3"
             # These ticket types are closed by changing their state.
-            if closure_case == "closed" and ticket_type == INCIDENT:
+            if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "7":
                 parsed_args.delta["state"] = "7"  # Closing incident ticket.
-            elif closure_case == "resolved" and ticket_type == INCIDENT:
+                parsed_args.delta["close_code"] = "Resolved by caller"
+                parsed_args.delta["close_notes"] = (
+                    "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+                )
+            elif (closure_case == "resolved" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "6":
                 parsed_args.delta["state"] = "6"  # resolving incident ticket.
+                parsed_args.delta["close_code"] = "Resolved by caller"
+                parsed_args.delta["close_notes"] = (
+                    "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+                )
             if close_custom_state:  # Closing by custom state
                 demisto.debug(f"Closing by custom state = {close_custom_state}")
                 is_custom_close = True
@@ -3685,7 +3797,6 @@ def main():
             "servicenow-oauth-login": login_command,
             "servicenow-update-ticket": update_ticket_command,
             "servicenow-create-ticket": create_ticket_command,
-            "servicenow-create-ticket-quick-action": create_ticket_command,
             "servicenow-delete-ticket": delete_ticket_command,
             "servicenow-query-tickets": query_tickets_command,
             "servicenow-add-link": add_link_command,
@@ -3718,6 +3829,8 @@ def main():
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
+        elif command == "get-remote-data-preview":
+            return_results(get_remote_data_preview_command(client, demisto.args()))
         elif command == "update-remote-system":
             return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
         elif command == "get-mapping-fields":
@@ -3732,6 +3845,9 @@ def main():
             return_results(get_ticket_notes_command(client, args, params))
         elif command == "servicenow-get-ticket-attachments":
             return_results(get_attachment_command(client, args))
+        elif command == "servicenow-create-ticket-quick-action":
+            md_, ec_, raw_response, ignore_auto_extract = create_ticket_command(client, args, is_quick_action=True)
+            return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
