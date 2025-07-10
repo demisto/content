@@ -143,12 +143,13 @@ class Event:
         #  Created at time is stored in either or two locations, never both.
         demisto.debug(f"Event init: created_at={raw_input.get('created_at')}, source exists= {bool(raw_input.get('source'))}")
         created_at = raw_input.get("created_at")
-        _created_at = raw_input.get("source", {}).get("created_at") if raw_input.get("source") else None
+        _created_at = raw_input.get("source", {}).get("created_at") if raw_input.get("source") else ""
         self.created_at = created_at if created_at is not None else _created_at
         demisto.debug(f"Event init:{self.created_at=}")
         self.event_id = raw_input.get("event_id")
         self.event_type = raw_input.get("event_type")
         self.labels = raw_input
+        demisto.debug(f"Useful current event info {self.event_id=} {self.event_type=} {raw_input=}")
 
     def format_incident(self):
         incident = {
@@ -682,7 +683,15 @@ class Client(BaseClient):
         self._headers.update({"As-User": validated_as_user})
         return self._http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
-    def list_events(self, as_user: str, stream_type: str, created_after: str = None, limit: int = None):
+    def list_events(
+        self,
+        as_user: str,
+        stream_type: str,
+        created_after: str = None,
+        limit: int = None,
+        event_type: str = None,
+        next_stream_position: str = None,
+    ):
         """
         Lists the events which have occurred given the as_user argument/parameter. Same endpoint is
         used to also handle the enterprise logs as well.
@@ -691,6 +700,8 @@ class Client(BaseClient):
         :param stream_type: str - Indicates the type of logs to be retrieved.
         :param created_after: str - Is used the return only events created after the given time.
         :param limit: int - The maximum amount of events to return.
+        :param event_type: a comma separated list of Event types to return.
+        :param next_stream_position: The location in the event stream to start receiving events from.
         :return: dict - The results for the given logs query.
         """
         url_suffix = "/events/"
@@ -701,6 +712,11 @@ class Client(BaseClient):
             request_params.update({"created_after": created_after})
         if limit:
             request_params.update({"limit": limit})  # type:ignore
+        if event_type:
+            request_params.update({"event_type": event_type})
+        if next_stream_position:
+            request_params.update({"stream_position": next_stream_position})
+        demisto.debug(f"The command with {url_suffix=}, params are {request_params=}")
         return self._http_request(method="GET", url_suffix=url_suffix, params=request_params)
 
     def get_current_user(self, as_user: str):
@@ -1705,8 +1721,8 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
 
 
 def fetch_incidents(
-    client: Client, max_results: int, last_run: dict, first_fetch_time: int, as_user: str
-) -> tuple[str, list[dict]]:
+    client: Client, max_results: int, last_run: dict, first_fetch_time: int, as_user: str, event_type: list = None
+) -> tuple[dict, list[dict]]:
     """
 
     :param client:
@@ -1714,24 +1730,44 @@ def fetch_incidents(
     :param last_run:
     :param first_fetch_time:
     :param as_user:
+    :param event_type:
     :return:
     """
     created_after = last_run.get("time", None)
+    next_stream_position = last_run.get("next_stream_position", "")
     incidents = []
     if not created_after:
         created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(DATE_FORMAT)
-    results = client.list_events(stream_type="admin_logs", as_user=as_user, limit=max_results, created_after=created_after)
+    demisto.debug(f"At the beginning of the fetch, {created_after=} {next_stream_position=}")
+    event_type_str = ",".join(event_type) if event_type else ""
+    demisto.debug(f"{event_type_str=}")
+    results = client.list_events(
+        stream_type="admin_logs",
+        as_user=as_user,
+        limit=max_results,
+        created_after=created_after,
+        event_type=event_type_str,
+        next_stream_position=next_stream_position,
+    )
     raw_incidents = results.get("entries", [])
+    next_stream_position = results.get("next_stream_position")
     demisto.debug(f"Extracted {len(raw_incidents)} raw incidents from the results.")
-    next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
+    next_run = created_after
     for raw_incident in raw_incidents:
         event = Event(raw_input=raw_incident)
         xsoar_incident = event.format_incident()
         incidents.append(xsoar_incident)
-        if event.created_at > created_after:
-            next_run = event.created_at  # type: ignore[assignment]
+        utc_event_time = arg_to_datetime(event.created_at)
+        utc_event_time = utc_event_time.strftime(DATE_FORMAT) if utc_event_time else ""
+        next_run = arg_to_datetime(next_run)
+        next_run = next_run.strftime(DATE_FORMAT) if next_run else ""
+        demisto.debug(f"{utc_event_time=} >? {next_run=}")
+        if utc_event_time > next_run:
+            next_run = utc_event_time
+    last_run = {"time": next_run, "next_stream_position": next_stream_position}
+    demisto.debug(f"The final {last_run=}")
 
-    return next_run, incidents
+    return last_run, incidents
 
 
 def main() -> None:  # pragma: no cover
@@ -1766,6 +1802,8 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "fetch-incidents":
             as_user = demisto.params().get("as_user", None)
+            event_type = demisto.params().get("event_type")
+            demisto.debug(f"The {event_type=}")
             max_results = arg_to_int(arg=demisto.params().get("max_fetch"), arg_name="max_fetch")
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
@@ -1776,8 +1814,9 @@ def main() -> None:  # pragma: no cover
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
                 as_user=as_user,
+                event_type=event_type,
             )
-            demisto.setLastRun({"time": next_run})
+            demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
         elif demisto.command() == "box-create-file-share-link" or demisto.command() == "box-update-file-share-link":
