@@ -295,6 +295,22 @@
                 "C3",
                 "X5"
             ]
+        },
+        {
+            "id": "GCP",
+            "supportedModules":[
+                "C1", 
+                "C3",
+                "X5"
+            ]
+        },
+                {
+            "id": "Azure",
+            "supportedModules":[
+                "C1", 
+                "C3",
+                "X5"
+            ]
         }
     ]
 }

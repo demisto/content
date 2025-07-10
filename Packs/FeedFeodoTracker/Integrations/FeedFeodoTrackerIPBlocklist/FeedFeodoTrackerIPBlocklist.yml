@@ -96,8 +96,9 @@ configuration:
   hiddenusername: true
   name: credentials
   type: 9
-  required: true
+  required: false
   section: Connect
+  additionalinfo: Starting June 30th 2025 this parameter is mandatory.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

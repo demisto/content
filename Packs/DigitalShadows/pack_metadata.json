@@ -2,7 +2,7 @@
     "name": "ReliaQuest Takedown",
     "description": "ReliaQuest's Managed Takedown service provides customers with end-to-end takedown management that quickly removes infringing content, domains, documents and mobile applications.",
     "support": "partner",
-    "currentVersion": "3.0.0",
+    "currentVersion": "3.0.1",
     "author": "ReliaQuest",
     "url": "https:// www.reliaquest.com/",
     "email": "drpsupport@reliaquest.com",
@@ -78,6 +78,7 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix"
     ]
 }
