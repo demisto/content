@@ -453,15 +453,19 @@ def test_todate_set_and_pagination(mocker):
     # Page 1 returns exactly page_size incidents
     page1_incidents = [{"created": f"2025-01-01T10:0{i}:00Z", "id": i} for i in range(5)]
     # Page 2 returns fewer, triggering end-of-pagination
-    page2_incidents = [{"created": f"2025-01-01T09:59:00Z", "id": 101}]
+    page2_incidents = [{"created": "2025-01-01T09:59:00Z", "id": 101}]
 
     # Mock execute_command behavior
-    execute_command_mocker = mocker.patch.object(SearchIncidentsV2, "execute_command", side_effect= [
-        # 1st call: initial getIncidents
-        [{"Contents": {"data": page1_incidents}}],
-        # 2nd call: getIncidents inside loop (page2)
-        {"data": page2_incidents},
-    ])
+    execute_command_mocker = mocker.patch.object(
+        SearchIncidentsV2,
+        "execute_command",
+        side_effect=[
+            # 1st call: initial getIncidents
+            [{"Contents": {"data": page1_incidents}}],
+            # 2nd call: getIncidents inside loop (page2)
+            {"data": page2_incidents},
+        ],
+    )
 
     args = {"limit": 10, "size": 5}
     SearchIncidentsV2.search_incidents(args=args)
