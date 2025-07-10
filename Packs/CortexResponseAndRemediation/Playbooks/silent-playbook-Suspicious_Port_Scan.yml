@@ -314,8 +314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 243,
-          "y": 4181
+          "x": 244,
+          "y": 4422
         }
       }
     note: false
@@ -958,8 +958,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 243,
-          "y": 4301
+          "x": 244,
+          "y": 4542
         }
       }
     note: false
@@ -1740,7 +1740,7 @@ tasks:
       RuleName:
         simple: XSIAM- Block IP playbook - ${alert.id}
       UserVerification:
-        simple: "True"
+        simple: "False"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1752,7 +1752,7 @@ tasks:
       {
         "position": {
           "x": 939,
-          "y": 4037
+          "y": 4301
         }
       }
     note: false
@@ -1807,7 +1807,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "157"
+      - "199"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2593,8 +2593,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 243,
-          "y": 4440
+          "x": 244,
+          "y": 4681
         }
       }
     note: false
@@ -3471,6 +3471,127 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "199":
+    id: "199"
+    taskid: 688914bb-c9e2-41b4-83f9-0a40ed65515f
+    type: collection
+    task:
+      id: 688914bb-c9e2-41b4-83f9-0a40ed65515f
+      version: -1
+      name: Approve Block IP
+      description: |+
+        Blocking the source IP address requires analyst approval.
+
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "200"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 939,
+          "y": 4024
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Should the source IP ${Core.OriginalAlert.event.action_local_ip} be blocked using the "Block IP - Generic v3" sub-playbook and the available integrations?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: This approval will allow blocking the source IP address to prevent the attacker from executing lateral movement.
+        readonly: false
+      title: BlockIpApproval
+      description: |+
+        A malicious port scan was detected. Blocking the source IP address is recommended to prevent potential lateral movement within the network.
+
+
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "200":
+    id: "200"
+    taskid: 62654364-f860-4c5d-be2f-1d6c476ab676
+    type: condition
+    task:
+      id: 62654364-f860-4c5d-be2f-1d6c476ab676
+      version: -1
+      name: Check Analyst Decision – Block IP
+      description: Checks analyst’s decision on blocking the source IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockIpApproval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 939,
+          "y": 4144
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3499,6 +3620,8 @@ view: |-
       "187_159_#default#": 0.39,
       "190_159_#default#": 0.54,
       "190_186_yes": 0.42,
+      "200_13_#default#": 0.46,
+      "200_157_yes": 0.36,
       "2_145_#default#": 0.41,
       "2_83_yes": 0.24,
       "81_82_yes": 0.43,
@@ -3509,7 +3632,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4522,
+        "height": 4763,
         "width": 5458,
         "x": -974,
         "y": -22
