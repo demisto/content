@@ -3463,11 +3463,12 @@ Command to quickly block malicious or suspicious IP addresses directly from the 
 | --- | --- | --- |
 | endpoint_list | List of agent IDs that support the operation. | Required |
 | addresses | List of IPv6 or IPv4 addresses to be added to the blocklist. | Required |
-| duration | Number of minutes to block (Max 518,400). | Required |
+| duration | Number of minutes to block (Max 518,400). The default is 300 | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
+| --- | --- | --- |
 | Core.ip_block_results | List | List of dictionaries each holds 3 fileds: ip_address, endpoint_id, reason. |
 
 #### Context Example
