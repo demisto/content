@@ -2101,3 +2101,5 @@ outputs:
 tests:
 - no tests
 fromversion: 6.0.0
+supportedModules:
+- X0
