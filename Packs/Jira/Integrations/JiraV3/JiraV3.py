@@ -2689,12 +2689,7 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     if visibility:
         payload["visibility"] = {"type": "role", "value": visibility}
     if internal:
-        payload["properties"] = [{
-            "key": "sd.public.comment",
-            "value": {
-                "internal": True
-            }
-        }]
+        payload["properties"] = [{"key": "sd.public.comment", "value": {"internal": True}}]  # type: ignore
     res = client.add_comment(issue_id_or_key=issue_id_or_key, json_data=payload)
     markdown_dict = {
         "Comment": BeautifulSoup(res.get("renderedBody", ""), features="html.parser").get_text()
