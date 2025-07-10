@@ -381,6 +381,7 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
     latest_case_created_time: datetime = fetch_time
     latest_fetched_case: str = last_run.get("lastFetchedCase", "")
 
+    case_id = latest_fetched_case
     for case in retrieve_cases_data:
         case_created_time = datetime.strptime(case.get("createdAt"), MSISAC_CREATED_TIME_FORMAT)
         case_id = case.get("caseId", "")
