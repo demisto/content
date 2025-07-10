@@ -116,6 +116,7 @@ class Client(BaseClient):
         )
 
         try:
+            demisto.debug(f"debug-log: making new {method} request to '{url_suffix}' endpoint.")
             token = self._get_token()
             request_args["headers"] |= {"Authorization": str(token)}
             return self._http_request(**request_args)
@@ -123,7 +124,7 @@ class Client(BaseClient):
             error_status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
 
             if error_status_code == HTTPStatus.UNAUTHORIZED:
-                demisto.debug("Generating a new token after getting unauthorized error.")
+                demisto.debug("debug-log: generating a new token after getting unauthorized error.")
                 token = self._get_token(force_new=True)
                 request_args["headers"] |= {"Authorization": str(token)}
                 return self._http_request(**request_args)
@@ -142,14 +143,15 @@ class Client(BaseClient):
         Returns:
             bool: True if the token is expired, False otherwise.
         """
-        demisto.debug("Checking if token is expired")
+        demisto.debug("debug-log: checking if token is expired.")
         token_expiration = integration_context.get("token_expiration", None)
         if not token_expiration:
+            demisto.debug("debug-log: no token expiration time in integration context. Assuming token is expired.")
             return True
 
         expire_time = dateparser.parse(token_expiration).replace(tzinfo=datetime.now().tzinfo)  # type: ignore
         current_time = datetime.now() - timedelta(seconds=30)
-        demisto.debug(f"Comparing current time: {current_time} with expire time: {expire_time}")
+        demisto.debug(f"debug-log: comparing current time: {current_time} with token expiration time: {expire_time}.")
         return expire_time < current_time
 
     def _get_token(self, force_new: bool = False):
@@ -164,17 +166,17 @@ class Client(BaseClient):
         integration_context = get_integration_context()
         token = integration_context.get("token")
         if token and not force_new and not self.is_token_expired(integration_context):
-            demisto.debug("Got valid token from integration context.")
+            demisto.debug("debug-log: got valid token from integration context.")
             return token
 
-        demisto.debug("Creating a new access token")
+        demisto.debug("debug-log: creating a new access token.")
         response = self._http_request("POST", "/access_token/", data={"secret_key": self._api_key})
         token = response.get("data", {}).get("access_token")
         expiration = response.get("data", {}).get("expiration_utc")
         expiration_date = dateparser.parse(expiration)
         assert expiration_date is not None, f"failed parsing {expiration}"
 
-        demisto.debug(f"Setting new token to integration context with expiration time: {expiration_date}.")
+        demisto.debug(f"debug-log: setting new token to integration context with expiration time: {expiration_date}.")
         set_integration_context({"token": token, "token_expiration": str(expiration_date)})
         return token
 
