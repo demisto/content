@@ -142,7 +142,7 @@ def listen_for_reports(params):
                 private_key_path = private_key_file.name
                 private_key_file.write(private_key)
                 private_key_file.close()
-                listener.socket = ssl.wrap_socket(
+                listener.socket = ssl.wrap_socket(  # type: ignore
                     listener.socket,
                     keyfile=private_key_path,
                     certfile=certificate_path,
