@@ -38,6 +38,17 @@ EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = [
     "endpoint_name",
     "endpoint_status",
 ]
+ERROR_CODE_MAP = {
+    -199: "IP_BLOCK_DISABLED_BY_POLICY",
+    -198: "INVALID_IP_ADDRESS",
+    -197: "IP_ADDRESS_ALREADY_BLOCKED",
+    -196: "IP_ADDRESS_WHITELISTED",
+    -195: "IP_ADDRESS_NOT_BLOCKED",
+    -194: "IP_ADDRESS_NOT_BLOCKED_BUT_WHITELISTED",
+    -193: "IP_IS_LOOPBACK",
+    -192: "IPV6_BLOCKING_IS_DISABLED",
+    -191: "IP_IS_LOCAL_ADDRESS",
+}
 
 
 class Client(CoreClient):
@@ -162,13 +173,19 @@ class Client(CoreClient):
         if status == "FAILED":
             reason = error_reasons.get(endpoint_id, {})
             text = reason.get("errorText")
+
             if not text and reason.get("errorData"):
                 try:
                     payload = json.loads(reason["errorData"])
                     text = payload.get("errorText")
                 except (ValueError, TypeError):
                     text = reason["errorData"]
-            return "Failure", text or "Unknown error"
+
+            match = re.search(r"error code\s*(-?\d+)", text or "")
+            error_number = int(match.group(1)) if match else 0
+
+            demisto.debug(f"Error number {error_number}")
+            return "Failure", ERROR_CODE_MAP.get(error_number) or text or "Unknown error"
 
         if status == "COMPLETED_SUCCESSFULLY":
             return "Success", ""

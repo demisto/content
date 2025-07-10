@@ -998,6 +998,36 @@ class TestClientBlockIP:
         assert status == "IN_PROGRESS"
         assert msg == ""
 
+    def test_fetch_block_error_code_message(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - ip address already blocked and server return error code -197
+        Then:
+            - The status returned is Failure with the right message.
+        """
+        from CortexCoreIR import ERROR_CODE_MAP
+
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value={
+                "reply": {
+                    "data": {"endpoint_id": "FAILED"},
+                    "errorReasons": {
+                        "endpoint_id": {
+                            "errorData": '{"reportIds":["11"],"errorText":"Failed blocking IP address with error code -197\\n"}'
+                        }
+                    },
+                }
+            },
+        )
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+        assert status == "Failure"
+        assert msg == ERROR_CODE_MAP[-197]
+
 
 class DummyClient:
     """
