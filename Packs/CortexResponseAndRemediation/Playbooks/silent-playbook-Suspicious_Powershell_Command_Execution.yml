@@ -1223,7 +1223,8 @@ tasks:
     task:
       id: 10f5a4e3-9803-4558-aab1-4e12b68a48b0
       version: -1
-      name: 'Domain/URL Exist to Block '
+      name: 'Domain/URL Exist to Block'
+      description: 'Check if there are malicious domains or URLs to block'
       type: condition
       iscommand: false
       brand: ""
