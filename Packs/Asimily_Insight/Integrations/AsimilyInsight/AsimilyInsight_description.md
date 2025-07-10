@@ -9,7 +9,7 @@
     - **Asimily Portal URL**: Base URL of the Asimily Insight portal. Format: `https://customer-portal.asimily.com`.
     - **API Username** and **Password**: Asimily API user credentials. To create a new user, go to **Settings > Users** and click **Add User** on the Asimily Insight portal.
     - **Fetch incidents**: Enable to fetch incidents from Asimily Insight into Cortex XSOAR.
-    - **Classifier and Mapper**: No specific classifier or mapper is required.
+    - **Classifier and Mapper**: Default Classifier and Mapper provided as `Asimily_Insight - Classifier` and `Asimily_Insight - Incoming Mapper`.
     - **Incident Fetch Interval**: Set how often incidents should be fetched (e.g., `5 minutes`).
     - **Log Level**: Choose a log level from the dropdown.
     - **Single Engine**: Select **No engine**.
