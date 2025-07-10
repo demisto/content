@@ -42,7 +42,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
                                 get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
-                                execute_polling_command, QuickActionPreview, MirrorObject
+                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version,
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -8752,85 +8752,6 @@ Exception: WTF?!!!'''
         assert result == expected_traceback
 
 
-PACK_VERSION_INFO = [
-    (
-        {'context': {'IntegrationBrand': 'PaloAltoNetworks_PrismaCloudCompute'}, 'integration': True},
-        ''
-    ),
-    (
-        {'context': {'ScriptName': 'test-script'}, 'integration': False},
-        ''
-    ),
-    (
-        {},
-        'test-pack'
-    ),
-    (
-        {'context': {'IntegrationBrand': 'PagerDuty v2'}, 'integration': True},
-        ''
-    )
-]
-
-
-def get_pack_version_mock_internal_http_request(method, uri, body):
-    if method == 'POST':
-        if uri == '/contentpacks/marketplace/search':
-            if 'integrationsQuery' in body:  # whether its an integration that needs to be searched
-                integration_brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
-                if integration_brand == 'PaloAltoNetworks_PrismaCloudCompute':
-                    return {
-                        'body': '{"packs":[{"currentVersion":"1.0.0","contentItems":'
-                                '{"integration":[{"name":"Palo Alto Networks - Prisma Cloud Compute"}]}}]}'
-                    }
-                elif integration_brand == 'PagerDuty v2':
-                    return {
-                        'body': '{"packs":[{"currentVersion":"1.0.0","contentItems":'
-                                '{"integration":[{"name":"PagerDuty v2"}]}}]}'
-                    }
-            elif 'automationQuery' in body:  # whether its a script/automation that needs to be searched
-                return {
-                    'body': '{"packs":[{"currentVersion":"1.0.0",'
-                            '"contentItems":{"automation":[{"name":"test-script"}]}}]}'
-                }
-            else:  # whether its a pack that needs to be searched
-                return {
-                    'body': '{"packs":[{"currentVersion":"1.0.0","name":"test-pack"}]}'
-                }
-        if uri == '/settings/integration/search':
-            # only used in an integration where the brand/name/id is not equal to the display name
-            return {
-                'body': '{"configurations":[{"id":"PaloAltoNetworks_PrismaCloudCompute",'
-                        '"display":"Palo Alto Networks - Prisma Cloud Compute"}]}'
-            }
-    return {}
-
-
-@pytest.mark.parametrize(
-    'calling_context_mock, pack_name', PACK_VERSION_INFO
-)
-def test_get_pack_version(mocker, calling_context_mock, pack_name):
-    """
-    Given -
-        Case1: an integration that its display name is not the same as the integration brand/name/id.
-        Case2: a script/automation.
-        Case3: a pack name.
-        Case4: an integration that its display name is the same as the integration brand/name/id.
-
-    When -
-        executing the get_pack_version function.
-
-    Then -
-        Case1: the pack version of which the integration is a part of is returned.
-        Case2: the pack version of which the script is a part of is returned.
-        Case3: the pack version of the requested pack is returned.
-        Case4: the pack version of which the integration is a part of is returned.
-    """
-    from CommonServerPython import get_pack_version
-    mocker.patch('demistomock.callingContext', calling_context_mock)
-    mocker.patch.object(demisto, 'internalHttpRequest', side_effect=get_pack_version_mock_internal_http_request)
-    assert get_pack_version(pack_name=pack_name) == '1.0.0'
-
-
 TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN = [
     (
         {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12',
@@ -10620,3 +10541,21 @@ def test_arg_to_bool_or_none_with_string():
     result = arg_to_bool_or_none("true")
     assert result is True
 
+
+
+CONSTANT_PACK_VERSION = '1.0.0'
+
+
+def test_get_pack_version():
+    """
+    Given: A global CONSTANT_PACK_VERSION
+    When: Using the function get_pack_version.
+    Then: assert verify the correct version is returned.
+    """
+
+    with open('CommonServerPython.py', 'r') as f:
+        code = f.read()
+
+    exec(code, globals())
+    version = get_pack_version()
+    assert version == '1.0.0'
