@@ -506,16 +506,20 @@ def fetch_incidents(
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_run_time")
 
+    fetch_severity_str = ",".join(fetch_severity) if fetch_severity else ""
+    demisto.debug(f"{fetch_severity_str=}")
+
     if last_fetch is None:
         last_fetch = dateparser.parse(first_fetch_time, settings={"TIMEZONE": "UTC"})
         last_fetch = last_fetch.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + "Z"  # format ex: 2021-08-23T09:26:25.872Z
 
+    demisto.debug(f"Calling get_incidents with {fetch_limit=}, {last_fetch=}, {fetch_state=}, {fetch_severity_str=}, {fetch_status=}")
     current_fetch = last_fetch
     results = client.get_incidents(
         limit=fetch_limit,
         from_time=last_fetch,
         state=fetch_state,
-        severity=fetch_severity,
+        severity=fetch_severity_str,
         status=fetch_status,
         app_ids=fetch_app_ids,
     ).get("resources", [])
@@ -735,6 +739,7 @@ def main() -> None:
     fetch_severity = params.get("severity")
     fetch_status = ",".join(STATUS_MAP.get(x) for x in argToList(params.get("status", [])))  # type: ignore[misc]
     fetch_app_ids = ",".join(argToList(params.get("app_ids", [])))
+    demisto.debug(f"In main, {fetch_severity=}")
 
     mirror_direction = MIRROR_DIRECTION.get(params.get("mirror_direction", "None"), None)
     instance = demisto.integrationInstance()
