@@ -18,18 +18,20 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSIAM
 class LogType(Enum):
     """Enum to hold all configuration for different log types."""
 
-    AUDIT = ("audit", "/api/now/", "table/sys_audit", "last_fetch_time", "previous_run_ids")
+    AUDIT = ("audit","Audit", "/api/now/", "table/sys_audit", "last_fetch_time", "previous_run_ids")
     SYSLOG_TRANSACTIONS = (
         "syslog transactions",
+        "Syslog Transactions",
         "/api/now/",
         "table/syslog_transaction",
         "last_fetch_time_syslog",
         "previous_run_ids_syslog",
     )
-    CASE = ("case", "/api/sn_customerservice/", "case", "last_fetch_time_case", "previous_run_ids_case")
+    CASE = ("case", "Case", "/api/sn_customerservice/", "case", "last_fetch_time_case", "previous_run_ids_case")
 
-    def __init__(self, type_string: str, api_base: str, api_endpoint: str, last_fetch_time_key: str, previous_ids_key: str):
+    def __init__(self, type_string: str,title: str, api_base: str, api_endpoint: str, last_fetch_time_key: str, previous_ids_key: str ):
         self.type_string = type_string
+        self.title = title
         self.api_base = api_base
         self.api_endpoint = api_endpoint
         self.last_fetch_time_key = last_fetch_time_key
@@ -146,26 +148,21 @@ def get_log_types_from_titles(event_types_to_fetch: List[str]) -> List[LogType]:
     Returns:
         A list of LogType Enum members corresponding to the provided titles.
     """
-    titles_to_types = {"Audit": LogType.AUDIT, "Syslog Transactions": LogType.SYSLOG_TRANSACTIONS, "Case": LogType.CASE}
+    # Create a set of valid titles for quick lookup
+    valid_titles = {lt.title for lt in LogType}
 
-    log_types = []
-    invalid_types = []
-
-    for type_title in event_types_to_fetch:
-        # Attempt to get the Enum object from the dictionary
-        if log_type_member := titles_to_types.get(type_title):
-            log_types.append(log_type_member)
-        else:
-            # If the title is not a valid key, add it to the list of errors
-            invalid_types.append(type_title)
+    # Check for invalid types
+    invalid_types = [title for title in event_types_to_fetch if title not in valid_titles]
 
     if invalid_types:
-        valid_options = ", ".join(titles_to_types.keys())
+        valid_options = ", ".join(valid_titles)
         raise DemistoException(
-            f"Invalid event type(s) provided: {invalid_types}. " f"Please select from the following list: {valid_options}"
+            f"Invalid event type(s) provided: {invalid_types}. "
+            f"Please select from the following list: {valid_options}"
         )
 
-    return log_types
+    # Return matching LogType members
+    return [lt for lt in LogType if lt.title in event_types_to_fetch]
 
 
 def update_last_run(last_run: dict[str, Any], log_type: LogType, last_event_time: str, previous_run_ids: list) -> dict:
@@ -318,8 +315,6 @@ def get_events_command(client: Client, args: dict, log_type: LogType, last_run: 
         - A CommandResults object for display in the war room.
     """
 
-    log_types_to_titles = {LogType.AUDIT: "Audit", LogType.SYSLOG_TRANSACTIONS: "Syslog Transactions", LogType.CASE: "Case"}
-
     from_date = args.get("from_date") or get_from_date(last_run, log_type)
     offset = args.get("offset", 0)
     limit = get_limit(args, client, log_type)
@@ -330,7 +325,7 @@ def get_events_command(client: Client, args: dict, log_type: LogType, last_run: 
     demisto.debug(f"Got a total of {len(events)} {log_type.name} events created after {from_date}")
 
     hr = tableToMarkdown(
-        name=f"{log_types_to_titles[log_type]} Events",
+        name=f"{log_type.title} Events",
         t=events,
         removeNull=True,
         headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)),

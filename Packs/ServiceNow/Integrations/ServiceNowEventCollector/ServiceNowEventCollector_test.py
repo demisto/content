@@ -1034,14 +1034,14 @@ def test_updated_last_run_multiple_log_types():
 
 
 # ------------------ Test get_log_types_from_titles ----------------------- #
-def test_get_log_types_from_titles_valid_titles():
+def test_get_log_types_from_titles_valid_titles_expected_order():
     """
     Given:
         - A list of valid event type titles.
     When:
         - Calling get_log_types_from_titles.
     Then:
-        - Returns a list of corresponding LogType Enum members.
+        - Returns a list of corresponding LogType Enum members in the expected order.
     """
     # Arrange
     event_types_to_fetch = ["Audit", "Syslog Transactions", "Case"]
@@ -1062,20 +1062,22 @@ def test_get_log_types_from_titles_invalid_title():
         - Raises a DemistoException with a specific error message.
     """
     # Arrange
-    event_types_to_fetch = ["Invalid Title"]
+    event_types_to_fetch = ["Invalid Title", "Another Bad One"]
 
-    # Act & Assert
-    expected_message = (
-        "Invalid event type(s) provided: ['Invalid Title']. "
-        "Please select from the following list: Audit, Syslog Transactions, Case"
-    )
+    # Act:
     with pytest.raises(DemistoException) as excinfo:
         get_log_types_from_titles(event_types_to_fetch)
-    # Check for the more user-friendly error message
-    assert expected_message in str(excinfo.value)
+
+    # Assert: Check for the more user-friendly error message
+    error_message = str(excinfo.value)
+    assert "Invalid event type(s) provided: ['Invalid Title', 'Another Bad One']" in error_message
+    assert "Please select from the following list:" in error_message
+    assert "Audit" in error_message
+    assert "Syslog Transactions" in error_message
+    assert "Case" in error_message
 
 
-def test_get_log_types_from_titles_mixed_titles():
+def test_get_log_types_from_titles_mixed_valid_and_invalid_titles():
     """
     Given:
         - A list containing both valid and invalid event type titles.
