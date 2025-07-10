@@ -4293,7 +4293,7 @@ script:
     - description: List of IPv6 or IPv4 addresses to be added to the blocklist.
       name: addresses
       required: true
-    - description: Number of minutes to block (Max 518,400).
+    - description: Number of minutes to block (Max 518,400). The default is 300.
       name: duration
     - description: The blocked IP address lists required for polling that are not visible to the user.
       name: blocked_list
