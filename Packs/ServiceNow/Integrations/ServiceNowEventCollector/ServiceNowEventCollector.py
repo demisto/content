@@ -269,7 +269,7 @@ def deduplicate_events(events: list, previous_run_ids: Set[str], from_date: str)
     duplicate_ids_found = []
 
     for event in events:
-        event_timestamp = datetime.strptime(event.get("sys_created_on"), LOGS_DATE_FORMAT)
+        event_create_time = datetime.strptime(event.get("sys_created_on"), LOGS_DATE_FORMAT)
         event_id = event.get("sys_id")
 
         # Skip this event if its ID was part of the last run's boundary check.
@@ -280,9 +280,9 @@ def deduplicate_events(events: list, previous_run_ids: Set[str], from_date: str)
         # If this event's timestamp is newer than the last one we were tracking,
         # it means we have crossed the time boundary. We can safely reset the
         # set of IDs to track, as we are now in a new time bracket.
-        if event_timestamp > last_run_timestamp:
+        if event_create_time > last_run_timestamp:
             previous_run_ids = set()
-            last_run_timestamp = event_timestamp
+            last_run_timestamp = event_create_time
 
         previous_run_ids.add(event_id)
         unique_events.append(event)
