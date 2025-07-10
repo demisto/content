@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: override_corepacks_tmp_v2
+  CURRENT_BRANCH_NAME: override_corepacks_tmp
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: override_corepacks_tmp_v2
+    ref: override_corepacks_tmp
     project: "${CI_PROJECT_NAMESPACE}/infra"
