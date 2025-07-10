@@ -124,32 +124,31 @@ class Client(CoreClient):
         if not self._is_endpoint_connected(endpoint_id):
             demisto.debug(f"Cannot block ip list. Endpoint {endpoint_id} is not connected.")
             return [{"ip_address": ip_address, "group_id": None, "endpoint_id": endpoint_id} for ip_address in ip_list]
+
         for ip_address in ip_list:
-            result = {
-                "ip_address": ip_address,
-                "endpoint_id": endpoint_id,
-            }
-            if is_ipv6_valid(ip_address) or is_ip_valid(ip_address):
-                demisto.debug(f"Blocking ip address: {ip_address}")
-                response = self._http_request(
-                    method="POST",
-                    headers=self._headers,
-                    url_suffix="/endpoints/block_ip",
-                    json_data={
-                        "request_data": {
-                            "addresses": [ip_address],
-                            "endpoint_id": endpoint_id,
-                            "direction": "both",
-                            "duration": duration,
-                        }
-                    },
-                )
-                group_id = response.get("reply", {}).get("group_action_id")
-                demisto.debug(f"Block request for {ip_address} returned with group_id {group_id}")
-                result["group_id"] = group_id
-            else:
-                result["group_id"] = "INVALID_IP"
-            results.append(result)
+            demisto.debug(f"Blocking ip address: {ip_address}")
+            response = self._http_request(
+                method="POST",
+                headers=self._headers,
+                url_suffix="/endpoints/block_ip",
+                json_data={
+                    "request_data": {
+                        "addresses": [ip_address],
+                        "endpoint_id": endpoint_id,
+                        "direction": "both",
+                        "duration": duration,
+                    }
+                },
+            )
+            group_id = response.get("reply", {}).get("group_action_id")
+            demisto.debug(f"Block request for {ip_address} returned with group_id {group_id}")
+            results.append(
+                {
+                    "ip_address": ip_address,
+                    "group_id": group_id,
+                    "endpoint_id": endpoint_id,
+                }
+            )
 
         return results
 
@@ -780,6 +779,9 @@ def core_block_ip_command(args: dict, client: Client) -> PollResult:
 
         if duration <= 0 or duration >= 518400:
             return_error(message="Duration must be greater than 0 and less than 518,400 minutes (approx 12 months).")
+
+        is_ip_list_valid(ip_list)
+
         blocked_list = []
 
         for endpoint_id in endpoint_list:
@@ -789,6 +791,18 @@ def core_block_ip_command(args: dict, client: Client) -> PollResult:
     else:
         # all other calls after the block ip requests sent
         return polling_block_ip_status(args, client)
+
+
+def is_ip_list_valid(ip_list: list[str]):
+    """
+    Validates all the ip addresses.
+    Return error in case one of the inputs is invalid.
+    Args:
+        ip_list (list[str]): list of ip address to check.
+    """
+    for ip_address in ip_list:
+        if not is_ip_valid(ip_address) and not is_ipv6_valid(ip_address):
+            return_error(f"ip address {ip_address} is invalid")
 
 
 def main():  # pragma: no cover
