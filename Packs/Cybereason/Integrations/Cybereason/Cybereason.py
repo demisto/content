@@ -1751,21 +1751,25 @@ def login(client: Client):
     return JSESSIONID, creation_time
 
 
-def validate_jsession(client: Client):
+def validate_jsession(client: Client, explicit_refresh = False):
     creation_time = int(time.time())
     integration_context = get_integration_context()
     token = integration_context.get('jsession_id')
     valid_until = integration_context.get('valid_until')
-    demisto.debug(f"Validate JSESSION: Token is valid until: {valid_until}")
-    if token and valid_until and creation_time < valid_until:
-        demisto.debug(f"Token is still valid - did not expire. token: {token}")
+    demisto.debug(f"Validate JSESSION: Token is valid until: {valid_until} and explicit token refresh: {explicit_refresh}")
+    should_refresh = explicit_refresh or not token or not valid_until or current_time >= valid_until
+    demisto.debug(f"Value of Should Refresh: {should_refresh}. Token {token}")
+    if not should_refresh:
+        # Token is still valid and no explicit refresh requested, so use existing token
+        demisto.debug(f"Token is still valid - did not expire. Token: {token}")
         HEADERS["Cookie"] = f"JSESSIONID={token}"
         return
-    token, creation_time = login(client)
-    integration_context['jsession_id'] = token
-    integration_context['valid_until'] = creation_time + 28000
+    demisto.debug("Token expired, missing, or explicit refresh requested. Logging in to get a new token.")
+    new_token, login_time = login(client)
+    integration_context['jsession_id'] = new_token
+    integration_context['valid_until'] = login_time + 28800
     set_integration_context(integration_context)
-    HEADERS["Cookie"] = f"JSESSIONID={token}"
+    HEADERS["Cookie"] = f"JSESSIONID={new_token}"
 
 
 def client_certificate():
