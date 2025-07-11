@@ -94,19 +94,35 @@ EXTENSIVE_LOGGING: bool
 
 
 def get_war_room_url(url: str) -> str:
-    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
-    if is_xsiam() or is_platform():
-        incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
-        incident_url = urlparse(url)
-        war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
-        # executed from the incident War Room
-        if incident_id and incident_id.startswith("INCIDENT-"):
-            war_room_url += f"/war_room?caseId={incident_id.split('-')[-1]}"
-        # executed from the alert War Room
-        else:
-            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+    """
+    Constructs a war room URL based on the input URL and incident context.
+    Workarounds for known bugs:
+    - CRTX-107526 for XSIAM URLs
+    - CRTX-183586 for platform URLs
+    """
+    incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
+    parsed_url = urlparse(url)
+    base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
 
-        return war_room_url
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
+    if is_xsiam():
+        if incident_id and incident_id.startswith("INCIDENT-"):
+            # Executed from the incident War Room
+            case_id = incident_id.split("-")[-1]
+            return f"{base_url}/incidents/war_room?caseId={case_id}"
+
+        # Executed from the alert War Room
+        return f"{base_url}/incidents/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-183586
+    if is_platform():
+        if incident_id and incident_id.startswith("INCIDENT-"):
+            # Executed from the cases War Room
+            case_id = incident_id.split("-")[-1]
+            return f"{base_url}/cases/war_room?caseId={case_id}"
+
+        # Executed from the issue War Room
+        return f"{base_url}/issue-view/{incident_id}"
 
     return url
 
