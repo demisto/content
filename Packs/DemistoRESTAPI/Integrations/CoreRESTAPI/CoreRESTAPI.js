@@ -177,7 +177,7 @@ var addPlaybookMetadataToRequest = function(body, command) {
 };
 
 
-var sendRequest = function(method, uri, body, raw) {
+var sendRequest = function(method, uri, body, raw, timeout = (3 * 60 * 1000)) {
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
@@ -200,7 +200,6 @@ var sendRequest = function(method, uri, body, raw) {
         body = addPlaybookMetadataToRequest(body, command);
     }
 
-    timeout = 3 * 60 * 1000; // timeout in milliseconds
     logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
     var res = http(
         requestUrl,
@@ -595,9 +594,14 @@ switch (command) {
         if(args.body)
             var body = JSON.parse(args.body);
         else
-            logDebug('The body is empty.')
+            logDebug('The body is empty.');
+        if (args.timeout)
+            var timeout = parseInt(args.timeout) * 60 * 1000; // timeout in milliseconds
+        else
+            var timeout = 3 * 60 * 1000; // Default 3 minutes timeout in milliseconds
+            logDebug('Timeout was not set will use the default 3 minutes timeout.')
 
-        return sendRequest('POST',args.uri, args.body);
+        return sendRequest('POST', args.uri, args.body, false, timeout);
     case 'demisto-api-get':
     case 'core-api-get':
         return sendRequest('GET',args.uri);
