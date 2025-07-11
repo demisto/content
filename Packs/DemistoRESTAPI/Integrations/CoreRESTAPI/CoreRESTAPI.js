@@ -595,11 +595,18 @@ switch (command) {
             var body = JSON.parse(args.body);
         else
             logDebug('The body is empty.');
-        if (args.timeout)
-            var timeout = parseInt(args.timeout) * 60 * 1000; // timeout in milliseconds
-        else
-            var timeout = 3 * 60 * 1000; // Default 3 minutes timeout in milliseconds
-            logDebug('Timeout was not set will use the default 3 minutes timeout.')
+        var timeout; // Declare timeout.
+        if (args.timeout) {
+            var parsedTimeout = parseInt(args.timeout);
+            if (!isNaN(parsedTimeout) && parsedTimeout >= 0) {
+                timeout = parsedTimeout * 60 * 1000; // timeout in milliseconds
+                logDebug('Timeout was set to ' + timeout + ' milliseconds.');
+            }
+        }
+        if (!timeout) {
+            timeout = 3 * 60 * 1000; // Default 3 minutes timeout
+            logDebug('Timeout was not provided or it is invalid. Will use the default 3 minutes timeout.');
+        }
 
         return sendRequest('POST', args.uri, args.body, false, timeout);
     case 'demisto-api-get':
