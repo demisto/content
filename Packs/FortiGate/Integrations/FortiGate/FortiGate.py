@@ -177,6 +177,7 @@ class Client(BaseClient):
         Raises:
             DemistoException: Incase the credentials are wrong or too many attempts were made.
         """
+        demisto.debug("Starting login")
         response: requests.Response = self._http_request(
             method="POST",
             full_url=urljoin(self.server, "logincheck"),
@@ -188,6 +189,7 @@ class Client(BaseClient):
             resp_type="response",
             error_handler=Client._error_handler,
         )
+        demisto.debug(f"Got response: {str(response)}")
 
         if response.text == "0":
             raise DemistoException(AUTHORIZATION_ERROR)
@@ -2833,11 +2835,14 @@ def test_module(client: Client) -> str:
         str: : 'ok' if test passed, or an error message if the credentials are incorrect.
     """
     try:
+        demisto.debug("Starting test module")
         client.list_system_vdoms()
 
     except DemistoException as exc:
+        demisto.debug(f"Got error: {str(exc)}")
         if exc.res is not None:
             if exc.res.status_code == http.HTTPStatus.FORBIDDEN:
+                demisto.debug("Returning authorization error")
                 return AUTHORIZATION_ERROR
 
             if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED:
@@ -5751,6 +5756,10 @@ def main() -> None:
     username = dict_safe_get(params, ["credentials", "identifier"])
     password = dict_safe_get(params, ["credentials", "password"])
     api_key = dict_safe_get(params, ["api_key", "password"])
+    if not username:
+        demisto.debug("Got empty username")
+    if not password:
+        demisto.debug("Got empty password")
 
     if not any([username, password, api_key]):
         raise DemistoException("Please provide an authentication method. Either 'API Key' or 'Account username' and 'Password'.")
@@ -5841,6 +5850,7 @@ def main() -> None:
         )
 
         if username and password:
+            demisto.debug("Trying to login using username and password")
             client.login()
 
         results = None
