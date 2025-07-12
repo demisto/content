@@ -32,65 +32,65 @@ Searches Shodan using facets to get summary information on properties.
 | query | The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany. | Required |
 | facets | A CSV list of properties on which to get summary information. The search query supports filtering using the "property:count" format to define the number of facets to return for a property. For example, the query "country:100" returns the top 100 countries. | Optional |
 | page | The page number of the fetched results. Each page contains a maximum of 100 results. Default is 1. | Optional |
-| return_json | Whether to return a JSON file containing the full search results for further processing. Possible values are: Yes, No. Default is No. | Optional | 
+| return_json | Whether to return a JSON file containing the full search results for further processing. Possible values are: Yes, No. Default is No. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Shodan.Banner.Org | String | The name of the organization to which the space of the IP address space for the searched device is assigned. | 
-| Shodan.Banner.Isp | String | The Internet Service Provider that provides the organization with the IP address space for the searched device. | 
-| Shodan.Banner.Transport | String | The IP address transport protocol used to fetch the summary information. Can be "UDP" or "TCP". | 
-| Shodan.Banner.Asn | String | The Autonomous System Number. For example, "AS4837". | 
-| Shodan.Banner.IP | String | The IP address of the host as a string. | 
-| Shodan.Banner.Port | Number | The port number on which the service is operating. | 
-| Shodan.Banner.Ssl.versions | String | The list of SSL versions that are supported by the server. Unsupported versions are prefixed with a "-". For example, \["TLSv1", "-SSLv2"\] means that the server supports TLSv1, but does not support SSLv2. | 
-| Shodan.Banner.Hostnames | String | An array of strings containing all of the host names that have been assigned to the IP address for the searched device. | 
-| Shodan.Banner.Location.City | String | The city in which the searched device is located. | 
-| Shodan.Banner.Location.Longitude | Number | The longitude of the geolocation of the searched device. | 
-| Shodan.Banner.Location.Latitude | Number | The latitude of the geolocation of the searched device. | 
-| Shodan.Banner.Location.Country | String | The country in which the searched device is located. | 
-| Shodan.Banner.Timestamp | Date | The timestamp in UTC format indicating when the banner was fetched from the searched device. | 
-| Shodan.Banner.Domains | String | An array of strings containing the top-level domains for the host names of the searched device. It is a utility property for filtering by a top-level domain instead of a subdomain. It supports handling global top-level domains that have several dots in the domain. For example, "co.uk". | 
-| Shodan.Banner.OS | String | The operating system that powers the searched device. | 
-| Shodan.Banner.Product | String | Name of the software that powers the service. | 
-| Shodan.Banner.Ntlm.OSBuild | String | OS build reported by the service. | 
-| Shodan.Banner.Ntlm.DNSForestName | String | DNS Forest Name reported by the service. | 
-| Shodan.Banner.Ntlm.Timestamp | Number | Timestamp. | 
-| Shodan.Banner.Ntlm.FQDN | String | FQDN. | 
-| Shodan.Banner.Ntlm.NetBIOSDomainName | String | Netbios Domain Name. | 
-| Shodan.Banner.Ntlm.NetBIOSComputerName | String | Netbios Computer Name. | 
-| Shodan.Banner.Ntlm.TargetRealm | String | Target Realm. | 
-| Shodan.Banner.Ntlm.OS | Unknown | OS. | 
-| Shodan.Banner.Ntlm.DNSDomainName | String | DNS Domain Name. | 
-| Shodan.Banner.Hash | Number | Numeric hash of the "data" property which is helpful for finding other IPs with the exact same information. | 
-| Shodan.Banner.Tags | Unknown | Tag applied by Shodan analysis. | 
-| Shodan.Banner.SslCert.SigAlg | String | Certificate Signature Algorithm. | 
-| Shodan.Banner.SslCert.Issued | Date | Timestamp of the beginning of certificate validity \(Not Valid Before\). | 
-| Shodan.Banner.SslCert.Expires | Date | Timestamp of the end of certificate validity \(Not Valid After\). | 
-| Shodan.Banner.SslCert.Version | Number | X.509 Certificate Version. | 
-| Shodan.Banner.SslCert.Serial | Number | Serial Number assigned by the issuer. | 
-| Shodan.Banner.SslCert.Subject.CN | String | Subject Common Name. | 
-| Shodan.Banner.SslCert.Subject.O | String | Subject Organization. | 
-| Shodan.Banner.SslCert.Subject.L | String | Subject Locality or City. | 
-| Shodan.Banner.SslCert.Subject.ST | String | Subject State or Province. | 
-| Shodan.Banner.SslCert.Subject.C | String | Subject Country Name. | 
-| Shodan.Banner.SslCert.Expired | Boolean | Boolean indicating whether the certificate is expired. | 
-| Shodan.Banner.SslCert.Issuer.CN | String | Issuer Certificate Common Name. | 
-| Shodan.Banner.SslCert.Issuer.O | String | Issuer Organization. | 
-| Shodan.Banner.SslCert.Issuer.OU | String | Issuer Organizational Unit. | 
-| Shodan.Banner.SslCert.Issuer.L | String | Issuer Locality or City. | 
-| Shodan.Banner.SslCert.Issuer.ST | String | Issuer State or Province. | 
-| Shodan.Banner.SslCert.Issuer.C | String | Issuer Country Name. | 
-| Shodan.Banner.Data | String | The raw data returned fro the service. | 
-| Shodan.Banner.CPE23 | Unknown | CPE information in the 2.3 format. | 
-| Shodan.Banner.Device | String | Device identified by Shodan. | 
-| Shodan.Banner.DeviceType | String | The Device Type identified by Shodan. | 
-| Shodan.Banner.Info | String | Additional information provided by Shodan. | 
-| Shodan.Banner.IPv6 | String | The IPv6 address of the host as a string. | 
-| Shodan.Banner.Link | String | The Link identified by Shodan. | 
-| Shodan.Banner.Platform | String | The Platform identified by Shodan. | 
-| Shodan.Banner.Product | String | The Product identified by Shodan. | 
+| Shodan.Banner.Org | String | The name of the organization to which the space of the IP address space for the searched device is assigned. |
+| Shodan.Banner.Isp | String | The Internet Service Provider that provides the organization with the IP address space for the searched device. |
+| Shodan.Banner.Transport | String | The IP address transport protocol used to fetch the summary information. Can be "UDP" or "TCP". |
+| Shodan.Banner.Asn | String | The Autonomous System Number. For example, "AS4837". |
+| Shodan.Banner.IP | String | The IP address of the host as a string. |
+| Shodan.Banner.Port | Number | The port number on which the service is operating. |
+| Shodan.Banner.Ssl.versions | String | The list of SSL versions that are supported by the server. Unsupported versions are prefixed with a "-". For example, \["TLSv1", "-SSLv2"\] means that the server supports TLSv1, but does not support SSLv2. |
+| Shodan.Banner.Hostnames | String | An array of strings containing all of the host names that have been assigned to the IP address for the searched device. |
+| Shodan.Banner.Location.City | String | The city in which the searched device is located. |
+| Shodan.Banner.Location.Longitude | Number | The longitude of the geolocation of the searched device. |
+| Shodan.Banner.Location.Latitude | Number | The latitude of the geolocation of the searched device. |
+| Shodan.Banner.Location.Country | String | The country in which the searched device is located. |
+| Shodan.Banner.Timestamp | Date | The timestamp in UTC format indicating when the banner was fetched from the searched device. |
+| Shodan.Banner.Domains | String | An array of strings containing the top-level domains for the host names of the searched device. It is a utility property for filtering by a top-level domain instead of a subdomain. It supports handling global top-level domains that have several dots in the domain. For example, "co.uk". |
+| Shodan.Banner.OS | String | The operating system that powers the searched device. |
+| Shodan.Banner.Product | String | Name of the software that powers the service. |
+| Shodan.Banner.Ntlm.OSBuild | String | OS build reported by the service. |
+| Shodan.Banner.Ntlm.DNSForestName | String | DNS Forest Name reported by the service. |
+| Shodan.Banner.Ntlm.Timestamp | Number | Timestamp. |
+| Shodan.Banner.Ntlm.FQDN | String | FQDN. |
+| Shodan.Banner.Ntlm.NetBIOSDomainName | String | Netbios Domain Name. |
+| Shodan.Banner.Ntlm.NetBIOSComputerName | String | Netbios Computer Name. |
+| Shodan.Banner.Ntlm.TargetRealm | String | Target Realm. |
+| Shodan.Banner.Ntlm.OS | Unknown | OS. |
+| Shodan.Banner.Ntlm.DNSDomainName | String | DNS Domain Name. |
+| Shodan.Banner.Hash | Number | Numeric hash of the "data" property which is helpful for finding other IPs with the exact same information. |
+| Shodan.Banner.Tags | Unknown | Tag applied by Shodan analysis. |
+| Shodan.Banner.SslCert.SigAlg | String | Certificate Signature Algorithm. |
+| Shodan.Banner.SslCert.Issued | Date | Timestamp of the beginning of certificate validity \(Not Valid Before\). |
+| Shodan.Banner.SslCert.Expires | Date | Timestamp of the end of certificate validity \(Not Valid After\). |
+| Shodan.Banner.SslCert.Version | Number | X.509 Certificate Version. |
+| Shodan.Banner.SslCert.Serial | Number | Serial Number assigned by the issuer. |
+| Shodan.Banner.SslCert.Subject.CN | String | Subject Common Name. |
+| Shodan.Banner.SslCert.Subject.O | String | Subject Organization. |
+| Shodan.Banner.SslCert.Subject.L | String | Subject Locality or City. |
+| Shodan.Banner.SslCert.Subject.ST | String | Subject State or Province. |
+| Shodan.Banner.SslCert.Subject.C | String | Subject Country Name. |
+| Shodan.Banner.SslCert.Expired | Boolean | Boolean indicating whether the certificate is expired. |
+| Shodan.Banner.SslCert.Issuer.CN | String | Issuer Certificate Common Name. |
+| Shodan.Banner.SslCert.Issuer.O | String | Issuer Organization. |
+| Shodan.Banner.SslCert.Issuer.OU | String | Issuer Organizational Unit. |
+| Shodan.Banner.SslCert.Issuer.L | String | Issuer Locality or City. |
+| Shodan.Banner.SslCert.Issuer.ST | String | Issuer State or Province. |
+| Shodan.Banner.SslCert.Issuer.C | String | Issuer Country Name. |
+| Shodan.Banner.Data | String | The raw data returned fro the service. |
+| Shodan.Banner.CPE23 | Unknown | CPE information in the 2.3 format. |
+| Shodan.Banner.Device | String | Device identified by Shodan. |
+| Shodan.Banner.DeviceType | String | The Device Type identified by Shodan. |
+| Shodan.Banner.Info | String | Additional information provided by Shodan. |
+| Shodan.Banner.IPv6 | String | The IPv6 address of the host as a string. |
+| Shodan.Banner.Link | String | The Link identified by Shodan. |
+| Shodan.Banner.Platform | String | The Platform identified by Shodan. |
+| Shodan.Banner.Product | String | The Product identified by Shodan. |
 
 #### Command Example
 

@@ -31,6 +31,27 @@ class Client(BaseClient):
     Retrieve event details /albertlogs/{event_id}
     """
 
+    def error_handler(self, res: requests.Response):
+        """Generic handler for API call error
+        Constructs and throws a proper error for the API call response.
+
+        :type response: ``requests.Response``
+        :param response: Response from API after the request for which to check the status.
+        """
+
+        err_msg = f"Error in API call [{res.status_code}] - {res.reason}"
+        demisto.debug(
+            f"""
+            ---Start Error Details---
+            Error API Endpoint:
+            {res.url}
+            Error Content:
+            {str(res._content)}
+            ---End Error Details---
+            """
+        )
+        raise DemistoException(err_msg, res=res)
+
     def get_event(self, event_id: str) -> Dict[str, Any]:
         """
         Returns the details of an MS-ISAC event
@@ -43,7 +64,9 @@ class Client(BaseClient):
         """
         # We need to specify 404 as an OK code so that we can handle "no results found" as an output instead of an error
         # The API returns 404 if the specified event ID was not found
-        return self._http_request(method="GET", url_suffix=f"/albertlogs/{event_id}", timeout=100, ok_codes=(200, 404))
+        return self._http_request(
+            method="GET", url_suffix=f"/albertlogs/{event_id}", timeout=100, ok_codes=(200, 404), error_handler=self.error_handler
+        )
 
     def retrieve_events(self, days: int) -> Dict[str, Any]:
         """
@@ -56,7 +79,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
 
-        return self._http_request(method="GET", url_suffix=f"/albert/{days}", timeout=100)
+        return self._http_request(method="GET", url_suffix=f"/albert/{days}", timeout=100, error_handler=self.error_handler)
 
 
 """ HELPER FUNCTIONS """
@@ -86,6 +109,43 @@ def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
     return days_param
 
 
+@logger
+def format_stream_data(event: dict[str, list]) -> list[dict]:
+    """Formats the stream data that is returned by get_event().
+
+    Args:
+        event: The raw albert event data returned by get_event().
+
+    Returns:
+        A list containing a single index that is a dict containing the unpacked stream data.
+
+    """
+    # the json_data in the payload is the most verbose and should be our final output
+    # However there are several keys that are not present in json_data we still want/need in the markdown and context
+    stream = []
+    for event_data in event["data"]:
+        stream_data = json.loads(event_data["json_data"])
+        stream_data["time"] = event_data["time"]
+        stream_data["streamdataascii"] = event_data["streamdataascii"]
+        stream_data["streamdatahex"] = event_data["streamdatahex"]
+        stream_data["logical_sensor_id"] = event_data["logical_sensor_id"]
+        stream_data["streamdatalen"] = event_data["streamdatalen"]
+        # Not all responses have the http stream data so we need to make sure we're not referencing non-existant entries
+        http = stream_data.get("http", None)
+        if http:
+            # The data we have in here we want at the root to more easily reference in context paths
+            for entry in stream_data["http"]:
+                stream_data[entry] = stream_data["http"][entry]
+            del stream_data["http"]
+        # Same deal as http, we want this refereanceable in context
+        for data in stream_data["flow"]:
+            stream_data[data] = stream_data["flow"][data]
+        del stream_data["flow"]
+        stream.append(stream_data)
+
+    return stream
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -104,10 +164,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    try:
-        client.retrieve_events(days=1)
-    except DemistoException as error:
-        raise error
+    client.retrieve_events(days=1)
     return "ok"
 
 
@@ -148,33 +205,10 @@ def get_event_command(client: Client, args: Dict[str, Any]):
             outputs=output,
         )
 
-    # the json_data in the payload is the most verbose and should be our final output
-    # However there are several keys that are not present in json_data we still want/need in the markdown and context
-    stream = []
-    for event_data in event["data"]:
-        stream_data = json.loads(event_data["json_data"])
-        stream_data["time"] = event_data["time"]
-        stream_data["streamdataascii"] = event_data["streamdataascii"]
-        stream_data["streamdatahex"] = event_data["streamdatahex"]
-        stream_data["logical_sensor_id"] = event_data["logical_sensor_id"]
-        stream_data["streamdatalen"] = event_data["streamdatalen"]
-        # Not all responses have the http stream data so we need to make sure we're not referencing non-existant entries
-        http = stream_data.get("http", None)
-        if http:
-            # The data we have in here we want at the root to more easily reference in context paths
-            for entry in stream_data["http"]:
-                stream_data[entry] = stream_data["http"][entry]
-            del stream_data["http"]
-        # Same deal as http, we want this refereanceable in context
-        for data in stream_data["flow"]:
-            stream_data[data] = stream_data["flow"][data]
-        del stream_data["flow"]
-        stream.append(stream_data)
-
-    output["Stream"] = stream
+    output["Stream"] = format_stream_data(event)
 
     return CommandResults(
-        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", stream),
+        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", output["Stream"]),
         raw_response=event,
         outputs_prefix="MSISAC.Event",
         outputs_key_field="event_id",
@@ -207,6 +241,11 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]):
 
     # event is our raw-response
     event_list = client.retrieve_events(days=days)["data"]
+
+    # If there are no albert events in the search window, the data key will be a string.
+    if isinstance(event_list, str):
+        return event_list
+
     # We initialize raw_response so we can use it as a check after the for loop has completed
     # If we find the event ID then this will be overwritten otherwise we return a different output
     raw_response = None
@@ -270,8 +309,12 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
         for event in retrieve_events_data:
             event_s_time = datetime.strptime(event.get("stime"), MSISAC_S_TIME_FORMAT)
             event_id = event.get("event_id", "")
-            event_description = event.get("description", "")
+
             if event_s_time > fetch_time:  # Make sure event happened after last fetch
+                event_description = event.get("description", "")
+                # Populating stream data for each ingested event.
+                get_event_data = client.get_event(event_id=event_id)
+                event["stream"] = format_stream_data(get_event_data)
                 events_to_fetch.append(
                     {
                         "name": f"{event_id} - {event_description}",
@@ -282,8 +325,17 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
                         "dbotMirrorId": f"{event_id}",
                     }
                 )
+                demisto.debug(f"Albert Event: {event_id} has been fetched.")
                 if event_s_time > latest_event_s_time:
                     latest_event_s_time = event_s_time
+
+            else:
+                demisto.debug(f"""
+                    Albert Event: {event_id} was not fetched.
+                    Event S_Time: {event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                    Fetch Start Time: {fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                    Fetch End Time: {datetime.now().strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                    """)
 
     else:
         demisto.debug(f"Here is the event data that was returned: {retrieve_events_data}")
@@ -310,7 +362,7 @@ def main():
 
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {"Authorization": f"Bearer {api_key}"}
+        headers = {"Authorization": f"Bearer {api_key}", "Accept": "application/json"}
         client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":

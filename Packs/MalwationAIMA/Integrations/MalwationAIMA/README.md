@@ -2,7 +2,6 @@ Malwation AIMA malware analysis sandboxing.
 
 ## Configure Malwation AIMA in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g. https://aima.malwation.com) |  | True |
@@ -12,47 +11,51 @@ Malwation AIMA malware analysis sandboxing.
 | CAP API Key | It is additional for MALWATION Content Analysis Platform. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aima-upload-sample
+
 ***
 Submits a sample to AIMA for analysis.
-
 
 #### Base Command
 
 `aima-upload-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| environment | Choose what environment you want to run your submission. Possible values are: win7x64, win10x64. Default is win7x64. | Required | 
-| isPublic | Privacy of the submission. Possible values are: true, false. Default is false. | Required | 
-| entry_id | Entry ID of the file to submit. Possible values are: . | Required | 
-| timeout | Duration of the submission analysis. Possible values are: 1, 2, 5, 8. Default is 1. | Optional | 
-| mouse_simulation | Enable human simulation. Possible values are: true, false. Default is false. | Optional | 
-| config_extractor | Malware Config Extractor Possible values are: true, false. Default is false. | Optional | 
-| https_inspection | Https inspection to read encrypted traffic. Possible values are: true, false. Default is false. | Optional | 
-| full_memory_dump | If you want to access MemProcFS Module enable this metafield. Possible values are: true, false. Default is false. | Optional | 
-| enable_net | Enable Internet Connection Possible values are: true, false. Default is false. | Optional | 
-| work_path | The working path of the submission. Possible values are: desktop, appdata, windows, temp. Default is desktop. | Optional | 
-| zip_pass | Password of the zip file. Do not use if archive has no password. | Optional | 
-| file_from_zip | Name of the sample in the zip file.  | Optional | 
-
+| environment | Choose what environment you want to run your submission. Possible values are: win7x64, win10x64. Default is win7x64. | Required |
+| isPublic | Privacy of the submission. Possible values are: true, false. Default is false. | Required |
+| entry_id | Entry ID of the file to submit. Possible values are: . | Required |
+| timeout | Duration of the submission analysis. Possible values are: 1, 2, 5, 8. Default is 1. | Optional |
+| mouse_simulation | Enable human simulation. Possible values are: true, false. Default is false. | Optional |
+| config_extractor | Malware Config Extractor Possible values are: true, false. Default is false. | Optional |
+| https_inspection | Https inspection to read encrypted traffic. Possible values are: true, false. Default is false. | Optional |
+| full_memory_dump | If you want to access MemProcFS Module enable this metafield. Possible values are: true, false. Default is false. | Optional |
+| enable_net | Enable Internet Connection Possible values are: true, false. Default is false. | Optional |
+| work_path | The working path of the submission. Possible values are: desktop, appdata, windows, temp. Default is desktop. | Optional |
+| zip_pass | Password of the zip file. Do not use if archive has no password. | Optional |
+| file_from_zip | Name of the sample in the zip file.  | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AIMA.Analysis.UUID | String | UUID of sample. | 
-| AIMA.Analysis.URL | String | URL of analysis of sample. | 
+| AIMA.Analysis.UUID | String | UUID of sample. |
+| AIMA.Analysis.URL | String | URL of analysis of sample. |
 
 #### Command Example
+
 ```
 aima-upload-sample environment=win7x64 isPublic=true  entry_id=79@4 
 ```
 
 #### Context Example
+
 ```json
 {
     "message": "File successfully uploaded, now you can track your submissions progress from /checkSubmissionStatus/2661ca6d-8989-45b1-b912-203fa2c60a21 or /getSubmission/2661ca6d-8989-45b1-b912-203fa2c60a21",
@@ -62,39 +65,41 @@ aima-upload-sample environment=win7x64 isPublic=true  entry_id=79@4
 ```
 
 ### aima-get-result
+
 ***
 Retrive the analysis result from AIMA Sandbox.
-
 
 #### Base Command
 
 `aima-get-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the submission. | Required | 
-
+| uuid | UUID of the submission. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AIMA.Result.STATUS | String | The status of the submission scanning process. | 
-| AIMA.Result.LEVEL | String | Threat Level of the scanned file. \(malicious, suspicious or informative\) | 
-| AIMA.Result.URL | String | The result page url of the submission. | 
-| AIMA.Result.MD5 | String | The md5 hash of the submission. | 
-| AIMA.Result.INFO | String | Contains the file name, scan process status and public status. | 
-| AIMA.Result.SHA1 | String | The sha1 hash of the submission. | 
-| AIMA.Result.SHA256 | String | The sha256 hash of the submission. | 
-| AIMA.Result.ID | String | The ID of the submission | 
+| AIMA.Result.STATUS | String | The status of the submission scanning process. |
+| AIMA.Result.LEVEL | String | Threat Level of the scanned file. \(malicious, suspicious or informative\) |
+| AIMA.Result.URL | String | The result page url of the submission. |
+| AIMA.Result.MD5 | String | The md5 hash of the submission. |
+| AIMA.Result.INFO | String | Contains the file name, scan process status and public status. |
+| AIMA.Result.SHA1 | String | The sha1 hash of the submission. |
+| AIMA.Result.SHA256 | String | The sha256 hash of the submission. |
+| AIMA.Result.ID | String | The ID of the submission |
 
 #### Command Example
+
 ```
 aima-get-result uuid=79@4 
 ```
 
 #### Context Example
+
 ```json
 {
     "submission": {
@@ -133,32 +138,34 @@ aima-get-result uuid=79@4
 ```
 
 ### aima-cap-static-upload-sample
+
 ***
 Submits sample to Malwation CAP for static analysis.
-
 
 #### Base Command
 
 `aima-cap-static-upload-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The entry id of the file. | Required | 
-
+| entry_id | The entry id of the file. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CAP.Static.UUID | String | The uuid value of the submission. | 
+| CAP.Static.UUID | String | The uuid value of the submission. |
 
 #### Command Example
+
 ```
 aima-cap-static-upload-sample entry_id=571@7d
 ```
 
 #### Context Example
+
 ```json
 {
     "message": "File successfully uploaded d25d3ae7-78b4-4608-838e-beac5dacb39c.exe",
@@ -167,32 +174,34 @@ aima-cap-static-upload-sample entry_id=571@7d
 ```
 
 ### aima-cap-mav-upload-sample
+
 ***
 Submits sample to Malwation CAP for mav analysis.
-
 
 #### Base Command
 
 `aima-cap-mav-upload-sample`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The Entry id of the file. | Required | 
-
+| entry_id | The Entry id of the file. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CAP.Mav.UUID | String | The uuid value of the submission. | 
+| CAP.Mav.UUID | String | The uuid value of the submission. |
 
 #### Command Example
+
 ```
 aima-cap-mav-upload-sample entry_id=571@7d
 ```
 
 #### Context Example
+
 ```json
 {
     "message": "File successfully uploaded d25d3ae7-78b4-4608-838e-beac5dacb39c.exe",
@@ -201,37 +210,38 @@ aima-cap-mav-upload-sample entry_id=571@7d
 ```
 
 ### aima-cap-static-get-submission
+
 ***
 Retrive static analysis result from Malwation CAP.
-
 
 #### Base Command
 
 `aima-cap-static-get-submission`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | The uuid of the file. | Required | 
-
+| uuid | The uuid of the file. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CAP.Static.SCORE | String | Thread level of the scanned file. \(malicious, suspicious or informative\) | 
-| CAP.Static.WEIGHT | Number | The weight score of detection. | 
-| CAP.Static.STATUS | String | The status of the submission scanning process. | 
-| CAP.Static.YARA | String | The matched yara rules with sample. | 
-| CAP.Static.ENTROPY | Number | The entropy value of sample. | 
-
+| CAP.Static.SCORE | String | Thread level of the scanned file. \(malicious, suspicious or informative\) |
+| CAP.Static.WEIGHT | Number | The weight score of detection. |
+| CAP.Static.STATUS | String | The status of the submission scanning process. |
+| CAP.Static.YARA | String | The matched yara rules with sample. |
+| CAP.Static.ENTROPY | Number | The entropy value of sample. |
 
 #### Command Example
+
 ```
 aima-cap-static-get-submission uuid=407aa78e-cd1c-4568-b1e2-616fce50cacc 
 ```
 
 #### Context Example
+
 ```json
 {
     "Score": [
@@ -369,35 +379,37 @@ aima-cap-static-get-submission uuid=407aa78e-cd1c-4568-b1e2-616fce50cacc
 ```
 
 ### aima-cap-mav-get-submission
+
 ***
 Retrive mav analysis result from Malwation CAP.
-
 
 #### Base Command
 
 `aima-cap-mav-get-submission`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | The uuid value of submission | Required | 
-
+| uuid | The uuid value of submission | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CAP.Mav.COUNT | Number | The count of the detection by engines. | 
-| CAP.Mav.SCORE | String | Threat Level of the scanned file \(malicious, suspicious or informative\) | 
-| CAP.Mav.DETECTIONS | Number | The results of detections by engines. | 
-| CAP.Mav.STATUS | String | The status of the submission scanning process. | 
+| CAP.Mav.COUNT | Number | The count of the detection by engines. |
+| CAP.Mav.SCORE | String | Threat Level of the scanned file \(malicious, suspicious or informative\) |
+| CAP.Mav.DETECTIONS | Number | The results of detections by engines. |
+| CAP.Mav.STATUS | String | The status of the submission scanning process. |
 
 #### Command Example
+
 ```
 aima-cap-mav-upload-sample entry_id=571@7d
 ```
 
 #### Context Example
+
 ```json
 {
     "scan_results": [

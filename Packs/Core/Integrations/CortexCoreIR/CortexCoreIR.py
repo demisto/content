@@ -87,6 +87,35 @@ class Client(CoreClient):
         )
         return reply
 
+    def get_contributing_event_by_alert_id(self, alert_id: int):
+        """_summary_
+
+        Args:
+            alert_id (int): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        request_data = {
+            "request_data": {
+                "alert_id": alert_id,
+            }
+        }
+        try:
+            reply = self._http_request(
+                method="POST",
+                json_data=request_data,
+                headers=self._headers,
+                url_suffix="/alerts/get_correlation_alert_data/",
+            )
+
+            return reply
+        except Exception as e:
+            if "[404]" in str(e):
+                raise DemistoException(f"Got 404 when querying for alert ID {alert_id}, alert not found.")
+            else:
+                raise e
+
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get("file_hash")
@@ -515,6 +544,45 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     )
 
 
+def core_get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
+    """Gets the contributing events for specific alert IDs.
+
+    Args:
+        client (Client): The Core client
+        args (dict): Dictionary containing the arguments for the command.
+
+    Returns:
+        CommandResults: Object containing the formatted asset details,
+                        raw response, and outputs for integration context.
+    """
+    alert_ids = argToList(args.get("alert_ids"))
+    alerts = []
+
+    for alert_id in alert_ids:
+        if alert := client.get_contributing_event_by_alert_id(int(alert_id)).get("reply", {}):
+            page_number = max(int(args.get("page_number", 1)), 1) - 1  # Min & default zero (First page)
+            page_size = max(int(args.get("page_size", 50)), 0)  # Min zero & default 50
+            offset = page_number * page_size
+            limit = max(int(args.get("limit", 0)), 0) or offset + page_size
+
+            alert_with_events = {
+                "alertID": str(alert_id),
+                "events": alert.get("events", [])[offset:limit],
+            }
+            alerts.append(alert_with_events)
+
+    readable_output = tableToMarkdown(
+        "Contributing events", alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ContributingEvent",
+        outputs_key_field="alertID",
+        outputs=alerts,
+        raw_response=alerts,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -904,6 +972,9 @@ def main():  # pragma: no cover
 
         elif command == "core-add-indicator-rule":
             return_results(core_add_indicator_rule_command(client, args))
+
+        elif command == "core-get-contributing-event":
+            return_results(core_get_contributing_event_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
