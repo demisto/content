@@ -4,7 +4,7 @@ import requests
 import re
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type:ignore
 
 
 class Client(BaseClient):

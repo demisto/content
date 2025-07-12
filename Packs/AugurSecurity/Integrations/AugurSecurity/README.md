@@ -7,19 +7,15 @@ Leverage Augur's preemptive threat intelligence for actionable data against pers
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Fetch indicators |  | False |
     | API Key | The Augur access token is required to interact with Augur's API.  Please obtain the access token by contacting support@augursecurity.com | True |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    |  |  | False |
-    |  |  | False |
     | Incremental Feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified. | False |
-    | Feed Fetch Interval |  | False |
+    | Feed Fetch Interval | The frequency of fetching the feed.  Default is daily. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Tags | Supports CSV values. | False |
+    | Trust any certificate (not secure) | Should the api request trust a any SSL cert. | False |
+    | Use system proxy settings | Should the api request use the system's proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

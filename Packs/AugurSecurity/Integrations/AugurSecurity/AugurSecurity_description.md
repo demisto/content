@@ -10,5 +10,11 @@ These aren’t retroactive IOCs. The Augur platform will reveal attack infrastru
 Augur's XSOAR integration leverages Augur API to provide threat intel feed and IOC enrichments.
 The daily indicator process will download unique threat intel in the form of IPV4 CIDR (network blocks), malicious hostname, file hashes, urls to XSOAR.  The context endpoint can be used by the XSOAR playbook to enrich suspicious IOCs with context found by Augur. 
 
+## How to get credential / API Key
+If you're new to Augur Security. Please contact support@augursecurity.com to receive the API key.
+If you have access to Augur Security's dashboard, please navigate to "Integrations" -> "Manage Integrations" -> "SOAR" -> Click on "Settings" for Palo Alto Networks Cortex XSoar -> find the ACCESS TOKEN string.
+
+
+
 For more information, please email: support@augursecurity.com
 
