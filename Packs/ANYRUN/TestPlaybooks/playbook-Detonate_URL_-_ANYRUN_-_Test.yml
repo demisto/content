@@ -1,6 +1,8 @@
 id: Detonate URL - ANYRUN - Test
 version: -1
 name: Detonate URL - ANYRUN - Test
+deprecated: true
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
