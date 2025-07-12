@@ -1,0 +1,34 @@
+{
+    "trigger_id": "714a581ffd144106a948bc9ad0cbd5ef",
+    "playbook_id": "Cortex EM - Remediation",
+    "suggestion_reason": "Recommended for remediation of Cortex Exposure Management SshServer issues",
+    "description": "This automation rule is responsible for handling remediation of Cortex Exposure Management SshServer issues",
+    "trigger_name": "Cortex Exposure Management SshServer Remediation",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "SshServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_domain",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "DOMAIN_POSTURE"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_category",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "CONFIGURATION"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_source",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "XPANSE"
+                        }
+            ]
+        }
+    },
+    "fromVersion": "6.10.0"
+}
