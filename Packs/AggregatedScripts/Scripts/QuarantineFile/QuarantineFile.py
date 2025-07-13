@@ -214,7 +214,7 @@ def get_connected_xdr_endpoints(
     unrteachable_endpoints = [e_id for e_id in endpoint_ids if e_id not in connected_endpoints]
     demisto.debug(f"update message for unreachable endpoints: {unrteachable_endpoints}")
     for e_id in unrteachable_endpoints:
-        message = "Failed to quarantine file. The endpoint is offline or unreachacle"
+        message = "Failed to quarantine file. The endpoint is offline or unreachable."
         readable_context.append({"endpoint_id": e_id, "message": message})
         context.append(
             {
