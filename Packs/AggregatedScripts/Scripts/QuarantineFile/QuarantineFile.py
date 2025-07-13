@@ -434,7 +434,7 @@ def quarantine_file_script(args: dict[str, Any]) -> list[CommandResults]:
         outputs_prefix="QuarantineFile",
         outputs_key_field=["endpoint_id", "file_path"],
         readable_output=tableToMarkdown(
-            name=f"Result for File Quarantine {file_path}", headers=["endpoint_id", "message"], t=readable_context
+            name=f"Quarantine File Results for: {file_path}", headers=["endpoint_id", "message"], t=readable_context
         ),
         outputs=context,
     )
