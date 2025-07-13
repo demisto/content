@@ -25,7 +25,7 @@ configuration:
   section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
-  display: Source Reliability
+  display: Source Reli   ability
   name: feedReliability
   options:
   - A - Completely reliable
