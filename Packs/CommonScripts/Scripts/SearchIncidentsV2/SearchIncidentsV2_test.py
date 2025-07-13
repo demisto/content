@@ -208,8 +208,8 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
 
 def get_incidents_mock_include_informational(_, args, extract_contents=True, fail_on_error=True):
     incidents = [
-        {"id": "1", "informational": False},
-        {"id": "2", "informational": False},
+        {"id": "1", "informational": False, "created": "2025-01-01T09:59:00Z"},
+        {"id": "2", "informational": False, "created": "2025-01-01T10:00:00Z"},
     ]
 
     includeinformational = args.get("includeinformational", None)
@@ -217,8 +217,8 @@ def get_incidents_mock_include_informational(_, args, extract_contents=True, fai
     if includeinformational:
         incidents.extend(
             [
-                {"id": "3", "informational": True},
-                {"id": "4", "informational": True},
+                {"id": "3", "informational": True, "created": "2025-01-01T10:01:00Z"},
+                {"id": "4", "informational": True, "created": "2025-01-01T10:02:00Z"},
             ]
         )
 
@@ -248,8 +248,8 @@ INCLUDE_INFORMATIONAL_3_HOURS_AGO = dt.datetime(2024, 10, 1, 12, 0, 0).isoformat
             ["1", "2", "3", "4"],
         ),
         ({"includeinformational": "true"}, {}, ValueError),
-        ({"includeinformational": "false"}, {}, ["1", "2"]),
-        ({}, {}, ["1", "2"]),
+        ({"includeinformational": "false"}, {"todate": "2025-01-01T09:59:00Z"}, ["1", "2"]),
+        ({}, {"todate": "2025-01-01T09:59:00Z"}, ["1", "2"]),
         ({"includeinformational": "true", "todate": "now"}, {}, ValueError),
         ({"includeinformational": "true", "fromdate": "3 hours ago"}, {}, ValueError),
     ],
