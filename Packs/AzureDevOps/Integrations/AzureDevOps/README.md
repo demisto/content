@@ -101,12 +101,12 @@ If you are using Client Credentials Flow, click **Test** when you are configurin
 
 If you encounter the following error:
 
-`Please sign in at least once as <tenant_id>/<application_id> in a web browser to enable access to the service.`
+`Please sign in at least once as {tenant_id}/{application_id} in a web browser to enable access to the service.`
 
 Please follow these steps to resolve it:
 
 1. Navigate to your Azure DevOps organization using this URL (replace <organization> with your actual org name):
-https://dev.azure.com/<organization_name>
+https://dev.azure.com/{organization_name}
 
 2. In the bottom-left corner, click ***Organization settings***.
 
