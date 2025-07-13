@@ -414,6 +414,13 @@ script:
       required: true
     - description: 'The roles that can view the comment, for example: Administrators.'
       name: visibility
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to make this an internal comment.
+      name: internal_comment
+      predefined:
+      - "false"
+      - "true"
     description: Adds a new comment to an existing Jira issue.
     name: jira-issue-add-comment
   - arguments:
