@@ -353,7 +353,7 @@ def all_incidents_trimmer(
     demisto.debug("Test-IronScales: starting incidents enrichment loop")
     for i in incident_ids:
         # remove ids that already pulled
-        demisto.debug(f"Test-IronScales:incident id in loop is {i}")
+        # demisto.debug(f"Test-IronScales:incident id in loop is {i}")
         if last_timestamp_ids and i in last_timestamp_ids:
             demisto.debug(f"Test-IronScales: already seen this id! id = {str(i)}")
             continue
