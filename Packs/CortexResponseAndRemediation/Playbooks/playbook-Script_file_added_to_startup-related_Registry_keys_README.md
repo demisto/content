@@ -1,18 +1,13 @@
-
-#### Playbooks
-
-##### New: Script file added to startup-related Registry keys
-
 This playbook handles "Script file added to startup-related Registry keys" alerts.
 
-##### Playbook Stages:
+Playbook Stages:
 
 Analysis:
 
 - Extract the script path from the registry key value.
 - Check the reputation of the associated processes.
 
-###### Investigation:
+Investigation:
 
 - Searches for related Cortex XSIAM alerts to identify potential attack patterns.
 - Retrieves the script file and relevant details for investigation.
@@ -32,9 +27,56 @@ Remediation:
 - Adds the script file hash to the blocklist (Requires analyst approval).
 - Automatically close the alert.
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: Script file added to startup-related Registry keys
+### Sub-playbooks
 
-- New: Added a new triggers recommendation- Script file added to startup-related Registry keys that This trigger is responsible for handling the 'Script file added to startup-related Registry keys' alerts.
+* Quarantine File
+* Wildfire Sandbox - Detonate and Analyze File
+
+### Integrations
+
+This playbook does not use any integrations.
+
+### Scripts
+
+* CommandLineAnalysis
+* MatchRegexV2
+* ReadFile
+* SearchAlertsV2
+* Set
+* SetAndHandleEmpty
+* SetMultipleValues
+* UnzipFile
+
+### Commands
+
+* closeInvestigation
+* core-blocklist-files
+* core-get-cloud-original-alerts
+* core-get-script-execution-results
+* core-retrieve-file-details
+* core-retrieve-files
+* core-run-script-execute-commands
+* core-terminate-causality
+* extractIndicators
+* file
+* wildfire-get-verdict
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Script file added to startup-related Registry keys](../doc_files/Script_file_added_to_startup-related_Registry_keys.png)
