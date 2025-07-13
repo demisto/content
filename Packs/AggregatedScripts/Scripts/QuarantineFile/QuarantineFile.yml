@@ -41,7 +41,7 @@ outputs:
   description: The hash of the quarantined file.
   type: String
 - contextPath: QuarantineFile.Status
-  description: whether the command was running succussefully or not.
+  description: Whether the command execution was successful or not.
   type: Boolean
 - contextPath: QuarantineFile.Result
   description: whether the command was running succussefully or not.
