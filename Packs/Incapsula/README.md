@@ -10,7 +10,7 @@ To setup a real-time SIEM log integration via AWS S3 push, follow the **Set up l
 
 ### Collection via AWS S3
 
-To create or configure Incapsula log collection via S3, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Network-Flow-Logs-from-Amazon-S3).
+To create or configure Incapsula log collection via S3, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-network-flow-logs-from-Amazon-S3).
 
 You can configure the AWS S3 collector:
 
@@ -18,6 +18,6 @@ You can configure the AWS S3 collector:
 2. Make sure to add the following values to the configuration:
    - Log Type - Generic
    - Log Format - CEF
-   - Vendor - incapsula
-   - Product - siemintegration
+   - Vendor - Auto-Detect
+   - Product - Auto-Detect
 </~XSIAM>
