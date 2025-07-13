@@ -76,27 +76,31 @@ class Client(BaseClient):
         Returns:
             str. The download link.
         """
-        azure_url_response = self._http_request(
-            method="GET",
-            full_url=self._base_url,
-            url_suffix="",
-            headers={"User-Agent": "PANW-XSOAR"},
-            stream=False,
-            timeout=self._polling_timeout,
-            resp_type="text",
-            retries=4,
-            status_list_to_retry=[403, 404],
-        )
+        try:
+            azure_url_response = self._http_request(
+                method="GET",
+                full_url=self._base_url,
+                url_suffix="",
+                headers={"User-Agent": "PANW-XSOAR"},
+                stream=False,
+                timeout=self._polling_timeout,
+                resp_type="text",
+                retries=4,
+                status_list_to_retry=[403, 404],
+            )
+            download_link_search_regex = re.search(r"(https://download\.microsoft\.com/download/.+?\.json)", azure_url_response)
+            download_link = download_link_search_regex.group(1) if download_link_search_regex else None
+            if download_link is None:
+                demisto.debug(f"azure response is: {azure_url_response}")
+                raise RuntimeError(f"{INTEGRATION_NAME} - Download link not found")
+            demisto.debug(f"download link: {download_link}")
+            save_azure_download_link(download_link)
+        
+        except Exception as e:
+            demisto.info(f"Error while fetching download link: {e}")
+            download_link = load_azure_download_link()
+            
 
-        download_link_search_regex = re.search(r"(https://download\.microsoft\.com/download/.+?\.json)", azure_url_response)
-        download_link = download_link_search_regex.group(1) if download_link_search_regex else None
-
-        if download_link is None:
-            demisto.debug(f"azure response is: {azure_url_response}")
-            raise RuntimeError(f"{INTEGRATION_NAME} - Download link not found")
-
-        demisto.debug(f"download link: {download_link}")
-        save_azure_download_link(download_link)
         return download_link
 
     def get_download_file_content_values(self, download_link: str) -> dict:
@@ -108,17 +112,9 @@ class Client(BaseClient):
         Returns:
             Dict. Content of values section in the Azure downloaded file.
         """
-        try:
-            file_download_response = self._http_request(
-                method="GET", full_url=download_link, url_suffix="", stream=True, timeout=self._polling_timeout
-            )
-        except DemistoException as e:
-            if isinstance(e.res, requests.Response) and e.res.status_code == 404:
-                file_download_response = self._http_request(
-                    method="GET", full_url=self.get_azure_download_link(), url_suffix="", stream=True, timeout=self._polling_timeout
-                )
-            else:
-                raise
+        file_download_response = self._http_request(
+            method="GET", full_url=download_link, url_suffix="", stream=True, timeout=self._polling_timeout
+        )
 
         return file_download_response.get("values")
 
@@ -222,11 +218,9 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         try:
-            download_link = load_azure_download_link() or self.get_azure_download_link()
+            download_link = self.get_azure_download_link()
             values_from_file = self.get_download_file_content_values(download_link)
-            results = self.extract_indicators_from_values_dict(values_from_file)
-
-            return results
+            return self.extract_indicators_from_values_dict(values_from_file)
 
         except (requests.exceptions.SSLError, requests.ConnectionError, requests.exceptions.HTTPError) as err:
             demisto.debug(str(err))
@@ -238,7 +232,7 @@ class Client(BaseClient):
 
         except ValueError as err:
             demisto.debug(str(err))
-            raise ValueError(f"Could not parse returned data to Json. \n\nError massage: {err}")
+            raise ValueError(f"Could not parse returned data to Json. \n\nError message: {err}")
 
 
 def load_azure_download_link() -> Optional[str]:
