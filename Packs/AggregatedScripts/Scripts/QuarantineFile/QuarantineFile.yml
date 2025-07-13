@@ -3,7 +3,7 @@ commonfields:
   version: -1
 args:
 - name: endpoint_ids
-  description: 'List of endpoint IDs.'
+  description: 'A comma-separated list of endpoint IDs.'
   required: true
   isArray: true
   type: List
