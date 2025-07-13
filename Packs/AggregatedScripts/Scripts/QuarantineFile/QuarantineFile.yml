@@ -35,7 +35,7 @@ comment: This script executes the 'quarantine-file' command on a specified file 
 name: quarantine-file
 outputs:
 - contextPath: QuarantineFile.FilePath.
-  description: Path of the file that was quarantined.
+  description: The path of the quarantined file.
   type: String
 - contextPath: QuarantineFile.FileHash.
   description: Hash of the file.
