@@ -31,7 +31,7 @@ To specify multiple integrations, provide a comma-separated list of integration 
   - 'true'
   - 'false'
   defaultValue: 'false'
-comment: This script run quarantine-file command on a specific file by the agent for a file that was identified as suspicious.
+comment: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious.
 name: quarantine-file
 outputs:
 - contextPath: QuarantineFile.FilePath.
