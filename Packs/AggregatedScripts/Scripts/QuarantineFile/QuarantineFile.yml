@@ -50,7 +50,7 @@ outputs:
   description: A success message if the command runs successfully, otherwise a message that contains the error.
   type: String
 - contextPath: QuarantineFile.Brand
-  description: The integration that used to run the command.
+  description: The integration that executed the command.
   type: String
 - contextPath: QuarantineFile.EndpointID
   description: The endpoint_id which the command was executed on.
