@@ -347,9 +347,9 @@ def main():  # pragma: no cover
             return_results(test_module(host, cluster_id, api_key))
         elif command == "proofpoint-es-get-last-run-results":
             return_results(get_last_run_results_command())
-        
+
         elif command == "fetch-events":
-            demisto.debug(f"Skipping fetch-events **command call** (handled by long-running-execution).")
+            demisto.debug("Skipping fetch-events **command call** (handled by long-running-execution).")
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:
