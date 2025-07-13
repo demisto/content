@@ -105,7 +105,7 @@ If you encounter the following error:
 
 Please follow these steps to resolve it:
 
-1. Navigate to your Azure DevOps organization using this URL (replace <organization> with your actual org name):
+1. Navigate to your Azure DevOps organization using this URL (replace {organization_name} with your actual org name):
 https://dev.azure.com/{organization_name}
 
 2. In the bottom-left corner, click ***Organization settings***.
