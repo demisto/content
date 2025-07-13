@@ -495,7 +495,7 @@ def main():
             demisto.setLastRun(
                 {
                     "last_id": last_id,
-                    "last_incident_time": events[-1].get("_time") if events else None,
+                    "last_incident_time": events[-1].get("_time") if events else first_fetch,
                     "last_timestamp_ids": last_timestamp_ids,
                 }
             )
