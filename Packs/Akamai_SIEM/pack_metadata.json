@@ -10,9 +10,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Network"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Akamai",
+        "WAF"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

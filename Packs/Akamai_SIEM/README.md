@@ -3,8 +3,7 @@
 ## Overview
 
 This pack enables using a Web Application Firewall (WAF), a security filter that protects against HTTP-based attacks by inspecting traffic before it reaches your application.
-Note:
-Use the native collector for log ingestion. The event collector will be deprecated in the next Cortex XSIAM version.
+### Note: Use the native collector for log ingestion. The event collector will be deprecated in the next Cortex XSIAM version.
 
 ## This pack includes
 

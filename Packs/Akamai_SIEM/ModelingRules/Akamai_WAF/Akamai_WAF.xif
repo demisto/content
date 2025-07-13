@@ -14,7 +14,7 @@ alter // pre-modeling extractions
     response_code = httpMessage -> status,
     rule_actions = attackData -> ruleActions,
     rule_messages_risk = arraycreate(attackData -> ruleMessages),
-    rule_messages_desc = coalesce(to_string(arraystring(json_extract_scalar_array(attackData,  "$.ruleMessages")), ";"), to_string(attackData -> ruleMessages)),
+    rule_messages_desc = coalesce(to_string(arraystring(json_extract_scalar_array(attackData,  "$.ruleMessages"), ";")), to_string(attackData -> ruleMessages)),
     rules = if(to_string(attackData -> rules) ~= "\[", arraystring(json_extract_scalar_array(attackData, "$.ruleMessages"), ";"), to_string(attackData -> rules)),
     as_number = geo -> asn
 
