@@ -21,8 +21,8 @@ args:
   type: Integer
 - name: quarantine_brands
   description: |-
-    Integrations brands to use for running quarantine-file. If not provided, the command will run the command for all relevant integrations by file_hash that implement quarantine-file command.
-    For multi-select, provide a comma-separated list of integration IDs. For example: "Microsoft Defender Advanced Threat Protection, Cortex Core - IR".
+Integrations to execute the 'quarantine-file' command. If not specified, the integration will be automatically selected based on the file hash type and the available configured instances.
+To specify multiple integrations, provide a comma-separated list of integration brand IDs (e.g., "Palo Alto Networks Cortex XDR - Investigation and Response, Cortex Core - IR").
   isArray: true
 - name: verbose
   description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result.
