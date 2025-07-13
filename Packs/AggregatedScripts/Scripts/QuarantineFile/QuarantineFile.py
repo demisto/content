@@ -372,8 +372,10 @@ def xdr_quarantine_file(
 
 def quarantine_file_script(args: dict[str, Any]) -> list[CommandResults]:
     """
-    implements the !quarantine-file command by identify which integration to use
-    and use it's quarantine-file custom command to reflect the result of the quarantine status to the user
+    implements the !quarantine-file command:
+     - Selects which integration to use.
+     - Runs the quarantine-file command of the selected integration.
+     - Reflects the result of the quarantine status to the user.
 
     Args:
         args (dict): the arguments that were given by the user.
