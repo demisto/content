@@ -38,7 +38,7 @@ outputs:
   description: The path of the quarantined file.
   type: String
 - contextPath: QuarantineFile.FileHash.
-  description: Hash of the file.
+  description: The hash of the quarantined file.
   type: String
 - contextPath: QuarantineFile.Status
   description: whether the command was running succussefully or not.
