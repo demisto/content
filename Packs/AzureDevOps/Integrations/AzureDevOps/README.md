@@ -97,7 +97,7 @@ If you are using Device Code Flow or Authorization Code Flow, for testing your a
 
 If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
 
-### Troubleshooting
+## Troubleshooting
 
 If you encounter the following error:
 
