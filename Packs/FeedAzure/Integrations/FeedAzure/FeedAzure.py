@@ -95,11 +95,10 @@ class Client(BaseClient):
                 raise RuntimeError(f"{INTEGRATION_NAME} - Download link not found")
             demisto.debug(f"download link: {download_link}")
             save_azure_download_link(download_link)
-        
+
         except Exception as e:
             demisto.info(f"Error while fetching download link: {e}")
             download_link = load_azure_download_link()
-            
 
         return download_link
 
@@ -241,15 +240,12 @@ def load_azure_download_link() -> Optional[str]:
     Returns:
         str. The download link.
     """
-    return demisto.getIntegrationContext().get('azure_download_link')
+    return demisto.getIntegrationContext().get("azure_download_link")
 
 
 def save_azure_download_link(link: str):
-    """Saves the download link for the file to the server.
-    """
-    demisto.setIntegrationContext(
-        demisto.getIntegrationContext() | {'azure_download_link': link}
-    )
+    """Saves the download link for the file to the server."""
+    demisto.setIntegrationContext(demisto.getIntegrationContext() | {"azure_download_link": link})
 
 
 def test_module(client: Client) -> tuple[str, dict, dict]:
