@@ -74,8 +74,6 @@ script:
   dockerimage: demisto/netutils:1.0.0.3562043
   longRunning: true
   subtype: python3
-  # isfetchevents:platform: false
-  # isfetchevents:xsiam: false
 marketplaces:
 - marketplacev2
 - platform
