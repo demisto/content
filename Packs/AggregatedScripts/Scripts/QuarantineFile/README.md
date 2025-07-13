@@ -1,4 +1,4 @@
-This script run quarantine-file command on a specific file by the agent for a file that was identified as suspicious.
+This script executes the ***quarantine-file*** command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious. The integration used to perform the quarantine action is selected either by user input or based on the available configured instances.
 
 ## Script Data
 
