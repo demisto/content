@@ -47,7 +47,7 @@ outputs:
   description: whether the command execution was successful or not.
   type: String
 - contextPath: QuarantineFile.Message
-  description: If the command run successfully - message for success else message that contain the error.
+  description: A success message if the command runs successfully, otherwise a message that contains the error.
   type: String
 - contextPath: QuarantineFile.Brand
   description: The integration that used to run the command.
