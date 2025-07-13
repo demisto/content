@@ -73,6 +73,7 @@ script:
     description: Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
   dockerimage: demisto/netutils:1.0.0.3562043
   longRunning: true
+  isfetchevents: true
   subtype: python3
 marketplaces:
 - marketplacev2
