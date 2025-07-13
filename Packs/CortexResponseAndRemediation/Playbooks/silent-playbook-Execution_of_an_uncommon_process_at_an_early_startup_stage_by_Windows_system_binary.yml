@@ -187,8 +187,7 @@ tasks:
                         simple: alert.targetprocesssha256
                       iscontext: true
                     ignorecase: true
-                accessor: |
-                  Score
+                accessor: Score
             iscontext: true
           right:
             value:
