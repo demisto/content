@@ -330,7 +330,7 @@ def all_incidents_trimmer(
     incident_ids: List[int],
     client: Client,
     max_fetch: int,
-    last_timestamp_ids: Optional[List[int]],
+    last_timestamp_ids: List[int],
     last_timestamp: datetime,
     last_id: int | None,
 ):
@@ -347,10 +347,9 @@ def all_incidents_trimmer(
     """
     demisto.debug("Test-IronScales: going in all_incidents_trimmer")
     events: List[dict[str, Any]] = []
-    new_last_ids: set[int] = set()  # type: ignore # the new ids to save for the next run
-    if last_timestamp_ids:
-        last_timestamp_ids = set(last_timestamp_ids)  # type: ignore # for better runtime
-        demisto.debug("Test-IronScales: cast ids list to set")
+    new_last_ids: set[int] = set(last_timestamp_ids)  # type: ignore # the new ids to save for the next run
+    last_timestamp_ids = set(last_timestamp_ids)  # type: ignore # for better runtime
+    demisto.debug("Test-IronScales: cast ids list to set")
     demisto.debug("Test-IronScales: starting incidents enrichment loop")
     for i in incident_ids:
         # remove ids that already pulled
@@ -419,8 +418,13 @@ def fetch_events_command(
     last_id = last_id or -1
     if client.all_incident:
         events, last_id, last_timestamp_ids = all_incidents_trimmer(
-            incident_ids, client, max_fetch, last_timestamp_ids, first_fetch, last_id
-        )  # type: ignore
+            incident_ids,
+            client,
+            max_fetch,
+            last_timestamp_ids,  # type: ignore
+            first_fetch,
+            last_id,
+        )
     else:
         events, last_id, last_timestamp_ids = open_incidents_trimmer(incident_ids, client, max_fetch, last_id)
 
@@ -482,7 +486,7 @@ def main():
                     {str([event.get('incident_id') for event in events])},\
                         last event: {str(last_id)}, num of events: {len(events)},\
                         set last run to: 'last_id': {last_id},\
-                            'last_incident_time': {events[-1].get('_time')if events else None},\
+                            'last_incident_time': {events[-1].get('_time')if events else first_fetch},\
                                 'last_timestamp_ids': {last_timestamp_ids}"
             )
 
