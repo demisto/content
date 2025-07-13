@@ -44,7 +44,7 @@ outputs:
   description: Whether the command execution was successful or not.
   type: Boolean
 - contextPath: QuarantineFile.Result
-  description: whether the command was running succussefully or not.
+  description: whether the command execution was successful or not.
   type: String
 - contextPath: QuarantineFile.Message
   description: If the command run successfully - message for success else message that contain the error.
