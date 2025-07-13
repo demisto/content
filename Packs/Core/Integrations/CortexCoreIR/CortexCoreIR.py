@@ -778,7 +778,7 @@ def core_block_ip_command(args: dict, client: Client) -> PollResult:
         duration = arg_to_number(args.get("duration")) or 300
 
         if duration <= 0 or duration >= 518400:
-            return_error(message="Duration must be greater than 0 and less than 518,400 minutes (approx 12 months).")
+            raise DemistoException("Duration must be greater than 0 and less than 518,400 minutes (approx 12 months).")
 
         is_ip_list_valid(ip_list)
 
@@ -802,7 +802,7 @@ def is_ip_list_valid(ip_list: list[str]):
     """
     for ip_address in ip_list:
         if not is_ip_valid(ip_address) and not is_ipv6_valid(ip_address):
-            return_error(f"ip address {ip_address} is invalid")
+            raise DemistoException(f"ip address {ip_address} is invalid")
 
 
 def main():  # pragma: no cover
