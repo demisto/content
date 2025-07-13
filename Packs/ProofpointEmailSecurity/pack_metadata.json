@@ -13,7 +13,8 @@
         "Email",
         "Alerts",
         "Security",
-        "Data Source"
+        "marketplacev2:Data Source",
+        "platform:Data Source"
     ],
     "useCases": [],
     "keywords": [
