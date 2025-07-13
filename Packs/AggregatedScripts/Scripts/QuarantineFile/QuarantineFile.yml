@@ -8,7 +8,7 @@ args:
   isArray: true
   type: List
 - name: file_hash
-  description: 'Hash of the file. Supported types are: SHA1, SHA256.'
+  description: 'The hash of the file to quarantine. Supported types are: SHA1, SHA256.'
   required: true
   type: String
 - name: file_path
