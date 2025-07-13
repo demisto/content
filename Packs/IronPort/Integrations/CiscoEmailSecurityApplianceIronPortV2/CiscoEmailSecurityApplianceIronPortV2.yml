@@ -101,7 +101,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.11.3982393
   isfetch: true
   commands:
     - name: cisco-esa-spam-quarantine-message-search
@@ -1732,7 +1732,7 @@ script:
         - contextPath: CiscoESA.MessageRemediation.message_details.msg_read
           description: Indicates whether the message was read (0 = unread, 1 = read, or N/A).
           type: String
-fromversion: 6.14.0
+fromversion: 6.5.0
 tests:
   - CiscoESA_dictionary_commands_tpb
   - CiscoEsaEnhancement_Test
