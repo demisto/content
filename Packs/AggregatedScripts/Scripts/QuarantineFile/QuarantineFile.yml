@@ -16,7 +16,7 @@ args:
   required: true
   type: String
 - name: timeout
-  description: 'Polling timeout in seconds for the quarantine commands.'
+  description: 'The polling timeout in seconds for the quarantine commands.'
   required: false
   type: Integer
 - name: quarantine_brands
