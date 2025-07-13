@@ -3787,3 +3787,23 @@ def test_file_statistics_api_parser_to_human_readable(mocker, file_stats: FileSt
         "Global Last Observed": response["globalLastObserved"],
         "Top File Names": response["topFileNames"],
     }
+
+
+def test_list_auth_permissions_command(mocker):
+    """
+    Given:
+    - An authenticated Microsoft Defender ATP API client.
+
+    When:
+    - Calling function microsoft-atp-list-auth-permissions.
+
+    Then:
+    - Ensure the human-readable command results are as expected.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_auth_permissions_command
+
+    mocker.patch.object(client_mocker, "get_decoded_token", return_value={"roles": ["Event.Write", "User.Read"]})
+
+    command_results = list_auth_permissions_command(client_mocker)
+
+    assert command_results.readable_output == "### Permissions\nEvent.Write\nUser.Read"
