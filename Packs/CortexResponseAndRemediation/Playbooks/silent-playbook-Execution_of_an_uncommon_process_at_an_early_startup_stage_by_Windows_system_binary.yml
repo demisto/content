@@ -694,7 +694,7 @@ tasks:
             value:
               simple: svchost.exe
           ignorecase: true
-      - - operator: containsGeneral
+      - - operator: endWith
           left:
             value:
               simple: alert.osparentcmd
