@@ -12,9 +12,10 @@ alter // pre-modeling extractions
     port = to_integer(httpMessage -> port),
     query = httpMessage -> query,
     response_code = httpMessage -> status,
-    rule_actions = arraystring(json_extract_scalar_array(attackData, "$.ruleActions"), ";"),
-    rule_messages = json_extract_scalar_array(attackData, "$.ruleMessages"),
-    rules = arraystring(json_extract_scalar_array(attackData, "$.rules"), ";"),
+    rule_actions = attackData -> ruleActions,
+    rule_messages_risk = arraycreate(attackData -> ruleMessages),
+    rule_messages_desc = coalesce(to_string(arraystring(json_extract_scalar_array(attackData,  "$.ruleMessages"), ";")), to_string(attackData -> ruleMessages)),
+    rules = if(to_string(attackData -> rules) ~= "\[", arraystring(json_extract_scalar_array(attackData, "$.ruleMessages"), ";"), to_string(attackData -> rules)),
     as_number = geo -> asn
 
 | alter // initialize the url components 
@@ -31,9 +32,9 @@ alter // pre-modeling extractions
 | alter url = concat(scheme, host, path, query )
 
 | alter // XDM Mappings
-    xdm.alert.description = arraystring(rule_messages, ";"), // The message reported by each triggered rule.
+    xdm.alert.description = if(rule_messages_desc != "", rule_messages_desc, to_string(rule_messages_risk)), // The message reported by each triggered rule.
     xdm.alert.name = rules, // A series of identifiers for rules within the configuration that triggered for this request.
-    xdm.alert.risks = rule_messages, // The message reported by each triggered rule. 
+    xdm.alert.risks = rule_messages_risk, // The message reported by each triggered rule. 
     xdm.event.id = httpMessage -> requestId, // A unique identifier for each request.
     xdm.network.application_protocol = httpMessage -> protocol,
     xdm.network.http.content_type = httpMessage -> responseHeaders.Content_Type,
