@@ -36,7 +36,7 @@ class Command:
         self,
         brand: str,
         name: str,
-        output_keys: List[str],
+        output_keys: list[str],
         args_mapping: dict[str, Any],
         output_mapping: dict,
         get_endpoint_output: bool = False,

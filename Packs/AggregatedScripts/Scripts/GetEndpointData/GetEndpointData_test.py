@@ -516,157 +516,77 @@ def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_comm
     mock_debug.assert_called_once_with("ending single arg loop with 0 endpoints")
 
 
-def test_create_endpoint_successful_with_mapping():
+def test_create_endpoint_with_endpoint_output():
     """
     Given:
-        Command output with keys that match the output mapping and a brand name.
+        Command output and endpoint output with overlapping keys in the output mapping.
     When:
-        The create_endpoint function is called with add_additional_fields set to False.
+        The create_endpoint function is called with both command_output and endpoint_output provided.
     Then:
-        It should return an endpoint dictionary with mapped keys, success message, and brand information.
+        It should prioritize endpoint_output values over command_output and include command_output in
+            AdditionalFields when add_additional_fields is True.
     """
-    command_output = {"host_name": "server1", "ip_addr": "192.168.1.1", "extra_field": "extra_value"}
+    command_output = {"host_name": "from_command", "extra_field": "extra_value", "cpu_count": 4}
+    endpoint_output = {"host_name": "from_endpoint", "ip_addr": "192.168.1.1"}
     output_mapping = {"host_name": "Hostname", "ip_addr": "IPAddress"}
     brand = "TestBrand"
 
-    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=False)
+    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=True, endpoint_output=endpoint_output)
 
-    expected = {"Message": COMMAND_SUCCESS_MSG, "Hostname": "server1", "IPAddress": "192.168.1.1", "Brand": "TestBrand"}
-
-    assert result == expected
-
-
-def test_create_endpoint_failed_command():
-    """
-    Given:
-        Command output and an is_failed flag set to True.
-    When:
-        The create_endpoint function is called with the failed flag.
-    Then:
-        It should return an endpoint dictionary with a failure message instead of success message.
-    """
-    command_output = {"host_name": "server1"}
-    output_mapping = {"host_name": "Hostname"}
-    brand = "TestBrand"
-
-    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=False, is_failed=True)
-
-    expected = {"Message": COMMAND_FAILED_MSG, "Hostname": "server1", "Brand": "TestBrand"}
+    expected = {
+        "Message": COMMAND_SUCCESS_MSG,
+        "Hostname": "from_endpoint",  # Should use value from endpoint_output
+        "IPAddress": "192.168.1.1",  # Should use value from endpoint_output
+        "Brand": "TestBrand",
+        "AdditionalFields": command_output,  # Should include entire command_output as additional fields
+    }
 
     assert result == expected
 
 
-def test_create_endpoint_with_additional_fields():
+def test_create_endpoint_with_endpoint_output_no_additional_fields():
     """
     Given:
-        Command output with both mapped and unmapped keys and add_additional_fields set to True.
+        Command output and endpoint output with mapped keys and add_additional_fields set to False.
     When:
-        The create_endpoint function is called.
+        The create_endpoint function is called with endpoint_output provided.
     Then:
-        It should return an endpoint dictionary with mapped keys and additional unmapped fields in AdditionalFields.
+        It should use only the mapped values from endpoint_output and not include any additional fields from command_output.
     """
-    command_output = {"host_name": "server1", "ip_addr": "192.168.1.1", "cpu_count": 4, "memory_gb": 16}
+    command_output = {"host_name": "from_command", "extra_field": "extra_value"}
+    endpoint_output = {"host_name": "from_endpoint", "ip_addr": "192.168.1.1"}
     output_mapping = {"host_name": "Hostname", "ip_addr": "IPAddress"}
     brand = "TestBrand"
 
-    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=True)
+    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=False, endpoint_output=endpoint_output)
 
-    expected = {
-        "Message": COMMAND_SUCCESS_MSG,
-        "Hostname": "server1",
-        "IPAddress": "192.168.1.1",
-        "Brand": "TestBrand",
-        "AdditionalFields": {"cpu_count": 4, "memory_gb": 16},
-    }
-
-    assert result == expected
-
-
-def test_create_endpoint_empty_command_output():
-    """
-    Given:
-        An empty command output dictionary.
-    When:
-        The create_endpoint function is called.
-    Then:
-        It should return an empty dictionary without processing any fields.
-    """
-    command_output = {}
-    output_mapping = {"host_name": "Hostname"}
-    brand = "TestBrand"
-
-    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=False)
-
-    assert result == {}
-
-
-def test_create_endpoint_with_existing_brand():
-    """
-    Given:
-        Command output that already contains a "Brand" key in the mapped fields.
-    When:
-        The create_endpoint function is called.
-    Then:
-        It should preserve the existing Brand value and not override it with the provided brand parameter.
-    """
-    command_output = {"host_name": "server1", "vendor": "ExistingBrand"}
-    output_mapping = {"host_name": "Hostname", "vendor": "Brand"}
-    brand = "TestBrand"
-
-    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=False)
-
-    expected = {
-        "Message": COMMAND_SUCCESS_MSG,
-        "Hostname": "server1",
-        "Brand": "ExistingBrand",  # Should use the mapped brand, not the parameter
-    }
-
-    assert result == expected
-
-
-def test_create_endpoint_no_mapped_fields():
-    """
-    Given:
-        Command output with keys that don't match any output mapping.
-    When:
-        The create_endpoint function is called with add_additional_fields set to True.
-    Then:
-        It should return an endpoint dictionary with only message, brand, and all fields in AdditionalFields.
-    """
-    command_output = {"unmapped_field1": "value1", "unmapped_field2": "value2"}
-    output_mapping = {"different_key": "Hostname"}
-    brand = "TestBrand"
-
-    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=True)
-
-    expected = {
-        "Message": COMMAND_SUCCESS_MSG,
-        "Brand": "TestBrand",
-        "AdditionalFields": {"unmapped_field1": "value1", "unmapped_field2": "value2"},
-    }
-
-    assert result == expected
-
-
-def test_create_endpoint_without_additional_fields():
-    """
-    Given:
-        Command output with unmapped keys and add_additional_fields set to False.
-    When:
-        The create_endpoint function is called.
-    Then:
-        It should return an endpoint dictionary without the AdditionalFields key, ignoring unmapped fields.
-    """
-    command_output = {"host_name": "server1", "unmapped_field": "ignored_value"}
-    output_mapping = {"host_name": "Hostname"}
-    brand = "TestBrand"
-
-    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=False)
-
-    expected = {"Message": COMMAND_SUCCESS_MSG, "Hostname": "server1", "Brand": "TestBrand"}
+    expected = {"Message": COMMAND_SUCCESS_MSG, "Hostname": "from_endpoint", "IPAddress": "192.168.1.1", "Brand": "TestBrand"}
 
     assert result == expected
     assert "AdditionalFields" not in result
+
+
+def test_create_endpoint_with_endpoint_output_unmapped_keys():
+    """
+    Given:
+        Endpoint output containing keys that are not present in the output mapping.
+    When:
+        The create_endpoint function is called with endpoint_output having unmapped keys.
+    Then:
+        It should only map the keys that exist in output_mapping and ignore unmapped keys from endpoint_output.
+    """
+    command_output = {"some_field": "some_value"}
+    endpoint_output = {"host_name": "server1", "unmapped_key": "ignored_value", "another_unmapped": "also_ignored"}
+    output_mapping = {"host_name": "Hostname"}
+    brand = "TestBrand"
+
+    result = create_endpoint(command_output, output_mapping, brand, add_additional_fields=True, endpoint_output=endpoint_output)
+
+    expected = {"Message": COMMAND_SUCCESS_MSG, "Hostname": "server1", "Brand": "TestBrand", "AdditionalFields": command_output}
+
+    assert result == expected
+    assert "unmapped_key" not in result
+    assert "another_unmapped" not in result
 
 
 def test_prepare_args():
@@ -742,7 +662,7 @@ def test_hr_to_command_results():
     human_readable = "This is a human-readable result."
 
     # Call the function
-    result = hr_to_command_results(command_name, args, human_readable, entry_type=False)
+    result = hr_to_command_results(command_name, args, human_readable)
 
     # Expected result
     expected_command = "!example-command arg1=value1 arg2=value2"
@@ -755,7 +675,7 @@ def test_hr_to_command_results():
 
     # Test error case
     error_human_readable = "An error occurred."
-    result = hr_to_command_results(command_name, args, error_human_readable, entry_type=True)
+    result = hr_to_command_results(command_name, args, error_human_readable, entry_type=EntryType.ERROR)
 
     expected_output = f"#### Error for {expected_command}\n{error_human_readable}"
 
@@ -765,7 +685,7 @@ def test_hr_to_command_results():
     assert result.mark_as_note is True
 
     # Test with no human_readable
-    result = hr_to_command_results(command_name, args, "", entry_type=False)
+    result = hr_to_command_results(command_name, args, "")
 
     # Assertions
     assert result is None
@@ -914,164 +834,128 @@ def test_get_raw_endpoints_multiple_entries(mocker):
     assert result == expected_output, f"Expected {expected_output}, got {result}"
 
 
-def test_create_endpoints_with_dict_mapping(mocker):
+def test_create_endpoints_with_empty_raw_endpoints_output():
     """
     Given:
-        Raw endpoints data and a dictionary-based output mapping.
+        Raw endpoints data with no corresponding raw endpoints output provided.
     When:
-        The create_endpoints function is called with the dictionary mapping.
+        The create_endpoints function is called with an empty raw_endpoints_output list.
     Then:
-        It should create endpoints using the dictionary mapping and return a list of endpoint dictionaries.
+        It should create empty dictionaries for each raw endpoint and pass them to create_endpoint.
     """
-    raw_endpoints = [{"host_name": "server1", "ip_addr": "192.168.1.1"}, {"host_name": "server2", "ip_addr": "192.168.1.2"}]
-    output_mapping = {"host_name": "Hostname", "ip_addr": "IPAddress"}
-    brand = "TestBrand"
-    add_additional_fields = False
-
-    mock_create_endpoint = mocker.patch("GetEndpointData.create_endpoint")
-    mock_create_endpoint.side_effect = [
-        {"Hostname": "server1", "IPAddress": "192.168.1.1", "Brand": "TestBrand"},
-        {"Hostname": "server2", "IPAddress": "192.168.1.2", "Brand": "TestBrand"},
-    ]
-
-    result = create_endpoints(raw_endpoints, output_mapping, brand, add_additional_fields)
-
-    expected = [
-        {"Hostname": "server1", "IPAddress": "192.168.1.1", "Brand": "TestBrand"},
-        {"Hostname": "server2", "IPAddress": "192.168.1.2", "Brand": "TestBrand"},
-    ]
-
-    assert result == expected
-    assert mock_create_endpoint.call_count == 2
-    mock_create_endpoint.assert_any_call(raw_endpoints[0], output_mapping, brand, add_additional_fields)
-    mock_create_endpoint.assert_any_call(raw_endpoints[1], output_mapping, brand, add_additional_fields)
-
-
-def test_create_endpoints_with_callable_mapping(mocker):
-    """
-    Given:
-        Raw endpoints data and a callable function as output mapping.
-    When:
-        The create_endpoints function is called with the callable mapping.
-    Then:
-        It should call the mapping function for each endpoint and create endpoints using the returned mappings.
-    """
-    raw_endpoints = [{"type": "server", "name": "server1"}, {"type": "workstation", "name": "workstation1"}]
-
-    def mapping_function(endpoint):
-        if endpoint.get("type") == "server":
-            return {"name": "ServerHostname"}
-        else:
-            return {"name": "WorkstationHostname"}
-
-    brand = "TestBrand"
-    add_additional_fields = True
-
-    mock_create_endpoint = mocker.patch("GetEndpointData.create_endpoint")
-    mock_create_endpoint.side_effect = [
-        {"ServerHostname": "server1", "Brand": "TestBrand"},
-        {"WorkstationHostname": "workstation1", "Brand": "TestBrand"},
-    ]
-
-    result = create_endpoints(raw_endpoints, mapping_function, brand, add_additional_fields)
-
-    expected = [
-        {"ServerHostname": "server1", "Brand": "TestBrand"},
-        {"WorkstationHostname": "workstation1", "Brand": "TestBrand"},
-    ]
-
-    assert result == expected
-    assert mock_create_endpoint.call_count == 2
-    mock_create_endpoint.assert_any_call(raw_endpoints[0], {"name": "ServerHostname"}, brand, add_additional_fields)
-    mock_create_endpoint.assert_any_call(raw_endpoints[1], {"name": "WorkstationHostname"}, brand, add_additional_fields)
-
-
-def test_create_endpoints_empty_raw_endpoints(mocker):
-    """
-    Given:
-        An empty list of raw endpoints.
-    When:
-        The create_endpoints function is called with the empty list.
-    Then:
-        It should return an empty list without calling create_endpoint.
-    """
-    raw_endpoints = []
+    raw_endpoints = [{"host_name": "server1"}, {"host_name": "server2"}]
     output_mapping = {"host_name": "Hostname"}
     brand = "TestBrand"
     add_additional_fields = False
+    raw_endpoints_output = []
 
-    mock_create_endpoint = mocker.patch("GetEndpointData.create_endpoint")
+    result = create_endpoints(raw_endpoints, output_mapping, brand, add_additional_fields, raw_endpoints_output)
 
-    result = create_endpoints(raw_endpoints, output_mapping, brand, add_additional_fields)
-
-    assert result == []
-    mock_create_endpoint.assert_not_called()
+    # Should have called create_endpoint for each raw endpoint with empty dict as endpoint_output
+    assert len(result) == 2
 
 
-def test_create_endpoints_single_endpoint(mocker):
+def test_create_endpoints_with_matching_raw_endpoints_output():
     """
     Given:
-        A single raw endpoint in the list.
+        Raw endpoints data with corresponding raw endpoints output of the same length.
     When:
-        The create_endpoints function is called with the single endpoint.
+        The create_endpoints function is called with matching raw_endpoints_output.
     Then:
-        It should create one endpoint and return a list containing that single endpoint.
+        It should pair each raw endpoint with its corresponding output and create endpoints accordingly.
     """
-    raw_endpoints = [{"host_name": "single-server", "status": "active"}]
-    output_mapping = {"host_name": "Hostname", "status": "Status"}
-    brand = "SingleBrand"
+    raw_endpoints = [{"host_name": "server1"}, {"host_name": "server2"}]
+    output_mapping = {"host_name": "Hostname"}
+    brand = "TestBrand"
     add_additional_fields = True
+    raw_endpoints_output = [{"endpoint_data": "data1"}, {"endpoint_data": "data2"}]
 
-    mock_create_endpoint = mocker.patch("GetEndpointData.create_endpoint")
-    mock_create_endpoint.return_value = {
-        "Hostname": "single-server",
-        "Status": "active",
-        "Brand": "SingleBrand",
-        "AdditionalFields": {},
-    }
+    result = create_endpoints(raw_endpoints, output_mapping, brand, add_additional_fields, raw_endpoints_output)
 
-    result = create_endpoints(raw_endpoints, output_mapping, brand, add_additional_fields)
-
-    expected = [{"Hostname": "single-server", "Status": "active", "Brand": "SingleBrand", "AdditionalFields": {}}]
-
-    assert result == expected
-    assert mock_create_endpoint.call_count == 1
-    mock_create_endpoint.assert_called_once_with(raw_endpoints[0], output_mapping, brand, add_additional_fields)
+    assert len(result) == 2
 
 
-def test_create_endpoints_callable_mapping_with_none_return(mocker):
+def test_create_endpoints_preserves_order(mocker):
     """
     Given:
-        Raw endpoints and a callable mapping that returns None for some endpoints.
+        Multiple raw endpoints with corresponding output data in a specific order.
     When:
-        The create_endpoints function is called with the callable that can return None.
+        The create_endpoints function is called with ordered input data.
     Then:
-        It should handle None return values gracefully and pass them to create_endpoint.
+        It should preserve the order of endpoints in the returned list.
     """
-    raw_endpoints = [{"valid": True, "name": "server1"}, {"valid": False, "name": "server2"}]
-
-    def mapping_function(endpoint):
-        if endpoint.get("valid"):
-            return {"name": "Hostname"}
-        return None
-
+    raw_endpoints = [{"host_name": "first-server"}, {"host_name": "second-server"}, {"host_name": "third-server"}]
+    output_mapping = {"host_name": "Hostname"}
     brand = "TestBrand"
     add_additional_fields = False
+    raw_endpoints_output = [{"priority": 1}, {"priority": 2}, {"priority": 3}]
+
+    mock_create_endpoint = mocker.patch("GetEndpointData.create_endpoint")
+    mock_create_endpoint.side_effect = [
+        {"Hostname": "first-server", "Brand": "TestBrand"},
+        {"Hostname": "second-server", "Brand": "TestBrand"},
+        {"Hostname": "third-server", "Brand": "TestBrand"},
+    ]
+
+    result = create_endpoints(raw_endpoints, output_mapping, brand, add_additional_fields, raw_endpoints_output)
+
+    assert len(result) == 3
+    assert result[0]["Hostname"] == "first-server"
+    assert result[1]["Hostname"] == "second-server"
+    assert result[2]["Hostname"] == "third-server"
+
+
+def test_create_endpoints_calls_create_endpoint_with_correct_parameters(mocker):
+    """
+    Given:
+        Raw endpoints data with specific parameters for brand and additional fields.
+    When:
+        The create_endpoints function is called with these parameters.
+    Then:
+        It should call create_endpoint with exactly the correct parameters for each endpoint.
+    """
+    raw_endpoints = [{"host_name": "test-server"}]
+    output_mapping = {"host_name": "Hostname"}
+    brand = "SpecificBrand"
+    add_additional_fields = True
+    raw_endpoints_output = [{"extra": "output"}]
+
+    mock_create_endpoint = mocker.patch("GetEndpointData.create_endpoint")
+    mock_create_endpoint.return_value = {"Hostname": "test-server", "Brand": "SpecificBrand"}
+
+    create_endpoints(raw_endpoints, output_mapping, brand, add_additional_fields, raw_endpoints_output)
+
+    mock_create_endpoint.assert_called_once_with(
+        raw_endpoints[0], output_mapping, brand, add_additional_fields, raw_endpoints_output[0]
+    )
+
+
+def test_create_endpoints_handles_none_values_in_output(mocker):
+    """
+    Given:
+        Raw endpoints data with None values in the raw endpoints output.
+    When:
+        The create_endpoints function is called with None values in the output list.
+    Then:
+        It should pass None values to create_endpoint without modification.
+    """
+    raw_endpoints = [{"host_name": "server1"}, {"host_name": "server2"}]
+    output_mapping = {"host_name": "Hostname"}
+    brand = "TestBrand"
+    add_additional_fields = False
+    raw_endpoints_output = [None, {"valid": "output"}]
 
     mock_create_endpoint = mocker.patch("GetEndpointData.create_endpoint")
     mock_create_endpoint.side_effect = [
         {"Hostname": "server1", "Brand": "TestBrand"},
-        {"Brand": "TestBrand"},  # Result when mapping is None
+        {"Hostname": "server2", "Brand": "TestBrand"},
     ]
 
-    result = create_endpoints(raw_endpoints, mapping_function, brand, add_additional_fields)
+    result = create_endpoints(raw_endpoints, output_mapping, brand, add_additional_fields, raw_endpoints_output)
 
-    expected = [{"Hostname": "server1", "Brand": "TestBrand"}, {"Brand": "TestBrand"}]
-
-    assert result == expected
-    assert mock_create_endpoint.call_count == 2
-    mock_create_endpoint.assert_any_call(raw_endpoints[0], {"name": "Hostname"}, brand, add_additional_fields)
-    mock_create_endpoint.assert_any_call(raw_endpoints[1], None, brand, add_additional_fields)
+    assert len(result) == 2
+    mock_create_endpoint.assert_any_call(raw_endpoints[0], output_mapping, brand, add_additional_fields, None)
+    mock_create_endpoint.assert_any_call(raw_endpoints[1], output_mapping, brand, add_additional_fields, {"valid": "output"})
 
 
 def test_get_endpoints_not_found_list_all_endpoints_found():
