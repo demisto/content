@@ -1,3 +1,4 @@
+import re
 import pytest
 from unittest.mock import MagicMock, patch
 from CommonServerPython import CommandResults, DemistoException
@@ -19,15 +20,15 @@ SHA_256_HASH = "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2
 
 
 @pytest.mark.parametrize(
-    "endpoint_ids, file_hash, file_path",
+    "endpoint_ids, file_hash, file_path, err_msg",
     [
-        ("ids", "", "path"),  # Missing file_hash
-        ("", "hash", "path"),  # Missing endpoint_ids
-        ("ids", "hash", ""),  # Missing file_path
-        ("ids", "hash", "path"),  # invalid hash type
+        ("ids", "", "path", "Please provide these missing fields ['file_hash']. Abourting command"),  # Missing file_hash
+        ("", "hash", "path", "Please provide these missing fields ['endpoint_ids']. Abourting command"),  # Missing endpoint_ids
+        ("ids", "hash", "", "Please provide these missing fields ['file_path']. Abourting command"),  # Missing file_path
+        ("ids", "hash", "path", "A valid file hash must be provided. Supported types are: SHA1 and SHA256"),  # invalid hash type
     ],
 )
-def test_quarantine_file_script_invalid_input(endpoint_ids: str, file_hash: str, file_path: str):
+def test_quarantine_file_script_invalid_input(endpoint_ids: str, file_hash: str, file_path: str, err_msg: str):
     """
     Given:
         - A set of inputs to the 'quarantine_file_script' function with one or more missing or invalid arguments:
@@ -40,10 +41,7 @@ def test_quarantine_file_script_invalid_input(endpoint_ids: str, file_hash: str,
     Then:
         - A ValueError is raised, indicating that the input validation failed as expected
     """
-    required_is_missing_msg = "Missing required fields"
-    invalid_hash_msg = "A valid file hash must be provided. Supported types are: SHA1 and SHA256"
-    err_msg = invalid_hash_msg if endpoint_ids and file_hash and file_path else required_is_missing_msg
-    with pytest.raises(ValueError, match=err_msg):
+    with pytest.raises(ValueError, match=re.escape(err_msg)):
         quarantine_file_script({"endpoint_ids": endpoint_ids, "file_hash": file_hash, "file_path": file_path})
 
 
@@ -87,10 +85,10 @@ def test_quarantine_file_script_valid_hash(file_hash: str, excpected_function_ca
             args = {"endpoint_ids": "ids", "file_hash": file_hash, "file_path": "file_path"}
             quarantine_file_script(args)
             if active_brand == BRAND_MDE:
-                mock_send.assert_called_once_with(args, [], [], [])
+                mock_send.assert_called_once_with(["ids"], file_hash, "file_path", 300, [], [], [])
             else:
                 command_prefix = "core" if active_brand == BRAND_CORE_IR else "xdr"
-                mock_send.assert_called_once_with(command_prefix, args, [], [], [])
+                mock_send.assert_called_once_with(command_prefix, ["ids"], file_hash, "file_path", 300, [], [], [])
 
 
 @pytest.mark.parametrize(
@@ -139,10 +137,10 @@ def test_quarantine_file_script_valid_quarantine_brand(file_hash: str, excpected
             }
             quarantine_file_script(args)
             if quarantine_brands == BRAND_MDE:
-                mock_send.assert_called_once_with(args, [], [], [])
+                mock_send.assert_called_once_with(["ids"], file_hash, "file_path", 300, [], [], [])
             else:
                 command_prefix = "core" if quarantine_brands == BRAND_CORE_IR else "xdr"
-                mock_send.assert_called_once_with(command_prefix, args, [], [], [])
+                mock_send.assert_called_once_with(command_prefix, ["ids"], file_hash, "file_path", 300, [], [], [])
 
 
 @pytest.mark.parametrize(
@@ -246,11 +244,10 @@ def test_xdr_quarantine_file_sucess():
         - The verbose_command_results list contains the quarantine and status command results.
         - The message should indicate the file was successfully quarantined.
     """
-    args = {
-        "endpoint_ids": "endpoint-1",
-        "file_hash": "abc123",
-        "file_path": "/tmp/test.exe",
-    }
+    endpoint_ids = ["endpoint-1"]
+    file_hash = "abc123"
+    file_path = "/tmp/test.exe"
+    timeout = 300
 
     readable_context = []
     context = []
@@ -278,7 +275,10 @@ def test_xdr_quarantine_file_sucess():
 
         xdr_quarantine_file(
             command_prefix="core",
-            args=args,
+            endpoint_ids=endpoint_ids,
+            file_hash=file_hash,
+            file_path=file_path,
+            timeout=timeout,
             readable_context=readable_context,
             context=context,
             verbose_command_results=verbose_command_results,
@@ -311,11 +311,10 @@ def test_xdr_quarantine_file_fail():
         - The message includes the error description from the polling response.
         - verbose_command_results contains both quarantine and status check results.
     """
-    args = {
-        "endpoint_ids": "endpoint-1",
-        "file_hash": "abc123",
-        "file_path": "/tmp/test.exe",
-    }
+    endpoint_ids = ["endpoint-1"]
+    file_hash = "abc123"
+    file_path = "/tmp/test.exe"
+    timeout = 300
 
     readable_context = []
     context = []
@@ -342,7 +341,10 @@ def test_xdr_quarantine_file_fail():
 
         xdr_quarantine_file(
             command_prefix="core",
-            args=args,
+            endpoint_ids=endpoint_ids,
+            file_hash=file_hash,
+            file_path=file_path,
+            timeout=timeout,
             readable_context=readable_context,
             context=context,
             verbose_command_results=verbose_command_results,
@@ -375,11 +377,9 @@ def test_get_endpoints_to_quarantine_with_xdr():
         - Updates readable_context and context for already quarantined endpoints
         - Appends the CommandResults to verbose_command_results for each status check
     """
-    args = {
-        "endpoint_ids": "ep1,ep2",
-        "file_hash": "abc123",
-        "file_path": "/path/file.exe",
-    }
+    endpoint_ids = ["ep1", "ep2"]
+    file_hash = "abc123"
+    file_path = "/path/file.exe"
 
     readable_context = []
     context = []
@@ -406,7 +406,9 @@ def test_get_endpoints_to_quarantine_with_xdr():
 
         endpoints_to_quarantine, status_commands = get_endpoints_to_quarantine_with_xdr(
             command_prefix="core",
-            args=args,
+            endpoint_ids=endpoint_ids,
+            file_hash=file_hash,
+            file_path=file_path,
             readable_context=readable_context,
             context=context,
             verbose_command_results=verbose_command_results,
@@ -440,7 +442,9 @@ def test_get_connected_xdr_endpoints():
         - readable_context and context are updated with failure message for 'ep2' and 'ep3'.
         - verbose_command_results includes the result(s) of the get-endpoints command.
     """
-    args = {"endpoint_ids": "ep1,ep2,ep3", "file_hash": "abc123", "file_path": "/tmp/test.exe"}
+    endpoint_ids = ["ep1", "ep2", "ep3"]
+    file_hash = "abc123"
+    file_path = "/tmp/test.exe"
 
     readable_context = []
     context = []
@@ -464,7 +468,9 @@ def test_get_connected_xdr_endpoints():
 
         connected = get_connected_xdr_endpoints(
             command_prefix="core",
-            args=args,
+            endpoint_ids=endpoint_ids,
+            file_hash=file_hash,
+            file_path=file_path,
             readable_context=readable_context,
             context=context,
             verbose_command_results=verbose_command_results,
@@ -475,10 +481,10 @@ def test_get_connected_xdr_endpoints():
     # ep2 and ep3 should be in context as unreachable
     assert len(readable_context) == 2
     assert readable_context[0]["endpoint_id"] == "ep2"
-    assert readable_context[0]["message"] == "Failed to quarantine file. The endpoint is offline or unreachacle"
+    assert readable_context[0]["message"] == "Failed to quarantine file. The endpoint is offline or unreachable."
 
     assert readable_context[1]["endpoint_id"] == "ep3"
-    assert readable_context[1]["message"] == "Failed to quarantine file. The endpoint is offline or unreachacle"
+    assert readable_context[1]["message"] == "Failed to quarantine file. The endpoint is offline or unreachable."
 
     assert len(context) == 2
     assert context[0]["endpoint_id"] == "ep2"
