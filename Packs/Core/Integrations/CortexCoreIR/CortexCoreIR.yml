@@ -2431,6 +2431,13 @@ script:
     - description: The endpoint hostname.
       isArray: true
       name: hostname
+    - auto: PREDEFINED
+      defaultValue: true
+      description: Whether to return only `one` IP as a `string` or `all` IPs associated to the endpoint as as a `list`. Default is true (only one as a string).
+      name: ip_as_string
+      predefined:
+        - true
+        - false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
