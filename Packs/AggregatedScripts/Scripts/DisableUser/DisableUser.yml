@@ -1,18 +1,54 @@
 args:
-- default: false
-  description: Hello command - prints hello to anyone.
-  isArray: false
-  name: name
-  required: false
-  secret: false
-comment: This script disables users TBD
+- description: List of users IDs of the users to disable. At least one of "user_id", "user_name" or "user_email" is required.
+  name: user_id
+  isArray: true
+- description: List of names of the users to disable. At least one of "user_id", "user_name" or "user_email" is required.
+  name: user_name
+  isArray: true
+- description: List of emails of the users to disable. At least one of "user_id", "user_name" or "user_email" is required.
+  name: user_email
+  isArray: true
+- description: List of brands (integrations) to disable users from.
+  isArray: true
+  name: brands
+- description: List of instances to disable users from.
+  isArray: true
+  name: instances
+- description: Whether to fetch a human-readable entry for each command or just the final result. If set to true, all commands will have human-readable entries. If set to false, only the final result will be human-readable.
+  name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+comment: This script disables users for multiple services. 
 commonfields:
   id: disable-user
   version: -1
 enabled: false
 name: disable-user
 outputs:
-- contextPath: HelloWorld.hello
+- contextPath: DisableUser.Brand
+  description: Should be Hello **something** here.
+  type: String
+- contextPath: DisableUser.Instance
+  description: Should be Hello **something** here.
+  type: String
+- contextPath: DisableUser.Disable
+  description: Should be Hello **something** here.
+  type: String
+- contextPath: DisableUser.Result
+  description: Should be Hello **something** here.
+  type: String
+- contextPath: DisableUser.Message
+  description: Should be Hello **something** here.
+  type: String
+- contextPath: DisableUser.UserProfile.Username
+  description: Should be Hello **something** here.
+  type: String
+- contextPath: DisableUser.UserProfile.UserId
+  description: Should be Hello **something** here.
+  type: String
+- contextPath: DisableUser.UserProfile.Email
   description: Should be Hello **something** here.
   type: String
 script: '-'
