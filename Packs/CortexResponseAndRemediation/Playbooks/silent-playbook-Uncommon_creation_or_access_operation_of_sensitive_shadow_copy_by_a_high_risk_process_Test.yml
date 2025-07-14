@@ -625,7 +625,8 @@ tasks:
       process_name:
         simple: ${alert.cgoname}
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
+    continueonerror: true
     task:
       brand: ''
       description: Get the prevalence of a process, identified by process_name.
