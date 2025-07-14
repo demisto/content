@@ -4,6 +4,9 @@ const PLAYBOOK_METADATA = 'playbook_metadata';
 const INTEGRATION_NAME = 'CoreRESTAPI';
 const xsoar_hosted = ['xsoar', 'xsoar_hosted']
 const platform_hosted = ['x2', 'unified_platform']
+// Default timeout for HTTP requests (3 minutes in milliseconds)
+const default_timeout = 3 * 60 * 1000;
+
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
@@ -177,7 +180,7 @@ var addPlaybookMetadataToRequest = function(body, command) {
 };
 
 
-var sendRequest = function(method, uri, body, raw, timeout = (3 * 60 * 1000)) {
+var sendRequest = function(method, uri, body, raw, timeout= default_timeout) {
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
@@ -604,7 +607,7 @@ switch (command) {
             }
         }
         if (!timeout) {
-            timeout = 3 * 60 * 1000; // Default 3 minutes timeout
+            timeout = default_timeout; // Default 3 minutes timeout
             logDebug('Timeout was not provided or it is invalid. Will use the default 3 minutes timeout.');
         }
 
