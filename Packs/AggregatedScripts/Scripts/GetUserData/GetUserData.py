@@ -632,18 +632,19 @@ def main():
             #################################
             ### Running for Active Directory Query v2 ###
             #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Active Directory Query v2",
-                command_name="ad-get-user",
-                arg_name="name",
-                arg_value=user_name.split("\\")[1],
-                cmd=ad_get_user,
-                additional_fields=additional_fields,
-            )
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
+            if "\\" in (user_name or ""):
+                readable_output, outputs = get_data(
+                    modules=modules,
+                    brand_name="Active Directory Query v2",
+                    command_name="ad-get-user",
+                    arg_name="name",
+                    arg_value=user_name.split("\\")[1],
+                    cmd=ad_get_user,
+                    additional_fields=additional_fields,
+                )
+                if readable_output and outputs:
+                    users_outputs.append(outputs)
+                    users_readables.extend(readable_output)
 
             #################################
             ### Running for Cortex XDR - IR (XDR) ###
