@@ -55,7 +55,7 @@ To add the registration, refer to the following [Microsoft article](https://lear
 
 To the Azure DevOps Account, use one of the following flows-
 
-## Authorization Code Flow(Recommended)
+## Authorization Code Flow (Recommended)
 
 For a Authorization Code configuration:
 
