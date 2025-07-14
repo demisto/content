@@ -22,7 +22,7 @@ def test_test_module(mocker):
         '_login',
         return_value=None,
     )
-    mock_response = util_load_json('./test_data/checkpointndr-get_incidents.json')
+    mock_response = util_load_json('./test_data/checkpointxdr-get_incidents.json')
     query_events = mocker.patch.object(
         Client,
         '_call_api',
@@ -42,12 +42,12 @@ def test_test_module(mocker):
 
 
 def test_parse_incidents():
-    mock_incidents = util_load_json('./test_data/checkpointndr-get_incidents.json').get('objects')
+    mock_incidents = util_load_json('./test_data/checkpointxdr-get_incidents.json').get('objects')
 
-    mock_result = (util_load_json('./test_data/checkpointndr-parse_incidents-output.json'),
+    mock_result = (util_load_json('./test_data/checkpointxdr-parse_incidents-output.json'),
                    datetime.datetime.fromtimestamp(1703387404.364).isoformat())
 
-    result = parse_incidents(mock_incidents, 0, 10, 0)
+    result = parse_incidents(mock_incidents, {}, 10, 0)
     assert result == mock_result
 
 
@@ -65,7 +65,7 @@ def test_fetch_incidents(mocker):
         '_login',
         return_value=None,
     )
-    mock_insights_response = util_load_json('./test_data/checkpointndr-get_incidents.json')
+    mock_insights_response = util_load_json('./test_data/checkpointxdr-get_incidents.json')
     query_insights = mocker.patch.object(
         Client,
         '_call_api',
@@ -77,7 +77,7 @@ def test_fetch_incidents(mocker):
         return_value=None,
     )
 
-    fetch_incidents(client, {}, datetime.datetime(2024, 1, 1), 10, 0)
+    fetch_incidents(client, {}, {}, datetime.datetime(2024, 1, 1), 1000)
     login.assert_called_once()
     query_insights.assert_called()
     logout.assert_called_once()

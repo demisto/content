@@ -1,6 +1,6 @@
 [
     {
-    "type": "Check Point NDR Insight",
+    "type": "Check Point XDR Insight",
     "dbotMirrorId": "636750_950961",
     "name": "Behavioral.Geo.Bulgaria",
     "severity": 2,

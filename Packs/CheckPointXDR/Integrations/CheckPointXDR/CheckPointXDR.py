@@ -1,9 +1,7 @@
 import demistomock as demisto
-from dateutil import parser
 from CommonServerPython import *
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
-NUMBER_OF_INC_TO_FETCH = 2
 OUTGOING_MIRRORED_FIELDS_OBJ = {
     "Status",
     "Severity",
@@ -114,7 +112,7 @@ class Client(BaseClient):
 def test_module(client: Client, last_run: dict[str, str], first_fetch: datetime):
     try:
         fetch_incidents(client, {
-            "mirror_direction": MIRROR_DIRECTION.get("Out"),
+            "mirror_direction": MIRROR_DIRECTION.get("Outgoing"),
             "mirror_instance": demisto.integrationInstance()
         }, last_run, first_fetch, 1)
         return 'ok'
@@ -165,7 +163,7 @@ def get_instances_id():
     return instances_id
 
 
-def parse_incidents(xdr_incidents: list[dict[str, Any]], mirroring_fields: dict, startTS: int, max_fetch: int):
+def parse_incidents(xdr_incidents: dict[str, Any], mirroring_fields: dict, startTS: int, max_fetch: int):
     incidents: list[dict[str, Any]] = []
     for incident in xdr_incidents.get("incidents", []):
         incident.update(mirroring_fields)
