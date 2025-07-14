@@ -116,7 +116,7 @@ tasks:
     task:
       id: 033a3572-80ae-4975-9d59-b474407fce47
       version: -1
-      name: Checks if the process has a bad reputation or found related alerts indicating a malicious activity
+      name: Checks if the processes have a bad reputation
       description: |
         Determines the appropriate verdict based on the process reputation.
       type: condition
@@ -6255,7 +6255,7 @@ tasks:
     task:
       id: a0da660f-fb09-40ff-98cf-a3ff97c4f097
       version: -1
-      name: Checks if the process has a bad reputation or found related alerts indicating a malicious activity
+      name: Checks if found related alerts indicating a malicious activity
       description: Determines the appropriate verdict based on the related alert within the current incident.
       type: condition
       iscommand: false
