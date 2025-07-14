@@ -90,48 +90,45 @@ script:
   commands:
   - description: Run this command to start the authorization process and follow the instructions in the command results.
     name: msg-defender-threat-intel-auth-start
-  - description: "Run this command to complete the authorization process.\nShould be used after running the msgraph-identity-auth-start command."
+  - description: Run this command to complete the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command.
     name: msg-defender-threat-intel-auth-complete
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: Article ID to retrieve specific article details.
       name: article_id
     - defaultvalue: '50'
-      description: 'Number of incidents in the list.'
+      description: Number of incidents in the list.
       name: limit
     - default: false
-      description: 'Filter incidents using "odata" query.'
+      description: Filter incidents using "odata" query.
       name: odata
     deprecated: false
-    description: 'Get articles including their properties and relationships.'
+    description: Get articles including their properties and relationships.
     execution: false
     name: msg-defender-threat-intel-article-list
 
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The unique identifier of the article.
       name: article_id
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The unique identifier of a specific indicator within the article.
       name: article_indicator_id
     - defaultvalue: '50'
-      description: 'Number of incidents in the list.'
+      description: Number of incidents in the list.
       name: limit
     - default: false
-      description: 'Filter incidents using "odata" query.'
+      description: Filter incidents using "odata" query.
       name: odata
     deprecated: false
-    description: 'Get indicators of threat or compromise related to the contents of an article.'
+    description: Get indicators of threat or compromise related to the contents of an article.
     execution: false
     name: msg-defender-threat-intel-article-indicators-list
 
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The unique identifier of the intelligence profile.
       name: intel_profile_id
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: article_indicator_id
     - defaultvalue: '50'
       description: 'Number of incidents in the list.'
       name: limit
@@ -145,32 +142,32 @@ script:
 
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The unique identifier of the intelligence profile.
       name: intel_profile_id
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The unique identifier of a specific indicator related to an intelligence profile.
       name: intel_profile_indicator_id
     - defaultvalue: '50'
-      description: 'Number of incidents in the list.'
+      description: Number of incidents in the list.
       name: limit
     - default: false
-      description: 'Filter incidents using "odata" query.'
+      description: Filter incidents using "odata" query.
       name: odata
     deprecated: false
-    description: 'Get Intelligence Profiles Indicators and their properties.'
+    description: Get Intelligence Profiles Indicators and their properties.
     execution: false
     name: msg-defender-threat-intel-profile-indicators-list
 
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The unique identifier of the host.
       name: host_id
       required: true
     - default: false
-      description: 'Filter incidents using "odata" query.'
+      description: Filter incidents using "odata" query.
       name: odata
     deprecated: false
-    description: 'Read the properties and relationships of a host object.'
+    description: Read the properties and relationships of a host object.
     execution: false
     name: msg-defender-threat-intel-host
 
@@ -180,16 +177,16 @@ script:
       description: 'hostname or IP address.'
       name: host_id
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The unique identifier of a specific whois record.
       name: whois_record_id
     - default: false
-      description: 'Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.'
+      description: Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.
       name: odata
     - default: false
-      description: 'Number of records in the list.'
+      description: Number of records in the list.
       name: limit
     deprecated: false
-    description: 'Get the specified whoisRecord resource.'
+    description: Get the specified whoisRecord resource.
     execution: false
     name: msg-defender-threat-intel-host-whois
 
@@ -198,10 +195,10 @@ script:
       description: 'hostname or IP address.'
       name: host_id
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The unique identifier of the whois record whose history you want to retrieve.
       name: whois_record_id
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: The unique identifier of a specific WHOIS history record.
       name: whois_history_record_id
     - default: false
       description: 'Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.'

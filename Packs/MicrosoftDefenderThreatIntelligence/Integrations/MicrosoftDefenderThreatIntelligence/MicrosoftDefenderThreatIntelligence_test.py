@@ -95,7 +95,7 @@ def test_article_indicators_list_command_with_article_id():
                                    "test_data/article_indicators_list_with_article_id.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
+    client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
     
     args = {"article_id": "article123"}
     result = article_indicators_list_command(client, args)
@@ -120,7 +120,7 @@ def test_article_indicators_list_command_with_article_indicator_id():
                                    "test_data/article_indicators_list_with_article_indicator_id.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
+    client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
     
     args = {"article_indicator_id": "specific_indicator"}
     result = article_indicators_list_command(client, args)
@@ -144,7 +144,7 @@ def test_article_indicators_list_command_with_empty_response():
     
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
+    client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
     
     args = {"article_id": "empty_article"}
     result = article_indicators_list_command(client, args)
@@ -167,7 +167,7 @@ def test_article_indicators_list_command_with_missing_artifact():
     
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
+    client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
     
     args = {"article_id": "mixed_article"}
     result = article_indicators_list_command(client, args)
