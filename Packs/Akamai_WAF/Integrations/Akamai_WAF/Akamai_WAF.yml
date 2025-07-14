@@ -1607,7 +1607,7 @@ script:
       - 'False'
     - auto: PREDEFINED
       defaultValue: SPLUNK
-      description: 'The destination configuration in the stream to send logs. See Destinations for details and features available for each destination. Note: "SPLUNK" and "HTTPS" are the only two types tested.'
+      description: 'The destination configuration in the stream to send logs. Note: "SPLUNK" and "HTTPS" are the only two types tested.'
       name: destination_type
       predefined:
       - HTTPS
