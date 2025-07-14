@@ -1570,7 +1570,7 @@ script:
     - description: The unique identifier of the properties that belong to the same product and to be monitored in the stream. Note that a stream can only log data for active properties. A property can be activated in Property Manager.
       isArray: true
       name: properties
-    - description: The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines. See Data set parameters for the complete list of the fields you can choose.
+    - description: The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines.
       isArray: true
       name: dataset_fields
     - auto: PREDEFINED
