@@ -3,16 +3,14 @@ version: -1
 name: silent-Suspicious Local User Account Creation
 description: |-
   This playbook addresses the following alerts:
-  - Suspicious local user account creation
+  - Suspicious Local User Account Creation
 
   Playbook Stages:
 
   Triage:
-
   - Retrieve extra information about the alert, such as the SID of the created user.
 
   Investigation:
-
   - Get host risk level for the machine where the user was created.
   - Search for related alerts in the incident that hint of privilege escalation or persistence.
   - Retrieve local user password expiration status using PowerShell commands.
@@ -22,7 +20,6 @@ description: |-
   - Check creator's historical user creation patterns.
 
   Containment:
-
   - Analyze evidence using multiple indicators to determine if the alert is a true positive, false positive, or inconclusive.
   - For true positives: Automatically disable the suspicious local user account.
   - Present analyst review with comprehensive findings including related alerts, privileged groups, host/user risk levels, and suspicious command lines.
@@ -55,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 37
+          "y": 30
         }
       }
     note: false
@@ -1280,8 +1277,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 448,
-          "y": 3143
+          "x": 450,
+          "y": 2972
         }
       }
     note: false
@@ -1505,23 +1502,43 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: afa2e31c-a222-4b52-85b8-0f99b239ac5f
+    taskid: dc27eae2-8d97-4984-aa18-23616573b477
     type: regular
     task:
-      id: afa2e31c-a222-4b52-85b8-0f99b239ac5f
+      id: dc27eae2-8d97-4984-aa18-23616573b477
       version: -1
-      name: Get creator user risk level
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
-      script: '|||core-list-risky-users'
+      name: Get creator user info & risk level
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "50"
     scriptarguments:
-      user_id:
-        simple: ${Core.OriginalAlert.event.normalized_evtlog_subject_user}
+      user_name:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: normalized_evtlog_subject_user
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: .*\\(.*)
+              unpack_matches: {}
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.normalized_evtlog_subject_user
+                iscontext: true
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1540,10 +1557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 69c50e13-2d1b-4894-8b97-cdf511817bf0
+    taskid: 5114b746-a120-42b6-a466-c79725478175
     type: regular
     task:
-      id: 69c50e13-2d1b-4894-8b97-cdf511817bf0
+      id: 5114b746-a120-42b6-a466-c79725478175
       version: -1
       name: Save creator user risk to evidence
       description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
@@ -1559,10 +1576,27 @@ tasks:
         simple: Evidence.CreatorUserRisky
       value:
         complex:
-          root: Core.RiskyUser
-          accessor: risk_level
+          root: UserData
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.Username
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.normalized_evtlog_subject_user
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.Source
+                iscontext: true
+              right:
+                value:
+                  simple: Cortex Core - IR
+          accessor: RiskLevel
           transformers:
-          - operator: FirstArrayElement
           - operator: DT
             args:
               dt:
@@ -2111,7 +2145,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "68"
+      - "71"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2173,88 +2207,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1183,
-          "y": 3010
+          "x": 1186,
+          "y": 2804
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
-    taskid: 971323dd-1c06-4fb6-8574-0542edec8d86
-    type: condition
-    task:
-      id: 971323dd-1c06-4fb6-8574-0542edec8d86
-      version: -1
-      name: Check Active Directory availability
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "70"
-      "yes":
-      - "69"
-    scriptarguments:
-      brandname:
-        simple: Active Directory Query v2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 785,
-          "y": 2635
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
-    taskid: 1a251d63-830b-4137-9418-dbe014dcf3e1
-    type: regular
-    task:
-      id: 1a251d63-830b-4137-9418-dbe014dcf3e1
-      version: -1
-      name: Attempt to get creator from AD
-      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
-      script: '|||ad-get-user'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "71"
-    scriptarguments:
-      limit:
-        simple: "1"
-      username:
-        simple: ${Core.OriginalAlert.event.action_evtlog_data_fields.SubjectUserName}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 786,
-          "y": 2761
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2283,8 +2243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1577,
-          "y": 3010
+          "x": 1584,
+          "y": 2804
         }
       }
     note: false
@@ -2296,10 +2256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 70bd4180-9118-4b10-bcf4-965888cafc55
+    taskid: f2957793-4404-4fe5-88a9-53aaec06ba97
     type: condition
     task:
-      id: 70bd4180-9118-4b10-bcf4-965888cafc55
+      id: f2957793-4404-4fe5-88a9-53aaec06ba97
       version: -1
       name: Check user type
       description: Checks if the user is a local or domain user.
@@ -2311,21 +2271,59 @@ tasks:
       - "67"
       Domain:
       - "72"
+      Undetermined:
+      - "70"
     separatecontext: false
     conditions:
+    - label: Undetermined
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: UserData.Source
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Source
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+            iscontext: true
     - label: Domain
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ActiveDirectory.Users.sAMAccountName
+              complex:
+                root: UserData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Username
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.evtlog_subject_username
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: UserData.Source
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 786,
-          "y": 2882
+          "y": 2636
         }
       }
     note: false
@@ -2364,7 +2362,7 @@ tasks:
       {
         "position": {
           "x": 786,
-          "y": 3010
+          "y": 2804
         }
       }
     note: false
@@ -2388,20 +2386,19 @@ view: |-
       "54_58_#default#": 0.29,
       "56_37_#default#": 0.25,
       "62_33_#error#": 0.1,
-      "68_70_#default#": 0.28
+      "71_72_Domain": 0.45
     },
     "paper": {
       "dimensions": {
-        "height": 3176,
-        "width": 3549,
+        "height": 3012,
+        "width": 3556,
         "x": -1591,
-        "y": 37
+        "y": 30
       }
     }
   }
 inputs: []
 outputs: []
-issilent: true
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
