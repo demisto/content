@@ -99,6 +99,9 @@ class Client(BaseClient):
         except Exception as e:
             demisto.info(f"Error while fetching download link: {e}")
             download_link = load_azure_download_link()
+            demisto.debug(f"Loaded cached download link: {download_link}")
+            if not download_link:
+                raise DemistoException("Unable to get download link.")
 
         return download_link
 
