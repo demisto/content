@@ -1384,7 +1384,7 @@
 									"conditions": {
 										"isContext": false,
 										"value": {
-											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{display_name}  + \" - Detection ID: \" + #{composite_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n     \"condition\": \"#{incident_type} == 'On-Demand Scans detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'OFP detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n   \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{composite_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
+											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{display_name}  + \" - Detection ID: \" + #{composite_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n     \"condition\": \"#{incident_type} == 'On-Demand Scans detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'OFP detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'ngsiem_detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n     \"condition\": \"#{incident_type} == 'thirdparty_detection'\",\n   \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n{\n   \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{composite_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
 										}
 									},
 									"flags": {
@@ -1436,7 +1436,146 @@
 					}
 				}
 			}
-		}
+		}, 
+        "CrowdStrike Falcon Third Party Detection": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Behaviour Tactic": {
+					"simple": "tactic"
+				},
+				"CrowdStrike Falcon Crawled Timestamp": {
+					"simple": "crawled_timestamp"
+				},
+				"CrowdStrike Falcon Detection Type": {
+					"simple": "type"
+				},
+				"CrowdStrike Falcon Pattern ID": {
+					"simple": "pattern_id"
+				},
+				"Display Name": {
+					"simple": "display_name"
+				},
+				"Domain Name": {
+					"simple": "data_domains"
+				},
+				"Last Update Time": {
+					"simple": "updated_timestamp"
+				},
+				"Source IP": {
+					"simple": "source_endpoint_address_ip4"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"Tags": {
+					"simple": "tags"
+				},
+				"Threat Name": {
+					"simple": "name"
+				},
+				"User SID": {
+					"simple": "user_sid"
+				},
+				"Vendor Product": {
+					"simple": "product"
+				},
+				"occurred": {
+					"simple": "created_timestamp"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+                "User Id": {
+                    "simple": "user_id"
+                },
+                "Username": {
+                    "simple": "user_name"
+                },
+                "Source IPV6": {
+                    "simple": "source_endpoint_address_ip6"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
+			}
+		},
+        "CrowdStrike Falcon NGSIEM Detection": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+                "occurred": {
+					"simple": "created_timestamp"
+				},
+                "severity": {
+					"simple": "severity"
+				},
+                "CrowdStrike Falcon Crawled Timestamp": {
+					"simple": "crawled_timestamp"
+				},
+                "Description": {
+					"simple": "description"
+				},
+                "Domain Name": {
+					"simple": "data_domains"
+				},
+                "Display Name": {
+					"simple": "display_name"
+				},
+                "Destination IPs": {
+                    "simple": "destination_ips"
+                },
+                "End Time": {
+                    "simple": "end_time"
+                },
+                "Threat Name": {
+					"simple": "name"
+				},
+				"CrowdStrike Falcon Pattern ID": {
+					"simple": "pattern_id"
+				},
+				"Vendor Product": {
+					"simple": "product"
+				},
+                "Source IPs": {
+                    "simple": "source_ips"
+                },
+                "Start Time": {
+                    "simple": "start_time"
+                },
+                "State": {
+					"simple": "status"
+				},
+                "Tactic ID": {
+					"simple": "tactic_id"
+				},
+                "Behaviour Tactic": {
+					"simple": "tactic"
+				},
+                "Last Update Time": {
+					"simple": "updated_timestamp"
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
+            }
+        }
     },
     "name": "CrowdStrike Falcon Mapper",
     "type": "mapping-incoming",
