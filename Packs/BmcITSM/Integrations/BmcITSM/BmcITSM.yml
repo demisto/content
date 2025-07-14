@@ -128,6 +128,7 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR.
   defaultvalue: "false"
@@ -136,6 +137,7 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM.
   defaultvalue: "false"
@@ -144,6 +146,7 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  - platform
   required: false
 - name: proxy
   display: Use system proxy settings
@@ -169,7 +172,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.

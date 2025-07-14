@@ -9,7 +9,7 @@ tags:
 - transformer
 - entirelist
 - general
-comment: Accepts a json object and returns a markdown.
+comment: Accepts a json object and returns a markdown. Supports clickable links.
 enabled: true
 args:
 - name: value
@@ -24,9 +24,11 @@ args:
   description: Try transforming complex JSON automatically.
 - name: json_transform_properties
   description: 'Transformation JSON from value to strings. The syntax is: `{"header_key": {"keys": [<item1>, ...], "is_nested": true/false}}`.'
+- name: url_keys
+  description: Comma-separated list of keys in the given JSON table that should be turned into a clickable URL.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 tests:
 - JsonToTable - Test Playbook

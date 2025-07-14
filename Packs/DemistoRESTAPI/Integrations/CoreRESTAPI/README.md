@@ -7,7 +7,7 @@
 | API Key ID | The API Key ID that is linked to the API Key (relevant for Cortex XSIAM and Cortex XSOAR 8.0.0 and above). | True |
 | API Key (Password) | The core server API key. | True |
 | Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
-| Base marketplace url | The base url for the tenant marketplace. | False | 
+| Base marketplace url | The base url for the tenant marketplace. | False |
 | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
 | Use system proxy settings | Use system proxy settings. | False |
 
@@ -278,7 +278,7 @@ There is no context output for this command.
 ### core-api-file-delete
 
 ***
-Delete a file from Cortex XSOAR by entry_id.
+Delete a war room (investigation) file entry.
 
 #### Base Command
 
@@ -297,7 +297,7 @@ There is no context output for this command.
 ### core-api-file-attachment-delete
 
 ***
-Delete the attachment from the incident and from the Cortex XSOAR server.
+Delete a file attachment from an incident — specifically from the incident’s file attachments (not from the war room).
 
 #### Base Command
 
