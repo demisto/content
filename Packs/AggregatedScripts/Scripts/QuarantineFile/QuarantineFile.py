@@ -290,7 +290,7 @@ def get_endpoints_to_quarantine_with_xdr(
         verbose_command_results.append(response[1])  # type: ignore
         quarantine_status = list(response[0][0].values())[0].get("status")
         if quarantine_status:
-            message = "already quarantined"
+            message = "Already quarantined."
             readable_context.append({"endpoint_id": e_id, "message": message})
             context.append(
                 {
@@ -358,7 +358,7 @@ def xdr_quarantine_file(
                 val = list(response[0][0].values())[0]
                 quarantine_status = val.get("status")
                 if quarantine_status:
-                    message = "File successfully quarantined"
+                    message = "File successfully quarantined."
                 else:
                     message = f"Failed to quarantine file. {val.get('error_description')}"
         else:
@@ -440,8 +440,8 @@ def quarantine_file_script(args: dict[str, Any]) -> list[CommandResults]:
     quarantine_brands = list(set(supported_brands) & set(enabled_brands))
     if not quarantine_brands:
         raise DemistoException(
-            "Could not find enabled integrations for the requested hash type."
-            f"for hash_type {hash_type} please use {integration_for_hash}"
+            "Could not find enabled integrations for the requested hash type.\n"
+            f"For hash_type {hash_type.upper()} please use {integration_for_hash}."
         )
     if hash_type == HASH_SHA1:
         # supported only by MDE
