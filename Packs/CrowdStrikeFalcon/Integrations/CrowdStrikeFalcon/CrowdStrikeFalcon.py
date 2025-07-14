@@ -1562,6 +1562,8 @@ def get_token_request():
     """
     body = {"client_id": CLIENT_ID, "client_secret": SECRET}
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    demisto.debug(f"In get_token_request, body is {body}")
+    demisto.debug(f"In get_token_request, headers is {headers}")
     token_res = http_request("POST", "/oauth2/token", data=body, headers=headers, get_token_flag=False)
     demisto.debug(f"In get_token_request, token_res is not None {token_res is not None}")
     if not token_res:
@@ -3062,8 +3064,16 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     if raw_res is not None and "resources" in raw_res:
         full_detections = demisto.get(raw_res, "resources")
         for detection in full_detections:
-            detection["incident_type"] = incident_type
-            # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
+            # the following test is to filter out detections that are older than the start_fetch_time.
+            # The CS Falcon API does not do that reliably
+            created_time = detection.get("created_timestamp")
+            create_date = datetime.fromisoformat(created_time.replace('Z', '+00:00'))
+            start_date = datetime.fromisoformat(start_fetch_time.replace('Z', '+00:00'))
+            if create_date < start_date:
+                demisto.debug(
+                    f"CrowdStrikeFalconMsg: Detection {detection_id} created at {created_time} "
+                    f"was created before the fetch start date: {start_fetch_time}"
+                )
             detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
             demisto.debug(
                 f"CrowdStrikeFalconMsg: Detection {detection_id} "
