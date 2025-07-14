@@ -1,8 +1,8 @@
 id: Detonate File - ANYRUN
 version: -1
 name: Detonate File - ANYRUN
-deprecated: true
-description: Deprecated. Use ANY.RUN Detonate File [Windows, Linux, Android] instead.
+description: |-
+  Deprecated. Use ANY.RUN Detonate File [Windows, Linux, Android] instead.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -513,3 +513,4 @@ outputs:
   type: String
 tests:
 - Detonate File From URL - ANYRUN - Test
+deprecated: true

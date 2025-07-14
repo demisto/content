@@ -5,6 +5,7 @@ TI Lookup is a searchable database of IOCs, IOAs, IOBs, and events for threat hu
 Perform deep searches, look up threats online, and enrich your security solutions.
 
 ## Generate API token
+
 * Follow [ANY.RUN Sandbox](https://app.any.run/)
 * [1] Profile > [2] API and Limits > [3] Generate > [4] Copy
 

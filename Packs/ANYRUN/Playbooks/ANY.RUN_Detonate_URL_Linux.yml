@@ -1,7 +1,7 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97cy
 version: -1
 name: ANY.RUN Detonate Url Linux
-fromversion: 8.0.0
+fromversion: 6.0.0
 description: This playbook submits a URL extracted from an indicator to the 
   ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. 
   It automates the analysis of potentially malicious URLs on Ubuntu OS.

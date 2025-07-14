@@ -1,8 +1,7 @@
 category: Forensics & Malware Analysis
-deprecated: true
 sectionOrder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 commonfields:
   id: ANYRUN
   version: -1
@@ -395,3 +394,4 @@ script:
 tests:
 - ANYRUN-Test
 fromversion: 5.0.0
+deprecated: true

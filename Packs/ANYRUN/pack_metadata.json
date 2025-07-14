@@ -8,8 +8,8 @@
     "email": "anyrun-integrations@any.run",
     "created": "2025-07-01T00:00:00Z",
     "categories": [
-       "Forensics & Malware Analysis",
-       "Data Enrichment & Threat Intelligence"
+        "Forensics & Malware Analysis",
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
         "Malware",
@@ -17,10 +17,10 @@
         "Feed"
     ],
     "useCases": [
-       "Ransomware",
-       "Malware",
-       "Phishing",
-       "Threat Intelligence Management"
+        "Ransomware",
+        "Malware",
+        "Phishing",
+        "Threat Intelligence Management"
     ],
     "keywords": [
         "enrichment",

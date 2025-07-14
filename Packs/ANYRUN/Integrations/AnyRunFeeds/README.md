@@ -1,6 +1,7 @@
 Threat Intelligence Feeds provide data on the known indicators of compromise: malicious IPs, URLs, Domains
 
 ## Generate Basic auth token
+
 Please Contact your ANY.RUN account manager to get your basic token
 
 ## Configure ANY.RUN Feeds in Cortex

@@ -107,4 +107,4 @@ script:
   feed: true
 tests:
 - No tests
-fromversion: 8.0.0
+fromversion: 6.0.0

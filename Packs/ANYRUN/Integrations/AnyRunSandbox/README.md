@@ -17,6 +17,7 @@ ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool fo
 5. Download file submission sample, analysis network traffic dumps
 
 ## Generate API token
+
 * Follow [ANY.RUN Sandbox](https://app.any.run/)
 * [1] Profile > [2] API and Limits > [3] Generate > [4] Copy
 
@@ -335,6 +336,7 @@ Deletes analysis task according to specified task uuid.
 #### Context Output
 
 There is no context output for this command.
+
 ### anyrun-get-analysis-report
 
 ***
@@ -609,6 +611,7 @@ Returns the analysis network traffic dump.
 #### Context Output
 
 There is no context output for this command.
+
 ### anyrun-download-analysis-sample
 
 ***
@@ -627,6 +630,7 @@ Returns the analysis file in zip archive. Archive password: infected.
 #### Context Output
 
 There is no context output for this command.
+
 ### anyrun-get-analysis-verdict
 
 ***

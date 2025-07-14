@@ -1,8 +1,6 @@
 id: Detonate File From URL - ANYRUN - Test
 version: -1
 name: Detonate File From URL - ANYRUN - Test
-deprecated: true
-description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -108,6 +107,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -133,6 +133,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -159,3 +160,5 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+deprecated: true
+description: Deprecated. No available replacement.

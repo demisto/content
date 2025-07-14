@@ -1,10 +1,8 @@
-id: ce53a5d0-8f43-49b0-8467-ed091bcd0be6
+id: ANY.RUN Detonate Url Android
 version: -1
 name: ANY.RUN Detonate Url Android
-fromversion: 8.0.0
-description: This playbook submits a URL extracted from an indicator to the 
-  ANY.RUN cloud sandbox for dynamic analysis in an Android environment. 
-  It automates the analysis of potentially malicious URLs on Android OS.
+fromversion: 6.0.0
+description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It automates the analysis of potentially malicious URLs on Android OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -172,8 +170,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
     nexttasks:
       '#default#':
       - "5"
@@ -213,8 +210,7 @@ tasks:
       id: 6bda10d8-8658-450e-9c09-071864fe4814
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -251,8 +247,7 @@ tasks:
       id: 4265cf78-40be-41bb-99bb-027a1b4b7ef6
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -296,8 +291,7 @@ tasks:
       id: 790bca60-a62d-49d1-a058-c8cbb0bb30e7
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected,
-        Suspicious activity, Malicious activity'
+      description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -384,74 +378,73 @@ inputs:
     simple: ${URL.Data}
   required: false
   description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link).'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex:
-    "en-US" or "Brazil"). Case insensitive.'
-  playbookInputQuery: null
+  description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive.'
+  playbookInputQuery:
 - key: opt_network_connect
   value:
     simple: "True"
   required: false
   description: Network connection state.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_fakenet
   value:
     simple: "False"
   required: false
   description: FakeNet feature status.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_tor
   value:
     simple: "False"
   required: false
   description: TOR using.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_geo
   value:
     simple: fastest
   required: false
   description: 'Tor geo location option. Example: US, AU.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_mitm
   value:
     simple: "False"
   required: false
   description: HTTPS MITM proxy option.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_residential_proxy
   value:
     simple: "False"
   required: false
   description: Residential proxy using.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_network_residential_proxy_geo
   value:
     simple: fastest
   required: false
   description: 'Residential proxy geo location option. Example: US, AU.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
   description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: opt_timeout
   value:
     simple: "60"
   required: false
   description: 'Timeout option. Size range: 10-660.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: obj_ext_browser
   value:
     simple: Google Chrome
   required: false
   description: 'Browser name. Supports: Google Chrome, Mozilla Firefox'
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - obj_url
@@ -482,5 +475,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-sourceplaybookid: 52d278a0-2905-4a37-8379-4853a06f65d8
 quiet: true
+tests:
+- No tests (auto formatted)

@@ -1,10 +1,8 @@
-id: 04275315-7598-4042-8fdb-5f93d3ea97cl
+id: ANY.RUN Detonate Url Windows
 version: -1
 name: ANY.RUN Detonate Url Windows
-fromversion: 8.0.0
-description: This playbook submits a URL extracted from an indicator to the 
-  ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. 
-  It automates the analysis of potentially malicious URLs on Windows OS.
+fromversion: 6.0.0
+description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It automates the analysis of potentially malicious URLs on Windows OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -180,8 +178,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
     nexttasks:
       '#default#':
       - "5"
