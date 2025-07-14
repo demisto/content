@@ -1683,7 +1683,7 @@ def get_last_run(client: EWSClient, last_run=None):
         last_run = {
             LAST_RUN_TIME: None,
             LAST_RUN_FOLDER: client.folder_name,
-            LAST_RUN_IDS: [],
+            LAST_RUN_IDS_DICT_REPRESENTATION: {},
         }
     if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] is not None:
         last_run[LAST_RUN_TIME] = EWSDateTime.from_string(last_run[LAST_RUN_TIME])
