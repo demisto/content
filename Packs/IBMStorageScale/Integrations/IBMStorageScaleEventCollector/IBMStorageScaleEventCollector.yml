@@ -1,0 +1,80 @@
+commonfields:
+  id: IBM Storage Scale
+  version: -1
+name: IBM Storage Scale
+display: IBM Storage Scale
+category: Data Storage
+description: |
+  Collects Command Line Interface (CLI) audit log records from IBM Storage Scale.
+detaileddescription: ''
+configuration:
+- name: server_url
+  display: Server URL
+  help: The base URL of the IBM Storage Scale API server (e.g., https://192.168.1.100:443).
+  type: 0
+  required: true
+- name: credentials
+  display: Credentials
+  help: Username and password for API access. The user should have the ProtocolAdmin role.
+  type: 9
+  required: true
+- name: isFetch
+  display: Fetch events
+  type: 8
+  required: false
+  section: Collect
+- name: max_fetch
+  display: Maximum number of events per fetch
+  help: The maximum number of events to pull in a single fetch-events cycle.
+  defaultvalue: '10000'
+  type: 0
+  required: false
+  section: Collect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.83255
+  isfetch: true
+  commands:
+  - name: test-module
+    description: Tests API connectivity.
+  - name: fetch-events
+    description: Fetches audit log events for ingestion.
+  - name: ibm-storage-scale-get-events
+    description: Gets audit log events for interactive investigation.
+    arguments:
+    - name: limit
+      default: false
+      description: The maximum number of events to return. Default is 50.
+      required: false
+    outputs:
+    - contextPath: IBMStorageScale.AuditLog.oid
+      description: The unique identifier for the audit record.
+      type: Number
+    - contextPath: IBMStorageScale.AuditLog.entryTime
+      description: The timestamp when the command was logged.
+      type: String
+    - contextPath: IBMStorageScale.AuditLog.user
+      description: The user who executed the command.
+      type: String
+    - contextPath: IBMStorageScale.AuditLog.command
+      description: The command that was executed.
+      type: String
+    - contextPath: IBMStorageScale.AuditLog.node
+      description: The node where the command was executed.
+      type: String
+    - contextPath: IBMStorageScale.AuditLog.returnCode
+      description: The return code of the command.
+      type: Number
+    - contextPath: IBMStorageScale.AuditLog.originator
+      description: The origin of the command (e.g., GUI, CLI).
+      type: String
