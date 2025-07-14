@@ -2111,7 +2111,7 @@ Creates a stream configuration. Within a stream configuration, you can select pr
 | group_id | The unique identifier of the group that has access to the product and this stream configuration. | Required |
 | contract_id | The unique identifier of the contract that has access to the product. | Optional |
 | properties | The unique identifier of the properties that belong to the same product and to be monitored in the stream. Note that a stream can only log data for active properties. A property can be activated in Property Manager. | Optional |
-| dataset_fields | The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines. See Data set parameters for the complete list of the fields you can choose. | Optional |
+| dataset_fields | The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines. | Optional |
 | interval_in_seconds | The interval in seconds (30 or 60) after which the system bundles log lines into a file and sends it to a destination. Possible values are: 30, 60. | Optional |
 | log_format | The format in which you want to receive log files. STRUCTURED or JSON are the currently available formats. When the delimiter is present in the request, STRUCTURED format needs to be defined. | Optional |
 | field_delimiter | A delimiter that separates data set fields in the log lines, either SPACE or TAB. Set this only for the STRUCTURED log file format. | Optional |
