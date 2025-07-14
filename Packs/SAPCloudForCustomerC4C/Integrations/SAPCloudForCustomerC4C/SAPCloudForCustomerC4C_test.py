@@ -6,6 +6,7 @@ from CommonServerPython import *  # noqa: F401
 SAP_CLOUD = "SAP CLOUD FOR CUSTOMER"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC
 URL_SUFFIX = "/sap/c4c/odata/ana_businessanalytics_analytics.svc/"
+STRFTIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 
 
 def mock_client():
@@ -300,7 +301,7 @@ def test_get_events_command_success_single_page(mocker):
     # # Assert the returned values
     assert events_list == expected_events
     assert cmd_results.raw_response == expected_events
-    assert f"### Test Event for {SAP_CLOUD}" in cmd_results.readable_output
+    assert f"### Events from {SAP_CLOUD}" in cmd_results.readable_output
     assert "|CBROWSER|CDEVICE_TYPE|CTIMESTAMP|__metadata|" in cmd_results.readable_output
 
 
@@ -399,7 +400,7 @@ def test_get_events_command_success_multiple_pages(mocker):
 
     assert events_list == expected_all_events
     assert cmd_results.raw_response == expected_all_events
-    assert f"### Test Event for {SAP_CLOUD}" in cmd_results.readable_output
+    assert f"### Events from {SAP_CLOUD}" in cmd_results.readable_output
 
 
 def test_get_events_command_no_start_date():
@@ -407,18 +408,15 @@ def test_get_events_command_no_start_date():
     Tests the behavior of `get_events_command` when the 'start_date' argument is missing.
 
     This test verifies that the `get_events_command` function correctly handles
-    the absence of the mandatory 'start_date' argument, ensuring it returns
-    an empty list for events and an appropriate error message in the command results.
+    the absence of the mandatory 'start_date' argument, ensuring it raises an exception when the required 'start_date' argument
+    is missing.
 
     When:
         - Running the `get_events_command` function with the missing 'start_date' argument.
     Then:
         Verify that:
-        - The `events` list returned by the command is empty.
-        - The `readable_output` in `cmd_results` contains the expected error message
-          indicating that 'start_date' is required.
-        - The `raw_response` in `cmd_results` is an empty dictionary, as no API call
-          would have been made.
+        - Tests that `get_events_command` raises an exception.
+        - A `DemistoException` is raised with a message indicating that 'start_date' is required.
     """
     from SAPCloudForCustomerC4C import get_events_command
 
@@ -426,12 +424,10 @@ def test_get_events_command_no_start_date():
     report_id = "general_reportID"
     args = {"limit": 10}  # Missing start_date
 
-    expected_cmd_results = "Error: 'start_date' argument is required."
+    with pytest.raises(DemistoException) as excinfo:
+        get_events_command(mock_client_instance, report_id, args)
 
-    events, cmd_results = get_events_command(mock_client_instance, report_id, args)
-    assert events == []
-    assert cmd_results.readable_output == expected_cmd_results
-    assert cmd_results.raw_response == {}
+    assert "start_date argument is missing. Cannot retrieve events." in str(excinfo.value)
 
 
 def test_fetch_events_first_fetch_success(mocker):
@@ -625,3 +621,67 @@ def test_fetch_events_dateparser_fallback(mocker):
 
     assert fetched_events == expected_events
     assert next_run == {"last_fetch": fixed_now_dt.strftime(DATE_FORMAT)}
+
+
+def test_fetch_events_subsequent_fetch_with_overlap(mocker):
+    """
+    Tests a subsequent fetch, ensuring that events from a desired overlapping time window
+    are included.
+
+    This test simulates a scenario where a previous `last_fetch` timestamp exists.
+    The goal is to verify that the `fetch_events` function requests events starting
+    from a point before the `last_fetch` timestamp (e.g., 1 minute prior) to
+    ensure no events are missed due to precise timestamp boundaries or API delays.
+    It then checks if the returned events cover this overlap and if the `next_run`
+    state is correctly updated.
+
+    Given:
+        - `mocker`: A pytest fixture for mocking objects and methods.
+    When:
+        - Calling `fetch_events` with a mocked client, parameters, and a `last_run`
+          dictionary containing a `last_fetch` timestamp.
+    Then:
+        Verify that:
+        - The `get_events` method (which wraps the API call) is called with a
+          `start_date` filter that is one minute prior to the `last_fetch` timestamp.
+        - The `fetched_events` returned by `fetch_events` include events from
+          within and after the desired overlap window, matching `expected_events`.
+        - The `next_run` dictionary correctly contains `last_fetch` key with the
+          formatted `fixed_now_dt` as its value.
+    """
+    from SAPCloudForCustomerC4C import fetch_events
+
+    mock_client_instance = mock_client()
+    report_id = "general_reportID"
+    params = {"report_id": report_id, "max_fetch": 3}
+
+    # Simulate a previous last_fetch timestamp.
+    last_fetch_str = "2025-07-06T12:00:00Z"
+
+    # Define the current time for this fetch.
+    fixed_now_dt = datetime(2025, 7, 6, 12, 1, 0)  # Current time is 12:01:00Z
+
+    # Calculate the DESIRED start_date_for_filter for the API call.
+    desired_start_date_for_filter_dt = fixed_now_dt - timedelta(minutes=1)  # Start time is 12:00:00Z
+    expected_start_date_filter = desired_start_date_for_filter_dt.strftime(STRFTIME_FORMAT)
+
+    expected_events = [
+        {"CTIMESTAMP": "06-07-2025 12:00:00"},
+        {"CTIMESTAMP": "06-07-2025 12:00:30"},
+        {"CTIMESTAMP": "06-07-2025 12:00:59"},
+    ]
+
+    mocker.patch("SAPCloudForCustomerC4C.get_current_utc_time", return_value=fixed_now_dt)
+    mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": expected_events}})
+
+    next_run, fetched_events = fetch_events(mock_client_instance, params, last_run={"last_fetch": last_fetch_str})
+
+    assert fetched_events == expected_events
+    assert next_run == {"last_fetch": fixed_now_dt.strftime(DATE_FORMAT)}
+
+    expected_filter = f"CTIMESTAMP ge '{expected_start_date_filter}'"
+    mock_client_instance.http_request.assert_called_once_with(
+        method="GET",
+        url_suffix=f"{URL_SUFFIX}{report_id}?",
+        params={"$filter": expected_filter, "$skip": 0, "$top": 3, "$format": "json", "$inlinecount": "allpages"},
+    )

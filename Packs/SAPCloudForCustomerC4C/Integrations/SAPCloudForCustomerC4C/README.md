@@ -2,15 +2,16 @@ Use the SAP Cloud for Customer C4C Integration to fetch events from SAP Cloud.
 
 ## Configure SAP Cloud For Customer C4C in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Your server URL | True |
-| Username | True |
-| Password | True |
-| Report ID | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
-| Maximum number of audit events per fetch | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | | True |
+| Server URL | Confirm that the pre-filled URL matches the correct API endpoint for your SAP C4C integration instance. | True |
+| Username |  | True |
+| Password | | True |
+| Report ID | The unique identifier of the report to retrieve data from in SAP Cloud for Customer (C4C). | True |
+| Trust any certificate (not secure) | |  False |
+| Use system proxy settings |  | False |
+| Maximum number of audit events per fetch | Maximum number of events to retrieve per fetch. The default value is 10000. | False |
 
 ## Commands
 

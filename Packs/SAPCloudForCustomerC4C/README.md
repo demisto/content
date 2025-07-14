@@ -4,7 +4,7 @@ The SAP Cloud for Customer (C4C) integration facilitates the collection of audit
 
 #### This includes
 
-- Efficient Pagination: Supports client-side pagination with $top and $skip parameters to handle large datasets efficiently (up to 1,000 records per page)
+- Efficient Pagination: Supports client-side pagination with $top and $skip parameters to handle large datasets efficiently (up to 1,000 records per page).
 - Customizable Fetch Limit: Allows setting a maximum number of audit events to fetch per run (defaulting to 10,000).
 
 ### Configuration Parameters

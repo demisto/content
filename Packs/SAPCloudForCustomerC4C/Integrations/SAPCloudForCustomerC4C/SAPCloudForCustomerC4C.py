@@ -11,12 +11,15 @@ urllib3.disable_warnings()
 
 SAP_CLOUD = "SAP CLOUD FOR CUSTOMER"
 STRFTIME_FORMAT = "%d-%m-%Y %H:%M:%S"
-VENDOR = "SAP CLOUD"
+VENDOR = "SAP"
 PRODUCT = "C4C"
 FIRST_FETCH = "one minute ago"
 URL_SUFFIX = "/sap/c4c/odata/ana_businessanalytics_analytics.svc/"
 INIT_SKIP = 0
-DEFAULT_TOP = 1000
+DEFAULT_TOP = 1000  # Max number of events that are retrieved from the api response
+MAX_EVENTS_PER_FETCH = 10000
+DEFAULT_LIMIT_OF_EVENTS = 10
+DEFAULT_DAYS_FROM_START = 2
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC
 
 """ CLIENT CLASS """
@@ -29,7 +32,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url, base64String, verify):
         super().__init__(base_url=base_url, verify=verify, ok_codes=(200, 201, 202))
-        self.credentials = {"Authorization": "Basic " + base64String, "Content-Type": "application/json"}
+        self.credentials = {"Authorization": f"Basic  {base64String}", "Content-Type": "application/json"}
 
     def http_request(
         self,
@@ -114,7 +117,7 @@ def test_module(client: Client, report_id: str) -> str:
     url_suffix = f"{URL_SUFFIX}{report_id}?"
     client.http_request(
         "GET",
-        url_suffix=f"{url_suffix}",
+        url_suffix=url_suffix,
         params={"$inlinecount": "allpages", "$filter": "CUSER eq 'ASAHAYA'", "$top": 2, "$format": "json"},
     )
     return "ok"
@@ -172,14 +175,13 @@ def get_events_command(client: Client, report_id: str, args: dict) -> tuple[List
             - A list of events (List[Dict]): The raw list of retrieved events.
             - CommandResults: The command results object with a human-readable output table and raw response.
     """
-    limit: int = arg_to_number(args.get("limit")) or 10
+    limit: int = arg_to_number(args.get("limit")) or DEFAULT_LIMIT_OF_EVENTS
     start_date: Optional[str] = args.get("start_date")
     if not start_date:
         # Handle the case where start_date is missing, as it's required for get_events
-        demisto.debug("start_date argument is missing. Cannot retrieve events.")
-        return [], CommandResults(readable_output="Error: 'start_date' argument is required.", raw_response={})
+        raise DemistoException("start_date argument is missing. Cannot retrieve events.")
 
-    days_from_start: int = arg_to_number(args.get("days_from_start")) or 2
+    days_from_start: int = arg_to_number(args.get("days_from_start")) or DEFAULT_DAYS_FROM_START
     end_date: str = get_end_date(start_date, days=days_from_start)
 
     skip_count = 0
@@ -190,13 +192,14 @@ def get_events_command(client: Client, report_id: str, args: dict) -> tuple[List
         response = get_events(client, report_id, skip=skip_count, top=top, start_date=start_date, end_date=end_date)
         if response:
             all_events.extend(response)
+            # Since DEFAULT_TOP is always <= limit, incrementing skip_count by DEFAULT_TOP or top makes no difference here.
             skip_count += DEFAULT_TOP
             limit -= len(response)
         else:
             demisto.debug("No more events exist or no response received, breaking...")
             break
 
-    hr = tableToMarkdown(name=f"Test Event for {SAP_CLOUD}", t=all_events, removeNull=True, is_auto_json_transform=True)
+    hr = tableToMarkdown(name=f"Events from {SAP_CLOUD}", t=all_events, removeNull=True, is_auto_json_transform=True)
     return all_events, CommandResults(readable_output=hr, raw_response=all_events)
 
 
@@ -246,7 +249,8 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
             - The first element is a dictionary representing the next run, typically containing a 'last_fetch' timestamp.
             - The second element is a list of dictionaries, where each dictionary represents a fetched event.
     """
-    max_events_per_fetch = arg_to_number(params.get("max_fetch")) or 10000
+    max_events_per_fetch = arg_to_number(params.get("max_fetch")) or MAX_EVENTS_PER_FETCH
+    demisto.debug("starting the SAP C4C fetch events command.")
     report_id = params.get("report_id")
     if not isinstance(report_id, str):
         raise DemistoException("Report ID must be provided in the integration parameters and must be a string.")
@@ -266,7 +270,7 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
             start_date_for_filter = parsed_start_date.strftime(STRFTIME_FORMAT)
         else:
             # Fallback if parsing fails for some reason
-            demisto.info(f"Could not parse last_fetch: {start_date_str}. Falling back to {FIRST_FETCH}.")
+            demisto.debug(f"Could not parse last_fetch: {start_date_str}. Falling back to {FIRST_FETCH}.")
             start_date_for_filter = dateparser.parse(FIRST_FETCH).strftime(STRFTIME_FORMAT)  # type: ignore[union-attr]
     else:
         # For the very first fetch or if last_run is empty
@@ -279,14 +283,17 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
         response = get_events(client, report_id, skip=skip_count, top=top, start_date=start_date_for_filter)
         if response:
             all_events.extend(response)
+            # Since DEFAULT_TOP is always <= max_events_per_fetch, incrementing skip_count by DEFAULT_TOP or top makes no
+            # difference here.
             skip_count += DEFAULT_TOP
+            # Decrease max_events_per_fetch by the number of events received.
             max_events_per_fetch -= len(response)
         else:
             demisto.debug("No more events exist or no response received, breaking...")
             break
 
     demisto.debug(f"Fetched {len(all_events)} events.")
-    # next_run will be the current time when the fetch started
+    # Set next_run to the current time marking the start of this fetch
     next_run = {"last_fetch": now.strftime(DATE_FORMAT)}
     return next_run, all_events
 
@@ -304,21 +311,20 @@ def main():
     user_name = demisto.get(params, "username.identifier")
     password = demisto.get(params, "username.password")
     server_url = params.get("url", "").strip("/")
+    report_id = params.get("report_id")
     try:
         base64String = encode_to_base64(user_name + ":" + password)  # type: ignore
         client = Client(
-            base_url=f"{server_url}",
+            base_url=server_url,
             base64String=base64String,
             verify=not params.get("insecure", False),
         )
 
         if command == "test-module":
             # This call is made when clicking the integration 'Test' button.
-            report_id = params.get("report_id")
             return_results(test_module(client, report_id))  # Let test_module handle validation
 
         elif command == "sap-cloud-get-events":
-            report_id = params.get("report_id")
             events, results = get_events_command(client, report_id, args)
             should_push_events = argToBoolean(args.get("should_push_events", "false"))
             if should_push_events:
