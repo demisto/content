@@ -3994,7 +3994,7 @@ Show firewall device software version.
 ### pan-os-download-latest-content-update
 
 ***
-Downloads the latest content update.
+Downloads the latest app/threat dynamic update.
 
 #### Base Command
 
@@ -4004,26 +4004,16 @@ Downloads the latest content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the download job. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Download.JobID | String | Job ID of the content download. |
-| Panorama.Content.Download.Status | String | Content download status. |
-
-#### Command Example
-
-```!pan-os-download-latest-content-update```
-
-#### Human Readable Output
-
->### Content download
->
->|JobID|Status|
->|---|---|
->| 657 | Pending |
+| Panorama.Content.Download.JobID | String | The job ID of the app/threat download. |
+| Panorama.Content.Download.Status | String | The app/threat download status. |
+| Panorama.Content.Download.Details | String | The download job details. |
 
 ### pan-os-content-update-download-status
 
@@ -4064,7 +4054,7 @@ Checks the download status of a content update.
 ### pan-os-install-latest-content-update
 
 ***
-Installs the latest content update.
+Installs the latest app/threat dynamic update.
 
 #### Base Command
 
@@ -4074,26 +4064,16 @@ Installs the latest content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the install job. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Install.JobID | String | Job ID of the installation. |
-| Content.Install.Status | String | Installation status. |
-
-#### Command Example
-
-```!pan-os-install-latest-content-update```
-
-#### Human Readable Output
-
->### Result
->
->|JobID|Status|
->|---|---|
->| 878 | Pending |
+| Panorama.Content.Install.JobID | String | The job ID of the installation. |
+| Panorama.Content.Install.Status | String | The installation status. |
+| Panorama.Content.Install.Details | String | The install job details. |
 
 ### pan-os-content-update-install-status
 
@@ -9896,3 +9876,286 @@ Gathers the name, expiration date, and expiration status of certificates configu
 >| name | device | subject | expiration_date | expiration_status | location | cert_type | devices_using_certificate |
 >| --- | --- | --- | --- | --- | --- | --- | --- |
 >| ACME Root CA | panorama.test | /CN=acme-root-ca.acme.com | May  9 16:35:16 2026 GMT | Valid | Panorama | Pushed | 111111111111111 |
+
+### pan-os-check-dynamic-updates-status
+
+***
+Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+
+#### Base Command
+
+`pan-os-check-dynamic-updates-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.app-version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.current | String | Whether this version is currently active on the device. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.downloaded | String | Whether this version has been downloaded to the device. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.feature-desc | String | Detailed description of features provided. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.features | String | Features provided by this version. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.filename | String | Filename of the dynamic update. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.installing | String | Whether this version is being installed by a running job on the device. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.previous | String | Whether this version was previously active on the system and can be reverted to. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.release-notes | String | Link to release notes about the dynamic update package. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.released-on | Date | Date this version was released. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.sha256 | String | SHA256 hash of the dynamic update package file. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.size | String | Size of the dynamic update package file. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.size-kb | String | Size \(in KB\) of the dynamic update file. |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.update-type | String | Type of update package \(Full, Incremental, etc\) |
+| Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.AntiVirus.IsUpToDate | Boolean | Whether the latest available AntiVirus package is active on the device. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.app-version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.current | String | Whether this version is currently active on the device. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.downloaded | String | Whether this version has been downloaded to the device. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.feature-desc | String | Detailed description of features provided. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.features | String | Features provided by this version. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.filename | String | Filename of the dynamic update. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.installing | String | Whether this version is being installed by a running job on the device. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.previous | String | Whether this version was previously active on the system and can be reverted to. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.release-notes | String | Link to release notes about the dynamic update package. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.released-on | Date | Date this version was released. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.sha256 | String | SHA256 hash of the dynamic update package file. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.size | String | Size of the dynamic update package file. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.size-kb | String | Size \(in KB\) of the dynamic update file. |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.update-type | String | Type of update package \(Full, Incremental, etc\) |
+| Panorama.DynamicUpdates.AntiVirus.LatestAvailable.version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.app-version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.current | String | Whether this version is currently active on the device. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.downloaded | String | Whether this version has been downloaded to the device. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.feature-desc | String | Detailed description of features provided. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.features | String | Features provided by this version. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.filename | String | Filename of the dynamic update. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.installing | String | Whether this version is being installed by a running job on the device. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.previous | String | Whether this version was previously active on the system and can be reverted to. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.release-notes | String | Link to release notes about the dynamic update package. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.released-on | Date | Date this version was released. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.sha256 | String | SHA256 hash of the dynamic update package file. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.size | String | Size of the dynamic update package file. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.size-kb | String | Size \(in KB\) of the dynamic update file. |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.update-type | String | Type of update package \(Full, Incremental, etc\) |
+| Panorama.DynamicUpdates.Content.CurrentlyInstalled.version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.Content.IsUpToDate | Boolean | Whether the latest available App/Threat package is active on the device. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.app-version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.current | String | Whether this version is currently active on the device. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.downloaded | String | Whether this version has been downloaded to the device. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.feature-desc | String | Detailed description of features provided. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.features | String | Features provided by this version. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.filename | String | Filename of the dynamic update. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.installing | String | Whether this version is being installed by a running job on the device. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.previous | String | Whether this version was previously active on the system and can be reverted to. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.release-notes | String | Link to release notes about the dynamic update package. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.released-on | Date | Date this version was released. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.sha256 | String | SHA256 hash of the dynamic update package file. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.size | String | Size of the dynamic update package file. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.size-kb | String | Size \(in KB\) of the dynamic update file. |
+| Panorama.DynamicUpdates.Content.LatestAvailable.update-type | String | Type of update package \(Full, Incremental, etc\) |
+| Panorama.DynamicUpdates.Content.LatestAvailable.version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.ContentTypesOutOfDate.Count | Number | The total number of active Dynamic Updates that have updates available. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.app-version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.current | String | Whether this version is currently active on the device. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.downloaded | String | Whether this version has been downloaded to the device. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.feature-desc | String | Detailed description of features provided. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.features | String | Features provided by this version. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.filename | String | Filename of the dynamic update. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.installing | String | Whether this version is being installed by a running job on the device. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.previous | String | Whether this version was previously active on the system and can be reverted to. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.release-notes | String | Link to release notes about the dynamic update package. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.released-on | Date | Date this version was released. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.sha256 | String | SHA256 hash of the dynamic update package file. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.size | String | Size of the dynamic update package file. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.size-kb | String | Size \(in KB\) of the dynamic update file. |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.update-type | String | Type of update package \(Full, Incremental, etc\) |
+| Panorama.DynamicUpdates.GP.CurrentlyInstalled.version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.GP.IsUpToDate | Boolean | Whether the latest available GP Clientless VPN package is active on the device. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.app-version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.current | String | Whether this version is currently active on the device. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.downloaded | String | Whether this version has been downloaded to the device. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.feature-desc | String | Detailed description of features provided. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.features | String | Features provided by this version. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.filename | String | Filename of the dynamic update. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.installing | String | Whether this version is being installed by a running job on the device. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.previous | String | Whether this version was previously active on the system and can be reverted to. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.release-notes | String | Link to release notes about the dynamic update package. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.released-on | Date | Date this version was released. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.sha256 | String | SHA256 hash of the dynamic update package file. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.size | String | Size of the dynamic update package file. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.size-kb | String | Size \(in KB\) of the dynamic update file. |
+| Panorama.DynamicUpdates.GP.LatestAvailable.update-type | String | Type of update package \(Full, Incremental, etc\) |
+| Panorama.DynamicUpdates.GP.LatestAvailable.version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.app-version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.current | String | Whether this version is currently active on the device. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.downloaded | String | Whether this version has been downloaded to the device. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.feature-desc | String | Detailed description of features provided. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.features | String | Features provided by this version. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.filename | String | Filename of the dynamic update. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.installing | String | Whether this version is being installed by a running job on the device. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.previous | String | Whether this version was previously active on the system and can be reverted to. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.release-notes | String | Link to release notes about the dynamic update package. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.released-on | Date | Date this version was released. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.sha256 | String | SHA256 hash of the dynamic update package file. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.size | String | Size of the dynamic update package file. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.size-kb | String | Size \(in KB\) of the dynamic update file. |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.update-type | String | Type of update package \(Full, Incremental, etc\) |
+| Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.WildFire.IsUpToDate | Boolean | Whether the latest available WildFire package is active on the device. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.app-version | String | Version of the dynamic update package. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.current | String | Whether this version is currently active on the device. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.downloaded | String | Whether this version has been downloaded to the device. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.feature-desc | String | Detailed description of features provided. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.features | String | Features provided by this version. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.filename | String | Filename of the dynamic update. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.installing | String | Whether this version is being installed by a running job on the device. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.previous | String | Whether this version was previously active on the system and can be reverted to. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.release-notes | String | Link to release notes about the dynamic update package. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.released-on | Date | Date this version was released. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.sha256 | String | SHA256 hash of the dynamic update package file. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.size | String | Size of the dynamic update package file. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.size-kb | String | Size \(in KB\) of the dynamic update file. |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.update-type | String | Type of update package \(Full, Incremental, etc\) |
+| Panorama.DynamicUpdates.WildFire.LatestAvailable.version | String | Version of the dynamic update package. |
+
+### pan-os-download-latest-antivirus-update
+
+***
+Downloads the latest antivirus dynamic update.
+
+#### Base Command
+
+`pan-os-download-latest-antivirus-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.AntiVirus.Download.JobID | String | The job ID of the antivirus download. |
+| Panorama.AntiVirus.Download.Status | String | The antivirus download status. |
+| Panorama.AntiVirus.Download.Details | String | The download job details. |
+
+### pan-os-download-latest-wildfire-update
+
+***
+Downloads the latest WildFire dynamic update.
+
+#### Base Command
+
+`pan-os-download-latest-wildfire-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.WildFire.Download.JobID | String | The job ID of the WildFire download. |
+| Panorama.WildFire.Download.Status | String | The WildFire download status. |
+| Panorama.WildFire.Download.Details | String | The download job details. |
+
+### pan-os-download-latest-gp-update
+
+***
+Downloads the latest GlobalProtect Clientless VPN dynamic update.
+
+#### Base Command
+
+`pan-os-download-latest-gp-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.GP.Download.JobID | String | The job ID of the GlobalProtect Clientless VPN download. |
+| Panorama.GP.Download.Status | String | The GlobalProtect Clientless VPN download status. |
+| Panorama.GP.Download.Details | String | The download job details. |
+
+### pan-os-install-latest-antivirus-update
+
+***
+Installs the latest Antivirus update.
+
+#### Base Command
+
+`pan-os-install-latest-antivirus-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.AntiVirus.Install.JobID | String | The job ID of the installation. |
+| Panorama.AntiVirus.Install.Status | String | The installation status. |
+| Panorama.AntiVirus.Install.Details | String | The install job details. |
+
+### pan-os-install-latest-wildfire-update
+
+***
+Installs the latest WildFire dynamic update.
+
+#### Base Command
+
+`pan-os-install-latest-wildfire-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.WildFire.Install.JobID | String | The job ID of the installation. |
+| Panorama.WildFire.Install.Status | String | The installation status. |
+| Panorama.WildFire.Install.Details | String | The install job details. |
+
+### pan-os-install-latest-gp-update
+
+***
+Installs the latest GlobalProtect Clientless VPN dynamic update.
+
+#### Base Command
+
+`pan-os-install-latest-gp-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.GP.Install.JobID | String | The job ID of the installation. |
+| Panorama.GP.Install.Status | String | The installation status. |
+| Panorama.GP.Install.Details | String | The install job details. |
