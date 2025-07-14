@@ -88,7 +88,7 @@ class Client(BaseClient):
             status_list_to_retry=[403, 404],
         )
 
-        download_link_search_regex = re.search(r".+\"(https://download\.microsoft\.com/download/.+\.json)\",", azure_url_response)
+        download_link_search_regex = re.search(r"(https://download\.microsoft\.com/download/.+?\.json)", azure_url_response)
         download_link = download_link_search_regex.group(1) if download_link_search_regex else None
 
         if download_link is None:

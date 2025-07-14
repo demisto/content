@@ -3179,7 +3179,6 @@ xdm__asset__type__name | xdm__asset__strong_id |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|123|Policy|Global||XSIAM|123|Identity||100000000|100000000|Fake Name|IAM|FAKE ID|
 
-
 ### core-execute-command
 
 ***
@@ -3193,33 +3192,33 @@ Run a shell command on a specific endpoint and return its result.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional | 
-| polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional | 
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
-| command | List of shell commands to execute separeted by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the chosen separator. | Required | 
-| timeout | The maximum running time of the command. Default is 600. | Optional | 
-| incident_id | Link the response action to the triggered incident. | Optional | 
-| is_raw_command | Whether to pass the command as-is. When false, the command is split by the chosen command_separator argument and sent as a list of commands that are run independently. | Optional | 
-| command_separator | The separator used to split the command list. For example, using the default value (a comma), the string command1,command2 will be split into two separate commands, and each will be executed individually. Possible values are: ,, \|, /. Default is ,. | Optional | 
-| command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
+| polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional |
+| polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required |
+| command | List of shell commands to execute separeted by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the chosen separator. | Required |
+| timeout | The maximum running time of the command. Default is 600. | Optional |
+| incident_id | Link the response action to the triggered incident. | Optional |
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by the chosen command_separator argument and sent as a list of commands that are run independently. | Optional |
+| command_separator | The separator used to split the command list. For example, using the default value (a comma), the string command1,command2 will be split into two separate commands, and each will be executed individually. Possible values are: ,, \|, /. Default is ,. | Optional |
+| command_type | Type of shell command. Possible values are: powershell, native. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.ScriptResult.action_id | Number | ID of the action initiated. | 
-| Core.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
-| Core.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
-| Core.ScriptResult.results.endpoint_name | String | Endpoint name. | 
-| Core.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
-| Core.ScriptResult.results.endpoint_status | String | Endpoint status. | 
-| Core.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
-| Core.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
-| Core.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
-| Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
-| Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
-| Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
-| Core.ScriptResult.results.command | String | The command that was executed by the script. | 
+| Core.ScriptResult.action_id | Number | ID of the action initiated. |
+| Core.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. |
+| Core.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. |
+| Core.ScriptResult.results.endpoint_name | String | Endpoint name. |
+| Core.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. |
+| Core.ScriptResult.results.endpoint_status | String | Endpoint status. |
+| Core.ScriptResult.results.domain | String | Domain to which the endpoint belongs. |
+| Core.ScriptResult.results.endpoint_id | String | Endpoint ID. |
+| Core.ScriptResult.results.execution_status | String | Execution status of this endpoint. |
+| Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. |
+| Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. |
+| Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. |
+| Core.ScriptResult.results.command | String | The command that was executed by the script. |
 
 ##### Context Example
 
@@ -3299,3 +3298,152 @@ Run a shell command on a specific endpoint and return its result.
 | echo hello | hello | dummy_id | 2.2.2.2 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
 | echo |  | dummy_id2 | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
 | echo hello | hello | dummy_id2 | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+
+### core-add-indicator-rule
+
+***
+Upload IOCs Rule to XSIAM.
+When the ioc_object is defined, disregard any other provided arguments, as ioc_object takes precedence. Validate the indicator parameters when ioc_object is used.
+If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
+Adding the same indicator, but with different parameters, will update the existing rule.
+
+#### Base Command
+
+`core-add-indicator-rule`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| indicator | String that identifies the indicator you want to ingest into XSIAM.                                                                                                                                                                                                                                                                                                                                                                                                                                               | Required |
+| type | Keyword identifying the type of indicator. Possible values are: HASH, IP, PATH, DOMAIN_NAME, FILENAME.                                                                                                                                                                                                                                                                                                                                                                                                             | Required |
+| severity | Keyword identifying the indicator's severity. Possible values are: INFO, LOW, MEDIUM, HIGH, CRITICAL.                                                                                                                                                                                                                                                                                                                                                                                                              | Required |
+| expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. Also valid is the UTC date or relative timestamp to set the IOC rule expiration date, for example: '7 Days', '12 hours'. Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. If this indicator has no expiration, use Never.  If value is not given, the indicator receives the indicator's type default expiration date. | Optional |
+| comment | Comment string.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| reputation | Keyword representing the indicator's reputation. Possible values are: GOOD, BAD, SUSPICIOUS, UNKNOWN.                                                                                                                                                                                                                                                                                                                                                                                                              | Optional |
+| reliability | Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Possible values are: A, B, C, D, E, F.                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| class | String representing the indicator class (for example, "Malware").                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional |
+| vendor_name | String representing the name of the vendor who reported this indicator.                                                                                                                                                                                                                                                                                                                                                                                                                                            | Optional |
+| vendor_reputation | Keyword representing the vendor's reputation. Required when vendor_name is defined. Possible values are: GOOD, BAD, SUSPICIOUS, UNKNOWN.                                                                                                                                                                                                                                                                                                                                                                           | Optional |
+| vendor_reliability | Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Required when vendor_reputation is defined. Possible values are: A, B, C, D, E, F.                                                                                                                                                                                                                                                                                                           | Optional |
+| input_format | The input format selected, which determines how parameters are sent to the XDR API. Possible values are: CSV, JSON. Default is JSON.                                                                                                                                                                                                                                                                                                                                                                               | Optional |
+| ioc_object | The JSON/CSV object contains the IOC details. Make sure a valid IOC object is passed. CSV Example: indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class<br/>1.1.1.1,IP,HIGH,1744874761000,test indicator,SUSPICIOUS,D,VirusTotal (API v3),A,GOOD,Malware .                                                                                                                                                                                | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.Indicator.indicator | String | String that identifies the indicator that was ingested into XSIAM. |
+| Core.Indicator.type | String | Keyword identifying the type of indicator. |
+| Core.Indicator.severity | String | Keyword identifying the indicator's severity. |
+| Core.Indicator.expiration_date | Number | Integer representing the indicator's expiration timestamp. |
+| Core.Indicator.comment | String | Comment string. |
+| Core.Indicator.reputation | String | Keyword representing the indicator's reputation. |
+| Core.Indicator.reliability | String | Keyword representing the indicator's reliability rating. |
+| Core.Indicator.class | String | String representing the indicator class. |
+| Core.Indicator.vendors | List | List representing the vendors who reported this indicator. |
+
+### core-get-contributing-event
+
+***
+Retrieves contributing events for a specific correlation alert.
+Known limitation: the command is compatible **only** with correlation alerts, otherwise an error will be raised.
+
+##### Required Permissions
+
+Required Permissions For API call:
+`Alerts & Incidents` --> `View`
+
+Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
+
+#### Base Command
+
+`core-get-contributing-event`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | The alert ID's from where to retrieve the contributing events. | Required |
+| limit | The maximum number of contributing events to retrieve. Default is 50. | Optional |
+| page_number | The page number to retrieve. Minimum is 1. Default is 1. | Optional |
+| page_size | The page size. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.ContributingEvent.alertID | String | The alert ID. |
+| Core.ContributingEvent.events | Unknown | Contributing events per alert. |
+
+#### Command example
+
+```!core-get-contributing-event alert_ids=`[123456 , 123457]````
+
+#### Context Example
+
+```json
+{
+    "Core": {
+        "ContributingEvent": [
+            {
+                "alertID": "123456",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on.",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            },
+            {
+                "alert_id": "123457",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Contributing events
+
+>|Alert _ Id|Events|
+>|---|---|
+>| 123456 | **-** ***Logon_Type***: 7<br/> ***User_Name***: xsoar<br/> ***Domain***: WIN10X64<br/> ***Source_IP***: 1.1.1.1<br/> ***Process_Name***: C:\Windows\System32\svchost.exe<br/> ***Host_Name***: WIN10X64<br/> ***Raw_Message***: An account was successfully logged on. ***_time***: 165298280000<br/> ***555555***: a1b2c3d4<br/> ***222222***: 165298280000<br/> ***333333***: abcdef<br/> ***111111***: 15<br/> ***444444***: 1<br/> ***insert_timestamp***: 165298280001<br/> ***_vendor***: PANW<br/> ***_product***: XDR agent<br/> ***_is_cardable***: true |
+>| 123457 | **-** ***Logon_Type***: 7<br/> ***User_Name***: xsoar<br/> ***Domain***: WIN10X64<br/> ***Source_IP***: 1.1.1.1<br/> ***Process_Name***: C:\Windows\System32\svchost.exe<br/> ***Host_Name***: WIN10X64<br/> ***Raw_Message***: An account was successfully logged on. ***_time***: 165298280000<br/> ***555555***: ghijk<br/> ***222222***: 165298280000<br/> ***333333***: abcdef<br/> ***111111***: 15<br/> ***444444***: 1<br/> ***insert_timestamp***: 165298280001<br/> **

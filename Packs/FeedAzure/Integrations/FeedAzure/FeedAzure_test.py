@@ -350,3 +350,23 @@ def test_fetch_indicators_command(requests_mock, enrichment_excluded):
         client, feedTags=["test"], tlp_color="test_color", enrichment_excluded=enrichment_excluded
     )
     assert indicators == expected
+
+
+def test_download_link_regex(mocker):
+    """
+    Given:
+        - A mock response from the endpoint.
+    When:
+        - call the get_azure_download_link method.
+    Then:
+        - Ensure the link is valid.
+    """
+    client = Client(["All"], ["All"])
+    with open("./test_data/response_mock_test_regex.txt") as f:
+        response = f.read()
+    mocker.patch("CommonServerPython.BaseClient._http_request", return_value=response)
+    assert (
+        client.get_azure_download_link() == "https://download.microsoft.com/download"
+        "/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/"
+        "ServiceTags_Public_20200504.json"
+    )

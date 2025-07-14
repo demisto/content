@@ -169,6 +169,7 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  - platform
   section: Collect
   required: false
   options:
@@ -183,6 +184,7 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  - platform
   section: Collect
   advanced: true
   required: false
@@ -193,6 +195,7 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  - platform
   section: Collect
   advanced: true
   required: false
@@ -2488,7 +2491,7 @@ script:
     - contextPath: AzureSentinel.Incident.Etag
       description: The Etag of the incident.
       type: String
-  dockerimage: demisto/crypto:1.0.0.3174650
+  dockerimage: demisto/crypto:1.0.0.3539024
   isfetch: true
   runonce: false
   script: '-'
