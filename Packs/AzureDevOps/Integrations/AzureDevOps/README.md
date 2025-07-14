@@ -105,16 +105,16 @@ If you encounter the following error:
 
 Please follow these steps to resolve it:
 
-    1. Navigate to your Azure DevOps organization using this URL (replace {organization_name} with your actual org name):
-    https://dev.azure.com/{organization_name}
-    2. In the bottom-left corner, click ***Organization settings***.
-    3. Select ***Users*** from the left menu.
-    4. Click ***Add Users***.
-    5. In the Users or Service Principals field, paste the Application (Client) ID of your app.
-    6. Assign the appropriate Access Level, at least a basic license, and add any necessary projects.
-    7. Click ***Add*** to complete.
-    8. Once added, confirm that the application appears in the Users list.
-    9. Now retry running the failing command.
+1. Navigate to your Azure DevOps organization using this URL (replace {organization_name} with your actual org name):
+https://dev.azure.com/{organization_name}
+2. In the bottom-left corner, click ***Organization settings***.
+3. Select ***Users*** from the left menu.
+4. Click ***Add Users***.
+5. In the Users or Service Principals field, paste the Application (Client) ID of your app.
+6. Assign the appropriate Access Level, at least a basic license, and add any necessary projects.
+7. Click ***Add*** to complete.
+8. Once added, confirm that the application appears in the Users list.
+9. Now retry running the failing command.
 
 ## Commands
 
