@@ -180,7 +180,7 @@ var addPlaybookMetadataToRequest = function(body, command) {
 };
 
 
-var sendRequest = function(method, uri, body, raw, timeout= default_timeout) {
+var sendRequest = function(method, uri, body, raw, timeout = default_timeout) {
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
