@@ -110,26 +110,10 @@ def test_is_incident_id_valid(id_value, expected_output):
 
 
 EXAMPLE_INCIDENTS_RAW_RESPONSE = [
-    {
-        "id": "1",
-        "type": "TypeA",
-        "name": "Phishing",
-    },
-    {
-        "id": "2",
-        "type": "Type-A",
-        "name": "Phishing Campaign",
-    },
-    {
-        "id": "3",
-        "type": "SomeType-A",
-        "name": "Go Phish",
-    },
-    {
-        "id": "4",
-        "type": "Another Type-A",
-        "name": "Hello",
-    },
+    {"id": "1", "type": "TypeA", "name": "Phishing", "created": "2025-01-01T10:00:00Z"},
+    {"id": "2", "type": "Type-A", "name": "Phishing Campaign", "created": "2025-01-01T10:01:00Z"},
+    {"id": "3", "type": "SomeType-A", "name": "Go Phish", "created": "2025-01-01T10:02:00Z"},
+    {"id": "4", "type": "Another Type-A", "name": "Hello", "created": "2025-01-01T10:03:00Z"},
 ]
 
 FILTER_TO_MATCHED_INCIDENTS = [
@@ -175,9 +159,17 @@ def get_incidents_mock(_, args, extract_contents=True, fail_on_error=True):
         # ({}, {}, []),
         ({"trimevents": "0"}, {}, []),
         ({"trimevents": "1"}, {"trimevents": "1"}, []),
-        ({"id": 1}, {"id": "1"}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
-        ({"id": [1, 2]}, {"id": "1,2"}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
-        ({"id": "1,2"}, {"id": "1,2"}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
+        ({"id": 1}, {"id": "1", "todate": "2025-01-01T10:00:00Z"}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
+        (
+            {"id": [1, 2]},
+            {"id": "1,2", "todate": "2025-01-01T10:00:00Z"},
+            [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]],
+        ),
+        (
+            {"id": "1,2"},
+            {"id": "1,2", "todate": "2025-01-01T10:00:00Z"},
+            [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]],
+        ),
     ],
 )
 def test_filter_events(mocker, args, filtered_args, expected_result):
