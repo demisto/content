@@ -990,7 +990,7 @@ def generic_endpint_post(
 """ MAIN FUNCTION """
 
 
-def main():
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         endpoint_ids = argToList(args.get("endpoint_id", []), transform=convert_none_to_empty_string)
