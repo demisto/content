@@ -1,19 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 from typing import Any
 
 import demistomock as demisto
@@ -107,7 +91,7 @@ class Client:
         if not article_id:
             response = self.ms_client.http_request(
             method='GET',
-            url_suffix='v1.0/security/threatIntelligence/articles{odata_query}',
+            url_suffix=f'v1.0/security/threatIntelligence/articles{odata_query}',
             )
             return response.get('value', [])
 
@@ -119,31 +103,9 @@ class Client:
 
         
         return [response]
-        '''
-        response = {
-            "value": [
-                {
-                    "@odata.context": "$metadata#articles/$entity",
-                    "id": "a272d5ab",
-                    "createdDateTime": "2023-03-03T18:20:22.677Z",
-                    "lastUpdatedDateTime": "2023-03-03T18:20:22.677Z",
-                    "title": "Batloader Malware Abuses Legitimate Tools Uses Obfuscated JavaScript Files in Q4 2022 Attacks",
-                    "summary": {
-                        "content": "Trend Micro discusses Batloader campaigns that were observed in the last quarter of 2022.",
-                        "format": "markdown",
-                    },
-                    "isFeatured": False,
-                    "body": {"content": "#### Description\r\nTrend Micro discusses Batloader...", "format": "markdown"},
-                    "tags": ["OSINT", "Batloader", "RoyalRansomware", "Python", "JavaScript", "MSI", "PowerShell"],
-                    "imageUrl": None,
-                }
-            ]
-        }
         
-        return response.get("value", [])
-        '''
 
-    def indicator_list(self, article_id: str, article_indicator_id: str, odata: str, limit: int) -> list:
+    def article_indicator_list(self, article_id: str, article_indicator_id: str, odata: str, limit: int) -> list:
         """
         Retrieve threat intelligence indicators from Microsoft Defender.
 
@@ -161,32 +123,20 @@ class Client:
         if odata:
             odata_query += odata
         """NEED TO CHECK IF LIMIT IS VALID HERE"""
-        # if not article_id:
-        #     response = self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix='v1.0//security/threatIntelligence/articleIndicators/{article_indicator_id}{odata_query}',
-        #     )
-        # if response:
-        #   return [response]
+        if not article_id:
+            response = self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'v1.0//security/threatIntelligence/articleIndicators/{article_indicator_id}{odata_query}',
+            )
+            if response:
+                return [response]
 
-        # response = self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix=f'v1.0//security/threatIntelligence/articles/{article_id}/indicators{odata_query}',
-        # )
-        # return response.get('value', [])
+        response = self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'v1.0//security/threatIntelligence/articles/{article_id}/indicators{odata_query}',
+        )
+        return response.get('value', [])
 
-        response = {
-            "value": [
-                {
-                    "@odata.type": "#microsoft.graph.security.articleIndicator",
-                    "id": "ZmFrZS1tYWxpY2lvdXMuc2l0ZQ==",
-                    "source": "microsoft",
-                    "artifact": {"@odata.type": "#microsoft.graph.security.hostname", "id": "fake-malicious.site"},
-                }
-            ]
-        }
-
-        return response.get("value", [])
 
     def profile_list(self, intel_profile_id: str, odata: str, limit: int) -> list:
         """
@@ -204,63 +154,20 @@ class Client:
         odata_query += f"$top={limit}&"
         if odata:
             odata_query += odata
-        # if not intel_profile_id:
-        #     response = self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix='v1.0//security/threatIntelligence/intelProfiles{odata_query}',
-        #     )
-        #     return response.get('value', [])
+        if not intel_profile_id:
+            response = self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'v1.0//security/threatIntelligence/intelProfiles{odata_query}',
+            )
+            return response.get('value', [])
 
         """NEED TO CHECK IT LIMIT IS VALID HERE"""
-        # response = self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix=f'v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}',
-        # )
-        #
-        # if response:
-        #   return [response]
-
-        response = {
-            "value": [
-                {
-                    "@odata.type": "#microsoft.graph.security.intelligenceProfile",
-                    "id": "9b01de37bf66d1760954a16dc2b52fed2a7bd4e093dfc8a4905e108e4843da80",
-                    "kind": "actor",
-                    "title": "Aqua Blizzard",
-                    "firstActiveDateTime": "2020-02-24T00:00:00Z",
-                    "aliases": ["Primitive Bear", "ACTINIUM", "SectorC08", "shuckworm", "Gamaredon", "UNC530", "Armageddon"],
-                    "targets": [
-                        "Government Agencies & Services: Defense",
-                        "Government Agencies & Services: Law Enforcement",
-                        "Non-Government Organization: Human Rights Organization",
-                    ],
-                    "countriesOrRegionsOfOrigin": [
-                        {
-                            "@odata.type": "microsoft.graph.security.intelligenceProfileCountryOrRegionOfOrigin",
-                            "label": "Country/Region",
-                            "code": "Country/Region code",
-                        }
-                    ],
-                    "summary": {
-                        "@odata.type": "microsoft.graph.security.formattedContent",
-                        "content": "The actor that Microsoft tracks as Aqua Blizzard (ACTINIUM) is a nation-state activity group based out of ...",
-                        "format": "text",
-                    },
-                    "description": {
-                        "@odata.type": "microsoft.graph.security.formattedContent",
-                        "content": "## Snapshot\r\nThe actor that Microsoft tracks as Aqua Blizzard (ACTINIUM) is a nation-state activity group based out of ...",
-                        "format": "markdown",
-                    },
-                    "tradecraft": {
-                        "@odata.type": "microsoft.graph.security.formattedContent",
-                        "content": "Aqua Blizzard (ACTINIUM) primarily uses spear phishing emails to infect targets. These emails harness remote template injection to load malicious code or content. Typically, ...",
-                        "format": "markdown",
-                    },
-                }
-            ]
-        }
-
-        return response.get("value", [])
+        response = self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}',
+        )
+        
+        return [response]
 
     def profile_indicators_list(self, intel_profile_id: str, intel_profile_indicator_id: str, odata: str, limit: int) -> list:
         """
@@ -281,35 +188,20 @@ class Client:
         if odata:
             odata_query += odata
 
-        # if not intel_profile_indicator_id:
-        #     response = self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix='v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}/indicators{odata_query}',
-        #     )
-        #     return response.get('value', [])
+        if not intel_profile_indicator_id:
+            response = self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}/indicators{odata_query}',
+            )
+            return response.get('value', [])
 
         """NEED TO CHECK IF LIMIT IS VALID HERE"""
-        # response = self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix=f'v1.0//security/threatIntelligence/intelligenceProfileIndicators/{intel_profile_indicator_id}{odata_query}',
-        # )
-        # if response:
-        #   return [response]
+        response = self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'v1.0//security/threatIntelligence/intelligenceProfileIndicators/{intel_profile_indicator_id}{odata_query}',
+        )
+        return [response]
 
-        response = {
-            "value": [
-                {
-                    "@odata.type": "#microsoft.graph.security.intelligenceProfileIndicator",
-                    "id": "ff3eecd2-a2be-27c2-8dc0-40d1c0eada55",
-                    "source": "microsoft",
-                    "firstSeenDateTime": "2022-05-02T23:09:20.000Z",
-                    "lastSeenDateTime": "null",
-                    "artifact": {"@odata.type": "#microsoft.graph.security.hostname", "id": "fake-malicious.site"},
-                }
-            ]
-        }
-
-        return response.get("value", [])
 
     def host(self, host_id: str, odata: str) -> dict:
         """
@@ -327,21 +219,11 @@ class Client:
         if odata:
             odata_query += odata
 
-        # return self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix=f'v1.0//security/threatIntelligence/hosts/{host_id}{odata_query}',
-        # )
+        return self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'v1.0//security/threatIntelligence/hosts/{host_id}{odata_query}',
+        )
 
-        response = {
-            "@odata.type": "#microsoft.graph.security.hostname",
-            "id": "contoso.com",
-            "firstSeenDateTime": "2009-09-02T03:29:10.000Z",
-            "lastSeenDateTime": "2009-09-02T03:29:10.000Z",
-            "registrar": "MarkMonitor Inc.",
-            "registrant": "Microsoft Corporation",
-        }
-
-        return response
 
     def host_whois(self, host_id: str, whois_record_id: str, odata: str) -> dict:
         """
@@ -359,98 +241,17 @@ class Client:
         odata_query = "?"
         if odata:
             odata_query += odata
-        # if host_id:
-        #     return self.ms_client.http_request(
-        #         method='GET',
-        #         url_suffix=f'v1.0/security/threatIntelligence/{host_id}/whois{odata_query}',
-        #     )
+        if host_id:
+            return self.ms_client.http_request(
+                method='GET',
+                url_suffix=f'v1.0/security/threatIntelligence/{host_id}/whois{odata_query}',
+            )
 
-        # return self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix=f'v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}{odata_query}',
-        # )
-        response = {
-            "@odata.type": "#microsoft.graph.security.whoisRecord",
-            "id": "Y29udG9zby5jb20kJDY5NjQ3ODEyMDc3NDY1NzI0MzM=",
-            "expirationDateTime": "2023-08-31T00:00:00Z",
-            "registrationDateTime": "2022-07-30T09:43:19Z",
-            "firstSeenDateTime": "null",
-            "lastSeenDateTime": "null",
-            "lastUpdateDateTime": "2023-06-24T08:34:15.984Z",
-            "billing": "null",
-            "noc": "null",
-            "zone": "null",
-            "whoisServer": "rdap.markmonitor.com",
-            "domainStatus": "client update prohibited,client transfer prohibited,client delete prohibited",
-            "rawWhoisText": "Registrar: \n  Handle: 1891582_DOMAIN_COM-VRSN\n  LDH Name: contoso.com\n  Nameserver: \n    LDH Name: ns1.contoso.com\n    Event: \n      Action: last changed\n...",
-            "abuse": {
-                "email": "noreply@contoso.com",
-                "name": "null",
-                "organization": "null",
-                "telephone": "+1.5555555555",
-                "fax": "null",
-                "address": {"city": "null", "countryOrRegion": "null", "postalCode": "null", "state": "null", "street": "null"},
-            },
-            "admin": {
-                "email": "noreply@contoso.com",
-                "name": "Domain Administrator",
-                "organization": "Contoso Org",
-                "telephone": "+1.5555555555",
-                "fax": "+1.5555555555",
-                "address": {
-                    "city": "Redmond",
-                    "countryOrRegion": "US",
-                    "postalCode": "98052",
-                    "state": "WA",
-                    "street": "123 Fake St.",
-                },
-            },
-            "registrar": {
-                "email": "null",
-                "name": "null",
-                "organization": "MarkMonitor Inc.",
-                "telephone": "null",
-                "fax": "null",
-                "address": "null",
-            },
-            "registrant": {
-                "email": "noreply@contoso.com",
-                "name": "Domain Administrator",
-                "organization": "Contoso Corporation",
-                "telephone": "+1.5555555555",
-                "fax": "+1.5555555555",
-                "address": {
-                    "city": "Redmond",
-                    "countryOrRegion": "US",
-                    "postalCode": "98052",
-                    "state": "WA",
-                    "street": "123 Fake St.",
-                },
-            },
-            "technical": {
-                "email": "noreply@contoso.com",
-                "name": "Hostmaster",
-                "organization": "Contoso Corporation",
-                "telephone": "+1.5555555555",
-                "fax": "+1.5555555555",
-                "address": {
-                    "city": "Redmond",
-                    "countryOrRegion": "US",
-                    "postalCode": "98052",
-                    "state": "WA",
-                    "street": "123 Fake St.",
-                },
-            },
-            "nameservers": [
-                {"firstSeenDateTime": "null", "lastSeenDateTime": "null", "host": {"id": "ns1.contoso-dns.com"}},
-                {"firstSeenDateTime": "null", "lastSeenDateTime": "null", "host": {"id": "ns2.contoso-dns.com"}},
-                {"firstSeenDateTime": "null", "lastSeenDateTime": "null", "host": {"id": "ns3.contoso-dns.com"}},
-                {"firstSeenDateTime": "null", "lastSeenDateTime": "null", "host": {"id": "ns4.contoso-dns.com"}},
-            ],
-            "host": {"id": "contoso.com"},
-        }
+        return self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}{odata_query}',
+        )
 
-        return response
 
     def host_whois_history(
         self, host_id: str, whois_record_id: str, whois_history_record_id: str, odata: str, limit: str
@@ -474,118 +275,26 @@ class Client:
             odata_query += f"$top={limit}&"
         if odata:
             odata_query += odata
-        # if host_id:
-        #     return self.ms_client.http_request(
-        #         method='GET',
-        #         url_suffix=f'v1.0/security/threatIntelligence/hosts/{host_Id}/whois/history{odata_query}',
-        #     )
+        if host_id:
+            return self.ms_client.http_request(
+                method='GET',
+                url_suffix=f'v1.0/security/threatIntelligence/hosts/{host_id}/whois/history{odata_query}',
+            )
 
-        # elif whois_record_id:
-        #     return self.ms_client.http_request(
-        #         method='GET',
-        #         url_suffix=f'v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}/history{odata_query}',
-        #     )
+        elif whois_record_id:
+            return self.ms_client.http_request(
+                method='GET',
+                url_suffix=f'v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}/history{odata_query}',
+            )
 
-        # response =  self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix=f'v1.0/security/threatIntelligence/whoisHistoryRecord/{whois_history_record_id}{odata_query}',
-        # )
+        response =  self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'v1.0/security/threatIntelligence/whoisHistoryRecord/{whois_history_record_id}{odata_query}',
+        )
 
-        # if response:
-        #   return [response]
+        
+        return [response]
 
-        response = {
-            "value": [
-                {
-                    "@odata.type": "#microsoft.graph.security.whoisRecord",
-                    "id": "Y29udG9zby5jb20kJDY5NjQ3ODEyMDc3NDY1NzI0MzM=",
-                    "expirationDateTime": "2023-08-31T00:00:00Z",
-                    "registrationDateTime": "2022-07-30T09:43:19Z",
-                    "firstSeenDateTime": "null",
-                    "lastSeenDateTime": "null",
-                    "lastUpdateDateTime": "2023-06-24T08:34:15.984Z",
-                    "billing": "null",
-                    "noc": "null",
-                    "zone": "null",
-                    "whoisServer": "rdap.markmonitor.com",
-                    "domainStatus": "client update prohibited,client transfer prohibited,client delete prohibited",
-                    "rawWhoisText": "Registrar: \n  Handle: 1891582_DOMAIN_COM-VRSN\n  LDH Name: contoso.com\n  Nameserver: \n    LDH Name: ns1.contoso.com\n    Event: \n      Action: last changed\n...",
-                    "abuse": {
-                        "email": "noreply@contoso.com",
-                        "name": "null",
-                        "organization": "null",
-                        "telephone": "+1.5555555555",
-                        "fax": "null",
-                        "address": {
-                            "city": "null",
-                            "countryOrRegion": "null",
-                            "postalCode": "null",
-                            "state": "null",
-                            "street": "null",
-                        },
-                    },
-                    "admin": {
-                        "email": "noreply@contoso.com",
-                        "name": "Domain Administrator",
-                        "organization": "Contoso Org",
-                        "telephone": "+1.5555555555",
-                        "fax": "+1.5555555555",
-                        "address": {
-                            "city": "Redmond",
-                            "countryOrRegion": "US",
-                            "postalCode": "98052",
-                            "state": "WA",
-                            "street": "123 Fake St.",
-                        },
-                    },
-                    "registrar": {
-                        "email": "null",
-                        "name": "null",
-                        "organization": "MarkMonitor Inc.",
-                        "telephone": "null",
-                        "fax": "null",
-                        "address": "null",
-                    },
-                    "registrant": {
-                        "email": "noreply@contoso.com",
-                        "name": "Domain Administrator",
-                        "organization": "Contoso Corporation",
-                        "telephone": "+1.5555555555",
-                        "fax": "+1.5555555555",
-                        "address": {
-                            "city": "Redmond",
-                            "countryOrRegion": "US",
-                            "postalCode": "98052",
-                            "state": "WA",
-                            "street": "123 Fake St.",
-                        },
-                    },
-                    "technical": {
-                        "email": "noreply@contoso.com",
-                        "name": "Hostmaster",
-                        "organization": "Contoso Corporation",
-                        "telephone": "+1.5555555555",
-                        "fax": "+1.5555555555",
-                        "address": {
-                            "city": "Redmond",
-                            "countryOrRegion": "US",
-                            "postalCode": "98052",
-                            "state": "WA",
-                            "street": "123 Fake St.",
-                        },
-                    },
-                    "nameservers": [
-                        {"firstSeenDateTime": "null", "lastSeenDateTime": "null", "host": {"id": "ns1.contoso-dns.com"}},
-                        {"firstSeenDateTime": "null", "lastSeenDateTime": "null", "host": {"id": "ns2.contoso-dns.com"}},
-                        {"firstSeenDateTime": "null", "lastSeenDateTime": "null", "host": {"id": "ns3.contoso-dns.com"}},
-                        {"firstSeenDateTime": "null", "lastSeenDateTime": "null", "host": {"id": "ns4.contoso-dns.com"}},
-                    ],
-                    "host": {"id": "contoso.com"},
-                }
-            ]
-        }
-
-        return response.get("value", [])
 
 
 """ HELPER FUNCTIONS """
@@ -655,7 +364,7 @@ def article_indicators_list_command(client: Client, args: dict[str, Any]) -> Com
     odata = args.get("odata", "")
     limit = args.get("limit", 50)
     ensure_only_one_argument_provided(article_id=article_id, article_indicator_id=article_indicator_id)
-    response = client.indicator_list(article_id, article_indicator_id, odata, limit)
+    response = client.article_indicator_list(article_id, article_indicator_id, odata, limit)
     display_data = [{"ID": indicator.get("id"), "Artifact Id": indicator.get("artifact", {}).get("id")} for indicator in response]
     return CommandResults(
         "MSGDefenderThreatIntel.ArticleIndicator",
@@ -676,6 +385,7 @@ def profile_list_command(client: Client, args: dict[str, Any]) -> CommandResults
 
     # Call the Client function and get the raw response
     response = client.profile_list(intel_profile_id, odata, limit)
+    
     display_data = [{"Profile ID": profile.get("id"), "Title": profile.get("title")} for profile in response]
     return CommandResults(
         "MSGDefenderThreatIntel.Profile",

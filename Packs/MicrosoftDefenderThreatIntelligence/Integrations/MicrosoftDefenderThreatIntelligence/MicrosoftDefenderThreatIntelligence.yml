@@ -8,7 +8,7 @@ commonfields:
 
 configuration:
 - section: Connect
-  defaultvalue: 597c0375-766f-4e6d-ad2a-f48117044ac5
+  defaultvalue: 7f55ea8c-2e5c-4a52-aafa-d0bfc632b242
   display: Application ID (Client ID for Client credentials mode)
   name: app_id
   type: 0
