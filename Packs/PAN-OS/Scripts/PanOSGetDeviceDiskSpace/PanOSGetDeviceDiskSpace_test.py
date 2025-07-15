@@ -139,32 +139,33 @@ def test_parse_disk_space_output(mocker):
 
     assert result == expected_result
 
+
 def test_get_disk_space(mocker):
     """Test the main get_disk_space function"""
     from PanOSGetDeviceDiskSpace import get_disk_space
-    
+
     # Mock the show_disk_space_command function
     mocker.patch("PanOSGetDeviceDiskSpace.show_disk_space_command", return_value=sample_response)
-    mock_table = mocker.patch("PanOSGetDeviceDiskSpace.tableToMarkdown", return_value="mocked table")
-    
+
     args = {"target": "device1", "disk_space_units": "G"}
     result = get_disk_space(args)
-    
-    assert isinstance(result,CommandResults)
+
+    assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "PANOS.DiskSpace"
     assert isinstance(result.outputs, dict)
     assert result.outputs["hostid"] == "device1"
     assert "FileSystems" in result.outputs
 
+
 def test_show_disk_space_command_error_handling(mocker):
     """Test error handling in show_disk_space_command"""
     from PanOSGetDeviceDiskSpace import show_disk_space_command
-    
+
     mocker.patch("PanOSGetDeviceDiskSpace.demisto.executeCommand", return_value=True)
     mocker.patch("PanOSGetDeviceDiskSpace.is_error", return_value=True)
     mocker.patch("PanOSGetDeviceDiskSpace.get_error", return_value="Test error")
-    
+
     args = {"target": "device1"}
-    
+
     with pytest.raises(Exception, match="Error executing pan-os: Test error"):
         show_disk_space_command(args)

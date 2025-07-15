@@ -1,4 +1,5 @@
 This playbook executes hygiene check commands using the PAN-OS integration and identifies items configured in a manner that do not meet minimum security best practices.  It looks for the following:
+
 1. Log Forwarding Profiles
   i. Profiles without Enhanced Logging enabled
   ii. Profiles with no match list (rules) configured
@@ -57,8 +58,8 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Summary | A list of hygiene check summaries \(constructed as dictionaries\) describing the overall result of hygiene checks and how many issues of each type were found, if any. | unknown |
-| Result | A list of hygiene check results \(constructed as dictionaries\) including a description of the issue found, the configuration location \(container name\), and the name of the object affected by the issue. | unknown |
+| PANOS.ConfigurationHygiene.Summary | A list of hygiene check summaries \(constructed as dictionaries\) describing the overall result of hygiene checks and how many issues of each type were found, if any. | unknown |
+| PANOS.ConfigurationHygiene.Result | A list of hygiene check results \(constructed as dictionaries\) including a description of the issue found, the configuration location \(container name\), and the name of the object affected by the issue. | unknown |
 
 ## Playbook Image
 

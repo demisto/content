@@ -1,8 +1,9 @@
 This playbook automates the download and installation of the following Dynamic Update types on Palo Alto firewalls:
-  - App/Threat
-  - Anti-Virus
-  - WildFire
-  - GlobalProtect Clientless VPN
+
+- App/Threat
+- Anti-Virus
+- WildFire
+- GlobalProtect Clientless VPN
 
 Use the "itemsToUpdate" input to control which update type(s) to download and install.  All types are updated by default.
 
@@ -18,23 +19,23 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Panorama
+- Panorama
 
 ### Scripts
 
-* Set
-* SetAndHandleEmpty
+- Set
+- SetAndHandleEmpty
 
 ### Commands
 
-* pan-os-download-latest-antivirus-update
-* pan-os-download-latest-content-update
-* pan-os-download-latest-gp-update
-* pan-os-download-latest-wildfire-update
-* pan-os-install-latest-antivirus-update
-* pan-os-install-latest-content-update
-* pan-os-install-latest-gp-update
-* pan-os-install-latest-wildfire-update
+- pan-os-download-latest-antivirus-update
+- pan-os-download-latest-content-update
+- pan-os-download-latest-gp-update
+- pan-os-download-latest-wildfire-update
+- pan-os-install-latest-antivirus-update
+- pan-os-install-latest-content-update
+- pan-os-install-latest-gp-update
+- pan-os-install-latest-wildfire-update
 
 ## Playbook Inputs
 

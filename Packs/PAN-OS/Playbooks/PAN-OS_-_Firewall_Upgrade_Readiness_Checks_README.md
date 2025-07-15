@@ -1,4 +1,5 @@
 This playbook uses the PAN-OS integration to check NGFW device conditions that can affect its readiness to perform a PAN-OS upgrade.  Included checks examine the following:
+
 1. Available disk space for the target version (base image + release image)
 2. Presence of any uncommitted configuration changes
 3. Whether device has an active Support license
