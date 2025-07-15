@@ -22,7 +22,6 @@ The main Cortex Exposure Management playbook is the `Cortex EM - Exposure Issue`
   - [Cortex EM - ServiceNow CMDB](#cortex-em---servicenow-cmdb)
   - [Cortex EM - Remediation](#cortex-em---remediation)
 
-
 ### Playbooks
 
 #### Cortex EM - Exposure Issue
