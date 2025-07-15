@@ -34,7 +34,7 @@ filter
      xdm.target.location.city = if(city != null and city != "",city),
      xdm.target.location.country = if(location != null and location != "", location),
      xdm.target.url = if(url != null and url != "",url),
-     xdm.network.http.domain = threat //The potentially malicious domain in question.;
+     xdm.network.http.domain = threat; //The potentially malicious domain in question.
 
 //This modeling rule is based on the following schema of CybelAngel: https://developers.cybelangel.com/docs/cybelangel-platform-api/c2208b348ef2f-get-domain-watchlist
 filter
@@ -58,7 +58,7 @@ filter
     SOURCE_LOG_TYPE = "Credential watchlist"
 | alter
     ipv4 = arrayindex(regextract(ip_address, "(?:\d{1,3}\.){3}\d{1,3}"),0),
-    ipv6 = arrayindex(regextract(ip_address,"(?:[a-fA-F0-9\:]{1,5}){7}[a-fA-F0-9\:]{1,5}"),0),
+    ipv6 = arrayindex(regextract(ip_address,"(?:[a-fA-F0-9\:]{1,5}){7}[a-fA-F0-9\:]{1,5}"),0)
 // XDM mapping
 | alter
     xdm.event.type = SOURCE_LOG_TYPE,
