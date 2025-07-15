@@ -156,7 +156,7 @@ def calculate_dbot_score(client: Client, raw_response: dict | None) -> float:
                 return Common.DBotScore.SUSPICIOUS
             else:
                 return Common.DBotScore.NONE
-        elif len(validation) > min_valid_sources:
+        elif len(validation) < min_valid_sources:
             return Common.DBotScore.SUSPICIOUS
         else:
             return Common.DBotScore.GOOD
