@@ -435,7 +435,7 @@ def is_detection_fetch_type_selected(selected_types: list):
 def is_detection_occurred_before_fetch_time(detection: dict, start_fetch_time: str) -> bool:
     # the following test is to filter out detections that are older than the start_fetch_time.
     # The CS Falcon API does not do that reliably
-    created_time = detection.get("created_timestamp", '')
+    created_time = detection.get("created_timestamp", "")
     create_date = datetime.fromisoformat(created_time.replace("Z", "+00:00"))
     start_date = datetime.fromisoformat(start_fetch_time.replace("Z", "+00:00"))
 
