@@ -19,6 +19,8 @@ from RankRemediationOwners import (
     score,
     write_output_to_context_key,
 )
+
+
 def test_load_pickled_xpanse_object(tmp_path):
     """
     Tests load_pickled_xpanse_obje function.
@@ -978,7 +980,7 @@ def test_base_case():
 def test_missing_data():
     """
     Should not fail if no system IDs or owners are provided
-   Given:
+    Given:
     - Input data with missing fields, null values, or incomplete information
     When:
     - Running the function with missing data conditions.
