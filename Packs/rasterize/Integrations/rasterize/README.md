@@ -101,17 +101,14 @@ Converts the contents of a URL to an image file or a PDF file.
 
 #### Passing Multiple URLs
 
-If you want to pass several URLs as an argument when one or more of them contains comma, provide them as a JSON list. Make sure the list is formatted as a string, like this:
+To pass multiple URLs as an argument when one or more URL contains a comma, use a JSON list formatted as a string as follows:
  ```"[\"https://www.a.com\", \"https://www.b.com\"]"```
 
-You can also wrap the entire list in backticks (`) to pass it correctly. Make sure that:
--The only double quotes (") used are the ones enclosing each URL string.
--If any part of a URL contains double quotes, replace them with single quotes (') or run the URL separately to avoid parsing issues.
+Alternatively, you can wrap the entire list in backticks (`) so it is interpreted as a single argument. If you do this, make sure to:
+-Only use double quotes (") to enclose each URL string.
+-Replace any double quotes in a URL with single quotes (') or`%22`, or pass the URL separately to ensure proper parsing and avoid conflicts caused by nested quotation marks.
 for example:
 ``` `["https://www.a.com", "https://www.b.com/?q='test_arg'/search"]` ```
-This format ensures proper parsing and avoids conflicts caused by nested quotation marks.
-
- This allows the integration to parse and handle multiple URLs correctly. Be sure to wrap the list in quotes (") so it is interpreted as a single argument.
 
 #### Human Readable Output
 
