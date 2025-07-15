@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 import demistomock as demisto
 import pytest
@@ -14,10 +14,10 @@ CommandResults = RecordedFutureAlerts.CommandResults
 # Test Client
 
 
-def _capture_http_call(monkeypatch: pytest.MonkeyPatch, method_name: str) -> Dict[str, Any]:
+def _capture_http_call(monkeypatch: pytest.MonkeyPatch, method_name: str) -> dict[str, Any]:
     """Patch Client.*method_name* and capture arguments."""
 
-    captured: Dict[str, Any] = {}
+    captured: dict[str, Any] = {}
 
     def _fake_http(self, *, url_suffix: str, params=None, json_data=None, **kwargs):
         captured.update(url_suffix=url_suffix, params=params, json_data=json_data)
@@ -100,7 +100,7 @@ def test_client_alert_lookup_delegates_to_get(monkeypatch: pytest.MonkeyPatch):
 def test_client_get_alert_image_calls_http_request(
     monkeypatch: pytest.MonkeyPatch,
 ):
-    captured: Dict[str, Any] = {}
+    captured: dict[str, Any] = {}
 
     image_data = b"bytes"
 
@@ -378,7 +378,7 @@ def _exercise_main(monkeypatch: pytest.MonkeyPatch, command: str, actions_attr: 
 
     monkeypatch.setattr(Actions, actions_attr, _fake_action, raising=True)
 
-    captured: Dict[str, Any] = {}
+    captured: dict[str, Any] = {}
     monkeypatch.setattr(
         RecordedFutureAlerts,
         "return_results",

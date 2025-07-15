@@ -1,6 +1,6 @@
 import concurrent.futures
 import platform
-from typing import Any, Union, Optional
+from typing import Any
 
 import urllib3
 import demistomock as demisto
@@ -30,7 +30,7 @@ TIMEOUT_120 = 120
 class Client(BaseClient):
     """Client class to interact with the service API"""
 
-    def _call(self, **kwargs: Any) -> Union[dict, list[CommandResults]]:
+    def _call(self, **kwargs: Any) -> dict | list[CommandResults]:
         try:
             response: dict = self._http_request(**kwargs)
             if not isinstance(response, dict):
@@ -73,10 +73,10 @@ class Client(BaseClient):
         self,
         url_suffix: str,
         *,
-        params: Optional[dict] = None,
+        params: dict | None = None,
         timeout: int = 90,
         retries: int = 3,
-    ) -> Union[dict, list[CommandResults]]:
+    ) -> dict | list[CommandResults]:
         return self._call(
             method="GET",
             url_suffix=url_suffix,
@@ -92,7 +92,7 @@ class Client(BaseClient):
         json_data: dict,
         timeout: int = 90,
         retries: int = 3,
-    ) -> Union[dict, list[CommandResults]]:
+    ) -> dict | list[CommandResults]:
         return self._call(
             method="POST",
             url_suffix=url_suffix,
@@ -102,13 +102,13 @@ class Client(BaseClient):
             status_list_to_retry=STATUS_TO_RETRY,
         )
 
-    def whoami(self) -> Union[dict, list[CommandResults]]:
+    def whoami(self) -> dict | list[CommandResults]:
         return self._get(
             url_suffix="/info/whoami",
             timeout=60,
         )
 
-    def alert_update(self) -> Union[dict, list[CommandResults]]:
+    def alert_update(self) -> dict | list[CommandResults]:
         """Update alert"""
         return self._post(
             url_suffix="/v3/alert/update",
@@ -116,15 +116,15 @@ class Client(BaseClient):
             timeout=90,
         )
 
-    def alert_search(self) -> Union[dict, list[CommandResults]]:
+    def alert_search(self) -> dict | list[CommandResults]:
         """Search alerts"""
         return self._get(url_suffix="/v3/alert/search", params=demisto.args())
 
-    def alert_rule_search(self) -> Union[dict, list[CommandResults]]:
+    def alert_rule_search(self) -> dict | list[CommandResults]:
         """Search alert rules."""
         return self._get(url_suffix="/v3/alert/rules", params=demisto.args())
 
-    def alert_lookup(self, alert_id: str) -> Union[dict, list[CommandResults]]:
+    def alert_lookup(self, alert_id: str) -> dict | list[CommandResults]:
         return self._get(
             url_suffix="/v3/alert/lookup",
             params={"alert_id": alert_id},
@@ -136,7 +136,7 @@ class Client(BaseClient):
         alert_type: str,
         alert_id: str,
         image_id: str,
-        alert_subtype: Optional[str],
+        alert_subtype: str | None,
     ) -> bytes:
         """
         Get an image from the v3 alert image endpoint.
@@ -156,7 +156,7 @@ class Client(BaseClient):
         )
         return response_content
 
-    def fetch_incidents(self) -> Union[dict, list[CommandResults]]:
+    def fetch_incidents(self) -> dict | list[CommandResults]:
         """Fetch incidents."""
         classic_query_params = demisto.getLastRun().get("next_query_classic", {})
         playbook_query_params = demisto.getLastRun().get("next_query_playbook", {})
@@ -248,15 +248,15 @@ class Actions:
         demisto.incidents(incidents)
         demisto.setLastRun(next_query)
 
-    def alert_search_command(self) -> Union[dict, list[CommandResults]]:
+    def alert_search_command(self) -> dict | list[CommandResults]:
         return self.client.alert_search()
 
     def alert_rule_search_command(
         self,
-    ) -> Union[dict, list[CommandResults]]:
+    ) -> dict | list[CommandResults]:
         return self.client.alert_rule_search()
 
-    def alert_update_command(self) -> Union[dict, list[CommandResults]]:
+    def alert_update_command(self) -> dict | list[CommandResults]:
         return self.client.alert_update()
 
     @staticmethod
@@ -268,8 +268,8 @@ class Actions:
         alert_type: str,
         alert_id: str,
         image_id: str,
-        alert_subtype: Optional[str],
-    ) -> Optional[dict]:
+        alert_subtype: str | None,
+    ) -> dict | None:
         try:
             return_results(f"Trying to fetch {image_id=} ({alert_type=} {alert_subtype=} {alert_id=})")
             image_content = self.client.get_alert_image(
