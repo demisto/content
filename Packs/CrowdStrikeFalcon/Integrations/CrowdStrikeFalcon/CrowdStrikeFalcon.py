@@ -432,6 +432,22 @@ def is_detection_fetch_type_selected(selected_types: list):
     return any(detection_type in selected_types for detection_type in DETECTION_FETCH_TYPES)
 
 
+def is_detection_occurred_before_fetch_time(detection: dict, start_fetch_time: str) -> bool:
+    # the following test is to filter out detections that are older than the start_fetch_time.
+    # The CS Falcon API does not do that reliably
+    created_time = detection.get("created_timestamp")
+    create_date = datetime.fromisoformat(created_time.replace('Z', '+00:00'))
+    start_date = datetime.fromisoformat(start_fetch_time.replace('Z', '+00:00'))
+    
+    if create_date < start_date:
+        demisto.debug(
+            f"CrowdStrikeFalconMsg: Detection {detection.get('detection_id')} created at {detection.get('created_timestamp')} "
+            f"was created before the fetch start date: {start_fetch_time}"
+        )
+        return True
+    return False
+
+
 def is_incident_fetch_type_selected(selected_types: list):
     return any(incident_type in selected_types for incident_type in INCIDENT_FETCH_TYPES)
 
@@ -1562,8 +1578,6 @@ def get_token_request():
     """
     body = {"client_id": CLIENT_ID, "client_secret": SECRET}
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    demisto.debug(f"In get_token_request, body is {body}")
-    demisto.debug(f"In get_token_request, headers is {headers}")
     token_res = http_request("POST", "/oauth2/token", data=body, headers=headers, get_token_flag=False)
     demisto.debug(f"In get_token_request, token_res is not None {token_res is not None}")
     if not token_res:
@@ -3064,17 +3078,12 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     if raw_res is not None and "resources" in raw_res:
         full_detections = demisto.get(raw_res, "resources")
         for detection in full_detections:
-            # the following test is to filter out detections that are older than the start_fetch_time.
-            # The CS Falcon API does not do that reliably
-            created_time = detection.get("created_timestamp")
-            create_date = datetime.fromisoformat(created_time.replace('Z', '+00:00'))
-            start_date = datetime.fromisoformat(start_fetch_time.replace('Z', '+00:00'))
-            if create_date < start_date:
-                demisto.debug(
-                    f"CrowdStrikeFalconMsg: Detection {detection_id} created at {created_time} "
-                    f"was created before the fetch start date: {start_fetch_time}"
-                )
+            if is_detection_occurred_before_fetch_time(detection, start_fetch_time):
+                continue
+            
+            # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
             detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
+            detection["incident_type"] = incident_type
             demisto.debug(
                 f"CrowdStrikeFalconMsg: Detection {detection_id} "
                 f"was fetched which was created in {detection['created_timestamp']}"
