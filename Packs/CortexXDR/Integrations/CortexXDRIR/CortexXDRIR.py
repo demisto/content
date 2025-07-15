@@ -17,7 +17,7 @@ XDR_INCIDENT_TYPE_NAME = "Cortex XDR Incident Schema"
 INTEGRATION_NAME = "Cortex XDR - IR"
 ALERTS_LIMIT_PER_INCIDENTS: int = -1
 REMOVE_ALERTS_NULL_VALUES = "null_values"
-FIELDS_TO_EXCLUDE = ["network_artifacts", "file_artifacts"] 
+FIELDS_TO_EXCLUDE = ["network_artifacts", "file_artifacts"]
 
 XDR_INCIDENT_FIELDS = {
     "status": {
