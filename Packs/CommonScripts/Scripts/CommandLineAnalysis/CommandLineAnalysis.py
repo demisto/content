@@ -2019,7 +2019,7 @@ def main():
             parsed_command = None
 
         for findings in result["analysis"]["original"].values():
-            if findings:
+            if findings and isinstance(findings, list):
                 for match in findings:
                     try:
                         mitre_results.append(
