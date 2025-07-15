@@ -177,23 +177,8 @@ class Client(BaseClient):
         Raises:
             DemistoException: Incase the credentials are wrong or too many attempts were made.
         """
-        response: requests.Response = self._http_request(
-            method="POST",
-            full_url=urljoin(self.server, "logincheck"),
-            data={
-                "username": self.username,
-                "secretkey": self.password,
-                "ajax": "1",
-            },
-            resp_type="response",
-            error_handler=Client._error_handler,
-        )
-
-        if response.text == "0":
-            raise DemistoException(AUTHORIZATION_ERROR)
-
-        if response.text == "2":
-            raise DemistoException("Too many login attempts. Please wait and try again.")
+        demisto.debug("Starting login")
+        response = self.login_request()
 
         # Extract the cookie and inject it into the headers, without the header only GET requests available.
         # The X-CSRFTOKEN header is required for POST/PUT/DELETE requests.
@@ -216,6 +201,53 @@ class Client(BaseClient):
             )
 
         Client.IS_ONLINE = True
+
+    def login_request(self) -> requests.Response:
+        """Sends the login request, and retries to login if needed
+
+        Returns:
+            response: requests.Response
+        """
+        
+        response: requests.Response = self._http_request(
+            method="POST",
+            full_url=urljoin(self.server, "logincheck"),
+            data={
+                "username": self.username,
+                "secretkey": self.password,
+                "ajax": "1",
+            },
+            resp_type="response",
+            error_handler=Client._error_handler,
+        )
+        
+        demisto.debug(f"Got response {str(response)} with {response.text=}")
+
+        if response.text == "0":
+            demisto.debug("Retrying the login process due to error")
+            # retry for authorization errors
+            retry_response: requests.Response = self._http_request(
+            method="POST",
+            full_url=urljoin(self.server, "logincheck"),
+            data={
+                "username": self.username,
+                "secretkey": self.password,
+                "ajax": "1",
+            },
+            resp_type="response",
+            error_handler=Client._error_handler,
+        )
+            demisto.debug(f"Got retry response {str(retry_response)} with {retry_response.text=}")
+            
+            if retry_response.text == "0":
+                raise DemistoException(AUTHORIZATION_ERROR)
+
+            response = retry_response
+
+        if response.text == "2":
+            raise DemistoException("Too many login attempts. Please wait and try again.")
+        
+        return response
 
     def logout(self) -> None:
         """Due to limited amount of simultaneous connections we log out."""
@@ -2833,11 +2865,14 @@ def test_module(client: Client) -> str:
         str: : 'ok' if test passed, or an error message if the credentials are incorrect.
     """
     try:
+        demisto.debug("Starting test module")
         client.list_system_vdoms()
 
     except DemistoException as exc:
+        demisto.debug(f"Got error: {str(exc)}")
         if exc.res is not None:
             if exc.res.status_code == http.HTTPStatus.FORBIDDEN:
+                demisto.debug("Returning authorization error")
                 return AUTHORIZATION_ERROR
 
             if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED:
@@ -5751,6 +5786,10 @@ def main() -> None:
     username = dict_safe_get(params, ["credentials", "identifier"])
     password = dict_safe_get(params, ["credentials", "password"])
     api_key = dict_safe_get(params, ["api_key", "password"])
+    if not username:
+        demisto.debug("Got empty username")
+    if not password:
+        demisto.debug("Got empty password")
 
     if not any([username, password, api_key]):
         raise DemistoException("Please provide an authentication method. Either 'API Key' or 'Account username' and 'Password'.")
@@ -5841,6 +5880,7 @@ def main() -> None:
         )
 
         if username and password:
+            demisto.debug("Trying to login using username and password")
             client.login()
 
         results = None
