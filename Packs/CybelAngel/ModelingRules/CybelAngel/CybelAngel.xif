@@ -62,6 +62,7 @@ filter
 // XDM mapping
 | alter
     xdm.event.type = SOURCE_LOG_TYPE,
+    xdm.event.description = concat(email, " - Status: ", status),
     xdm.alert.original_alert_id = if(alert_ids not in (null, ""), arraystring(alert_ids -> [], ", "), null),
     xdm.alert.original_threat_name = if(malware_name not in (null, ""), malware_name, null),
     xdm.target.ipv4 = ipv4,
