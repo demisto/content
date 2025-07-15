@@ -87,11 +87,12 @@ Object.keys(all).forEach(function(m) {
                 success = true;
             }
             attempts++;
-            const start = Date.now();
-            while (Date.now() < start + 30000) {
-                // This loop consumes CPU cycles and blocks the entire thread, waits for 30 seconds
+            if (attempts <= retries && !success){
+                const start = Date.now();
+                while (Date.now() < start + 30000) {
+                    // waits for 30 seconds between failed attempts
+                }                   
             }
-
         }
 
         if (res[0].Type === entryTypes.error) {
