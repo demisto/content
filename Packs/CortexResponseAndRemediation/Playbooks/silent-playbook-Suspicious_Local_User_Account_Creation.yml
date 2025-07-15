@@ -413,7 +413,7 @@ tasks:
     task:
       id: a609f7b8-f826-4407-9926-1edd3954855b
       version: -1
-      name: Save attribute to evidence
+      name: Save password expiry to evidence
       description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
       scriptName: SetAndHandleEmpty
       type: regular
