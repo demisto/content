@@ -29,14 +29,13 @@ from EWSO365 import (
     handle_transient_files,
     parse_incident_from_item,
     parse_item_as_dict,
-    EWSClient  # TODO:  REmove
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone, FileAttachment
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from exchangelib.properties import MessageHeader
 from freezegun import freeze_time
-# from EWSApiModule import EWSClient
+from EWSApiModule import EWSClient
 
 with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
