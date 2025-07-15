@@ -82,60 +82,25 @@ class Client:
                     in a list format. If article_id is empty, returns multiple articles from
                     the 'value' field of the response.
         """
-        # odata_query = "?"
-        # odata_query += f"$top={limit}&"
-        # if odata:
-        #     odata_query += odata
+        odata_query = "?"
+        odata_query += f"$top={limit}&"
+        if odata:
+            odata_query += odata
 
-        # if not article_id:
-        #     response = self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix=f'v1.0/security/threatIntelligence/articles{odata_query}',
-        #     )
-        #     return response.get('value', [])
+        if not article_id:
+            response = self.ms_client.http_request(
+                method="GET",
+                url_suffix=f"v1.0/security/threatIntelligence/articles{odata_query}",
+            )
+            return response.get("value", [])
 
-        # """NEED TO CHECK IF LIMIT IS VALID HERE"""
-        # response = self.ms_client.http_request(
-        #     method='GET',
-        #     url_suffix=f'v1.0/security/threatIntelligence/articles/{article_id}{odata_query}',
-        # )
+        """NEED TO CHECK IF LIMIT IS VALID HERE"""
+        response = self.ms_client.http_request(
+            method="GET",
+            url_suffix=f"v1.0/security/threatIntelligence/articles/{article_id}{odata_query}",
+        )
 
-        # return [response]
-
-        response = [
-            {
-                "@odata.context": "$metadata#articles/$entity",
-                "id": "12345",
-                "createdDateTime": "2023-03-03T18:20:22.677Z",
-                "lastUpdatedDateTime": "2023-03-03T18:20:22.677Z",
-                "title": "Test Article 1",
-                "summary": {
-                    "content": "Trend Micro discusses Batloader campaigns that were observed in the last quarter of 2022.",
-                    "format": "markdown",
-                },
-                "isFeatured": "False",
-                "body": {"content": "#### Description\r\nTrend Micro discusses Batloader...", "format": "markdown"},
-                "tags": ["OSINT", "Batloader", "RoyalRansomware", "Python", "JavaScript", "MSI", "PowerShell"],
-                "imageUrl": "None",
-            },
-            {
-                "@odata.context": "$metadata#articles/$entity",
-                "id": "67890",
-                "createdDateTime": "2023-03-03T18:20:22.677Z",
-                "lastUpdatedDateTime": "2023-03-03T18:20:22.677Z",
-                "title": "Test Article 2",
-                "summary": {
-                    "content": "Trend Micro discusses Batloader campaigns that were observed in the last quarter of 2022.",
-                    "format": "markdown",
-                },
-                "isFeatured": "False",
-                "body": {"content": "#### Description\r\nAnother content...", "format": "markdown"},
-                "tags": ["OSINT", "Batloader", "RoyalRansomware", "Python", "JavaScript", "MSI", "PowerShell"],
-                "imageUrl": "None",
-            },
-        ]
-
-        return response
+        return [response]
 
     def article_indicator_list(self, article_id: str, article_indicator_id: str, odata: str, limit: int) -> list:
         """

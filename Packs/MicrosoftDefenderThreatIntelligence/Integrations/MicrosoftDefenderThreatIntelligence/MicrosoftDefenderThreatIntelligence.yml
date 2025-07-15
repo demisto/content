@@ -83,8 +83,8 @@ configuration:
   advanced: true
   required: false
 
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: MicrosoftDefenderThreatIntelligence
+description: Use the Microsoft Defender Threat Intelligence integration to query enriched threat intelligence data such as articles, threat actor profiles, WHOIS records, and host-related infrastructure.
+display: Microsoft Defender Threat Intelligence
 name: MicrosoftDefenderThreatIntelligence
 script:
   commands:
@@ -93,14 +93,12 @@ script:
   - description: Run this command to complete the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command.
     name: msg-defender-threat-intel-auth-complete
   - arguments:
-    - default: false
-      description: Article ID to retrieve specific article details.
+    - description: Article ID to retrieve specific article details.
       name: article_id
-    - defaultvalue: '50'
+    - defaultValue: '50'
       description: Number of incidents in the list.
       name: limit
-    - default: false
-      description: Filter incidents using "odata" query.
+    - description: Filter incidents using "odata" query.
       name: odata
     description: Get articles including their properties and relationships.
     name: msg-defender-threat-intel-article-list
@@ -112,17 +110,14 @@ script:
       description: The title of the Microsoft Defender Threat Intelligence article.
       type: String
   - arguments:
-    - default: false
-      description: The unique identifier of the article.
+    - description: The unique identifier of the article.
       name: article_id
-    - default: false
-      description: The unique identifier of a specific indicator within the article.
+    - description: The unique identifier of a specific indicator within the article.
       name: article_indicator_id
-    - defaultvalue: '50'
+    - defaultValue: '50'
       description: Number of incidents in the list.
       name: limit
-    - default: false
-      description: Filter incidents using "odata" query.
+    - description: Filter incidents using "odata" query.
       name: odata
     description: Get indicators of threat or compromise related to the contents of an article.
     name: msg-defender-threat-intel-article-indicators-list
@@ -137,7 +132,7 @@ script:
     - default: false
       description: The unique identifier of the intelligence profile.
       name: intel_profile_id
-    - defaultvalue: '50'
+    - defaultValue: '50'
       description: 'Number of incidents in the list.'
       name: limit
     - default: false
@@ -152,13 +147,12 @@ script:
       description: The title or name of the threat actor profile.
       type: String
   - arguments:
-    - default: false
-      description: The unique identifier of the intelligence profile.
+    - description: The unique identifier of the intelligence profile.
       name: intel_profile_id
     - default: false
       description: The unique identifier of a specific indicator related to an intelligence profile.
       name: intel_profile_indicator_id
-    - defaultvalue: '50'
+    - defaultValue: '50'
       description: Number of incidents in the list.
       name: limit
     - default: false
@@ -173,12 +167,10 @@ script:
       description: The unique identifier of the artifact (e.g., IP address, domain, file hash) linked to the indicator.
       type: String
   - arguments:
-    - default: false
-      description: The unique identifier of the host.
+    - description: The unique identifier of the host.
       name: host_id
       required: true
-    - default: false
-      description: Filter incidents using "odata" query.
+    - description: Filter incidents using "odata" query.
       name: odata
     description: Read the properties and relationships of a host object.
     name: msg-defender-threat-intel-host
@@ -193,16 +185,13 @@ script:
       type: String
 
   - arguments:
-    - default: false
-      description: 'hostname or IP address.'
+    - description: 'hostname or IP address.'
       name: host_id
-    - default: false
-      description: The unique identifier of a specific whois record.
+    - description: The unique identifier of a specific whois record.
       name: whois_record_id
-    - default: false
-      description: Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.
+    - description: Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.
       name: odata
-    - default: false
+    - defaultValue: '50'
       description: Number of records in the list.
       name: limit
     description: Get the specified whoisRecord resource.
@@ -218,19 +207,15 @@ script:
       type: String
 
   - arguments:
-    - default: false
-      description: 'hostname or IP address.'
+    - description: 'hostname or IP address.'
       name: host_id
-    - default: false
-      description: The unique identifier of the whois record whose history you want to retrieve.
+    - description: The unique identifier of the whois record whose history you want to retrieve.
       name: whois_record_id
-    - default: false
-      description: The unique identifier of a specific WHOIS history record.
+    - description: The unique identifier of a specific WHOIS history record.
       name: whois_history_record_id
-    - default: false
-      description: 'Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.'
+    - description: 'Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.'
       name: odata
-    - default: false
+    - defaultValue: '50'
       description: 'Number of records in the list.'
       name: limit
     description: 'Get the history for a whoisRecord, as represented by a collection of whoisHistoryRecord resources.'

@@ -43,8 +43,7 @@ There is no context output for this command.
 ### msg-defender-threat-intel-auth-complete
 
 ***
-Run this command to complete the authorization process.
-Should be used after running the msgraph-identity-auth-start command.
+Run this command to complete the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command.
 
 #### Base Command
 
@@ -71,13 +70,16 @@ Get articles including their properties and relationships.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| article_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
+| article_id | Article ID to retrieve specific article details. | Optional |
 | limit | Number of incidents in the list. | Optional |
 | odata | Filter incidents using "odata" query. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGDefenderThreatIntel.Article.id | String | The unique identifier of the threat intelligence article. |
+| MSGDefenderThreatIntel.Article.title | String | The title of the Microsoft Defender Threat Intelligence article. |
 
 ### msg-defender-threat-intel-article-indicators-list
 
@@ -92,14 +94,17 @@ Get indicators of threat or compromise related to the contents of an article.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| article_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
-| article_indicator_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
+| article_id | The unique identifier of the article. | Optional |
+| article_indicator_id | The unique identifier of a specific indicator within the article. | Optional |
 | limit | Number of incidents in the list. | Optional |
 | odata | Filter incidents using "odata" query. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGDefenderThreatIntel.ArticleIndicator.id | String | The unique identifier of the indicator associated with the article. |
+| MSGDefenderThreatIntel.ArticleIndicator.artifact.id | String | The unique identifier of the artifact \(e.g., file, domain, IP\) related to the indicator. |
 
 ### msg-defender-threat-intel-profile-list
 
@@ -114,14 +119,16 @@ Get Intelligence Profiles including their properties and relationships.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| intel_profile_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
-| article_indicator_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
+| intel_profile_id | The unique identifier of the intelligence profile. | Optional |
 | limit | Number of incidents in the list. | Optional |
 | odata | Filter incidents using "odata" query. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGDefenderThreatIntel.Profile.id | unknown | The unique identifier of the threat actor profile. |
+| MSGDefenderThreatIntel.Profile.title | String | The title or name of the threat actor profile. |
 
 ### msg-defender-threat-intel-profile-indicators-list
 
@@ -136,14 +143,17 @@ Get Intelligence Profiles Indicators and their properties.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| intel_profile_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
-| intel_profile_indicator_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
+| intel_profile_id | The unique identifier of the intelligence profile. | Optional |
+| intel_profile_indicator_id | The unique identifier of a specific indicator related to an intelligence profile. | Optional |
 | limit | Number of incidents in the list. | Optional |
 | odata | Filter incidents using "odata" query. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGDefenderThreatIntel.ProfileIndicator.id | unknown | The unique identifier of the indicator associated with the threat actor profile. |
+| MSGDefenderThreatIntel.ProfileIndicator.artifact.id | String | The unique identifier of the artifact \(e.g., IP address, domain, file hash\) linked to the indicator. |
 
 ### msg-defender-threat-intel-host
 
@@ -158,12 +168,16 @@ Read the properties and relationships of a host object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Required |
+| host_id | The unique identifier of the host. | Required |
 | odata | Filter incidents using "odata" query. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGDefenderThreatIntel.Host.id | unknown | The unique identifier of the host object in Microsoft Defender Threat Intelligence. |
+| MSGDefenderThreatIntel.Host.registrar | String | The name of the domain registrar responsible for registering the host. |
+| MSGDefenderThreatIntel.Host.registrant | String | The entity \(person or organization\) that registered the host domain. |
 
 ### msg-defender-threat-intel-host-whois
 
@@ -179,13 +193,17 @@ Get the specified whoisRecord resource.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | hostname or IP address. | Optional |
-| whois_record_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
+| whois_record_id | The unique identifier of a specific whois record. | Optional |
 | odata | Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top. | Optional |
 | limit | Number of records in the list. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGDefenderThreatIntel.Whois.id | unknown | The unique identifier of the WHOIS record in Microsoft Defender Threat Intelligence. |
+| MSGDefenderThreatIntel.Whois.whoisServer | String | The WHOIS server that provided the domain registration information. |
+| MSGDefenderThreatIntel.Whois.domainStatus | String | The current status of the domain \(e.g., active, clientHold, expired\) as reported in the WHOIS record. |
 
 ### msg-defender-threat-intel-host-whois-history
 
@@ -201,8 +219,8 @@ Get the history for a whoisRecord, as represented by a collection of whoisHistor
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | hostname or IP address. | Optional |
-| whois_record_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
-| whois_history_record_id | [Enter a description of the argument, including any important information users need to know, for example, default values.]. | Optional |
+| whois_record_id | The unique identifier of the whois record whose history you want to retrieve. | Optional |
+| whois_history_record_id | The unique identifier of a specific WHOIS history record. | Optional |
 | odata | Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top. | Optional |
 | limit | Number of records in the list. | Optional |
 
@@ -210,4 +228,6 @@ Get the history for a whoisRecord, as represented by a collection of whoisHistor
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BaseIntegration.Output | String | \[Enter a description of the data returned in this output.\] |
+| MSGDefenderThreatIntel.WhoisHistory.id | unknown | The unique identifier of the historical WHOIS record. |
+| MSGDefenderThreatIntel.WhoisHistory.whoisServer | String | The WHOIS server that provided the historical domain registration data. |
+| MSGDefenderThreatIntel.WhoisHistory.domainStatus | String | The domain's status at the time of the historical WHOIS record \(e.g., clientTransferProhibited, inactive\). |
