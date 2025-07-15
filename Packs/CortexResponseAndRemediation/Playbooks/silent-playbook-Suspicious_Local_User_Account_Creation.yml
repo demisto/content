@@ -202,12 +202,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2fe4d3ae-4ad1-44e0-928c-997af07f4343
+    taskid: 9214af15-0536-4ae7-a994-51315f1e6157
     type: regular
     task:
-      id: 2fe4d3ae-4ad1-44e0-928c-997af07f4343
+      id: 9214af15-0536-4ae7-a994-51315f1e6157
       version: -1
-      name: Search related alerts
+      name: Search suspicious user activity alerts
       description: Searches for known related alerts in the same case.
       scriptName: SearchAlertsV2
       type: regular
@@ -256,10 +256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ceabad22-9b7a-46d4-a02a-ad731ca6a548
+    taskid: 4d87791f-0873-466f-b7bb-13faedb9552a
     type: regular
     task:
-      id: ceabad22-9b7a-46d4-a02a-ad731ca6a548
+      id: 4d87791f-0873-466f-b7bb-13faedb9552a
       version: -1
       name: Retrieve local user password status
       description: Runs a Powershell code snipper on the endpoint where the user was created, in order to retrieve the PASSWORDEXPIRES attribute of the local user.
@@ -1290,10 +1290,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: ce712cfe-c409-46bf-9d4a-9e1a54c57b96
+    taskid: 9184b7c9-0f90-47f1-84f7-334f6a4c39ff
     type: condition
     task:
-      id: ce712cfe-c409-46bf-9d4a-9e1a54c57b96
+      id: 9184b7c9-0f90-47f1-84f7-334f6a4c39ff
       version: -1
       name: Analyst review - disable suspicious user?
       description: |
@@ -1312,7 +1312,11 @@ tasks:
         ---
 
         ### Related Alerts
-        Suspicious related alerts found: `${.=val.foundIncidents && val.foundIncidents.length > 0 ? "True" : "False"}`
+        Suspicious alerts related to either user showing potential evasion or privilege escalation attempts: `${.=val.foundIncidents && val.foundIncidents.length > 0 ? "True" : "False"}`
+
+        Alert names:
+        `${foundIncidents.name}`
+
 
         ---
 
@@ -1458,7 +1462,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 869,
+          "x": 871,
           "y": 2154
         }
       }
@@ -2210,10 +2214,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 18e9f289-19ea-4b1b-b1e3-034b89c56d0f
+    taskid: 6f25ad56-e505-4eac-bf1c-8c65e25f931c
     type: regular
     task:
-      id: 18e9f289-19ea-4b1b-b1e3-034b89c56d0f
+      id: 6f25ad56-e505-4eac-bf1c-8c65e25f931c
       version: -1
       name: Undetermined user type - manual
       description: |-
