@@ -487,8 +487,7 @@ class Client(CoreClient):
         )
 
         reply = res.get("reply", {})
-        set_sorted_paths_and_names(reply)  # sort action_file_name and action_file_path
-
+        set_sorted_paths_and_names(reply)
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get("alerts_limit_per_incident")) or 50
             demisto.debug(f"Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}")
@@ -519,37 +518,20 @@ class Client(CoreClient):
         return response["reply"]["alerts_ids"]
 
 
-def map_file_path_to_file_name(paths: list) -> dict:
-    """
-    Maps file paths to their corresponding file names.
-
-    This function handles both Windows and POSIX (Unix/Linux) file paths by using
-    PureWindowsPath and PurePosixPath from pathlib. The function detects the path
-    type by checking for backslashes (\) which are specific to Windows paths,
-    and uses the appropriate path parser to extract the file name correctly.
-
-    Using PureWindowsPath and PurePosixPath ensures proper handling of:
-    - Windows paths with backslash separators (e.g., "C:\folder\file.txt")
-    - POSIX paths with forward slash separators (e.g., "/home/user/file.txt")
-    - Proper file name extraction regardless of the underlying operating system
-
-    :param paths: List of file paths (can contain both Windows and POSIX style paths)
-    :return: Dictionary mapping file names to their corresponding file paths
-    """
-    from pathlib import PureWindowsPath, PurePosixPath
-
-    paths_to_names = {p: (PureWindowsPath(p).name if "\\" in p else PurePosixPath(p).name) for p in paths}
-
-    return paths_to_names
-
-
-def extract_paths_and_names(file_mapping: dict) -> tuple:
+def extract_paths_and_names(paths: list) -> tuple:
     """
     Takes the output of map_file_path_to_file_name and returns two lists.
 
     :param file_mapping: Dictionary mapping file names to file paths
     :return: Tuple containing (list of file paths, list of file names)
     """
+    from pathlib import PureWindowsPath, PurePosixPath
+
+    if not paths:
+        return [], []
+
+    file_mapping = {p: (PureWindowsPath(p).name if "\\" in p else PurePosixPath(p).name) for p in paths}
+
     file_names = []
     file_paths = []
 
@@ -560,42 +542,47 @@ def extract_paths_and_names(file_mapping: dict) -> tuple:
     return file_paths, file_names
 
 
-def get_sorted_file_alerts(paths: list) -> tuple:
-    """
-    Sorts file paths and returns their mapping and lists.
-
-    :param paths: List of file paths to process
-    :return: Tuple containing (file mapping, file paths, file names)
-    """
-    if not paths:
-        return None, None
-    file_mapping = map_file_path_to_file_name(paths)
-    file_paths, file_names = extract_paths_and_names(file_mapping)
-    return file_paths, file_names
-
-
 def set_sorted_paths_and_names(reply: dict):
-    # from incidents/get_incident_extra_data
+    """
+    Processes file paths in alerts data and sorts them with corresponding file names.
+
+    Handles two different response formats:
+    - Single incident response from incidents/get_incident_extra_data endpoint
+    - Multiple incidents response from incidents/get_multiple_incidents_extra_data endpoint
+
+    For each alert found, extracts file paths and updates the alert data with sorted
+    file paths and corresponding file names.
+
+    :param reply: Response dictionary containing either single incident or multiple incidents data
+    :return: None (modifies the reply dictionary in-place)
+    """
     alerts_data = reply.get("alerts", {}).get("data", [])
     if alerts_data:
-        for alert in alerts_data:
-            alert_paths = alert.get("action_file_path", [])  # inorder
-            paths, names = get_sorted_file_alerts(alert_paths)  # sorted
-            alert["action_file_path"] = paths
-            alert["action_file_name"] = names
+        update_alerts_file_data(alerts_data)
 
     else:
-        # from incidents/get_multiple_incidents_extra_data
         incidents = reply.get("incidents", [])
-        # if not isinstance(incidents, list):
-        #     incidents = [incidents]
+
         for incident in incidents:
             alerts_data = incident.get("alerts", {}).get("data", [])
-            for alert in alerts_data:
-                alert_paths = alert.get("action_file_path", [])  # inorder
-                paths, names = get_sorted_file_alerts(alert_paths)  # sorted
-                alert["action_file_path"] = paths
-                alert["action_file_name"] = names
+            update_alerts_file_data(alerts_data)
+
+
+def update_alerts_file_data(alerts_data):
+    """
+    Updates alert data with sorted file paths and corresponding file names.
+
+    Iterates through alert data and processes file paths for each alert, replacing
+    the original file paths with sorted paths and adding corresponding file names.
+
+    :param alerts_data: List of alert dictionaries containing file path data
+    :return: None (modifies the alerts_data list in-place)
+    """
+    for alert in alerts_data:
+        alert_paths = alert.get("action_file_path", [])
+        paths, names = extract_paths_and_names(alert_paths)
+        alert["action_file_path"] = paths
+        alert["action_file_name"] = names
 
 
 def get_headers(params: dict) -> dict:

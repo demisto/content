@@ -2339,128 +2339,6 @@ def test_handle_excluded_data_param_old_param():
     assert handle_excluded_data_from_alerts_param(excluded_data_from_alerts) == (["b"], True)
 
 
-def test_map_file_path_to_file_name_windows_paths():
-    """
-    Given:
-        - List of Windows file paths with backslashes
-    When:
-        - Calling map_file_path_to_file_name
-    Then:
-        - Returns correct mapping of file names to file paths
-    """
-    from CortexXDRIR import map_file_path_to_file_name
-
-    paths = ["C:\\Users\\Administrator\\file.exe", "D:\\folder\\subfolder\\document.txt", "E:\\test.pdf"]
-    result = map_file_path_to_file_name(paths)
-
-    expected = {
-        "C:\\Users\\Administrator\\file.exe": "file.exe",
-        "D:\\folder\\subfolder\\document.txt": "document.txt",
-        "E:\\test.pdf": "test.pdf",
-    }
-    assert result == expected
-
-
-def test_map_file_path_to_file_name_posix_paths():
-    """
-    Given:
-        - List of POSIX file paths with forward slashes
-    When:
-        - Calling map_file_path_to_file_name
-    Then:
-        - Returns correct mapping of file names to file paths
-    """
-    from CortexXDRIR import map_file_path_to_file_name
-
-    paths = ["/home/user/script.py", "/var/log/system.log", "/tmp/tempfile.tmp"]
-    result = map_file_path_to_file_name(paths)
-
-    expected = {"/home/user/script.py": "script.py", "/var/log/system.log": "system.log", "/tmp/tempfile.tmp": "tempfile.tmp"}
-    assert result == expected
-
-
-def test_map_file_path_to_file_name_mixed_paths():
-    """
-    Given:
-        - List containing both Windows and POSIX file paths
-    When:
-        - Calling map_file_path_to_file_name
-    Then:
-        - Returns correct mapping for both path types
-    """
-    from CortexXDRIR import map_file_path_to_file_name
-
-    paths = ["C:\\Windows\\file.exe", "/usr/bin/program", "D:\\data\\report.csv", "/home/user/config.json"]
-    result = map_file_path_to_file_name(paths)
-
-    expected = {
-        "C:\\Windows\\file.exe": "file.exe",
-        "/usr/bin/program": "program",
-        "D:\\data\\report.csv": "report.csv",
-        "/home/user/config.json": "config.json",
-    }
-    assert result == expected
-
-
-def test_map_file_path_to_file_name_empty_list():
-    """
-    Given:
-        - Empty list of file paths
-    When:
-        - Calling map_file_path_to_file_name
-    Then:
-        - Returns empty dictionary
-    """
-    from CortexXDRIR import map_file_path_to_file_name
-
-    paths = []
-    result = map_file_path_to_file_name(paths)
-    assert result == {}
-
-
-def test_map_file_path_to_file_name_file_names_only():
-    """
-    Given:
-        - List of file names without directories
-    When:
-        - Calling map_file_path_to_file_name
-    Then:
-        - Returns mapping with same file names
-    """
-    from CortexXDRIR import map_file_path_to_file_name
-
-    paths = ["file.txt", "script.py", "document.pdf"]
-    result = map_file_path_to_file_name(paths)
-
-    expected = {"file.txt": "file.txt", "script.py": "script.py", "document.pdf": "document.pdf"}
-    assert result == expected
-
-
-def test_map_file_path_to_file_name_edge_cases():
-    """
-    Given:
-        - List of edge case file paths
-    When:
-        - Calling map_file_path_to_file_name
-    Then:
-        - Returns correct mapping for edge cases
-    """
-    from CortexXDRIR import map_file_path_to_file_name
-
-    paths = ["C:\\", "/", "C:\\file", "/file", "file.with.multiple.dots", ""]
-    result = map_file_path_to_file_name(paths)
-
-    expected = {
-        "C:\\": "",
-        "/": "",
-        "C:\\file": "file",
-        "/file": "file",
-        "file.with.multiple.dots": "file.with.multiple.dots",
-        "": "",
-    }
-    assert result == expected
-
-
 def test_extract_paths_and_names_valid_mapping():
     """
     Given:
@@ -2472,9 +2350,9 @@ def test_extract_paths_and_names_valid_mapping():
     """
     from CortexXDRIR import extract_paths_and_names
 
-    file_mapping = {"C:\\folder\\file.exe": "file.exe", "/home/user/script.py": "script.py", "document.txt": "document.txt"}
+    paths = ["C:\\folder\\file.exe", "/home/user/script.py", "document.txt"]
 
-    file_paths, file_names = extract_paths_and_names(file_mapping)
+    file_paths, file_names = extract_paths_and_names(paths)
 
     assert set(file_paths) == {"C:\\folder\\file.exe", "/home/user/script.py", "document.txt"}
     assert set(file_names) == {"file.exe", "script.py", "document.txt"}
@@ -2492,8 +2370,8 @@ def test_extract_paths_and_names_empty_mapping():
     """
     from CortexXDRIR import extract_paths_and_names
 
-    file_mapping = {}
-    file_paths, file_names = extract_paths_and_names(file_mapping)
+    paths = []
+    file_paths, file_names = extract_paths_and_names(paths)
 
     assert file_paths == []
     assert file_names == []
@@ -2510,60 +2388,8 @@ def test_extract_paths_and_names_single_item():
     """
     from CortexXDRIR import extract_paths_and_names
 
-    file_mapping = {"C:\\test\\file.exe": "file.exe"}
-    file_paths, file_names = extract_paths_and_names(file_mapping)
+    paths = ["C:\\test\\file.exe"]
+    file_paths, file_names = extract_paths_and_names(paths)
 
     assert file_paths == ["C:\\test\\file.exe"]
     assert file_names == ["file.exe"]
-
-
-def test_get_sorted_file_alerts_valid_paths():
-    """
-    Given:
-        - List of file paths
-    When:
-        - Calling get_sorted_file_alerts
-    Then:
-        - Returns tuple with file paths and names
-    """
-    from CortexXDRIR import get_sorted_file_alerts
-
-    paths = ["C:\\folder\\file.exe", "/home/user/script.py"]
-    file_paths, file_names = get_sorted_file_alerts(paths)
-
-    assert set(file_paths) == {"C:\\folder\\file.exe", "/home/user/script.py"}
-    assert set(file_names) == {"file.exe", "script.py"}
-
-
-def test_get_sorted_file_alerts_empty_list():
-    """
-    Given:
-        - Empty list of paths
-    When:
-        - Calling get_sorted_file_alerts
-    Then:
-        - Returns tuple with None values
-    """
-    from CortexXDRIR import get_sorted_file_alerts
-
-    paths = []
-    result = get_sorted_file_alerts(paths)
-
-    assert result == (None, None)
-
-
-def test_get_sorted_file_alerts_none_input():
-    """
-    Given:
-        - None as input
-    When:
-        - Calling get_sorted_file_alerts
-    Then:
-        - Returns tuple with None values
-    """
-    from CortexXDRIR import get_sorted_file_alerts
-
-    paths = None
-    result = get_sorted_file_alerts(paths)
-
-    assert result == (None, None)
