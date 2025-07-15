@@ -103,7 +103,7 @@ To connect Cortex XSIAM to the Azure Event Hub, follow the below steps.
 3. Fill in the attributes based on the Azure Event Hub you streamed your data to.
 4. Leave the **Use audit logs in analytics** checkbox selected, unless you were told otherwise.
 
-More information can be found [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=yjPDSlvRYtlNncGBLHOzvw).
+More information can be found [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Azure-Event-Hub).
 
 ![MicrosoftEntraID_Azure_Event_Hub](./././doc_files/MicrosoftEntraID_Azure_Event_Hub.png)
 
