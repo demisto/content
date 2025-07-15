@@ -408,7 +408,7 @@ def profile_indicators_list_command(client: Client, args: dict[str, Any]) -> Com
     ]
     return CommandResults(
         "MSGDefenderThreatIntel.ProfileIndicator",
-        "ID",
+        "id",
         outputs=response,
         readable_output=tableToMarkdown(
             "Profiles Indicators:",

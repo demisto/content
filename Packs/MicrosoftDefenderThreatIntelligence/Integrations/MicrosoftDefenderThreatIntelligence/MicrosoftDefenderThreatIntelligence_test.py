@@ -384,7 +384,7 @@ def test_host_command_with_host_id():
     result = host_command(client, args)
 
     assert result.outputs == mock_response
-    assert result.outputs_prefix == "MSGDefenderThreatIntel.host"
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.Host"
     assert result.outputs_key_field == "id"
     assert "Host Id" in result.readable_output
     assert "Host Registrar" in result.readable_output
@@ -410,7 +410,7 @@ def test_host_command_with_empty_response():
     result = host_command(client, args)
 
     assert result.outputs == mock_response
-    assert result.outputs_prefix == "MSGDefenderThreatIntel.host"
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.Host"
     assert result.outputs_key_field == "id"
 
 
