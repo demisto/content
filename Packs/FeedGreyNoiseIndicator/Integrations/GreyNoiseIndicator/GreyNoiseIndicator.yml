@@ -43,7 +43,7 @@ configuration:
   required: true
   type: 15
   section: Collect
-- additionalinfo: Select which GreyNoise Feed to ingest
+- additionalinfo: Select which GreyNoise Feed to ingest.  Select the option that includes the classification(s) of the indicator you want to ingest.  By selection a option with more than one classification, the feed will include indicators that match any of the selected classifications.  The All option will include all indicators.  All options ingest indicators from the last 24 hours.
   defaultvalue: Malicious
   display: GreyNoise Feed Type
   name: greynoiseFeedType
@@ -52,6 +52,7 @@ configuration:
   - Malicious
   - Suspicious
   - Benign + Malicious
+  - Malicious + Suspicious
   - Benign + Malicious + Suspicious
   - All
   required: true

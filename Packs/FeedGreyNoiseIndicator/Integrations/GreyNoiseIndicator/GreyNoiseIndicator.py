@@ -84,7 +84,7 @@ def format_timestamp(date: str) -> str:
 
 
 def get_ip_tag_names(tags: list) -> list:
-    """Get tag names from tags list.
+    """Get the tag names from tags list.
 
     :type tags: ``list``
     :param tags: list of tags.
@@ -148,6 +148,8 @@ def build_feed_query(query: str) -> str:
         query_string = "last_seen:1d classification:malicious"
     elif query == "Suspicious":
         query_string = "last_seen:1d classification:suspicious"
+    elif query == "Malicious + Suspicious":
+        query_string = "last_seen:1d (classification:malicious OR classification:suspicious)"
     elif query == "Benign + Malicious":
         query_string = "last_seen:1d (classification:benign OR classification:malicious)"
     elif query == "Benign + Malicious + Suspicious":
