@@ -63,6 +63,7 @@ configuration:
   - interval
   required: false
   type: 17
+  section: Collect
 - defaultvalue: "20160"
   display: ""
   name: feedExpirationInterval
