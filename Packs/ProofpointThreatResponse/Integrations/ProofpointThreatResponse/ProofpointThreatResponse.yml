@@ -732,6 +732,9 @@ script:
     - contextPath: ProofPointTRAP.Quarantine
       description: Results of the email quarantine operation.
       type: String
+    - name: check_for_exact_time_match
+      defaultValue: 'true'
+      description: If true, the command will check for quarantined emails with the exact reception time of the email.
     description: Verify if an email has been quarantined.
     name: proofpoint-tr-verify-quarantine
   isfetch: true
