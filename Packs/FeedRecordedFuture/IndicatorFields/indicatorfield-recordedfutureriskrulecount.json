@@ -1,5 +1,6 @@
 {
     "id": "indicatorfield_recordedfutureriskrules",
+    "description": "Rule score count from Recorded Future",
     "version": 1,
     "cacheVersn": 0,
     "modified": "2025-06-04T08:40:49.53325006Z",
