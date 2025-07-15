@@ -1618,7 +1618,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         for item in last_emails:
             try:
                 if item.message_id:
-                    # demisto.debug(f"received: {item.datetime_created.ewsformat()}, modified: {item.last_modified_time.ewsformat()}")
                     current_fetch_ids[
                         item.message_id] = item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()
                     incident = parse_incident_from_item(item)

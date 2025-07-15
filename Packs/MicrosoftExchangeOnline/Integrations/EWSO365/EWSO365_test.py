@@ -1200,8 +1200,8 @@ def test_fetch_attachments_for_message_output(mocker):
         - Attachments are fetched and parsed as expected.
         - The output is returned in the correct format.
     """
-    from EWSO365 import main, CustomDomainOAuth2Credentials
-    # from EWSApiModule import CustomDomainOAuth2Credentials # TODO: return
+    from EWSO365 import main
+    from EWSApiModule import CustomDomainOAuth2Credentials
 
     from CommonServerPython import CommandResults
 
