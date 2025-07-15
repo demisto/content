@@ -4263,12 +4263,53 @@ script:
     - contextPath: Core.Indicator.vendors
       description: List representing the vendors who reported this indicator.
       type: List
-
+  - arguments:
+    - description: The alert ID's from where to retrieve the contributing events.
+      isArray: true
+      name: alert_ids
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of contributing events to retrieve.
+      name: limit
+    - defaultValue: '1'
+      description: The page number to retrieve. Minimum is 1.
+      name: page_number
+    - defaultValue: '50'
+      description: The page size.
+      name: page_size
+    description: Retrieves contributing events for a specific correlation alert.
+    name: core-get-contributing-event
+    outputs:
+    - contextPath: Core.ContributingEvent.alertID
+      description: The alert ID.
+      type: String
+    - contextPath: Core.ContributingEvent.events
+      description: The contributing events.
+      type: Unknown
+  - arguments:
+    - description: List of agent IDs that support the operation.
+      name: endpoint_list
+      required: true
+    - description: List of IPv6 or IPv4 addresses to be added to the blocklist.
+      name: addresses
+      required: true
+    - description: Number of minutes to block (Max 518,400). The default is 300.
+      name: duration
+    - description: The blocked IP address lists required for polling that are not visible to the user.
+      name: blocked_list
+      hidden: true
+    polling: true
+    name: core-block-ip
+    description: Block malicious or suspicious IP addresses.  
+    outputs:
+    - contextPath: Core.ip_block_results
+      description: List of Dictionaries, each containing ip_address, end_point, and reason (status and error message).
+      type: List
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.2941324
+  dockerimage: demisto/google-cloud-storage:1.0.0.4088897
 tests:
 - No tests
 supportsquickactions: true

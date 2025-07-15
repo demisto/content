@@ -1,0 +1,25 @@
+commonfields:
+  id: CsFalconLiftHostContainment
+  version: -1
+name: CsFalconLiftHostContainment
+script: ''
+type: python
+tags:
+  - Utilities
+comment: A polling wrapper script; lifts containment on the host, returning its network communications to normal.
+enabled: true
+args:
+  - description: A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get agent IDs from detections.
+    isArray: true
+    name: ids
+    required: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.1.0
+tests:
+  - No tests (auto formatted)
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
