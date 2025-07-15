@@ -29,7 +29,8 @@ def test_load_pickled_xpanse_object(tmp_path):
     When:
     - Running the 'load_pickled_xpanse_obje' function.
     Then:
-    - Checks the function successfully loads and returns the unpickled xpanse object with preserved data integrity and no exceptions.
+    - Checks the function successfully loads and returns the unpickled xpanse object with preserved data integrity and no
+      exceptions.
     """
     # create temporary local cache
     cache_path = tmp_path / "tmp"
@@ -1024,7 +1025,8 @@ def test_featurize_similarity_error(mocker):
     When:
     - Running the 'featurize_similarity' function with problematic data.
     Then:
-    - Checks the function handles similarity featurization errors gracefully and returns appropriate error handling or default similarity features.
+    - Checks the function handles similarity featurization errors gracefully and returns appropriate error
+      handling or default similarity features.
     """
     mocker.patch("RankRemediationOwners.OwnerFeaturizationPipeline.get_name_similarity_person_asset", side_effect=Exception())
 
