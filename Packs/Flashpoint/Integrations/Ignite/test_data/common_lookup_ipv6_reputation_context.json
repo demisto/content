@@ -1,9 +1,112 @@
 {
-    "DBotScore": {
-        "Indicator": "0:0:0:0:0:0:0:0",
-        "Type": "ip-dst",
-        "Vendor": "Ignite",
-        "Score": 3,
-        "Reliability": "B - Usually reliable"
+    "IP(val.Address && val.Address == obj.Address)": [
+        {
+            "Address": "0:0:0:0:0:0:0:0",
+            "Malicious": {
+                "Vendor": "Ignite",
+                "Description": "Found in malicious indicators dataset"
+            },
+            "Relationships": [
+                {
+                    "Relationship": "related-to",
+                    "EntityA": "0:0:0:0:0:0:0:0",
+                    "EntityAType": "IPv6",
+                    "EntityB": "dummy_latest_sighting_related_ioc_value_1",
+                    "EntityBType": "File"
+                },
+                {
+                    "Relationship": "related-to",
+                    "EntityA": "0:0:0:0:0:0:0:0",
+                    "EntityAType": "IPv6",
+                    "EntityB": "dummy_related_ioc_value_1.com",
+                    "EntityBType": "Domain"
+                }
+            ]
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "0:0:0:0:0:0:0:0",
+            "Type": "ip",
+            "Vendor": "Ignite",
+            "Score": 3,
+            "Reliability": "B - Usually reliable"
+        }
+    ],
+    "Ignite.IP(val.id && val.id == obj.id)": {
+        "id": " dummy_id_123",
+        "type": "ipv6",
+        "value": "0:0:0:0:0:0:0:0",
+        "href": "https://dummy.href.com",
+        "entity_type": "indicator",
+        "score": {
+            "value": "malicious",
+            "last_scored_at": "2025-04-21T06:44:37.633000"
+        },
+        "modified_at": "2025-04-21T06:44:37.633000",
+        "created_at": "2025-04-14T15:28:26.371000",
+        "last_seen_at": "2025-04-21T06:34:55.617000",
+        "sort_date": "2025-04-21T06:34:55.617000",
+        "platform_urls": {
+            "ignite": "https://dummy.ignite.com"
+        },
+        "apt_description": "N/A",
+        "malware_description": "dummy_malware_description",
+        "mitre_attack_ids": [
+            {
+                "id": "dummy_attack_id_123",
+                "name": "dummy_attack_name",
+                "tactics": [
+                    "Discovery"
+                ]
+            }
+        ],
+        "relationships": {
+            "iocs": [
+                {
+                    "id": "dummy_ioc_id_1",
+                    "type": "dummy_ioc_type_1",
+                    "value": "dummy_ioc_value_1",
+                    "href": "https://dummy.ioc.href.com/1"
+                }
+            ]
+        },
+        "sightings": [
+            {
+                "source": "dummy_source",
+                "sighted_at": "2025-04-21T06:34:55.617000",
+                "tags": [
+                    "dummy_tag_1",
+                    "dummy_tag_2",
+                    "dummy_tag_3"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy_related_ioc_id_1",
+                        "type": "domain",
+                        "value": "dummy_related_ioc_value_1.com",
+                        "href": "https://dummy.related_ioc.href.com/1"
+                    }
+                ]
+            }
+        ],
+        "latest_sighting": {
+            "source": "dummy_latest_sighting_source",
+            "sighted_at": "2025-04-21T06:34:55.617000",
+            "tags": [
+                "dummy_latest_sighting_tag_1",
+                "dummy_latest_sighting_tag_2",
+                "dummy_latest_sighting_tag_3"
+            ],
+            "related_iocs": [
+                {
+                    "id": "dummy_latest_sighting_related_ioc_id_1",
+                    "type": "file",
+                    "value": "dummy_latest_sighting_related_ioc_value_1",
+                    "href": "https://dummy.latest_sighting.related_ioc.href.com/1"
+                }
+            ]
+        },
+        "total_sightings": 11
     }
 }

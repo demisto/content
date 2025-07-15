@@ -300,241 +300,241 @@
     "SearchResults": [
         {
             "AlertIPSIDAlertID": "144115188075855872|10201"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 14:57:38"
-        }, 
+        },
         {
             "ActionName": "success"
-        }, 
+        },
         {
             "AlertIPSIDAlertID": "144115188075855872|10202"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 14:58:37"
-        }, 
+        },
         {
             "ActionName": "success"
-        }, 
+        },
         {
             "AlertIPSIDAlertID": "144115188075855872|10203"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 14:59:35"
-        }, 
+        },
         {
             "ActionName": "success"
-        }, 
+        },
         {
             "AlertIPSIDAlertID": "144115188075855872|10204"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 15:00:36"
-        }, 
+        },
         {
             "ActionName": "success"
-        }, 
+        },
         {
             "AlertIPSIDAlertID": "144115188075855872|10208"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 15:01:37"
-        }, 
+        },
         {
             "ActionName": "success"
-        }, 
+        },
         {
             "AlertIPSIDAlertID": "144115188075855872|10209"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 15:02:38"
-        }, 
+        },
         {
             "ActionName": "success"
-        }, 
+        },
         {
             "AlertIPSIDAlertID": "144115188075855872|10210"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 15:03:36"
-        }, 
+        },
         {
             "ActionName": "success"
-        }, 
+        },
         {
             "AlertIPSIDAlertID": "144115188075855872|10211"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 15:04:36"
-        }, 
+        },
         {
             "ActionName": "success"
-        }, 
+        },
         {
             "AlertIPSIDAlertID": "144115188075855872|10212"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 15:05:37"
-        }, 
+        },
         {
             "ActionName": "success"
-        }, 
+        },
         {
             "AlertIPSIDAlertID": "144115188075855872|10213"
-        }, 
+        },
         {
             "AlertSrcIP": "52.15.91.198"
-        }, 
+        },
         {
             "AlertSrcPort": "0"
-        }, 
+        },
         {
             "AlertDstIP": "192.168.1.25"
-        }, 
+        },
         {
             "AlertDstPort": "0"
-        }, 
+        },
         {
             "AlertProtocol": "n/a"
-        }, 
+        },
         {
             "AlertLastTime": "03/11/2019 15:06:38"
-        }, 
+        },
         {
             "ActionName": "success"
         }
@@ -798,135 +798,135 @@
 <pre>{
     "Alarm": [
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:48:10", 
-            "acknowledgedDate": "03/11/2019 08:16:19", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "NGCP", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:48:10",
+            "acknowledgedDate": "03/11/2019 08:16:19",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "NGCP",
             "ID": 25
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:44:40", 
-            "acknowledgedDate": "03/11/2019 08:16:20", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "NGCP", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:44:40",
+            "acknowledgedDate": "03/11/2019 08:16:20",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "NGCP",
             "ID": 24
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:41:10", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:41:10",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 23
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:27:39", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:27:39",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 22
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:24:39", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:24:39",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 21
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:21:39", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:21:39",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 20
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:19:09", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:19:09",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 19
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:14:09", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:14:09",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 18
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:07:09", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:07:09",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 17
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:06:09", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:06:09",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 16
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/11/2019 01:01:39", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/11/2019 01:01:39",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 15
-        }, 
+        },
         {
-            "conditionType": 13, 
-            "severity": 50, 
-            "triggeredDate": "03/10/2019 17:01:30", 
-            "acknowledgedDate": "", 
-            "summary": "408944640 - Failed Login Attempts - 306-31", 
-            "assignee": "NGCP", 
-            "alarmName": "Failed Login Attempts", 
-            "acknowledgedUsername": "", 
+            "conditionType": 13,
+            "severity": 50,
+            "triggeredDate": "03/10/2019 17:01:30",
+            "acknowledgedDate": "",
+            "summary": "408944640 - Failed Login Attempts - 306-31",
+            "assignee": "NGCP",
+            "alarmName": "Failed Login Attempts",
+            "acknowledgedUsername": "",
             "ID": 14
         }
     ]
@@ -1208,52 +1208,52 @@
 <pre>{
     "Case": [
         {
-            "Status": "Open", 
-            "Summary": "case to be deleted", 
-            "OpenTime": "03/11/2019 08:15:02", 
-            "ID": 1, 
+            "Status": "Open",
+            "Summary": "case to be deleted",
+            "OpenTime": "03/11/2019 08:15:02",
+            "ID": 1,
             "Severity": 1
-        }, 
+        },
         {
-            "Status": "Open", 
-            "Summary": "New Virus Detected", 
-            "OpenTime": "03/11/2019 11:39:18", 
-            "ID": 2, 
+            "Status": "Open",
+            "Summary": "New Virus Detected",
+            "OpenTime": "03/11/2019 11:39:18",
+            "ID": 2,
             "Severity": 1
-        }, 
+        },
         {
-            "Status": "Open", 
-            "Summary": "408944640 - Failed Login Attempts - 306-31", 
-            "OpenTime": "03/11/2019 11:41:02", 
-            "ID": 3, 
+            "Status": "Open",
+            "Summary": "408944640 - Failed Login Attempts - 306-31",
+            "OpenTime": "03/11/2019 11:41:02",
+            "ID": 3,
             "Severity": 1
-        }, 
+        },
         {
-            "Status": "Open", 
-            "Summary": "this is the first case", 
-            "OpenTime": "03/11/2019 12:54:50", 
-            "ID": 4, 
+            "Status": "Open",
+            "Summary": "this is the first case",
+            "OpenTime": "03/11/2019 12:54:50",
+            "ID": 4,
             "Severity": 1
-        }, 
+        },
         {
-            "Status": "Open", 
-            "Summary": "this is the first case", 
-            "OpenTime": "03/11/2019 13:27:22", 
-            "ID": 5, 
+            "Status": "Open",
+            "Summary": "this is the first case",
+            "OpenTime": "03/11/2019 13:27:22",
+            "ID": 5,
             "Severity": 1
-        }, 
+        },
         {
-            "Status": "Open", 
-            "Summary": "this is the first case", 
-            "OpenTime": "03/11/2019 13:29:47", 
-            "ID": 6, 
+            "Status": "Open",
+            "Summary": "this is the first case",
+            "OpenTime": "03/11/2019 13:29:47",
+            "ID": 6,
             "Severity": 1
-        }, 
+        },
         {
-            "Status": "Open", 
-            "Summary": "this is the first case", 
-            "OpenTime": "03/11/2019 13:33:13", 
-            "ID": 7, 
+            "Status": "Open",
+            "Summary": "this is the first case",
+            "OpenTime": "03/11/2019 13:33:13",
+            "ID": 7,
             "Severity": 1
         }
     ]
@@ -1467,22 +1467,22 @@
 <pre>{
     "Case": [
         {
-            "Status": "Open", 
-            "OpenTime": "03/11/2019 15:07:22", 
-            "Severity": 1, 
-            "EventList": [], 
+            "Status": "Open",
+            "OpenTime": "03/11/2019 15:07:22",
+            "Severity": 1,
+            "EventList": [],
             "Notes": [
                 {
-                    "action": "Open", 
-                    "content": "", 
-                    "username": "NGCP", 
-                    "changes": [], 
+                    "action": "Open",
+                    "content": "",
+                    "username": "NGCP",
+                    "changes": [],
                     "timestamp": "03/11/2019 15:07:22(GMT)"
                 }
-            ], 
-            "Summary": "this is the first case", 
-            "Assignee": "NGCP", 
-            "Organization": "None", 
+            ],
+            "Summary": "this is the first case",
+            "Assignee": "NGCP",
+            "Organization": "None",
             "ID": 8
         }
     ]
@@ -1667,147 +1667,147 @@
 <pre>{
     "Case": [
         {
-            "Status": "Open", 
-            "OpenTime": "03/11/2019 11:39:18", 
-            "Severity": 50, 
-            "EventList": [], 
+            "Status": "Open",
+            "OpenTime": "03/11/2019 11:39:18",
+            "Severity": 50,
+            "EventList": [],
             "Notes": [
                 {
-                    "action": "Changes", 
-                    "content": "Summary\n    old: New Virus Detected\n    new: editing first case\n\n  Severity\n    old: 1\n    new: 50", 
-                    "username": "NGCP", 
+                    "action": "Changes",
+                    "content": "Summary\n    old: New Virus Detected\n    new: editing first case\n\n  Severity\n    old: 1\n    new: 50",
+                    "username": "NGCP",
                     "changes": [
                         {
-                            "changeType": "Summary", 
+                            "changeType": "Summary",
                             "changes": [
-                                "old: New Virus Detected", 
+                                "old: New Virus Detected",
                                 "new: editing first case"
                             ]
-                        }, 
+                        },
                         {
-                            "changeType": "Severity", 
+                            "changeType": "Severity",
                             "changes": [
-                                "old: 1", 
+                                "old: 1",
                                 "new: 50"
                             ]
                         }
-                    ], 
+                    ],
                     "timestamp": "03/11/2019 15:07:26(GMT)"
-                }, 
+                },
                 {
-                    "action": "Changes", 
-                    "content": "Summary\n    old: editing first case\n    new: New Virus Detected\n\n  Severity\n    old: 50\n    new: 1", 
-                    "username": "NGCP", 
+                    "action": "Changes",
+                    "content": "Summary\n    old: editing first case\n    new: New Virus Detected\n\n  Severity\n    old: 50\n    new: 1",
+                    "username": "NGCP",
                     "changes": [
                         {
-                            "changeType": "Summary", 
+                            "changeType": "Summary",
                             "changes": [
-                                "old: editing first case", 
+                                "old: editing first case",
                                 "new: New Virus Detected"
                             ]
-                        }, 
+                        },
                         {
-                            "changeType": "Severity", 
+                            "changeType": "Severity",
                             "changes": [
-                                "old: 50", 
+                                "old: 50",
                                 "new: 1"
                             ]
                         }
-                    ], 
+                    ],
                     "timestamp": "03/11/2019 15:01:28(GMT)"
-                }, 
+                },
                 {
-                    "action": "Changes", 
-                    "content": "Summary\n    old: New Virus Detection\n    new: editing first case\n\n  Severity\n    old: 1\n    new: 50", 
-                    "username": "NGCP", 
+                    "action": "Changes",
+                    "content": "Summary\n    old: New Virus Detection\n    new: editing first case\n\n  Severity\n    old: 1\n    new: 50",
+                    "username": "NGCP",
                     "changes": [
                         {
-                            "changeType": "Summary", 
+                            "changeType": "Summary",
                             "changes": [
-                                "old: New Virus Detection", 
+                                "old: New Virus Detection",
                                 "new: editing first case"
                             ]
-                        }, 
+                        },
                         {
-                            "changeType": "Severity", 
+                            "changeType": "Severity",
                             "changes": [
-                                "old: 1", 
+                                "old: 1",
                                 "new: 50"
                             ]
                         }
-                    ], 
+                    ],
                     "timestamp": "03/11/2019 13:33:16(GMT)"
-                }, 
+                },
                 {
-                    "action": "Changes", 
-                    "content": "Summary\n    old: editing first New Virus Detection\n    new: New Virus Detection", 
-                    "username": "NGCP", 
+                    "action": "Changes",
+                    "content": "Summary\n    old: editing first New Virus Detection\n    new: New Virus Detection",
+                    "username": "NGCP",
                     "changes": [
                         {
-                            "changeType": "Summary", 
+                            "changeType": "Summary",
                             "changes": [
-                                "old: editing first New Virus Detection", 
+                                "old: editing first New Virus Detection",
                                 "new: New Virus Detection"
                             ]
                         }
-                    ], 
+                    ],
                     "timestamp": "03/11/2019 13:31:59(GMT)"
-                }, 
+                },
                 {
-                    "action": "Changes", 
-                    "content": "Summary\n    old: editing first case\n    new: editing first New Virus Detection\n\n  Severity\n    old: 50\n    new: 1", 
-                    "username": "NGCP", 
+                    "action": "Changes",
+                    "content": "Summary\n    old: editing first case\n    new: editing first New Virus Detection\n\n  Severity\n    old: 50\n    new: 1",
+                    "username": "NGCP",
                     "changes": [
                         {
-                            "changeType": "Summary", 
+                            "changeType": "Summary",
                             "changes": [
-                                "old: editing first case", 
+                                "old: editing first case",
                                 "new: editing first New Virus Detection"
                             ]
-                        }, 
+                        },
                         {
-                            "changeType": "Severity", 
+                            "changeType": "Severity",
                             "changes": [
-                                "old: 50", 
+                                "old: 50",
                                 "new: 1"
                             ]
                         }
-                    ], 
+                    ],
                     "timestamp": "03/11/2019 13:31:45(GMT)"
-                }, 
+                },
                 {
-                    "action": "Changes", 
-                    "content": "Summary\n    old: New Virus Detection\n    new: editing first case\n\n  Severity\n    old: 1\n    new: 50", 
-                    "username": "NGCP", 
+                    "action": "Changes",
+                    "content": "Summary\n    old: New Virus Detection\n    new: editing first case\n\n  Severity\n    old: 1\n    new: 50",
+                    "username": "NGCP",
                     "changes": [
                         {
-                            "changeType": "Summary", 
+                            "changeType": "Summary",
                             "changes": [
-                                "old: New Virus Detection", 
+                                "old: New Virus Detection",
                                 "new: editing first case"
                             ]
-                        }, 
+                        },
                         {
-                            "changeType": "Severity", 
+                            "changeType": "Severity",
                             "changes": [
-                                "old: 1", 
+                                "old: 1",
                                 "new: 50"
                             ]
                         }
-                    ], 
+                    ],
                     "timestamp": "03/11/2019 13:27:25(GMT)"
-                }, 
+                },
                 {
-                    "action": "Open", 
-                    "content": "", 
-                    "username": "NGCP", 
-                    "changes": [], 
+                    "action": "Open",
+                    "content": "",
+                    "username": "NGCP",
+                    "changes": [],
                     "timestamp": "03/11/2019 11:39:18(GMT)"
                 }
-            ], 
-            "Summary": "editing first case", 
-            "Assignee": "NGCP", 
-            "Organization": "None", 
+            ],
+            "Summary": "editing first case",
+            "Assignee": "NGCP",
+            "Organization": "None",
             "ID": 2
         }
     ]
@@ -2110,41 +2110,41 @@
 <pre>{
     "Case": [
         {
-            "Status": "Open", 
-            "OpenTime": "03/11/2019 11:41:02", 
-            "Severity": 1, 
+            "Status": "Open",
+            "OpenTime": "03/11/2019 11:41:02",
+            "Severity": 1,
             "EventList": [
                 {
-                    "message": "Failed User Logon", 
-                    "lastTime": "03/11/2019 01:01:13", 
+                    "message": "Failed User Logon",
+                    "lastTime": "03/11/2019 01:01:13",
                     "id": {
                         "value": "144115188075855872|8850"
                     }
                 }
-            ], 
+            ],
             "Notes": [
                 {
-                    "action": "Open", 
-                    "content": "Events Added: 144115188075855872|8850\n    Events Removed:", 
-                    "username": "NGCP", 
+                    "action": "Open",
+                    "content": "Events Added: 144115188075855872|8850\n    Events Removed:",
+                    "username": "NGCP",
                     "changes": [
                         {
-                            "changeType": "Events Added", 
+                            "changeType": "Events Added",
                             "changes": [
                                 "144115188075855872|8850"
                             ]
-                        }, 
+                        },
                         {
-                            "changeType": "Events Removed", 
+                            "changeType": "Events Removed",
                             "changes": []
                         }
-                    ], 
+                    ],
                     "timestamp": "03/11/2019 11:41:02(GMT)"
                 }
-            ], 
-            "Summary": "408944640 - Failed Login Attempts - 306-31", 
-            "Assignee": "NGCP", 
-            "Organization": "None", 
+            ],
+            "Summary": "408944640 - Failed Login Attempts - 306-31",
+            "Assignee": "NGCP",
+            "Organization": "None",
             "ID": 3
         }
     ]
@@ -2274,13 +2274,13 @@
 <pre>{
     "CaseEvents": [
         {
-            "Message": "Failed User Logon", 
-            "LastTime": "03/11/2019 01:01:13", 
+            "Message": "Failed User Logon",
+            "LastTime": "03/11/2019 01:01:13",
             "ID": "144115188075855872|8850"
-        }, 
+        },
         {
-            "Message": "User Logon", 
-            "LastTime": "03/11/2019 11:09:37", 
+            "Message": "User Logon",
+            "LastTime": "03/11/2019 11:09:37",
             "ID": "144115188075855872|9718"
         }
     ]
@@ -2495,7 +2495,7 @@
 <pre>{
     "Organizations": [
         {
-            "ID": 1, 
+            "ID": 1,
             "Name": "None"
         }
     ]
@@ -2608,27 +2608,27 @@
 <pre>{
     "EsmUser": [
         {
-            "IsMaster": true, 
-            "Name": "NGCP", 
-            "SMS": "", 
-            "ID": 1, 
-            "IsAdmin": false, 
+            "IsMaster": true,
+            "Name": "NGCP",
+            "SMS": "",
+            "ID": 1,
+            "IsAdmin": false,
             "Email": ""
-        }, 
+        },
         {
-            "IsMaster": false, 
-            "Name": "POLICY", 
-            "SMS": "", 
-            "ID": 3, 
-            "IsAdmin": false, 
+            "IsMaster": false,
+            "Name": "POLICY",
+            "SMS": "",
+            "ID": 3,
+            "IsAdmin": false,
             "Email": ""
-        }, 
+        },
         {
-            "IsMaster": false, 
-            "Name": "REPORT", 
-            "SMS": "", 
-            "ID": 2, 
-            "IsAdmin": false, 
+            "IsMaster": false,
+            "Name": "REPORT",
+            "SMS": "",
+            "ID": 2,
+            "IsAdmin": false,
             "Email": ""
         }
     ]
@@ -3013,18 +3013,18 @@
 <pre>{
     "EsmAlarmEvent": [
         {
-            "DstIP": "192.168.1.25", 
-            "FirstTime": "03/11/2019 11:09:37", 
-            "Severity": 19, 
-            "DstPort": "0", 
-            "SrcPort": "0", 
-            "DstMac": "00:00:00:00:00:00", 
-            "SubType": "success", 
-            "SrcIP": "52.15.91.198", 
-            "Message": "User Logon", 
-            "LastTime": "03/11/2019 11:09:37", 
-            "ID": "144115188075855872|9718", 
-            "NormalizedDescription": "The Login category indicates events related to logging in to hosts or services.  Belongs to Authentication: The authentication category indicates events relating to system access.", 
+            "DstIP": "192.168.1.25",
+            "FirstTime": "03/11/2019 11:09:37",
+            "Severity": 19,
+            "DstPort": "0",
+            "SrcPort": "0",
+            "DstMac": "00:00:00:00:00:00",
+            "SubType": "success",
+            "SrcIP": "52.15.91.198",
+            "Message": "User Logon",
+            "LastTime": "03/11/2019 11:09:37",
+            "ID": "144115188075855872|9718",
+            "NormalizedDescription": "The Login category indicates events related to logging in to hosts or services.  Belongs to Authentication: The authentication category indicates events relating to system access.",
             "SrcMac": "00:00:00:00:00:00"
         }
     ]
@@ -3204,12 +3204,12 @@
 <pre>{
     "EsmAlarmEvent": [
         {
-            "DstIP": "192.168.1.25", 
-            "Severity": 25, 
-            "SubType": "failure", 
-            "SrcIP": "186.29.149.40", 
-            "Message": "Failed User Logon", 
-            "LastTime": "03/11/2019 01:44:27", 
+            "DstIP": "192.168.1.25",
+            "Severity": 25,
+            "SubType": "failure",
+            "SrcIP": "186.29.149.40",
+            "Message": "Failed User Logon",
+            "LastTime": "03/11/2019 01:44:27",
             "ID": "144115188075855872|8919"
         }
     ]

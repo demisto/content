@@ -785,7 +785,10 @@ def add_data_to_actions(card_json, data_value):
         # Check if this dictionary is an Action.Submit or Action.Execute
         if card_json.get("type") in ["Action.Submit", "Action.Execute"]:
             # Add the 'data' key with the provided value
-            card_json["data"] = data_value
+            if "data" in card_json:
+                card_json["data"].update(data_value)
+            else:
+                card_json["data"] = data_value
 
         # Only check nested elements within 'actions'
         if "actions" in card_json:
@@ -2355,15 +2358,17 @@ def send_message():
                 if entities:
                     conversation["body"]["mentions"] = entities
     else:  # Adaptive card
+        # This use case is relevant for TeamsAsk script when the entitlement is one of the keys under the adaptive_card
         entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
         if entitlement_match_ac:
             adaptive_card_processed = process_adaptive_card(adaptive_card)
             conversation = {"type": "message", "attachments": [adaptive_card_processed]}
+        else:
+            conversation = {"type": "message", "attachments": [adaptive_card]}
 
     service_url: str = integration_context.get("service_url", "")
     if not service_url:
         raise ValueError("Did not find service URL. Try messaging the bot on Microsoft Teams")
-
     res: dict = send_message_request(service_url, recipient, conversation, message_id, team_aad_id)
     results = CommandResults(
         outputs={"ID": res.get("id")},
@@ -3256,7 +3261,7 @@ def create_messaging_endpoint_command():
         messaging_endpoint = urljoin(urljoin(xsoar_url, "instance/execute"), instance_name)
 
     else:  # XSIAM or XSOAR SAAS
-        if is_xsiam():
+        if is_xsiam() or is_platform():
             # Replace the 'xdr' with 'crtx' in the hostname of XSIAM tenants
             # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
             xsoar_url = xsoar_url.replace("xdr", "crtx", 1)
