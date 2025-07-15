@@ -4,15 +4,21 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 def get_module_command(module: str, user: str) -> tuple[str, dict]:
     return {
-        "Active Directory Query v2": ("ad-disable-account", {"username": user}),
-        "Microsoft Graph User": ("msgraph-user-account-disable", {"user": user}),
-        "Okta v2": ("okta-suspend-user", {"username": user}),
-        "Okta IAM": ("iam-disable-user", {"user-profile": user}),
+        "Active Directory Query v2": ("ad-disable-account", {"username": user}), # requires username, in get-user-data, no command to get user
+        "Microsoft Graph User": ("msgraph-user-account-disable", {"user": user}), # requires username or ID, in get-user-data, can be added to support email address
+        "Okta v2": ("okta-suspend-user", {"username": user}), # requires username, in get-user-data, can list users to get the emails, ids and names
+        "Okta IAM": ("iam-disable-user", {"user-profile": user}), # not in get-user-data, add iam-get-user
         "AWS-ILM": ("iam-disable-user", {"user-profile": user}),
-        "GSuiteAdmin": ("gsuite-user-update", {"user_key": user, "suspended": "true"})
+        "GSuiteAdmin": ("gsuite-user-update", {"user_key": user, "suspended": "true"}) # not in get-user-data
     }[module]
 
-def validate_input(args: dict): ...
+def validate_input(args: dict):
+    if not (
+        args.get('user_id')
+        or args.get('user_name')
+        or args.get('user_email')
+    ):
+        raise DemistoException('At least one of the following arguments must be provided: "user_id", "user_name", "user_email"')
 
 def get_users(args: dict) -> list[str]: ...
 
@@ -22,6 +28,8 @@ def run_commands(TBD): ...
 
 def main():
     try:
+        args = demisto.args()
+        users = get_users(args)
         demisto.getModules()
         {
             "WildFire-Reports_default_instance": {
