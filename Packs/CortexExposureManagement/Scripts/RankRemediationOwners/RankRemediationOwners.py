@@ -53,7 +53,7 @@ def load_pickled_xpanse_object(file_name: str, cache_path: str = "/tmp/xpanse-ml
         # read access to the GCS bucket, or at least the resource at `remote_path`
         remote_path = posixpath.join("", file_name)
 
-        demisto.info(f"Starting to download '{file_name}' from gs://{remote_gcs_bucket}/{remote_path}").
+        demisto.info(f"Starting to download '{file_name}' from gs://{remote_gcs_bucket}/{remote_path}")
         client = google.cloud.storage.client.Client()
         bucket = client.bucket(remote_gcs_bucket)
         blob = bucket.blob(remote_path)
