@@ -19,8 +19,7 @@ def test_article_list_command_with_default_parameters():
     """
     from MicrosoftDefenderThreatIntelligence import Client, article_list_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/article_list_default.json")
+    mock_response = util_load_json("test_data/article_list_default.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.article_list = lambda article_id, odata, limit: mock_response
@@ -44,8 +43,7 @@ def test_article_list_command_with_article_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, article_list_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/article_list_with_id.json")
+    mock_response = util_load_json("test_data/article_list_with_id.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.article_list = lambda article_id, odata, limit: mock_response
@@ -91,8 +89,7 @@ def test_article_indicators_list_command_with_article_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, article_indicators_list_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/article_indicators_list_with_article_id.json")
+    mock_response = util_load_json("test_data/article_indicators_list_with_article_id.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
@@ -116,8 +113,7 @@ def test_article_indicators_list_command_with_article_indicator_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, article_indicators_list_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/article_indicators_list_with_article_indicator_id.json")
+    mock_response = util_load_json("test_data/article_indicators_list_with_article_indicator_id.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
@@ -162,8 +158,7 @@ def test_article_indicators_list_command_with_missing_artifact():
     """
     from MicrosoftDefenderThreatIntelligence import Client, article_indicators_list_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/article_indicators_list_missing_artifact.json")
+    mock_response = util_load_json("test_data/article_indicators_list_missing_artifact.json")
     
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
@@ -210,8 +205,7 @@ def test_profile_list_command_with_default_parameters():
     """
     from MicrosoftDefenderThreatIntelligence import Client, profile_list_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/profile_list_default.json")
+    mock_response = util_load_json("test_data/profile_list_default.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.profile_list = lambda intel_profile_id, odata, limit: mock_response
@@ -234,8 +228,7 @@ def test_profile_list_command_with_intel_profile_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, profile_list_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/profile_list_with_id.json")
+    mock_response = util_load_json("test_data/profile_list_with_id.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.profile_list = lambda intel_profile_id, odata, limit: mock_response
@@ -281,8 +274,7 @@ def test_profile_indicators_list_command_with_intel_profile_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, profile_indicators_list_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/profile_indicators_list.json")
+    mock_response = util_load_json("test_data/profile_indicators_list.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.profile_indicators_list = lambda intel_profile_id, intel_profile_indicator_id, odata, limit: mock_response
@@ -305,8 +297,7 @@ def test_profile_indicators_list_command_with_intel_profile_indicator_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, profile_indicators_list_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/profile_indicators_list.json")
+    mock_response = util_load_json("test_data/profile_indicators_list.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.profile_indicators_list = lambda intel_profile_id, intel_profile_indicator_id, odata, limit: mock_response
@@ -370,8 +361,7 @@ def test_host_command_with_host_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, host_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/host_response.json")
+    mock_response = util_load_json("test_data/host_response.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.host = lambda host_id, odata: mock_response
@@ -418,8 +408,7 @@ def test_host_whois_command_with_host_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, host_whois_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/host_whois_response.json")
+    mock_response = util_load_json("test_data/host_whois_response.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.host_whois = lambda host_id, whois_record_id, odata: mock_response
@@ -444,8 +433,7 @@ def test_host_whois_command_with_whois_record_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, host_whois_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/host_whois_response.json")
+    mock_response = util_load_json("test_data/host_whois_response.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.host_whois = lambda host_id, whois_record_id, odata: mock_response
@@ -510,8 +498,7 @@ def test_host_whois_history_command_with_host_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, host_whois_history_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/host_whois_history_response.json")
+    mock_response = util_load_json("test_data/host_whois_history_response.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
@@ -536,8 +523,7 @@ def test_host_whois_history_command_with_whois_record_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, host_whois_history_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/host_whois_history_response.json")
+    mock_response = util_load_json("test_data/host_whois_history_response.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
@@ -559,8 +545,7 @@ def test_host_whois_history_command_with_whois_history_record_id():
     """
     from MicrosoftDefenderThreatIntelligence import Client, host_whois_history_command
     
-    mock_response = util_load_json("Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/"
-                                   "test_data/host_whois_history_response.json")
+    mock_response = util_load_json("test_data/host_whois_history_response.json")
     
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response

@@ -17,7 +17,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 REQUIRED_PERMISSIONS = (
     "offline_access",  # allows device-flow login
     "ThreatIntelligence.Read.All",  # Threat Intelligence specific permission
-    "Application.Read.All",
 )
 
 """ CLIENT CLASS """
