@@ -555,7 +555,16 @@ tasks:
       - "56"
     scriptarguments:
       user:
-        simple: ${Core.OriginalAlert.event.identity_name}
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: identity_name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.referenced_resource_name
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1253,9 +1262,29 @@ tasks:
       - "41"
     scriptarguments:
       new_json:
-        simple: ${Core.OriginalAlert.raw_abioc.event.raw_log.properties.targetResources.[0].modifiedProperties.[0].newValue}
+        complex:
+          root: Core.OriginalAlert.raw_abioc.event.raw_log.targetResources.modifiedProperties
+          accessor: newValue
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.raw_log.properties.targetResources.modifiedProperties.newValue
+                iscontext: true
+          - operator: uniq
       old_json:
-        simple: ${Core.OriginalAlert.raw_abioc.event.raw_log.properties.targetResources.[0].modifiedProperties.[0].oldValue}
+        complex:
+          root: Core.OriginalAlert.raw_abioc.event.raw_log.targetResources.modifiedProperties
+          accessor: oldValue
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.raw_log.properties.targetResources.modifiedProperties.oldValue
+                iscontext: true
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
