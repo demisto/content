@@ -33,6 +33,7 @@ configuration:
   required: false
 - defaultvalue: '2'
   display: Minimum Number of Validated Sources to consider the indicator as trustworthy.
+  additionalinfo: Specifies the minimum number of entries in the API response's "validation" field in order for the indicator to be considered trustworthy.
   name: min_valid_sources
   type: 0
   section: Collect
