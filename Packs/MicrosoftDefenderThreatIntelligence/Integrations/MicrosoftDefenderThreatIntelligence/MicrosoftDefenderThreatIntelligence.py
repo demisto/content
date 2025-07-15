@@ -3,7 +3,8 @@ from typing import Any
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-#from CommonServerUserPython import *  # noqa
+
+# from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
@@ -13,7 +14,6 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-'''NEED TO CHANGE TO THE CORRECT PERMISSION SET'''
 REQUIRED_PERMISSIONS = (
     "offline_access",  # allows device-flow login
     "ThreatIntelligence.Read.All",  # Threat Intelligence specific permission
@@ -24,17 +24,17 @@ REQUIRED_PERMISSIONS = (
 
 class Client:
     def __init__(
-    self,
-    app_id: str,
-    verify: bool,
-    proxy: bool,
-    azure_ad_endpoint: str = "https://login.microsoftonline.com",
-    client_credentials: bool = False,
-    tenant_id: str = None,
-    enc_key: str = None,
-    managed_identities_client_id: Optional[str] = None,
-    private_key: Optional[str] = None,
-    certificate_thumbprint: Optional[str] = None,
+        self,
+        app_id: str,
+        verify: bool,
+        proxy: bool,
+        azure_ad_endpoint: str = "https://login.microsoftonline.com",
+        client_credentials: bool = False,
+        tenant_id: str = None,
+        enc_key: str = None,
+        managed_identities_client_id: Optional[str] = None,
+        private_key: Optional[str] = None,
+        certificate_thumbprint: Optional[str] = None,
     ):
         if app_id and "@" in app_id:
             app_id, refresh_token = app_id.split("@")
@@ -71,38 +71,71 @@ class Client:
     def article_list(self, article_id: str, odata: str, limit: int) -> list:
         """
         Retrieve threat intelligence articles from Microsoft Defender.
-    
+
         Args:
             article_id (str): Specific article ID to retrieve. If empty, retrieves all articles.
             odata (str): Additional OData query parameters for filtering and sorting.
             limit (int): Maximum number of articles to return.
-    
+
         Returns:
             list: List of article objects. If article_id is provided, returns a single article
                     in a list format. If article_id is empty, returns multiple articles from
                     the 'value' field of the response.
         """
-        odata_query = "?"
-        odata_query += f"$top={limit}&"
-        if odata:
-            odata_query += odata
+        # odata_query = "?"
+        # odata_query += f"$top={limit}&"
+        # if odata:
+        #     odata_query += odata
 
-        if not article_id:
-            response = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0/security/threatIntelligence/articles{odata_query}',
-            )
-            return response.get('value', [])
+        # if not article_id:
+        #     response = self.ms_client.http_request(
+        #     method='GET',
+        #     url_suffix=f'v1.0/security/threatIntelligence/articles{odata_query}',
+        #     )
+        #     return response.get('value', [])
 
-        """NEED TO CHECK IF LIMIT IS VALID HERE"""
-        response = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0/security/threatIntelligence/articles/{article_id}{odata_query}',
-        )
+        # """NEED TO CHECK IF LIMIT IS VALID HERE"""
+        # response = self.ms_client.http_request(
+        #     method='GET',
+        #     url_suffix=f'v1.0/security/threatIntelligence/articles/{article_id}{odata_query}',
+        # )
 
-        
-        return [response]
-        
+        # return [response]
+
+        response = [
+            {
+                "@odata.context": "$metadata#articles/$entity",
+                "id": "12345",
+                "createdDateTime": "2023-03-03T18:20:22.677Z",
+                "lastUpdatedDateTime": "2023-03-03T18:20:22.677Z",
+                "title": "Test Article 1",
+                "summary": {
+                    "content": "Trend Micro discusses Batloader campaigns that were observed in the last quarter of 2022.",
+                    "format": "markdown",
+                },
+                "isFeatured": "False",
+                "body": {"content": "#### Description\r\nTrend Micro discusses Batloader...", "format": "markdown"},
+                "tags": ["OSINT", "Batloader", "RoyalRansomware", "Python", "JavaScript", "MSI", "PowerShell"],
+                "imageUrl": "None",
+            },
+            {
+                "@odata.context": "$metadata#articles/$entity",
+                "id": "67890",
+                "createdDateTime": "2023-03-03T18:20:22.677Z",
+                "lastUpdatedDateTime": "2023-03-03T18:20:22.677Z",
+                "title": "Test Article 2",
+                "summary": {
+                    "content": "Trend Micro discusses Batloader campaigns that were observed in the last quarter of 2022.",
+                    "format": "markdown",
+                },
+                "isFeatured": "False",
+                "body": {"content": "#### Description\r\nAnother content...", "format": "markdown"},
+                "tags": ["OSINT", "Batloader", "RoyalRansomware", "Python", "JavaScript", "MSI", "PowerShell"],
+                "imageUrl": "None",
+            },
+        ]
+
+        return response
 
     def article_indicator_list(self, article_id: str, article_indicator_id: str, odata: str, limit: int) -> list:
         """
@@ -124,18 +157,17 @@ class Client:
         """NEED TO CHECK IF LIMIT IS VALID HERE"""
         if not article_id:
             response = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0//security/threatIntelligence/articleIndicators/{article_indicator_id}{odata_query}',
+                method="GET",
+                url_suffix=f"v1.0//security/threatIntelligence/articleIndicators/{article_indicator_id}{odata_query}",
             )
             if response:
                 return [response]
 
         response = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0//security/threatIntelligence/articles/{article_id}/indicators{odata_query}',
+            method="GET",
+            url_suffix=f"v1.0//security/threatIntelligence/articles/{article_id}/indicators{odata_query}",
         )
-        return response.get('value', [])
-
+        return response.get("value", [])
 
     def profile_list(self, intel_profile_id: str, odata: str, limit: int) -> list:
         """
@@ -155,29 +187,29 @@ class Client:
             odata_query += odata
         if not intel_profile_id:
             response = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0//security/threatIntelligence/intelProfiles{odata_query}',
+                method="GET",
+                url_suffix=f"v1.0//security/threatIntelligence/intelProfiles{odata_query}",
             )
-            return response.get('value', [])
+            return response.get("value", [])
 
         """NEED TO CHECK IT LIMIT IS VALID HERE"""
         response = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}',
+            method="GET",
+            url_suffix=f"v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}",
         )
-        
+
         return [response]
 
     def profile_indicators_list(self, intel_profile_id: str, intel_profile_indicator_id: str, odata: str, limit: int) -> list:
         """
         Retrieve intelligence profile indicators.
-    
+
         Args:
             intel_profile_id (str): The ID of the intelligence profile.
             intel_profile_indicator_id (str): The ID of a specific intelligence profile indicator.
             odata (str): OData query parameters for filtering and formatting the response.
             limit (int): Maximum number of indicators to return.
-    
+
         Returns:
             list: A list of intelligence profile indicators, each containing information such as
                     ID, source, first/last seen timestamps, and associated artifacts.
@@ -189,27 +221,26 @@ class Client:
 
         if not intel_profile_indicator_id:
             response = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}/indicators{odata_query}',
+                method="GET",
+                url_suffix=f"v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}/indicators{odata_query}",
             )
-            return response.get('value', [])
+            return response.get("value", [])
 
         """NEED TO CHECK IF LIMIT IS VALID HERE"""
         response = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0//security/threatIntelligence/intelligenceProfileIndicators/{intel_profile_indicator_id}{odata_query}',
+            method="GET",
+            url_suffix=f"v1.0//security/threatIntelligence/intelligenceProfileIndicators/{intel_profile_indicator_id}{odata_query}",
         )
         return [response]
-
 
     def host(self, host_id: str, odata: str) -> dict:
         """
         Retrieve host information by host ID.
-    
+
         Args:
             host_id (str): The ID of the host to retrieve information for.
             odata (str): OData query parameters for filtering and formatting the response.
-    
+
         Returns:
             dict: A dictionary containing host information including ID, first/last seen timestamps,
                     registrar, and registrant details.
@@ -219,20 +250,19 @@ class Client:
             odata_query += odata
 
         return self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0//security/threatIntelligence/hosts/{host_id}{odata_query}',
+            method="GET",
+            url_suffix=f"v1.0//security/threatIntelligence/hosts/{host_id}{odata_query}",
         )
-
 
     def host_whois(self, host_id: str, whois_record_id: str, odata: str) -> dict:
         """
         Retrieve WHOIS record information for a host or specific WHOIS record.
-    
+
         Args:
             host_id (str): The ID of the host to retrieve WHOIS information for.
             whois_record_id (str): The specific WHOIS record ID to retrieve.
             odata (str): OData query parameters for filtering and formatting the response.
-    
+
         Returns:
             dict: A dictionary containing WHOIS record information including registration details,
                     contact information (admin, technical, registrant), nameservers, and timestamps.
@@ -242,29 +272,28 @@ class Client:
             odata_query += odata
         if host_id:
             return self.ms_client.http_request(
-                method='GET',
-                url_suffix=f'v1.0/security/threatIntelligence/{host_id}/whois{odata_query}',
+                method="GET",
+                url_suffix=f"v1.0/security/threatIntelligence/{host_id}/whois{odata_query}",
             )
 
         return self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}{odata_query}',
+            method="GET",
+            url_suffix=f"v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}{odata_query}",
         )
-
 
     def host_whois_history(
         self, host_id: str, whois_record_id: str, whois_history_record_id: str, odata: str, limit: str
     ) -> list:
         """
         Retrieves WHOIS history records for a host or specific WHOIS record.
-    
+
         Args:
             host_id (str): The ID of the host to get WHOIS history for.
             whois_record_id (str): The ID of a specific WHOIS record to get history for.
             whois_history_record_id (str): The ID of a specific WHOIS history record.
             odata (str): OData query parameters for filtering and formatting results.
             limit (str): Maximum number of records to return (used when whois_history_record_id is not provided).
-    
+
         Returns:
             list: A list of WHOIS history records containing registration details, contact information,
                     nameservers, and other domain registration data.
@@ -276,27 +305,26 @@ class Client:
             odata_query += odata
         if host_id:
             return self.ms_client.http_request(
-                method='GET',
-                url_suffix=f'v1.0/security/threatIntelligence/hosts/{host_id}/whois/history{odata_query}',
+                method="GET",
+                url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}/whois/history{odata_query}",
             )
 
         elif whois_record_id:
             return self.ms_client.http_request(
-                method='GET',
-                url_suffix=f'v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}/history{odata_query}',
+                method="GET",
+                url_suffix=f"v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}/history{odata_query}",
             )
 
-        response =  self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'v1.0/security/threatIntelligence/whoisHistoryRecord/{whois_history_record_id}{odata_query}',
+        response = self.ms_client.http_request(
+            method="GET",
+            url_suffix=f"v1.0/security/threatIntelligence/whoisHistoryRecord/{whois_history_record_id}{odata_query}",
         )
 
-        
         return [response]
 
 
-
 """ HELPER FUNCTIONS """
+
 
 def ensure_only_one_argument_provided(**kwargs):
     """
@@ -310,18 +338,18 @@ def ensure_only_one_argument_provided(**kwargs):
     allowed_keys = ", ".join(kwargs.keys())
 
     if total_provided == 0:
-        raise ValueError(
-            f"You must provide one of the following arguments: {allowed_keys}.\nNone were provided."
-        )
+        raise ValueError(f"You must provide one of the following arguments: {allowed_keys}.\nNone were provided.")
     elif total_provided > 1:
         raise ValueError(
             f"Only one of the following arguments should be provided: {allowed_keys}.\n"
             f"Currently provided: {', '.join(provided_keys)}."
         )
 
+
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 """ COMMAND FUNCTIONS """
+
 
 def start_auth(client: Client) -> CommandResults:  # pragma: no cover
     result = client.ms_client.start_auth("!msg-defender-threat-intel-auth-complete")
@@ -331,6 +359,7 @@ def start_auth(client: Client) -> CommandResults:  # pragma: no cover
 def complete_auth(client: Client) -> str:  # pragma: no cover
     client.ms_client.get_access_token()
     return "✅ Authorization completed successfully."
+
 
 def test_connection(client: Client) -> str:  # pragma: no cover
     client.ms_client.get_access_token()
@@ -384,7 +413,7 @@ def profile_list_command(client: Client, args: dict[str, Any]) -> CommandResults
 
     # Call the Client function and get the raw response
     response = client.profile_list(intel_profile_id, odata, limit)
-    
+
     display_data = [{"Profile ID": profile.get("id"), "Title": profile.get("title")} for profile in response]
     return CommandResults(
         "MSGDefenderThreatIntel.Profile",
@@ -414,7 +443,7 @@ def profile_indicators_list_command(client: Client, args: dict[str, Any]) -> Com
     ]
     return CommandResults(
         "MSGDefenderThreatIntel.ProfileIndicator",
-        "id",
+        "ID",
         outputs=response,
         readable_output=tableToMarkdown(
             "Profiles Indicators:",
@@ -438,7 +467,7 @@ def host_command(client: Client, args: dict[str, Any]) -> CommandResults:
         }
     ]
     return CommandResults(
-        "MSGDefenderThreatIntel.host",
+        "MSGDefenderThreatIntel.Host",
         "id",
         outputs=response,
         readable_output=tableToMarkdown(
@@ -480,8 +509,9 @@ def host_whois_history_command(client: Client, args: dict[str, Any]) -> CommandR
     odata = args.get("odata", "")
     limit = args.get("limit", 50)
 
-    ensure_only_one_argument_provided(host_id=host_id, whois_record_id=whois_record_id,
-                                      whois_history_record_id=whois_history_record_id)
+    ensure_only_one_argument_provided(
+        host_id=host_id, whois_record_id=whois_record_id, whois_history_record_id=whois_history_record_id
+    )
 
     # Call the Client function and get the raw response
     response = client.host_whois_history(host_id, whois_record_id, whois_history_record_id, odata, limit)
@@ -507,7 +537,6 @@ def host_whois_history_command(client: Client, args: dict[str, Any]) -> CommandR
 
 
 def main():
-
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:

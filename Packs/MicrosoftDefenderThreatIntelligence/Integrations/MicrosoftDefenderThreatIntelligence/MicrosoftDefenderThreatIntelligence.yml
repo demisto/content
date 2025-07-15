@@ -102,11 +102,15 @@ script:
     - default: false
       description: Filter incidents using "odata" query.
       name: odata
-    deprecated: false
     description: Get articles including their properties and relationships.
-    execution: false
     name: msg-defender-threat-intel-article-list
-
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.Article.id
+      description: The unique identifier of the threat intelligence article.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.Article.title
+      description: The title of the Microsoft Defender Threat Intelligence article.
+      type: String
   - arguments:
     - default: false
       description: The unique identifier of the article.
@@ -120,11 +124,15 @@ script:
     - default: false
       description: Filter incidents using "odata" query.
       name: odata
-    deprecated: false
     description: Get indicators of threat or compromise related to the contents of an article.
-    execution: false
     name: msg-defender-threat-intel-article-indicators-list
-
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.ArticleIndicator.id
+      description: The unique identifier of the indicator associated with the article.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.ArticleIndicator.artifact.id
+      description: The unique identifier of the artifact (e.g., file, domain, IP) related to the indicator.
+      type: String
   - arguments:
     - default: false
       description: The unique identifier of the intelligence profile.
@@ -135,11 +143,14 @@ script:
     - default: false
       description: 'Filter incidents using "odata" query.'
       name: odata
-    deprecated: false
     description: 'Get Intelligence Profiles including their properties and relationships.'
-    execution: false
     name: msg-defender-threat-intel-profile-list
-
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.Profile.id
+      description: The unique identifier of the threat actor profile.
+    - contextPath: MSGDefenderThreatIntel.Profile.title
+      description: The title or name of the threat actor profile.
+      type: String
   - arguments:
     - default: false
       description: The unique identifier of the intelligence profile.
@@ -153,11 +164,14 @@ script:
     - default: false
       description: Filter incidents using "odata" query.
       name: odata
-    deprecated: false
     description: Get Intelligence Profiles Indicators and their properties.
-    execution: false
     name: msg-defender-threat-intel-profile-indicators-list
-
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.ProfileIndicator.id
+      description: The unique identifier of the indicator associated with the threat actor profile.
+    - contextPath: MSGDefenderThreatIntel.ProfileIndicator.artifact.id
+      description: The unique identifier of the artifact (e.g., IP address, domain, file hash) linked to the indicator.
+      type: String
   - arguments:
     - default: false
       description: The unique identifier of the host.
@@ -166,11 +180,17 @@ script:
     - default: false
       description: Filter incidents using "odata" query.
       name: odata
-    deprecated: false
     description: Read the properties and relationships of a host object.
-    execution: false
     name: msg-defender-threat-intel-host
-
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.Host.id
+      description: The unique identifier of the host object in Microsoft Defender Threat Intelligence.
+    - contextPath: MSGDefenderThreatIntel.Host.registrar
+      description: The name of the domain registrar responsible for registering the host.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.Host.registrant
+      description: The entity (person or organization) that registered the host domain.
+      type: String
 
   - arguments:
     - default: false
@@ -185,10 +205,17 @@ script:
     - default: false
       description: Number of records in the list.
       name: limit
-    deprecated: false
     description: Get the specified whoisRecord resource.
-    execution: false
     name: msg-defender-threat-intel-host-whois
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.Whois.id
+      description: The unique identifier of the WHOIS record in Microsoft Defender Threat Intelligence.
+    - contextPath: MSGDefenderThreatIntel.Whois.whoisServer
+      description: The WHOIS server that provided the domain registration information.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.Whois.domainStatus
+      description: The current status of the domain (e.g., active, clientHold, expired) as reported in the WHOIS record.
+      type: String
 
   - arguments:
     - default: false
@@ -206,17 +233,18 @@ script:
     - default: false
       description: 'Number of records in the list.'
       name: limit
-    deprecated: false
     description: 'Get the history for a whoisRecord, as represented by a collection of whoisHistoryRecord resources.'
-    execution: false
     name: msg-defender-threat-intel-host-whois-history
-
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: Enter a description of the data returned in this output.
+    - contextPath: MSGDefenderThreatIntel.WhoisHistory.id
+      description: The unique identifier of the historical WHOIS record.
+    - contextPath: MSGDefenderThreatIntel.WhoisHistory.whoisServer
+      description: The WHOIS server that provided the historical domain registration data.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.WhoisHistory.domainStatus
+      description: The domain's status at the time of the historical WHOIS record (e.g., clientTransferProhibited, inactive).
       type: String
   isfetch: false
-  runonce: false
   script: '-'
   type: python
   subtype: python3
