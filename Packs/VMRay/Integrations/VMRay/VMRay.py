@@ -24,6 +24,7 @@ ERROR_FORMAT = "Error in API call to VMRay [{}] - {}"
 RELIABILITY = demisto.params().get("integrationReliability", DBotScoreReliability.C) or DBotScoreReliability.C
 INDEX_LOG_DELIMITER = "|"
 INDEX_LOG_FILENAME_POSITION = 3
+VENDOR_NAME = "vmray"
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -237,7 +238,7 @@ def dbot_score_by_hash(data):
                 {
                     "Indicator": data.get(hash_type),
                     "Type": "hash",
-                    "Vendor": "VMRay",
+                    "Vendor": VENDOR_NAME,
                     "Score": DBOTSCORE.get(data.get("Verdict", 0)),
                     "Reliability": RELIABILITY,
                 }
@@ -664,7 +665,7 @@ def get_sample_command():
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type="url",
-            integration_name="VMRay",
+            integration_name=VENDOR_NAME,
             score=score,
             reliability=RELIABILITY,
         )
@@ -675,7 +676,7 @@ def get_sample_command():
         dbot_score = Common.DBotScore(
             indicator=entry["SHA256"],
             indicator_type="file",
-            integration_name="VMRay",
+            integration_name=VENDOR_NAME,
             score=score,
             reliability=RELIABILITY,
         )
@@ -1060,7 +1061,7 @@ def get_iocs_command():  # pragma: no cover
                 dbot_score = Common.DBotScore(
                     indicator=hashes.get("MD5"),
                     indicator_type=dbot_score_type,
-                    integration_name="VMRay",
+                    integration_name=VENDOR_NAME,
                     score=DBOTSCORE.get(object["Verdict"], 0),
                     reliability=RELIABILITY,
                 )
@@ -1080,7 +1081,7 @@ def get_iocs_command():  # pragma: no cover
                 dbot_score = Common.DBotScore(
                     indicator=key_value,
                     indicator_type=dbot_score_type,
-                    integration_name="VMRay",
+                    integration_name=VENDOR_NAME,
                     score=DBOTSCORE.get(object["Verdict"], 0),
                     reliability=RELIABILITY,
                 )
