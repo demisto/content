@@ -106,8 +106,9 @@ def get_agents_outputs(agents, column_to_display: list | None = None):
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, headers=None):
+    def __init__(self, base_url, verify=True, proxy=False, headers=None, block_site_ids=None):
         super().__init__(base_url, verify, proxy, headers=headers)
+        self.block_site_ids = block_site_ids
 
     def remove_hash_from_blocklist_request(self, hash_id) -> dict:
         body = {"data": {"ids": [hash_id]}}
@@ -134,19 +135,15 @@ class Client(BaseClient):
         self,
         value,
         os_type,
-        site_ids=None,
+        site_ids="",
         description="",
         source="",
-        group_ids=None,
-        account_ids=None,
+        group_ids="",
+        account_ids="",
     ) -> dict:
         """
         Supports adding hashes to multiple scoped site blocklists
         """
-        # Treat as comma-separated strings
-        site_ids = site_ids or ""
-        group_ids = group_ids or ""
-        account_ids = account_ids or ""
 
         filt = {}
         if site_ids:
@@ -3078,15 +3075,20 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     if not sha1:
         raise DemistoException("You must specify a valid SHA1 hash")
 
-    site_ids = args.get("site_ids")
+    # Combine block_site_ids from integration params with site_ids from command args
+    block_site_ids = client.block_site_ids or []
+    site_ids_arg = argToList(args.get("site_ids")) if args.get("site_ids") else []
+    combined_site_ids = list(set(block_site_ids + site_ids_arg))
+    site_ids_str = ",".join(combined_site_ids) if combined_site_ids else None
+
     group_ids = args.get("group_ids")
     account_ids = args.get("account_ids")
 
     try:
         # If any scope is provided, use the scoped request
-        if site_ids or group_ids or account_ids:
+        if site_ids_str or group_ids or account_ids:
             scope_map = {
-                "site_ids": ("site", site_ids),
+                "site_ids": ("site", site_ids_str),
                 "group_ids": ("group", group_ids),
                 "account_ids": ("account", account_ids),
             }
@@ -3098,16 +3100,21 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
                 value=sha1,
                 description=args.get("description"),
                 os_type=args.get("os_type"),
-                site_ids=site_ids,
+                site_ids=site_ids_str,
                 group_ids=group_ids,
                 account_ids=account_ids,
                 source=args.get("source"),
             )
             status = {"hash": sha1, "status": f"Added to {scope_str} blocklist"}
             # Add scope info to status if present
-            for key in ("site_ids", "group_ids", "account_ids"):
-                if locals()[key]:
-                    status[key] = locals()[key]
+            scope_vars = {
+                "site_ids": site_ids_str,
+                "group_ids": group_ids,
+                "account_ids": account_ids,
+            }
+            for key, value in scope_vars.items():
+                if value:
+                    status[key] = value
         else:
             result = client.add_hash_to_blocklist_request(
                 value=sha1,
@@ -3160,9 +3167,16 @@ def get_hash_ids_from_blocklist(
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
     ret: list = []
-    if site_ids or group_ids or account_ids:
+
+    # Combine block_site_ids from integration params with site_ids from function argument
+    block_site_ids = client.block_site_ids or []
+    site_ids_arg = argToList(site_ids) if site_ids else []
+    combined_site_ids = list(set(block_site_ids + site_ids_arg))
+    site_ids_str = ",".join(combined_site_ids) if combined_site_ids else None
+
+    if site_ids_str or group_ids or account_ids:
         PAGE_SIZE = 20
-        site_ids = site_ids
+        site_ids = site_ids_str
         group_ids = group_ids
         account_ids = account_ids
         block_list = client.get_blocklist_request(
@@ -4165,6 +4179,7 @@ def main():
     fetch_threat_rank = int(params.get("fetch_threat_rank", 0))
     fetch_limit = int(params.get("fetch_limit", 10))
     fetch_site_ids = params.get("fetch_site_ids", None)
+    block_site_ids = argToList(params.get("block_site_ids")) or []
     mirror_direction = params.get("mirror_direction", None)
 
     headers = {
@@ -4264,6 +4279,7 @@ def main():
             verify=use_ssl,
             headers=headers,
             proxy=proxy,
+            block_site_ids=block_site_ids,
         )
 
         if command == "test-module":
