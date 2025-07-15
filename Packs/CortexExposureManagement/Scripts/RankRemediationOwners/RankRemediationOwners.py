@@ -26,7 +26,7 @@ STRING_DELIMITER = " | "  # delimiter used for joining source fields and any add
 # Normalize owner scores to be within the following bounds.
 # We want to use a standard scale (e.g. between 0 and 1) for interpretability.
 # However, we expect that normalizing to greater-than-half "probabilities" is
-# likely more accurate, # given that there are stringent conditions on initial detection
+# likely more accurate, number given that there are stringent conditions on initial detection
 # such that any name should be considered well-attested and likely to be an owner.
 SCORE_LOWER_BOUND = 0.5
 SCORE_UPPER_BOUND = 1.0
@@ -42,19 +42,18 @@ def load_pickled_xpanse_object(file_name: str, cache_path: str = "/tmp/xpanse-ml
     Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
     """
     remote_gcs_bucket = "xpanse-service-ownership-ml-models"
-    remote_gcs_path = ""  # ok for this to be empty string
 
     os.makedirs(cache_path, exist_ok=True)
     cached_file_path = os.path.join(cache_path, file_name)
 
-    # check that file is not empty; if authorization fails it will
-    # create the cache_path but the file will be empty
+    # check that the file is not empty.
+    # if authorization fails we will create the cache_path but the file will be empty.
     if not (os.path.exists(cached_file_path) and os.path.getsize(cached_file_path)):
         # The relevant infrastructure-related service account needs to be granted
         # read access to the GCS bucket, or at least the resource at `remote_path`
-        remote_path = posixpath.join(remote_gcs_path, file_name)
+        remote_path = posixpath.join("", file_name)
 
-        demisto.info(f"Starting download of '{file_name}' from gs://{remote_gcs_bucket}/{remote_path}")
+        demisto.info(f"Starting to download '{file_name}' from gs://{remote_gcs_bucket}/{remote_path}").
         client = google.cloud.storage.client.Client()
         bucket = client.bucket(remote_gcs_bucket)
         blob = bucket.blob(remote_path)
@@ -105,7 +104,7 @@ def normalize_scores(
 
 def score(owners: list[dict[str, Any]], system_ids: list[str]) -> list[dict[str, Any]]:
     """
-    Load the model, featurize inputs, score owners, normalize scores, and update the owners dicts
+    Load the model from local file, featurize inputs, score owners, normalize scores, and update the owners dicts
 
     If we fail to load or run inference with the model, return uniform scores of SCORE_LOWER_BOUND
     """
@@ -199,7 +198,7 @@ def canonicalize(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
             except Exception as e:
                 demisto.error(f"Unable to canonicalize {owner}: {e}")
     except Exception as e:
-        demisto.error(f"`owners` must be iterable: {e}")
+        demisto.error(f"Could not canonicalize all owners: {e}")
     return canonicalized
 
 
@@ -264,11 +263,10 @@ def _get_k(
 
     Notable hyperparameters (which are tuned to target_k=5) and where they come from:
 
-    :param target_k: the value of k we are roughly targeting (set by discussion with PM)
+    :param target_k: the value of k we are roughly targeting
     :param k_tol: our tolerance for k, or how many additional owners above `target_k` we are willing to show
-        (set by intuition/discussion with PM)
     :param a_tol: max expected absolute different between two scores in the same "tier"
-        (set by intuition; see unit tests)
+        (see unit tests)
     :param min_score_proportion: the targeted min proportion of the score mass
         (identified using a gridsearch over values to find best outcome on unit tests)
     """
@@ -362,7 +360,7 @@ def split_phrase(phrase: str) -> set[str]:
 
     This object allows us to run `in` commands correctly for `asset_name`.
 
-    If asset_name has internal string structure, make it foremost.
+    If asset_name has internal string structure, make it first.
     If it has no structure, run on the raw string.
     """
     SPLITTER = re.compile(r"[:\*_\.-]")
@@ -470,7 +468,7 @@ class OwnerFeaturizationPipeline:
         else:
             self.SOURCES = sources.copy()
 
-        # features which only require contents of remediationowner as input
+        # features that only require contents of remediation owners as input
         self.OWNER_FEATURES: list[tuple[str, Callable]] = [
             ("num_reasons", self.get_num_reasons),
             ("num_distinct_sources", self.get_num_distinct_sources),
@@ -489,7 +487,7 @@ class OwnerFeaturizationPipeline:
     @staticmethod
     def _get_sources(owner: dict[str, Any]) -> list[str]:
         """
-        Return a list of sources.
+        Returns the sources as a list.
         """
         return owner.get("source", "").split(STRING_DELIMITER)
 
@@ -525,7 +523,7 @@ class OwnerFeaturizationPipeline:
 
     def get_name_similarity_person_asset(self, service_identifiers: Iterable[str], owner: dict[str, Any]) -> float:
         """
-        Returns >=1 if there is a blatant match between any `service_identifiers` and `owner`.
+        Returns >=1 if there is a obvious match between any `service_identifiers` and `owner`.
         Returns 0 if there is no match at all.
         Returns 0 to 1 if there is a potential match.
         """
@@ -585,6 +583,9 @@ class OwnerFeaturizationPipeline:
 
 
 def write_output_to_context_key(final_owners: list[dict[str, str]], owner_related_field: str, platform_tenant: str):
+    """
+    Writes remediation owners to XSOAR field.
+    """
     if not final_owners or not owner_related_field:
         return_results(CommandResults(readable_output="No owners found"))
 

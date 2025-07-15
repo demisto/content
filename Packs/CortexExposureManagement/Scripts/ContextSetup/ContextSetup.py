@@ -3,8 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 def context_setup(keys: list[str], vals: dict) -> list[dict[str, str]]:
-    """Returns a list of dictionaries based on the key/values provided.
-    :type keys: ``str``
+    """Prepares key/value mapping to prepare input into XSOAR context
+    :type keys: list[str]
     :type vals: ``dict``
     :param keys: comma separated values used for keys (columns)
     :param vals: dictionary of the value assigned to keys
@@ -26,10 +26,19 @@ def context_setup(keys: list[str], vals: dict) -> list[dict[str, str]]:
 
 
 def context_setup_command(args: dict[str, str]) -> CommandResults:
-    keys = argToList(args.pop("keys", []))
-    overwrite = argToBoolean(args.pop("overwrite", False))
+    """
+    Main command that takes key/value pairs and formats them in a way that allows input into XSOAR context.
 
-    context_key = args.pop("context_key", None)
+    Args:
+        args (Dict[str, Any]): Demisto.args() object
+
+    Returns:
+        CommandResults: human readable message of results of !Set command.
+    """
+    keys = argToList(args.get("keys", []))
+    overwrite = argToBoolean(args.get("overwrite", False))
+
+    context_key = args.get("context_key", None)
 
     # dictionary or all vals
     vals = {k: v for k, v in args.items() if k.startswith("val")}
