@@ -200,7 +200,7 @@ script:
     - contextPath: CyberBlindspot.RemoteIncident.operating_system
       description: The operating system of the compromised device.
     - contextPath: CyberBlindspot.RemoteIncident.malware_path
-      description: The path of the in which the malware was installed on the compromised device.
+      description: The path in which the malware was installed on the compromised device.
     - contextPath: CyberBlindspot.RemoteIncident.url_path
       description: The path of the URL.
     - contextPath: CyberBlindspot.RemoteIncident.masked_password
