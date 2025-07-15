@@ -296,7 +296,7 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     last_run = mocker.patch.object(demisto, "setLastRun")
     fetch_emails_as_incidents(client, current_last_run, RECEIVED_FILTER, False)
     assert last_run.call_args[0][0].get("lastRunTime") == expected_last_run.get("lastRunTime")
-    assert set(last_run.call_args[0][0].get("ids")) == set(expected_last_run.get("ids"))
+    assert set(last_run.call_args[0][0].get("ids_dict")) == set(expected_last_run.get("ids"))
 
 
 @pytest.mark.parametrize(
@@ -491,7 +491,7 @@ def test_handle_html(mocker, html_input, expected_output):
 @pytest.mark.parametrize(
     "since_datetime, filter_arg, expected_result",
     [
-        ("", "last_modified_time__gte", EWSDateTime.from_string("2021-05-23 16:08:14.901293+00:00")),
+        ("", "datetime_received__gte", EWSDateTime.from_string("2021-05-23 16:08:14.901293+00:00")),
         ("2021-05-23 21:28:14.901293+00:00", "datetime_received__gte", "2021-05-23 21:28:14.901293+00:00"),
     ],
 )
@@ -505,7 +505,7 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
         - Fetching last emails
 
     Then:
-        - Verify last_modified_time__gte is ten minutes earlier
+        - Verify datetime_received__gte is ten minutes earlier
         - Verify datetime_received__gte according to the datetime received
     """
 
@@ -1194,3 +1194,4 @@ def test_fetch_attachments_for_message_output(mocker):
     assert results[1].outputs.get("attachmentName") == "mock_item_id-attachmentName-item_attachment_mock"
     assert results[2].get("File") == "mock_item_id-attachmentName-item_attachment_mock.eml"
     assert results[2].get("content") == "mock mime content"
+
