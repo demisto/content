@@ -31,6 +31,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- defaultvalue: '2'
+  display: Minimum Number of Validated Sources to consider the indicator as trustworthy.
+  name: min_valid_sources
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
 - defaultvalue: '10'
   display: Maximum number of relationships for indicators
   name: max_indicator_relationships

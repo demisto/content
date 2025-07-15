@@ -31,6 +31,7 @@ class Client(BaseClient):
         verify,
         proxy,
         default_threshold,
+        min_valid_sources,
         max_indicator_relationships,
         reliability,
         create_relationships=True,
@@ -46,6 +47,7 @@ class Client(BaseClient):
 
         self.reliability = reliability
         self.create_relationships = create_relationships
+        self.min_valid_sources = min_valid_sources
         self.default_threshold = default_threshold
         self.max_indicator_relationships = max_indicator_relationships if max_indicator_relationships else 0
         self.should_error = should_error
@@ -135,6 +137,7 @@ def calculate_dbot_score(client: Client, raw_response: dict | None) -> float:
         score - good (if 0), bad (if grater than default), suspicious if between
     """
     default_threshold = int(client.default_threshold)
+    min_valid_sources = int(client.min_valid_sources)
     false_Positive = {}
     pulase_info_dict = {}
     validation = []
@@ -153,7 +156,7 @@ def calculate_dbot_score(client: Client, raw_response: dict | None) -> float:
                 return Common.DBotScore.SUSPICIOUS
             else:
                 return Common.DBotScore.NONE
-        elif len(validation) == 1:
+        elif len(validation) > min_valid_sources:
             return Common.DBotScore.SUSPICIOUS
         else:
             return Common.DBotScore.GOOD
@@ -968,6 +971,7 @@ def main():
     verify_ssl = not params.get("insecure", False)
     proxy = params.get("proxy")
     default_threshold = int(params.get("default_threshold", 2))
+    min_valid_sources = int(params.get("min_valid_sources", 2))
     max_indicator_relationships = arg_to_number(params.get("max_indicator_relationships", 0))
     token = params.get("credentials", {}).get("password", "") or params.get("api_token", "")
     reliability = params.get("integrationReliability")
@@ -984,6 +988,7 @@ def main():
         verify=verify_ssl,
         proxy=proxy,
         default_threshold=default_threshold,
+        min_valid_sources=min_valid_sources,
         reliability=reliability,
         create_relationships=argToBoolean(params.get("create_relationships")),
         max_indicator_relationships=max_indicator_relationships,
