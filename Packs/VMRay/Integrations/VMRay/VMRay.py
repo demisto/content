@@ -666,6 +666,7 @@ def get_sample_command():
             indicator_type="url",
             integration_name="VMRay",
             score=score,
+            reliability=RELIABILITY,
         )
         url_ctx = Common.URL(url=url, dbot_score=dbot_score)
         entry_context.update(url_ctx.to_context())
@@ -676,6 +677,7 @@ def get_sample_command():
             indicator_type="file",
             integration_name="VMRay",
             score=score,
+            reliability=RELIABILITY,
         )
         file_ctx = Common.File(
             dbot_score=dbot_score,
@@ -1060,6 +1062,7 @@ def get_iocs_command():  # pragma: no cover
                     indicator_type=dbot_score_type,
                     integration_name="VMRay",
                     score=DBOTSCORE.get(object["Verdict"], 0),
+                    reliability=RELIABILITY,
                 )
                 # ... and have multiple parameters
                 indicator = Common.File(
@@ -1079,6 +1082,7 @@ def get_iocs_command():  # pragma: no cover
                     indicator_type=dbot_score_type,
                     integration_name="VMRay",
                     score=DBOTSCORE.get(object["Verdict"], 0),
+                    reliability=RELIABILITY,
                 )
                 # first argument must always be the "main" value and second arg the score
                 indicator = indicator_class(key_value, dbot_score)
