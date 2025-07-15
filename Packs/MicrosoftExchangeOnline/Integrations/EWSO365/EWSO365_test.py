@@ -538,6 +538,51 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
     assert MockObject.filter.call_args[1].get(filter_arg) == expected_result
 
 
+@freeze_time("2021-05-23 13:18:14.901293+00:00")
+@pytest.mark.parametrize(
+    "exclude_ids, expected_result, incident_filter",
+    [
+        ({"id1": ""}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        ({"id1": '2021-05-23T13:19:14Z'}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        ({"id2": '2021-05-23T13:19:14Z'}, [Message(message_id="id3")], "received-time"),
+        ({"id2": '2021-05-23T13:17:14Z'}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        ({"id2": '2021-05-23T13:17:14Z'}, [Message(message_id="id2"), Message(message_id="id3")], "modified-time"),
+    ],
+)
+def test_fetch_last_emails_dedup_mechanism(mocker, exclude_ids, expected_result, incident_filter):
+    class MockObject:
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self, **kwargs):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            class MockQuerySet:
+                def __iter__(self):
+                    return (m for m in [
+                        Message(message_id="id2", datetime_created=EWSDateTime.from_string('2021-05-23T13:18:14Z'),
+                                last_modified_time=EWSDateTime.from_string('2021-05-23T13:18:14Z')),
+                        Message(message_id="id3", datetime_created=EWSDateTime.from_string('2021-05-23T13:19:14Z'),
+                                last_modified_time=EWSDateTime.from_string('2021-05-23T13:18:14Z'))])
+
+            return MockQuerySet()
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.get_folder_by_path = mock_get_folder_by_path
+    results = fetch_last_emails(client, exclude_ids=exclude_ids, incident_filter=incident_filter)
+    result_ids = [msg.message_id for msg in results]
+    expected_ids = [msg.message_id for msg in expected_result]
+    assert result_ids == expected_ids
+
+
 @freeze_time("2021-05-23 18:28:14.901293+00:00")
 @pytest.mark.parametrize("max_fetch, expected_result", [(6, 5), (2, 2), (5, 5)])
 def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
@@ -1194,4 +1239,3 @@ def test_fetch_attachments_for_message_output(mocker):
     assert results[1].outputs.get("attachmentName") == "mock_item_id-attachmentName-item_attachment_mock"
     assert results[2].get("File") == "mock_item_id-attachmentName-item_attachment_mock.eml"
     assert results[2].get("content") == "mock mime content"
-
