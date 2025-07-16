@@ -17,7 +17,7 @@ description: |-
   - Searches for related alerts.
 
   Investigation:
-  The investigation follows different flows depending on the persistence techniques and involved processes:
+  The investigation follows different flows depending on the persistence techniques and involved processes from the following list:
   - winlogon
   - LogonUI
   - WMI
