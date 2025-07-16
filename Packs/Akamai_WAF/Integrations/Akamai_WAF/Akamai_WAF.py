@@ -6872,11 +6872,7 @@ def generic_api_call_command(
 
     title = f"{INTEGRATION_NAME} - Generic API Call command"
     context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}": raw_response}
-    human_readable = tableToMarkdown(
-        name=title,
-        t=raw_response,
-        removeNull=True,
-    )
+    human_readable = "API call return successful."
     return human_readable, context_entry, raw_response
 
 
