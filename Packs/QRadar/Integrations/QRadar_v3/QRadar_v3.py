@@ -36,7 +36,7 @@ MAX_SEARCHES_QUEUE = 10  # maximum number of concurrent searches in mirroring
 SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
-
+ 
 EVENTS_SEARCH_TRIES = 3  # number of retries for creating a new search
 EVENTS_POLLING_TRIES = 10  # number of retries for events polling
 EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new search
