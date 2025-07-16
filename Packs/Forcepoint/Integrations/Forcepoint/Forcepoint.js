@@ -27,6 +27,8 @@ function sendRequest(url, method, body, transactionID) {
     if (transactionID) {
         reqBody['Transaction ID'] = transactionID;
     }
+    // An empty body can cause the API to error out. Only send it on non-GETs.
+    // If future GET Requests need a body, this logic will need to be updated.
     if (method !== 'GET'){
         req.Body = JSON.stringify(reqBody);
     }
