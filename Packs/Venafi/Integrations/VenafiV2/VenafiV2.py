@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 import urllib3
 from typing import Any
-from datetime import datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -101,8 +100,8 @@ class Client(BaseClient):
 
         access_token = access_token_obj.get("access_token", "")
         refresh_token = access_token_obj.get("refresh_token", "")
-        access_until = arg_to_number(access_token_obj.get("expires") or datetime.now().timestamp())
-        refresh_until = arg_to_number(access_token_obj.get("refresh_until") or datetime.now().timestamp())
+        access_until = arg_to_number(access_token_obj.get("expires") or get_current_time().timestamp())
+        refresh_until = arg_to_number(access_token_obj.get("refresh_until") or get_current_time().timestamp())
 
         set_integration_context({
             "access_token": access_token,
