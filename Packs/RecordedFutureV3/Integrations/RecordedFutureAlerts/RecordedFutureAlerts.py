@@ -35,10 +35,12 @@ class Client(BaseClient):
             response: dict = self._http_request(**kwargs)
             if not isinstance(response, dict):
                 return_error(f"Bad Response, response was not a dict: {str(response)}")
+                return []  # return_error will exit(0), but to make linter happy.
 
             if response.get("return_error"):
                 # This will raise the Exception or call "demisto.results()" for the error and sys.exit(0).
                 return_error(**response["return_error"])
+                return []  # return_error will exit(0), but to make linter happy.
 
             result_actions = response.get("result_actions")
             if isinstance(result_actions, list):
@@ -51,6 +53,7 @@ class Client(BaseClient):
                 ]
             elif result_actions:
                 return_error(f"Bad Response, result_actions was present but not a list: {str(response)}")
+                return []  # return_error will exit(0), but to make linter happy.
             else:
                 # We called an endpoint that didn't try to return command results (e.g. fetch-incidents),
                 # should just pass response object directly to XSOAR
@@ -223,10 +226,11 @@ class Actions:
             raise DemistoException(f"Failed due to - {message}")
 
     def fetch_incidents(self) -> None:
-        response = self.client.fetch_incidents()
-        if isinstance(response, CommandResults):
+        response: dict | list[CommandResults] = self.client.fetch_incidents()
+        if isinstance(response, list):
             # 404.
             return_error("404 in fetch incidents")
+            return
         alerts = response.get("alerts", [])
         next_query_classic = response.get("next_query_classic", {})
         next_query_playbook = response.get("next_query_playbook", {})
@@ -304,12 +308,13 @@ class Actions:
         lookup_result = self.client.alert_lookup(alert_id)
 
         if isinstance(lookup_result, list) and lookup_result and isinstance(lookup_result[0], CommandResults):
-            lookup_data = lookup_result[0].outputs
+            lookup_data: dict = lookup_result[0].outputs  # type: ignore
         else:
             return_error("Failed to lookup alert.")
+            return []  # return_error will exit(0), but to make linter happy.
 
-        alert_type = lookup_data.get("type")
-        alert_subtype = lookup_data.get("subtype")
+        alert_type: str = lookup_data.get("type") or ""
+        alert_subtype: str = lookup_data.get("subtype") or ""
 
         image_ids = lookup_data.get("images", []) or []
 
@@ -327,7 +332,7 @@ class Actions:
         existing_file_names = {f.get("Name") for f in files}
 
         # Determine missing image IDs.
-        missing_image_ids = set()
+        missing_image_ids: set = set()
         for img_id in image_ids:
             # Limit to only 25 images.
             if len(missing_image_ids) >= MAX_IMAGES_TO_FETCH:

@@ -2,7 +2,6 @@
 	"description": "Maps incoming Recorded Future classic and playbook alerts.",
 	"feed": false,
 	"id": "RF - Incoming Mapper",
-	"keyTypeMap": {},
 	"mapping": {
 		"RF Classic Alert": {
 			"dontMapEventToLabels": false,
@@ -70,32 +69,11 @@
 						]
 					}
 				},
-				"Recorded Future AI Insights": {
-					"simple": "ai_insights"
-				},
-				"Recorded Future References": {
-					"complex": {
-						"filters": [],
-						"root": "references",
-						"transformers": [
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					}
-				},
 				"Rule Name": {
 					"simple": "rule.name"
 				},
 				"occurred": {
 					"simple": "created"
-				},
-				"rf_entities": {
-					"complex": {
-						"filters": [],
-						"root": "entities",
-						"transformers": []
-					}
 				}
 			}
 		},

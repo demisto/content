@@ -146,6 +146,7 @@ script:
       arguments: []
       outputs:
         - contextPath: Files
+          description: "Image files"
           type: unknown
     - name: rf-alert-rules
       description: Search for alert rule IDs.
