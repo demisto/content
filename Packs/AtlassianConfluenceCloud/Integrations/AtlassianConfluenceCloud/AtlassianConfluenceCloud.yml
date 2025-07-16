@@ -2040,6 +2040,12 @@ script:
       - contextPath: ConfluenceCloud.Event.associatedObjects.objectType
         description: Type of the associated object.
         type: String
+  - arguments:
+    - description: The ID of the Content that should be retrived.
+      name: content_id
+      required: true
+    description: Retrieves a Content Item by Content ID.
+    name: confluence-cloud-content-get   
   dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   isfetchevents:xsoar: false
