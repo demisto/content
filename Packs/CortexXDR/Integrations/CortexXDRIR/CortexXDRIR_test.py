@@ -2142,6 +2142,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
+                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2160,6 +2161,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
                 "sort": {"field": "creation_time", "keyword": "asc"},
                 "alert_fields_to_exclude": ["fieldA", "fieldB"],
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
+                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2177,6 +2179,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
                 "sort": {"field": "creation_time", "keyword": "asc"},
                 "drop_nulls": True,
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
+                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2195,6 +2198,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
                 "alert_fields_to_exclude": ["fieldA", "fieldB"],
                 "drop_nulls": True,
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
+                "full_alert_fields": True,
             }
         },
         headers=client.headers,
