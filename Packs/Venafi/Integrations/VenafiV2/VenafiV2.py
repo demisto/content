@@ -71,7 +71,7 @@ class Client(BaseClient):
             bool: True if the token is expired, False otherwise.
         """
 
-        timestamp_utc_now = arg_to_number(get_current_time().timestamp())
+        timestamp_utc_now = int(get_current_time().timestamp())
         return timestamp_utc_now > expires_date
 
     def create_new_token(self, json_data: dict, is_token_exist: bool) -> str:
@@ -100,8 +100,8 @@ class Client(BaseClient):
 
         access_token = access_token_obj.get("access_token", "")
         refresh_token = access_token_obj.get("refresh_token", "")
-        access_until = arg_to_number(access_token_obj.get("expires") or get_current_time().timestamp())
-        refresh_until = arg_to_number(access_token_obj.get("refresh_until") or get_current_time().timestamp())
+        access_until = arg_to_number(access_token_obj.get("expires")) or int(get_current_time().timestamp())
+        refresh_until = arg_to_number(access_token_obj.get("refresh_until")) or int(get_current_time().timestamp())
 
         set_integration_context({
             "access_token": access_token,
