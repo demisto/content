@@ -79,6 +79,12 @@ XPATH_OBJECTS = ""
 
 XPATH_RULEBASE = ""
 
+# op commands for run_op_command
+SHOW_LOCAL_CERTS = "request certificate show"
+SHOW_CONFIG_RUNNING = "show config running"
+SHOW_CONFIG_PUSHED_TEMPLATE = "show config pushed-template"
+PREDEFINED_CERTS_XPATH = "/config/predefined/certificate"
+
 # pan-os-python device timeout value, in seconds
 DEVICE_TIMEOUT = 120
 DEFAULT_LIMIT_PAGE_SIZE = 50
@@ -266,6 +272,23 @@ class ExceptionCommandType(enum.Enum):
     EDIT = "edit"
     DELETE = "delete"
     LIST = "get"
+
+
+class DynamicUpdateType(enum.Enum):
+    """Enum for dynamic update types to download/install"""
+
+    APP_THREAT = "content"
+    ANTIVIRUS = "anti-virus"
+    WILDFIRE = "wildfire"
+    GP = "global-protect-clientless-vpn"
+
+
+DynamicUpdateContextPrefixMap = {
+    DynamicUpdateType.APP_THREAT: "Content",
+    DynamicUpdateType.ANTIVIRUS: "AntiVirus",
+    DynamicUpdateType.WILDFIRE: "WildFire",
+    DynamicUpdateType.GP: "GP",
+}
 
 
 class QueryMap(TypedDict):
@@ -6532,10 +6555,10 @@ def panorama_show_device_version_command(target: Optional[str] = None):
 
 
 @logger
-def panorama_download_latest_content_update_content(target: Optional[str] = None):
+def panorama_check_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None):
     params = {
         "type": "op",
-        "cmd": "<request><content><upgrade><download><latest/></download></upgrade></content></request>",
+        "cmd": f"<request><{update_type.value}><upgrade><check/></upgrade></{update_type.value}></request>",
         "key": API_KEY,
     }
     if target:
@@ -6546,35 +6569,116 @@ def panorama_download_latest_content_update_content(target: Optional[str] = None
     return result
 
 
-def panorama_download_latest_content_update_command(args: dict):
+def panorama_check_latest_dynamic_update_command(args: dict):
     """
-    Download content and show message in war room
+    Check latest available versions of dynamic updates for App/Threat, Antivirus, WildFire, and GP Clientless VPN
     """
-    target = args.get("target", None)
-    if DEVICE_GROUP and not target:
-        raise Exception("Download latest content is only supported on Firewall (not Panorama).")
+    target = args.get("target")
+    outdated_item_count = 0
+    outputs = {}
 
-    result = panorama_download_latest_content_update_content(target)
+    for update_type in DynamicUpdateType:
+        # Call firewall API to check for the latest available update of each type
+        result = panorama_check_latest_dynamic_update_content(update_type, target)
 
-    if "result" in result["response"]:
-        # download has been given a jobid
-        download_status_output = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}
-        entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": download_status_output}
-        human_readable = tableToMarkdown("Content download:", download_status_output, ["JobID", "Status"], removeNull=True)
+        if "result" in result["response"] and result["response"]["@status"] == "success":
+            versions = result["response"]["result"]["content-updates"]["entry"]
 
-        return_results(
+            # Ensure versions is a list even if there's only one entry
+            if not isinstance(versions, list):
+                versions = [versions]
+
+            latest_version = {}
+            current_version = {}
+            latest_version_parts = (0, 0)
+
+            # Identify the latest available version and what is currently installed
+            for entry in versions:
+                # Find current version
+                if entry.get("current") == "yes" or entry.get("installing") == "yes":
+                    current_version = entry
+
+                # Parse version parts as integers for proper comparison
+                version_str = entry.get("version", "")
+                if "-" in version_str:
+                    major, minor = version_str.split("-")
+                    version_parts = (int(major), int(minor))
+
+                    # Check if this is the latest version
+                    if version_parts > latest_version_parts:
+                        latest_version_parts = version_parts
+                        latest_version = entry
+
+            # Check if currently installed is the most recent available
+            is_up_to_date = current_version.get("version") == latest_version.get("version")
+
+            context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+
+            if not is_up_to_date:
+                outdated_item_count += 1
+
+            # Add both latest and current versions to the output
+            outputs[context_prefix] = {
+                "LatestAvailable": latest_version,
+                "CurrentlyInstalled": current_version,
+                "IsUpToDate": is_up_to_date,
+            }
+        else:
+            # Raise error if API call failed
+            raise DemistoException(
+                f"Failed to retrieve dynamic update information for {update_type.value}.\nAPI response:\n"
+                f"{result['response']['msg']}"
+            )
+
+    outputs["ContentTypesOutOfDate"] = {"Count": outdated_item_count}
+
+    # Create summary table for human-readable output
+    summary_table = []
+    for update_type, data in outputs.items():
+        # Skip the ContentTypesOutOfDate counter
+        if update_type == "ContentTypesOutOfDate":
+            continue
+
+        summary_table.append(
             {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["json"],
-                "Contents": result,
-                "ReadableContentsFormat": formats["markdown"],
-                "HumanReadable": human_readable,
-                "EntryContext": entry_context,
+                "Update Type": update_type,
+                "Is Up To Date": "True" if data["IsUpToDate"] else "False",
+                "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),  # type: ignore[union-attr]
+                "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),  # type: ignore[union-attr]
             }
         )
-    else:
-        # no download took place
-        return_results(result["response"]["msg"])
+
+    # Add the outdated count as a footer in the table markdown
+    summary_markdown = tableToMarkdown(
+        "Dynamic Update Status Summary",
+        summary_table,
+        headers=["Update Type", "Is Up To Date", "Latest Available Version", "Currently Installed Version"],
+    )
+
+    summary_markdown += f"\n\n**Total Content Types Outdated: {outdated_item_count}**"
+
+    command_results = CommandResults(
+        outputs_prefix="Panorama.DynamicUpdates",
+        outputs=outputs,
+        readable_output=summary_markdown,
+    )
+
+    return_results(command_results)
+
+
+@logger
+def panorama_download_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None):
+    params = {
+        "type": "op",
+        "cmd": f"<request><{update_type.value}><upgrade><download><latest/></download></upgrade></{update_type.value}></request>",
+        "key": API_KEY,
+    }
+    if target:
+        params["target"] = target
+
+    result = http_request(URL, "POST", body=params)
+
+    return result
 
 
 @logger
@@ -6588,11 +6692,131 @@ def panorama_content_update_download_status(target: str, job_id: str):
     return result
 
 
-def panorama_content_update_download_status_command(args: dict):
+@logger
+def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateType, args: dict):
     """
-    Check jobID of content update download status
+    Download dynamic update of the given type, poll for status, and return details to war room & context
     """
-    target = str(args["target"]) if "target" in args else None
+    target = args.get("target")
+    job_id = args.get("job_id")
+    entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+    polling = argToBoolean(args.get("polling", "true"))
+
+    # Map update type to command name
+    command_map = {
+        "APP_THREAT": "pan-os-download-latest-content-update",
+        "ANTIVIRUS": "pan-os-download-latest-antivirus-update",
+        "WILDFIRE": "pan-os-download-latest-wildfire-update",
+        "GP": "pan-os-download-latest-gp-update",
+    }
+    command_to_run = command_map.get(update_type.name, "")
+
+    if not job_id:
+        # Initiate new download job
+        if DEVICE_GROUP and not target:
+            raise Exception("Download latest content is only supported on Firewall (not Panorama).")
+
+        result = panorama_download_latest_dynamic_update_content(update_type, target)
+
+        if "result" in result["response"] and result["response"]["@status"] == "success":
+            # Download has been given a job ID
+            job_id = result["response"]["result"]["job"]
+
+            entry_context = {"JobID": job_id, "Status": "Pending"}
+
+            if not polling:
+                # Return result immediately if polling is not enabled
+                command_results = CommandResults(
+                    readable_output=f"Content download JobID {job_id} started on device {target}.",
+                    outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": entry_context},
+                )
+
+            else:
+                # Polling is enabled - schedule command to check download status
+                args["job_id"] = job_id
+                scheduled_command = ScheduledCommand(
+                    command=command_to_run,
+                    next_run_in_seconds=10,
+                    args=args,
+                    timeout_in_seconds=300,
+                )
+
+                command_results = CommandResults(
+                    scheduled_command=scheduled_command,
+                    readable_output=f"Content download JobID {job_id} started on device {target}. Status will be checked shortly.",
+                    outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": entry_context},
+                )
+
+            return_results(command_results)
+
+        else:
+            # No download took place
+            return_results(result["response"]["msg"])
+    else:
+        # Check status of existing job
+        result = panorama_content_update_download_status(target, job_id)
+
+        job_result = result["response"]["result"]["job"]
+
+        content_download_status = {"JobID": job_result["id"]}
+
+        # Determine job status
+        if job_result["status"] in ["FIN", "ACT", "FAIL"]:
+            status_res = job_result["result"]
+            if status_res == "OK":
+                content_download_status["Status"] = "Completed"
+            elif status_res == "FAIL":
+                content_download_status["Status"] = "Failed"
+            elif status_res == "PEND":
+                content_download_status["Status"] = "Pending"
+            content_download_status["Details"] = job_result
+
+        if job_result["status"] == "PEND":
+            content_download_status["Status"] = "Pending"
+
+        if content_download_status.get("Status") == "Pending":
+            # Schedule another status check
+            args["job_id"] = job_id
+            scheduled_command = ScheduledCommand(
+                command=command_to_run,
+                next_run_in_seconds=10,
+                args=args,
+                timeout_in_seconds=300,
+            )
+
+            command_results = CommandResults(
+                scheduled_command=scheduled_command,
+                readable_output=f"Dynamic Update download JobID {job_id} still running on device {target}. Status will be checked shortly.",
+            )
+
+            return_results(command_results)
+        else:
+            # Job is complete, return final status
+            entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": content_download_status}
+            human_readable = tableToMarkdown(
+                f"{entry_context_prefix} update download status:",
+                content_download_status,
+                ["JobID", "Status", "Details"],
+                removeNull=True,
+            )
+
+            return_results(
+                {
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["json"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": human_readable,
+                    "EntryContext": entry_context,
+                }
+            )
+
+
+def panorama_dynamic_update_download_status_command(update_type: DynamicUpdateType, args: dict):
+    """
+    Check jobID of dynamic update download status
+    """
+    target = str(args["target"]) if "target" in args else ""
     if DEVICE_GROUP and not target:
         raise Exception("Content download status is only supported on Firewall (not Panorama).")
     job_id = args["job_id"]
@@ -6612,9 +6836,13 @@ def panorama_content_update_download_status_command(args: dict):
     if result["response"]["result"]["job"]["status"] == "PEND":
         content_download_status["Status"] = "Pending"
 
-    entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": content_download_status}
+    entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+    entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": content_download_status}
     human_readable = tableToMarkdown(
-        "Content download status:", content_download_status, ["JobID", "Status", "Details"], removeNull=True
+        f"{entry_context_prefix} update download status:",
+        content_download_status,
+        ["JobID", "Status", "Details"],
+        removeNull=True,
     )
 
     return_results(
@@ -6630,10 +6858,10 @@ def panorama_content_update_download_status_command(args: dict):
 
 
 @logger
-def panorama_install_latest_content_update(target: str):
+def panorama_install_latest_dynamic_update(update_type: DynamicUpdateType, target: str):
     params = {
         "type": "op",
-        "cmd": "<request><content><upgrade><install><version>latest</version></install></upgrade></content></request>",
+        "cmd": f"<request><{update_type.value}><upgrade><install><version>latest</version></install></upgrade></{update_type.value}></request>",
         "key": API_KEY,
     }
     if target:
@@ -6641,33 +6869,6 @@ def panorama_install_latest_content_update(target: str):
     result = http_request(URL, "GET", params=params)
 
     return result
-
-
-def panorama_install_latest_content_update_command(target: Optional[str] = None):
-    """
-    Check jobID of content content install status
-    """
-    result = panorama_install_latest_content_update(target)
-
-    if "result" in result["response"]:
-        # installation has been given a jobid
-        content_install_info = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}
-        entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
-        human_readable = tableToMarkdown("Result:", content_install_info, ["JobID", "Status"], removeNull=True)
-
-        return_results(
-            {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["json"],
-                "Contents": result,
-                "ReadableContentsFormat": formats["markdown"],
-                "HumanReadable": human_readable,
-                "EntryContext": entry_context,
-            }
-        )
-    else:
-        # no content install took place
-        return_results(result["response"]["msg"])
 
 
 @logger
@@ -6679,7 +6880,128 @@ def panorama_content_update_install_status(target: str, job_id: str):
     return result
 
 
-def panorama_content_update_install_status_command(args: dict):
+@logger
+def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateType, args: dict):
+    """
+    Install latest downloaded dynamic update of the given type, poll for status, and return details to war room & context
+    """
+    target = args.get("target")
+    job_id = args.get("job_id")
+    entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+    polling = argToBoolean(args.get("polling", "true"))
+
+    # Map update type to command name
+    command_map = {
+        "APP_THREAT": "pan-os-install-latest-content-update",
+        "ANTIVIRUS": "pan-os-install-latest-antivirus-update",
+        "WILDFIRE": "pan-os-install-latest-wildfire-update",
+        "GP": "pan-os-install-latest-gp-update",
+    }
+    command_to_run = command_map.get(update_type.name, "")
+
+    if not job_id:
+        # Initiate installation job
+        if DEVICE_GROUP and not target:
+            raise Exception("Install latest content is only supported on Firewall (not Panorama).")
+
+        result = panorama_install_latest_dynamic_update(update_type, target)
+
+        if "result" in result["response"] and result["response"]["@status"] == "success":
+            # installation has been given a jobid
+            job_id = result["response"]["result"]["job"]
+
+            entry_context = {"JobID": job_id, "Status": "Pending"}
+
+            if not polling:
+                # Return result immediately if polling is not enabled
+                command_results = CommandResults(
+                    readable_output=f"Content install JobID {job_id} started on device {target}.",
+                    outputs={f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": entry_context},
+                )
+
+            else:
+                # Polling is enabled - schedule command to check download status
+                # Schedule command to check install status
+                args["job_id"] = job_id
+                scheduled_command = ScheduledCommand(
+                    command=command_to_run,
+                    next_run_in_seconds=10,
+                    args=args,
+                    timeout_in_seconds=300,
+                )
+
+                command_results = CommandResults(
+                    scheduled_command=scheduled_command,
+                    readable_output=f"Content install JobID {job_id} started on device {target}. Status will be checked shortly.",
+                    outputs={f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": entry_context},
+                )
+
+            return_results(command_results)
+
+        else:
+            # no content install took place
+            return_results(result["response"]["msg"])
+
+    else:
+        # Check status of existing job
+        result = panorama_content_update_install_status(target, job_id)
+        job_result = result["response"]["result"]["job"]
+
+        content_install_status = {"JobID": job_result["id"]}
+
+        # Determine job status
+        if job_result["status"] in ["FIN", "ACT", "FAIL"]:
+            status_res = job_result["result"]
+            if status_res == "OK":
+                content_install_status["Status"] = "Completed"
+            elif status_res == "FAIL":
+                content_install_status["Status"] = "Failed"
+            elif status_res == "PEND":
+                content_install_status["Status"] = "Pending"
+            content_install_status["Details"] = job_result
+
+        if job_result["status"] == "PEND":
+            content_install_status["Status"] = "Pending"
+
+        if content_install_status.get("Status") == "Pending":
+            # Schedule another status check
+            args["job_id"] = job_id
+            scheduled_command = ScheduledCommand(
+                command=command_to_run,
+                next_run_in_seconds=10,
+                args=args,
+                timeout_in_seconds=300,
+            )
+
+            command_results = CommandResults(
+                scheduled_command=scheduled_command,
+                readable_output=f"Dynamic Update install JobID {job_id} still running on device {target}. Status will be checked shortly.",
+            )
+
+            return_results(command_results)
+        else:
+            # Job is complete, return final status
+            entry_context = {f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": content_install_status}
+            human_readable = tableToMarkdown(
+                f"{entry_context_prefix} update install status:",
+                content_install_status,
+                ["JobID", "Status", "Details"],
+                removeNull=True,
+            )
+
+            return_results(
+                {
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["json"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": human_readable,
+                    "EntryContext": entry_context,
+                }
+            )
+
+
+def panorama_dynamic_update_install_status_command(update_type: DynamicUpdateType, args: dict):
     """
     Check jobID of content update install status
     """
@@ -6702,9 +7024,11 @@ def panorama_content_update_install_status_command(args: dict):
     if result["response"]["result"]["job"]["status"] == "PEND":
         content_install_status["Status"] = "Pending"
 
-    entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_status}
+    entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+
+    entry_context = {f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": content_install_status}
     human_readable = tableToMarkdown(
-        "Content install status:", content_install_status, ["JobID", "Status", "Details"], removeNull=True
+        f"{entry_context_prefix} install status:", content_install_status, ["JobID", "Status", "Details"], removeNull=True
     )
     return_results(
         {
@@ -14595,6 +14919,299 @@ def pan_os_get_master_key_details_command() -> CommandResults:
     )
 
 
+def expiration_status_check(cert_expiration: datetime) -> str:
+    """
+    Returns the expiration status of a certificate based on its expiration date.
+
+    Args:
+        cert_expiration (datetime): The expiration date and time of the certificate
+
+    Returns:
+        str: The expiration status, one of:
+            - "Expired": Certificate has already expired
+            - "Expiring in 30 days": Certificate expires within 30 days
+            - "Expiring in 60 days": Certificate expires within 31-60 days
+            - "Expiring in 90 days": Certificate expires within 61-90 days
+            - "Valid": Certificate expires in more than 90 days
+    """
+    now = datetime.now()
+    if cert_expiration < now:
+        return "Expired"
+    elif cert_expiration < now + timedelta(days=30):
+        return "Expiring in 30 days"
+    elif cert_expiration < now + timedelta(days=60):
+        return "Expiring in 60 days"
+    elif cert_expiration < now + timedelta(days=90):
+        return "Expiring in 90 days"
+    else:
+        return "Valid"
+
+
+def compile_certificate_details(
+    cert_list: List, cert_type: str, device: str, devices_using_certificate: Optional[List] = None
+) -> List[dict]:
+    """
+    Extract and consolidate certificate details from XML certificate entries into structured dictionaries.
+
+    Args:
+        cert_list (List): List of XML certificate entry elements to process
+        cert_type (str): Type of certificate, one of:
+            - "Pushed": Certificates pushed from Panorama to firewalls
+            - "Local": Certificates stored locally on firewall
+            - "Predefined": System predefined certificates
+        device (str): Device identifier (hostname, serial number, etc.) where certificates are found
+        devices_using_certificate (Optional[List], optional): List of devices that use these certificates. Defaults to None.
+
+    Returns:
+        List[dict]: List of dictionaries containing certificate details. Each dictionary contains:
+            - name (str): Certificate name
+            - device (str): Device identifier
+            - subject (str): Certificate subject or None if not available
+            - expiration_date (str): Expiration date string or None if not available
+            - expiration_status (str): Status from expiration_status_check() or None
+            - location (str): "Panorama" or "Firewall" based on cert_type and DEVICE_GROUP
+            - cert_type (str): The certificate type passed as input
+            - devices_using_certificate (List): Included only if devices_using_certificate is provided
+    """
+
+    cert_details = []
+    if cert_type == "Pushed":
+        location = "Panorama"
+    elif cert_type == "Local":
+        location = "Firewall"
+    elif cert_type == "Predefined":
+        location = "Panorama" if DEVICE_GROUP else "Firewall"
+    else:
+        location = ""
+
+    for cert in cert_list:
+        not_valid_after = cert.find("not-valid-after")
+        subject_elem = cert.find("subject")
+        if not_valid_after is not None and not_valid_after.text is not None:
+            cert_expiration = datetime.strptime(not_valid_after.text, "%b %d %H:%M:%S %Y %Z")
+            expiration_status = expiration_status_check(cert_expiration)
+        else:
+            cert_expiration = None
+            expiration_status = None
+
+        cert_details_dict = {
+            "name": cert.get("name"),
+            "device": device,
+            "subject": subject_elem.text if subject_elem is not None else None,
+            "expiration_date": not_valid_after.text if not_valid_after is not None else None,
+            "expiration_status": expiration_status,
+            "location": location,
+            "cert_type": cert_type,
+        }
+        if devices_using_certificate:
+            cert_details_dict.update({"devices_using_certificate": devices_using_certificate})
+        cert_details.append(cert_details_dict)
+
+    return cert_details
+
+
+def extract_certificates_from_running_config(device: Union[Panorama, Firewall]) -> Tuple[List, List]:
+    """
+    Process pushed certificates from Panorama response and consolidate them.
+
+    Args:
+        device: Panorama device object
+
+    Returns:
+        Tuple[List, List]: Tuple containing pushed certificates and target devices
+
+    Raises:
+        AttributeError: If XML elements don't have expected attributes
+    """
+    templates = Template.refreshall(device)
+    template_stacks = TemplateStack.refreshall(device)
+    response_pushed = run_op_command(device, SHOW_CONFIG_RUNNING)
+
+    if not (response_pushed is not None and hasattr(response_pushed, "get") and response_pushed.get("status") == "success"):
+        demisto.debug("Response is not valid or status is not success")
+        return [], []
+
+    try:
+        template_config = response_pushed.find(".//template")
+        template_stack_config = response_pushed.find(".//template-stack")
+
+        devices_using_certificate: List = []
+        certificate: Optional[ET.Element] = None
+
+        # Check template configuration first
+        if template_config is not None:
+            certificate = template_config.find(".//certificate")
+            if certificate is not None:
+                devices_using_certificate = [
+                    template.devices for template in templates if hasattr(template, "devices") and template.devices
+                ]
+
+        # Check template stack configuration if no certificate found in template
+        if certificate is None and template_stack_config is not None:
+            certificate = template_stack_config.find(".//certificate")
+            if certificate is not None:
+                devices_using_certificate = [
+                    template_stack.devices
+                    for template_stack in template_stacks
+                    if hasattr(template_stack, "devices") and template_stack.devices
+                ]
+
+        # Process found certificates
+        pushed_certs: List[ET.Element] = []
+        if certificate is not None:
+            pushed_certs = certificate.findall(".//entry")
+
+        demisto.debug(f"Found {len(pushed_certs)} pushed certificates")
+
+        # Get the first device group safely
+        target_devices = devices_using_certificate[0] if devices_using_certificate else []
+
+        return pushed_certs, target_devices
+
+    except (AttributeError, IndexError) as e:
+        demisto.debug(f"Error processing pushed certificates: {str(e)}")
+        raise
+
+
+def extract_certificate_from_pushed_template(device: Union[Panorama, Firewall]) -> List:
+    """
+    Extract certificate entries from pushed template configuration.
+
+    Args:
+        device: Firewall device object
+
+    Returns:
+        List of pushed certificate entries
+    """
+    response_pushed = run_op_command(device, SHOW_CONFIG_PUSHED_TEMPLATE)
+
+    # Process pushed certificates
+    if response_pushed is not None and hasattr(response_pushed, "get") and response_pushed.get("status") == "success":
+        certificate = response_pushed.find(".//certificate")
+        pushed_certs = certificate.findall(".//entry") if certificate else []
+        demisto.debug(f"Found {len(pushed_certs)} pushed certificates")
+        return pushed_certs
+
+    return []
+
+
+def extract_local_certificates(device: Union[Panorama, Firewall]) -> List:
+    """
+    Extract local certificate entries from device.
+
+    Args:
+        device: Firewall device object
+
+    Returns:
+        List of local certificate entries
+    """
+    response_local = run_op_command(device, SHOW_LOCAL_CERTS)
+
+    # Process local certificates
+    if response_local is not None and hasattr(response_local, "get") and response_local.get("status") == "success":
+        local_certs = response_local.findall(".//entry")
+        demisto.debug(f"Found {len(local_certs)} local certificates")
+        return local_certs
+
+    return []
+
+
+def get_predefined_certificates() -> List:
+    """
+    Extract predefined certificate entries from system configuration.
+
+    Returns:
+        List of predefined certificate entries
+    """
+    params = {"type": "config", "action": "get", "xpath": PREDEFINED_CERTS_XPATH, "cmd": "show predefined", "key": API_KEY}
+
+    response_predefined = requests.get(URL, params=params, verify=USE_SSL)
+
+    if response_predefined and response_predefined.status_code == 200:
+        root = ET.fromstring(response_predefined.text)
+        certificate = root.find(".//certificate")
+        predefined_certs = certificate.findall(".//entry") if certificate is not None else []
+        demisto.debug(f"Found {len(predefined_certs)} predefined certificates")
+        return predefined_certs
+
+    return []
+
+
+def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> CommandResults:
+    """
+    Get certificate information from PAN-OS device
+
+    Args:
+        topology: `Topology` instance
+        args (dict): The command argument - show_expired_only
+
+    Returns:
+        CommandResults: Certificate information
+    """
+    consolidated_cert_details = []
+
+    try:
+        panorama_devices = topology.panorama_devices()
+        if panorama_devices:
+            for device in panorama_devices:
+                # 1. Get certs pushed from Panorama using SHOW_CONFIG_RUNNING command:
+                pushed_certs, target_devices = extract_certificates_from_running_config(device)
+
+                consolidated_cert_details.extend(
+                    compile_certificate_details(pushed_certs, "Pushed", device.hostname, target_devices)
+                )
+
+        firewall_devices = topology.firewall_devices()
+        if firewall_devices:
+            for device in firewall_devices:
+                # 1. Check if pushed certs were already obtained
+                if not panorama_devices:
+                    pushed_certs = extract_certificate_from_pushed_template(device)
+                    device_hostname = device.parent.get("hostname") if device.parent else device.serial
+                    consolidated_cert_details.extend(compile_certificate_details(pushed_certs, "Pushed", device_hostname or ""))
+
+                # 2. Get local certs on each firewall
+                local_certs = extract_local_certificates(device)
+
+                consolidated_cert_details.extend(compile_certificate_details(local_certs, "Local", device.serial or ""))
+
+        # 3. Get predefined certs
+        predefined_certs = get_predefined_certificates()
+
+        consolidated_cert_details.extend(
+            compile_certificate_details(predefined_certs, "Predefined", URL.replace("https://", "").split(":")[0])
+        )
+
+        readable_output = tableToMarkdown(
+            "Certificate Information",
+            consolidated_cert_details,
+            headers=[
+                "name",
+                "device",
+                "subject",
+                "expiration_date",
+                "expiration_status",
+                "location",
+                "cert_type",
+                "devices_using_certificate",
+            ],
+            removeNull=True,
+        )
+
+        if args.get("show_expired_only") == True:
+            consolidated_cert_details = [cert for cert in consolidated_cert_details if cert.get("expiration_status") == "Expired"]
+
+        return CommandResults(
+            outputs_prefix="Panorama.Certificate",
+            outputs=consolidated_cert_details,
+            readable_output=readable_output if len(consolidated_cert_details) > 0 else "No certificates found",
+            raw_response=consolidated_cert_details,
+        )
+
+    except Exception as e:
+        raise Exception(f"Failed to get certificate information: {str(e)}")
+
+
 """ Fetch Incidents """
 
 
@@ -14619,7 +15236,6 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int, offse
         dir="forward",
         skip=offset_fetch,
     )
-    demisto.debug(f"{params=}")
     response = http_request(URL, "GET", params=params)
     return dict_safe_get(response, ("response", "result", "job"))  # type: ignore
 
@@ -15345,21 +15961,49 @@ def main():  # pragma: no cover
         elif command == "panorama-show-device-version" or command == "pan-os-show-device-version":
             panorama_show_device_version_command(args.get("target"))
 
-        # Download the latest content update
+        # Check latest available versions of Dynamic Updates
+        elif command == "pan-os-check-dynamic-updates-status":
+            panorama_check_latest_dynamic_update_command(args)
+
+        # Download the latest app/threat content update
         elif command == "panorama-download-latest-content-update" or command == "pan-os-download-latest-content-update":
-            panorama_download_latest_content_update_command(args)
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.APP_THREAT, args)
 
-        # Download the latest content update
+        # Download the latest antivirus content update
+        elif command == "pan-os-download-latest-antivirus-update":
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, args)
+
+        # Download the latest wildfire content update
+        elif command == "pan-os-download-latest-wildfire-update":
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.WILDFIRE, args)
+
+        # Download the latest GP content update
+        elif command == "pan-os-download-latest-gp-update":
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.GP, args)
+
+        # Check download status of the latest app/threat content update
         elif command == "panorama-content-update-download-status" or command == "pan-os-content-update-download-status":
-            panorama_content_update_download_status_command(args)
+            panorama_dynamic_update_download_status_command(DynamicUpdateType.APP_THREAT, args)
 
-        # Install the latest content update
+        # Install the latest app/threat content update
         elif command == "panorama-install-latest-content-update" or command == "pan-os-install-latest-content-update":
-            panorama_install_latest_content_update_command(args.get("target"))
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.APP_THREAT, args)
 
-        # Content update install status
+        # Install the latest antivirus content update
+        elif command == "pan-os-install-latest-antivirus-update":
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, args)
+
+        # Install the latest wildfire content update
+        elif command == "pan-os-install-latest-wildfire-update":
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.WILDFIRE, args)
+
+        # Install the latest GP content update
+        elif command == "pan-os-install-latest-gp-update":
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.GP, args)
+
+        # App/Threat update install status
         elif command == "panorama-content-update-install-status" or command == "pan-os-content-update-install-status":
-            panorama_content_update_install_status_command(args)
+            panorama_dynamic_update_install_status_command(DynamicUpdateType.APP_THREAT, args)
 
         # Check PAN-OS latest software update
         elif command == "panorama-check-latest-panos-software" or command == "pan-os-check-latest-panos-software":
@@ -15792,6 +16436,9 @@ def main():  # pragma: no cover
             return_results(pan_os_update_master_key_command(args))
         elif command == "pan-os-get-master-key-details":
             return_results(pan_os_get_master_key_details_command())
+        elif command == "pan-os-get-certificate-info":
+            topology = get_topology()
+            return_results(pan_os_get_certificate_info_command(topology, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as err:
