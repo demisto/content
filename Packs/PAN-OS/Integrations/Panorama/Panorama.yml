@@ -5532,11 +5532,11 @@ script:
       auto: PREDEFINED
       name: rulebase
       predefined:
-      - 'security'
-      - 'application-override'
-      - 'authentication'
-      - 'decryption'
-      - 'nat'
+      - security
+      - application-override
+      - authentication
+      - decryption
+      - nat
       - pbf
       defaultValue: security
       required: true

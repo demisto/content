@@ -1,6 +1,13 @@
 contentitemexportablefields:
   contentitemfields: {}
-description: "The playbook collects and analyzes Palo Alto Networks NGFW policy rule hitcount information and generates a summary of unused rules for potential clean-up.  Policy rules are classified into three categories:\n1. Unused Local Rules - Rules configured locally on Firewalls\n2. Unused Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have zero hits on all Firewalls.\n3. Used Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have hits on some Firewalls but not all.\n    i. These rules may be pushed to firewalls where they are not needed and  should be considered for clean-up.\n\nFor firewalls in HA pairs, rules are only considered unused if all members of the HA group have zero hits for it."
+description: |-
+  The playbook collects and analyzes Palo Alto Networks NGFW policy rule hitcount information and generates a summary of unused rules for potential clean-up. Policy rules are classified into three categories:
+  1. Unused Local Rules - Rules configured locally on Firewalls
+  2. Unused Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have zero hits on all Firewalls.
+  3. Used Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have hits on some Firewalls but not all.
+      i. These rules may be pushed to firewalls where they are not needed and  should be considered for clean-up.
+      
+  For firewalls in HA pairs, rules are only considered unused if all members of the HA group have zero hits for it.
 id: PAN-OS - Identify Unused Policy Rules
 inputSections:
 - description: Generic group for inputs
@@ -8,7 +15,9 @@ inputSections:
   - Rulebase
   name: General (Inputs group)
 inputs:
-- description: "The Firewall rulebase to analyze. Must be one of the following:\nsecurity, nat, decryption, application-override, authentication, dos, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect."
+- description: |-
+    The Firewall rulebase to analyze. Must be one of the following:
+    security, nat, decryption, application-override, authentication, dos, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect.
   key: Rulebase
   playbookInputQuery:
   required: true
