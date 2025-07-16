@@ -82,6 +82,6 @@ Each CVE entry should contain:
 
 ## Notes
 
-- The script implements the CVE schema algorithm from <https://cveproject.github.io/cve-schema/schema/docs>
-- Hotfix versions require exact matches for status changes
-- If a CVE doesn't apply to PAN-OS or GlobalProtect, all firewalls are marked as unaffected
+- The script implements the CVE schema algorithm from <https://cveproject.github.io/cve-schema/schema/docs>.
+- Hotfix versions require exact matches for status changes.
+- If a CVE doesn't apply to the PAN-OS software version or the GlobalProtect client package version, the output will specify the affected status on these 2 versions. For any other installed package versions, please inspect the CVE details.

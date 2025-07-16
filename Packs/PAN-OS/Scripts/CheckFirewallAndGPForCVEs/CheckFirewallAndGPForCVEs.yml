@@ -1,9 +1,9 @@
 args:
-- description: System info of firewalls.
+- description: System info of firewalls as obtained from running the pan-os-platform-get-system-info command.
   isArray: true
   name: pan_os_system_info_list
   required: true
-- description: List of CVE with detailed json.
+- description: Details of the CVE as obtained from running the PAN-OS_Security_Advisories_Enrichment script to enrich the CVE from the <https://security.paloaltonetworks.com> page.
   isArray: true
   name: cve_json
   required: true
@@ -19,7 +19,7 @@ outputs:
   description: ID of the CVE being checked.
   type: string
 - contextPath: CVE_Check.Result
-  description: Result of CVE vulnerability assessment for firewalls.
+  description: Result of the CVE vulnerability assessment for firewalls.
   type: unknown
 - contextPath: CVE_Check.Severity
   description: Severity of the CVE being assessed.

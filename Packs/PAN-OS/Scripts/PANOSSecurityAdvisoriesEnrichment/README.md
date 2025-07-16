@@ -95,9 +95,9 @@ The script retrieves comprehensive vulnerability data including CVSS scores, aff
 
 ## Notes
 
-- The script automatically handles both CVE and PAN-SA format inputs
-- For PAN-SA advisories, the script attempts to retrieve additional CSAF (Common Security Advisory Framework) data
-- Version information is parsed and sorted to provide clear affected/unaffected status
-- CVSS metrics are prioritized by score (highest first) when multiple metrics are available
-- External CVE references are included for PAN-SA advisories when available
-- The script connects to `https://security.paloaltonetworks.com` for data retrieval
+- The script automatically handles both CVE and PAN-SA format inputs.
+- For PAN-SA advisories, the script attempts to retrieve additional CSAF (Common Security Advisory Framework) data.
+- Version information is parsed and sorted to provide clear affected/unaffected status.
+- CVSS metrics are prioritized by score (highest first) when multiple metrics are available.
+- External CVE references are included for PAN-SA advisories when available.
+- The script connects to the [Palo Alto Networks Security Advisories](https://security.paloaltonetworks.com/) page for data retrieval.
