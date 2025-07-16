@@ -61,7 +61,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.4",
+            "X-Integration-Version": "1.1.9",
         }
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
@@ -375,7 +375,7 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
         outputs.append(alert)
     total_alerts = result.get("total")
     table_headers = ["id", "ref_id", "title", "status", "severity", "created_date", "update_date", "type", "environment"]
-    readable_output = f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}\n'
+    readable_output = f"Total alerts: {total_alerts}\nCurrent page: {args.get('page', 1)}\n"
     readable_output += tableToMarkdown(name="Cyberint alerts:", t=outputs, headers=table_headers, removeNull=True)
     return CommandResults(
         outputs_key_field="ref_id",
@@ -878,7 +878,7 @@ def fetch_incidents(
                 alert_data.update({"content": incident_csv_record})
                 alert.update({"attachments": alert_data})
 
-                alert_name = f"Cyberint alert {alert_id} ({index+1}): {alert_title}"
+                alert_name = f"Cyberint alert {alert_id} ({index + 1}): {alert_title}"
                 alert.update({"alert_name": alert_name})
 
                 incident.update({"name": alert_name, "rawJSON": json.dumps(alert)})
