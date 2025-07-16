@@ -347,9 +347,7 @@ def replace_keys_from_misp_to_context_data(obj_to_build: dict | list | str) -> d
         return [replace_keys_from_misp_to_context_data(item) for item in obj_to_build]
     if isinstance(obj_to_build, dict):
         return {
-            (
-                MISP_ENTITIES_TO_CONTEXT_DATA.get(key, key)
-            ): replace_keys_from_misp_to_context_data(value)
+            (MISP_ENTITIES_TO_CONTEXT_DATA.get(key, key)): replace_keys_from_misp_to_context_data(value)
             for key, value in obj_to_build.items()
         }
     return obj_to_build
@@ -922,7 +920,7 @@ def get_events_related_to_scored_tag(all_attributes, found_tag):
 def remove_duplicated_related_events(related_events):
     related_events_no_duplicates = []
     for i in range(len(related_events)):
-        if related_events[i] not in related_events[i + 1:]:
+        if related_events[i] not in related_events[i + 1 :]:
             related_events_no_duplicates.append(related_events[i])
     return related_events_no_duplicates
 
@@ -1395,9 +1393,11 @@ def add_tag(demisto_args: dict, is_attribute=False):
     is_local_tag = argToBoolean(demisto_args.get("is_local", False))
     disable_output = argToBoolean(demisto_args.get("disable_output", False))
     try:
-        PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
+        res = PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
         raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
+    if "errors" in res:
+        raise DemistoException(f"Got error from MISP API: {res}")
     if is_attribute:
         response = None
         success_msg = f"Tag {tag} has been successfully added to attribute {uuid}"

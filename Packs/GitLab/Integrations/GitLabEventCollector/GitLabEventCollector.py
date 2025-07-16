@@ -184,7 +184,7 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     return events, results
 
 
-def fetch_events_command(client: Client, params: dict, last_run: dict, events_types_ids: dict) -> tuple[list, list, dict]:
+def fetch_events_command(client: Client, params: dict, last_run: dict, event_type_management: dict) -> tuple[list, list, dict]:
     """
     Collects log events from GitLab using pagination.
 
@@ -192,21 +192,23 @@ def fetch_events_command(client: Client, params: dict, last_run: dict, events_ty
         client (Client): the client implementing the API to GitLab.
         params (dict): the instance configuration parameters.
         last_run (dict): the lastRun object, holding information from the previous run.
-        events_types_ids (dict): The groups / projects Ids to fetch events for.
+        event_type_management (dict): The groups and projects Ids to fetch events for as well as whether to fetch instance events.
 
     Returns:
         (list) the audit events retrieved from the API call.
         (list) the groups and projects events retrieved from the API call.
         (dict) the updated lastRun object.
     """
-
-    query_params_url = prepare_query_params(params, last_run.get("audit_events", {}))
-    audit_events = client.fetch_events(query_params_url, last_run.get("audit_events", {}), params)
-    demisto.debug(f"Aggregated audits events: {len(audit_events)}")
+    should_fetch_instance_events = event_type_management.get("instance_events")
+    audit_events = []
+    if should_fetch_instance_events:
+        query_params_url = prepare_query_params(params, last_run.get("audit_events", {}))
+        audit_events.extend(client.fetch_events(query_params_url, last_run.get("audit_events", {}), params))
+        demisto.debug(f"Aggregated audits events: {len(audit_events)}")
 
     group_and_project_events = []
     for event_type in ["groups", "projects"]:
-        for obj_id in events_types_ids.get(f"{event_type}_ids", []):
+        for obj_id in event_type_management.get(f"{event_type}_ids", []):
             query_params_url = prepare_query_params(params, last_run.get(event_type, {}))
             events = client.fetch_events(
                 query_params_url, last_run.get(event_type, {}), params, url_suffix=f"/{event_type}/{obj_id}/audit_events"
@@ -235,6 +237,7 @@ def main() -> None:
         )
 
         events_collection_management = {
+            "instance_events": argToBoolean(params.get("fetch_instance_audit_events", True)),
             "groups_ids": argToList(params.get("group_ids", "")),
             "projects_ids": argToList(params.get("project_ids", "")),
         }

@@ -147,7 +147,12 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File",
+            "timeout": 1200
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "CrowdStrike Falcon Basic Test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -907,7 +912,6 @@
             "scripts": [
                 "FindDuplicateEmailIncidents"
             ],
-            "integrations": "Rasterize",
             "timeout": 1000
         },
         {
@@ -1963,7 +1967,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 5000
+            "timeout": 6000
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -2382,6 +2386,10 @@
             "integrations": "PrismaCloud v2",
             "playbookID": "Prisma Cloud V2 Test",
             "memory_threshold": 250
+        },
+         {
+            "integrations": "PrismaCloud v2",
+            "playbookID": "Prisma Cloud V2 Basic Test"
         },
         {
             "integrations": "Symantec Messaging Gateway",
@@ -4044,7 +4052,7 @@
             "scripts": [
                 "FindDuplicateEmailIncidents"
             ],
-            "integrations": "Rasterize"
+            "has_api": false
         },
         {
             "integrations": "HPEArubaClearPass",
@@ -6052,9 +6060,8 @@
         "PAN-OS-panorama-topology-test-pb": "The creds were expired CIAC-13553",
         "OpenPhish Test Playbook": "API issue CIAC-13583",
         "SaasSecurity-Test": "blocked by SCA-8028",
-        "Mail-Listener Test Playbook": " invalid creds CRTX-171878"
-
-
+        "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
+        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
@@ -6255,6 +6262,64 @@
         "PaloAltoNetworksAIOps",
         "Jira",
         "Campaign"
+    ],
+    "selected_nightly_tpb": [
+        "JiraV3 Test",
+        "PaloAltoNetworksAIOps-Test",
+        "PaloAltoNetworks_IoT-Test",
+        "SaasSecurity-Test",
+        "CortexXpanse_Test",
+        "PaloAltoNetworks_PrismaCloudCompute-Test",
+        "Azure SecurityCenter - Test",
+        "Cortex Data Lake Test",
+        "Palo Alto Networks - Malware Remediation Test",
+        "Office365_Feed_Test",
+        "Mail-Listener Test Playbook",
+        "Test-Shodan_v2",
+        "CrowdStrike Falcon Intel v2 - Test",
+        "Test_URLhaus",
+        "FeedMitreAttackv2_test",
+        "CrowdStrike_FalconX_Test",
+        "Test_SlackV3_NonCaching",
+        "MISP V3 Test",
+        "Alienvault_OTX_v2 - Test",
+        "IPInfo_v2Test",
+        "CreateCertificate-Test",
+        "Get EWS Folder Test",
+        "palo_alto_panorama_test_pb",
+        "EWS search-mailbox test",
+        "EWS V2 Send Mail Test",
+        "Send Email To Recipients",
+        "EWS V2 Send Mail Test 2",
+        "EWS V2 Send Mail Test 3",
+        "Mail Sender (New) Test",
+        "TestImageOCR",
+        "MicrosoftGraphMail-Test_dev_no_oproxy",
+        "MicrosoftGraphMail-Test_dev",
+        "MicrosoftGraphMail-Test_prod",
+        "Microsoft Defender Advanced Threat Protection - Test dev",
+        "Microsoft Defender Advanced Threat Protection - Test prod",
+        "Microsoft Defender Advanced Threat Protection - Test self deployed",
+        "Microsoft Defender - ATP - Indicators SC Test",
+        "Whois A new layout implemented with python-whois service",
+        "Detonate URL - WildFire-v2 - Test",
+        "CrowdStrike Falcon Basic Test",
+        "TestDemistoRestAPI",
+        "Cortex XDR - IOC - Test without fetch",
+        "Active Directory - automatic pagination check",
+        "QRadar_v3-test",
+        "Prisma Cloud V2 Basic Test",
+        "playbook-checkEmailAuthenticity-test",
+        "FormatURL-Test",
+        "Test CommonServer",
+        "PowerShellCommon-Test",
+        "SplunkPy-Test-V2_requests_handler",
+        "Autofocus Query Samples, Sessions and Tags Test Playbook",
+        "Endpoint Enrichment - Generic v2.1 - Test",
+        "servicenow_test_v2",
+        "Rasterize Test",
+        "AbuseIPDB Test",
+        "AbuseIPDB PopulateIndicators Test"
     ],
     "parallel_integrations": [
         "AWS - ACM",
