@@ -87,65 +87,7 @@ def test_get_end_date(start_date_str: str, days: int, expected_end_date_str: str
     assert actual_end_date_str == expected_end_date_str
 
 
-def test_get_events_success_without_end_date(mocker):
-    """
-    Tests the successful retrieval of events when no end date is specified.
-
-    This test verifies that the `get_events` function correctly fetches event data
-    from the mocked SAP Cloud for Customer (C4C) client when only a start date
-    is provided, ensuring the generated OData filter does not include an end date clause.
-
-    Given:
-        - `mocker`: A pytest fixture for mocking objects and methods.
-    When:
-        - Calling `get_events` with a mocked client instance, a report ID,
-          pagination parameters (`skip`, `top`), and only a `start_date`.
-    Then:
-        Verify that:
-        - The `http_request` method of the mocked client is called exactly once.
-        - The `http_request` call includes the correct `url_suffix` and `params`.
-        - The `$filter` parameter in the `http_request` call correctly specifies
-          `CTIMESTAMP ge '{start_date}'`.
-        - The `$filter` parameter explicitly *does not* contain an "and CTIMESTAMP le"
-          clause, confirming no end date filter was applied.
-        - The returned `result` from `get_events` matches the `expected_events`
-          provided by the mocked `http_request` response.
-    """
-    from SAPCloudForCustomerC4C import get_events
-
-    mock_client_instance = mock_client()
-    report_id = "general_reportID"
-    skip = 0
-    top = 10
-    start_date = "01-01-2023 00:00:00"
-    expected_events = [
-        {
-            "__metadata": {"uri": "example_url_1", "type": "111_QueryResult"},
-            "CTIMESTAMP": "01-01-2023 01:00:00",
-            "CBROWSER": "02",
-            "CDEVICE_TYPE": "default",
-        },
-        {
-            "__metadata": {"uri": "example_url_2", "type": "112_QueryResult"},
-            "CTIMESTAMP": "01-01-2023 02:00:00",
-            "CBROWSER": "01",
-            "CDEVICE_TYPE": "default",
-        },
-    ]
-    mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": expected_events}})
-    result = get_events(mock_client_instance, report_id, skip, top, start_date)
-
-    expected_filter = f"CTIMESTAMP ge '{start_date}'"
-    mock_client_instance.http_request.assert_called_once_with(
-        method="GET",
-        url_suffix=f"{URL_SUFFIX}{report_id}?",
-        params={"$filter": expected_filter, "$skip": skip, "$top": top, "$format": "json", "$inlinecount": "allpages"},
-    )
-    assert result == expected_events
-    assert "and CTIMESTAMP le" not in mock_client_instance.http_request.call_args[1]["params"]["$filter"]
-
-
-def test_get_events_success_with_end_date(mocker):
+def test_get_events_success(mocker):
     """
     Tests the successful retrieval of events when both start and end dates are specified.
 
@@ -211,18 +153,19 @@ def test_get_events_empty_results(mocker):
 
     This test verifies that the `get_events` function correctly handles cases
     where the mocked SAP Cloud for Customer (C4C) client's API call
-    returns an empty list of results, ensuring the function returns an
-    empty list as expected.
+    returns an empty list of results. It ensures the function returns an
+    empty list as expected when no events are found in the specified time range.
 
     Given:
         - `mocker`: A pytest fixture for mocking objects and methods.
     When:
         - Calling `get_events` with a mocked client instance, a report ID,
-          pagination parameters (`skip`, `top`), and a `start_date`,
-          where the `http_request` is configured to return an empty list of results.
+          pagination parameters (`skip`, `top`), and a `start_date` and an `end_date` defining the time window.
+        - The client's `http_request` is configured to return an empty list of results.
     Then:
         Verify that:
-        - The `http_request` method of the mocked client is called exactly once.
+        - The `http_request` method of the mocked client is called exactly once with the appropriate filter including both
+        `start_date` and `end_date`.
         - The returned `result` from `get_events` is an empty list,
           matching the API's empty response.
     """
@@ -232,10 +175,11 @@ def test_get_events_empty_results(mocker):
     report_id = "general_reportID"
     skip = 0
     top = 10
-    start_date = "01-01-2023 00:00:00"
+    start_date = "01-01-2023 12:00:03"
+    end_date = "01-01-2023 12:01:03"
 
     mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": []}})
-    result = get_events(mock_client_instance, report_id, skip, top, start_date)
+    result = get_events(mock_client_instance, report_id, skip, top, start_date, end_date)
 
     mock_client_instance.http_request.assert_called_once()
     assert result == []
@@ -626,14 +570,13 @@ def test_fetch_events_dateparser_fallback(mocker):
 def test_fetch_events_subsequent_fetch_with_overlap(mocker):
     """
     Tests a subsequent fetch, ensuring that events from a desired overlapping time window
-    are included.
+    are included by specifying both a start and an end date.
 
     This test simulates a scenario where a previous `last_fetch` timestamp exists.
     The goal is to verify that the `fetch_events` function requests events starting
-    from a point before the `last_fetch` timestamp (e.g., 1 minute prior) to
-    ensure no events are missed due to precise timestamp boundaries or API delays.
-    It then checks if the returned events cover this overlap and if the `next_run`
-    state is correctly updated.
+    from a point before the `last_fetch` timestamp (e.g., 1 minute prior) and ending
+    at the current time (`fixed_now_dt`). This ensures no events are missed due to
+    precise timestamp boundaries or API delays.
 
     Given:
         - `mocker`: A pytest fixture for mocking objects and methods.
@@ -641,13 +584,10 @@ def test_fetch_events_subsequent_fetch_with_overlap(mocker):
         - Calling `fetch_events` with a mocked client, parameters, and a `last_run`
           dictionary containing a `last_fetch` timestamp.
     Then:
-        Verify that:
-        - The `get_events` method (which wraps the API call) is called with a
-          `start_date` filter that is one minute prior to the `last_fetch` timestamp.
-        - The `fetched_events` returned by `fetch_events` include events from
-          within and after the desired overlap window, matching `expected_events`.
-        - The `next_run` dictionary correctly contains `last_fetch` key with the
-          formatted `fixed_now_dt` as its value.
+        - Verify that `get_events` is called with a `start_date` that is one minute
+          before the `last_fetch`, and an `end_date` equal to the current time (`fixed_now_dt`).
+        - Ensure `fetched_events` includes events from within and after the overlap window.
+        - Confirm `next_run` contains a `last_fetch` equal to `fixed_now_dt`.
     """
     from SAPCloudForCustomerC4C import fetch_events
 
@@ -665,6 +605,10 @@ def test_fetch_events_subsequent_fetch_with_overlap(mocker):
     desired_start_date_for_filter_dt = fixed_now_dt - timedelta(minutes=1)  # Start time is 12:00:00Z
     expected_start_date_filter = desired_start_date_for_filter_dt.strftime(STRFTIME_FORMAT)
 
+    # Calculate the DESIRED end_date_for_filter for the API call.
+    desired_end_date_for_filter_dt = fixed_now_dt  # End time is 12:01:00Z
+    expected_end_date_filter = desired_end_date_for_filter_dt.strftime(STRFTIME_FORMAT)
+
     expected_events = [
         {"CTIMESTAMP": "06-07-2025 12:00:00"},
         {"CTIMESTAMP": "06-07-2025 12:00:30"},
@@ -679,9 +623,41 @@ def test_fetch_events_subsequent_fetch_with_overlap(mocker):
     assert fetched_events == expected_events
     assert next_run == {"last_fetch": fixed_now_dt.strftime(DATE_FORMAT)}
 
-    expected_filter = f"CTIMESTAMP ge '{expected_start_date_filter}'"
+    expected_filter = f"CTIMESTAMP ge '{expected_start_date_filter}' and CTIMESTAMP le '{expected_end_date_filter}'"
     mock_client_instance.http_request.assert_called_once_with(
         method="GET",
         url_suffix=f"{URL_SUFFIX}{report_id}?",
         params={"$filter": expected_filter, "$skip": 0, "$top": 3, "$format": "json", "$inlinecount": "allpages"},
     )
+
+
+def test_add_time_to_events():
+    """
+    Tests the basic functionality of `add_time_to_events` for correct conversion and addition of `_time`.
+
+    This test verifies that the `add_time_to_events` function correctly parses the
+    "CTIMESTAMP" string (which includes " GMTUK"), converts it to the specified
+    "YYYY-MM-DDTHH:MM:SSZ" format, and adds it as the `_time` key to event dictionaries.
+
+    When:
+        - The `add_time_to_events` function is called with a list of event dictionaries,
+          each containing a valid "CTIMESTAMP" key in the "DD.MM.YYYY HH:MM:SS GMTUK" format.
+    Then:
+        Verify that:
+        - The input `events` list is modified in-place.
+        - The value of `_time` for each event matches the expected ISO8601 UTC format.
+    """
+    from SAPCloudForCustomerC4C import add_time_to_events
+
+    events = [
+        {
+            "CTIMESTAMP": "14.07.2025 13:30:40 GMTUK",
+        },
+        {"CTIMESTAMP": "01.01.2024 00:00:00 GMTUK"},
+    ]
+    expected = [
+        {"CTIMESTAMP": "14.07.2025 13:30:40 GMTUK", "_time": "2025-07-14T13:30:40Z"},
+        {"CTIMESTAMP": "01.01.2024 00:00:00 GMTUK", "_time": "2024-01-01T00:00:00Z"},
+    ]
+    add_time_to_events(events)
+    assert events == expected

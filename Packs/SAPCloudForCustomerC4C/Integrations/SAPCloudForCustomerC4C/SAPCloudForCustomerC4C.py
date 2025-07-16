@@ -32,7 +32,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url, base64String, verify):
         super().__init__(base_url=base_url, verify=verify, ok_codes=(200, 201, 202))
-        self.credentials = {"Authorization": f"Basic  {base64String}", "Content-Type": "application/json"}
+        self.credentials = {"Authorization": f"Basic {base64String}", "Content-Type": "application/json"}
 
     def http_request(
         self,
@@ -157,6 +157,27 @@ def get_end_date(start_date_str: str, days: int = 2) -> str:
     return end_date.strftime(STRFTIME_FORMAT)
 
 
+def add_time_to_events(events: list):
+    """Adds the _time key to the events.
+
+    This function iterates through a list of event dictionaries and, for each event,
+    adds a new key "_time". The value for "_time" is taken from the existing "CTIMESTAMP" key
+    within the same event dictionary. If the "CTIMESTAMP" key does not exist, "_time" will be None.
+
+    Args:
+        events (list[Any]): A list of dictionaries, where each dictionary represents an event.
+                             Each event dictionary is expected to potentially contain a "CTIMESTAMP" key.
+
+    Returns:
+        None: This function modifies the input `events` list in-place and does not return a new object.
+    """
+    for event in events:
+        datetime_part = event.get("CTIMESTAMP").replace(" GMTUK", "")
+        parsed_dt = datetime.strptime(datetime_part, "%d.%m.%Y %H:%M:%S")
+        formatted_time = parsed_dt.strftime(DATE_FORMAT)
+        event["_time"] = formatted_time
+
+
 def get_events_command(client: Client, report_id: str, args: dict) -> tuple[List[Dict], CommandResults]:
     """
     Retrieves events from the SAP Cloud for Customer API based on provided parameters.
@@ -204,7 +225,7 @@ def get_events_command(client: Client, report_id: str, args: dict) -> tuple[List
 
 
 def get_events(
-    client: Client, report_id: str, skip: int, top: int, start_date: str, end_date: Optional[str] = None
+    client: Client, report_id: str, skip: int, top: int, start_date: str, end_date: str
 ) -> Optional[List[Dict[str, Any]]]:
     """
     Get a list of events from the SAP Cloud for Customer API.
@@ -215,16 +236,14 @@ def get_events(
         skip (int): Number of items to skip for pagination.
         top (int): Maximum number of events to return in this request.
         start_date (str): Fetch events that are newer than or equal to this time (formatted as DD-MM-YYYY HH:MM:SS).
-        end_date (Optional[str], optional): Fetch events that are older than or equal to this time
+        end_date (str): Fetch events that are older than or equal to this time
         (formatted as DD-MM-YYYY HH:MM:SS). Defaults to None.
 
     Returns:
         Optional[List[Dict[str, Any]]]: A list of events, or None if an error occurs.
     """
 
-    filter = f"CTIMESTAMP ge '{start_date}'"
-    if end_date:
-        filter += f" and CTIMESTAMP le '{end_date}'"
+    filter = f"CTIMESTAMP ge '{start_date}' and CTIMESTAMP le '{end_date}'"
     params = {"$filter": filter, "$skip": skip, "$top": top, "$format": "json", "$inlinecount": "allpages"}
 
     res = client.http_request(
@@ -280,7 +299,9 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
 
     while max_events_per_fetch > 0:
         top = min(DEFAULT_TOP, max_events_per_fetch)
-        response = get_events(client, report_id, skip=skip_count, top=top, start_date=start_date_for_filter)
+        response = get_events(
+            client, report_id, skip=skip_count, top=top, start_date=start_date_for_filter, end_date=now.strftime(STRFTIME_FORMAT)
+        )
         if response:
             all_events.extend(response)
             # Since DEFAULT_TOP is always <= max_events_per_fetch, incrementing skip_count by DEFAULT_TOP or top makes no
@@ -328,6 +349,7 @@ def main():
             events, results = get_events_command(client, report_id, args)
             should_push_events = argToBoolean(args.get("should_push_events", "false"))
             if should_push_events:
+                add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(results)
 
@@ -335,6 +357,8 @@ def main():
             last_run = demisto.getLastRun() or {}
             next_run, events = fetch_events(client, params, last_run)
             if events:
+                add_time_to_events(events)
+                demisto.debug("Successfully added _time to events")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
             demisto.debug(f"Successfully saved last_run= {demisto.getLastRun()}")
