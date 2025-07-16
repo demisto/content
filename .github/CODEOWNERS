@@ -58,9 +58,9 @@
 validation_config.toml @YuvHayun @yedidyacohenpalo
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @tcarmeli1
-/Packs/Core/Integrations/ @tcarmeli1
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @tcarmeli1
+/Packs/CortexXDR/Integrations/ @tcarmeli1 @jlevypaloalto
+/Packs/Core/Integrations/ @tcarmeli1 @jlevypaloalto
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @tcarmeli1 @jlevypaloalto
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
