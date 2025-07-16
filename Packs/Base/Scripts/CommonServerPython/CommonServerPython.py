@@ -12717,7 +12717,10 @@ def execute_polling_command(
     default_polling_timeout=600,
 ):
     r"""
-    **Only for use in special circumstances where polling is not supported. Avoid using otherwise!**
+    ###########################################
+    DO NOT USE THIS UNLESS ABOLUTLY NECESSERY!
+    ###########################################
+    This is intended only for special cases where polling is not supported.
     Continuously executes a specified command and sleeps until the command indicates polling is done or a
     timeout is reached.
     :param command_name: The name of the initial Demisto command to execute.
