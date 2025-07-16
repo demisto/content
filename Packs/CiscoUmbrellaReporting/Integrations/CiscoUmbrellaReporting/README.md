@@ -49,7 +49,7 @@ List of destinations ordered by the number of requests made in descending order.
 | page | The page number. Default is 1. | Optional |
 | page_size | The number of requested results per page. Default is 50. | Optional |
 | categories | A comma-separated list of category ids to filter on. | Optional |
-| identityids | A comma-separated list of identity ids to filter on. | Optional | 
+| identityids | A comma-separated list of identity ids to filter on. | Optional |
 
 #### Context Output
 
@@ -230,7 +230,7 @@ List of categories ordered by the number of requests made matching the categorie
 | page | The page number. Default is 1. | Optional |
 | page_size | The number of requested results per page. Default is 50.| Optional |
 | categories | A comma-separated list of category ids to filter on. | Optional |
-| identityids | A comma-separated list of identity ids to filter on. | Optional | 
+| identityids | A comma-separated list of identity ids to filter on. | Optional |
 
 #### Context Output
 
@@ -323,7 +323,7 @@ List of identities ordered by the number of requests made matching the categorie
 | page | The page number. Default is 1. | Optional |
 | page_size | The number of requested results per page. Default is 50. | Optional |
 | categories | A comma-separated list of category ids to filter on. | Optional |
-| identityids | A comma-separated list of identity ids to filter on. | Optional | 
+| identityids | A comma-separated list of identity ids to filter on. | Optional |
 
 #### Context Output
 
@@ -432,7 +432,7 @@ List of event types ordered by the number of requests made for each type of even
 | page | The page number. Default is 1. | Optional |
 | page_size | The number of requested results per page. Default is 50. | Optional |
 | categories | A comma-separated list of category ids to filter on. | Optional |
-| identityids | A comma-separated list of identity ids to filter on. | Optional | 
+| identityids | A comma-separated list of identity ids to filter on. | Optional |
 
 #### Context Output
 
@@ -524,7 +524,7 @@ List of files within a time frame. Only returns proxy data.
 | page | The page number. Default is 1. | Optional |
 | page_size | The number of requested results per page. Default is 50. | Optional |
 | categories | A comma-separated list of category ids to filter on. | Optional |
-| identityids | A comma-separated list of identity ids to filter on. | Optional | 
+| identityids | A comma-separated list of identity ids to filter on. | Optional |
 
 #### Context Output
 
@@ -615,7 +615,7 @@ List of top threats within a time frame. Returns both DNS and Proxy data.
 | page | The page number. Default is 1. | Optional |
 | page_size | The number of requested results per page. Default is 50. | Optional |
 | categories | A comma-separated list of category ids to filter on. | Optional |
-| identityids | A comma-separated list of identity ids to filter on. | Optional | 
+| identityids | A comma-separated list of identity ids to filter on. | Optional |
 
 #### Context Output
 
@@ -682,7 +682,7 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 | page | The page number. Default is 1. | Optional |
 | page_size | The number of requested results per page. Default is 50. | Optional |
 | categories | A comma-separated list of category ids to filter on. | Optional |
-| identityids | A comma-separated list of identity ids to filter on. | Optional | 
+| identityids | A comma-separated list of identity ids to filter on. | Optional |
 
 #### Context Output
 
@@ -910,7 +910,7 @@ Only one activity type can be selected at a time.
 | signatures | A comma-separated list of Generator id - Signatures ID. Where Generator ID is unique id assigned to the part of the IPS which generated the event and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Optional |
 | intrusion_action | Comma-separated list of intrusion actions. Possible values: would_block, blocked, detected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional |
 | categories | A comma-separated list of category ids to filter on. | Optional |
-| identityids | A comma-separated list of identity ids to filter on. | Optional | 
+| identityids | A comma-separated list of identity ids to filter on. | Optional |
 
 #### Context Output for **`traffic_type = dns`** for base command **`umbrella-reporting-activity-get`**
 
@@ -1727,7 +1727,7 @@ Get the summary.
 | signatures | A comma-separated list of Generator id - Signatures ID. Where Generator ID is unique id assigned to the part of the IPS which generated the event and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4. | Optional |
 | intrusion_action | Comma-separated List of intrusion actions. Possible values: would_block, blocked, detected. | Optional |
 | categories | A comma-separated list of category ids to filter on. | Optional |
-| identityids | A comma-separated list of identity ids to filter on. | Optional | 
+| identityids | A comma-separated list of identity ids to filter on. | Optional |
 
 #### Context Output for `summary` for base command `umbrella-reporting-summary-list`
 

@@ -165,11 +165,11 @@ Search and manage watchlists and lists in Recorded Future
 #### Available Actions
 
 * recordedfuture-lists-add-entities
- 	* Add entities to a list, separate entities by commas. "NOTE:" if entity type is specified, only one entity type can be added with each action.
+  * Add entities to a list, separate entities by commas. "NOTE:" if entity type is specified, only one entity type can be added with each action.
 * recordedfuture-lists-remove-entities
   * Remove entities from a list. Separate entities with commas. "NOTE:" If entity type is specified, only one entity type can be added with each action.
 * recordedfuture-lists-search
- 	* Search for a Recorded Future list. Returns list entities  
+  * Search for a Recorded Future list. Returns list entities  
 * recordedfuture-lists-entities
   * Fetch entities from given lists. Use search command to find the unique ID of a list.
 

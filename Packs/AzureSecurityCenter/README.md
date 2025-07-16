@@ -81,6 +81,6 @@ To connect Cortex XSIAM to the Azure Event Hub, follow the below steps.
    - Product - defender_for_cloud
    - Log Format - JSON
 
-More information can be found [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=yjPDSlvRYtlNncGBLHOzvw).
+More information can be found [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Azure-Event-Hub).
 
 </~XSIAM>

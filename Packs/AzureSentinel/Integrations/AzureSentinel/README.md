@@ -92,6 +92,7 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and *Microsoft Sentinel*.
 - If the **The minimum severity of incidents to fetch** integration parameter is set to a value other than `None`, incidents with a severity lower than the specified value will not be mirrored, even if their severity is changed in *Microsoft Sentinel* to a higher severity.
+- When closing an incident in Cortex XSOAR, the *Closing Reason* must be provided, otherwise the incident cannot be closed in *Microsoft Sentinel*.
 
 ## Commands
 
