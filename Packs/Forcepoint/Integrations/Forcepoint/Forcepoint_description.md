@@ -13,6 +13,3 @@ Your Credentials (Username) and password when logging in to your Forcepoint inst
 Per [Forcepoint's documentation](https://help.forcepoint.com/websec/en-us/on-prem/85/mgmt_api_guide/1E0FA6F7-FDD2-41DE-B3A7-9CDE6B2D348E.html), the API Calls to delete URLs/IPs from a category and to delete the category itself have changed.
 
 Check the Version 8.5.5 or later flag to switch to use these newer api endpoints. 
-
-## Note: TLS Support
-Forcepoint's API does not support TLS1.2 out of the box without having a specific Instrumental build installed. 
