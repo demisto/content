@@ -491,6 +491,7 @@ tasks:
       id: 9ad67e3a-c815-4e79-842c-ea509d293e1e
       version: -1
       name: Is there a child submission?
+      description: Returns "yes" if a child submission is available
       type: condition
       iscommand: false
       brand: ""

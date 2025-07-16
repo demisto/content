@@ -128,7 +128,7 @@ def test_dbot_score_by_hash():
             "Reliability": "C - Fairly reliable",
             "Score": None,
             "Type": "hash",
-            "Vendor": "VMRay",
+            "Vendor": "vmray",
         }
     ]
 

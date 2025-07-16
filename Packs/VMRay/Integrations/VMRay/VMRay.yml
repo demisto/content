@@ -1,3 +1,7 @@
+sectionOrder:
+  - Connect
+  - Collect
+  - Optimize
 category: Forensics & Malware Analysis
 commonfields:
   id: vmray
@@ -1184,7 +1188,7 @@ script:
       description: Percentages used.
       type: Number
     arguments: []
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4181428
   runonce: false
   script: ''
   subtype: python3
