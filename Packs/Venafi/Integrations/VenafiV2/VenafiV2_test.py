@@ -25,7 +25,11 @@ def mock_client_with_valid_token(mocker) -> Client:
         Client: Connection to client.
     """
 
-    mocker.patch("VenafiV2.get_integration_context", return_value={"token": "access_token", "expires": "1715032135"})
+    mocker.patch("VenafiV2.get_integration_context", return_value={
+        "access_token": "access_token", 
+        "access_until": 1715032135
+    })
+    mocker.patch("VenafiV2.get_current_time")
 
     return Client(
         base_url=MOCK_BASEURL,
@@ -50,6 +54,8 @@ def test_login_first_time_token_creation(mocker):
     mock_response = util_load_json("test_data/mock_response_login_first_time_token_creation.json")
     mocker.patch.object(Client, "_http_request", return_value=mock_response)
     mocker.patch("VenafiV2.get_integration_context", return_value={})
+    mocker.patch("VenafiV2.set_integration_context")
+    mocker.patch("VenafiV2.get_current_time")
 
     client = Client(
         base_url=MOCK_BASEURL,
@@ -84,11 +90,18 @@ def test_login_with_invalid_token_refresh_required(mocker):
 
     mocker.patch(
         "VenafiV2.get_integration_context",
-        return_value={"token": "access_token", "expires": "1615032135", "refresh_token": "refresh_token"},
+        return_value={
+            "access_token": "access_token", 
+            "access_until": 1615032135, 
+            "refresh_token": "refresh_token",
+            "refresh_until": 1745566543
+        },
     )
 
     mock_response = util_load_json("test_data/mock_response_login_without_valid_token.json")
     mocker.patch.object(Client, "_http_request", return_value=mock_response)
+    mocker.patch("VenafiV2.set_integration_context")
+    mocker.patch("VenafiV2.get_current_time")
 
     client = Client(
         base_url=MOCK_BASEURL,
