@@ -30,7 +30,7 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: Verison 8.5.5 or later?
+- display: Forcepoint version 8.5.5 or later
   name: versionCheck
   type: 8
   required: false
