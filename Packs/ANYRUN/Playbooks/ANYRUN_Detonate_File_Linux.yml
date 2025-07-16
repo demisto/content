@@ -1,8 +1,8 @@
-id: ANY.RUN Detonate File Android
+id: ANYRUN Detonate File Linux
 version: -1
 fromversion: 6.0.0
-name: ANY.RUN Detonate File Android
-description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It helps to automate malware detonation and behavior observation on Android OS.
+name: ANYRUN Detonate File Linux
+description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps to automate malware detonation and behavior observation on Ubuntu OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -37,14 +37,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 29050f73-a833-4d28-b383-de0e91bf45d5
+    taskid: 7a25c747-44e0-470d-bf56-94cea07030c7
     type: regular
     task:
-      id: 29050f73-a833-4d28-b383-de0e91bf45d5
+      id: 7a25c747-44e0-470d-bf56-94cea07030c7
       version: -1
-      name: '[ANY.RUN] Detonate File Android'
-      description: Perform File analysis using Android VM.
-      script: '|||anyrun-detonate-file-android'
+      name: '[ANY.RUN] Detonate File Linux'
+      description: Perform File analysis using Ubuntu VM.
+      script: '|||anyrun-detonate-file-linux'
       type: regular
       iscommand: true
       brand: ""
@@ -54,10 +54,16 @@ tasks:
     scriptarguments:
       env_locale:
         simple: ${inputs.env_locale}
+      env_os:
+        simple: ${inputs.env_os}
       file:
         simple: ${inputs.file}
       obj_ext_cmd:
         simple: ${inputs.obj_ext_cmd}
+      obj_ext_extension:
+        simple: ${inputs.obj_ext_extension}
+      obj_ext_startfolder:
+        simple: ${inputs.obj_ext_startfolder}
       opt_network_connect:
         simple: ${inputs.opt_network_connect}
       opt_network_fakenet:
@@ -76,13 +82,15 @@ tasks:
         simple: ${inputs.opt_privacy_type}
       opt_timeout:
         simple: ${inputs.opt_timeout}
+      run_as_root:
+        simple: ${inputs.run_as_root}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 227,
-          "y": 412
+          "y": 410
         }
       }
     note: false
@@ -94,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: e60df45d-0efe-4632-832d-174b80a4eb65
+    taskid: aeb1eb24-0002-4113-a63d-6f7f9ab1c0ae
     type: regular
     task:
-      id: e60df45d-0efe-4632-832d-174b80a4eb65
+      id: aeb1eb24-0002-4113-a63d-6f7f9ab1c0ae
       version: -1
       name: '[ANY.RUN] Get analysis summary'
       description: Returns the analysis report summary.
@@ -114,14 +122,14 @@ tasks:
       report_format:
         simple: html
       task_uuid:
-        simple: ${ANYRUN_DetonateFileAndroid.TaskID}
+        simple: ${ANYRUN_DetonateFileLinux.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 447,
-          "y": 1000
+          "y": 999
         }
       }
     note: false
@@ -149,7 +157,7 @@ tasks:
       {
         "position": {
           "x": -154,
-          "y": 1488
+          "y": 1516
         }
       }
     note: false
@@ -241,10 +249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: be694bfa-d555-4531-850b-37f0f4c46ff6
+    taskid: 48787ef6-ca44-4380-9db4-facc9841094e
     type: condition
     task:
-      id: be694bfa-d555-4531-850b-37f0f4c46ff6
+      id: 48787ef6-ca44-4380-9db4-facc9841094e
       version: -1
       name: Was a malicious or suspicious verdict received?
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -285,10 +293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 26000f51-4da0-4701-979a-61120a246d81
+    taskid: 7f744e68-334e-4d03-a107-7594b97da68c
     type: regular
     task:
-      id: 26000f51-4da0-4701-979a-61120a246d81
+      id: 7f744e68-334e-4d03-a107-7594b97da68c
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
       description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
@@ -301,7 +309,7 @@ tasks:
       - "8"
     scriptarguments:
       task_uuid:
-        simple: ${ANYRUN_DetonateFileAndroid.TaskID}
+        simple: ${ANYRUN_DetonateFileLinux.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -320,10 +328,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 748c43c9-cbeb-4a0c-b276-5fd80396662a
+    taskid: fd1528e1-1c06-4f50-b35d-9ac98757958c
     type: regular
     task:
-      id: 748c43c9-cbeb-4a0c-b276-5fd80396662a
+      id: fd1528e1-1c06-4f50-b35d-9ac98757958c
       version: -1
       name: '[ANY.RUN] Load IOCs to Threat Intel'
       description: Returns the analysis report summary.
@@ -340,7 +348,7 @@ tasks:
       report_format:
         simple: ioc
       task_uuid:
-        simple: ${ANYRUN_DetonateFileAndroid.TaskID}
+        simple: ${ANYRUN_DetonateFileLinux.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -365,7 +373,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1865,
+        "height": 1893,
         "width": 982,
         "x": -154,
         "y": -317
@@ -385,11 +393,23 @@ inputs:
   required: false
   description: XSOAR Incident
   playbookInputQuery:
+- key: run_as_root
+  value:
+    simple: "False"
+  required: false
+  description: Run file with superuser privileges
+  playbookInputQuery:
 - key: env_locale
   value:
     simple: en-US
   required: false
   description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive.'
+  playbookInputQuery:
+- key: env_os
+  value:
+    simple: ubuntu
+  required: false
+  description: Operation system
   playbookInputQuery:
 - key: opt_network_connect
   value:
@@ -450,14 +470,28 @@ inputs:
   required: false
   description: Optional command line
   playbookInputQuery:
+- key: obj_ext_startfolder
+  value:
+    simple: temp
+  required: false
+  description: 'Start object from. Supports: desktop, home, downloads, appdata, temp, windows, root'
+  playbookInputQuery:
+- key: obj_ext_extension
+  value:
+    simple: "True"
+  required: false
+  description: Change extension to valid
+  playbookInputQuery:
 inputSections:
 - inputs:
   - file
   - incident_info
+  - run_as_root
   name: General (Inputs group)
   description: Generic group for inputs
 - inputs:
   - env_locale
+  - env_os
   name: Environment
   description: ""
 - inputs:
@@ -474,6 +508,8 @@ inputSections:
   description: ""
 - inputs:
   - obj_ext_cmd
+  - obj_ext_startfolder
+  - obj_ext_extension
   name: Object
   description: ""
 outputSections:

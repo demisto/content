@@ -753,8 +753,8 @@ tasks:
       id: 5a218a31-9417-4da1-818f-e46204e57f90
       description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It helps to automate malware detonation and behavior observation on Android OS.
       version: -1
-      name: ANY.RUN Detonate File Android
-      playbookName: ANY.RUN Detonate File Android
+      name: ANYRUN Detonate File Android
+      playbookName: ANYRUN Detonate File Android
       type: playbook
       iscommand: false
       brand: ""
@@ -785,8 +785,8 @@ tasks:
       id: 97ba62f0-bdcd-42ca-8281-4550ece095bd
       description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps to automate malware detonation and behavior observation on Ubuntu OS.
       version: -1
-      name: ANY.RUN Detonate File Linux
-      playbookName: ANY.RUN Detonate File Linux
+      name: ANYRUN Detonate File Linux
+      playbookName: ANYRUN Detonate File Linux
       type: playbook
       iscommand: false
       brand: ""
@@ -817,8 +817,8 @@ tasks:
       id: cf6dfc9a-fe83-4241-8273-164c93cb29f3
       description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It helps to automate malware detonation and behavior observation on Windows OS.
       version: -1
-      name: ANY.RUN Detonate File Windows
-      playbookName: ANY.RUN Detonate File Windows
+      name: ANYRUN Detonate File Windows
+      playbookName: ANYRUN Detonate File Windows
       type: playbook
       iscommand: false
       brand: ""

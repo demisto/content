@@ -1,4 +1,4 @@
-This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It helps to automate malware detonation and behavior observation on Android OS.
+This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps to automate malware detonation and behavior observation on Ubuntu OS.
 
 ## Dependencies
 
@@ -18,7 +18,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* anyrun-detonate-file-android
+* anyrun-detonate-file-linux
 * anyrun-get-analysis-report
 * anyrun-get-analysis-verdict
 
@@ -30,7 +30,9 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | file | XSOAR Entry ID | ${File.EntryID} | Optional |
 | incident_info | XSOAR Incident | ${incident} | Optional |
+| run_as_root | Run file with superuser privileges | False | Optional |
 | env_locale | Operation system language. Use locale identifier or country name \(Ex: "en-US" or "Brazil"\). Case insensitive. | en-US | Optional |
+| env_os | Operation system | ubuntu | Optional |
 | opt_network_connect | Network connection state. | True | Optional |
 | opt_network_fakenet | FakeNet feature status. | False | Optional |
 | opt_network_tor | TOR using. | False | Optional |
@@ -41,6 +43,8 @@ This playbook does not use any sub-playbooks.
 | opt_privacy_type | Privacy settings. Supports: public, bylink, owner, byteam. | bylink | Optional |
 | opt_timeout | Timeout option. Size range: 10-660. | 240 | Optional |
 | obj_ext_cmd | Optional command line |  | Optional |
+| obj_ext_startfolder | Start object from. Supports: desktop, home, downloads, appdata, temp, windows, root | temp | Optional |
+| obj_ext_extension | Change extension to valid | True | Optional |
 
 ## Playbook Outputs
 
@@ -51,4 +55,4 @@ There are no outputs for this playbook.
 
 ---
 
-![ANY.RUN Detonate File Android](../doc_files/ANYRUN_Detonate_File_Android.png)
+![ANYRUN Detonate File Linux](../doc_files/ANYRUN_Detonate_File_Linux.png)

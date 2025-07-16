@@ -1,8 +1,10 @@
-id: ANY.RUN Detonate File Windows
+id: ANYRUN Detonate Url Linux
 version: -1
+name: ANYRUN Detonate Url Linux
 fromversion: 6.0.0
-name: ANY.RUN Detonate File Windows
-description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It helps to automate malware detonation and behavior observation on Windows OS.
+description: This playbook submits a URL extracted from an indicator to the 
+  ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. 
+  It automates the analysis of potentially malicious URLs on Ubuntu OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -37,14 +39,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 4e720c3e-e7cc-48ab-ae0e-1185dc7de62c
+    taskid: 68f15f73-9164-4f65-9544-c96cf90f9def
     type: regular
     task:
-      id: 4e720c3e-e7cc-48ab-ae0e-1185dc7de62c
+      id: 68f15f73-9164-4f65-9544-c96cf90f9def
       version: -1
-      name: '[ANY.RUN] Detonate File Windows'
-      description: Perform File analysis using Windows VM.
-      script: '|||anyrun-detonate-file-windows'
+      name: '[ANY.RUN] Detonate URL Linux'
+      description: Perform URL analysis using Ubuntu VM.
+      script: '|||anyrun-detonate-url-linux'
       type: regular
       iscommand: true
       brand: ""
@@ -52,24 +54,16 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      env_bitness:
-        simple: ${inputs.env_bitness}
       env_locale:
         simple: ${inputs.env_locale}
-      env_type:
-        simple: ${inputs.env_type}
-      env_version:
-        simple: ${inputs.env_version}
-      file:
-        simple: ${inputs.file}
-      obj_ext_cmd:
-        simple: ${inputs.obj_ext_cmd}
+      env_os:
+        simple: ${inputs.env_os}
+      obj_ext_browser:
+        simple: ${inputs.obj_ext_browser}
       obj_ext_extension:
         simple: ${inputs.obj_ext_extension}
-      obj_ext_startfolder:
-        simple: ${inputs.obj_ext_startfolder}
-      obj_force_elevation:
-        simple: ${inputs.obj_force_elevation}
+      obj_url:
+        simple: ${inputs.obj_url}
       opt_network_connect:
         simple: ${inputs.opt_network_connect}
       opt_network_fakenet:
@@ -106,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b8f4e14f-6a8a-439f-9487-3bf1968455bf
+    taskid: f5fd0cff-7854-497b-ac41-daabaf401d7c
     type: regular
     task:
-      id: b8f4e14f-6a8a-439f-9487-3bf1968455bf
+      id: f5fd0cff-7854-497b-ac41-daabaf401d7c
       version: -1
       name: '[ANY.RUN] Get analysis summary'
       description: Returns the analysis report summary.
@@ -122,11 +116,11 @@ tasks:
       - "10"
     scriptarguments:
       incident_info:
-        simple: ${inputs.incident_info}
+        simple: ${incident}
       report_format:
         simple: html
       task_uuid:
-        simple: ${ANYRUN_DetonateFileWindows.TaskID}
+        simple: ${ANYRUN_DetonateUrlLinux.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -161,7 +155,7 @@ tasks:
       {
         "position": {
           "x": -154,
-          "y": 1488
+          "y": 1455
         }
       }
     note: false
@@ -173,16 +167,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 91f5ae62-588c-4612-8157-37b109e4d862
+    taskid: cd868d33-64f3-4b5a-9fff-6cbd8277c790
     type: condition
     task:
-      id: 91f5ae62-588c-4612-8157-37b109e4d862
+      id: cd868d33-64f3-4b5a-9fff-6cbd8277c790
       version: -1
-      name: Is there any File to detonate?
+      name: Is there any URL to detonate?
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
     nexttasks:
       '#default#':
       - "5"
@@ -195,7 +190,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.file
+              simple: inputs.obj_url
             iscontext: true
           right:
             value: {}
@@ -222,7 +217,8 @@ tasks:
       id: 6bda10d8-8658-450e-9c09-071864fe4814
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -234,7 +230,7 @@ tasks:
       - "6"
     scriptarguments:
       brandname:
-        simple: ANY.RUN Cloud Sandbox
+        simple: ANY.RUN Sandbox
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -253,13 +249,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: b584be64-f270-496f-8d65-62e8a4b8a137
+    taskid: b4ff7512-562f-4330-aaaf-ded4e269e842
     type: condition
     task:
-      id: b584be64-f270-496f-8d65-62e8a4b8a137
+      id: b4ff7512-562f-4330-aaaf-ded4e269e842
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -285,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 227,
-          "y": 807
+          "y": 806
         }
       }
     note: false
@@ -297,13 +294,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 48e50751-0f3d-4262-bd81-0c7274e163d5
+    taskid: 6568ad76-4026-49cf-b8c0-2f94ff3542cb
     type: regular
     task:
-      id: 48e50751-0f3d-4262-bd81-0c7274e163d5
+      id: 6568ad76-4026-49cf-b8c0-2f94ff3542cb
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
+      description: 'Returns a threat level text. Possible values: No threats detected,
+        Suspicious activity, Malicious activity'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -313,7 +311,7 @@ tasks:
       - "8"
     scriptarguments:
       task_uuid:
-        simple: ${ANYRUN_DetonateFileWindows.TaskID}
+        simple: ${ANYRUN_DetonateUrlLinux.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -332,10 +330,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: fe59675d-8912-426d-8901-faa7ef425bb5
+    taskid: e2a8c0ec-b8f7-4098-912c-cfde31a5c48c
     type: regular
     task:
-      id: fe59675d-8912-426d-8901-faa7ef425bb5
+      id: e2a8c0ec-b8f7-4098-912c-cfde31a5c48c
       version: -1
       name: '[ANY.RUN] Load IOCs to Threat Intel'
       description: Returns the analysis report summary.
@@ -348,11 +346,11 @@ tasks:
       - "5"
     scriptarguments:
       incident_info:
-        simple: ${inputs.incident_info}
+        simple: ${incident}
       report_format:
         simple: ioc
       task_uuid:
-        simple: ${ANYRUN_DetonateFileWindows.TaskID}
+        simple: ${ANYRUN_DetonateUrlLinux.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -377,7 +375,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1865,
+        "height": 1832,
         "width": 982,
         "x": -154,
         "y": -317
@@ -385,132 +383,99 @@ view: |-
     }
   }
 inputs:
-- key: file
+- key: obj_url
   value:
-    simple: ${File.EntryID}
+    simple: ${URL.Data}
   required: false
-  description: XSOAR Entry ID
-  playbookInputQuery:
-- key: incident_info
-  value:
-    simple: ${incident}
-  required: false
-  description: XSOAR Incident
-  playbookInputQuery:
+  description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link)'
+  playbookInputQuery: null
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive.'
-  playbookInputQuery:
-- key: env_bitness
+  description: 'Operation system language. Use locale identifier or country name (Ex:
+    "en-US" or "Brazil"). Case insensitive.'
+  playbookInputQuery: null
+- key: env_os
   value:
-    simple: "64"
+    simple: ubuntu
   required: false
-  description: Bitness of Operation System. Supports 32, 64
-  playbookInputQuery:
-- key: env_version
-  value:
-    simple: "10"
-  required: false
-  description: 'Version of OS. Supports: 7, 10, 11'
-  playbookInputQuery:
-- key: env_type
-  value:
-    simple: complete
-  required: false
-  description: Environment preset type. You can select **development** env for OS Windows 10 x64. For all other cases, **complete** env is required
-  playbookInputQuery:
+  description: Operation system
+  playbookInputQuery: null
 - key: opt_network_connect
   value:
     simple: "True"
   required: false
   description: Network connection state.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_fakenet
   value:
     simple: "False"
   required: false
   description: FakeNet feature status.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_tor
   value:
     simple: "False"
   required: false
   description: TOR using.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_geo
   value:
     simple: fastest
   required: false
   description: 'Tor geo location option. Example: US, AU.'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_mitm
   value:
     simple: "False"
   required: false
   description: HTTPS MITM proxy option.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_residential_proxy
   value:
     simple: "False"
   required: false
   description: Residential proxy using.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_residential_proxy_geo
   value:
     simple: fastest
   required: false
   description: 'Residential proxy geo location option. Example: US, AU.'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
   description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_timeout
   value:
-    simple: "240"
+    simple: "120"
   required: false
   description: 'Timeout option. Size range: 10-660.'
-  playbookInputQuery:
-- key: obj_ext_cmd
-  value: {}
+  playbookInputQuery: null
+- key: obj_ext_browser
+  value:
+    simple: Google Chrome
   required: false
   description: Optional command line
-  playbookInputQuery:
-- key: obj_ext_startfolder
-  value:
-    simple: temp
-  required: false
-  description: 'Start object from. Supports: desktop, home, downloads, appdata, temp, windows, root'
-  playbookInputQuery:
-- key: obj_force_elevation
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Forces the file to execute with elevated privileges and an elevated token
-                (for PE32, PE32+, PE64 files only)
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: obj_ext_extension
   value:
     simple: "True"
   required: false
   description: Change extension to valid
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
-  - file
-  - incident_info
+  - obj_url
   name: General (Inputs group)
   description: Generic group for inputs
 - inputs:
   - env_locale
-  - env_bitness
-  - env_version
-  - env_type
+  - env_os
   name: Environment
   description: ""
 - inputs:
@@ -526,9 +491,7 @@ inputSections:
   name: Options
   description: ""
 - inputs:
-  - obj_ext_cmd
-  - obj_ext_startfolder
-  - obj_force_elevation
+  - obj_ext_browser
   - obj_ext_extension
   name: Object
   description: ""
@@ -537,6 +500,5 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
+sourceplaybookid: 52d278a0-2905-4a37-8379-4853a06f65d8
 quiet: true
-tests:
-- No tests (auto formatted)

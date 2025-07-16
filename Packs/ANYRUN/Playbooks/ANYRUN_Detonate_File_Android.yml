@@ -1,8 +1,8 @@
-id: ANY.RUN Detonate Url Android
+id: ANYRUN Detonate File Android
 version: -1
-name: ANY.RUN Detonate Url Android
 fromversion: 6.0.0
-description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It automates the analysis of potentially malicious URLs on Android OS.
+name: ANYRUN Detonate File Android
+description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It helps to automate malware detonation and behavior observation on Android OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -37,14 +37,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2edd7958-99a4-46a8-bd49-03c1c824adc2
+    taskid: 29050f73-a833-4d28-b383-de0e91bf45d5
     type: regular
     task:
-      id: 2edd7958-99a4-46a8-bd49-03c1c824adc2
+      id: 29050f73-a833-4d28-b383-de0e91bf45d5
       version: -1
-      name: '[ANY.RUN] Detonate URL Android'
-      description: Perform URL analysis using Android VM.
-      script: '|||anyrun-detonate-url-android'
+      name: '[ANY.RUN] Detonate File Android'
+      description: Perform File analysis using Android VM.
+      script: '|||anyrun-detonate-file-android'
       type: regular
       iscommand: true
       brand: ""
@@ -54,10 +54,10 @@ tasks:
     scriptarguments:
       env_locale:
         simple: ${inputs.env_locale}
-      obj_ext_browser:
-        simple: ${inputs.obj_ext_browser}
-      obj_url:
-        simple: ${inputs.obj_url}
+      file:
+        simple: ${inputs.file}
+      obj_ext_cmd:
+        simple: ${inputs.obj_ext_cmd}
       opt_network_connect:
         simple: ${inputs.opt_network_connect}
       opt_network_fakenet:
@@ -82,7 +82,7 @@ tasks:
       {
         "position": {
           "x": 227,
-          "y": 411
+          "y": 412
         }
       }
     note: false
@@ -94,10 +94,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9582ce1d-8166-49d9-9c49-6e0172d5ae6e
+    taskid: e60df45d-0efe-4632-832d-174b80a4eb65
     type: regular
     task:
-      id: 9582ce1d-8166-49d9-9c49-6e0172d5ae6e
+      id: e60df45d-0efe-4632-832d-174b80a4eb65
       version: -1
       name: '[ANY.RUN] Get analysis summary'
       description: Returns the analysis report summary.
@@ -110,18 +110,18 @@ tasks:
       - "10"
     scriptarguments:
       incident_info:
-        simple: ${incident}
+        simple: ${inputs.incident_info}
       report_format:
         simple: html
       task_uuid:
-        simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
+        simple: ${ANYRUN_DetonateFileAndroid.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 447,
-          "y": 999
+          "y": 1000
         }
       }
     note: false
@@ -149,7 +149,7 @@ tasks:
       {
         "position": {
           "x": -154,
-          "y": 1465
+          "y": 1488
         }
       }
     note: false
@@ -161,16 +161,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a02a2aaa-c451-4e29-9a9e-e222c7660c9a
+    taskid: 91f5ae62-588c-4612-8157-37b109e4d862
     type: condition
     task:
-      id: a02a2aaa-c451-4e29-9a9e-e222c7660c9a
+      id: 91f5ae62-588c-4612-8157-37b109e4d862
       version: -1
-      name: Is there any URL to detonate?
+      name: Is there any File to detonate?
       type: condition
       iscommand: false
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -183,7 +183,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.obj_url
+              simple: inputs.file
             iscontext: true
           right:
             value: {}
@@ -241,10 +241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 4265cf78-40be-41bb-99bb-027a1b4b7ef6
+    taskid: be694bfa-d555-4531-850b-37f0f4c46ff6
     type: condition
     task:
-      id: 4265cf78-40be-41bb-99bb-027a1b4b7ef6
+      id: be694bfa-d555-4531-850b-37f0f4c46ff6
       version: -1
       name: Was a malicious or suspicious verdict received?
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -273,7 +273,7 @@ tasks:
       {
         "position": {
           "x": 227,
-          "y": 804
+          "y": 806
         }
       }
     note: false
@@ -285,10 +285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 790bca60-a62d-49d1-a058-c8cbb0bb30e7
+    taskid: 26000f51-4da0-4701-979a-61120a246d81
     type: regular
     task:
-      id: 790bca60-a62d-49d1-a058-c8cbb0bb30e7
+      id: 26000f51-4da0-4701-979a-61120a246d81
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
       description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
@@ -301,14 +301,14 @@ tasks:
       - "8"
     scriptarguments:
       task_uuid:
-        simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
+        simple: ${ANYRUN_DetonateFileAndroid.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 227,
-          "y": 611
+          "y": 610
         }
       }
     note: false
@@ -320,10 +320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 736a5bc6-52db-423c-b61a-0118cdfb0504
+    taskid: 748c43c9-cbeb-4a0c-b276-5fd80396662a
     type: regular
     task:
-      id: 736a5bc6-52db-423c-b61a-0118cdfb0504
+      id: 748c43c9-cbeb-4a0c-b276-5fd80396662a
       version: -1
       name: '[ANY.RUN] Load IOCs to Threat Intel'
       description: Returns the analysis report summary.
@@ -336,11 +336,11 @@ tasks:
       - "5"
     scriptarguments:
       incident_info:
-        simple: ${incident}
+        simple: ${inputs.incident_info}
       report_format:
         simple: ioc
       task_uuid:
-        simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
+        simple: ${ANYRUN_DetonateFileAndroid.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -365,7 +365,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1842,
+        "height": 1865,
         "width": 982,
         "x": -154,
         "y": -317
@@ -373,11 +373,17 @@ view: |-
     }
   }
 inputs:
-- key: obj_url
+- key: file
   value:
-    simple: ${URL.Data}
+    simple: ${File.EntryID}
   required: false
-  description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link).'
+  description: XSOAR Entry ID
+  playbookInputQuery:
+- key: incident_info
+  value:
+    simple: ${incident}
+  required: false
+  description: XSOAR Incident
   playbookInputQuery:
 - key: env_locale
   value:
@@ -435,19 +441,19 @@ inputs:
   playbookInputQuery:
 - key: opt_timeout
   value:
-    simple: "60"
+    simple: "240"
   required: false
   description: 'Timeout option. Size range: 10-660.'
   playbookInputQuery:
-- key: obj_ext_browser
-  value:
-    simple: Google Chrome
+- key: obj_ext_cmd
+  value: {}
   required: false
-  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox'
+  description: Optional command line
   playbookInputQuery:
 inputSections:
 - inputs:
-  - obj_url
+  - file
+  - incident_info
   name: General (Inputs group)
   description: Generic group for inputs
 - inputs:
@@ -467,7 +473,7 @@ inputSections:
   name: Options
   description: ""
 - inputs:
-  - obj_ext_browser
+  - obj_ext_cmd
   name: Object
   description: ""
 outputSections:

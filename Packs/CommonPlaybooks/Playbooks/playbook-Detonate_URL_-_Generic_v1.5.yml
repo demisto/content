@@ -834,8 +834,8 @@ tasks:
       id: df46af7d-b2ae-4a77-8fd9-901ff7e65a18
       description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It automates the analysis of potentially malicious URLs on Android OS.
       version: -1
-      name: ANY.RUN Detonate Url Android
-      playbookName: ANY.RUN Detonate Url Android
+      name: ANYRUN Detonate Url Android
+      playbookName: ANYRUN Detonate Url Android
       type: playbook
       iscommand: false
       brand: ""
@@ -866,8 +866,8 @@ tasks:
       id: 10486b13-661b-4d9e-89e2-8222ac5b53a9
       description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It automates the analysis of potentially malicious URLs on Ubuntu OS.
       version: -1
-      name: ANY.RUN Detonate Url Linux
-      playbookName: ANY.RUN Detonate Url Linux
+      name: ANYRUN Detonate Url Linux
+      playbookName: ANYRUN Detonate Url Linux
       type: playbook
       iscommand: false
       brand: ""
@@ -898,8 +898,8 @@ tasks:
       id: cfadc723-4213-43ae-80ba-522a1a7fb2db
       description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It automates the analysis of potentially malicious URLs on Windows OS.
       version: -1
-      name: ANY.RUN Detonate Url Windows
-      playbookName: ANY.RUN Detonate Url Windows
+      name: ANYRUN Detonate Url Windows
+      playbookName: ANYRUN Detonate Url Windows
       type: playbook
       iscommand: false
       brand: ""

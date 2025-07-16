@@ -38,9 +38,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
 * Detonate URL - FireEye AX
 * Detonate URL - Lastline v2
-* ANY.RUN Detonate Url Android
-* ANY.RUN Detonate Url Linux
-* ANY.RUN Detonate Url Windows
+* ANYRUN Detonate Url Android
+* ANYRUN Detonate Url Linux
+* ANYRUN Detonate Url Windows
 
 ### Integrations
 

@@ -33,9 +33,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Detonate File - Lastline v2
 * Detonate File - JoeSecurity V2
 * Detonate File - ThreatGrid v2
-* ANY.RUN Detonate File Android
-* ANY.RUN Detonate File Linux
-* ANY.RUN Detonate File Windows
+* ANYRUN Detonate File Android
+* ANYRUN Detonate File Linux
+* ANYRUN Detonate File Windows
 
 ### Integrations
 

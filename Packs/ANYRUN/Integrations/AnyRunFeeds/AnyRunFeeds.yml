@@ -18,38 +18,38 @@ configuration:
   required: true
   type: 0
   section: Collect
-- display: Fetch indicators.
+- display: 'Fetch indicators'
   name: feed
-  defaultvalue: "true"
+  defaultvalue: 'true'
   type: 8
   required: false
   section: Collect
-- display: Indicator Reputation.
+- display: 'Indicator Reputation'
   name: feedReputation
   defaultvalue: Bad
   type: 18
   required: false
   options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
+  - 'None'
+  - 'Good'
+  - 'Suspicious'
+  - 'Bad'
   additionalinfo: Indicators from this integration instance will be marked with this reputation.
   section: Collect
-- display: Source Reliability.
+- display: 'Source Reliability'
   name: feedReliability
   defaultvalue: A - Completely reliable
   type: 15
   required: true
   options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
+  - 'A - Completely reliable'
+  - 'B - Usually reliable'
+  - 'C - Fairly reliable'
+  - 'D - Not usually reliable'
+  - 'E - Unreliable'
+  - 'F - Reliability cannot be judged'
   section: Collect
-  additionalinfo: Reliability of the source providing the intelligence data.
+  additionalinfo: 'Reliability of the source providing the intelligence data'
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: never
@@ -66,18 +66,18 @@ configuration:
   type: 1
   required: false
   section: Collect
-- display: Feed Fetch Interval.
+- display: 'Feed Fetch Interval'
   name: feedFetchInterval
   defaultvalue: "120"
   type: 19
   required: false
   section: Collect
-- display: Bypass exclusion list.
+- display: 'Bypass exclusion list'
   name: feedBypassExclusionList
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  additionalinfo: 'When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.'
   section: Collect
 - name: feedTags
   display: Tags

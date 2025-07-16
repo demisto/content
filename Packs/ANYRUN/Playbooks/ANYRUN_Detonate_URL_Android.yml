@@ -1,8 +1,8 @@
-id: ANY.RUN Detonate Url Windows
+id: ANYRUN Detonate Url Android
 version: -1
-name: ANY.RUN Detonate Url Windows
+name: ANYRUN Detonate Url Android
 fromversion: 6.0.0
-description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It automates the analysis of potentially malicious URLs on Windows OS.
+description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It automates the analysis of potentially malicious URLs on Android OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": -154,
-          "y": -316
+          "y": -317
         }
       }
     note: false
@@ -37,14 +37,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ba727b14-8224-4cc4-a7a5-07eb0088482f
+    taskid: 2edd7958-99a4-46a8-bd49-03c1c824adc2
     type: regular
     task:
-      id: ba727b14-8224-4cc4-a7a5-07eb0088482f
+      id: 2edd7958-99a4-46a8-bd49-03c1c824adc2
       version: -1
-      name: '[ANY.RUN] Detonate URL Windows'
-      description: Perform URL analysis using Windows VM.
-      script: '|||anyrun-detonate-url-windows'
+      name: '[ANY.RUN] Detonate URL Android'
+      description: Perform URL analysis using Android VM.
+      script: '|||anyrun-detonate-url-android'
       type: regular
       iscommand: true
       brand: ""
@@ -52,18 +52,10 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      env_bitness:
-        simple: ${inputs.env_bitness}
       env_locale:
         simple: ${inputs.env_locale}
-      env_type:
-        simple: ${inputs.env_type}
-      env_version:
-        simple: ${inputs.env_version}
       obj_ext_browser:
         simple: ${inputs.obj_ext_browser}
-      obj_ext_extension:
-        simple: ${inputs.obj_ext_extension}
       obj_url:
         simple: ${inputs.obj_url}
       opt_network_connect:
@@ -102,10 +94,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 06fba4d0-2f3f-47e4-b7f2-c55edc19c029
+    taskid: 9582ce1d-8166-49d9-9c49-6e0172d5ae6e
     type: regular
     task:
-      id: 06fba4d0-2f3f-47e4-b7f2-c55edc19c029
+      id: 9582ce1d-8166-49d9-9c49-6e0172d5ae6e
       version: -1
       name: '[ANY.RUN] Get analysis summary'
       description: Returns the analysis report summary.
@@ -122,14 +114,14 @@ tasks:
       report_format:
         simple: html
       task_uuid:
-        simple: ${ANYRUN_DetonateUrlWindows.TaskID}
+        simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 447,
-          "y": 998
+          "y": 999
         }
       }
     note: false
@@ -157,7 +149,7 @@ tasks:
       {
         "position": {
           "x": -154,
-          "y": 1488
+          "y": 1465
         }
       }
     note: false
@@ -169,10 +161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 953830ac-79b0-42f2-83c9-509386fcfe8e
+    taskid: a02a2aaa-c451-4e29-9a9e-e222c7660c9a
     type: condition
     task:
-      id: 953830ac-79b0-42f2-83c9-509386fcfe8e
+      id: a02a2aaa-c451-4e29-9a9e-e222c7660c9a
       version: -1
       name: Is there any URL to detonate?
       type: condition
@@ -249,10 +241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: ef81e54c-6bc4-4b82-b668-f9c1801aee6a
+    taskid: 4265cf78-40be-41bb-99bb-027a1b4b7ef6
     type: condition
     task:
-      id: ef81e54c-6bc4-4b82-b668-f9c1801aee6a
+      id: 4265cf78-40be-41bb-99bb-027a1b4b7ef6
       version: -1
       name: Was a malicious or suspicious verdict received?
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -281,7 +273,7 @@ tasks:
       {
         "position": {
           "x": 227,
-          "y": 806
+          "y": 804
         }
       }
     note: false
@@ -293,10 +285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6ec11986-da4b-4bc3-b41e-f8375fe86c7b
+    taskid: 790bca60-a62d-49d1-a058-c8cbb0bb30e7
     type: regular
     task:
-      id: 6ec11986-da4b-4bc3-b41e-f8375fe86c7b
+      id: 790bca60-a62d-49d1-a058-c8cbb0bb30e7
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
       description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
@@ -309,14 +301,14 @@ tasks:
       - "8"
     scriptarguments:
       task_uuid:
-        simple: ${ANYRUN_DetonateUrlWindows.TaskID}
+        simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 227,
-          "y": 610
+          "y": 611
         }
       }
     note: false
@@ -328,10 +320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: f12c2188-8e8f-4cc2-9316-53932fef1fcb
+    taskid: 736a5bc6-52db-423c-b61a-0118cdfb0504
     type: regular
     task:
-      id: f12c2188-8e8f-4cc2-9316-53932fef1fcb
+      id: 736a5bc6-52db-423c-b61a-0118cdfb0504
       version: -1
       name: '[ANY.RUN] Load IOCs to Threat Intel'
       description: Returns the analysis report summary.
@@ -348,7 +340,7 @@ tasks:
       report_format:
         simple: ioc
       task_uuid:
-        simple: ${ANYRUN_DetonateUrlWindows.TaskID}
+        simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -373,10 +365,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1864,
+        "height": 1842,
         "width": 982,
         "x": -154,
-        "y": -316
+        "y": -317
       }
     }
   }
@@ -385,31 +377,13 @@ inputs:
   value:
     simple: ${URL.Data}
   required: false
-  description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link)'
+  description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link).'
   playbookInputQuery:
 - key: env_locale
   value:
     simple: en-US
   required: false
   description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive.'
-  playbookInputQuery:
-- key: env_bitness
-  value:
-    simple: "64"
-  required: false
-  description: Bitness of Operation System. Supports 32, 64
-  playbookInputQuery:
-- key: env_version
-  value:
-    simple: "10"
-  required: false
-  description: 'Version of OS. Supports: 7, 10, 11'
-  playbookInputQuery:
-- key: env_type
-  value:
-    simple: complete
-  required: false
-  description: Environment preset type. You can select **development** env for OS Windows 10 x64. For all other cases, **complete** env is required
   playbookInputQuery:
 - key: opt_network_connect
   value:
@@ -469,13 +443,7 @@ inputs:
   value:
     simple: Google Chrome
   required: false
-  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox, Internet Explorer, Microsoft Edge'
-  playbookInputQuery:
-- key: obj_ext_extension
-  value:
-    simple: "True"
-  required: false
-  description: Change extension to valid
+  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox'
   playbookInputQuery:
 inputSections:
 - inputs:
@@ -484,9 +452,6 @@ inputSections:
   description: Generic group for inputs
 - inputs:
   - env_locale
-  - env_bitness
-  - env_version
-  - env_type
   name: Environment
   description: ""
 - inputs:
@@ -503,7 +468,6 @@ inputSections:
   description: ""
 - inputs:
   - obj_ext_browser
-  - obj_ext_extension
   name: Object
   description: ""
 outputSections:
