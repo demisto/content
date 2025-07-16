@@ -17,7 +17,7 @@ inputSections:
 inputs:
 - description: |-
     The Firewall rulebase to analyze. Must be one of the following:
-    security, nat, decryption, application-override, authentication, dos, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect.
+    security, nat, decryption, application-override, authentication, dos, network-packet-broker, pbf, qos, sdwan, tunnel-inspect.
   key: Rulebase
   playbookInputQuery:
   required: true

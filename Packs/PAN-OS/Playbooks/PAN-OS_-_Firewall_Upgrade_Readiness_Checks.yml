@@ -1942,7 +1942,7 @@ tasks:
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Target Version Already Installed\",\n\"CheckDescription\":\"Verifies that the target PAN-OS version is not already installed and running. If this check fails, the target version is NOT already installed.\",\n\"CheckResult\":\"Passed\"}"
+        simple: "{\"CheckName\":\"Target Version Already Installed\",\n\"CheckDescription\":\"Verifies whether the target PAN-OS version is already installed and running. If the target version is already installed, this check will result as Failed.\",\n\"CheckResult\":\"Passed\"}"
     separatecontext: false
     skipunavailable: false
     task:
@@ -1975,7 +1975,7 @@ tasks:
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Target Version Already Installed\",\n\"CheckDescription\":\"Verifies that the target PAN-OS version is not already installed and running. If this check fails, the target version is NOT already installed.\",\n\"CheckResult\":\"Failed\"}"
+        simple: "{\"CheckName\":\"Target Version Already Installed\",\n\"CheckDescription\":\"Verifies whether the target PAN-OS version is already installed and running. If the target version is already installed, this check will result as Failed.\",\n\"CheckResult\":\"Failed\"}"
     separatecontext: false
     skipunavailable: false
     task:
