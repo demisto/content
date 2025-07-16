@@ -1,4 +1,5 @@
 Leverage Augur's preemptive threat intelligence for actionable data against persistent threat actors.  Augur Security return a list which could include IP addresses, domains, URLs, and hash indicators which are updated daily.
+
 ## Configure Augur Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -37,8 +38,8 @@ Get daily indicators from Augur.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default is 100k. Default is 100000. | Optional | 
-| offset | The index of the first indicator to fetch. Default is 0. | Optional | 
+| limit | The maximum number of indicators to return. Default is 100k. Default is 100000. | Optional |
+| offset | The index of the first indicator to fetch. Default is 0. | Optional |
 
 #### Context Output
 
@@ -57,8 +58,7 @@ Get threat context of a file hash from the Augur API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | The hash string to send. Available hash type are md5, sha1 and sha256 | Required | 
-
+| hash | The hash string to send. Available hash type are md5, sha1 and sha256 | Required |
 
 #### Context Output
 
@@ -77,8 +77,7 @@ Get threat context of a host name from the Augur API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host | The host string to send. | Required | 
-
+| host | The host string to send. | Required |
 
 #### Context Output
 
@@ -97,8 +96,7 @@ Get threat context of a ipv4 address from the Augur API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The ipv4 address to send. | Required | 
-
+| ip | The ipv4 address to send. | Required |
 
 #### Context Output
 
