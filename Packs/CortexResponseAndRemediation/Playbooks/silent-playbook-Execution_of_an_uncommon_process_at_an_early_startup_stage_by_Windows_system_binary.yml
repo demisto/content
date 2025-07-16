@@ -4471,7 +4471,7 @@ tasks:
     task:
       id: 82a51490-782b-4518-99a7-8e756f34e7f7
       version: -1
-      name: Get Alert related alerts for the process who create the suspicious scheduled task
+      name: Get related alerts for the process who create the suspicious scheduled task
       description: This task searches for related alerts indicating the suspicious creation of a scheduled task on this endpoint.
       scriptName: SearchAlertsV2
       type: regular
