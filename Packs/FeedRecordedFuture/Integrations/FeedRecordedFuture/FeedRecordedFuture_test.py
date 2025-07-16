@@ -357,9 +357,13 @@ def test_fetch_indicators_command(mocker):
     for output in fetch_indicators_command(client, indicator_type):
         client_outputs.extend(output)
     assert client_outputs[0] == {
-        "fields": {"recordedfutureevidencedetails": [], "recordedfutureriskscore": None, "tags": [],
-                   'recordedfuturefeedthreatassessment': '',
-                   'recordedfutureriskrulecount': '', },
+        "fields": {
+            "recordedfutureevidencedetails": [],
+            "recordedfutureriskscore": None,
+            "tags": [],
+            "recordedfuturefeedthreatassessment": "",
+            "recordedfutureriskrulecount": "",
+        },
         "rawJSON": {"Name": "192.168.0.1", "a": "3", "type": "IP", "value": "192.168.0.1"},
         "score": 0,
         "type": "IP",
@@ -391,9 +395,13 @@ def test_fetch_indicators_risk_threshold_command(mocker):
     for output in fetch_indicators_command(client, indicator_type):
         client_outputs.extend(output)
     assert client_outputs[0] == {
-        "fields": {"recordedfutureevidencedetails": [], "recordedfutureriskscore": "80", "tags": [],
-                   'recordedfuturefeedthreatassessment': 'Malicious',
-                   'recordedfutureriskrulecount': '', },
+        "fields": {
+            "recordedfutureevidencedetails": [],
+            "recordedfutureriskscore": "80",
+            "tags": [],
+            "recordedfuturefeedthreatassessment": "Malicious",
+            "recordedfutureriskrulecount": "",
+        },
         "rawJSON": {
             "Criticality Label": "Malicious",
             "Name": "192.168.0.1",
