@@ -537,7 +537,10 @@ def map_file_path_to_file_name(paths: list) -> dict:
 def extract_paths_and_names(file_mapping: dict) -> tuple:
     """
     Takes the output of map_file_path_to_file_name and returns two lists.
-
+    This function handles both Windows and POSIX (Unix/Linux) file paths by using
+    PureWindowsPath and PurePosixPath from pathlib. The function detects the path
+    type by checking for backslashes (\) which are specific to Windows paths,
+    and uses the appropriate path parser to extract the file name correctly.
     :param file_mapping: Dictionary mapping file names to file paths
     :return: Tuple containing (list of file paths, list of file names)
     """
