@@ -524,17 +524,6 @@ class Client(CoreClient):
 def map_file_path_to_file_name(paths: list) -> dict:
     """
     Maps file paths to their corresponding file names.
-
-    This function handles both Windows and POSIX (Unix/Linux) file paths by using
-    PureWindowsPath and PurePosixPath from pathlib. The function detects the path
-    type by checking for backslashes (\) which are specific to Windows paths,
-    and uses the appropriate path parser to extract the file name correctly.
-
-    Using PureWindowsPath and PurePosixPath ensures proper handling of:
-    - Windows paths with backslash separators (e.g., "C:\folder\file.txt")
-    - POSIX paths with forward slash separators (e.g., "/home/user/file.txt")
-    - Proper file name extraction regardless of the underlying operating system
-
     :param paths: List of file paths (can contain both Windows and POSIX style paths)
     :return: Dictionary mapping file names to their corresponding file paths
     """
@@ -580,21 +569,21 @@ def set_sorted_paths_and_names(reply: dict):
     # from incidents/get_incident_extra_data
     alerts_data = reply.get("alerts", {}).get("data", [])
     if alerts_data:
-        for alert in alerts_data:
-            alert_paths = alert.get("action_file_path", [])  # inorder
-            paths, names = get_sorted_file_alerts(alert_paths)  # sorted
-            alert["action_file_path"] = paths
-            alert["action_file_name"] = names
+        update_alerts(alerts_data)
 
     else:
         incidents = reply.get("incidents", [])
         for incident in incidents:
             alerts_data = incident.get("alerts", {}).get("data", [])
-            for alert in alerts_data:
-                alert_paths = alert.get("action_file_path", [])  # inorder
-                paths, names = get_sorted_file_alerts(alert_paths)  # sorted
-                alert["action_file_path"] = paths
-                alert["action_file_name"] = names
+            update_alerts(alerts_data)
+
+
+def update_alerts(alerts_data):
+    for alert in alerts_data:
+        alert_paths = alert.get("action_file_path", [])  # inorder
+        paths, names = get_sorted_file_alerts(alert_paths)  # sorted
+        alert["action_file_path"] = paths
+        alert["action_file_name"] = names
 
 
 def get_headers(params: dict) -> dict:

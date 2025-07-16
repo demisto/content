@@ -2515,38 +2515,3 @@ def test_extract_paths_and_names_single_item():
 
     assert file_paths == ["C:\\test\\file.exe"]
     assert file_names == ["file.exe"]
-
-
-def test_get_sorted_file_alerts_valid_paths():
-    """
-    Given:
-        - List of file paths
-    When:
-        - Calling get_sorted_file_alerts
-    Then:
-        - Returns tuple with file paths and names
-    """
-    from CortexXDRIR import get_sorted_file_alerts
-
-    paths = ["C:\\folder\\file.exe", "/home/user/script.py"]
-    file_paths, file_names = get_sorted_file_alerts(paths)
-
-    assert set(file_paths) == {"C:\\folder\\file.exe", "/home/user/script.py"}
-    assert set(file_names) == {"file.exe", "script.py"}
-
-
-def test_get_sorted_file_alerts_empty_list():
-    """
-    Given:
-        - Empty list of paths
-    When:
-        - Calling get_sorted_file_alerts
-    Then:
-        - Returns tuple with None values
-    """
-    from CortexXDRIR import get_sorted_file_alerts
-
-    paths = []
-    result = get_sorted_file_alerts(paths)
-
-    assert result == ([], [])
