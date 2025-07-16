@@ -532,12 +532,8 @@ def extract_paths_and_names(paths: list) -> tuple:
 
     file_mapping = {p: (PureWindowsPath(p).name if "\\" in p else PurePosixPath(p).name) for p in paths}
 
-    file_names = []
-    file_paths = []
-
-    for file_path, file_name in file_mapping.items():
-        file_names.append(file_name)
-        file_paths.append(file_path)
+    file_paths = list(file_mapping.keys())
+    file_names = list(file_mapping.values())
 
     return file_paths, file_names
 
