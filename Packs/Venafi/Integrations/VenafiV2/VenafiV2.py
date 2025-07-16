@@ -44,21 +44,17 @@ class Client(BaseClient):
         """
 
         integration_context = get_integration_context()
+ 
         if token := integration_context.get("access_token"):
             access_until = integration_context.get("access_until")
             if access_until and not self.is_token_expired(access_until):
+                demisto.debug("Access token is valid, will use it to login")
                 return token
-            else:
-                refresh_token = integration_context.get("refresh_token")
+     
+            elif refresh_token := integration_context.get("refresh_token"):
                 refresh_until = integration_context.get("refresh_until")
-                # Check if refresh token is expired
-                if refresh_until and self.is_token_expired(refresh_until):
-                    # Refresh token expired, need to authenticate with credentials
-                    demisto.debug("Refresh token expired, authenticating with credentials")
-                    json_data = {"username": username, "password": password, "client_id": client_id, "scope": "certificate"}
-                    return self.create_new_token(json_data, is_token_exist=False)
-                else:
-                    # Use refresh token to get new access token
+                if refresh_until and not self.is_token_expired(refresh_until):
+                    demisto.debug("Refresh token is valid, will use it to get new access token")
                     json_data = {"client_id": client_id, "refresh_token": refresh_token}
                     return self.create_new_token(json_data, is_token_exist=True)
 
@@ -76,7 +72,7 @@ class Client(BaseClient):
             bool: True if the token is expired, False otherwise.
         """
 
-        timestamp_utc_now = get_current_time().timestamp()
+        timestamp_utc_now = arg_to_number(get_current_time().timestamp())
         return timestamp_utc_now > expires_date
 
     def create_new_token(self, json_data: dict, is_token_exist: bool) -> str:
@@ -103,19 +99,19 @@ class Client(BaseClient):
             data=json.dumps(json_data),
         )
 
-        new_token = access_token_obj.get("access_token", "")
+        access_token = access_token_obj.get("access_token", "")
         refresh_token = access_token_obj.get("refresh_token", "")
         access_until = arg_to_number(access_token_obj.get("expires") or datetime.now().timestamp())
         refresh_until = arg_to_number(access_token_obj.get("refresh_until") or datetime.now().timestamp())
 
         set_integration_context({
-            "access_token": token,
+            "access_token": access_token,
             "refresh_token": refresh_token,
             "access_until":  access_until,
             "refresh_until": refresh_until,
         })
 
-        return new_token
+        return access_token
 
     def get_certificates(self, args: dict[str, Any]) -> dict:
         """
