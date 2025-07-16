@@ -457,7 +457,7 @@ switch(command) {
     case 'fp-add-address-to-category':
         return addAddress();
     case 'fp-delete-address-from-category':
-            return deleteAddress();
+        return deleteAddress();
     case 'fp-delete-categories':
         return deleteCategory();
 }
