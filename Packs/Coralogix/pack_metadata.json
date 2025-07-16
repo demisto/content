@@ -23,6 +23,8 @@
         "platform"
     ],
     "supportedModules": [
-        "AGENTIC"
+         "asm",
+        "exposure_management",
+        "X5"
     ]
 }
