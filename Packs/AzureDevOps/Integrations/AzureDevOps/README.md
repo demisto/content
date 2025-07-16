@@ -55,7 +55,7 @@ To add the registration, refer to the following [Microsoft article](https://lear
 
 To the Azure DevOps Account, use one of the following flows-
 
-## Authorization Code Flow(Recommended)
+## Authorization Code Flow (Recommended)
 
 For a Authorization Code configuration:
 
@@ -96,6 +96,25 @@ To configure a Microsoft integration that uses this authorization flow with a se
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure DevOps service run the ***!azure-devops-auth-test*** command.
 
 If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
+
+## Troubleshooting
+
+If you encounter the following error:
+
+`Please sign in at least once as {tenant_id}/{application_id} in a web browser to enable access to the service.`
+
+Please follow these steps to resolve it:
+
+1. Navigate to your Azure DevOps organization using this URL (replace {organization_name} with your actual org name):
+https://dev.azure.com/{organization_name}
+2. In the bottom-left corner, click ***Organization settings***.
+3. Select ***Users*** from the left menu.
+4. Click ***Add Users***.
+5. In the Users or Service Principals field, paste the Application (Client) ID of your app.
+6. Assign the appropriate Access Level, at least a basic license, and add any necessary projects.
+7. Click ***Add*** to complete.
+8. Once added, confirm that the application appears in the Users list.
+9. Now retry running the failing command.
 
 ## Commands
 
