@@ -261,7 +261,6 @@ def get_analysis_report(params: dict, args: dict) -> None:
         incident_info = json.loads(incident_info)
 
     incident_id = incident_info.get("id")
-    return_results(f"incident id: {incident_id}")
 
     with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
         report = connector.get_analysis_report(task_uuid, report_format=report_format)
