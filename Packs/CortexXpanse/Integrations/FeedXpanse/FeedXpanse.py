@@ -246,7 +246,7 @@ def fetch_indicators(client: Client, limit: Optional[int] = None, asset_type: li
     """
     asset_list, asset_response = [], []
     if asset_type == []:
-        asset_list = ["DOMAIN","CERTIFICATE","UNASSOCIATED_RESPONSIVE_IP"]
+        asset_list = ["DOMAIN", "CERTIFICATE", "UNASSOCIATED_RESPONSIVE_IP"]
     else:
         if "Domain" in asset_type:
             asset_list.append("DOMAIN")
