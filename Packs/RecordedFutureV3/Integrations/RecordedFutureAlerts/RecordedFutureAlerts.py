@@ -387,7 +387,7 @@ def get_client():
     verify_ssl = not demisto_params.get("insecure", False)
     proxy = demisto_params.get("proxy", False)
 
-    api_token = demisto_params.get("apikey")
+    api_token = demisto_params.get("credentials", {}).get("password")
     if not api_token:
         return_error("Please provide a valid API token")
 
