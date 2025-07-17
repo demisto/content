@@ -149,22 +149,10 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      archive_password:
-        simple: ${inputs.archive_password}
-      document_password:
-        simple: ${inputs.document_password}
       entry_id:
         simple: ${inputs.File.EntryID}
       file_id:
         simple: ${File.EntryID}
-      max_jobs:
-        simple: ${inputs.max_jobs}
-      sample_type:
-        simple: ${inputs.sample_type}
-      shareable:
-        simple: ${inputs.shareable}
-      tags:
-        simple: ${inputs.tags}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -640,36 +628,6 @@ inputs:
     simple: "10"
   required: false
   description: The amount of time to wait before giving up waiting for results (minutes).
-  playbookInputQuery: null
-- key: document_password
-  value: {}
-  required: false
-  description: The password if the file is a password-protected document.
-  playbookInputQuery: null
-- key: archive_password
-  value: {}
-  required: false
-  description: The password if the file is a password-protected archive.
-  playbookInputQuery: null
-- key: sample_type
-  value: {}
-  required: false
-  description: The sample type.
-  playbookInputQuery: null
-- key: shareable
-  value: {}
-  required: false
-  description: Whether to make the file shareable.
-  playbookInputQuery: null
-- key: max_jobs
-  value: {}
-  required: false
-  description: The  maximum jobs to create in VMRay.
-  playbookInputQuery: null
-- key: tags
-  value: {}
-  required: false
-  description: The tags of the file (comma-separated).
   playbookInputQuery: null
 outputs:
 - contextPath: VMRay.Job.JobID
