@@ -1,5 +1,5 @@
 import demistomock as demisto
-from SearchIndicator import search_indicators, prepare_query
+from Packs.CommonScripts.Scripts.SearchIndicatorAgentix.SearchIndicatorAgentix import search_indicators, prepare_query
 
 
 def test_main(mocker):

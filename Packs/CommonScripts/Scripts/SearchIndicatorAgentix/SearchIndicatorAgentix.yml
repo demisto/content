@@ -22,18 +22,18 @@ args:
 comment: |-
   Searches Cortex XSOAR Indicators.
 
-  Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+  Search for XSOAR Indicators and returns the id, indicator_type, value, expiration status, lastSeen timestamp, related investigations and score/verdict.
 
   You can add additional fields from the indicators using the add_field_to_context argument.
 commonfields:
-  id: SearchIndicator
+  id: SearchIndicatorAgentix
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
-name: SearchIndicator
+name: SearchIndicatorAgentix
 outputs:
 - contextPath: foundIndicators.id
   description: The id of the indicator in the XSOAR database.
@@ -45,6 +45,12 @@ outputs:
   description: The numeric score of the indicator (0 = Unknown, 1 = Good, 2 = Suspicious, 3 = Malicious)
 - contextPath: foundIndicators.verdict
   description: The human readable score/verdict of the Indicator.
+- contextPath: foundIndicators.investigationIDs
+  description: The investigations related to the indicator. 
+- contextPath: foundIndicators.expiration
+  description: The expiration status of the indicator.
+- contextPath: foundIndicators.lastSeen
+  description: The timestamp of the last time the indicator was sensitive.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

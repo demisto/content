@@ -42,10 +42,7 @@ def search_indicators(args):
 
     # return specific information for found indicators
     filtered_indicators = []
-    fields = ["id", "indicator_type", "value", "score"]
-    if args.get("add_fields_to_context"):
-        fields = fields + args.get("add_fields_to_context").split(",")
-        fields = [x.strip() for x in fields]  # clear out whitespace
+    fields = ["id", "indicator_type", "value", "score", "expirationStatus", "investigationIDs", "expiration", "lastSeen"]
     for indicator in indicators:
         style_indicator = {}
         for field in fields:
