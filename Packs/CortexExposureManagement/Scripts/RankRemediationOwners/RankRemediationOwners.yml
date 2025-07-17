@@ -2,6 +2,7 @@ args:
 - description: List of potential remediation owners.
   isArray: true
   name: owners
+  required: true
 - description: System IDs or names associated with the compute instance.
   isArray: true
   name: system_ids

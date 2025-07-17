@@ -53,15 +53,15 @@ def load_pickled_xpanse_object(file_name: str, cache_path: str = "/tmp/xpanse-ml
         # read access to the GCS bucket, or at least the resource at `remote_path`
         remote_path = posixpath.join("", file_name)
 
-        demisto.info(f"Starting to download '{file_name}' from gs://{remote_gcs_bucket}/{remote_path}")
+        demisto.debug(f"Starting to download '{file_name}' from gs://{remote_gcs_bucket}/{remote_path}")
         client = google.cloud.storage.client.Client()
         bucket = client.bucket(remote_gcs_bucket)
         blob = bucket.blob(remote_path)
         blob.download_to_filename(cached_file_path)
-        demisto.info(f"Downloaded '{file_name}' from gs://{remote_gcs_bucket}/{remote_path}")
+        demisto.debug(f"Downloaded '{file_name}' from gs://{remote_gcs_bucket}/{remote_path} to {cached_file_path}")
 
     else:
-        demisto.info(f"Found '{file_name}' locally")
+        demisto.debug(f"Found '{file_name}' locally")
 
     with open(cached_file_path, "rb") as f:
         return pickle.load(f)
@@ -69,7 +69,13 @@ def load_pickled_xpanse_object(file_name: str, cache_path: str = "/tmp/xpanse-ml
 
 def featurize(system_ids: list[str], owners: list[dict[str, Any]]) -> np.ndarray:
     """
-    Convert owners information into numerical array for model inference
+    Convert owners information into numerical array for model inference using a private featurization
+    pipeline. The output of this pipeline is passed as input to a private ML model, which converts the
+    numerical representation of service owners into a likelihood score.
+
+    >>> featurize(["system-name"], [{"name": "Automation First Remediation", "email": "afr@example.com",
+        "source": "GCP | Splunk", "timestamp": "5"}])
+    array([[1., 2., 2., 1., 0., 1.]])
     """
     pipeline = OwnerFeaturizationPipeline()
     feats = pipeline.featurize(system_ids, owners)
@@ -82,8 +88,12 @@ def normalize_scores(
     upper_bound: float = SCORE_UPPER_BOUND,
 ) -> list[float]:
     """
-    Normalizes a list of non-negative reals to values in range specified by `lower_bound`
-    and `upper_bound`
+    This runbook attempts to find potential service owners and assign them a "score", indicating the
+    likelihood that they're the right owner. This function normalizes the scores, i.e. maps them to a
+    value in a range specified by the given lower and upper bound (e.g. between 0 and 1 for interpretability
+    as a likelihood).
+    >>>normalize_scores([2, 1, 1], 0.5, 1.0)
+    [1.0, 0.5, 0.5]
     """
     if lower_bound < 0 or upper_bound < 0:
         raise ValueError("Lower and upper bounds must be non-negative")
@@ -117,14 +127,14 @@ def score(owners: list[dict[str, Any]], system_ids: list[str]) -> list[dict[str,
     try:
         model = load_pickled_xpanse_object("remediation_owner_model.pkl")
     except Exception as ex:
-        demisto.info(f"Error loading the model: {ex}. Using fallback scores")
+        demisto.debug(f"Error loading the model: {ex}. Using fallback scores")
         return scoring_fallback(owners)
 
     try:
         featurized = featurize(system_ids=system_ids, owners=owners)
         scores = model.predict(featurized)
     except Exception as ex:
-        demisto.info(f"Error scoring the owners: {ex}. Using fallback scores")
+        demisto.debug(f"Error scoring the owners: {ex}. Using fallback scores")
         return scoring_fallback(owners)
 
     normalized = normalize_scores(scores)
@@ -212,19 +222,31 @@ def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     Aggregate remaining keys by type: union over strings, and max over numerical types.
     If type is neither of the above, all values of that key will be dropped from the aggregated owner.
     """
+    demisto.debug(f"Starting aggregation for {len(owners)} owners")
+
     deduped = []
     sorted_owners = sorted(owners, key=lambda owner: owner["canonicalization"])
     for key, group in groupby(sorted_owners, key=lambda owner: owner["canonicalization"]):
+        demisto.debug(f"Processing canonicalization group: {key}")
+
         duplicates = list(group)
+        demisto.debug(f"Found {len(duplicates)} duplicates for canonicalization: {key}")
+
         email = duplicates[0].get("email", "")
         # the if condition in the list comprehension below defends against owners whose name value is None (not sortable)
         names = sorted([owner.get("name", "") for owner in duplicates if owner.get("name")], key=lambda x: len(x), reverse=True)
         name = names[0] if names else ""
+        demisto.debug(f"Selected name: {name}, email: {email}")
+
         # aggregate source by union
         source = STRING_DELIMITER.join(sorted({owner.get("source", "") for owner in duplicates if owner.get("source", "")}))
+        demisto.debug(f"Aggregated sources: {source}")
+
         # take max timestamp if there's at least one; else empty string
         timestamps = sorted([owner.get("timestamp", "") for owner in duplicates if owner.get("timestamp", "")], reverse=True)
         timestamp = timestamps[0] if timestamps else ""
+        demisto.debug(f"Selected timestamp: {timestamp}")
+
         owner = {"name": name, "email": email, "source": source, "timestamp": timestamp}
 
         # aggregate remaining keys according to type
@@ -234,19 +256,26 @@ def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
         for key in all_keys:
             if key.lower() not in {"name", "email", "source", "timestamp", "canonicalization"}:
                 other_keys.append(key)
+
+        demisto.debug(f"Processing {len(other_keys)} additional keys: {other_keys}")
+
         for other in other_keys:
             if keys_to_types[other] is str:
                 # union over strings
                 owner[other] = STRING_DELIMITER.join(
                     sorted({owner.get(other, "") for owner in duplicates if owner.get(other, "")})
                 )
+                demisto.debug(f"Aggregated string field '{other}': {owner[other]}")
             elif keys_to_types[other] in (int, float):
                 # max over numerical types
                 owner[other] = max(owner.get(other, 0) for owner in duplicates)  # type: ignore
+                demisto.debug(f"Aggregated numerical field '{other}': {owner[other]}")
             else:
-                demisto.info(f"Cannot aggregate owner detail {other} -- removing from remediation owner")
+                demisto.debug(f"Cannot aggregate owner detail {other} -- removing from remediation owner")
                 continue
         deduped.append(owner)
+
+    demisto.debug(f"Aggregation completed. Reduced {len(owners)} owners to {len(deduped)} unique owners")
     return deduped
 
 
@@ -254,9 +283,27 @@ def _get_k(
     scores: Iterable[float], target_k: int = 5, k_tol: int = 2, a_tol: float = 1.0, min_score_proportion: float = 0.75
 ) -> int:
     """
-    Return a value of k such that:
-    - target_k >= k <= target_k + k_tol
+    This function dynamically computes how many of the top-scoring service owners (k) we should return, based on their relative
+    scores.
+
+    It returns a value of k such that:
+    - target_k - k_tol >= k <= target_k + k_tol
     - the top k scores comprise minimum specified proportion of the total score mass
+
+    For example, say our target k is 3 with a tolerance of 1 (i.e. we generally want to return 3 service owners, but are okay
+    with returning 2 or 4).
+
+    Suppose we find five potential owners with scores: [10, 10, 1, 1, 1].
+
+    Intuitively, we only want to return the top 2, since they score higher than the other 3.
+
+    We represent this mathematically by trying to return the top scorers with the majority of the "score mass". In this case,
+    the total score mass is 10 + 10 + 1 + 1 + 1 = 23. The top 2 scores contain 20 / 23 = 87% of the score mass.
+
+    Therefore k=2 satisfies the above conditions:
+
+    it is which our tolerance range [2, 4]
+    it has at least 75% of the total score mass
 
     See unit tests in RankRemediationOwners_test.py for a more detailed specification of the
     expected behavior.
@@ -287,17 +334,34 @@ def _get_k(
     while cumulative_score < min_score_proportion and k < target_k:
         cumulative_score += scores_desc[k]
         k += 1
+        demisto.debug(
+            f"The top {k} scores compromise {min_score_proportion} of the total score mass"
+            f"{sum(scores_desc)} without exceeding the target k {target_k}"
+        )
 
     # score values are likely groupable into "tiers"; try to find a cutoff between tiers
     # look for the end of the next element's tier (may be the current or next tier),
     # where a tier is (arbitrarily) defined by an absolute difference of `a_tol`
+    # For example, these scores: [11, 11, 11, 10, 1] may by thought of as "tier 1", or relatively high, [11, 11, 11, 10]
+    # and "tier 2", or relatively low, [1]. We prefer to return everything in the high tier, rather than only a subset.
+    # In the above example, if target_k=3, then k will initially be 3, because the first three scores [11, 11, 11]
+    # comprise 75% of the total score mass (33 / 42 = .75). However, intuitively, we want to also return the next score
+    # because it's relatively high.
+    # The following loop finds scores beyond the first k that they are close in absolute distance to the first k, as a
+    # way of trying to "complete" the tier.
+
     tier_index = k
     while tier_index < len(scores_desc) and math.isclose(scores_desc[tier_index], scores_desc[tier_index - 1], abs_tol=a_tol):
         tier_index += 1
+    demisto.debug(f"The top {tier_index} scores are relatively close in value to the top {k}")
 
     # add additional score(s) if within tolerance for k
     if math.isclose(target_k, tier_index, abs_tol=k_tol):
         k = tier_index
+        demisto.debug(
+            f"The top {k} scores compromise {min_score_proportion} of the total score mass "
+            f"{sum(scores_desc)} without exceeding the target k {target_k}"
+        )
 
     return k
 
@@ -309,7 +373,8 @@ def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> set[str
     email address) might manifest.
 
     Guaranteed lower case. Removes hyphens and quotes, and anything that
-    looks like a domain of an email address.
+    looks like a domain of an email address (i.e., if it contains an @ character,
+    extracts the proceeding substring).
 
     Example:
         personal_monikers = ["mike@example.com", "Michael Jordan"]
@@ -428,9 +493,11 @@ def get_name_similarity_index(
     """
     total_indicators = 0.0
 
-    all_monikers: set[str] = map(  # type: ignore
-        str.lower,
-        generate_all_spaceless_monikers(personal_monikers),
+    all_monikers: set[str] = set(
+        map(
+            str.lower,
+            generate_all_spaceless_monikers(personal_monikers),
+        )
     )
     all_monikers = {m for m in all_monikers if len(m) > 1}
     all_names = split_phrase(constant_name.lower())
@@ -438,12 +505,12 @@ def get_name_similarity_index(
 
     for moniker in all_monikers:
         if moniker in all_names:
-            demisto.info(f"Name similarity match: {constant_name} and {moniker}")
+            demisto.debug(f"Name similarity match: {constant_name} and {moniker}")
             total_indicators += 1
         else:
             for n in all_names:
                 if moniker in n:
-                    demisto.info(f"Name substring match: {constant_name} and {moniker}")
+                    demisto.debug(f"Name substring match: {constant_name} and {moniker}")
                     total_indicators += 0.01
 
     # check for a hypothesized-middle-initial match
@@ -452,7 +519,7 @@ def get_name_similarity_index(
     hypothesized_initials = get_possible_3initials(personal_monikers) - all_monikers
     for hypothesized_initial in hypothesized_initials:
         if hypothesized_initial in all_names:
-            demisto.info(f"Hypothesized initial match: {constant_name} and {moniker}")
+            demisto.debug(f"Hypothesized initial match: {constant_name} and {moniker}")
             total_indicators += 0.1
 
     return total_indicators
@@ -519,6 +586,7 @@ class OwnerFeaturizationPipeline:
                 src = src[len("Chain: ") :]
             if min_path_length is None or src_path_length < min_path_length:
                 min_path_length = src_path_length
+        demisto.debug(f"minimum path length to reach this owner is {min_path_length}")
         return min_path_length
 
     def get_name_similarity_person_asset(self, service_identifiers: Iterable[str], owner: dict[str, Any]) -> float:
@@ -559,13 +627,16 @@ class OwnerFeaturizationPipeline:
         """
         X = np.zeros((len(owners), self.NUM_FEATURES))
         for sample_idx, owner in enumerate(owners):
+            demisto.debug(f"Processing owner {sample_idx + 1}/{len(owners)}: {owner.get('name', 'Unknown')}")
+
             # Iterate over features which require both system ID and owner as inputs
             feature_idx = 0
             for method_name, method in self.SYSTEM_ID_FEATURES:
                 try:
                     X[sample_idx, feature_idx] = method(service_identifiers, owner)
+                    demisto.debug(f"Feature '{method_name}': {X[sample_idx, feature_idx]}")
                 except Exception as e:
-                    demisto.info(f"Setting 0 for {method_name} because of processing exception: {e}")
+                    demisto.debug(f"Setting 0 for {method_name} because of processing exception: {e}")
                     X[sample_idx, feature_idx] = 0
                 finally:
                     feature_idx += 1
@@ -574,11 +645,13 @@ class OwnerFeaturizationPipeline:
             for method_name, method in self.OWNER_FEATURES:
                 try:
                     X[sample_idx, feature_idx] = method(owner)
+                    demisto.debug(f"Feature '{method_name}': {X[sample_idx, feature_idx]}")
                 except Exception as e:
-                    demisto.info(f"Setting 0 for {method_name} because of processing exception: {e}")
+                    demisto.debug(f"Setting 0 for {method_name} because of processing exception: {e}")
                     X[sample_idx, feature_idx] = 0
                 finally:
                     feature_idx += 1
+        demisto.debug(f"Featurization completed. Matrix shape: {X.shape}")
         return X
 
 
@@ -625,6 +698,7 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(str(ex))
         return_error(f"Failed to execute RankRemediationOwners. Error: {str(ex)}")
 
 
