@@ -710,3 +710,5 @@ view: "{\n  \"linkLabelsPosition\": {\n    \"1_13_WildFire\": 0.72\n  },\n  \"pa
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- agentix

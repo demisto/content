@@ -449,3 +449,5 @@ view: |-
     }
   }
 fromversion: 6.10.0
+supportedModules:
+- agentix
