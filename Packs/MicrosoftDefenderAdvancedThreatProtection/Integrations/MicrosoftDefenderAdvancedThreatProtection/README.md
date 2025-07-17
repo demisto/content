@@ -6913,7 +6913,7 @@ Retrieves a list of all the vulnerabilities affecting the organization per machi
 >
 >|id|cveId|machineId|productName|productVendor|productVersion|severity|
 >|---|---|---|---|---|---|---|
->| 1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_- | CVE-1111-1111 | 1111111111111111111111111111111111111111 | some_name | some_vendor | 11.11.11.11111111 | Medium |
+>| 1111111111111111111111111111111111111111-*-CVE-1111-1111-*-some_vendor-*-some_name-*-11.11.11.11111111-_- | CVE-1111-1111 | 1111111111111111111111111111111111111111 | some_name | some_vendor | 11.11.11.11111111 | Medium |
 
 ### microsoft-atp-list-vulnerabilities
 
