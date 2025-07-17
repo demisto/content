@@ -471,7 +471,7 @@ Retrieves a sample using the sample ID.
 | VMRay.Sample.Classifications | String | Classifications of the sample. |
 | VMRay.Sample.ChildSampleIDs | Number | List of child sample IDs. |
 | VMRay.Sample.ParentSampleIDs | Number | List of parent sample IDs. |
-| VMRay.Sample.URL | String | The sample URL. | 
+| VMRay.Sample.URL | String | The sample URL. |
 
 #### Command Example
 
@@ -1245,13 +1245,13 @@ Retrieves the PDF report for a specific sample.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | ID of the sample from which to retrieve the PDF report. | Required | 
+| sample_id | ID of the sample from which to retrieve the PDF report. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | Filename. | 
-| InfoFile.EntryID | string | The EntryID of the PDF report. | 
-| InfoFile.Size | number | The file size of the PDF report. | 
-| InfoFile.Info | string | MIME type of the PDF report. | 
+| InfoFile.Name | string | Filename. |
+| InfoFile.EntryID | string | The EntryID of the PDF report. |
+| InfoFile.Size | number | The file size of the PDF report. |
+| InfoFile.Info | string | MIME type of the PDF report. |
