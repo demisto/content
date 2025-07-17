@@ -141,79 +141,7 @@ test_module_data = [
     ),
 ]
 
-ip_reputation_command_data = [
-    (
-        {"ip": "71.6.135.131"},
-        "positive",
-        valid_ip_response,
-        200,
-        valid_ip_response_expected,
-    ),  # NOSONAR
-    (
-        {"ip": "1.1.1.1"},
-        "positive",
-        valid_riot_ip_response,
-        200,
-        valid_riot_ip_response_expected,
-    ),  # NOSONAR
-    (
-        {"ip": "71.6.135.131"},
-        "positive",
-        {
-            "ip": "71.6.135.131",
-            "internet_scanner_intelligence": {"found": False},
-            "business_service_intelligence": {"found": False},
-        },
-        200,  # NOSONAR
-        {
-            "address": "71.6.135.131",
-            "internet_scanner_intelligence": {"found": False},
-            "business_service_intelligence": {"found": False},
-        },
-    ),  # NOSONAR
-    (
-        {"ip": "71.6.135.131"},
-        "negative",
-        "invalid ip response",
-        200,  # NOSONAR
-        "Invalid response from GreyNoise. Response: invalid ip response",
-    ),  # NOSONAR
-    (
-        {"ip": "71.6.135.131"},
-        "negative",
-        "forbidden",
-        401,
-        "Unauthenticated. Check the configured API Key.",
-    ),  # NOSONAR
-    (
-        {"ip": "71.6.135.131"},
-        "negative",
-        {},
-        429,
-        "API Rate limit hit. Try after sometime.",
-    ),  # NOSONAR
-    (
-        {"ip": "71.6.135.131"},
-        "negative",
-        "Dummy message",
-        405,  # NOSONAR
-        "Failed to execute  command.\n Error: Dummy message",
-    ),  # NOSONAR
-    (
-        {"ip": "71.6.135.131"},
-        "negative",
-        {},
-        505,  # NOSONAR
-        "The server encountered an internal error for GreyNoise and was unable to complete your request.",
-    ),  # NOSONAR
-    (
-        {"ip": "5844.2204.2191.2471"},
-        "negative",
-        {},
-        200,
-        "Invalid IP address: '5844.2204.2191.2471'",
-    ),  # NOSONAR
-]
+
 
 get_ip_reputation_score_data = [
     ("unknown", (0, "Unknown")),
@@ -221,6 +149,7 @@ get_ip_reputation_score_data = [
     ("benign", (1, "Good")),
     ("malicious", (3, "Bad")),
     ("dummy", (0, "Unknown")),
+    ("suspicious", (2, "Suspicious")),
 ]
 
 valid_ip_context_data = {
@@ -291,7 +220,7 @@ valid_ip_context_data_response = [
         ],
         "IP": "[71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131)",
         "Last Seen": "2025-06-26",
-        "found": True,
+        "Found": True,
         "Tags": ["ADB Check (suspicious - activity)"],
         "Actor": "Shodan.io",
         "Spoofable": False,
@@ -301,7 +230,7 @@ valid_ip_context_data_response = [
         "Tor": False,
         "Last Seen Timestamp": "2025-06-26 12:59:00",
         "Internet Scanner": True,
-        "address": "71.6.135.131",
+        "Address": "71.6.135.131",
     }
 ]
 
@@ -311,7 +240,33 @@ valid_ip_context_data["seen"] = valid_ip_context_data.get("found", False)
 valid_ip_context_data["address"] = valid_ip_context_data["ip"]
 valid_ip_context_data["ip"] = valid_ip_context_data["ip"]
 
-get_ip_context_data_data = [([valid_ip_context_data], valid_ip_context_data_response)]
+# test trust-level
+valid_ip_context_tl_data = copy.deepcopy(valid_ip_context_data)
+valid_ip_context_tl_data["trust_level"] = "2"
+
+valid_ip_response_tl = copy.deepcopy(valid_ip_response)
+valid_ip_response_tl["business_service_intelligence"]["found"] = True
+valid_ip_response_tl["business_service_intelligence"]["trust_level"] = "2"
+valid_ip_response_tl["business_service_intelligence"]["logo_url"] = "test_url"
+
+valid_ip_context_data_response_tl = copy.deepcopy(valid_ip_context_data_response)
+valid_ip_context_data_response_tl[0]["Trust Level"] = "2"
+
+valid_ip_response_expected_tl = copy.deepcopy(valid_ip_response_expected)
+valid_ip_response_expected_tl["business_service_intelligence"]["found"] = True
+valid_ip_response_expected_tl["business_service_intelligence"]["trust_level"] = "2"
+
+# test malicious description
+valid_ip_response_md_data = copy.deepcopy(valid_ip_response)
+valid_ip_response_md_data["internet_scanner_intelligence"]["classification"] = "malicious"
+
+valid_ip_response_expected_md = copy.deepcopy(valid_ip_response_expected)
+valid_ip_response_expected_md["internet_scanner_intelligence"]["classification"] = "malicious"
+
+get_ip_context_data_data = [
+    ([valid_ip_context_data], valid_ip_context_data_response),
+    ([valid_ip_context_tl_data], valid_ip_context_data_response_tl),
+]
 
 valid_tag_data = [
             {
@@ -332,3 +287,92 @@ valid_tag_data = [
 valid_tag_data_response = ["ADB Check (suspicious - activity)"]
 
 get_ip_tag_names_data = [(valid_tag_data, valid_tag_data_response)]
+
+
+ip_reputation_command_data = [
+    (
+        {"ip": "71.6.135.131"},
+        "positive",
+        valid_ip_response,
+        200,
+        valid_ip_response_expected,
+    ),  # NOSONAR
+    (
+        {"ip": "71.6.135.132"},
+        "positive",
+        valid_ip_response_md_data,
+        200,
+        valid_ip_response_expected_md,
+    ),  # NOSONAR
+        (
+        {"ip": "71.6.135.133"},
+        "positive",
+        valid_ip_response_tl,
+        200,
+        valid_ip_response_expected_tl,
+    ),  # NOSONAR
+    (
+        {"ip": "1.1.1.1"},
+        "positive",
+        valid_riot_ip_response,
+        200,
+        valid_riot_ip_response_expected,
+    ),  # NOSONAR
+    (
+        {"ip": "71.6.135.131"},
+        "positive",
+        {
+            "ip": "71.6.135.131",
+            "internet_scanner_intelligence": {"found": False},
+            "business_service_intelligence": {"found": False},
+        },
+        200,  # NOSONAR
+        {
+            "address": "71.6.135.131",
+            "internet_scanner_intelligence": {"found": False},
+            "business_service_intelligence": {"found": False},
+        },
+    ),  # NOSONAR
+    (
+        {"ip": "71.6.135.131"},
+        "negative",
+        "invalid ip response",
+        200,  # NOSONAR
+        "Invalid response from GreyNoise. Response: invalid ip response",
+    ),  # NOSONAR
+    (
+        {"ip": "71.6.135.131"},
+        "negative",
+        "forbidden",
+        401,
+        "Unauthenticated. Check the configured API Key.",
+    ),  # NOSONAR
+    (
+        {"ip": "71.6.135.131"},
+        "negative",
+        {},
+        429,
+        "API Rate limit hit. Try after sometime.",
+    ),  # NOSONAR
+    (
+        {"ip": "71.6.135.131"},
+        "negative",
+        "Dummy message",
+        405,  # NOSONAR
+        "Failed to execute  command.\n Error: Dummy message",
+    ),  # NOSONAR
+    (
+        {"ip": "71.6.135.131"},
+        "negative",
+        {},
+        505,  # NOSONAR
+        "The server encountered an internal error for GreyNoise and was unable to complete your request.",
+    ),  # NOSONAR
+    (
+        {"ip": "5844.2204.2191.2471"},
+        "negative",
+        {},
+        200,
+        "Invalid IP address: '5844.2204.2191.2471'",
+    ),  # NOSONAR
+]

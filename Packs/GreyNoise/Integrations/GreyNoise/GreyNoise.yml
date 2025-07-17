@@ -503,6 +503,9 @@ script:
     - contextPath: GreyNoise.IP.seen
       description: IP is in record with GreyNoise.
       type: boolean
+    - contextPath: GreyNoise.IP.tags
+      description: A list of the tags the device has been assigned over the past 90 days.
+      type: array
     - contextPath: GreyNoise.IP.tags.category
       description: The category of the given tag.
       type: string
@@ -997,6 +1000,9 @@ script:
     - contextPath: GreyNoise.IP.seen
       description: IP is in record with GreyNoise.
       type: boolean
+    - contextPath: GreyNoise.IP.tags
+      description: A list of the tags the device has been assigned over the past 90 days.
+      type: array
     - contextPath: GreyNoise.IP.tags.category
       description: The category of the given tag.
       type: string

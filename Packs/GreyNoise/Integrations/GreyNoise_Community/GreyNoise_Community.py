@@ -63,6 +63,9 @@ PRETTY_KEY = PRETTY_KEY = {
     "ja4": "JA4",
     "cipher": "Cipher",
     "md5": "MD5",
+    "trust_level": "Trust Level",
+    "address": "Address",
+    "found": "Found",
 }
 IP_CONTEXT_HEADERS = [
     "IP",
@@ -319,6 +322,8 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 riot_response["trust_level"] = "2 - Commonly Seen"
             if riot_response.get("logo_url", "") != "":
                 del riot_response["logo_url"]
+            if original_response.get("business_service_intelligence", {}).get("logo_url", "") != "":
+                del original_response["business_service_intelligence"]["logo_url"]
 
         if response["seen"] and response.get("classification") == "malicious":
             malicious_description = "This IP has been observed scanning the internet in a malicious manner."

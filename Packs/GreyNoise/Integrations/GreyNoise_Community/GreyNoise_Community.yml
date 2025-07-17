@@ -87,7 +87,7 @@ script:
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
       type: string
-    - contextPath: IP.Address
+    - contextPath: IP.address
       description: IP address.
       type: string
     - contextPath: IP.Geo.Country
@@ -269,6 +269,15 @@ script:
       type: boolean
     - contextPath: GreyNoise.IP.vpn_service
       description: The name of the VPN service provider of the device.
+      type: string
+    - contextPath: GreyNoise.IP.noise
+      description: IP is in record with GreyNoise.
+      type: boolean
+    - contextPath: GreyNoise.IP.link
+      description: Link to the IP in GreyNoise.
+      type: string
+    - contextPath: GreyNoise.IP.message
+      description: Message from GreyNoise API.
       type: string
   dockerimage: demisto/greynoise:1.0.0.3876899
   runonce: false
