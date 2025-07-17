@@ -407,7 +407,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     if getattr(item, "folder", None):
         raw_dict["folder"] = parse_folder_as_json(item.folder)
         folder_path = (
-            item.folder.absolute[len(TOIS_PATH):] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
+            item.folder.absolute[len(TOIS_PATH) :] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
         )
         raw_dict["folder_path"] = folder_path
 
@@ -1620,7 +1620,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         incident: dict[str, str] = {}
         emails_ids = []  # Used for mark emails as read
         demisto.debug(f"{APP_NAME} - Started fetch with {len(last_emails)} at {last_fetch_time}")
-        current_fetch_ids = dict()
+        current_fetch_ids = {}
         last_modification_time = last_fetch_time
 
         if isinstance(last_modification_time, EWSDateTime):
@@ -1629,8 +1629,11 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         for item in last_emails:
             try:
                 if item.message_id:
-                    current_fetch_ids[
-                        item.message_id] = item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()
+                    current_fetch_ids[item.message_id] = (
+                        item.datetime_created.ewsformat()
+                        if incident_filter == RECEIVED_FILTER
+                        else item.last_modified_time.ewsformat()
+                    )
                     incident = parse_incident_from_item(item)
                     incidents.append(incident)
 
@@ -1748,7 +1751,7 @@ def fetch_last_emails(
         qs = qs.filter().order_by("last_modified_time")
 
     result = []
-    exclude_ids = exclude_ids if exclude_ids else dict()
+    exclude_ids = exclude_ids if exclude_ids else {}
     demisto.debug(f"{APP_NAME} - Exclude ID list: {exclude_ids}")
     qs.chunk_size = min(client.max_fetch, 100)
     qs.page_size = min(client.max_fetch, 100)
@@ -1761,14 +1764,16 @@ def fetch_last_emails(
                 received_time = item.datetime_created.ewsformat()
                 modified_time = item.last_modified_time.ewsformat()
                 if not exclude_ids.get(item.message_id) or exclude_ids.get(item.message_id) >= (
-                received_time if incident_filter == RECEIVED_FILTER else modified_time):
+                    received_time if incident_filter == RECEIVED_FILTER else modified_time
+                ):
                     # If it's the first fetch using a dictionary instead of a list, it implies the IDs have no associated time.
                     # Alternatively, an item is excluded if it was previously fetched and its received/modification
                     # time has not changed since then.
                     demisto.debug(
                         f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
                         f"{exclude_ids.get(item.message_id)}, (if no time - because of the transition from list to dict). "
-                        f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}")
+                        f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
+                    )
                     continue
             demisto.debug(f"Appending {item.subject=}")
             result.append(item)
