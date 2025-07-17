@@ -799,7 +799,26 @@ def add_data_to_actions(card_json, data_value):
             add_data_to_actions(card_json["card"], data_value)
 
 
-def process_adaptive_card(adaptive_card_obj: dict) -> dict:
+def handle_raw_adaptive_card(adaptive_card_obj: dict) -> dict:
+    """
+        Check if the adaptive card is already wrapped with the contentType and content keys, otherwise try to fix it.
+
+        :param adaptive_card_obj: The user supplied adaptive card
+        :return: Adaptive card with contentType and content keys
+    """
+    if ("contentType" not in adaptive_card_obj and "content" not in adaptive_card_obj and
+        adaptive_card_obj.get("type") == "AdaptiveCard"):
+        # This is a 'raw' adaptive card
+        wrapped_adaptive_card = {
+            "contentType": "application/vnd.microsoft.card.adaptive",
+            "content": adaptive_card_obj,
+        }
+        return wrapped_adaptive_card
+
+    # We are not completely sure this is a raw adaptive card so we will not modify it
+    return adaptive_card_obj
+
+def process_teams_ask_adaptive_card(adaptive_card_obj: dict) -> dict:
     """
     Processes adaptive cards coming from MicrosoftTeamsAsk. It will find all action elements
     of type Action.Submit or Action.Execute within adaptive_card_obj['adaptive_card'] and add entitlement,
@@ -808,7 +827,8 @@ def process_adaptive_card(adaptive_card_obj: dict) -> dict:
     :return: Adaptive card with entitlement.
     """
 
-    adaptive_card = adaptive_card_obj.get("adaptive_card", "")
+    adaptive_card = adaptive_card_obj.get("adaptive_card", {})
+    adaptive_card = handle_raw_adaptive_card(adaptive_card)
     data_obj: dict = {}
     data_obj["entitlement"] = str(adaptive_card_obj.get("entitlement", ""))
     data_obj["investigation_id"] = str(adaptive_card_obj.get("investigation_id", ""))
@@ -2361,9 +2381,10 @@ def send_message():
         # This use case is relevant for TeamsAsk script when the entitlement is one of the keys under the adaptive_card
         entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
         if entitlement_match_ac:
-            adaptive_card_processed = process_adaptive_card(adaptive_card)
+            adaptive_card_processed = process_teams_ask_adaptive_card(adaptive_card)
             conversation = {"type": "message", "attachments": [adaptive_card_processed]}
         else:
+            adaptive_card = handle_raw_adaptive_card(adaptive_card)
             conversation = {"type": "message", "attachments": [adaptive_card]}
 
     service_url: str = integration_context.get("service_url", "")
