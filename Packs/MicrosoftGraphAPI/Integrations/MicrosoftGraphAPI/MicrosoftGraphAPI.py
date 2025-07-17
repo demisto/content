@@ -36,7 +36,7 @@ class MsGraphClient:
             "proxy": proxy,
             "self_deployed": True,
             "grant_type": AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS,
-            "ok_codes": (200, 201, 204),
+            "ok_codes": (200, 201, 202, 204),
             "azure_ad_endpoint": azure_cloud.endpoints.active_directory,
             "private_key": private_key,
             "certificate_thumbprint": certificate_thumbprint,
