@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from CommonServerPython import *
-from greynoise import GreyNoise, exceptions, util  # type: ignore
+from greynoise.api import GreyNoise, APIConfig
+from greynoise import exceptions, util  # type: ignore
 
 INTEGRATION_NAME = "GreyNoise Indicator Feed"
 API_SERVER = util.DEFAULT_CONFIG.get("api_server")
@@ -29,14 +30,10 @@ class Client(GreyNoise):
         """
         Used to authenticate GreyNoise credentials.
         """
-        current_date = datetime.now()
         try:
-            response = self.test_connection()
-            expiration_date = datetime.strptime(response["expiration"], "%Y-%m-%d")
-            if current_date < expiration_date and response["offering"] != "community":
-                return "ok"
-            else:
-                raise DemistoException(f"Invalid API Offering ({response['offering']})or Expiration Date ({expiration_date})")
+            self.test_connection()
+
+            return "ok"
 
         except exceptions.RateLimitError:
             raise DemistoException(EXCEPTION_MESSAGES["API_RATE_LIMIT"])
@@ -70,7 +67,7 @@ def get_ip_reputation_score(classification: str) -> int:
     :return: int for score.
     :rtype: ``int``
     """
-    if classification == "unknown":
+    if classification == "suspicious":
         return 2
     elif classification == "benign":
         return 1
@@ -86,25 +83,56 @@ def format_timestamp(date: str) -> str:
     return formatted_timestamp
 
 
+def get_ip_tag_names(tags: list) -> list:
+    """Get the tag names from tags list.
+
+    :type tags: ``list``
+    :param tags: list of tags.
+
+    :return: list of tag names.
+    :rtype: ``list``
+    """
+    tag_names = []
+    if tags != []:
+        for tag in tags:
+            tag_name = tag.get("name")
+            tag_names.append(tag_name)
+
+    return tag_names
+
+
 def format_indicator(indicator, tlp_color: str):
-    tags = ",".join(indicator.get("tags", []))
-    if tags == "":
+    tag_names = get_ip_tag_names(indicator.get("internet_scanner_intelligence", {}).get("tags", []))
+    tag_string = ",".join(tag_names)
+    if tag_string == "":
         tags = "INTERNET SCANNER"
     else:
-        tags = "INTERNET SCANNER," + tags
-    if "metadata" in indicator:
-        country_code = indicator["metadata"].get("country_code", "")
+        tags = "INTERNET SCANNER," + tag_string
+    if "metadata" in indicator.get("internet_scanner_intelligence", {}):
+        country_code = indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("source_country", "")
+        if "latitude" in indicator.get("internet_scanner_intelligence", {}).get("metadata", {}) and "longitude" in indicator.get(
+            "internet_scanner_intelligence", {}
+        ).get("metadata", {}):
+            lat_long = (
+                str(indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("latitude", ""))
+                + ","
+                + str(indicator.get("internet_scanner_intelligence", {}).get("metadata", {}).get("longitude", ""))
+            )
+        else:
+            lat_long = ""
     else:
         country_code = ""
+        lat_long = ""
     formatted_indicator = {
         "Value": indicator["ip"],
         "Type": FeedIndicatorType.IP,
         "rawJSON": indicator,
-        "score": get_ip_reputation_score(indicator.get("classification", "")),
+        "score": get_ip_reputation_score(indicator.get("internet_scanner_intelligence", {}).get("classification", "")),
         "fields": {
-            "firstseenbysource": format_timestamp(indicator.get("first_seen", "")),
-            "lastseenbysource": format_timestamp(indicator.get("last_seen", "")),
+            "firstseenbysource": format_timestamp(indicator.get("internet_scanner_intelligence", {}).get("first_seen", "")),
+            "lastseenbysource": format_timestamp(indicator.get("internet_scanner_intelligence", {}).get("last_seen", "")),
             "geocountry": country_code,
+            "geolocation": lat_long,
             "tags": tags,
             "trafficlightprotocol": tlp_color,
         },
@@ -118,8 +146,14 @@ def build_feed_query(query: str) -> str:
         query_string = "last_seen:1d"
     elif query == "Malicious":
         query_string = "last_seen:1d classification:malicious"
+    elif query == "Suspicious":
+        query_string = "last_seen:1d classification:suspicious"
+    elif query == "Malicious + Suspicious":
+        query_string = "last_seen:1d (classification:malicious OR classification:suspicious)"
     elif query == "Benign + Malicious":
         query_string = "last_seen:1d (classification:benign OR classification:malicious)"
+    elif query == "Benign + Malicious + Suspicious":
+        query_string = "last_seen:1d (-classification:unknown)"
     elif query == "Benign":
         query_string = "last_seen:1d classification:benign"
     else:
@@ -139,15 +173,15 @@ def fetch_indicators(client: Client, params) -> list[dict]:
     feed_query = build_feed_query(query)
 
     try:
-        response = client.query(query=feed_query, exclude_raw=True)
+        response = client.query(query=feed_query, exclude_raw=True, size=10000)
         indicators: list = []
         complete = False
         while not complete:
             for indicator in response.get("data", []):
                 indicators.append(format_indicator(indicator, tlp_color))
-            complete = response.get("complete", True)
-            scroll = response.get("scroll", "")
-            response = client.query(query=feed_query, exclude_raw=True, scroll=scroll)
+            complete = response["request_metadata"].get("complete", True)
+            scroll = response["request_metadata"].get("scroll", "")
+            response = client.query(query=feed_query, exclude_raw=True, scroll=scroll, size=10000)
 
     except Exception as err:
         demisto.debug(str(err))
@@ -232,7 +266,7 @@ def main():
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
 
-    pack_version = "1.0.0"
+    pack_version = "2.0.0"
 
     # get pack version
     if is_demisto_version_ge("6.1.0"):
@@ -256,7 +290,7 @@ def main():
 
     demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(
+        api_config = APIConfig(
             api_key=api_key,
             api_server=API_SERVER,
             timeout=TIMEOUT,
@@ -264,6 +298,7 @@ def main():
             use_cache=False,
             integration_name=f"xsoar-feed-v{pack_version}",
         )
+        client = Client(api_config)
 
         if command == "test-module":
             return_results(test_module(client))
