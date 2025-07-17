@@ -1,0 +1,14 @@
+{
+    "name": "dummy",
+    "description": "dummy_description",
+    "createTime": "2025-06-09T12:07:30.863807Z",
+    "contentType": "PLAIN_TEXT",
+    "lines": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+    ]
+}
