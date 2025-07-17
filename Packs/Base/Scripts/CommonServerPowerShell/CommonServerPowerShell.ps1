@@ -3,7 +3,7 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Scope = "", Justification = "Use of globals set by the Demisto Server")]
 
 # Silence Progress STDOUT (e.g. long http request download progress)
-$progressPreference = 'silentlyContinue'
+$progressPreference = 'silentlyContinue' 
 
 enum ServerLogLevel {
     debug
