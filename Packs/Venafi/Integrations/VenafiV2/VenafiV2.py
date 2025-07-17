@@ -29,7 +29,7 @@ class Client(BaseClient):
          Log into the Venafi API using the provided credentials.
          If it's the first time logging in, it will create a new token, save it to the integration context, and log in.
          Otherwise,
-             - if the token is expired, it will use the refresh token (if not expired), save it to the integration context, and log in.
+             - if the token is expired, it will use the refresh token (if not expired), save it to the integration context.
              - if the token is valid, it will log in.
              - if both token and refresh token are expired, it will create a new token using credentials.
 

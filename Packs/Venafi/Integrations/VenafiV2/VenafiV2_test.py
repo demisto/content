@@ -113,6 +113,79 @@ def test_login_with_invalid_token_refresh_required(mocker):
 
 
 @freeze_time("2024-04-25 00:00:00")
+def test_login_with_expired_access_and_refresh_tokens(mocker):
+    """
+    Given: Both access and refresh tokens are expired in the integration context
+    When: Login is called
+    Then: Should create a new token using username/password
+    """
+    mock_response = util_load_json("test_data/mock_response_login_first_time_token_creation.json")
+    mocker.patch.object(Client, "_http_request", return_value=mock_response)
+    mocker.patch("VenafiV2.get_integration_context", return_value={
+        "access_token": "expired_access_token",
+        "access_until": 1000000000,  # expired
+        "refresh_token": "expired_refresh_token",
+        "refresh_until": 1000000000,  # expired
+    })
+    mocker.patch("VenafiV2.set_integration_context")
+    mocker.patch("VenafiV2.get_current_time")
+
+    client = Client(
+        base_url=MOCK_BASEURL,
+        verify=False,
+        username=MOCK_USERNAME,
+        password=MOCK_CLIENT_PASSWORD,
+        client_id=MOCK_CLIENT_ID,
+        proxy=False,
+    )
+    assert client.token == "expired_access_token"
+
+
+def test_login_with_missing_tokens(mocker):
+    """
+    Given: No tokens in the integration context
+    When: Login is called
+    Then: Should create a new token using username/password
+    """
+    mock_response = util_load_json("test_data/mock_response_login_first_time_token_creation.json")
+    mocker.patch.object(Client, "_http_request", return_value=mock_response)
+    mocker.patch("VenafiV2.get_integration_context", return_value={})
+    mocker.patch("VenafiV2.set_integration_context")
+    mocker.patch("VenafiV2.get_current_time")
+
+    client = Client(
+        base_url=MOCK_BASEURL,
+        verify=False,
+        username=MOCK_USERNAME,
+        password=MOCK_CLIENT_PASSWORD,
+        client_id=MOCK_CLIENT_ID,
+        proxy=False,
+    )
+    assert client.token == "access_token"
+
+
+def test_login_create_token_failure(mocker):
+    """
+    Given: Token creation raises an exception
+    When: Login is called
+    Then: Exception should be propagated
+    """
+    mocker.patch.object(Client, "_http_request", side_effect=Exception("Token creation failed"))
+    mocker.patch("VenafiV2.get_integration_context", return_value={})
+    mocker.patch("VenafiV2.set_integration_context")
+    mocker.patch("VenafiV2.get_current_time")
+    with pytest.raises(Exception, match="Token creation failed"):
+        Client(
+            base_url=MOCK_BASEURL,
+            verify=False,
+            username=MOCK_USERNAME,
+            password=MOCK_CLIENT_PASSWORD,
+            client_id=MOCK_CLIENT_ID,
+            proxy=False,
+        )
+
+
+@freeze_time("2024-04-25 00:00:00")
 def test_get_certificates_command(mocker, mock_client_with_valid_token):
     """
     Given: Client details
