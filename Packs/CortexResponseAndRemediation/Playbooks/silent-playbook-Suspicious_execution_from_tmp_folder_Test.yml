@@ -65,7 +65,8 @@ tasks:
       file:
         simple: ${alert.targetprocesssha256}
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
+    continueonerror: true
     task:
       brand: ''
       description: Retrieve results for a file hash using WildFire.

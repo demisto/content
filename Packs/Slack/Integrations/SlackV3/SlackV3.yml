@@ -450,6 +450,8 @@ script:
       required: true
     description: Reset user session token in Slack.
     name: slack-user-session-reset
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: 'Supply this argument to only return channels with this name.'
       name: name_filter
@@ -524,7 +526,7 @@ script:
     - contextPath: Slack.Thread.ID
       description: The Slack thread ID.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.3561750
+  dockerimage: demisto/slackv3:1.0.0.3638862
   longRunning: true
   runonce: false
   script: '-'

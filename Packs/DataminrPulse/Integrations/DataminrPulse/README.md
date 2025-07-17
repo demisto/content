@@ -51,7 +51,6 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
 
 ## Configure Dataminr Pulse in Cortex
 
-
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Dataminr Pulse.
 3. Click **Add instance** to create and configure a new integration instance.
@@ -73,7 +72,6 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
 | First Fetch Time (not supported) | This parameter is not supported as Dataminr Pulse API doesn't have time based filtering for fetching of alerts. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 
 #### Note
 

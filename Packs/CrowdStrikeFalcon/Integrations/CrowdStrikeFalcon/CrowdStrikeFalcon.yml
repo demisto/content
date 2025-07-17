@@ -135,6 +135,20 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: Third Party Detection fetch query
+  name: third_party_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM Detection fetch query
+  name: ngsiem_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -217,8 +231,8 @@ configuration:
   advanced: true
   required: false
   additionalinfo: |-
-   Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
-   2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+    Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
+    2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
   - Endpoint Incident
@@ -228,6 +242,8 @@ configuration:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
+  - Third Party Detection
+  - NGSIEM Detection
   hidden:
   - marketplacev2
   - platform
@@ -238,8 +254,8 @@ configuration:
   section: Collect
   required: false
   additionalinfo: |-
-   Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
-   2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+    Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
+    2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
   - Endpoint Incident
@@ -466,6 +482,7 @@ script:
         For example, filter="device.hostname:'CS-SE-TG-W7-01'"
         For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
       name: filter
+      defaultValue: "product:'epp'+type:'ldt'"
     - auto: PREDEFINED
       description: Whether to get additional data such as device and behaviors processed.
       name: extended_data
@@ -564,6 +581,8 @@ script:
       required: true
     description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
     name: cs-falcon-contain-host
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection.
       isArray: true
@@ -571,6 +590,8 @@ script:
       required: true
     description: Lifts containment on the host, which returns its network communications to normal.
     name: cs-falcon-lift-host-containment
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
@@ -1627,6 +1648,9 @@ script:
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - description: The ID of the IOC to update. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command.
       name: ioc_id
@@ -5152,8 +5176,8 @@ script:
       type: String
   dockerimage: demisto/py3-tools:1.0.0.3205634
   isfetch: true
-  isfetch:platform: false
   isfetch:marketplacev2: false
+  isfetch:platform: false
   isfetchevents: true
   ismappable: true
   isremotesyncin: true
