@@ -1136,7 +1136,9 @@ class TestClientClass:
 
         assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
-        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
+        assert http_request_kwargs["url_suffix"] == urljoin(
+            API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
+        )
         assert http_request_kwargs["params"] == {
             "truncation_limit": HOST_LIMIT,
             "vm_scan_date_after": since_datetime,
