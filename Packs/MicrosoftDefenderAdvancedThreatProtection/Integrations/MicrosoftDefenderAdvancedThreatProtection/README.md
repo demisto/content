@@ -5,7 +5,7 @@ Use the Microsoft Defender for Endpoint (previously Microsoft Defender Advanced 
 
 ## Deprecation Announcement
 
-Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, we are deprecating the following:
+**Note**: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, we are deprecating the following:
 
 - **14 commands**
 - **Fetch-incidents functionality**
@@ -34,91 +34,128 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 ## Authentication
 
 ---
-There are two different authentication methods for self-deployed configuration:
 
-- [Client Credentials flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-webapp?view=o365-worldwide)
-- [Authorization Code flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-nativeapp?view=o365-worldwide)
+Two application authentication methods are available:
+
+- [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
+- [Self-Deployed Azure Application (via Microsoft Entra ID)](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
+
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-**Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
+**Note**: When using the Authentication Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the required role permissions. This can be done via the Microsoft Defender Portal:
 
-**Note**: When using the Authorization Code Flow, ensure the authenticated user has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
+- If you are using the **New Unified RBAC permissions model**, navigate to [**Defender Portal** > **Permissions**](https://security.microsoft.com/securitypermissions) and select **Roles** under **Microsoft Defender XDR**.
 
-### Required Permissions
+- If you are using the **Legacy permissions model**, navigate to [**Defender Portal** > **Settings** > **Endpoints** > **Roles**](https://security.microsoft.com/securitysettings/endpoints/user_roles).
 
-Please add the following permissions to the app registration. Choose application permissions for the Client Credentials flow, and delegated permissions for the Authorization Code flow.
+For a detailed comparison between the new and legacy permission models, refer to the [permission mapping table](https://learn.microsoft.com/en-us/defender-xdr/compare-rbac-roles#map-defender-for-endpoint-and-defender-vulnerability-management-permissions-to-the-microsoft-defender-xdr-rbac-permissions).
 
-- WindowsDefenderATP - AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
-- WindowsDefenderATP - Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
-- WindowsDefenderATP - File.Read.All - Application / Delegated
-- WindowsDefenderATP - Ip.Read.All - Application / Delegated
-- WindowsDefenderATP - Machine.CollectForensics - Application / Delegated
-- WindowsDefenderATP - Machine.Isolate - Application / Delegated
-- WindowsDefenderATP - Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
-- WindowsDefenderATP - Machine.RestrictExecution - Application / Delegated
-- WindowsDefenderATP - Machine.Scan - Application / Delegated
-- WindowsDefenderATP - Machine.StopAndQuarantine - Application / Delegated
-- WindowsDefenderATP - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required.
-- WindowsDefenderATP - Url.Read.All - Application / Delegated
-- WindowsDefenderATP - User.Read.All - Application / Delegated
-- WindowsDefenderATP - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
-- WindowsDefenderATP - Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
-- WindowsDefenderATP - Software.Read.All - Application / Software.Read - Delegated
-- WindowsDefenderATP - Machine.LiveResponse - Application / Delegated
-- WindowsDefenderATP - Machine.Read.All - Application / Machine.Read - Delegated
+### Cortex XSOAR Application
+
+The integration can use OAuth 2.0 and OpenID Connect standard-compliant authentication services to sign-in or delegate authentication on behalf of a user. For more information, refer to the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
+
+1. To allow Cortex access to Microsoft Defender for Endpoint, click on the following [link](https://oproxy.demisto.ninja/ms-defender-atp).
+2. Select the user account with sufficient role permissions.
+3. After authorizing the application, copy the **ID**, **Token**, and **Key** values and insert them in the corresponding fields in the integration instance configuration window.
+4. Ensure **Authentication Type** is set to "Authorization Code".
+5. Click **Save & Exit**.
+6. Run the **!microsoft-atp-test** command to verify correct configuration.
+
+### Self-deployed Azure Application
+
+1. Navigate to the [Azure portal](https://portal.azure.com/) and search for **Microsoft Entra ID**.
+2. On the **App registrations** page, click **New registration**.
+4. Click **API Permissions** > **Add permission** > **APIs my organization uses**, and type **WindowsDefenderATP**.
+5. Choose the type of permissions:
+    - **Delegated Permissions** - used by applications that act on behalf of a signed-in user. The application will have access to the resources that the user has access to, limited by the permissions granted to the application. Choose this option if you prefer the **Authorization Code** flow.
+    - **Application Permissions** - used by applications that run without a signed-in user. The application acts as its own identity and is granted direct access to data or resources. This is common for background services or daemons. Choose this option if you prefer the the **Client Credentials** flow.
+6. Select the permissions required by the integration (based on the chosen permission type) and then click **Add permissions**.
+    - AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
+    - Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
+    - File.Read.All - Application / Delegated
+    - Ip.Read.All - Application / Delegated
+    - Machine.CollectForensics - Application / Delegated
+    - Machine.Isolate - Application / Delegated
+    - Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+    - Machine.RestrictExecution - Application / Delegated
+    - Machine.Scan - Application / Delegated
+    - Machine.StopAndQuarantine - Application / Delegated
+    - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated.
+        - **Note**: This permission is only used for the deprecated **microsoft-atp-indicator-list** command. If you are not using this command, it is not required.
+    - Url.Read.All - Application / Delegated
+    - User.Read.All - Application / Delegated
+    - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
+    - Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
+    - Software.Read.All - Application / Software.Read - Delegated
+    - Machine.LiveResponse - Application / Delegated
+    - Machine.Read.All - Application / Machine.Read - Delegated
+7. Click **Grant consent**.
+8. To add a secret to the application, select **Certificates & secrets**, write a helpful description, and click **Add**.
+9. In the integration instance configuration window, select **Use a self-deployed Azure Application** and copy the application details based on the chosen permissions type:
+    - If **Delegated Permissions** was selected:
+        - In the **ID** field, enter the Application (client) ID.
+        - In the **Key** field, enter the Client secret.
+        - In the **Token** field, enter the Directory (tenant) ID.
+        - In the **Authentication Type** field, select "Authorization Code".
+        - In the **Application Redirect URI** field, enter the Application redirect URI.
+        - Click **Save & Exit**.
+        - Run the **!microsoft-atp-generate-login-url** command and follow the instructions.
+    - If **Application Permissions** was selected:
+        - In the **ID** field, enter the Application (client) ID.
+        - In the **Key** field, enter the Client secret.
+        - In the **Token** field, enter the Directory (tenant) ID.
+        - In the **Authentication Type** field, select "Client Credentials".
+        - Click **Test** to verify correct configuration.
+        - Click **Save & Exit**.
+
+**Note**: If you previously configured the *Windows* Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
 
 **Note**: Access permissions can be verified by running the **microsoft-atp-list-auth-permissions** command after configuring the integration instance.
 
-## Configure Microsoft Defender for Endpoint on Cortex XSOAR
+## Configure Microsoft Defender for Endpoint in Cortex
 
 ---
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Defender for Endpoint.
-3. Click **Add instance** to create and configure a new integration instance.
+| **Parameter** | **Description** | **Example** |
+| --- | --- | --- |
+| Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
+| Endpoint Type | The endpoint for accessing Microsoft Defender for Endpoint, see table below.  | Worldwide  |
+| Fetches Incidents | Whether to fetch the incidents. | False |
+| Incident Type | The type of incident to select. | Phishing |
+| ID | The ID used to gain access to the integration. Your Client/Application ID. | |
+| Token | A piece of data that servers use to verify for authenticity. This is your Tenant ID.| eea810f5-a6f6 |
+| Key | Your client secret. | |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.| A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
+| Private Key| Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
+| Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. ||
+| Application redirect URI (for authorization code mode)  | | False|
+| Authorization code  | for user-auth mode - received from the authorization step. see Detailed Instructions section | False|
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | UUID |
+| Status for fetching alerts as incidents  | The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
+| DetecitonSource to filter out alters for fetching as incidents. | The property values are, "Antivirus", "CustomDetection", "CustomTI", "EDR" and "MDO". Comma-separated lists are supported, e.g., Antivirus,EDR. | CustomDetection,EDR |
+| Severity for fetching alerts as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
+| Maximum number of incidents to fetch | The maximum number of incidents to retrieve per fetch.| 50|
+| Trust any Certificate (Not Secure) | When selected, certificates are not checked. | |
+| Fetch alert evidence | When selected, fetches alerts in Microsoft Defender.  |  |
+| Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.| <https://proxyserver.com> |
+| Use a self-deployed Azure Application | For authorization code flow, mark this as true. | |
+| First Fetch Timestamp | The first timestamp to be fetched in the format \<number\> \<time unit\>. | 12 hours, 7 days |
+| Server URL | The URL to the Microsoft Defender for Endpoint server, including the scheme, see note below. | `https://api.securitycenter.windows.com` |
 
-    | **Parameter**                                           | **Description**                                                                                                               | **Example**                              |
-    |---------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|------------------------------------------|
-    | Name                                                    | A meaningful name for the integration instance.                                                                               | XXXXX Instance Alpha                     |
-    | Endpoint Type                                           | The endpoint for accessing Microsoft Defender for Endpoint, see table below.                                                  | Worldwide                                |
-    | Fetches Incidents                                       | Whether to fetch the incidents.                                                                                               | N/A                                      |
-    | Incident Type                                           | The type of incident to select.                                                                                               | Phishing                                 |
-    | ID                                                      | The ID used to gain access to the integration. Your Client/Application ID.                                                    | N/A                                      |
-    | Token                                                   | A piece of data that servers use to verify for authenticity. This is your Tenant ID.                                          | eea810f5-a6f6                            |
-    | Key                                                     | Your client secret.                                                                                                           |                                          |
-    | Certificate Thumbprint                                  | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.                              | A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
-    | Private Key                                             | Used for certificate authentication. The private key of the registered certificate.                                           | eea810f5-a6f6                            |
-    | Authentication Type                                     | Type of authentication - either Authorization Code \(recommended\) or Client Credentials.                                     |                                          |
-    | Application redirect URI (for authorization code mode)  |                                                                                                                               | False                                    |
-    | Authorization code                                      | for user-auth mode - received from the authorization step. see Detailed Instructions section                                  | False                                    |
-    | Azure Managed Identities Client ID                      | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                | UUID                                     |
-    | Status for fetching alerts as incidents  | The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved.          | New,In Progress,Resolved                 |
-    | DetecitonSource to filter out alters for fetching as incidents.  | The property values are, "Antivirus", "CustomDetection", "CustomTI", "EDR" and "MDO". Comma-separated lists are supported, e.g., Antivirus,EDR.          | CustomDetection,EDR   |
-    | Severity for fetching alerts as incidents| The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High                              |
-    | Maximum number of incidents to fetch                    | The maximum number of incidents to retrieve per fetch.                                                                        | 50                                       |
-    | Trust any Certificate (Not Secure)                      | When selected, certificates are not checked.                                                                                  | N/A                                      |
-    | Fetch alert evidence                                    | When selected, fetches alerts in Microsoft Defender.                                                                          | N/A                                      |
-    | Use system proxy settings                               | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.            | <https://proxyserver.com>                |
-    | Use a self-deployed Azure Application                   | For authorization code flow, mark this as true.                                                                               | N/A                                      |
-    | First Fetch Timestamp                                   | The first timestamp to be fetched in the format \<number\> \<time unit\>.                                                     | 12 hours, 7 days                         |
-    | Server URL                                              | The URL to the Microsoft Defender for Endpoint server, including the scheme, see note below.                                  | `https://api.securitycenter.windows.com` |
+#### Endpoint Type options
 
-4. Endpoint Type options
+ | **Endpoint Type** | **Description** |
+ | --- | --- |
+ | Worldwide | The publicly accessible Microsoft Defender for Endpoint  |
+ | EU Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers. |
+ | UK Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers. |
+ | US Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the US customers. |
+ | US GCC  | Microsoft Defender for Endpoint for the USA Government Cloud Community (GCC)  |
+ | US GCC-High| Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High) |
+ | DoD | Microsoft Defender for Endpoint for the USA Department of Defence (DoD) |
+ | Custom | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
 
-    | Endpoint Type    | Description                                                                                  |
-    |------------------|----------------------------------------------------------------------------------------------|
-    | Worldwide        | The publicly accessible Microsoft Defender for Endpoint                                      |
-    | EU Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
-    | UK Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
-    | US Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the US customers.                |
-    | US GCC           | Microsoft Defender for Endpoint for the USA Government Cloud Community (GCC)                 |
-    | US GCC-High      | Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High)       |
-    | DoD              | Microsoft Defender for Endpoint for the USA Department of Defence (DoD)                      |
-    | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
-
-   - Note: In most cases setting Endpoint type is preferred to setting Server URL, only use it cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
-
-5. Click **Test** to validate the URLs, token, and connection.
+**Note**: In most cases, setting Endpoint type is preferred to setting Server URL; only use it cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
 
 ## Fetched Incidents Data
 
