@@ -1,4 +1,6 @@
-## To set up an instance, you need to add the following:
+## Instance Setup
+
+To set up an instance, add the following.
 
 
 ### Server URL
