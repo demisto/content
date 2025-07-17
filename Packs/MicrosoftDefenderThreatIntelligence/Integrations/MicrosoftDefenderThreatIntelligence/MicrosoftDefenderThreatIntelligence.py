@@ -123,14 +123,14 @@ class Client:
         if not article_id:
             response = self.ms_client.http_request(
                 method="GET",
-                url_suffix=f"v1.0//security/threatIntelligence/articleIndicators/{article_indicator_id}{odata_query}",
+                url_suffix=f"v1.0/security/threatIntelligence/articleIndicators/{article_indicator_id}{odata_query}",
             )
             if response:
                 return [response]
 
         response = self.ms_client.http_request(
             method="GET",
-            url_suffix=f"v1.0//security/threatIntelligence/articles/{article_id}/indicators{odata_query}",
+            url_suffix=f"v1.0/security/threatIntelligence/articles/{article_id}/indicators{odata_query}",
         )
         return response.get("value", [])
 
@@ -153,14 +153,14 @@ class Client:
         if not intel_profile_id:
             response = self.ms_client.http_request(
                 method="GET",
-                url_suffix=f"v1.0//security/threatIntelligence/intelProfiles{odata_query}",
+                url_suffix=f"v1.0/security/threatIntelligence/intelProfiles{odata_query}",
             )
             return response.get("value", [])
 
         """NEED TO CHECK IT LIMIT IS VALID HERE"""
         response = self.ms_client.http_request(
             method="GET",
-            url_suffix=f"v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}",
+            url_suffix=f"v1.0/security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}",
         )
 
         return [response]
@@ -187,14 +187,14 @@ class Client:
         if not intel_profile_indicator_id:
             response = self.ms_client.http_request(
                 method="GET",
-                url_suffix=f"v1.0//security/threatIntelligence/intelProfiles/{intel_profile_id}/indicators{odata_query}",
+                url_suffix=f"v1.0/security/threatIntelligence/intelProfiles/{intel_profile_id}/indicators{odata_query}",
             )
             return response.get("value", [])
 
         """NEED TO CHECK IF LIMIT IS VALID HERE"""
         response = self.ms_client.http_request(
             method="GET",
-            url_suffix=f"v1.0//security/threatIntelligence/intelligenceProfileIndicators/{intel_profile_indicator_id}{odata_query}",
+            url_suffix=f"v1.0/security/threatIntelligence/intelligenceProfileIndicators/{intel_profile_indicator_id}{odata_query}",
         )
         return [response]
 
@@ -216,7 +216,7 @@ class Client:
 
         return self.ms_client.http_request(
             method="GET",
-            url_suffix=f"v1.0//security/threatIntelligence/hosts/{host_id}{odata_query}",
+            url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}{odata_query}",
         )
 
     def host_whois(self, host_id: str, whois_record_id: str, odata: str) -> dict:
@@ -311,8 +311,6 @@ def ensure_only_one_argument_provided(**kwargs):
         )
 
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
 """ COMMAND FUNCTIONS """
 
 
@@ -336,7 +334,6 @@ def article_list_command(client: Client, args: dict[str, Any]) -> CommandResults
     odata = args.get("odata", "")
     limit = args.get("limit", 50)
 
-    # Call the Client function and get the raw response
     response = client.article_list(article_id, odata, limit)
     display_data = [{"Article Id": article.get("id"), "Title": article.get("title")} for article in response]
     return CommandResults(
@@ -376,7 +373,6 @@ def profile_list_command(client: Client, args: dict[str, Any]) -> CommandResults
     odata = args.get("odata", "")
     limit = args.get("limit", 50)
 
-    # Call the Client function and get the raw response
     response = client.profile_list(intel_profile_id, odata, limit)
 
     display_data = [{"Profile ID": profile.get("id"), "Title": profile.get("title")} for profile in response]
@@ -400,7 +396,6 @@ def profile_indicators_list_command(client: Client, args: dict[str, Any]) -> Com
 
     ensure_only_one_argument_provided(intel_profile_id=intel_profile_id, intel_profile_indicator_id=intel_profile_indicator_id)
 
-    # Call the Client function and get the raw response
     response = client.profile_indicators_list(intel_profile_id, intel_profile_indicator_id, odata, limit)
     display_data = [
         {"ID": profileIndicator.get("id"), "Artifact Id": profileIndicator.get("artifact", {}).get("id")}
@@ -422,7 +417,6 @@ def host_command(client: Client, args: dict[str, Any]) -> CommandResults:
     host_id = args.get("host_id", "")
     odata = args.get("odata", "")
 
-    # Call the Client function and get the raw response
     response = client.host(host_id, odata)
     display_data = [
         {
@@ -450,7 +444,6 @@ def host_whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     ensure_only_one_argument_provided(host_id=host_id, whois_record_id=whois_record_id)
 
-    # Call the Client function and get the raw response
     response = client.host_whois(host_id, whois_record_id, odata)
     display_data = [
         {"Id": response.get("id"), "Whois Server": response.get("whoisServer"), "Domain Status": response.get("domainStatus")}
@@ -478,7 +471,6 @@ def host_whois_history_command(client: Client, args: dict[str, Any]) -> CommandR
         host_id=host_id, whois_record_id=whois_record_id, whois_history_record_id=whois_history_record_id
     )
 
-    # Call the Client function and get the raw response
     response = client.host_whois_history(host_id, whois_record_id, whois_history_record_id, odata, limit)
     display_data = [
         {
@@ -509,17 +501,17 @@ def main():
         args = demisto.args()
         handle_proxy()
         client = Client(
-            app_id=params.get("app_id"),
-            verify=not params.get("insecure", False),
-            proxy=params.get("proxy", False),
-            azure_ad_endpoint=params.get("azure_ad_endpoint", "https://login.microsoftonline.com")
+            app_id = params.get("app_id"),
+            verify = not params.get("insecure", False),
+            proxy = params.get("proxy", False),
+            azure_ad_endpoint = params.get("azure_ad_endpoint", "https://login.microsoftonline.com")
             or "https://login.microsoftonline.com",
-            tenant_id=params.get("tenant_id"),
-            client_credentials=params.get("client_credentials", False),
-            enc_key=(params.get("credentials") or {}).get("password"),
-            managed_identities_client_id=get_azure_managed_identities_client_id(params),
-            certificate_thumbprint=params.get("creds_certificate", {}).get("identifier"),
-            private_key=(replace_spaces_in_credential(params.get("creds_certificate", {}).get("password"))),
+            tenant_id = params.get("tenant_id"),
+            client_credentials = params.get("client_credentials", False),
+            enc_key = (params.get("credentials") or {}).get("password"),
+            managed_identities_client_id = get_azure_managed_identities_client_id(params),
+            certificate_thumbprint = params.get("creds_certificate", {}).get("identifier"),
+            private_key = (replace_spaces_in_credential(params.get("creds_certificate", {}).get("password"))),
         )
         if command == "test-module":
             if client.ms_client.managed_identities_client_id or client.ms_client.grant_type == CLIENT_CREDENTIALS:
@@ -527,7 +519,6 @@ def main():
                 return_results("ok")
             else:
                 return_results("The test module is not functional, run the msgraph-identity-auth-start command instead.")
-            # This is the call made when pressing the integration Test button.
         elif command == "msg-defender-threat-intel-auth-start":
             return_results(start_auth(client))
         elif command == "msg-defender-threat-intel-auth-complete":
@@ -548,6 +539,7 @@ def main():
             return_results(host_whois_history_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
+        
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 

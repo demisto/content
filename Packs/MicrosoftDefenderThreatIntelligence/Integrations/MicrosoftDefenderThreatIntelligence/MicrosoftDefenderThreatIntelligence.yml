@@ -110,7 +110,7 @@ script:
       description: The title of the Microsoft Defender Threat Intelligence article.
       type: String
   - arguments:
-    - description: The unique identifier of the article.
+    - description: The unique identifier of the article to retrieve indicators from.
       name: article_id
     - description: The unique identifier of a specific indicator within the article.
       name: article_indicator_id
@@ -207,7 +207,7 @@ script:
       type: String
 
   - arguments:
-    - description: 'hostname or IP address.'
+    - description: 'Hostname or IP address.'
       name: host_id
     - description: The unique identifier of the whois record whose history you want to retrieve.
       name: whois_record_id
