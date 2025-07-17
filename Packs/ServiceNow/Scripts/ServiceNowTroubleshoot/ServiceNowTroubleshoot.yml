@@ -14,7 +14,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.1.0
 marketplaces:
 - xsoar
@@ -27,3 +27,4 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix

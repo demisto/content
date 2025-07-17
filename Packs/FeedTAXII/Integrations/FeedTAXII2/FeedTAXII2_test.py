@@ -538,23 +538,23 @@ def test_fetch_indicators_error_handling(mocker):
     """  # noqa: E501
     mock_client = Taxii2FeedClient(url="", collection_to_fetch="default", proxies=[], verify=False, objects_to_fetch=[])
     mock_client.collections = [MockCollection("1", "trow exception"), MockCollection("2", "pass")]
-    
-    mock_update_health = mocker.patch.object(demisto,'updateModuleHealth')
-    mock_error = mocker.patch('FeedTAXII2.demisto.error')
-    
+
+    mock_update_health = mocker.patch.object(demisto, "updateModuleHealth")
+    mock_error = mocker.patch("FeedTAXII2.demisto.error")
+
     # Error simulation on the first collection
     def side_effect(limit, added_after):
-        if mock_client.collection_to_fetch.id == '1':
+        if mock_client.collection_to_fetch.id == "1":
             raise Exception("Simulated Error")
-        return [{'value': 'dummy_indicator_1'}, {'value': 'dummy_indicator_2'}]
-    
+        return [{"value": "dummy_indicator_1"}, {"value": "dummy_indicator_2"}]
+
     mock_client.collection_to_fetch = None
     mocker.patch("FeedTAXII2.Taxii2FeedClient.build_iterator", side_effect=side_effect)
     try:
         indicators, last_run = fetch_indicators_command(mock_client, "1 day", -1, {})
     except Exception:
         pass
-    
+
     mock_update_health.assert_called_once_with({"message": "Error fetching collection 1: Simulated Error"}, is_error=True)
     mock_error.assert_called_once_with("Failed to fetch IOCs from collection 1: Simulated Error")
     assert len(indicators) == 2

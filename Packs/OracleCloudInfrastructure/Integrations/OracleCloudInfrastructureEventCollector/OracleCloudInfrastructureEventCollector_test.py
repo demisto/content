@@ -199,6 +199,11 @@ class TestClientRelatedFunctions:
         "PKCS#1",
         "-----BEGIN RSA PRIVATE KEY-----\nCONTENT\n-----END RSA PRIVATE KEY-----",
     )
+    case_validate_private_key_inline = (
+        "-----BEGIN PRIVATE KEY----- CONTENT -----END PRIVATE KEY-----",
+        "PKCS#8",
+        "-----BEGIN PRIVATE KEY-----\nCONTENT\n-----END PRIVATE KEY-----",
+    )
 
     @pytest.mark.parametrize(
         "private_key, private_key_type, expected_result",
@@ -208,6 +213,7 @@ class TestClientRelatedFunctions:
             case_escaped_private_key,
             case_escaped_and_doubled_new_line_private_key,
             case_validate_private_key_PKCS1,
+            case_validate_private_key_inline,
         ],
     )
     def test_validate_private_key_syntax(self, mocker, private_key, private_key_type, expected_result):
@@ -409,9 +415,9 @@ class TestEventRelatedFunctions:
             "compartmentId": dummy_client.compartment_id,
             "startTime": "2023-01-01T10:10:10.000Z",
             "endTime": datetime.datetime.now().strftime(DATE_FORMAT),
-            "next_page": "dummy_next_page",
+            "opc-next-page": "dummy_next_page",
         }
-        assert mocked_http_request.called_with(expected_params)
+        assert mocked_http_request.call_args[1]["params"] == expected_params
 
     @freeze_time("2023-01-01T10:10:10.000Z")
     def test_audit_log_api_request_check_compartment_id(self, mocker):
@@ -445,10 +451,10 @@ class TestEventRelatedFunctions:
             "compartmentId": client.compartment_id,
             "startTime": "2023-01-01T10:10:10.000Z",
             "endTime": datetime.datetime.now().strftime(DATE_FORMAT),
-            "next_page": "dummy_next_page",
+            "opc-next-page": "dummy_next_page",
         }
         assert client.compartment_id == "dummy_compartment_id"
-        assert mocked_http_request.called_with(expected_params)
+        assert mocked_http_request.call_args[1]["params"] == expected_params
 
     @pytest.mark.parametrize("events", ([{"dummy_data": "dummy_data"}], []))
     def test_handle_fetched_events(self, mocker, events):

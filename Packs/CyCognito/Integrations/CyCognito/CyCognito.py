@@ -17,7 +17,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 HR_DATE_FORMAT = "%d %b %Y, %I:%M %p"
-BASE_URL = "https://api.platform.cycognito.com/v1"
+BASE_URL = "https://api.{}platform.cycognito.com/v1"
 MAX_PAGE_SIZE = 1000
 DEFAULT_COUNT = 50
 DEFAULT_SORT_ORDER = "desc"
@@ -82,12 +82,52 @@ ASSET_TYPE_HR = "Asset Type"
 HOSTING_TYPE_HR = "Hosting Type"
 ASSET_OUTPUT_PREFIX = "CyCognito.Asset"
 ISSUE_OUTPUT_PREFIX = "CyCognito.Issue"
+REGIONS = {"General": "", "US": "us-"}
 
 """ CLIENT CLASS """
 
 
 class CyCognitoClient(BaseClient):
     """CyCognitoClient class to interact with the service API."""
+
+    def __init__(self, params: dict, verify, proxy):
+        """
+        :type params: ``dict``
+        :param params: Integration parameters.
+
+        :type verify: ``bool``
+        :param verify: Verify SSL certificate.
+
+        :type proxy: ``bool``
+        :param proxy: Use proxy.
+        """
+        api_key = params.pop("api_key")
+        headers = {"Authorization": api_key}
+
+        region = params.get("region", "")
+        other_region = params.get("other_region", "").strip()
+        region = self.get_region(region=region, other_region=other_region)
+
+        super().__init__(base_url=BASE_URL.format(region), verify=verify, proxy=proxy, ok_codes=(404, 200, 400), headers=headers)
+
+    def get_region(self, region: str, other_region: str) -> str:
+        """Get region to use.
+
+        :type region: ``str``
+        :param region: Region to use.
+
+        :type other_region: ``str``
+        :param other_region: Other region to use.
+
+        :rtype: ``str``
+        :return: Region to use.
+        """
+        if region:
+            if other_region and other_region[-1] != "-":
+                other_region = f"{other_region}-"
+            return REGIONS[region] if region.lower() != "other" else other_region
+        else:
+            return REGIONS["General"]
 
     def get_issue(self, issue_instance_id: str) -> Response:
         """Get an issue from Cycognito.
@@ -125,7 +165,7 @@ class CyCognitoClient(BaseClient):
         json_data = {"investigation_status": params["investigation_status"]}
         return self._http_request(
             method="PUT",
-            url_suffix=f'/issues/issue/{params["issue_instance_id"]}/investigation-status',
+            url_suffix=f"/issues/issue/{params['issue_instance_id']}/investigation-status",
             json_data=json_data,
             resp_type="response",
         )
@@ -381,7 +421,7 @@ def prepare_hr_for_issue_get(response: Dict) -> str:
     :rtype: ``str``
     :return: Human readable output.
     """
-    link = f"https://platform.cycognito.com/issues/issue/{response.get('id', '').replace('issue/', '')}/info"
+    link = f"https://platform.cycognito.com/issues/issue/{response.get('id', '').replace('issue/', '')}/info"  # noqa: E231
     hr_output = [
         {
             "Title": response.get("title"),
@@ -432,7 +472,7 @@ def prepare_hr_for_issue_get(response: Dict) -> str:
         "Link to Platform",
     ]
 
-    heading = f"Issue detail:\n#### ID: {response['id'].replace('issue/', '')}"
+    heading = f"Issue detail: \n#### ID: {response['id'].replace('issue/', '')}"
 
     return tableToMarkdown(heading, hr_output, headers=headers, removeNull=True)
 
@@ -606,10 +646,10 @@ def prepare_hr_for_issue_investigation_status_change(valid_response: Dict[str, A
     """
     if valid_response.get("updated"):
         action_status = "Success"
-        heading = f'Investigation status for {params.get("issue_instance_id")} has been successfully updated.'
+        heading = f"Investigation status for {params.get('issue_instance_id')} has been successfully updated."
     else:
         action_status = "Failure"
-        heading = f'Investigation status for {params.get("issue_instance_id")} has failed to update.'
+        heading = f"Investigation status for {params.get('issue_instance_id')} has failed to update."
 
     hr_output = [
         {
@@ -1001,7 +1041,7 @@ def prepare_hr_for_list_assets(response: Dict, asset_type: str) -> str:
     ]
 
     return tableToMarkdown(
-        f"Asset List:\n Assets Type: {asset_type.title() if asset_type != 'ip' else asset_type.upper()}",
+        f"Asset List: \n Assets Type: {asset_type.title() if asset_type != 'ip' else asset_type.upper()}",
         hr_outputs,
         headers=headers,
         removeNull=True,
@@ -1459,7 +1499,6 @@ def cycognito_assets_list_command(client: CyCognitoClient, args: Dict[str, Any])
 def main():
     """Parse params and runs command functions."""
     params = demisto.params()
-    api_key = params.pop("api_key")
 
     verify_certificate = not params.get("insecure", False)
     proxy = argToBoolean(params.get("proxy", False))
@@ -1468,10 +1507,7 @@ def main():
     demisto.debug(f"Command being called is {command}")
 
     try:
-        headers = {"Authorization": api_key}
-        client = CyCognitoClient(
-            base_url=BASE_URL, verify=verify_certificate, headers=headers, proxy=proxy, ok_codes=(404, 200, 400)
-        )
+        client = CyCognitoClient(params=params, verify=verify_certificate, proxy=proxy)
         if command == "test-module":
             return_results(test_module(client))
         elif demisto.command() == "fetch-incidents":
@@ -1500,7 +1536,7 @@ def main():
             else:
                 raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
+        return_error(f"Failed to execute {command} command.\nError: \n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

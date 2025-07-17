@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.0.0 of Github Feed.
 
 ## Configure Github Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -41,9 +40,9 @@ Gets indicators from the feed within a specified date range and up to a maximum 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| since | The start date from which to fetch indicators. Accepts date strings like "7 days ago", "2 weeks ago", etc. Default is 7 days. | Optional | 
-| until | The end date until which to fetch indicators. Accepts date strings like "now", "2023-05-19", etc. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| since | The start date from which to fetch indicators. Accepts date strings like "7 days ago", "2 weeks ago", etc. Default is 7 days. | Optional |
+| until | The end date until which to fetch indicators. Accepts date strings like "now", "2023-05-19", etc. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 

@@ -1,6 +1,7 @@
 Extract Domain(s) from URL(s) and/or Email(s)
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Extract Domain(s) from URL(s) and/or Email(s)
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Extract Domain(s) from URL(s) and/or Email(s)
 | input | The URL\(s\) or Email\(s\) to process |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

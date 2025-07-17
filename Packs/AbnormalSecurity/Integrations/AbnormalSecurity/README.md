@@ -3,26 +3,22 @@ This integration was integrated and tested with version 1.3.0 of Abnormal Securi
 
 ## Configure Abnormal Security in Cortex
 
-
-
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Server URL (e.g. https://api.abnormalplatform.com/v1) |  | True |
-| API Key |  | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Fetch incidents |  | False |
-| Maximum incidents to fetch. | Maximum number of incidents per fetch. The default value is 200. | False |
-| Fetch Threats |  | False |
-| Fetch Abuse Campaigns |  | False |
-| Fetch Account Takeover Cases |  | False |
-| First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
-| Incident type |  | False |
-| Incidents Fetch Interval |  | False |
-| Polling Lag Time (in minutes) | Time in minutes to subtract from polling time window for data consistency (Default : 2 mins) | False |
-| Maximum incidents pages to fetch | Maximum number of pages to fetch for incidents | False |
-
-
+| **Parameter** | **Description**                                                                                                                   | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------| --- |
+| Server URL (e.g. https://api.abnormalplatform.com/v1) |                                                                                                                                   | True |
+| API Key |                                                                                                                                   | True |
+| Trust any certificate (not secure) |                                                                                                                                   | False |
+| Use system proxy settings |                                                                                                                                   | False |
+| Fetch incidents | Retrieves incidents based on the customer's selection from three categories: Threats, Account Takeover Cases, and Abuse Campaigns | False |
+| Maximum incidents to fetch. | Maximum number of incidents per fetch. The default value is 200.                                                                  | False |
+| Fetch Threats |                                                                                                                                   | False |
+| Fetch Abuse Campaigns |                                                                                                                                   | False |
+| Fetch Account Takeover Cases |                                                                                                                                   | False |
+| First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"                                                 | False |
+| Incident type |                                                                                                                                   | False |
+| Incidents Fetch Interval |                                                                                                                                   | False |
+| Polling Lag Time (in minutes) | Time in minutes to subtract from polling time window for data consistency (Default : 2 mins)                                      | False |
+| Maximum incidents pages to fetch | Maximum number of pages to fetch for incidents                                                                                    | False |
 
 ## Commands
 
@@ -381,8 +377,8 @@ Get details of a threat
 | threat_id         | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat.             | Required     |
 | mock-data         | Returns test data if set to `True`.                                                                                                       | Optional     |
 | subtenant         | Subtenant of the user (if applicable).                                                                                                    | Optional     |
-| page_size         | Number of threats per page. Each page will contain up to page_size threats. This has no effect if no filter is specified.                 | Optional     | 
-| page_number       | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.                                      | Optional     | 
+| page_size         | Number of threats per page. Each page will contain up to page_size threats. This has no effect if no filter is specified.                 | Optional     |
+| page_number       | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.                                      | Optional     |
 
 #### Context Output
 

@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Use the Google Chronicle Backstory Streaming API integration to ingest detections created by both user-created rules and Chronicle Rules as XSOAR incidents.
@@ -9,6 +10,7 @@ This integration was integrated and tested with version 2 of Google Chronicle Ba
 **Note:** The streaming mechanism will do up to 7 internal retries with a gap of 2, 4, 8, 16, 32, 64, and 128 seconds (exponentially) between the retries.
 
 ##### Problem #1
+
 Duplication of rule detection incidents when fetched from Chronicle.
 
 ##### Solution #1
@@ -20,7 +22,6 @@ Duplication of rule detection incidents when fetched from Chronicle.
 - Please refer for information on [Pre-Process rules](https://xsoar.pan.dev/docs/incidents/incident-pre-processing#:~:text=Creating%20Rules&text=Navigate%20to%20Settings%20%3E%20Integrations%20%3E%20Pre,viewing%20the%20list%20of%20rules).
 
 ## Configure Chronicle Streaming API in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -37,7 +38,6 @@ Duplication of rule detection incidents when fetched from Chronicle.
 | If selected, detections with above rule IDs will be denied for ingestion. |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Generic Notes
 

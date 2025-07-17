@@ -1,6 +1,7 @@
-Given a list of objects and a key found in each of those objects, return a unique list of values associated with that key. Returns error if the objects provided do not contain the key of interest. 
+Given a list of objects and a key found in each of those objects, return a unique list of values associated with that key. Returns error if the objects provided do not contain the key of interest.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Given a list of objects and a key found in each of those objects, return a uniqu
 | Tags |  |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Given a list of objects and a key found in each of those objects, return a uniqu
 | keep_none | Default is False. If set to True, will return None in the unique list if the key is not found |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

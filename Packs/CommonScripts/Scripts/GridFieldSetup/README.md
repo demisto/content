@@ -2,6 +2,7 @@ Automation used to more easily populate a grid field.  This is necessary when yo
 `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ Automation used to more easily populate a grid field.  This is necessary when yo
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -30,14 +32,18 @@ Automation used to more easily populate a grid field.  This is necessary when yo
 | overwrite | whether to overwrite what is in the gridfield or not \(default is to append\) |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Examples
+
 ### Example command
+
 ```!GridFieldSetup keys=url,verified val1="https://xsoar.pan.dev/" val2="verified" gridfield="urlsslverification"```
+
 ### Context Example
+
 ```json
 {}
 ```
@@ -50,8 +56,11 @@ There are no outputs for this script.
 >| New Value | [{"url":"https://www.paloaltonetworks.com","verified":"verified"},{"url":"https://xsoar.pan.dev/","verified":"verified"}] |
 
 ### Example command
+
 ```!GridFieldSetup keys=url,verified val1="https://www.paloaltonetworks.com" val2="verified" gridfield="urlsslverification" overwrite=true```
+
 ### Context Example
+
 ```json
 {}
 ```

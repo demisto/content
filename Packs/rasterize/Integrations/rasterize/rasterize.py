@@ -67,6 +67,7 @@ TAB_CLOSE_WAIT_TIME = 1
 DEFAULT_RETRIES_COUNT = 4
 DEFAULT_RETRY_WAIT_IN_SECONDS = 3
 PAGES_LIMITATION = 20
+SCREENSHOT_TIMEOUT = 60
 
 # chrome instance data keys
 INSTANCE_ID = "instance_id"
@@ -125,7 +126,7 @@ class RasterizeType(Enum):
 # region utility classes
 
 
-def excepthook_recv_loop(args):
+def excepthook_recv_loop(args: threading.ExceptHookArgs) -> None:
     """
     Suppressing exceptions that might happen after the tab was closed.
     """
@@ -205,7 +206,7 @@ class PychromeEventHandler:
     request_id = None
     screen_lock = threading.Lock()
 
-    def __init__(self, browser, tab, tab_ready_event, path: str, navigation_timeout: int):
+    def __init__(self, browser: pychrome.Browser, tab: pychrome.Tab, tab_ready_event: Event, path: str, navigation_timeout: int):
         self.browser = browser
         self.tab = tab
         self.tab_ready_event = tab_ready_event
@@ -214,73 +215,150 @@ class PychromeEventHandler:
         self.path = path
         self.navigation_timeout = navigation_timeout
         self.is_private_network_url = False
+        self.document_url = ""
 
     def page_frame_started_loading(self, frameId):
-        demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}")
+        demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}, {self.tab.id=}, {self.path=}")
         self.start_frame = frameId
         if self.request_id:
             # We're in redirect
-            demisto.debug(f"Frame (reload) started loading: {frameId}, clearing {self.request_id=}")
+            demisto.debug(f"Frame (reload) started loading: {frameId}, clearing {self.request_id=}, {self.tab.id=}, {self.path=}")
             self.request_id = None
             self.response_received = False
             # self.start_frame = None
         else:
-            demisto.debug(f"Frame started loading: {frameId}, no request_id")
+            demisto.debug(f"Frame started loading: {frameId}, no request_id, {self.tab.id=}, {self.path=}")
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
-        demisto.debug(f"PychromeEventHandler.network_data_received, {requestId=}")
+        demisto.debug(f"PychromeEventHandler.network_data_received, {requestId=}, {self.tab.id=}, {self.path=}")
         if requestId and not self.request_id:
-            demisto.debug(f"PychromeEventHandler.network_data_received, Using {requestId=}")
+            demisto.debug(f"PychromeEventHandler.network_data_received, Using {requestId=}, {self.tab.id=}, {self.path=}")
             self.request_id = requestId
         else:
-            demisto.debug(f"PychromeEventHandler.network_data_received, Not using {requestId=}")
+            demisto.debug(f"PychromeEventHandler.network_data_received, Not using {requestId=}, {self.tab.id=}, {self.path=}")
 
     def page_frame_stopped_loading(self, frameId):
-        demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}")
+        """
+        Callback handler for when a frame has stopped loading in the page.
+
+        This method is called by Chrome when a frame in the page finishes loading. It checks if
+        the finished frame is the main frame we're tracking, then verifies the loaded URL. If the
+        URL indicates a Chrome error page for a local file, it attempts to retry loading. Otherwise,
+        it signals that the page is ready by setting the tab_ready_event.
+
+        Args:
+            frameId: The identifier of the frame that has finished loading
+
+        Returns:
+            None
+        """
+        demisto.debug(
+            f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}, {self.tab.id=}, {self.path=}"
+        )
         # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
-            frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
-            demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, Frame URL: {frame_url}, Original path: {self.path}")
-
-            # Check if the loaded page is a Chrome error page, which indicates a failed load
-            # Only retry loading when the URL is a direct file path
-            # This helps handle cases where local files fail to load on the first attempt
-            if frame_url.lower().startswith(CHROME_ERROR_URL) and self.path.lower().startswith("file://"):
-                demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
-                self.retry_loading()
-            else:
-                demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
+            try:
+                # Check if the loaded page is a Chrome error page, which indicates a failed load
+                # Only retry loading when the URL is a direct file path
+                # This helps handle cases where temporary files fail to load on the first attempt
+                if self.path.lower().startswith("file://"):
+                    frame_url = self.get_frame_tree_url()
+                    if frame_url and frame_url.lower().startswith(CHROME_ERROR_URL):
+                        demisto.debug(f"Encountered chrome-error {frame_url=}, {self.tab.id=}, {self.path=} retrying...")
+                        self.retry_loading()
+                    else:
+                        demisto.debug(
+                            "PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, "
+                            f"{self.tab.id=}, {self.path=}"
+                        )
+                        self.tab_ready_event.set()
+                else:
+                    demisto.debug(
+                        f"PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event, {self.tab.id=}, {self.path=}"
+                    )
+                    self.tab_ready_event.set()
+            except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
+                demisto.debug(f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped: {ex}")
                 self.tab_ready_event.set()
+            except Exception as ex:
+                demisto.info(f"Unexpected exception in page_frame_stopped_loading {self.path=}, {self.tab.id=}: {ex}")
+                self.tab_ready_event.set()
+
+    def get_frame_tree_url(self) -> str:
+        """
+        Gets the frame tree URL from the tab and handles potential exceptions.
+
+        Returns:
+            str: The frame URL if successful, empty string on failure.
+        """
+        try:
+            frame_tree_result = self.tab.Page.getFrameTree()
+            frame_url = frame_tree_result.get("frameTree", {}).get("frame", {}).get("url", "")
+            demisto.debug(
+                f"PychromeEventHandler.get_frame_tree_url, Frame URL: {frame_url}, Original path: {self.path}, {self.tab.id}"
+            )
+            return frame_url
+        except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
+            # The tab is already stopping or has been stopped
+            demisto.debug(
+                f"get_frame_tree_url: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}"
+            )
+            return ""
+        except Exception as ex:
+            demisto.debug(f"Unexpected error getting frame tree URL for {self.tab.id=}, {self.path=}: {ex}")
+            return ""
 
     def retry_loading(self):
         """
         Attempts to reload the page multiple times.
+
+        This method will try to reload the current page up to DEFAULT_RETRIES_COUNT times
+        if it encounters a Chrome error page. It sets the tab_ready_event when successful.
         """
         for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
-            demisto.debug(f"Retrying loading URL {self.path}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
+            demisto.debug(f"Retrying loading URL {self.path}, {self.tab.id}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
             try:
                 if self.navigation_timeout > 0:
                     self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
                 else:
                     self.tab.Page.navigate(url=self.path)
             except Exception as e:
-                demisto.debug(f"Error during navigation attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}")
+                demisto.debug(
+                    f"Error during navigation to {self.tab.id=}, {self.path=} attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}"
+                )
 
             safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
 
-            frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
+            frame_url = self.get_frame_tree_url()
+
+            # If frame_url is empty string, we can't continue retrying - the tab may be in a bad state
+            if not frame_url:
+                demisto.debug(
+                    f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. "
+                    f"Stopping after {DEFAULT_RETRIES_COUNT} retry attempts. "
+                    f"For {self.tab.id=}, {self.path=}"
+                )
+                self.tab_ready_event.set()
+                return
 
             if not frame_url.lower().startswith(CHROME_ERROR_URL):
-                demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful.")
+                demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful. {self.tab.id=}, {self.path=}")
                 self.tab_ready_event.set()
-                break
-        else:
-            demisto.debug(f"Max retries {DEFAULT_RETRIES_COUNT} reached, could not load the page.")
+                return
+
+            demisto.debug(
+                "Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. "
+                f"{self.tab.id=}, {self.path=}"
+            )
+
+        demisto.debug(f"Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not load the page. {self.tab.id=}, {self.path=}")
+        # Ensure we always set the event to prevent hanging
+        self.tab_ready_event.set()
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
-        demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}")
-
+        demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}, {self.tab.id=}, {self.path=}")
+        self.document_url = documentURL
         self.is_mailto = documentURL.lower().startswith("mailto:")
         self.is_private_network_url = is_private_network(documentURL)
         demisto.debug(f"Private network URL check for {documentURL=}: {self.is_private_network_url}")
@@ -289,7 +367,7 @@ class PychromeEventHandler:
 
         if any(value in request_url for value in BLOCKED_URLS):
             self.tab.Fetch.enable()
-            demisto.debug("Fetch events enabled.")
+            demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
@@ -298,9 +376,9 @@ class PychromeEventHandler:
         # abort the request if the url inside blocked_urls param and its redirect request
         if any(value in request_url for value in BLOCKED_URLS) and not self.request_id:
             self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
-            demisto.debug(f"Request paused: {request_url=} , {request_id=}")
+            demisto.debug(f"Request paused: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
             self.tab.Fetch.disable()
-            demisto.debug("Fetch events disabled.")
+            demisto.debug(f"Fetch events disabled. {self.tab.id=}, {self.path=}")
 
 
 # endregion
@@ -616,7 +694,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     return browser, chrome_port
 
 
-def chrome_manager_one_port() -> tuple[pychrome. Browser | None, str | None]:
+def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
     ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
@@ -642,7 +720,7 @@ def chrome_manager_one_port() -> tuple[pychrome. Browser | None, str | None]:
     instance_id = demisto.callingContext.get("context", {}).get("IntegrationInstanceID", "None") or "None"
     chrome_options = demisto.params().get("chrome_options", "None")
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-    demisto.debug(f" chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}")
+    demisto.debug(f"chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}")
     chrome_options_dict = {
         options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
     }
@@ -708,30 +786,30 @@ def setup_tab_event(
     return tab_event_handler, tab_ready_event
 
 
-def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
+def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab, path, navigation_timeout)
 
     try:
         demisto.info(f"Starting tab navigation to given path: {path} on {tab.id=}")
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-        demisto.debug(f"allTimeSamplingProfile before navigation {allTimeSamplingProfile=} on {tab.id=}")
+        demisto.debug(f"allTimeSamplingProfile before navigation {allTimeSamplingProfile=} on {tab.id=}, {path=}")
         heapUsage = tab.Runtime.getHeapUsage()
-        demisto.debug(f"heapUsage before navigation {heapUsage=} on {tab.id=}")
+        demisto.debug(f"heapUsage before navigation {heapUsage=} on {tab.id=}, {path=}")
 
         if navigation_timeout > 0:
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
         else:
             tab.Page.navigate(url=path)
 
-        demisto.debug(f"Waiting for tab_ready_event on {tab.id=}")
+        demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
         tab_ready_event.wait(navigation_timeout)
-        demisto.debug(f"After waiting for tab_ready_event on {tab.id=}")
+        demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")
 
         if wait_time > 0:
-            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}, {tab.id=}")
+            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}, {tab.id=}, {path=}")
         else:
-            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}. {tab.id=}")
+            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}. {tab.id=}, {path=}")
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
@@ -799,8 +877,25 @@ def screenshot_image(
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     if tab_event_handler.is_mailto:
-        demisto.info(f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}, {tab.id=}.')
-        return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
+        # Determine the appropriate URL to display in the error message
+        display_url = tab_event_handler.document_url if tab_event_handler.document_url != tab_event_handler.path else path
+
+        # Create a more descriptive error message
+        if tab_event_handler.document_url != tab_event_handler.path:
+            # Handle redirect case where original URL redirects to mailto
+            error_msg = (
+                f'URLs that start with "mailto:" cannot be rasterized.\n'
+                f"Original URL: {path}\n"
+                f"Redirected to: {tab_event_handler.document_url}"
+            )
+            demisto.info(f"Mailto redirect detected - {error_msg}, tab_id={tab.id}")
+        else:
+            # Handle direct mailto URL case
+            error_msg = f'URLs that start with "mailto:" cannot be rasterized.\nURL: {display_url}'
+            demisto.info(f"Direct mailto URL detected - {error_msg}, tab_id={tab.id}")
+
+        return None, error_msg
+
     if tab_event_handler.is_private_network_url:
         demisto.info(
             'URLs that belong to the "This" Network (0.0.0.0/8), or'
@@ -814,20 +909,22 @@ def screenshot_image(
     try:
         page_layout_metrics = tab.Page.getLayoutMetrics()
     except Exception as ex:
-        demisto.info(f"Failed to get tab LayoutMetrics due to {ex}")
+        demisto.info(f"Failed to get tab LayoutMetrics for {tab.id=} {path=} due to {ex}")
         raise ex
 
-    demisto.debug(f"{page_layout_metrics=} {tab.id=}.")
+    demisto.debug(f"{page_layout_metrics=} {tab.id=} {path=}.")
     css_content_size = page_layout_metrics["cssContentSize"]
     try:
         if full_screen:
             viewport = css_content_size
             viewport["scale"] = 1
-            screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)["data"]
+            screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True, _timeout=SCREENSHOT_TIMEOUT)[
+                "data"
+            ]
         else:
-            screenshot_data = tab.Page.captureScreenshot()["data"]
+            screenshot_data = tab.Page.captureScreenshot(_timeout=SCREENSHOT_TIMEOUT)["data"]
     except Exception as ex:
-        demisto.info(f"Failed to capture screenshot due to {ex}, {tab.id=}")
+        demisto.info(f"Failed to capture screenshot due to {ex}, {tab.id=}, {path=}")
         raise ex
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
     screenshot_data, operation_time = backoff(screenshot_data)
@@ -837,24 +934,24 @@ def screenshot_image(
         demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available after {operation_time} seconds.")
 
     allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-    demisto.debug(f"allTimeSamplingProfile after screenshot {allTimeSamplingProfile=} on {tab.id=}")
+    demisto.debug(f"allTimeSamplingProfile after screenshot {allTimeSamplingProfile=} on {tab.id=}, {path=}")
     heapUsage = tab.Runtime.getHeapUsage()
-    demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}")
+    demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}, {path=}")
 
     captured_image = base64.b64decode(screenshot_data)
     if not captured_image:
-        demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}")
+        demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}, {path=}")
     else:
-        demisto.info(f"Captured snapshot, {len(captured_image)=}, {tab.id=}")
+        demisto.info(f"Captured snapshot, {len(captured_image)=}, {tab.id=}, {path=}")
 
     # Page URL, if needed
     if include_url:
-        demisto.debug(f"Including URL in image for path: {path}, {tab.id=}")
+        demisto.debug(f"Including URL in image for path: {path}, {tab.id=}, {path=}")
         captured_image_object = Image.open(BytesIO(captured_image))
-        demisto.debug(f"Original image size: {captured_image_object.size}, {tab.id=}")
+        demisto.debug(f"Original image size: {captured_image_object.size}, {tab.id=}, {path=}")
 
         image_with_url = Image.new(captured_image_object.mode, (css_content_size["width"], css_content_size["height"] + 20))
-        demisto.debug(f"New image size with URL: {image_with_url.size}, {tab.id=}")
+        demisto.debug(f"New image size with URL: {image_with_url.size}, {tab.id=}, {path=}")
 
         image_with_url.paste(captured_image_object, (0, 20))
         ImageDraw.Draw(image_with_url).text((0, 0), path, fill=(255, 255, 255))
@@ -862,7 +959,7 @@ def screenshot_image(
         img_byte_arr = BytesIO()
         image_with_url.save(img_byte_arr, format="PNG")
         img_byte_arr = img_byte_arr.getvalue()
-        demisto.debug(f"Size of image with URL: {len(img_byte_arr)} bytes, {tab.id=}")
+        demisto.debug(f"Size of image with URL: {len(img_byte_arr)} bytes, {tab.id=}, {path=}")
 
         ret_value = img_byte_arr
     else:
@@ -871,26 +968,28 @@ def screenshot_image(
     # Page source, if needed
     response_body = ""
     if include_source:
-        demisto.debug(f"screenshot_image, include_source, waiting for request_id, {tab.id=}")
+        demisto.debug(f"screenshot_image, include_source, waiting for request_id, {tab.id=}, {path=}")
         request_id, request_id_operation_time = backoff(tab_event_handler.request_id)
         if request_id:
-            demisto.debug(f"request_id available after {request_id_operation_time} seconds, {tab.id=}.")
+            demisto.debug(f"request_id available after {request_id_operation_time} seconds, {tab.id=}, {path=}.")
         else:
-            demisto.info(f"request_id not available after {request_id_operation_time} seconds, {tab.id=}.")
-        demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds, {tab.id=}.")
+            demisto.info(f"request_id not available after {request_id_operation_time} seconds, {tab.id=}, {path=}.")
+        demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds, {tab.id=}, {path=}.")
 
         try:
             response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)["body"]
-            demisto.debug(f"screenshot_image, {include_source=}, {response_body=}, {tab.id=}")
+            demisto.debug(f"screenshot_image, {include_source=}, {response_body=}, {tab.id=}, {path=}")
 
             response_body, operation_time = backoff(response_body)
             if response_body:
-                demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}, {tab.id=}")
+                demisto.debug(
+                    f"Response Body available after {operation_time} seconds, {len(response_body)=}, {tab.id=}, {path=}"
+                )
             else:
-                demisto.info(f"Response Body not available after {operation_time} seconds, {tab.id=}.")
+                demisto.info(f"Response Body not available after {operation_time} seconds, {tab.id=}, {path=}.")
 
         except Exception as ex:  # This exception is raised when a non-existent URL is provided.
-            demisto.info(f"Exception when calling Network.getResponseBody with {request_id=}, {ex=}, {tab.id=}")
+            demisto.info(f"Exception when calling Network.getResponseBody with {request_id=}, {ex=}, {tab.id=}, {path=}")
             demisto.info(f"Failed to get URL body due to {ex}")
             response_body = "Failed to get URL body"
 
@@ -913,9 +1012,9 @@ def screenshot_pdf(
     # Make sure that the (asynchronous) PDF data is available before continuing with execution
     pdf_data, operation_time = backoff(pdf_data)
     if pdf_data:
-        demisto.debug(f"PDF Data available after {operation_time} seconds, {tab.id=}.")
+        demisto.debug(f"PDF Data available after {operation_time} seconds, {tab.id=}, {path=}.")
     else:
-        demisto.info(f"PDF Data not available after {operation_time} seconds, {tab.id=}.")
+        demisto.info(f"PDF Data not available after {operation_time} seconds, {tab.id=}, {path=}.")
 
     ret_value = base64.b64decode(pdf_data)
     return ret_value, None
@@ -1164,7 +1263,7 @@ def perform_rasterize(
             executor.shutdown(wait=True)
             demisto.info(
                 f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
-                f"active tabs len: {len(browser.list_tab())}"
+                f"active tabs len: {len(browser.list_tab())}, {path=}"
             )
 
             chrome_instances_file_content: dict = read_json_file()  # CR fix name
@@ -1175,12 +1274,12 @@ def perform_rasterize(
 
             demisto.debug(
                 f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
-                f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}"
+                f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}, {path=}"
             )
             if not chrome_port:
-                demisto.debug("perform_rasterize: the chrome port was not found")
+                demisto.debug(f"perform_rasterize: the chrome port was not found, {path=}")
             elif rasterization_count >= MAX_RASTERIZATIONS_COUNT:
-                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization")
+                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization, {path=}")
                 terminate_chrome(chrome_port=chrome_port)
             else:
                 increase_counter_chrome_instances_file(chrome_port=chrome_port)
@@ -1396,7 +1495,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg("url")
-    # Do not remove this line, as rasterize does not support array in `url`.
+    #  Rasterize does not support array in `url`. Please consult the owner before changing this.
     urls = [urls] if isinstance(urls, str) else urls
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
@@ -1509,9 +1608,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"command {command} is not supported")
 
     except Exception as ex:
-        return_err_or_warn(
-            f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}"
-        )
+        return_err_or_warn(f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}")
     finally:
         kill_zombie_processes()
 

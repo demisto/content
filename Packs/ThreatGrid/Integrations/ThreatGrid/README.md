@@ -212,29 +212,29 @@
     "ThreatGrid": {
         "Sample": [
             {
-                "Status": "job_done", 
-                "SHA1": "f6ed96430b54a52740d3f7a0a246d1053ba7d779", 
-                "CompletedAt": "2018-09-23T08:18:20Z", 
-                "Filename": "8d3a3c399ac61a1e7ae6f6c68c67f1db2e88985066463a5ffb3dae0d552a64a5.exe", 
-                "State": "succ", 
-                "SubmittedAt": "2018-09-23T08:12:05Z", 
-                "StartedAt": "2018-09-23T08:12:06Z", 
-                "SHA256": "8d3a3c399ac61a1e7ae6f6c68c67f1db2e88985066463a5ffb3dae0d552a64a5", 
-                "OS": "7601.18798.amd64fre.win7sp1_gdr.150316-1654", 
-                "ID": "4bb1e6eed595513b2c07ba9bd4598f37", 
+                "Status": "job_done",
+                "SHA1": "f6ed96430b54a52740d3f7a0a246d1053ba7d779",
+                "CompletedAt": "2018-09-23T08:18:20Z",
+                "Filename": "8d3a3c399ac61a1e7ae6f6c68c67f1db2e88985066463a5ffb3dae0d552a64a5.exe",
+                "State": "succ",
+                "SubmittedAt": "2018-09-23T08:12:05Z",
+                "StartedAt": "2018-09-23T08:12:06Z",
+                "SHA256": "8d3a3c399ac61a1e7ae6f6c68c67f1db2e88985066463a5ffb3dae0d552a64a5",
+                "OS": "7601.18798.amd64fre.win7sp1_gdr.150316-1654",
+                "ID": "4bb1e6eed595513b2c07ba9bd4598f37",
                 "MD5": "c6bdbf3765854eef4981721947beba5f"
-            }, 
+            },
             {
-                "Status": "job_done", 
-                "SHA1": "6b7808dd69ff255e982f9940d067b356f030ff14", 
-                "CompletedAt": "2018-09-23T08:18:28Z", 
-                "Filename": "8a577adc1b387c0dfc445b4a6f9a5bb54de13018c960624c0dcf35145aa00b03.exe", 
-                "State": "succ", 
-                "SubmittedAt": "2018-09-23T08:12:07Z", 
-                "StartedAt": "2018-09-23T08:12:08Z", 
-                "SHA256": "8a577adc1b387c0dfc445b4a6f9a5bb54de13018c960624c0dcf35145aa00b03", 
-                "OS": "7601.18798.amd64fre.win7sp1_gdr.150316-1654", 
-                "ID": "b75b886bcd4b888c2c6a779736509b12", 
+                "Status": "job_done",
+                "SHA1": "6b7808dd69ff255e982f9940d067b356f030ff14",
+                "CompletedAt": "2018-09-23T08:18:28Z",
+                "Filename": "8a577adc1b387c0dfc445b4a6f9a5bb54de13018c960624c0dcf35145aa00b03.exe",
+                "State": "succ",
+                "SubmittedAt": "2018-09-23T08:12:07Z",
+                "StartedAt": "2018-09-23T08:12:08Z",
+                "SHA256": "8a577adc1b387c0dfc445b4a6f9a5bb54de13018c960624c0dcf35145aa00b03",
+                "OS": "7601.18798.amd64fre.win7sp1_gdr.150316-1654",
+                "ID": "b75b886bcd4b888c2c6a779736509b12",
                 "MD5": "eb6f2ad4dcba833fd4411301ed8ae40e"
             }
         ]
@@ -328,16 +328,16 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "Status": "filetype_not_supported", 
-            "SHA1": "a253ac433faa9ac59a9f73c540355bfe2f9fe708", 
-            "CompletedAt": "2018-07-07T10:11:06Z", 
-            "Filename": "WR Package(1).rar", 
-            "State": "fail", 
-            "SubmittedAt": "2018-07-07T10:11:04Z", 
-            "StartedAt": "2018-07-07T10:11:05Z", 
-            "SHA256": "9aa6f1189fa01f852e595d4c847a76613aa157d14addbdeb2ac011f443c811d7", 
-            "OS": null, 
-            "ID": "052de338e02c4e013a4e9f5da8a87d5b", 
+            "Status": "filetype_not_supported",
+            "SHA1": "a253ac433faa9ac59a9f73c540355bfe2f9fe708",
+            "CompletedAt": "2018-07-07T10:11:06Z",
+            "Filename": "WR Package(1).rar",
+            "State": "fail",
+            "SubmittedAt": "2018-07-07T10:11:04Z",
+            "StartedAt": "2018-07-07T10:11:05Z",
+            "SHA256": "9aa6f1189fa01f852e595d4c847a76613aa157d14addbdeb2ac011f443c811d7",
+            "OS": null,
+            "ID": "052de338e02c4e013a4e9f5da8a87d5b",
             "MD5": "69e51e9f3a5ffbf6970a754ebda56edd"
         }
     }
@@ -399,7 +399,7 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "State": "fail", 
+            "State": "fail",
             "ID": "052de338e02c4e013a4e9f5da8a87d5b"
         }
     }
@@ -509,29 +509,29 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "Status": "pending", 
-            "SHA1": "bd762a2d655e174fd935cc8a5e928bea738d666a", 
-            "CompletedAt": null, 
-            "Filename": "Suspicious_File_To_Be_Scanned", 
-            "State": "wait", 
-            "SubmittedAt": "2018-10-24T12:52:52Z", 
-            "StartedAt": null, 
-            "SHA256": "71a0ea5ebcc449feb2ab8954c239b89d9d629c77011b30f330bb61af091d2ad6", 
-            "OS": "", 
-            "ID": "ec7cb57929fdf3f313f3b1238ff042ca", 
+            "Status": "pending",
+            "SHA1": "bd762a2d655e174fd935cc8a5e928bea738d666a",
+            "CompletedAt": null,
+            "Filename": "Suspicious_File_To_Be_Scanned",
+            "State": "wait",
+            "SubmittedAt": "2018-10-24T12:52:52Z",
+            "StartedAt": null,
+            "SHA256": "71a0ea5ebcc449feb2ab8954c239b89d9d629c77011b30f330bb61af091d2ad6",
+            "OS": "",
+            "ID": "ec7cb57929fdf3f313f3b1238ff042ca",
             "MD5": "653e9905e882f44015e1023dcde66451"
         }
-    }, 
+    },
     "File": {
-        "Info": "image/jpeg", 
-        "SHA1": "bd762a2d655e174fd935cc8a5e928bea738d666a", 
-        "Name": "Image from iOS.jpg", 
-        "Extension": "jpg", 
-        "Size": 5405984, 
-        "EntryID": "98@16", 
-        "SSDeep": "98304:tSfriWHhyAU04siL8QOTgOZLG9CG6/2N76EUs0ELRd7xs6f2UXCpofGZ4oOBsU0:8W6B4siQtTR1GU/2No+fd2X/9J", 
-        "SHA256": "71a0ea5ebcc449feb2ab8954c239b89d9d629c77011b30f330bb61af091d2ad6", 
-        "Type": "JPEG image data, JFIF standard 1.01, aspect ratio, density 72x72, segment length 16, Exif Standard: [TIFF image data, big-endian, direntries=2, orientation=upper-left], baseline, precision 8, 4032x3024, frames 3\n", 
+        "Info": "image/jpeg",
+        "SHA1": "bd762a2d655e174fd935cc8a5e928bea738d666a",
+        "Name": "Image from iOS.jpg",
+        "Extension": "jpg",
+        "Size": 5405984,
+        "EntryID": "98@16",
+        "SSDeep": "98304:tSfriWHhyAU04siL8QOTgOZLG9CG6/2N76EUs0ELRd7xs6f2UXCpofGZ4oOBsU0:8W6B4siQtTR1GU/2No+fd2X/9J",
+        "SHA256": "71a0ea5ebcc449feb2ab8954c239b89d9d629c77011b30f330bb61af091d2ad6",
+        "Type": "JPEG image data, JFIF standard 1.01, aspect ratio, density 72x72, segment length 16, Exif Standard: [TIFF image data, big-endian, direntries=2, orientation=upper-left], baseline, precision 8, 4032x3024, frames 3\n",
         "MD5": "653e9905e882f44015e1023dcde66451"
     }
 }
@@ -676,31 +676,31 @@
     "ThreatGrid": {
         "Sample": [
             {
-                "Status": "job_done", 
-                "SHA1": "e823f52975e7b2dff0c5873973682dd5c2eb2464", 
-                "CompletedAt": null, 
-                "ThreatScore": 64, 
-                "Filename": "url_as_file", 
-                "State": "succ", 
-                "SubmittedAt": "2018-07-04T10:25:53Z", 
-                "StartedAt": null, 
-                "SHA256": "da6de9ab720e1c763290fdad040113881e7d7443780283ff71970d3e160aa374", 
-                "OS": null, 
-                "ID": "47a9ca675ba509457bfd8cbe2a5b2189", 
+                "Status": "job_done",
+                "SHA1": "e823f52975e7b2dff0c5873973682dd5c2eb2464",
+                "CompletedAt": null,
+                "ThreatScore": 64,
+                "Filename": "url_as_file",
+                "State": "succ",
+                "SubmittedAt": "2018-07-04T10:25:53Z",
+                "StartedAt": null,
+                "SHA256": "da6de9ab720e1c763290fdad040113881e7d7443780283ff71970d3e160aa374",
+                "OS": null,
+                "ID": "47a9ca675ba509457bfd8cbe2a5b2189",
                 "MD5": "08db479ddee306addef0946194374795"
-            }, 
+            },
             {
-                "Status": "job_done", 
-                "SHA1": "e823f52975e7b2dff0c5873973682dd5c2eb2464", 
-                "CompletedAt": null, 
-                "ThreatScore": 64, 
-                "Filename": "url_as_file", 
-                "State": "succ", 
-                "SubmittedAt": "2018-07-03T20:29:04Z", 
-                "StartedAt": null, 
-                "SHA256": "da6de9ab720e1c763290fdad040113881e7d7443780283ff71970d3e160aa374", 
-                "OS": null, 
-                "ID": "18bbd9bd6bf3be6a2f842b72cc19668f", 
+                "Status": "job_done",
+                "SHA1": "e823f52975e7b2dff0c5873973682dd5c2eb2464",
+                "CompletedAt": null,
+                "ThreatScore": 64,
+                "Filename": "url_as_file",
+                "State": "succ",
+                "SubmittedAt": "2018-07-03T20:29:04Z",
+                "StartedAt": null,
+                "SHA256": "da6de9ab720e1c763290fdad040113881e7d7443780283ff71970d3e160aa374",
+                "OS": null,
+                "ID": "18bbd9bd6bf3be6a2f842b72cc19668f",
                 "MD5": "08db479ddee306addef0946194374795"
             }
         ]
@@ -758,17 +758,17 @@
         "Sample": {
             "Id": "9798717402a40970a2d043014d9a6170"
         }
-    }, 
+    },
     "File": {
-        "Info": "video/webm", 
-        "SHA1": "28d2b83753b713e3fb40d896ca3cbff13735f8c0", 
-        "Name": "9798717402a40970a2d043014d9a6170.webm", 
-        "Extension": "webm", 
-        "Size": 1038907, 
-        "EntryID": "117@16", 
-        "SSDeep": "24576:u5/QP+OM+62I73Hi6RQ7MM4uyeL+I2zcvu3AYApDl29d9xG:u/IM+6v3HpM4rI2L3jACLG", 
-        "SHA256": "ce7c155cde9d2d637a8f0e48c5e9d183a7c9756bc02d6ee505bfcda19f01573e", 
-        "Type": ", created: Thu Jul 11 00:22:26 1974, modified: Sun Jul 17 00:26:42 2033\n", 
+        "Info": "video/webm",
+        "SHA1": "28d2b83753b713e3fb40d896ca3cbff13735f8c0",
+        "Name": "9798717402a40970a2d043014d9a6170.webm",
+        "Extension": "webm",
+        "Size": 1038907,
+        "EntryID": "117@16",
+        "SSDeep": "24576:u5/QP+OM+62I73Hi6RQ7MM4uyeL+I2zcvu3AYApDl29d9xG:u/IM+6v3HpM4rI2L3jACLG",
+        "SHA256": "ce7c155cde9d2d637a8f0e48c5e9d183a7c9756bc02d6ee505bfcda19f01573e",
+        "Type": ", created: Thu Jul 11 00:22:26 1974, modified: Sun Jul 17 00:26:42 2033\n",
         "MD5": "7aeb2b515af0c5e1c8cfca234377e44f"
     }
 }
@@ -992,17 +992,17 @@
         "Sample": {
             "Id": "9798717402a40970a2d043014d9a6170"
         }
-    }, 
+    },
     "File": {
-        "Info": "application/json", 
-        "SHA1": "365d2e8f7d25c24040a0ea92ae2f14a49cb3a683", 
-        "Name": "9798717402a40970a2d043014d9a6170-processes.json", 
-        "Extension": "json", 
-        "Size": 526700, 
-        "EntryID": "131@16", 
-        "SSDeep": "1536:RWK0+6BL3y3bdvHruY3kvaRLERpXS2wsxWsw9I1O8PDHK1YR50l1n:RWK0+6BL3y3bdvHruY3kvaRLERpXS2w/", 
-        "SHA256": "12f9c229f0eaa2629871db1f7f61e67fa8604ec5a6674378e14c7168f6b95201", 
-        "Type": "ASCII text, with very long lines\n", 
+        "Info": "application/json",
+        "SHA1": "365d2e8f7d25c24040a0ea92ae2f14a49cb3a683",
+        "Name": "9798717402a40970a2d043014d9a6170-processes.json",
+        "Extension": "json",
+        "Size": 526700,
+        "EntryID": "131@16",
+        "SSDeep": "1536:RWK0+6BL3y3bdvHruY3kvaRLERpXS2wsxWsw9I1O8PDHK1YR50l1n:RWK0+6BL3y3bdvHruY3kvaRLERpXS2w/",
+        "SHA256": "12f9c229f0eaa2629871db1f7f61e67fa8604ec5a6674378e14c7168f6b95201",
+        "Type": "ASCII text, with very long lines\n",
         "MD5": "b586252a2a6b1681d07667a8c64daa70"
     }
 }
@@ -1058,17 +1058,17 @@
         "Sample": {
             "Id": "a6cc7ae4e3318e98d94e8a053dd72c47"
         }
-    }, 
+    },
     "File": {
-        "Info": "application/json", 
-        "SHA1": "21bcaf1f8cd8775225a44669f6aa41b9b926d00d", 
-        "Name": "a6cc7ae4e3318e98d94e8a053dd72c47-pcap.json", 
-        "Extension": "json", 
-        "Size": 23804, 
-        "EntryID": "138@16", 
-        "SSDeep": "192:OH03L8c+0SDn9rLLqs6xeewPVtSRhe48CawloZ8XskD5ZdPQ:l+5LweewPHoeNCRloZ8ZD9PQ", 
-        "SHA256": "23b70b0eb5e5d84b253173af6d1d4d955dd8521ff32ddbe3359ecb094d1563cb", 
-        "Type": "tcpdump capture file (little-endian) - version 2.4 (Ethernet, capture length 65536)\n", 
+        "Info": "application/json",
+        "SHA1": "21bcaf1f8cd8775225a44669f6aa41b9b926d00d",
+        "Name": "a6cc7ae4e3318e98d94e8a053dd72c47-pcap.json",
+        "Extension": "json",
+        "Size": 23804,
+        "EntryID": "138@16",
+        "SSDeep": "192:OH03L8c+0SDn9rLLqs6xeewPVtSRhe48CawloZ8XskD5ZdPQ:l+5LweewPHoeNCRloZ8ZD9PQ",
+        "SHA256": "23b70b0eb5e5d84b253173af6d1d4d955dd8521ff32ddbe3359ecb094d1563cb",
+        "Type": "tcpdump capture file (little-endian) - version 2.4 (Ethernet, capture length 65536)\n",
         "MD5": "5e95685b998cc805183bc6ff17850594"
     }
 }
@@ -1124,17 +1124,17 @@
         "Sample": {
             "Id": "9798717402a40970a2d043014d9a6170"
         }
-    }, 
+    },
     "File": {
-        "Info": "application/json", 
-        "SHA1": "eac159abe40125ad1a3233ffcc127f534df7f629", 
-        "Name": "9798717402a40970a2d043014d9a6170-warnings.json", 
-        "Extension": "json", 
-        "Size": 40, 
-        "EntryID": "145@16", 
-        "SSDeep": "3:YEm4ZBg/VB6n:YEm4ZBg/VB6n", 
-        "SHA256": "1518d6dc7f181113c884b693f15ea4872fd0f1e738ddb1210016829638cd4c8a", 
-        "Type": "ASCII text, with no line terminators\n", 
+        "Info": "application/json",
+        "SHA1": "eac159abe40125ad1a3233ffcc127f534df7f629",
+        "Name": "9798717402a40970a2d043014d9a6170-warnings.json",
+        "Extension": "json",
+        "Size": 40,
+        "EntryID": "145@16",
+        "SSDeep": "3:YEm4ZBg/VB6n:YEm4ZBg/VB6n",
+        "SHA256": "1518d6dc7f181113c884b693f15ea4872fd0f1e738ddb1210016829638cd4c8a",
+        "Type": "ASCII text, with no line terminators\n",
         "MD5": "f90b597ba419030d7d4bc97b21f79c90"
     }
 }
@@ -1219,19 +1219,19 @@
     "ThreatGrid": {
         "Sample": {
             "ArtifactsCount": {
-                "Extracted": 1, 
-                "Disk": 3, 
-                "Network": null, 
+                "Extracted": 1,
+                "Disk": 3,
+                "Network": null,
                 "Memory": 1
-            }, 
+            },
             "AnalysisSummary": {
-                "RegistryCount": 9, 
-                "SampleType": "9798717402a40970a2d043014d9a6170", 
-                "FileName": "Suspicious_File_To_Be_Scanned.pdf", 
-                "LastSeen": "2018-08-08T10:59:45Z", 
-                "SHA256": "ad5902780a08a34af6d6b1a654fdc6a66d08bf8e7bdaf0d5fc0d0b2ca250144f", 
+                "RegistryCount": 9,
+                "SampleType": "9798717402a40970a2d043014d9a6170",
+                "FileName": "Suspicious_File_To_Be_Scanned.pdf",
+                "LastSeen": "2018-08-08T10:59:45Z",
+                "SHA256": "ad5902780a08a34af6d6b1a654fdc6a66d08bf8e7bdaf0d5fc0d0b2ca250144f",
                 "FirstSeen": "2018-08-08T10:59:45Z"
-            }, 
+            },
             "ID": "9798717402a40970a2d043014d9a6170"
         }
     }
@@ -1330,18 +1330,18 @@
 <h5>Context Example</h5>
 <pre><code>{
     "DBotScore": {
-        "Vendor": "ThreatGrid", 
-        "Indicator": "58e5e66b31484a8529b80a18a33e0814", 
-        "Score": 1, 
+        "Vendor": "ThreatGrid",
+        "Indicator": "58e5e66b31484a8529b80a18a33e0814",
+        "Score": 1,
         "Type": "Sample ID"
-    }, 
+    },
     "ThreatGrid": {
         "Sample": {
-            "Count": 0, 
-            "ThreatFeeds": [], 
-            "MaxSeverity": 0, 
-            "Score": 0, 
-            "MaxConfidence": 0, 
+            "Count": 0,
+            "ThreatFeeds": [],
+            "MaxSeverity": 0,
+            "Score": 0,
+            "MaxConfidence": 0,
             "ID": "58e5e66b31484a8529b80a18a33e0814"
         }
     }
@@ -1398,13 +1398,13 @@
         "Sample": {
             "Id": "6712d1b712dda4aa63d6073477c367c4"
         }
-    }, 
+    },
     "InfoFile": {
-        "Info": "text/html; charset=utf-8", 
-        "Name": "6712d1b712dda4aa63d6073477c367c4-report.html", 
-        "Extension": "html", 
-        "EntryID": "175@16", 
-        "Type": "HTML document text, UTF-8 Unicode text, with very long lines, with CRLF line terminators\n", 
+        "Info": "text/html; charset=utf-8",
+        "Name": "6712d1b712dda4aa63d6073477c367c4-report.html",
+        "Extension": "html",
+        "EntryID": "175@16",
+        "Type": "HTML document text, UTF-8 Unicode text, with very long lines, with CRLF line terminators\n",
         "Size": 771771
     }
 }
@@ -1460,17 +1460,17 @@
         "DownloadedSamples": {
             "Id": "6712d1b712dda4aa63d6073477c367c4"
         }
-    }, 
+    },
     "File": {
-        "Info": "application/zip", 
-        "SHA1": "804ac7075ec66262cb267ad56acdff2f507e28a7", 
-        "Name": "6712d1b712dda4aa63d6073477c367c4-sample.zip", 
-        "Extension": "zip", 
-        "Size": 6972, 
-        "EntryID": "184@16", 
-        "SSDeep": "192:R56It4RdYQq8ViAAybtWGIEOV2H6ryqvA7SI0p:/6IKRdYXnyboVMuAk", 
-        "SHA256": "97ae6411493dea29497d94db876af85958d23cdccff574b86be96ad15a4a004a", 
-        "Type": "Zip archive data, at least v2.0 to extract\n", 
+        "Info": "application/zip",
+        "SHA1": "804ac7075ec66262cb267ad56acdff2f507e28a7",
+        "Name": "6712d1b712dda4aa63d6073477c367c4-sample.zip",
+        "Extension": "zip",
+        "Size": 6972,
+        "EntryID": "184@16",
+        "SSDeep": "192:R56It4RdYQq8ViAAybtWGIEOV2H6ryqvA7SI0p:/6IKRdYXnyboVMuAk",
+        "SHA256": "97ae6411493dea29497d94db876af85958d23cdccff574b86be96ad15a4a004a",
+        "Type": "Zip archive data, at least v2.0 to extract\n",
         "MD5": "6dec1a3d1e4df557c2dba87c16f75542"
     }
 }
@@ -1588,511 +1588,511 @@
 <pre><code>{
     "DBotScore": [
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "antivirus-flagged-artifact", 
-            "Score": 2, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "antivirus-flagged-artifact",
+            "Score": 2,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "pe-uses-dot-net", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "pe-uses-dot-net",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "dns-dynamic-domain", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "dns-dynamic-domain",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "memory-execute-readwrite", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "memory-execute-readwrite",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "modified-executable", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "modified-executable",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "netsh-firewall-generic", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "netsh-firewall-generic",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "network-snort-malware", 
-            "Score": 3, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "network-snort-malware",
+            "Score": 3,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "registry-autorun-key-data-dir", 
-            "Score": 2, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "registry-autorun-key-data-dir",
+            "Score": 2,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "firewall-exception-user-dir", 
-            "Score": 3, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "firewall-exception-user-dir",
+            "Score": 3,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "modified-file-in-user-dir", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "modified-file-in-user-dir",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "netsh-firewall-add", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "netsh-firewall-add",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "registry-autorun-key-modified", 
-            "Score": 2, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "registry-autorun-key-modified",
+            "Score": 2,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "malware-known-trojan-av", 
-            "Score": 3, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "malware-known-trojan-av",
+            "Score": 3,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "feed-domain-rat", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "feed-domain-rat",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "network-fast-flux-domain", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "network-fast-flux-domain",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "artifact-flagged-anomaly", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "artifact-flagged-anomaly",
+            "Score": 1,
             "Type": "IOC"
         }
-    ], 
+    ],
     "ThreatGrid": {
         "IOCs": [
             {
-                "Confidence": 80, 
-                "Severity": 80, 
+                "Confidence": 80,
+                "Severity": 80,
                 "Tags": [
                     "file"
-                ], 
+                ],
                 "IOCCategory": [
                     "forensics"
-                ], 
-                "Title": "Artifact Flagged by Antivirus", 
+                ],
+                "Title": "Artifact Flagged by Antivirus",
                 "Data.Path": [
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
                     "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "antivirus-flagged-artifact"
-            }, 
+            },
             {
-                "Confidence": 60, 
-                "Severity": 35, 
+                "Confidence": 60,
+                "Severity": 35,
                 "Tags": [
-                    "artifact", 
-                    "library", 
+                    "artifact",
+                    "library",
                     "PE"
-                ], 
+                ],
                 "IOCCategory": [
                     "attribute"
-                ], 
-                "Title": "Executable Artifact Uses .NET", 
+                ],
+                "Title": "Executable Artifact Uses .NET",
                 "Data.Path": [
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
                     "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe"
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "IOC": "pe-uses-dot-net"
-            }, 
+            },
             {
-                "Confidence": 60, 
-                "Severity": 50, 
+                "Confidence": 60,
+                "Severity": 50,
                 "Tags": [
                     "evasion"
-                ], 
+                ],
                 "IOCCategory": [
                     "network"
-                ], 
-                "Title": "Dynamic DNS Domain Detected", 
+                ],
+                "Title": "Dynamic DNS Domain Detected",
                 "Data.Path": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "IOC": "dns-dynamic-domain"
-            }, 
+            },
             {
-                "Confidence": 50, 
-                "Severity": 50, 
+                "Confidence": 50,
+                "Severity": 50,
                 "Tags": [
                     "memory"
-                ], 
+                ],
                 "IOCCategory": [
                     "evasion"
-                ], 
-                "Title": "Potential Code Injection Detected", 
+                ],
+                "Title": "Potential Code Injection Detected",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "memory-execute-readwrite"
-            }, 
+            },
             {
-                "Confidence": 100, 
-                "Severity": 60, 
+                "Confidence": 100,
+                "Severity": 60,
                 "Tags": [
-                    "executable", 
-                    "file", 
-                    "process", 
+                    "executable",
+                    "file",
+                    "process",
                     "PE"
-                ], 
+                ],
                 "IOCCategory": [
-                    "file", 
+                    "file",
                     "persistence"
-                ], 
-                "Title": "Process Modified an Executable File", 
+                ],
+                "Title": "Process Modified an Executable File",
                 "Data.Path": [
                     "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "modified-executable"
-            }, 
+            },
             {
-                "Confidence": 100, 
-                "Severity": 70, 
+                "Confidence": 100,
+                "Severity": 70,
                 "Tags": [
-                    "process", 
-                    "firewall", 
-                    "bypass", 
+                    "process",
+                    "firewall",
+                    "bypass",
                     "networking"
-                ], 
+                ],
                 "IOCCategory": [
                     "weakening"
-                ], 
-                "Title": "Netsh.exe Used to Alter Windows Firewall", 
+                ],
+                "Title": "Netsh.exe Used to Alter Windows Firewall",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "netsh-firewall-generic"
-            }, 
+            },
             {
-                "Confidence": 95, 
-                "Severity": 95, 
+                "Confidence": 95,
+                "Severity": 95,
                 "Tags": [
-                    "snort", 
+                    "snort",
                     "malware"
-                ], 
+                ],
                 "IOCCategory": [
                     "network"
-                ], 
-                "Title": "Network Stream Marked as Malware by Snort", 
+                ],
+                "Title": "Network Stream Marked as Malware by Snort",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "network-snort-malware"
-            }, 
+            },
             {
-                "Confidence": 100, 
-                "Severity": 90, 
+                "Confidence": 100,
+                "Severity": 90,
                 "Tags": [
-                    "process", 
-                    "autorun", 
-                    "registry", 
+                    "process",
+                    "autorun",
+                    "registry",
                     "compound"
-                ], 
+                ],
                 "IOCCategory": [
                     "persistence"
-                ], 
-                "Title": "Registry Persistence Mechanism Refers to an Executable in a User Data Directory", 
+                ],
+                "Title": "Registry Persistence Mechanism Refers to an Executable in a User Data Directory",
                 "Data.Path": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "IOC": "registry-autorun-key-data-dir"
-            }, 
+            },
             {
-                "Confidence": 95, 
-                "Severity": 100, 
+                "Confidence": 95,
+                "Severity": 100,
                 "Tags": [
-                    "file", 
-                    "trojan", 
-                    "artifact", 
+                    "file",
+                    "trojan",
+                    "artifact",
                     "compound"
-                ], 
+                ],
                 "IOCCategory": [
                     "weakening"
-                ], 
-                "Title": "User Directory FireWall Exception", 
+                ],
+                "Title": "User Directory FireWall Exception",
                 "Data.Path": [
                     "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "firewall-exception-user-dir"
-            }, 
+            },
             {
-                "Confidence": 80, 
-                "Severity": 70, 
+                "Confidence": 80,
+                "Severity": 70,
                 "Tags": [
-                    "executable", 
-                    "file", 
+                    "executable",
+                    "file",
                     "process"
-                ], 
+                ],
                 "IOCCategory": [
                     "file"
-                ], 
-                "Title": "Process Modified File in a User Directory", 
+                ],
+                "Title": "Process Modified File in a User Directory",
                 "Data.Path": [
                     "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "modified-file-in-user-dir"
-            }, 
+            },
             {
-                "Confidence": 100, 
-                "Severity": 70, 
+                "Confidence": 100,
+                "Severity": 70,
                 "Tags": [
-                    "process", 
-                    "firewall", 
-                    "bypass", 
+                    "process",
+                    "firewall",
+                    "bypass",
                     "networking"
-                ], 
+                ],
                 "IOCCategory": [
                     "weakening"
-                ], 
-                "Title": "Netsh.exe Used to Add Program to Firewall Allowed Program List", 
+                ],
+                "Title": "Netsh.exe Used to Add Program to Firewall Allowed Program List",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "netsh-firewall-add"
-            }, 
+            },
             {
-                "Confidence": 60, 
-                "Severity": 80, 
+                "Confidence": 60,
+                "Severity": 80,
                 "Tags": [
-                    "process", 
-                    "autorun", 
+                    "process",
+                    "autorun",
                     "registry"
-                ], 
+                ],
                 "IOCCategory": [
                     "persistence"
-                ], 
-                "Title": "Process Modified Autorun Registry Key Value", 
+                ],
+                "Title": "Process Modified Autorun Registry Key Value",
                 "Data.Path": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "IOC": "registry-autorun-key-modified"
-            }, 
+            },
             {
-                "Confidence": 95, 
-                "Severity": 100, 
+                "Confidence": 95,
+                "Severity": 100,
                 "Tags": [
-                    "trojan", 
+                    "trojan",
                     "RAT"
-                ], 
+                ],
                 "IOCCategory": [
                     "malware"
-                ], 
-                "Title": "Artifact Flagged as Known Trojan by Antivirus", 
+                ],
+                "Title": "Artifact Flagged as Known Trojan by Antivirus",
                 "Data.Path": [
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
                     "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "malware-known-trojan-av"
-            }, 
+            },
             {
-                "Confidence": 25, 
-                "Severity": 25, 
+                "Confidence": 25,
+                "Severity": 25,
                 "Tags": [
-                    "communications", 
+                    "communications",
                     "command and control"
-                ], 
+                ],
                 "IOCCategory": [
                     "network"
-                ], 
-                "Title": "RAT Queried Domain", 
+                ],
+                "Title": "RAT Queried Domain",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "feed-domain-rat"
-            }, 
+            },
             {
-                "Confidence": 20, 
-                "Severity": 35, 
+                "Confidence": 20,
+                "Severity": 35,
                 "Tags": [
-                    "network", 
-                    "ttl", 
-                    "dns", 
-                    "fast flux", 
+                    "network",
+                    "ttl",
+                    "dns",
+                    "fast flux",
                     "command and control"
-                ], 
+                ],
                 "IOCCategory": [
                     "network"
-                ], 
-                "Title": "DNS Response Contains Low Time to Live (TTL) Value", 
+                ],
+                "Title": "DNS Response Contains Low Time to Live (TTL) Value",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "network-fast-flux-domain"
-            }, 
+            },
             {
-                "Confidence": 80, 
-                "Severity": 60, 
+                "Confidence": 80,
+                "Severity": 60,
                 "Tags": [
-                    "anomaly", 
+                    "anomaly",
                     "static"
-                ], 
+                ],
                 "IOCCategory": [
                     "forensics"
-                ], 
-                "Title": "Static Analysis Flagged Artifact As Anomalous", 
+                ],
+                "Title": "Static Analysis Flagged Artifact As Anomalous",
                 "Data.Path": [
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
                     "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe"
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d", 
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d",
                     "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d"
-                ], 
+                ],
                 "IOC": "artifact-flagged-anomaly"
             }
         ]
@@ -2146,10 +2146,10 @@
 <pre><code>{
     "ThreatGrid": {
         "User": {
-            "Organization": 42, 
-            "Login": "String", 
-            "Role": "org-admin", 
-            "Email": "String", 
+            "Organization": 42,
+            "Login": "String",
+            "Role": "org-admin",
+            "Email": "String",
             "Name": "String"
         }
     }
@@ -2221,7 +2221,7 @@
         "User": {
             "RateLimit": [
                 {
-                    "SubmissionWaitSeconds": 0, 
+                    "SubmissionWaitSeconds": 0,
                     "SubmissionsAvailable": null
                 }
             ]
@@ -2363,9 +2363,9 @@
         "User": {
             "RateLimit": [
                 {
-                    "SubmissionsAvailable": 47, 
-                    "SubmissionWaitSeconds": 0, 
-                    "Minutes": 1440, 
+                    "SubmissionsAvailable": 47,
+                    "SubmissionWaitSeconds": 0,
+                    "Minutes": 1440,
                     "Samples": 50
                 }
             ]
@@ -2522,48 +2522,48 @@
                 "Id": {
                     "Annotations": [
                         {
-                            "IP": "192.168.1.11", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "192.168.1.11",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
-                        }, 
+                        },
                         {
-                            "IP": "255.255.255.255", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "255.255.255.255",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
-                        }, 
+                        },
                         {
-                            "IP": "0.0.0.0", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "0.0.0.0",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
-                        }, 
+                        },
                         {
-                            "IP": "192.168.1.1", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "192.168.1.1",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
-                        }, 
+                        },
                         {
-                            "IP": "192.168.1.255", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "192.168.1.255",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
                         }
                     ]
@@ -2704,7 +2704,7 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "Details": "/api/v2/samples/b9218ef55a1bc6d50456f32dc5e31fba", 
+            "Details": "/api/v2/samples/b9218ef55a1bc6d50456f32dc5e31fba",
             "Result": "b9218ef55a1bc6d50456f32dc5e31fba"
         }
     }
@@ -2858,7 +2858,7 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "State": "succ", 
+            "State": "succ",
             "ID": "9798717402a40970a2d043014d9a6170"
         }
     }

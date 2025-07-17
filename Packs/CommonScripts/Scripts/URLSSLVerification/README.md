@@ -1,6 +1,7 @@
 Verifies the URL's/URL redirect chain for SSL certificate.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Verifies the URL's/URL redirect chain for SSL certificate.
 | Script Type | python |
 | Tags | url, Enrichment |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +18,7 @@ Verifies the URL's/URL redirect chain for SSL certificate.
 | url | Comma separated list of URLs to verify. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -5,7 +5,6 @@ This integration was integrated and tested with version 3.3.0 of RunZero
 
 ## Configure RunZero in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -14,67 +13,72 @@ This integration was integrated and tested with version 3.3.0 of RunZero
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### runzero-asset-search
+
 ***
 Get assets.
-
 
 #### Base Command
 
 `runzero-asset-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_ids | A comma-separated list of asset IDs. | Optional | 
-| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
-| ips | A comma-separated list of IP addresses. | Optional | 
-| hostnames | A comma-separated list of hostnames. | Optional | 
-| display_attributes | Whether to include the attributes section in the returned result. Possible values are: True, False. | Optional | 
-| display_services | Whether to include a services section in the returned result. Possible values are: True, False. | Optional | 
-| limit | Limit the number of assets returned. Default is 50. | Optional | 
-
+| asset_ids | A comma-separated list of asset IDs. | Optional |
+| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional |
+| ips | A comma-separated list of IP addresses. | Optional |
+| hostnames | A comma-separated list of hostnames. | Optional |
+| display_attributes | Whether to include the attributes section in the returned result. Possible values are: True, False. | Optional |
+| display_services | Whether to include a services section in the returned result. Possible values are: True, False. | Optional |
+| limit | Limit the number of assets returned. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RunZero.Asset.ID | UUID | Asset service ID. | 
-| RunZero.Asset.Addresses | Array | Asset addresses. | 
-| RunZero.Asset.Asset_Status | Boolean | Asset status. | 
-| RunZero.Asset.Hostname | Array | Asset hostname. | 
-| RunZero.Asset.OS | String | Operating system version. | 
-| RunZero.Asset.Type | String | Asset type. | 
-| RunZero.Asset.Hardware | String | Asset hardware. | 
-| RunZero.Asset.Outlier | String | Asset outlier score. | 
-| RunZero.Asset.MAC_Vendor | String | Asset vendor MAC address is allocated to. | 
-| RunZero.Asset.MAC_Age | Integer | Asset date MAC address was allocated. | 
-| RunZero.Asset.MAC | UUID | Asset MAC address. | 
-| RunZero.Asset.OS_EOL | String | Asset operating system end-of-life date. | 
-| RunZero.Asset.Sources | String | Asset data sources. | 
-| RunZero.Asset.Comments | String | Comments attached to the asset. | 
-| RunZero.Asset.Tags | Array | Tags attached to the asset. | 
-| RunZero.Asset.Svcs | Integer | Number of total service count. | 
-| RunZero.Asset.TCP | Integer | Asset TCP service count. | 
-| RunZero.Asset.UDP | Integer | Asset UDP service count. | 
-| RunZero.Asset.ICMP | Integer | Asset ICMP response. | 
-| RunZero.Asset.ARP | Integer | Asset ARP response. | 
-| RunZero.Asset.SW | Integer | Asset identified software. | 
-| RunZero.Asset.Vulns | Integer | Asset identified vulnerability count. | 
-| RunZero.Asset.RTT/ms | Integer | Asset round-trip time latency. | 
-| RunZero.Asset.Hops | Integer | Asset estimated hop count from scanner. | 
-| RunZero.Asset.Detected | String | Asset method of detection. | 
-| RunZero.Asset.First_Seen | String | Datetime of when the asset was first seen. | 
-| RunZero.Asset.Last_Seen | String | Datetime of when the asset was last seen. | 
-| RunZero.Asset.Explorer | String | Name of the RunZero explorer which most recently found the asset. | 
-| RunZero.Asset.Hosted_Zone | String | Asset hosted zone. | 
-| RunZero.Asset.Site | String | Asset site name. | 
+| RunZero.Asset.ID | UUID | Asset service ID. |
+| RunZero.Asset.Addresses | Array | Asset addresses. |
+| RunZero.Asset.Asset_Status | Boolean | Asset status. |
+| RunZero.Asset.Hostname | Array | Asset hostname. |
+| RunZero.Asset.OS | String | Operating system version. |
+| RunZero.Asset.Type | String | Asset type. |
+| RunZero.Asset.Hardware | String | Asset hardware. |
+| RunZero.Asset.Outlier | String | Asset outlier score. |
+| RunZero.Asset.MAC_Vendor | String | Asset vendor MAC address is allocated to. |
+| RunZero.Asset.MAC_Age | Integer | Asset date MAC address was allocated. |
+| RunZero.Asset.MAC | UUID | Asset MAC address. |
+| RunZero.Asset.OS_EOL | String | Asset operating system end-of-life date. |
+| RunZero.Asset.Sources | String | Asset data sources. |
+| RunZero.Asset.Comments | String | Comments attached to the asset. |
+| RunZero.Asset.Tags | Array | Tags attached to the asset. |
+| RunZero.Asset.Svcs | Integer | Number of total service count. |
+| RunZero.Asset.TCP | Integer | Asset TCP service count. |
+| RunZero.Asset.UDP | Integer | Asset UDP service count. |
+| RunZero.Asset.ICMP | Integer | Asset ICMP response. |
+| RunZero.Asset.ARP | Integer | Asset ARP response. |
+| RunZero.Asset.SW | Integer | Asset identified software. |
+| RunZero.Asset.Vulns | Integer | Asset identified vulnerability count. |
+| RunZero.Asset.RTT/ms | Integer | Asset round-trip time latency. |
+| RunZero.Asset.Hops | Integer | Asset estimated hop count from scanner. |
+| RunZero.Asset.Detected | String | Asset method of detection. |
+| RunZero.Asset.First_Seen | String | Datetime of when the asset was first seen. |
+| RunZero.Asset.Last_Seen | String | Datetime of when the asset was last seen. |
+| RunZero.Asset.Explorer | String | Name of the RunZero explorer which most recently found the asset. |
+| RunZero.Asset.Hosted_Zone | String | Asset hosted zone. |
+| RunZero.Asset.Site | String | Asset site name. |
 
 #### Command example
+
 ```!runzero-asset-search```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -192,14 +196,17 @@ Get assets.
 #### Human Readable Output
 
 >### Asset
+>
 >|ARP|Addresses|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|RTT/ms|SW|Site|Sources|Svcs|TCP|Tags|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 192.168.1.91,<br/>fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | bf707048-7ce9-4249-a58c-0aaa257d69f0 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0.84 | 2 | Primary | runZero | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | Server | 4 | 0 |
 
-
 #### Command example
+
 ```!runzero-asset-search hostnames=RHEL85```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -317,14 +324,17 @@ Get assets.
 #### Human Readable Output
 
 >### Asset
+>
 >|ARP|Addresses|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|RTT/ms|SW|Site|Sources|Svcs|TCP|Tags|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 192.168.1.91,<br/>fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | bf707048-7ce9-4249-a58c-0aaa257d69f0 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0.84 | 2 | Primary | runZero | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | Server | 4 | 0 |
 
-
 #### Command example
+
 ```!runzero-asset-search ips=192.168.1.91,192.168.1.1```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -442,99 +452,105 @@ Get assets.
 #### Human Readable Output
 
 >### Asset
+>
 >|ARP|Addresses|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|RTT/ms|SW|Site|Sources|Svcs|TCP|Tags|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 192.168.1.91,<br/>fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | bf707048-7ce9-4249-a58c-0aaa257d69f0 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0.84 | 2 | Primary | runZero | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | Server | 4 | 0 |
 
-
 #### Command example
-```!runzero-asset-search search=os:Windows ```
+
+```!runzero-asset-search search=os:Windows```
+
 #### Human Readable Output
 
 >### Asset
+>
 >**No entries.**
 
-
 ### runzero-asset-delete
+
 ***
 Bulk delete assets.
-
 
 #### Base Command
 
 `runzero-asset-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_ids | A comma-separated list of UUIDs of the asset to delete. | Required | 
-
+| asset_ids | A comma-separated list of UUIDs of the asset to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-service-search
+
 ***
 Get services.
-
 
 #### Base Command
 
 `runzero-service-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_id | UUID of the service to retrieve. | Optional | 
-| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
-| service_addresses | A comma-separated list of services by addresses. | Optional | 
-| display_attributes | Whether to include an attributes section in the returned result. Possible values are: True, False. | Optional | 
-| limit | Limit the number of assets returned. Default is 50. | Optional | 
-
+| service_id | UUID of the service to retrieve. | Optional |
+| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional |
+| service_addresses | A comma-separated list of services by addresses. | Optional |
+| display_attributes | Whether to include an attributes section in the returned result. Possible values are: True, False. | Optional |
+| limit | Limit the number of assets returned. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RunZero.Service.ID | UUID | Service ID. | 
-| RunZero.Service.Address | String | Service addresses. | 
-| RunZero.Service.Asset_Status | Boolean | Service asset status. | 
-| RunZero.Service.Hostname | Array | Service hostname. | 
-| RunZero.Service.Transport | String | Service transport. | 
-| RunZero.Service.Port | Integer | Service port. | 
-| RunZero.Service.Protocol | Array | Service protocol. | 
-| RunZero.Service.VHost | Array | Service virtual host. | 
-| RunZero.Service.Summary | Array | Service summary. | 
-| RunZero.Service.Hostname | Array | Service hostname. | 
-| RunZero.Service.OS | String | Service operating system version. | 
-| RunZero.Service.Type | String | Service type. | 
-| RunZero.Service.Hardware | String | Service hardware. | 
-| RunZero.Service.Outlier | String | Service outlier score. | 
-| RunZero.Service.MAC_Vendor | String | Service vendor MAC address is allocated to. | 
-| RunZero.Service.MAC_Age | Integer | Service date MAC address was allocated. | 
-| RunZero.Service.MAC | UUID | Service MAC address. | 
-| RunZero.Service.OS_EOL | String | Service operating system end-of-life. | 
-| RunZero.Service.Comments | String | Comments attached to the service. | 
-| RunZero.Service.Tags | Array | Tags attached to the service. | 
-| RunZero.Service.Svcs | Integer | Total service count. | 
-| RunZero.Service.TCP | Integer | TCP service count. | 
-| RunZero.Service.UDP | Integer | UDP service count. | 
-| RunZero.Service.ICMP | Integer | ICMP response. | 
-| RunZero.Service.ARP | Integer | ARP response. | 
-| RunZero.Service.SW | Integer | Identified software. | 
-| RunZero.Service.Vulns | Integer | Identified vulnerabilities. | 
-| RunZero.Service.RTT/ms | Integer | Service round-trip time latency. | 
-| RunZero.Service.Hops | Integer | Estimated hop count from scanner. | 
-| RunZero.Service.Detected | String | Method of detection. | 
-| RunZero.Service.First_Seen | String | Datetime of when the service was first seen. | 
-| RunZero.Service.Last_Seen | String | Datetime of when the service was last seen. | 
-| RunZero.Service.Explorer | String | Name of the RunZero explorer which most recently found the asset. | 
-| RunZero.Service.Hosted_Zone | String | Service hosted zone. | 
-| RunZero.Service.Site | String | Service site name. | 
+| RunZero.Service.ID | UUID | Service ID. |
+| RunZero.Service.Address | String | Service addresses. |
+| RunZero.Service.Asset_Status | Boolean | Service asset status. |
+| RunZero.Service.Hostname | Array | Service hostname. |
+| RunZero.Service.Transport | String | Service transport. |
+| RunZero.Service.Port | Integer | Service port. |
+| RunZero.Service.Protocol | Array | Service protocol. |
+| RunZero.Service.VHost | Array | Service virtual host. |
+| RunZero.Service.Summary | Array | Service summary. |
+| RunZero.Service.Hostname | Array | Service hostname. |
+| RunZero.Service.OS | String | Service operating system version. |
+| RunZero.Service.Type | String | Service type. |
+| RunZero.Service.Hardware | String | Service hardware. |
+| RunZero.Service.Outlier | String | Service outlier score. |
+| RunZero.Service.MAC_Vendor | String | Service vendor MAC address is allocated to. |
+| RunZero.Service.MAC_Age | Integer | Service date MAC address was allocated. |
+| RunZero.Service.MAC | UUID | Service MAC address. |
+| RunZero.Service.OS_EOL | String | Service operating system end-of-life. |
+| RunZero.Service.Comments | String | Comments attached to the service. |
+| RunZero.Service.Tags | Array | Tags attached to the service. |
+| RunZero.Service.Svcs | Integer | Total service count. |
+| RunZero.Service.TCP | Integer | TCP service count. |
+| RunZero.Service.UDP | Integer | UDP service count. |
+| RunZero.Service.ICMP | Integer | ICMP response. |
+| RunZero.Service.ARP | Integer | ARP response. |
+| RunZero.Service.SW | Integer | Identified software. |
+| RunZero.Service.Vulns | Integer | Identified vulnerabilities. |
+| RunZero.Service.RTT/ms | Integer | Service round-trip time latency. |
+| RunZero.Service.Hops | Integer | Estimated hop count from scanner. |
+| RunZero.Service.Detected | String | Method of detection. |
+| RunZero.Service.First_Seen | String | Datetime of when the service was first seen. |
+| RunZero.Service.Last_Seen | String | Datetime of when the service was last seen. |
+| RunZero.Service.Explorer | String | Name of the RunZero explorer which most recently found the asset. |
+| RunZero.Service.Hosted_Zone | String | Service hosted zone. |
+| RunZero.Service.Site | String | Service site name. |
 
 #### Command example
+
 ```!runzero-service-search```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -2033,6 +2049,7 @@ Get services.
 #### Human Readable Output
 
 >### Service
+>
 >|ARP|Address|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|Port|Protocol|RTT/ms|SW|Site|Summary|Svcs|TCP|Tags|Transport|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | 04d60ddf-8d28-494c-8186-8cd514e5b9cb | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | rpcbind,<br/>sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | udp | Server | 4 | 0 |
@@ -2047,10 +2064,12 @@ Get services.
 >| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | e9e37c0a-a952-40b2-880d-077df0434794 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 9090 | http,<br/>tls | 0.84 | 2 | Primary | HTTP/1.1 301 Moved Permanently<br/>Content-Type: text/html<br/>Location: https:<span>//</span>192.168.1.91:9090/<br/>Content-Length: 73<br/>X-DNS-Prefetch-Control: off<br/>Referrer-Policy: no-referrer<br/>X-Content-Type-Options: nosniff<br/>Cross-Origin-Resource-Policy: same-origin<br/><br/><html><head><title>Moved</title></head><body>Please use TLS</body></html> | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | tcp | Server | 4 | 0 |
 >| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | f9917aca-cc6b-4c49-96fa-4cd00e748719 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | tcp | Server | 4 | 0 |
 
-
 #### Command example
+
 ```!runzero-service-search service_addresses=192.168.1.2,192.168.1.91 limit=3 display_attributes=True```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -2527,85 +2546,91 @@ Get services.
 #### Human Readable Output
 
 >### Service
+>
 >|ARP|Address|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|Port|Protocol|RTT/ms|SW|Site|Summary|Svcs|TCP|Tags|Transport|Type|UDP|Vulns|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | 4cdaab83-a513-42e1-8ff1-ba1d70c64cc3 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 22 | ssh | 0.84 | 2 | Primary | SSH-2.0-OpenSSH_8.0 | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | tcp | Server | 4 | 0 |
 >| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | 89308b21-7c53-4a06-8e65-616f2dea019e | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 5353 | mdns | 0.84 | 2 | Primary |  | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | udp | Server | 4 | 0 |
 >| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br/>RHEL85.LOCALDOMAIN | 1 | 9b65b530-1540-47fb-9638-1f49081b2a09 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | rpcbind,<br/>sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | ThisTag: Value<br/>ThisTag-ThisTag2: <br/>ThisTag2: Value<br/>try: value<br/>try3: value3 | udp | Server | 4 | 0 |
 
-
 #### Command example
-```!runzero-service-search search=os:Windows ```
+
+```!runzero-service-search search=os:Windows```
+
 #### Human Readable Output
 
 >### Service
+>
 >**No entries.**
 
-
 ### runzero-service-delete
+
 ***
 Delete a service.
-
 
 #### Base Command
 
 `runzero-service-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_id | UUID of the service to delete. | Required | 
-
+| service_id | UUID of the service to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-comment-add
+
 ***
 Add a comment or override an existing asset comment.
-
 
 #### Base Command
 
 `runzero-comment-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Asset ID. | Required | 
-| comment | Comment to add. | Required | 
-
+| asset_id | Asset ID. | Required |
+| comment | Comment to add. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-tag-add
+
 ***
 Add tag or tags to the asset.
-
 
 #### Base Command
 
 `runzero-tag-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Asset ID. | Required | 
-| tags | Tags to add to the asset. | Required | 
-
+| asset_id | Asset ID. | Required |
+| tags | Tags to add to the asset. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-quota-get
+
 ***
 Get information about the API key used. Type, Limit, usage etc.
-
 
 #### Base Command
 
 `runzero-quota-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -2614,24 +2639,27 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RunZero.Quota.id | UUID | API key ID. | 
-| RunZero.Quota.client_id | UUID | Client ID. | 
-| RunZero.Quota.organization_id | UUID | Organization ID. | 
-| RunZero.Quota.created_at | Integer | Time the API was created. | 
-| RunZero.Quota.comment | String | API key comment. | 
-| RunZero.Quota.last_used_at | Integer | The time when the API key was last seen. | 
-| RunZero.Quota.last_used_ip | String | The IP address last used by the API key. | 
-| RunZero.Quota.last_used_ua | String | The user agent last used by the API key. | 
-| RunZero.Quota.counter | Integer | The API key usage counter. | 
-| RunZero.Quota.usage_today | Integer | The API key usage today. | 
-| RunZero.Quota.usage_limit | Integer | The API key usage limit. | 
-| RunZero.Quota.token | String | The API key. | 
-| RunZero.Quota.inactive | String | Whether the API key is inactive. | 
-| RunZero.Quota.type | String | API key type \(org, etc.\). | 
+| RunZero.Quota.id | UUID | API key ID. |
+| RunZero.Quota.client_id | UUID | Client ID. |
+| RunZero.Quota.organization_id | UUID | Organization ID. |
+| RunZero.Quota.created_at | Integer | Time the API was created. |
+| RunZero.Quota.comment | String | API key comment. |
+| RunZero.Quota.last_used_at | Integer | The time when the API key was last seen. |
+| RunZero.Quota.last_used_ip | String | The IP address last used by the API key. |
+| RunZero.Quota.last_used_ua | String | The user agent last used by the API key. |
+| RunZero.Quota.counter | Integer | The API key usage counter. |
+| RunZero.Quota.usage_today | Integer | The API key usage today. |
+| RunZero.Quota.usage_limit | Integer | The API key usage limit. |
+| RunZero.Quota.token | String | The API key. |
+| RunZero.Quota.inactive | String | Whether the API key is inactive. |
+| RunZero.Quota.type | String | API key type \(org, etc.\). |
 
 #### Command example
+
 ```!runzero-quota-get```
+
 #### Context Example
+
 ```json
 {
     "RunZero": {
@@ -2659,80 +2687,81 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Quota
+>
 >|counter|usage_limit|usage_today|
 >|---|---|---|
 >| 454 | 1672325319 | 25 |
 
-
 ### runzero-tag-delete
+
 ***
 Delete tags for specific asset.
-
 
 #### Base Command
 
 `runzero-tag-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Asset ID from which to remove specified tags. | Required | 
-| tags | A comma separated list of tags to delete. | Required | 
-
+| asset_id | Asset ID from which to remove specified tags. | Required |
+| tags | A comma separated list of tags to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### runzero-wireless-lan-search
+
 ***
 Get all wireless LANs.
-
 
 #### Base Command
 
 `runzero-wireless-lan-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| wireless_id | The wireless LAN ID. | Optional | 
-| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
-| limit | Limit the number of wireless LAN returned. Default is 50. | Optional | 
-
+| wireless_id | The wireless LAN ID. | Optional |
+| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional |
+| limit | Limit the number of wireless LAN returned. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RunZero.WirelessLAN.ID | UUID | Wireless LAN ID. | 
-| RunZero.WirelessLAN.ESSID | String | Wireless LAN extended service set identifier \(ESSID\). | 
-| RunZero.WirelessLAN.BSSID | String | Wireless LAN basic service set identifier \(BSSID\). | 
-| RunZero.WirelessLAN.Vendor | String | Wireless LAN vendor. | 
-| RunZero.WirelessLAN.Family | String | Wireless LAN family. | 
-| RunZero.WirelessLAN.Type | String | Wireless LAN type. | 
-| RunZero.WirelessLAN.Auth | String | Wireless LAN auth. | 
-| RunZero.WirelessLAN.Enc | String | Wireless LAN encryption. | 
-| RunZero.WirelessLAN.Sig | Integer | WirelessLAN signal strength. | 
-| RunZero.WirelessLAN.Int | String | Wireless LAN interface. | 
-| RunZero.WirelessLAN.Additional | Array | Wireless LAN additional information. | 
-| RunZero.WirelessLAN.First_seen | String | Datetime of when the wireless LAN was first seen. | 
-| RunZero.WirelessLAN.Last_seen | String | Datetime of when the wireless LAN was last seen. | 
-| RunZero.WirelessLAN.Site | String | Wireless LAN site name. | 
+| RunZero.WirelessLAN.ID | UUID | Wireless LAN ID. |
+| RunZero.WirelessLAN.ESSID | String | Wireless LAN extended service set identifier \(ESSID\). |
+| RunZero.WirelessLAN.BSSID | String | Wireless LAN basic service set identifier \(BSSID\). |
+| RunZero.WirelessLAN.Vendor | String | Wireless LAN vendor. |
+| RunZero.WirelessLAN.Family | String | Wireless LAN family. |
+| RunZero.WirelessLAN.Type | String | Wireless LAN type. |
+| RunZero.WirelessLAN.Auth | String | Wireless LAN auth. |
+| RunZero.WirelessLAN.Enc | String | Wireless LAN encryption. |
+| RunZero.WirelessLAN.Sig | Integer | WirelessLAN signal strength. |
+| RunZero.WirelessLAN.Int | String | Wireless LAN interface. |
+| RunZero.WirelessLAN.Additional | Array | Wireless LAN additional information. |
+| RunZero.WirelessLAN.First_seen | String | Datetime of when the wireless LAN was first seen. |
+| RunZero.WirelessLAN.Last_seen | String | Datetime of when the wireless LAN was last seen. |
+| RunZero.WirelessLAN.Site | String | Wireless LAN site name. |
 
 ### runzero-wireless-lan-delete
+
 ***
 Remove a wireless LAN.
-
 
 #### Base Command
 
 `runzero-wireless-lan-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| wireless_id | UUID of the wireless LAN to remove. | Required | 
-
+| wireless_id | UUID of the wireless LAN to remove. | Required |
 
 #### Context Output
 

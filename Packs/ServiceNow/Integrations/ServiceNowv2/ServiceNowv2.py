@@ -1,6 +1,7 @@
 import mimetypes
 import re
 from collections.abc import Callable, Iterable
+from urllib.parse import quote
 
 import demistomock as demisto  # noqa: F401
 
@@ -9,6 +10,10 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
+
+import jwt
+from datetime import datetime, timedelta, UTC
+import uuid
 
 DEFAULT_FETCH_TIME = "10 minutes"
 MAX_RETRY = 9
@@ -626,6 +631,7 @@ class Client(BaseClient):
         look_back: int = 0,
         use_display_value: bool = False,
         display_date_format: str = "",
+        jwt_params: dict | None = None,
     ):
         """
 
@@ -657,6 +663,7 @@ class Client(BaseClient):
         self._password = password
         self._proxies = handle_proxy(proxy_param_name="proxy", checkbox_default_value=False)
         self.use_oauth = bool(oauth_params)
+        self.use_jwt = bool(jwt_params)
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -685,8 +692,72 @@ class Client(BaseClient):
                 proxy=oauth_params.get("proxy", False),
                 headers=oauth_params.get("headers", ""),
             )
+            if jwt_params:
+                self.jwt_params = jwt_params
+                self.snow_client.set_jwt(self.create_jwt())
         else:
             self._auth = (self._username, self._password)
+
+    def check_private_key(self, private_key) -> str:
+        """_summary_
+
+        Args:
+            private_key (Dict): The user Private key, inside of a dictionary
+            since the private key type is 9.
+        Raises:
+            ValueError: : If the private key format (PEM) is incorrect, a ValueError will be raised.
+        Returns:
+            str: key without whitespaces and invalid characters
+        """
+        # Define the start and end markers
+        start_marker = "-----BEGIN PRIVATE KEY-----"
+        end_marker = "-----END PRIVATE KEY-----"
+        if isinstance(private_key, dict):
+            private_key = private_key.get("password")
+
+        if not private_key.startswith(start_marker) or not private_key.endswith(end_marker):
+            raise ValueError("Invalid private key format")
+        # Remove the markers and replace whitespaces with '\n'
+        key_content = (
+            private_key.replace(start_marker, "").replace(end_marker, "").replace(" ", "\n").replace("\n\n", "\n").strip()
+        )
+        # Reattach the markers
+        processed_key = f"{start_marker}\n{key_content}\n{end_marker}"
+        return processed_key
+
+    def create_jwt(self):
+        """
+        This function generate the JWT from the use credential
+
+        Returns:
+            JWT token
+        """
+        # Private key (PEM format)
+        private_key = self.check_private_key(self.jwt_params["private_key"])
+
+        # Header
+        header = {
+            "alg": "RS256",  # Signing algorithm
+            "typ": "JWT",  # Token type
+            "kid": self.jwt_params.get("kid"),  # From ServiceNow (see Jwt Verifier Maps )
+        }
+        self.exp_time = datetime.now(UTC) + timedelta(hours=1)  # Expiry time 1 hour
+        # Payload
+        payload = {
+            "sub": self.jwt_params.get("sub"),  # Subject (e.g., user ID)
+            "aud": self.snow_client.client_id,  # serviceNow client_id
+            "iss": self.snow_client.client_id,  # can be serviceNow client_id
+            "iat": datetime.now(UTC),  # Issued at
+            "exp": self.exp_time,
+            "jti": str(uuid.uuid4()),  # Unique JWT ID
+        }
+        try:
+            # Generate the JWT
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        except Exception:
+            # Generate again if failed
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        return jwt_token
 
     def generic_request(
         self,
@@ -1067,6 +1138,7 @@ class Client(BaseClient):
             Response from API.
         """
         body = generate_body(fields, custom_fields)
+
         query_params = {"sysparm_input_display_value": input_display_value}
         return self.send_request(f"table/{table_name}", "POST", params=query_params, body=body)
 
@@ -1262,6 +1334,10 @@ class Client(BaseClient):
         """
         return self.send_request(f"change/{sys_id}/task", "GET", cr_api=True)
 
+    @property
+    def base_url(self):
+        return self._base_url
+
 
 def get_ticket_command(client: Client, args: dict):
     """Get a ticket.
@@ -1391,12 +1467,13 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     return human_readable, entry_context, result, True
 
 
-def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def create_ticket_command(client: Client, args: dict, is_quick_action: bool = False) -> tuple[str, dict, dict, bool]:
     """Create a ticket.
 
     Args:
         client: Client object with request.
         args: Usually demisto.args()
+        is_quick_action: Whether the command is a quick action
 
     Returns:
         Demisto Outputs.
@@ -1457,11 +1534,33 @@ def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
     else:
         additional_fields_keys = list(args.keys())
 
+    instance_url = client.base_url.replace("/api/now/", "/")
+
+    ticket_type = ticket.get("sys_class_name")
+    ticket_sys_id = ticket.get("sys_id")
+    ticket_name = ticket.get("number")
+
+    target_uri_path = f"{ticket_type}.do?sys_id={ticket_sys_id}"
+
+    encoded_uri = quote(target_uri_path)
+
+    ticket_url = f"{instance_url}nav_to.do?uri={encoded_uri}"
+    mirror_obj = MirrorObject(object_url=ticket_url, object_id=ticket_sys_id, object_name=ticket_name).to_context()
+
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
         "Ticket(val.ID===obj.ID)": created_ticket_context,
         "ServiceNow.Ticket(val.ID===obj.ID)": created_ticket_context,
     }
+    if is_quick_action:
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["text"],
+                "Contents": "MirrorObject created successfully.",
+                "ExtendedPayload": {"MirrorObject": mirror_obj},
+            }
+        )
 
     return human_readable, entry_context, result, True
 
@@ -2705,7 +2804,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     Test the instance configurations when using basic authorization.
     """
     # Notify the user that test button can't be used when using OAuth 2.0:
-    if client.use_oauth:
+    if client.use_oauth and not client.use_jwt:
         raise Exception(
             "Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login "
             "command followed by the !servicenow-oauth-test command to test the instance."
@@ -2836,6 +2935,69 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
         raise Exception(f"Failed to convert {utc_time} to datetime object. ERROR: {e}")
     offset = utc_time - local_time_dt
     return offset
+
+
+def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    get-remote-data-preview command: Returns a standardized preview of a ServiceNow ticket.
+
+    Args:
+        client: XSOAR client to use.
+        args: Dictionary containing command arguments:
+            id (str): The ServiceNow ticket number or sys_id to retrieve the preview for.
+        params: Dictionary containing integration parameters.
+
+    Returns:
+        CommandResults: Object containing the QuickActionPreview data formatted for XSOAR context.
+
+    Raises:
+        ValueError: If the 'id' argument is missing.
+        DemistoException: If the ticket cannot be found in ServiceNow.
+    """
+    ticket_id = args.get("id")
+    if not ticket_id:
+        raise ValueError("ServiceNow Ticket ID ('id') is required for preview.")
+
+    demisto.debug(f"Getting preview for ServiceNow ticket {ticket_id=}")
+
+    ticket_type = client.ticket_type
+    try:
+        result = client.get(ticket_type, ticket_id, use_display_value=True)
+    except Exception as e:
+        raise DemistoException(f"Failed to fetch ticket {ticket_id} from ServiceNow. Error: {e}")
+
+    if not result or "result" not in result:
+        raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result empty or missing).")
+
+    if isinstance(result["result"], list):
+        if len(result["result"]) == 0:
+            raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result list empty).")
+        ticket_data = result["result"][0]
+    else:
+        ticket_data = result["result"]
+
+    if not ticket_data:
+        raise DemistoException(f"Ticket data for {ticket_id=} is empty after fetch.")
+
+    demisto.debug(f"Raw ticket data for preview: {ticket_data}")
+
+    key_map = {
+        "id": "number",
+        "title": "short_description",
+        "description": "description",
+        "status": "state",
+        "assignee": "assigned_to",
+        "creation_date": "sys_created_on",
+        "severity": "priority",
+    }
+
+    qa_preview_data = {new_key: ticket_data.get(old_key, {}).get("display_value") for new_key, old_key in key_map.items()}
+
+    qa_preview = QuickActionPreview(**qa_preview_data)
+
+    return CommandResults(
+        outputs_prefix="QuickActionPreview", outputs=qa_preview.to_context(), outputs_key_field="id", raw_response=result
+    )
 
 
 def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) -> Union[list[dict[str, Any]], str]:
@@ -3050,10 +3212,22 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
 
     """
     parsed_args = UpdateRemoteSystemArgs(args)
+    if isinstance(parsed_args.delta, str) and parsed_args.delta:
+        demisto.debug(f"Delta argument was a string, attempting to parse as JSON: {parsed_args.delta}")
+        try:
+            parsed_args.delta = json.loads(parsed_args.delta.replace("'", '"'))
+        except json.JSONDecodeError as e:
+            raise ValueError(f"The 'delta' argument is a malformed string and could not be parsed as JSON. Error: {e}")
+    if parsed_args.data is None:
+        demisto.debug("The 'data' argument was missing. Defaulting to an empty dictionary.")
+        parsed_args.data = {}
+    if not parsed_args.delta:
+        parsed_args.delta = {}
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta {parsed_args.delta}')
-        demisto.debug('The following keys appears in data but not in delta '
-                      f'{set(parsed_args.data.keys())-set(parsed_args.delta.keys())}')
+        demisto.debug(f"Got the following delta {parsed_args.delta}")
+        demisto.debug(
+            f"The following keys appear in data but not in delta {set(parsed_args.data.keys()) - set(parsed_args.delta.keys())}"
+        )
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
@@ -3064,15 +3238,25 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     demisto.debug(f"state will change to= {parsed_args.delta.get('state')}")
     if parsed_args.incident_changed:
         demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
-        if parsed_args.inc_status == IncidentStatus.DONE:
+        if (parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta):
             demisto.debug("Closing incident by closure case")
-            if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
+            if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta.get(
+                "state"
+            ) == "3":
                 parsed_args.delta["state"] = "3"
             # These ticket types are closed by changing their state.
-            if closure_case == "closed" and ticket_type == INCIDENT:
+            if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "7":
                 parsed_args.delta["state"] = "7"  # Closing incident ticket.
-            elif closure_case == "resolved" and ticket_type == INCIDENT:
+                parsed_args.delta["close_code"] = "Resolved by caller"
+                parsed_args.delta["close_notes"] = (
+                    "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+                )
+            elif (closure_case == "resolved" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "6":
                 parsed_args.delta["state"] = "6"  # resolving incident ticket.
+                parsed_args.delta["close_code"] = "Resolved by caller"
+                parsed_args.delta["close_notes"] = (
+                    "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+                )
             if close_custom_state:  # Closing by custom state
                 demisto.debug(f"Closing by custom state = {close_custom_state}")
                 is_custom_close = True
@@ -3478,6 +3662,7 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+
     command = demisto.command()
     demisto.debug(f"Executing command {command}")
 
@@ -3485,8 +3670,15 @@ def main():
     args = demisto.args()
     verify = not params.get("insecure", False)
     use_oauth = params.get("use_oauth", False)
+    use_jwt = params.get("use_jwt", False)
     oauth_params = {}
 
+    # use jwt only with OAuth
+    if use_jwt and use_oauth:
+        raise ValueError("Please choose only one authentication method (OAuth or JWT)")
+    elif use_jwt:
+        use_oauth = True
+    jwt_params = {}
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         username = ""
         password = ""
@@ -3502,6 +3694,15 @@ def main():
             "proxy": params.get("proxy"),
             "use_oauth": use_oauth,
         }
+        if use_jwt:
+            if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
+                raise Exception("When using JWT, fill private key, kid and sub fields")
+            jwt_params = {
+                "private_key": params.get("private_key"),
+                "kid": params.get("kid"),
+                "sub": params.get("sub"),
+            }
+
     else:  # use basic authentication
         username = params.get("credentials", {}).get("identifier")
         password = params.get("credentials", {}).get("password")
@@ -3588,6 +3789,7 @@ def main():
             look_back=look_back,
             use_display_value=use_display_value,
             display_date_format=display_date_format,
+            jwt_params=jwt_params,
         )
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             "test-module": test_module,
@@ -3595,7 +3797,6 @@ def main():
             "servicenow-oauth-login": login_command,
             "servicenow-update-ticket": update_ticket_command,
             "servicenow-create-ticket": create_ticket_command,
-            "servicenow-create-ticket-quick-action": create_ticket_command,
             "servicenow-delete-ticket": delete_ticket_command,
             "servicenow-query-tickets": query_tickets_command,
             "servicenow-add-link": add_link_command,
@@ -3628,6 +3829,8 @@ def main():
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
+        elif command == "get-remote-data-preview":
+            return_results(get_remote_data_preview_command(client, demisto.args()))
         elif command == "update-remote-system":
             return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
         elif command == "get-mapping-fields":
@@ -3642,6 +3845,9 @@ def main():
             return_results(get_ticket_notes_command(client, args, params))
         elif command == "servicenow-get-ticket-attachments":
             return_results(get_attachment_command(client, args))
+        elif command == "servicenow-create-ticket-quick-action":
+            md_, ec_, raw_response, ignore_auto_extract = create_ticket_command(client, args, is_quick_action=True)
+            return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)

@@ -1,0 +1,88 @@
+{
+    "type": "Detection",
+    "id": 87,
+    "attributes": {
+        "headline": "[example-87] Suspicious Activity (Network)",
+        "confirmed_at": "2025-04-25T14:57:47.698Z",
+        "summary": "Microsoft Defender for Endpoint detected an attempted connection to a suspicious domain.",
+        "severity": "medium",
+        "last_activity_seen_at": "2025-04-25T13:08:08.000Z",
+        "classification": {
+            "superclassification": "Suspicious Activity",
+            "subclassification": [
+                "Network"
+            ]
+        },
+        "time_of_occurrence": "2025-04-25T13:08:08.000Z",
+        "last_acknowledged_at": "2025-04-25T18:02:14.752Z",
+        "last_acknowledged_by": {
+            "type": "PortalUser",
+            "attributes": {
+                "id": 28366,
+                "email": "name@example.com",
+                "name": "Unknown Unknown",
+                "name_and_email": "Unknown Unknown (name@example.com)"
+            }
+        },
+        "last_remediated_status": {
+            "reason": null,
+            "remediation_state": "remediated",
+            "marked_by": {
+                "type": "PortalUser",
+                "attributes": {
+                    "id": 28366,
+                    "email": "name@example.com",
+                    "name": "Unknown Unknown",
+                    "name_and_email": "Unknown Unknown (name@example.com)"
+                }
+            },
+            "marked_at": "2025-04-25T18:02:15.752Z"
+        },
+        "associated_releasable_intelligence_profiles": []
+    },
+    "hostname": "user_iphone 14",
+    "username": "user",
+    "relationships": {
+        "affected_endpoint": {
+            "links": {
+                "related": "https://example.my.redcanary.co/openapi/v3/endpoints/1234"
+            },
+            "data": {
+                "type": "endpoint",
+                "id": 1234,
+                "reporting_tags": {},
+                "network_addresses": []
+            }
+        },
+        "related_endpoint_user": {
+            "links": {
+                "related": "https://example.my.redcanary.co/openapi/v3/endpoint_users/100000359563229"
+            },
+            "data": {
+                "type": "endpoint_user",
+                "id": 4321,
+                "reporting_tags": {
+                    "logon_domain": null,
+                    "local_account": false,
+                    "domain_account": true,
+                    "system_account": false
+                },
+                "endpoints_used": []
+            }
+        }
+    },
+    "links": {
+        "self": {
+            "href": "https://example.my.redcanary.co/openapi/v3/detections/87"
+        },
+        "activity_timeline": {
+            "href": "https://example.my.redcanary.co/openapi/v3/detections/87/timeline"
+        },
+        "detectors": {
+            "href": "https://example.my.redcanary.co/openapi/v3/detections/87/detectors"
+        },
+        "contributing_intel": {
+            "href": "https://example.my.redcanary.co/openapi/v3/detections/87/contributing_intel"
+        }
+    }
+}

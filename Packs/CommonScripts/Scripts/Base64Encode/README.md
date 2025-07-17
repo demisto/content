@@ -1,6 +1,7 @@
 Encodes an input using Base64 format.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Encodes an input using Base64 format.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +18,7 @@ Encodes an input using Base64 format.
 | input | The input to encode in Base64 format. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

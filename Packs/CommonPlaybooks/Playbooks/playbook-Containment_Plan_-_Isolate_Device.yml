@@ -543,21 +543,6 @@ view: |-
       }
     }
   }
-  {
-    "linkLabelsPosition": {
-      "17_16_Yes": 0.55,
-      "23_10_#default#": 0.11,
-      "25_22_yes": 0.48
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1575,
-        "width": 840,
-        "x": 30,
-        "y": -1020
-      }
-    }
-  }
 inputs:
 - key: HostContainment
   value:

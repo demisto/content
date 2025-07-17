@@ -6,9 +6,9 @@ CVE-2023-36884 is affecting both Office and Windows. This zero-day vulnerability
 
 This pack will provide you with a first response kit which includes:
 
-  * Threat Hunting Queries
-  * IoC Collection and Remediation
-  * Mitigation Measures
+* Threat Hunting Queries
+* IoC Collection and Remediation
+* Mitigation Measures
 
 **References:**
 

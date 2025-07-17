@@ -1,6 +1,7 @@
 Executes a test for all integration instances available and returns a detailed table with information about any failed integration instances.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,10 +11,12 @@ Executes a test for all integration instances available and returns a detailed t
 | Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

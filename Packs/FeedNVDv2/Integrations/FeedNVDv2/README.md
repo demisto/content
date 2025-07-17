@@ -1,4 +1,4 @@
-CVE feed from the National Vulnerability Database. 
+CVE feed from the National Vulnerability Database.
 
 This integration was built and tested with version 2.0 of National Vulnerability Database API. See [the NVD Developer API documentation](https://nvd.nist.gov/developers/start-here) for more information.
 
@@ -7,7 +7,6 @@ An API key for this feed can be obtained at [the NIST NVD Developer Website](htt
 This integration supports the latest CVSS - Common Vulnerability Scoring System standard - CVSS Version 4.0.
 
 ## Configure National Vulnerability Database in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -45,8 +44,11 @@ This integration supports the latest CVSS - Common Vulnerability Scoring System 
     Current Total Fetched Indicator Count: 4184
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
+
 ### nvd-get-indicators
+
 ***
 Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch.
 
@@ -55,6 +57,7 @@ Manually retrieve CVEs from NVD using the history parameter for the duration bac
 `!nvd-get-indicators history="7 days"`
 
 #### Input
+
 |**Argument Name**|**Description**|**Required**|
 |---|---|---|
 | History | Time back to retrieve CVEs, e.g. `7 days` | True |

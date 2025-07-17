@@ -1,6 +1,7 @@
 Returns an EWS query according to the automation's arguments.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Returns an EWS query according to the automation's arguments.
 | Script Type | python |
 | Tags | ews |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +24,7 @@ Returns an EWS query according to the automation's arguments.
 | escapeSemicolons | Whether to escape the semicolons. Must be "true" or "false". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

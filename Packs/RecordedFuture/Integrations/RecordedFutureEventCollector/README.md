@@ -5,7 +5,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Recorded Future Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API token | The API token to use for the connection. | True |
@@ -13,7 +12,6 @@ This is the default integration for this content pack when configured by the Dat
 | Use system proxy settings | Use proxy settings for connection or not. | False |
 | First fetch time |  First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`. | False |
 | Max fetch | The maximum number of events per fetch. Default and maximum is 1000. | False |
-
 
 ## Commands
 
@@ -33,8 +31,8 @@ Gets events from Recorded Future.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum results to return. Default is 10. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum results to return. Default is 10. | Optional |
 
 #### Context Output
 

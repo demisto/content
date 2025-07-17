@@ -14,6 +14,7 @@ RiskIQ Digital Footprint integration enables your security team to manage assets
 #### Enrich Incident With Asset Details - RiskIQ Digital Footprint
 
 This playbook helps perform the following functionalities:
+
 * Enriches the incident with asset details.
 * Enriches the asset with the incident URL on the RiskIQ Digital Footprint platform.
 * Sends an email containing the owner's information to the primary or secondary contact of the asset.
@@ -30,12 +31,15 @@ This playbook checks if the user wants to update or remove the asset using vario
 ### Layouts
 
 #### RiskIQ Asset Management Incident New/Edit Form
+
 ![RiskIQAssetManagement_Incident_New_or_Edit_Form_View](doc_files/RiskIQAssetManagement_Incident_New_or_Edit_Form_View.png)
 
 #### RiskIQ Asset Management Incident Summary
+
 ![RiskIQAssetManagement_Incident_Summary_View](doc_files/RiskIQAssetManagement_Incident_Summary_View.png)
 
 #### RiskIQ Asset Management Incident Quick View
+
 ![RiskIQAssetManagement_Incident_Quick_View](doc_files/RiskIQAssetManagement_Incident_Quick_View.png)
 
 As part of this pack, you will also get out-of-the-box RiskIQ Asset Management incident type, RiskIQAsset indicator type, incident & indicator fields, and incident layouts. All of these are easily customizable to suit the needs of your organization.

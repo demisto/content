@@ -940,6 +940,40 @@ def test_add_tag(demisto_args: dict, is_attribute: bool, expected_result: dict, 
     assert result.outputs_prefix == expected_result["outputs_prefix"]
 
 
+def test_add_tag_error(mocker):
+    """
+    Given:
+    - Various arguments that the add_tag function accepts.
+
+    When:
+    - Adding a local tag.
+
+    Then:
+    - Ensure that the command failes when did not suceed in adding the local tag.
+    """
+    from MISPV3 import add_tag
+
+    mocker.patch(
+        "MISPV3.PYMISP.tag",
+        return_value={
+            "errors": (
+                403,
+                {
+                    "saved": False,
+                    "name": "Could not attachTagToObject Tag",
+                    "message": "Could not attachTagToObject Tag",
+                    "url": "/tags/attachTagToObject",
+                    "errors": 'Failed to attach 1 tags. Reasons: {"0":"Local tags can only be added by users of the host organisation."}',  # noqa: E501
+                },
+            )
+        },
+    )
+
+    with pytest.raises(DemistoException) as exception_info:
+        add_tag({"uuid": "test_uuid", "tag": "test_tag", "is_local": "true"}, is_attribute=True)
+    assert "Got error from MISP API" in str(exception_info.value)
+
+
 def test_add_user_to_misp(mocker):
     """
     Given:

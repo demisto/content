@@ -1,4 +1,7 @@
 import json
+
+import pytest
+
 import demistomock as demisto
 from BoxV2 import Client
 
@@ -536,9 +539,7 @@ def test_upload_file_command_with_chunks(requests_mock, mocker):
 
     # Validate request to open a session
     assert requests_mock.request_history[0].headers.get("Authorization") == "Bearer JWT_TOKEN"
-    assert (
-        requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 105000000, "folder_id": "100"}'
-    )
+    assert requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 105000000, "folder_id": "100"}'
 
     # Validate first PUT request
     assert requests_mock.request_history[1].headers.get("Authorization") == "Bearer JWT_TOKEN"
@@ -872,7 +873,7 @@ def test_fetch_incidents(requests_mock, mocker):
 
     as_user = "sample_current_user"
     max_results = 10
-    last_run = {"time": "2015-10-21T04:29-8:00"}
+    last_run = {"time": "2012-12-12T10:50:43-08:00"}
     first_fetch_time = 1607935741
 
     mock_response = util_load_json("test_data/events.json")
@@ -885,10 +886,57 @@ def test_fetch_incidents(requests_mock, mocker):
     assert requests_mock.request_history[0].headers.get("As-User") == "sample_current_user"
     assert requests_mock.request_history[0].headers.get("Authorization") == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].qs.get("stream_type") == ["admin_logs"]
-    assert requests_mock.request_history[0].qs.get("created_after") == ["2015-10-21t04:29-8:00"]
+    assert requests_mock.request_history[0].qs.get("created_after") == ["2012-12-12t10:50:43-08:00"]
 
-    assert response[0] > "2015-10-21T04:29-8:00"
+    assert response[0].get("time") == "2012-12-12T18:53:43+0000"
+    assert response[0].get("next_stream_position") == 1152922976252290800
     assert response[1] == expected_fetch_results
+
+
+@pytest.mark.parametrize(
+    argnames="last_run_time, next_stream_position",
+    argvalues=[("2012-12-12T10:50:43-08:00", ""), ("2012-12-12T18:50:43+0000", "1152922976252290700")],
+)
+def test_fetch_incidents_event_type(mocker, last_run_time, next_stream_position):
+    """
+    Tests the fetch-incidents function and command.
+    This unit test checks 2 scenarios:
+    1. A scenario in which a local time was saved to the last run, and no streaming position was given.
+    2. A scenario in which the utc time was saved to the last run, and a next_stream_position was given.
+
+    Given: A valid last run object and time in the past.
+    When: Executing the fetch-incidents command.
+    Then: The correct arguments are being sent in the request, and that the expected last_run object is returned.
+        1. no stream_position is used in the params to the api call.
+        2. a stream_position is used in the params to the api call.
+    """
+    from BoxV2 import fetch_incidents
+
+    client = ClientTestBox(mocker).client
+
+    as_user = "sample_current_user"
+    max_results = 10
+    last_run = {"time": last_run_time, "next_stream_position": next_stream_position}
+    event_type = ["FILE_MARKED_MALICIOUS", "FILE_MARKED_MALICIOUS2"]
+    first_fetch_time = 1607935741
+    expected_event_type = "FILE_MARKED_MALICIOUS,FILE_MARKED_MALICIOUS2"
+    expected_params = {
+        "created_after": last_run.get("time"),
+        "limit": max_results,
+        "event_type": expected_event_type,
+        "stream_type": "admin_logs",
+    }
+    if next_stream_position:
+        expected_params["stream_position"] = next_stream_position
+
+    mock_response = util_load_json("test_data/events2.json")
+    http_request = mocker.patch.object(client, "_http_request", return_value=mock_response)
+
+    last_run, incidents = fetch_incidents(client, max_results, last_run, first_fetch_time, as_user, event_type)
+
+    http_request.assert_called_with(method="GET", url_suffix="/events/", params=expected_params)
+    assert last_run == {"time": "2012-12-12T18:53:44+0000", "next_stream_position": 1152922976252290800}
+    assert len(incidents) == 2
 
 
 def test_list_user_events_command(requests_mock, mocker):
