@@ -434,10 +434,9 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
         except Exception as e:
             raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
-        if not isinstance(api_response, dict):
-            raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(api_response))
-
-        if "internet_scanner_intelligence" not in api_response and "business_service_intelligence" not in api_response:
+        if not isinstance(api_response, dict) or (
+            "internet_scanner_intelligence" not in api_response and "business_service_intelligence" not in api_response
+        ):
             raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(api_response))
 
         if "internet_scanner_intelligence" in api_response:

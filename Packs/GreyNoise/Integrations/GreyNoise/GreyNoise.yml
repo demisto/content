@@ -503,9 +503,36 @@ script:
     - contextPath: GreyNoise.IP.seen
       description: IP is in record with GreyNoise.
       type: boolean
-    - contextPath: GreyNoise.IP.tags
-      description: A list of the tags the device has been assigned over the past 90 days.
-      type: array
+    - contextPath: GreyNoise.IP.tags.category
+      description: The category of the given tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.created
+      description: The date the tag was added to the GreyNoise system.
+      type: date
+    - contextPath: GreyNoise.IP.tags.description
+      description: A description of what the tag identifies.
+      type: string
+    - contextPath: GreyNoise.IP.tags.id
+      description: The unique id of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.intention
+      description: The intention of the associated activity the tag identifies.
+      type: string
+    - contextPath: GreyNoise.IP.tags.name
+      description: The name of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.recommend_block
+      description: Indicates if IPs associated with this tag should be blocked.
+      type: boolean
+    - contextPath: GreyNoise.IP.tags.references
+      description: A list of references used to create the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.slug
+      description: The unique slug of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.updated_at
+      description: The date the tag was last updated.
+      type: date
     - contextPath: GreyNoise.IP.actor
       description: The overt actor the device has been associated with.
       type: string
@@ -970,9 +997,36 @@ script:
     - contextPath: GreyNoise.IP.seen
       description: IP is in record with GreyNoise.
       type: boolean
-    - contextPath: GreyNoise.IP.tags
-      description: A list of the tags the device has been assigned over the past 90 days.
-      type: array
+    - contextPath: GreyNoise.IP.tags.category
+      description: The category of the given tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.created
+      description: The date the tag was added to the GreyNoise system.
+      type: date
+    - contextPath: GreyNoise.IP.tags.description
+      description: A description of what the tag identifies.
+      type: string
+    - contextPath: GreyNoise.IP.tags.id
+      description: The unique id of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.intention
+      description: The intention of the associated activity the tag identifies.
+      type: string
+    - contextPath: GreyNoise.IP.tags.name
+      description: The name of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.recommend_block
+      description: Indicates if IPs associated with this tag should be blocked.
+      type: boolean
+    - contextPath: GreyNoise.IP.tags.references
+      description: A list of references used to create the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.slug
+      description: The unique slug of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.updated_at
+      description: The date the tag was last updated.
+      type: date
     - contextPath: GreyNoise.IP.actor
       description: The overt actor the device has been associated with.
       type: string

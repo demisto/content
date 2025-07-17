@@ -94,7 +94,16 @@ Runs reputation on IPs.
 | GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
 | GreyNoise.IP.seen | boolean | IP is in record with GreyNoise. |
 | GreyNoise.IP.spoofable | boolean | Boolean indicates if IP is spoofable. |
-| GreyNoise.IP.tags | array | A list of the tags the device has been assigned over the past 90 days along with their metadata. |
+| GreyNoise.IP.tags.category | string | The category of the given tag. |
+| GreyNoise.IP.tags.created | date | The date the tag was added to the GreyNoise system. |
+| GreyNoise.IP.tags.description | string | A description of what the tag identifies. |
+| GreyNoise.IP.tags.id | string | The unique id of the tag. |
+| GreyNoise.IP.tags.intention | string | The intention of the associated activity the tag identifies. |
+| GreyNoise.IP.tags.name | string | The name of the tag. |
+| GreyNoise.IP.tags.recommend_block | boolean | Indicates if IPs associated with this tag should be blocked. |
+| GreyNoise.IP.tags.references | string | A list of references used to create the tag. |
+| GreyNoise.IP.tags.slug | string | The unique slug of the tag. |
+| GreyNoise.IP.tags.updated_at | date | The date the tag was last updated. |
 | GreyNoise.IP.vpn | boolean | Whether the device is VPN endpoint or not. |
 | GreyNoise.IP.vpn_service | string | The name of the VPN service provider of the device. |
 | GreyNoise.IP.category | string | The category of the business service. |
@@ -258,7 +267,16 @@ Get the information of IP based on the providence filters.
 | GreyNoise.IP.internet_scanner_intelligence.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
 | GreyNoise.IP.internet_scanner_intelligence.seen | boolean | IP is in record with GreyNoise. |
 | GreyNoise.IP.internet_scanner_intelligence.spoofable | boolean | Boolean indicates if IP is spoofable. |
-| GreyNoise.IP.internet_scanner_intelligence.tags | array | A list of the tags the device has been assigned over the past 90 days. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.category | string | The category of the given tag. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.created | date | The date the tag was added to the GreyNoise system. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.description | string | A description of what the tag identifies. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.id | string | The unique id of the tag. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.intention | string | The intention of the associated activity the tag identifies. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.name | string | The name of the tag. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.recommend_block | boolean | Indicates if IPs associated with this tag should be blocked. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.references | string | A list of references used to create the tag. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.slug | string | The unique slug of the tag. |
+| GreyNoise.IP.internet_scanner_intelligence.tags.updated_at | date | The date the tag was last updated. |
 | GreyNoise.IP.internet_scanner_intelligence.vpn | boolean | Whether the device is VPN endpoint or not. |
 | GreyNoise.IP.internet_scanner_intelligence.vpn_service | string | The name of the VPN service provider of the device. |
 | GreyNoise.Query.complete | boolean | Whether all results have been fetched or not. |
@@ -594,7 +612,16 @@ Identifies IPs that have been observed mass-scanning the internet.
 | GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
 | GreyNoise.IP.seen | boolean | IP is in record with GreyNoise. |
 | GreyNoise.IP.spoofable | boolean | Boolean indicates if IP is spoofable. |
-| GreyNoise.IP.tags | array | A list of the tags the device has been assigned over the past 90 days. |
+| GreyNoise.IP.tags.category | string | The category of the given tag. |
+| GreyNoise.IP.tags.created | date | The date the tag was added to the GreyNoise system. |
+| GreyNoise.IP.tags.description | string | A description of what the tag identifies. |
+| GreyNoise.IP.tags.id | string | The unique id of the tag. |
+| GreyNoise.IP.tags.intention | string | The intention of the associated activity the tag identifies. |
+| GreyNoise.IP.tags.name | string | The name of the tag. |
+| GreyNoise.IP.tags.recommend_block | boolean | Indicates if IPs associated with this tag should be blocked. |
+| GreyNoise.IP.tags.references | string | A list of references used to create the tag. |
+| GreyNoise.IP.tags.slug | string | The unique slug of the tag. |
+| GreyNoise.IP.tags.updated_at | date | The date the tag was last updated. |
 | GreyNoise.IP.vpn | boolean | Whether the device is VPN endpoint or not. |
 | GreyNoise.IP.vpn_service | string | The name of the VPN service provider of the device. |
 

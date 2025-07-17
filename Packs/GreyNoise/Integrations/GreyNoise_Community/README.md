@@ -44,33 +44,67 @@ Queries IPs in the GreyNoise Community API.
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
-| IP.address | string | IP address. |
+| IP.Address | string | IP address. |
 | IP.ASN | string | ASN Value. |
 | IP.Geo.Country | string | Source Country. |
 | IP.Geo.Description | string | Additional Geo Information - City, Region, Country Code. |
 | IP.Hostname | string | rDNS value. |
 | IP.Malicious.Description | string | Description of Malicious IP. |
 | IP.Malicious.Vendor | string | Vendor Identifying IP as Malicious. |
-| GreyNoise.IP.actor | string | Name of identified organization scanning
+| GreyNoise.IP.actor | string | Name of identified organization scanning. |
 | GreyNoise.IP.address | string | The IP address of the scanning device IP. |
 | GreyNoise.IP.bot | boolean | Identifies if the IP is associated with BOT activity. |
 | GreyNoise.IP.category | string | If a business service, identifies the category. |
 | GreyNoise.IP.classification | string | Whether the device has been categorized as unknown, benign, or malicious. |
-| GreyNoise.IP.descriptionn | string | If a business service, provides a description of the provider. |
-| GreyNoise.IP.explanationn | string | If a business service, provides an explanation of the category. |
-| GreyNoise.IP.found | boolean | Indicates if the IP is found in GreyNoise. |
-| GreyNoise.IP.last_seen | string | Identifes the last observed scanning activity date. |
-| GreyNoise.IP.last_seen_timestamp | string | Identifes the last observed scanning activity timestamp. |
-| GreyNoise.IP.last_updated | string | If a business service, indicates the last time the source record was parsed. |
-| GreyNoise.IP.metadata | object | Metadata about the source IP, such as IP Geo information
-| GreyNoise.IP.name | string | If a business service, indicates the provider name. |
-| GreyNoise.IP.reference | string | If a business service, indicates the references used to validate the entry. |
-| GreyNoise.IP.riot | boolean | Indicates if the IP is in the business services dataset. |
-| GreyNoise.IP.seen | boolean | Indicates if the IP is in the internet scanner dataset. |
-| GreyNoise.IP.spoofable | boolean | Indicates if the IP complete a three-way handshake during scanning. |
-| GreyNoise.IP.trust_level | string | If a business service, indicates the level of trustworthiness. |
-| GreyNoise.IP.tor | boolean | Indicates if the IP is on the known TOR exit node list. |
-| GreyNoise.IP.vpn | boolean | Indicates if the IP is associated with a knwon VPN service. |
+| GreyNoise.IP.description | string | If there is a business service, provides a description of the provider. |
+| GreyNoise.IP.explanation | string | If there is a business service, provides an explanation of the category. |
+| GreyNoise.IP.first_seen | string | The date of the first observed scanning activity. |
+| GreyNoise.IP.found | boolean | Whether the IP is found in GreyNoise. |
+| GreyNoise.IP.ip | string | The IP address of the scanning device IP. |
+| GreyNoise.IP.last_seen | string | The date of the last observed scanning activity. |
+| GreyNoise.IP.last_seen_timestamp | string | The timestamp of the last observed scanning activity. |
+| GreyNoise.IP.last_updated | string | If there is a business service, indicates the last time the source record was parsed. |
+| GreyNoise.IP.metadata.asn | string | The autonomous system identification number. |
+| GreyNoise.IP.metadata.carrier | string | The carrier information for the IP address. |
+| GreyNoise.IP.metadata.category | string | Whether the device belongs to a business, isp, hosting, education, or mobile network. |
+| GreyNoise.IP.metadata.datacenter | string | The datacenter information for the IP address. |
+| GreyNoise.IP.metadata.destination_countries | array | The list of countries targeted by scanning. |
+| GreyNoise.IP.metadata.destination_country_codes | array | The list of country codes targeted by scanning. |
+| GreyNoise.IP.metadata.domain | string | The domain associated with the IP address. |
+| GreyNoise.IP.metadata.latitude | number | The latitude coordinate of the IP address location. |
+| GreyNoise.IP.metadata.longitude | number | The longitude coordinate of the IP address location. |
+| GreyNoise.IP.metadata.mobile | boolean | Whether the device is on a mobile network. |
+| GreyNoise.IP.metadata.organization | string | The organization that owns the network that the IP address belongs to. |
+| GreyNoise.IP.metadata.os | string | The name of the operating system of the device. |
+| GreyNoise.IP.metadata.rdns | string | Reverse DNS lookup of the IP address. |
+| GreyNoise.IP.metadata.rdns_parent | string | The parent domain of the reverse DNS lookup. |
+| GreyNoise.IP.metadata.rdns_validated | boolean | Whether the reverse DNS lookup has been validated. |
+| GreyNoise.IP.metadata.region | string | The full name of the region the device is geographically located in. |
+| GreyNoise.IP.metadata.sensor_count | number | The number of sensors that observed activity from this IP. |
+| GreyNoise.IP.metadata.sensor_hits | number | The number of sensors events recorded from this IP. |
+| GreyNoise.IP.metadata.single_destination | boolean | Whether the IP targets a single destination. |
+| GreyNoise.IP.metadata.source_city | string | The city where the IP is geographically located. |
+| GreyNoise.IP.metadata.source_country | string | The full name of the IP source country. |
+| GreyNoise.IP.metadata.source_country_code | string | The country code of the IP source country. |
+| GreyNoise.IP.name | string | If there is a business service, indicates the provider name. |
+| GreyNoise.IP.raw_data.source.bytes | number | The number of bytes sent by the source. |
+| GreyNoise.IP.reference | string | If there is a business service, indicates the references used to validate the entry. |
+| GreyNoise.IP.riot | boolean | Whether the IP is in the business services dataset. |
+| GreyNoise.IP.seen | boolean | Whether the IP is in the internet scanner dataset. |
+| GreyNoise.IP.spoofable | boolean | Whether the IP complete a three-way handshake during scanning. |
+| GreyNoise.IP.tags.category | string | The category of the given tag. |
+| GreyNoise.IP.tags.created | date | The date the tag was added to the GreyNoise system. |
+| GreyNoise.IP.tags.description | string | A description of what the tag identifies. |
+| GreyNoise.IP.tags.id | string | The unique id of the tag. |
+| GreyNoise.IP.tags.intention | string | The intention of the associated activity the tag identifies. |
+| GreyNoise.IP.tags.name | string | The name of the tag. |
+| GreyNoise.IP.tags.recommend_block | boolean | Indicates if IPs associated with this tag should be blocked. |
+| GreyNoise.IP.tags.references | string | A list of references used to create the tag. |
+| GreyNoise.IP.tags.slug | string | The unique slug of the tag. |
+| GreyNoise.IP.tags.updated_at | date | The date the tag was last updated. |
+| GreyNoise.IP.tor | boolean | Whether the IP is on the known TOR exit node list. |
+| GreyNoise.IP.trust_level | string | If there is a business service, indicates the level of trustworthiness. |
+| GreyNoise.IP.vpn | boolean | Whether the IP is associated with a knwon VPN service. |
 | GreyNoise.IP.vpn_service | string | If the IP is part of a VPN, provides the name of the service. |
 
 #### Command Example
