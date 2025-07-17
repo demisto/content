@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": null
+    "breakingChangesNotes": "The endpoint command may now return a list of IP addresses under endpoint.IPAddress rather than a single entry which also affect the Cortex XDR Malware - Incident Enrichment playbook."
 }
