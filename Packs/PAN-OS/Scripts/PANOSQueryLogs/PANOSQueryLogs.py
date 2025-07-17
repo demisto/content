@@ -14,6 +14,7 @@ def main():
         args["zone-dst"] = args.pop("zone_dst", None)
         args["port-dst"] = args.pop("port_dst", None)
         args["show-detail"] = args.pop("show_detail", None)
+        args["polling"] = True
         return_results(execute_polling_command("pan-os-query-logs", args))
     except Exception as e:
         return_error(f"Failed to execute script.\nError:\n{e!s}")
