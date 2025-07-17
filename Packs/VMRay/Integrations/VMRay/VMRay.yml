@@ -20,7 +20,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
-  section: collect
+  section: Collect
 - defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g., https://cloud.vmray.com)
   name: server
