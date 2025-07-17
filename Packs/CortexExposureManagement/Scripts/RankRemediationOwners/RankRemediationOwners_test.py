@@ -683,7 +683,7 @@ def test_get_k():
     # The first value in each case is the list of scores outputs by the model (one per owner)
     # and the second value is the expected k
     cases = [
-        # If smallish set of owners, return all or find obvious cutoff
+        # If less than 12 in set of owners, return all or find obvious cutoff
         ([1], 1),
         ([1, 1], 2),
         ([1, 1, 1], 3),

@@ -340,7 +340,7 @@ def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> set[str
             # fm+l
             for fname in all_possible_first_names:
                 result_set.add(f"{fname[0]}{''.join([m[0] for m in middle_names])}{last_name[0]}")
-            # fl
+            # first initial+last initial
             for fname in all_possible_first_names:
                 result_set.add(f"{fname[0]}{last_name[0]}")
             # flast
