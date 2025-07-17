@@ -1246,6 +1246,147 @@ def safely_update_context_data_partial(changes: dict, attempts=5) -> None:
     raise DemistoException(f"Failed updating context after {attempts} attempts.")
 
 
+def safely_update_context_data_partial_with_diagnostics(changes: dict, attempts=5, operation="Unknown") -> None:
+    """
+    Enhanced version of safely_update_context_data_partial with detailed diagnostics.
+    This function provides comprehensive logging to help identify context bloating issues.
+    
+    Args:
+        changes (dict): Changes to apply to the context
+        attempts (int): Number of retry attempts
+        operation (str): Description of the operation for logging
+    """
+    changes_size_info = {
+        "size_bytes": len(str(changes)),
+        "size_mb": len(str(changes)) / (1024 * 1024),
+        "keys": list(changes.keys())
+    }
+    
+    print_debug_msg(f"[CONTEXT_UPDATE] Starting {operation} - Changes: {changes_size_info['size_mb']:.3f}MB, Keys: {changes_size_info['keys']}")
+    
+    for attempt in range(attempts):
+        ctx, version = get_integration_context_with_version()
+        
+        # Log current context state before changes
+        log_context_diagnostics(ctx, f"{operation} - Before Update (Attempt {attempt + 1})", changes_size_info)
+        
+        merged = copy.deepcopy(ctx)
+        deep_merge_context_changes(merged, changes)
+        
+        # Log merged context size
+        merged_size_info = get_context_size_info(merged)
+        print_debug_msg(f"[CONTEXT_UPDATE] Merged context size: {merged_size_info['total_size_mb']:.3f}MB")
+        
+        try:
+            demisto.debug(f"Updating integration context for {operation} - Size: {merged_size_info['total_size_mb']:.3f}MB, Version: {version}")
+            set_integration_context(merged, version=version)
+            
+            # Log successful update
+            print_debug_msg(f"[CONTEXT_UPDATE] Successfully updated context for {operation}")
+            log_context_diagnostics(merged, f"{operation} - After Successful Update")
+            return  # success
+            
+        except Exception as e:
+            error_msg = f"[CONTEXT_UPDATE] Version conflict or error setting context for {operation} (attempt {attempt + 1}/{attempts}): {e}"
+            demisto.debug(error_msg)
+            print_debug_msg(error_msg)
+            
+            if attempt == attempts - 1:  # Last attempt
+                log_context_diagnostics(ctx, f"{operation} - Final Failed Attempt")
+    
+    raise DemistoException(f"Failed updating context after {attempts} attempts for operation: {operation}")
+
+
+def get_context_size_info(context_data: dict) -> dict:
+    """
+    Calculate detailed size information for the context data to help diagnose bloating issues.
+    Returns comprehensive size metrics for different parts of the context.
+    """
+    import sys
+    
+    # Calculate total size
+    total_size_bytes = sys.getsizeof(str(context_data))
+    total_size_mb = total_size_bytes / (1024 * 1024)
+    
+    # Calculate sizes of individual components
+    component_sizes = {}
+    
+    # Size of mirroring dictionaries
+    queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
+    finished = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
+    fetched = context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {})
+    samples = context_data.get("samples", [])
+    
+    component_sizes = {
+        "queried_offenses": {
+            "count": len(queried),
+            "size_bytes": sys.getsizeof(str(queried)),
+            "size_mb": sys.getsizeof(str(queried)) / (1024 * 1024)
+        },
+        "finished_offenses": {
+            "count": len(finished),
+            "size_bytes": sys.getsizeof(str(finished)),
+            "size_mb": sys.getsizeof(str(finished)) / (1024 * 1024)
+        },
+        "fetched_offenses": {
+            "count": len(fetched),
+            "size_bytes": sys.getsizeof(str(fetched)),
+            "size_mb": sys.getsizeof(str(fetched)) / (1024 * 1024)
+        },
+        "samples": {
+            "count": len(samples),
+            "size_bytes": sys.getsizeof(str(samples)),
+            "size_mb": sys.getsizeof(str(samples)) / (1024 * 1024)
+        }
+    }
+    
+    return {
+        "total_size_bytes": total_size_bytes,
+        "total_size_mb": total_size_mb,
+        "components": component_sizes,
+        "last_fetch_id": context_data.get(LAST_FETCH_KEY, "N/A"),
+        "last_mirror_update": context_data.get(LAST_MIRROR_KEY, "N/A"),
+        "context_keys": list(context_data.keys())
+    }
+
+
+def log_context_diagnostics(context_data: dict, operation: str, changes_size_info: dict = None) -> None:
+    """
+    Log detailed context diagnostics to help identify bloating issues.
+    
+    Args:
+        context_data (dict): The integration context data
+        operation (str): Description of the operation being performed
+        changes_size_info (dict): Size info about the changes being applied
+    """
+    size_info = get_context_size_info(context_data)
+    
+    # Create detailed diagnostic message
+    diagnostic_msg = f"""=== QRadar Context Diagnostics - {operation} ===
+    Total Context Size: {size_info['total_size_mb']:.3f} MB ({size_info['total_size_bytes']:,} bytes)
+    Context Keys: {size_info['context_keys']}
+    Last Fetch ID: {size_info['last_fetch_id']}
+    Last Mirror Update: {size_info['last_mirror_update']}
+    
+    Component Breakdown:
+    - Queried Offenses: {size_info['components']['queried_offenses']['count']} items, {size_info['components']['queried_offenses']['size_mb']:.3f} MB
+    - Finished Offenses: {size_info['components']['finished_offenses']['count']} items, {size_info['components']['finished_offenses']['size_mb']:.3f} MB
+    - Fetched Offenses: {size_info['components']['fetched_offenses']['count']} items, {size_info['components']['fetched_offenses']['size_mb']:.3f} MB
+    - Samples: {size_info['components']['samples']['count']} items, {size_info['components']['samples']['size_mb']:.3f} MB
+    """
+    
+    if changes_size_info:
+        diagnostic_msg += f"\n    Changes Being Applied: {changes_size_info['size_mb']:.3f} MB\n"
+    
+    diagnostic_msg += "=" * 50
+    
+    print_debug_msg(diagnostic_msg)
+    
+    # Also log a summary for easier monitoring
+    summary_msg = f"Context: {size_info['total_size_mb']:.2f}MB | Queried: {size_info['components']['queried_offenses']['count']} | Finished: {size_info['components']['finished_offenses']['count']} | Fetched: {size_info['components']['fetched_offenses']['count']} | Samples: {size_info['components']['samples']['count']}"
+    print_debug_msg(f"[CONTEXT_MONITOR] {operation}: {summary_msg}")
+
+
 def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
     """
     Takes list of dicts, for each dict:
@@ -2047,7 +2188,7 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
             "samples": ctx["samples"],
         }
 
-        safely_update_context_data_partial(partial_changes)
+        safely_update_context_data_partial_with_diagnostics(partial_changes, operation="Reset Context Cleanup")
 
         return True
 
@@ -2661,7 +2802,7 @@ def perform_long_running_loop(
         partial_changes[LAST_FETCH_KEY] = int(new_highest_id)
 
         # Merge changes so we don't overwrite other subkeys
-        safely_update_context_data_partial(partial_changes)
+        safely_update_context_data_partial_with_diagnostics(partial_changes, operation="Main Fetch Loop Update")
 
         print_debug_msg(
             f'Successfully Created {len(incidents)} incidents. '
@@ -4254,7 +4395,7 @@ def add_modified_remote_offenses(
         partial_changes[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = finished_offenses_queue
 
     # Now safely merge these partial changes.
-    safely_update_context_data_partial(partial_changes)
+    safely_update_context_data_partial_with_diagnostics(partial_changes, operation="Mirror Offense Updates")
 
     # Do final logging for debugging if desired
     print_context_data_stats(context_data, "Get Modified Remote Data - After update")
