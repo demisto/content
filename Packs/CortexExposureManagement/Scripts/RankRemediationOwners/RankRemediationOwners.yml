@@ -1,0 +1,36 @@
+args:
+- description: List of potential remediation owners.
+  isArray: true
+  name: owners
+  required: true
+- description: System IDs or names associated with the compute instance.
+  isArray: true
+  name: system_ids
+- defaultValue: xdmremediationowners
+  description: The alert or issue field for the remediation owners.
+  name: ownerrelatedfield
+- defaultValue: "False"
+  description: For alerts (False), use !setAlert, for issues (True), use !setIssue.
+  name: tenantcommand
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+comment: This script determines the most likely remediation owners from those surfaced by other enrichments.
+commonfields:
+  id: RankRemediationOwners
+  version: -1
+dockerimage: demisto/xpanse-ml-ev2:1.0.0.4101073
+enabled: true
+name: RankRemediationOwners
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+runonce: false
+engineinfo: {}
