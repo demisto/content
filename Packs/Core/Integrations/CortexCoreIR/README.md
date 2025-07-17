@@ -3342,3 +3342,163 @@ Adding the same indicator, but with different parameters, will update the existi
 | Core.Indicator.reliability | String | Keyword representing the indicator's reliability rating. |
 | Core.Indicator.class | String | String representing the indicator class. |
 | Core.Indicator.vendors | List | List representing the vendors who reported this indicator. |
+
+### core-get-contributing-event
+
+***
+Retrieves contributing events for a specific correlation alert.
+Known limitation: the command is compatible **only** with correlation alerts, otherwise an error will be raised.
+
+##### Required Permissions
+
+Required Permissions For API call:
+`Alerts & Incidents` --> `View`
+
+Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
+
+#### Base Command
+
+`core-get-contributing-event`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | The alert ID's from where to retrieve the contributing events. | Required |
+| limit | The maximum number of contributing events to retrieve. Default is 50. | Optional |
+| page_number | The page number to retrieve. Minimum is 1. Default is 1. | Optional |
+| page_size | The page size. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.ContributingEvent.alertID | String | The alert ID. |
+| Core.ContributingEvent.events | Unknown | Contributing events per alert. |
+
+#### Command example
+
+```!core-get-contributing-event alert_ids=`[123456 , 123457]````
+
+#### Context Example
+
+```json
+{
+    "Core": {
+        "ContributingEvent": [
+            {
+                "alertID": "123456",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on.",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            },
+            {
+                "alert_id": "123457",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Contributing events
+
+>|Alert _ Id|Events|
+>|---|---|
+>| 123456 | **-** ***Logon_Type***: 7<br/> ***User_Name***: xsoar<br/> ***Domain***: WIN10X64<br/> ***Source_IP***: 1.1.1.1<br/> ***Process_Name***: C:\Windows\System32\svchost.exe<br/> ***Host_Name***: WIN10X64<br/> ***Raw_Message***: An account was successfully logged on. ***_time***: 165298280000<br/> ***555555***: a1b2c3d4<br/> ***222222***: 165298280000<br/> ***333333***: abcdef<br/> ***111111***: 15<br/> ***444444***: 1<br/> ***insert_timestamp***: 165298280001<br/> ***_vendor***: PANW<br/> ***_product***: XDR agent<br/> ***_is_cardable***: true |
+>| 123457 | **-** ***Logon_Type***: 7<br/> ***User_Name***: xsoar<br/> ***Domain***: WIN10X64<br/> ***Source_IP***: 1.1.1.1<br/> ***Process_Name***: C:\Windows\System32\svchost.exe<br/> ***Host_Name***: WIN10X64<br/> ***Raw_Message***: An account was successfully logged on. ***_time***: 165298280000<br/> ***555555***: ghijk<br/> ***222222***: 165298280000<br/> ***333333***: abcdef<br/> ***111111***: 15<br/> ***444444***: 1<br/> ***insert_timestamp***: 165298280001<br/> **
+
+### core-block-ip
+
+***
+Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
+Note: This action is only supported on XDR Agent version 8.9 and above.
+
+#### Base Command
+
+`core-block-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_list | List of agent IDs that support the operation. | Required |
+| addresses | List of IPv6 or IPv4 addresses to be added to the blocklist. | Required |
+| duration | Number of minutes to block (Max 518,400). The default is 300. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.ip_block_results | List | List of dictionaries each holds 3 fileds: ip_address, endpoint_id, reason. |
+
+#### Context Example
+
+```
+{
+    "Core.ip_block_results": [
+        {
+            "reason": "Success",
+            "ip_address": "1.1.1.1"
+            "endpoint_id": "1234"
+        },
+        {
+            "reason": "Failure: Endpoint Disconnected",
+            "ip_address": "1.1.1.1"
+            "endpoint_id": "12345"
+        },
+        {
+            "reason": "Failure: Unknown error",
+            "ip_address": "2.2.2.2"
+            "endpoint_id": "1234"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+
+|Reason|endpoint_id|ip_address|
+|---|---|---|
+| Success | AAA | 1.1.1.1 |
+| Failure: Endpoint Disconnected | AAA | 2.2.2.2 |
