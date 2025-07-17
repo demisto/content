@@ -408,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: a609f7b8-f826-4407-9926-1edd3954855b
+    taskid: 27148781-f091-4b5d-9fd7-368ff5eadcd8
     type: regular
     task:
-      id: a609f7b8-f826-4407-9926-1edd3954855b
+      id: 27148781-f091-4b5d-9fd7-368ff5eadcd8
       version: -1
       name: Save password expiry to evidence
       description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
@@ -877,10 +877,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 5c487e86-0f62-475f-b067-aa9befc23d90
+    taskid: 9f39265e-dbda-40f3-be1b-b7b9cf8cd6e7
     type: condition
     task:
-      id: 5c487e86-0f62-475f-b067-aa9befc23d90
+      id: 9f39265e-dbda-40f3-be1b-b7b9cf8cd6e7
       version: -1
       name: Analyze evidence
       description: Analyzes the evidence to reach a verdict or the alert.
@@ -890,8 +890,6 @@ tasks:
     nexttasks:
       '#default#':
       - "46"
-      False Positive:
-      - "43"
       True Positive:
       - "40"
     separatecontext: false
@@ -913,45 +911,12 @@ tasks:
           right:
             value:
               simple: "3"
-    - label: False Positive
-      condition:
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              complex:
-                root: Evidence
-                transformers:
-                - operator: DT
-                  args:
-                    dt:
-                      value:
-                        simple: .=Object.values(val).filter(value => value == "True").length
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: Core.OriginalAlert.event.evtlog_host_count_distinct_target_user_created
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: CreatorPastCreationCount
-            iscontext: true
-          right:
-            value:
-              simple: "3"
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 448,
-          "y": 1858
+          "x": 450,
+          "y": 1876
         }
       }
     note: false
@@ -1204,7 +1169,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 448,
+          "x": 450,
           "y": 2024
         }
       }
@@ -1235,7 +1200,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 448,
+          "x": 449,
           "y": 2154
         }
       }
@@ -1248,10 +1213,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 53babb1d-1c09-4857-8f6d-1c71deecbad2
+    taskid: 6d40c3d4-1c76-4723-842d-ce1ee7d4ea78
     type: regular
     task:
-      id: 53babb1d-1c09-4857-8f6d-1c71deecbad2
+      id: 6d40c3d4-1c76-4723-842d-ce1ee7d4ea78
       version: -1
       name: Close Investigation
       description: Close the current alert.
@@ -1261,15 +1226,7 @@ tasks:
       brand: Builtin
     scriptarguments:
       closeReason:
-        complex:
-          root: CloseReason
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: Resolved - False Positive
+        simple: ${CloseReason}
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -1278,7 +1235,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2972
+          "y": 2951
         }
       }
     note: false
@@ -1290,13 +1247,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 9184b7c9-0f90-47f1-84f7-334f6a4c39ff
+    taskid: 06f2d241-5aa0-4aa4-bebe-444dd2f27b4f
     type: condition
     task:
-      id: 9184b7c9-0f90-47f1-84f7-334f6a4c39ff
+      id: 06f2d241-5aa0-4aa4-bebe-444dd2f27b4f
       version: -1
       name: Analyst review - disable suspicious user?
-      description: |
+      description: |-
         We found suspicious indicators in this investigation and have taken action by disabling the suspicious local user that was created.
 
         Review the findings and decide on the next steps:
@@ -1330,14 +1287,18 @@ tasks:
         ### Host & User Risk Levels
         Host risk level: `${Core.RiskyHost.risk_level}`
 
-        Creator user risk level: `${Core.RiskyHost.risk_level}`
+        Creator user risk level: `${Core.RiskyUser.risk_level}`
 
         ---
 
         ### Suspicious command line executions
         Created user: `${.=val.SuspiciousCommandlinesList || "N/A"}`
 
+        CMD findings: `${CommandLineAnalysis.findings}`
+
         Creator user: `${.=val.CreatorSuspiciousCommandlinesList || "N/A"}`
+        
+        CMD findings: `${CreatorCommandLineAnalysis.findings}
       type: condition
       iscommand: false
       brand: ""
@@ -1351,8 +1312,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 448,
-          "y": 2394
+          "x": 449,
+          "y": 2389
         }
       }
     note: false
@@ -1434,7 +1395,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 448,
+          "x": 449,
           "y": 2265
         }
       }
@@ -2373,7 +2334,7 @@ view: |-
       "18_38_yes": 0.5,
       "20_33_#error#": 0.14,
       "22_33_#error#": 0.32,
-      "33_43_False Positive": 0.24,
+      "33_40_True Positive": 0.34,
       "33_46_#default#": 0.61,
       "44_43_#default#": 0.11,
       "53_33_#error#": 0.1,
@@ -2384,7 +2345,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3012,
+        "height": 2991,
         "width": 3556,
         "x": -1591,
         "y": 30
