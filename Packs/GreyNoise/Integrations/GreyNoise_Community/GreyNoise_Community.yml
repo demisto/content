@@ -87,6 +87,9 @@ script:
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
       type: string
+    - contextPath: IP.Address
+      description: IP address.
+      type: string
     - contextPath: IP.address
       description: IP address.
       type: string
