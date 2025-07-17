@@ -113,4 +113,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-![Detonate File - VMRay](../doc_files/Detonate_File_-_VMRay.png)
+![Detonate File - VMRay](../doc_files/VMRay-Detonate-File.png)

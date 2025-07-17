@@ -107,4 +107,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-![Detonate URL - VMRay](../doc_files/Detonate_URL_-_VMRay.png)
+![Detonate URL - VMRay](../doc_files/VMRay-Detonate-URL.png)
