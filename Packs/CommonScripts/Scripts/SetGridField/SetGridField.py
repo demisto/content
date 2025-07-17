@@ -173,11 +173,13 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     Returns:
         DataFrame: Existing grid data.
     """
+    demisto.info("SGF: In get_current_table")
     # Note: in XSIAM empty grid fields doe not exist in the context.
     # in XSOAR the fields exist with empty values.
     incident = demisto.incident()
     custom_fields = incident.get("CustomFields", {}) or {}
     if (not is_xsiam_or_xsoar_saas()) and grid_id not in custom_fields:
+        demisto.info(f"SGF: got {is_xsiam_or_xsoar_saas()=}. For {grid_id=} and {custom_fields=}, got {grid_id not in custom_fields}")  # noqa: E501
         raise ValueError(get_error_message(grid_id))
     current_table: list[dict] | None = custom_fields.get(grid_id)
     return pd.DataFrame(current_table) if current_table else pd.DataFrame()
@@ -343,6 +345,7 @@ def build_grid_command(
     Returns:
         list: Table representation for the Grid.
     """
+    demisto.info("SGF: In build_grid_command")
     # Assert columns match keys
     if keys[0] != "*" and (len(columns) != len(keys)):
         raise DemistoException(f"The number of keys: {len(keys)} should match the number of columns: {len(columns)}.")
@@ -376,10 +379,12 @@ def build_grid_command(
 
 
 def main():  # pragma: no cover
+    demisto.info("SGF: Starting script SetGridField")
     args = demisto.args()
     try:
         # Normalize grid id from any form to connected lower words, e.g. my_word/myWord -> myword
         grid_id = normalized_string(args.get("grid_id"))
+        demisto.info(f"SGF: got {grid_id=}")
 
         context_path = args.get("context_path")
         # Build updated table
@@ -394,6 +399,7 @@ def main():  # pragma: no cover
             keys_from_nested=argToList(args.get("keys_from_nested")),
         )
         # Execute automation 'setIncident` which change the Context data in the incident
+        demisto.info("SGF: Setting incident field")
         res_set = demisto.executeCommand(
             "setIncident",
             {
@@ -402,9 +408,11 @@ def main():  # pragma: no cover
                 },
             },
         )
+        demisto.info(f"SGF: Got {res_set=} from setIncidents to set the gris field")
         # we want to check if the incident was succefully updated
         # we execute command and not using `demisto.incident()` because we want to get the updated incident and context
         res = demisto.executeCommand("getIncidents", {"id": demisto.incident().get("id")})
+        demisto.info(f"SGF: Got {res=} from getIncidents to get incident {demisto.incident().get('id')}")
         custom_fields: dict = {}
         for entry in res:
             if entry["Contents"]:
@@ -412,6 +420,7 @@ def main():  # pragma: no cover
                 custom_fields = data[0].get("CustomFields", {}) if data else {}
         # in the debugger, there is an addition of the "_grid" suffix to the grid_id.
         if is_xsiam_or_xsoar_saas() and table and grid_id not in custom_fields and f"{grid_id}_grid" not in custom_fields:
+            demisto.info(f"SGF: got {is_xsiam_or_xsoar_saas()=} and {table=}. For {grid_id=} and {grid_id}_grid {custom_fields=}, got {grid_id not in custom_fields} ")  # noqa: E501
             raise ValueError(get_error_message(grid_id))
         if is_error(res_set):
             demisto.error(f'failed to execute "setIncident" with table: {table}.')
