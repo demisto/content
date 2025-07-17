@@ -121,12 +121,15 @@ def test_login_with_expired_access_and_refresh_tokens(mocker):
     """
     mock_response = util_load_json("test_data/mock_response_login_first_time_token_creation.json")
     mocker.patch.object(Client, "_http_request", return_value=mock_response)
-    mocker.patch("VenafiV2.get_integration_context", return_value={
-        "access_token": "expired_access_token",
-        "access_until": 1000000000,  # expired
-        "refresh_token": "expired_refresh_token",
-        "refresh_until": 1000000000,  # expired
-    })
+    mocker.patch(
+        "VenafiV2.get_integration_context",
+        return_value={
+            "access_token": "expired_access_token",
+            "access_until": 1000000000,  # expired
+            "refresh_token": "expired_refresh_token",
+            "refresh_until": 1000000000,  # expired
+        },
+    )
     mocker.patch("VenafiV2.set_integration_context")
     mocker.patch("VenafiV2.get_current_time")
 
