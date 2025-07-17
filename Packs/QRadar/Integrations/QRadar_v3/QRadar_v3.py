@@ -32,6 +32,7 @@ DEFAULT_EVENTS_TIMEOUT = 30  # default timeout for the events enrichment in minu
 PROFILING_DUMP_ROWS_LIMIT = 20
 MAX_RETRIES_CONTEXT = 5  # max number of retries to update the context
 MAX_SEARCHES_QUEUE = 10  # maximum number of concurrent searches in mirroring
+CONTEXT_SIZE_WARNING_THRESHOLD_MB = 3  # warn when context exceeds this size in MB
 
 SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
@@ -62,6 +63,7 @@ ADVANCED_PARAMETER_INT_NAMES = [
     "SLEEP_FETCH_EVENT_RETRIES",
     "DEFAULT_EVENTS_TIMEOUT",
     "PROFILING_DUMP_ROWS_LIMIT",
+    "CONTEXT_SIZE_WARNING_THRESHOLD_MB",
 ]
 
 """ CONSTANTS """
@@ -1360,6 +1362,18 @@ def log_context_diagnostics(context_data: dict, operation: str, changes_size_inf
         changes_size_info (dict): Size info about the changes being applied
     """
     size_info = get_context_size_info(context_data)
+    
+    # Check if context size exceeds warning threshold
+    if size_info['total_size_mb'] > CONTEXT_SIZE_WARNING_THRESHOLD_MB:
+        warning_msg = f"WARNING: QRadar Context Size Exceeds Threshold! Current: {size_info['total_size_mb']:.3f}MB > Threshold: {CONTEXT_SIZE_WARNING_THRESHOLD_MB}MB"
+        demisto.error(warning_msg)
+        print_debug_msg(warning_msg)
+        
+        # Identify the largest components for actionable warnings
+        largest_component = max(size_info['components'].items(), key=lambda x: x[1]['size_mb'])
+        component_warning = f"Largest component: {largest_component[0]} ({largest_component[1]['count']} items, {largest_component[1]['size_mb']:.3f}MB)"
+        demisto.error(component_warning)
+        print_debug_msg(component_warning)
     
     # Create detailed diagnostic message
     diagnostic_msg = f"""=== QRadar Context Diagnostics - {operation} ===
