@@ -136,3 +136,9 @@ ignore=GR107
 
 [file:playbook-Isolate_Endpoint_-_Generic_V2.yml]
 ignore=GR107
+
+[playbook-Endpoint_Enrichment_-_Generic_v2.1_README.md]
+ignore=RM116
+
+[playbook-Endpoint_Enrichment_-_Generic_v2.1_6_8_README.md]
+ignore=RM116
