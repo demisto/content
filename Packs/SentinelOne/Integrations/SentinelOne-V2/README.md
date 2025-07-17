@@ -21,6 +21,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Define which Threats should be fetched. |  | False |
 | Fetch limit: The maximum number of threats or alerts to fetch |  | False |
 | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
+| Block Site IDs | Comma-separated string of site IDs where the hash should be blocked. If left blank and no other scopes are provided in the sentinelone-add-hash-to-blocklist command, the hash will be blocked globally. If filled, the hash will be blocked only within the specified site scopes. When used with sentinelone-add-hash-to-blocklist, these IDs are combined with any site_ids passed as command arguments to define the final scope. |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
