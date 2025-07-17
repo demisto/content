@@ -67,6 +67,11 @@ configuration:
   name: incidentFetchInterval
   type: 19
   required: false
+- defaultvalue: UTC
+  display: Incidents Time Zone
+  name: incidents_time_zone
+  type: 0
+  required: false
 description: Symantec Data Loss Prevention version 15.7 enables you to discover, monitor and protect your sensitive corporate information.
 display: Symantec Data Loss Prevention v2
 name: Symantec Data Loss Prevention v2
