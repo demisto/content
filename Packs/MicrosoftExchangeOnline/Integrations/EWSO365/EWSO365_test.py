@@ -194,6 +194,7 @@ MESSAGES = [
         datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC"))
     ),
     Message(
         subject="message2",
@@ -203,6 +204,7 @@ MESSAGES = [
         datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC"))
     ),
     Message(
         subject="message3",
@@ -212,6 +214,7 @@ MESSAGES = [
         datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC"))
     ),
 ]
 CASE_FIRST_RUN_NO_INCIDENT = ({}, [], {"lastRunTime": None, "folderName": "Inbox", "ids": [], "errorCounter": 0})
