@@ -3482,11 +3482,12 @@ def test_process_ask_user():
 def test_send_notification_with_raw_adaptive_card(mocker, requests_mock):
     """
     Given:
-        - An adaptive_card argument send form MicrosoftTeamsAsk.
+        - A raw adaptive_card input.
     When:
-        - Call send_message method.
+        - send-notification is called.
     Then:
-        - The request to the endpoint is sent with the adaptive card.
+        - The adaptive card is wrapped with the required contentType and content fields.
+        - The request to the endpoint is sent with the adaptive card as expected.
     """
 
     from MicrosoftTeams import send_message
@@ -3531,10 +3532,11 @@ def test_send_notification_with_raw_adaptive_card(mocker, requests_mock):
 def test_send_notification_with_raw_adaptive_card_from_TeamAsk(mocker, requests_mock):
     """
     Given:
-        - An adaptive_card argument send form MicrosoftTeamsAsk.
+        - A raw adaptive_card is sent from MicrosoftTeamsAsk.
     When:
         - Call send_message method.
     Then:
+        - The adaptive card is wrapped with the required contentType and content fields.
         - The request to the endpoint is sent with the adaptive card.
     """
 
