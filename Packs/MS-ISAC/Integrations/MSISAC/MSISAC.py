@@ -316,7 +316,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
     alert = client.get_alert(alert_id=alert_id)
 
     return CommandResults(
-        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {alert_id}", alert),
+        readable_output=tableToMarkdown(f"MS-ISAC Alert Details for {alert_id}", alert),
         raw_response=alert,
         outputs_prefix="MSISAC.Alert",
         outputs_key_field="alertId",
@@ -345,7 +345,7 @@ def retrieve_cases_command(client: Client, args: Dict[str, Any]):
 
     case_list = client.retrieve_cases(timestamp=timestamp)
 
-    readable_output = tableToMarkdown(f"MS-ISAC Event List Fetched since timestamp: {timestamp}", case_list)
+    readable_output = tableToMarkdown(f'MS-ISAC Case List Fetched since: {timestamp or "last 72 hours"}', case_list)
 
     return CommandResults(
         readable_output=readable_output,
