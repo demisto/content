@@ -6870,9 +6870,8 @@ def generic_api_call_command(
         **kwargs,
     )
 
-    title = f"{INTEGRATION_NAME} - Generic API Call command"
     context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}": raw_response}
-    human_readable = "API call return successful."
+    human_readable = "API call returned successfully"
     return human_readable, context_entry, raw_response
 
 
