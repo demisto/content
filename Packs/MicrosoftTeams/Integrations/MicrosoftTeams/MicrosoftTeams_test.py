@@ -3478,3 +3478,114 @@ def test_process_ask_user():
         },
     }
     assert process_ask_user(json.dumps(message)) == expected_adaptive_card
+
+def test_send_notification_with_raw_adaptive_card(mocker, requests_mock):
+    """
+    Given:
+        - An adaptive_card argument send form MicrosoftTeamsAsk.
+    When:
+        - Call send_message method.
+    Then:
+        - The request to the endpoint is sent with the adaptive card.
+    """
+
+    from MicrosoftTeams import send_message
+
+    adaptive_card: dict = {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "version": "1.0",
+        "type": "AdaptiveCard",
+        "msteams": {"width": "Full"},
+        "body": [{"type": "TextBlock", "text": "message", "wrap": True}],
+        "actions": [
+            {"type": "Action.Submit", "title": "Yes"},
+            {"type": "Action.Submit", "title": "No"},
+        ],
+    }
+    expected_request_attachment = {
+        "contentType": "application/vnd.microsoft.card.adaptive",
+        "content": {
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.0",
+            "type": "AdaptiveCard",
+            "msteams": {"width": "Full"},
+            "body": [{"type": "TextBlock", "text": "message", "wrap": True}],
+            "actions": [
+                {"type": "Action.Submit", "title": "Yes"},
+                {"type": "Action.Submit", "title": "No"},
+            ],
+        }
+    }
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": "conversation-id"})
+    mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
+    mocker.patch.object(demisto, "params", return_value={"team": "The-A-Team"})
+    mocker.patch.object(
+        demisto, "args", return_value={"adaptive_card": json.dumps(adaptive_card), "to": "bwillis@email.com"}
+    )
+    send_message_request = requests_mock.post(f"{service_url}/v3/conversations/conversation-id/activities", json={})
+
+    send_message()
+    assert send_message_request.last_request.json() == {"type": "message", "attachments": [expected_request_attachment]}
+
+
+def test_send_notification_with_raw_adaptive_card_from_TeamAsk(mocker, requests_mock):
+    """
+    Given:
+        - An adaptive_card argument send form MicrosoftTeamsAsk.
+    When:
+        - Call send_message method.
+    Then:
+        - The request to the endpoint is sent with the adaptive card.
+    """
+
+    from MicrosoftTeams import send_message
+
+    adaptive_card: dict = {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "version": "1.0",
+        "type": "AdaptiveCard",
+        "msteams": {"width": "Full"},
+        "body": [{"type": "TextBlock", "text": "message", "wrap": True}],
+        "actions": [
+            {"type": "Action.Submit", "title": "Yes"},
+            {"type": "Action.Submit", "title": "No"},
+        ],
+    }
+    adaptive_card_arg_from_TeamsAsk: dict = {
+        "adaptive_card": adaptive_card,
+        "entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8",
+        "investigation_id": "1",
+        "task_id": "1",
+    }
+    expected_request_attachment = {
+        "contentType": "application/vnd.microsoft.card.adaptive",
+        "content": {
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.0",
+            "type": "AdaptiveCard",
+            "msteams": {"width": "Full"},
+            "body": [{"type": "TextBlock", "text": "message", "wrap": True}],
+            "actions": [
+                {
+                    "type": "Action.Submit",
+                    "title": "Yes",
+                    "data": {"entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
+                },
+                {
+                    "type": "Action.Submit",
+                    "title": "No",
+                    "data": {"entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
+                },
+            ],
+        },
+    }
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": "conversation-id"})
+    mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
+    mocker.patch.object(demisto, "params", return_value={"team": "The-A-Team"})
+    mocker.patch.object(
+        demisto, "args", return_value={"adaptive_card": json.dumps(adaptive_card_arg_from_TeamsAsk), "to": "bwillis@email.com"}
+    )
+    send_message_request = requests_mock.post(f"{service_url}/v3/conversations/conversation-id/activities", json={})
+
+    send_message()
+    assert send_message_request.last_request.json() == {"type": "message", "attachments": [expected_request_attachment]}
