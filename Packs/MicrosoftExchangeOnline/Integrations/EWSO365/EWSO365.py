@@ -1666,7 +1666,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
             f"last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####"
         )
 
-        demisto.debug(f"{current_fetch_ids=}, {excluded_ids=} ")
         # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
         # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
         if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
@@ -1674,7 +1673,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         else:
             ids = excluded_ids | current_fetch_ids
 
-        demisto.debug(f"{ids=}")
         new_last_run = {
             LAST_RUN_TIME: last_incident_run_time,
             LAST_RUN_FOLDER: client.folder_name,
@@ -1749,17 +1747,17 @@ def fetch_last_emails(
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message):
             if item.message_id in exclude_ids:
-                demisto.debug(
-                    f"prev: {exclude_ids.get(item.message_id)}, current: {item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()}")
+                received_time = item.datetime_created.ewsformat()
+                modified_time = item.last_modified_time.ewsformat()
                 if not exclude_ids.get(item.message_id) or exclude_ids.get(item.message_id) >= (
-                item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()):
+                received_time if incident_filter == RECEIVED_FILTER else modified_time):
                     # If it's the first fetch using a dictionary instead of a list, it implies the IDs have no associated time.
                     # Alternatively, an item is excluded if it was previously fetched and its received/modification
                     # time has not changed since then.
                     demisto.debug(
                         f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
                         f"{exclude_ids.get(item.message_id)}, (if no time - because of the transition from list to dict). "
-                        f"current fetch time: {item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()}")
+                        f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}")
                     continue
             demisto.debug(f"Appending {item.subject=}")
             result.append(item)
