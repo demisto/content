@@ -4,9 +4,9 @@ Ivanti has recently disclosed four critical vulnerabilities in their VPN devices
 
 This pack will provide you with a first response kit which includes:
 
-  * Threat Hunting
-  * IoC Collection and Remediation
-  * Mitigation Measures
+* Threat Hunting
+* IoC Collection and Remediation
+* Mitigation Measures
 
 **References:**
 

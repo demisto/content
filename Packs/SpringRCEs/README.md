@@ -12,7 +12,6 @@ Later, it was discovered that these are two separate vulnerabilities, one in Spr
 
 **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
 
-
 **Spring Core vulnerability requirements:**
 
 * JDK 9 or higher
@@ -27,10 +26,10 @@ Later, it was discovered that these are two separate vulnerabilities, one in Spr
 * 3.2.3
 
 This pack will provide you with a first response kit which includes:
+
 * Hunting
 * Remediation
 * Mitigations
-
 
 More information about the vulnerability:
 

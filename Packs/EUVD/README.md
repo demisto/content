@@ -1,0 +1,3 @@
+The objective of the EUVD is to ensure a high level of interconnection of publicly available information coming from multiple sources such as CSIRTs, vendors, as well as existing databases. In order to meet this objective, the platform is building on a holistic approach. As an interconnected database the EUVD allows for better analysis and facilitates the correlation of vulnerabilities by facilitating the open-source software Vulnerability-Lookup, thereby enabling enhanced cybersecurity risk management.
+
+The EUVD offers therefore a trusted, more transparent and broader source of information and further improves situational awareness while limiting exposure to threats.  

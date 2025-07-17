@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The First fetch timestamp parameter is no longer available."
+}

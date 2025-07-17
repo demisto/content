@@ -1,6 +1,6 @@
 Use the Gmail integration to search and process emails in your organization's Gmail mailboxes.
 
-This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration. 
+This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration.
 
 ### Prerequisites
 
@@ -13,22 +13,22 @@ You need to do the following in Google before configuring your integration insta
 
 ### Get a New Private Key
 
-1.  Access your [Google Service Account](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0).
-2.  In the IAM & admin section select **Service accounts**.
-3.  If you need to create a new project, click **CREATE PROJECT** and do the following:
-    1.  In the **New Project** window, type a project name, select an organization from the drop-down list, and then select a location.
-    2.  Click **CREATE**.
-4.  In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.    
+1. Access your [Google Service Account](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0).
+2. In the IAM & admin section select **Service accounts**.
+3. If you need to create a new project, click **CREATE PROJECT** and do the following:
+    1. In the **New Project** window, type a project name, select an organization from the drop-down list, and then select a location.
+    2. Click **CREATE**.
+4. In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.
 
     ![gmail_section1_step4](../../doc_files/gmail_section1_step4.png)
-5.  In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.  
- 
+5. In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.  
+
     ![gmail_section1_step5](../../doc_files/gmail_section1_step5.png)
-6.  In the **Grant this service account access to project** section,click **Continue**.
-7.  In the **Grant users access to this service account** section, click **DONE**.  
-8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.  
-    
-    ![gmail_section1_step8](../../doc_files/gmail_section1_step8.png)   
+6. In the **Grant this service account access to project** section,click **Continue**.
+7. In the **Grant users access to this service account** section, click **DONE**.  
+8. In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.  
+
+    ![gmail_section1_step8](../../doc_files/gmail_section1_step8.png)
 9. Click the **ADD KEY** dropdown, and select **Create new key**.
 10. Select Key type **JSON** and click **CREATE**.  
     This will generate a json **Private key** file that will be downloaded and saved locally.
@@ -50,7 +50,7 @@ Both the **Gmail API** and the **Admin SDK API** are required to use this integr
 2. Click **MANAGE DOMAIN WIDE DELEGATION**.
 3. Click **Add new** to open the **Add a new client ID** dialog.
 4. Complete the dialog using the **Client ID** copied in **Step 12** above, and the **OAuth scopes** noted below, then click **AUTHORIZE** to close the dialog.
-    
+
 ``` https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com,https://www.googleapis.com/auth/gmail.compose ```
 
 ### Get an Immutable Google Apps ID
@@ -111,7 +111,6 @@ To revoke or fetch a user role, you need an Immutable Google Apps ID.
 3. Deletes emails by using the following command.  
     `!gmail-delete-mail user-id=admin@demisto.com message-id=164d2110e0152660`
 
-
 ### Fetched Incidents Data
 
 1. Incident Name
@@ -127,7 +126,6 @@ To revoke or fetch a user role, you need an Immutable Google Apps ID.
 11. Attachment Name
 12. Email Body
 13. Email Body Format
-
 
 ## Commands
 
@@ -146,36 +144,34 @@ After you successfully execute a command, a DBot message appears in the War Room
 * **gmail-list-labels**: Lists all labels for a given user.
 * **gmail-revoke-user-role**: Revokes a Google user's role.
 * **gmail-create-user**: Creates a new user.
-* **gmail-delete-mail**: Deletes mail from a mailbox. 
-* **gmail-get-thread**: Gets the message in an email thread. 
-* **gmail-move-mail**: Moves an email to a different folder. 
+* **gmail-delete-mail**: Deletes mail from a mailbox.
+* **gmail-get-thread**: Gets the message in an email thread.
+* **gmail-move-mail**: Moves an email to a different folder.
 * **gmail-move-mail-to-mailbox**: Moves an email to a different mailbox.
-* **gmail-add-delete-filter**: Adds a rule to delete an email. 
-* **gmail-add-filter**: Adds a new filter. 
-* **gmail-list-filter**: Gets a list of filters in a mailbox. 
-* **gmail-remove-filter**: Removes a filter from an email. 
-* **gmail-hide-user-in-directory**: Hides a user's information. 
-* **gmail-set-password**: Sets a password. 
-* **gmail-get-autoreply**: Gets an auto reply message for the user. 
+* **gmail-add-delete-filter**: Adds a rule to delete an email.
+* **gmail-add-filter**: Adds a new filter.
+* **gmail-list-filter**: Gets a list of filters in a mailbox.
+* **gmail-remove-filter**: Removes a filter from an email.
+* **gmail-hide-user-in-directory**: Hides a user's information.
+* **gmail-set-password**: Sets a password.
+* **gmail-get-autoreply**: Gets an auto reply message for the user.
 * **gmail-set-autoreply**: Sets an auto-reply for the user.
-* **gmail-delegate-user-mailbox**: Adds a delegate user to a mailbox. 
-* **send-mail**: Sends an email using Gmail. 
+* **gmail-delegate-user-mailbox**: Adds a delegate user to a mailbox.
+* **send-mail**: Sends an email using Gmail.
 * **reply-mail**: Replies to an email using Gmail.
-* **gmail-remove-delegated-mailbox**: Removes a delegate user from a mailbox. 
-* **gmail-get-role**: Gets details of a specific role. 
-* **gmail-forwarding-address-add**: Creates a forwarding address. 
+* **gmail-remove-delegated-mailbox**: Removes a delegate user from a mailbox.
+* **gmail-get-role**: Gets details of a specific role.
+* **gmail-forwarding-address-add**: Creates a forwarding address.
 * **gmail-forwarding-address-update**: Updates the disposition in a forwarding address.
 * **gmail-forwarding-address-list**: Gets a list of forwarding addresses.
 * **gmail-forwarding-address-get**: Gets a forwarding address.
 * **gmail-forwarding-address-remove**: Removes a forwarding address.
-* **gmail-send-as-add**: Creates a custom "from" send-as alias. 
-
+* **gmail-send-as-add**: Creates a custom "from" send-as alias.
 
 ### gmail-delete-user
 
 ***
 Deletes a Gmail user.
-
 
 #### Base Command
 
@@ -185,8 +181,7 @@ Deletes a Gmail user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
 
 #### Context Output
 
@@ -195,7 +190,6 @@ There is no context output for this command.
 #### Command Example
 
 ```!gmail-delete-user user-id=user1@domain.io```
-
 
 #### Human Readable Output
 
@@ -206,7 +200,6 @@ There is no context output for this command.
 ***
 Lists all tokens associated with a specified user.
 
-
 #### Base Command
 
 `gmail-get-tokens-for-user`
@@ -215,8 +208,7 @@ Lists all tokens associated with a specified user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
 
 #### Command Example
 
@@ -241,7 +233,7 @@ Lists all tokens associated with a specified user.
 
 #### Human Readable Output
 
->### Tokens:
+>### Tokens
 
 >|DisplayText|ClientId|Kind|Scopes|UserKey|
 >|---|---|---|---|---|
@@ -256,7 +248,6 @@ Lists all tokens associated with a specified user.
 ***
 Gets information for a specified user.
 
-
 #### Base Command
 
 `gmail-get-user`
@@ -265,28 +256,26 @@ Gets information for a specified user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| projection | The subset of fields to fetch for the user. Can be: "basic": Do not include any custom fields for the user (default), "custom": Includes custom fields from schemas requested in custom-field-mask, "full": Includes all fields associated with the user. Possible values are: basic, custom, full. Default is basic. | Optional | 
-| view-type-public-domain | Whether to fetch the administrator or public view of the user. Can be admin_view (default), which includes both administrator and domain-public fields; or "domain_public", which includes user fields that are publicly visible to other users in the domain. Possible values are: admin_view, domain_public. Default is admin_view. | Optional | 
-| custom-field-mask | A comma-separated list of schema names. All fields from these schemas are fetched. This should only be set when projection=custom. | Optional | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| projection | The subset of fields to fetch for the user. Can be: "basic": Do not include any custom fields for the user (default), "custom": Includes custom fields from schemas requested in custom-field-mask, "full": Includes all fields associated with the user. Possible values are: basic, custom, full. Default is basic. | Optional |
+| view-type-public-domain | Whether to fetch the administrator or public view of the user. Can be admin_view (default), which includes both administrator and domain-public fields; or "domain_public", which includes user fields that are publicly visible to other users in the domain. Possible values are: admin_view, domain_public. Default is admin_view. | Optional |
+| custom-field-mask | A comma-separated list of schema names. All fields from these schemas are fetched. This should only be set when projection=custom. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.Type | String | The account type. For example, "AD", "LocalOS", "Google", "AppleID", and so on. | 
-| Account.ID | String | The unique ID for the account \(integration specific\). For AD accounts this is the Distinguished Name \(DN\). | 
-| Account.DisplayName | string | The display name. | 
-| Account.Gmail.Address | string | The email assigned with the current account. | 
-| Account.Email.Address | String | The email address of the account. | 
-| Account.Domain | String | The domain of the account. | 
-| Account.Username | String | The account username in the relevant system. | 
-| Account.OrganizationUnit | String | The Organization Unit \(OU\) of the account. | 
-| Account.Group | String | Groups to which the account belongs \(integration specific\). For example, for AD, these are the groups in which the account is a member. | 
-| Account.VisibleInDirectory | Boolean | Whether the account is visible in the directory. | 
-| Account.CustomerId | String | The customer unique ID. | 
-
+| Account.Type | String | The account type. For example, "AD", "LocalOS", "Google", "AppleID", and so on. |
+| Account.ID | String | The unique ID for the account \(integration specific\). For AD accounts this is the Distinguished Name \(DN\). |
+| Account.DisplayName | string | The display name. |
+| Account.Gmail.Address | string | The email assigned with the current account. |
+| Account.Email.Address | String | The email address of the account. |
+| Account.Domain | String | The domain of the account. |
+| Account.Username | String | The account username in the relevant system. |
+| Account.OrganizationUnit | String | The Organization Unit \(OU\) of the account. |
+| Account.Group | String | Groups to which the account belongs \(integration specific\). For example, for AD, these are the groups in which the account is a member. |
+| Account.VisibleInDirectory | Boolean | Whether the account is visible in the directory. |
+| Account.CustomerId | String | The customer unique ID. |
 
 #### Command Example
 
@@ -319,18 +308,16 @@ Gets information for a specified user.
 
 #### Human Readable Output
 
->### User user@domain.io:
+>### User user@domain.io
 
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|VisibleInDirectory|
 >|---|---|---|---|---|---|---|---|---|
 >| Google | 115824619743385532879 | user | user user | admin#directory#user | C03puekhd | domain.io | Address: user@domain.io | true |
 
-
 ### gmail-get-user-roles
 
 ***
 Retrieves a list of all Google roles for a specified user.
-
 
 #### Base Command
 
@@ -340,20 +327,18 @@ Retrieves a list of all Google roles for a specified user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.Role.RoleAssignmentId | String | The unique ID of the role assignment. | 
-| Gmail.Role.ScopeType | String | The scope type of the role. | 
-| Gmail.Role.Kind | String | The kind of the Role. | 
-| Gmail.Role.OrgUnitId | String | The organization the user was assigned to. | 
-| Gmail.Role.ID | String | The inner role ID. | 
-| Gmail.Role.AssignedTo | String | The user ID who was assigned to the role. | 
-
+| Gmail.Role.RoleAssignmentId | String | The unique ID of the role assignment. |
+| Gmail.Role.ScopeType | String | The scope type of the role. |
+| Gmail.Role.Kind | String | The kind of the Role. |
+| Gmail.Role.OrgUnitId | String | The organization the user was assigned to. |
+| Gmail.Role.ID | String | The inner role ID. |
+| Gmail.Role.AssignedTo | String | The user ID who was assigned to the role. |
 
 #### Command Example
 
@@ -397,7 +382,7 @@ Retrieves a list of all Google roles for a specified user.
 
 #### Human Readable Output
 
->### User Roles of user@domain.io:
+>### User Roles of user@domain.io
 
 >|ID|RoleAssignmentId|ScopeType|Kind|OrgUnitId|
 >|---|---|---|---|---|
@@ -418,27 +403,26 @@ Retrieves attachments from a sent Gmail message.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
+| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required |
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Name | String | The file name. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
-| File.Size | Number | The size of the file in bytes. | 
-| File.SSDeep | String | The SSDeep hash of the file \(same as displayed in file entries\). | 
+| File.Name | String | The file name. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). |
+| File.Size | Number | The size of the file in bytes. |
+| File.SSDeep | String | The SSDeep hash of the file \(same as displayed in file entries\). |
 | File.EntryID | String | The EntryID of the file. |
-| File.Extension | String | The file extension. For example: "xls". | 
+| File.Extension | String | The file extension. For example: "xls". |
 
 #### Command Example
 
 ```!gmail-get-attachments message-id=16d4316a25a332e4 user-id=admin@demistodev.com```
-
 
 ### gmail-get-mail
 
@@ -453,48 +437,48 @@ Retrieves the Gmail message sent to a specified user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
-| format | The format to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only the email message ID, labels, and email headers / "minimal": Returns only the email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional | 
-| include-attachments | Whether to include the attachment entries in the result or not. Possible values are: False, True. | Optional | 
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required |
+| format | The format to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only the email message ID, labels, and email headers / "minimal": Returns only the email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional |
+| include-attachments | Whether to include the attachment entries in the result or not. Possible values are: False, True. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ID | String | The inner ID of the Gmail message. | 
-| Gmail.ThreadId | string | The thread ID. | 
-| Gmail.Format | string | The MIME type of email. | 
-| Gmail.Labels | string | The labels of the specific email. | 
-| Gmail.To | String | The email address of the receiver. | 
-| Gmail.From | String | The email address of the sender. | 
-| Gmail.Cc | string | Additional recipient email address \(CC\). | 
-| Gmail.Bcc | string | Additional recipient email address \(BCC\). | 
-| Gmail.Subject | string | The subject of the email. | 
-| Gmail.Body | string | The content of the email. | 
-| Gmail.Attachments.ID | String | The email attachment ID (as appear in gmail). | 
-| Gmail.Attachments.Name | String | The email attachment name. | 
-| Gmail.Headers | unknown | All headers of the specific email \(list\). | 
-| Gmail.Mailbox | string | The email mailbox. | 
-| Email.To | String | The recipient of the email. | 
-| Email.From | String | The sender of the email. | 
-| Email.CC | String | Additional recipient email address \(CC\). | 
-| Email.BCC | String | Additional recipient email address \(BCC\). | 
-| Email.Format | String | The format of the email. | 
-| Email.Body/HTML | String | The HTML version of the email. | 
-| Email.Body/Text | String | The plain-text version of the email. | 
-| Email.Subject | String | The subject of the email. | 
-| Email.Headers | String | The headers of the email. | 
-| Email.Attachments.ID | String | The email attachment ID (as appear in gmail). | 
-| Email.Attachments.Name | String | The email attachment name. | 
+| Gmail.ID | String | The inner ID of the Gmail message. |
+| Gmail.ThreadId | string | The thread ID. |
+| Gmail.Format | string | The MIME type of email. |
+| Gmail.Labels | string | The labels of the specific email. |
+| Gmail.To | String | The email address of the receiver. |
+| Gmail.From | String | The email address of the sender. |
+| Gmail.Cc | string | Additional recipient email address \(CC\). |
+| Gmail.Bcc | string | Additional recipient email address \(BCC\). |
+| Gmail.Subject | string | The subject of the email. |
+| Gmail.Body | string | The content of the email. |
+| Gmail.Attachments.ID | String | The email attachment ID (as appear in gmail). |
+| Gmail.Attachments.Name | String | The email attachment name. |
+| Gmail.Headers | unknown | All headers of the specific email \(list\). |
+| Gmail.Mailbox | string | The email mailbox. |
+| Email.To | String | The recipient of the email. |
+| Email.From | String | The sender of the email. |
+| Email.CC | String | Additional recipient email address \(CC\). |
+| Email.BCC | String | Additional recipient email address \(BCC\). |
+| Email.Format | String | The format of the email. |
+| Email.Body/HTML | String | The HTML version of the email. |
+| Email.Body/Text | String | The plain-text version of the email. |
+| Email.Subject | String | The subject of the email. |
+| Email.Headers | String | The headers of the email. |
+| Email.Attachments.ID | String | The email attachment ID (as appear in gmail). |
+| Email.Attachments.Name | String | The email attachment name. |
 | Email.Date | String | The date the email was received. |
-| File.Name | String | Relevant only when include-attachments is set to True. The file name. | 
-| File.MD5 | String | Relevant only when include-attachments is set to True. The MD5 hash of the file. | 
-| File.SHA1 | String | Relevant only when include-attachments is set to True. The SHA1 hash of the file. | 
-| File.SHA256 | String | Relevant only when include-attachments is set to True. The SHA256 hash of the file. | 
-| File.Type | String | Relevant only when include-attachments is set to True. The file type, as determined by libmagic \(same as displayed in file entries\). | 
-| File.Size | Number | Relevant only when include-attachments is set to True. The size of the file in bytes. | 
-| File.SSDeep | String | Relevant only when include-attachments is set to True. The SSDeep hash of the file \(same as displayed in file entries\). | 
+| File.Name | String | Relevant only when include-attachments is set to True. The file name. |
+| File.MD5 | String | Relevant only when include-attachments is set to True. The MD5 hash of the file. |
+| File.SHA1 | String | Relevant only when include-attachments is set to True. The SHA1 hash of the file. |
+| File.SHA256 | String | Relevant only when include-attachments is set to True. The SHA256 hash of the file. |
+| File.Type | String | Relevant only when include-attachments is set to True. The file type, as determined by libmagic \(same as displayed in file entries\). |
+| File.Size | Number | Relevant only when include-attachments is set to True. The size of the file in bytes. |
+| File.SSDeep | String | Relevant only when include-attachments is set to True. The SSDeep hash of the file \(same as displayed in file entries\). |
 | File.EntryID | string | The EntryID of the file. |
 | File.Extension | String | The file extension. For example: "xls". |
 
@@ -757,18 +741,16 @@ Retrieves the Gmail message sent to a specified user.
 
 #### Human Readable Output
 
->### Email:
+>### Email
 
 >|Mailbox|ID|Subject|From|To|Labels|Format|Body|
 >|---|---|---|---|---|---|---|---|
->| user@domain.io | 175276e027a9aab9 | Your G Suite data transfer was successful for test user to newaccount newdemo | The G Suite Team <gsuite-noreply@google.com> | user@domain.io | UNREAD, CATEGORY_UPDATES, INBOX | multipart/alternative | From: "The G Suite Team" [gsuite-noreply@google.com]<br/>Subject:  Your G Suite data transfer was successful for test user to  <br/>newaccount newdemo<br/><br/>Hello Admin,<br/><br/>GÂ Suite recently processed a request from test user (user@domain.io)  <br/>to transfer data for test user (user@domain.io) to newaccount  <br/>newdemo (demo@domain.io).<br/><br/>The data transfer was successful.<br/><br/>Sincerely,<br/><br/>The GÂ Suite Team<br/><br/><br/>[Google Cloud]<br/><br/>(c) 2020 Google LLC 1600 Amphitheatre Parkway, Mountain View, CA 94043 *  <br/>Google Ireland Ltd, Gordon House, Barrow Street, Dublin 4, Ireland * Google  <br/>Asia Pacific Pte. Ltd., 8 Marina View, #30-01, Asia Square 1, Singapore  <br/>018960<br/><br/>You're receiving this mandatory email service announcement to update you  <br/>about important changes to your Google Cloud product or account.<br/> |
-
+>| user@domain.io | 175276e027a9aab9 | Your G Suite data transfer was successful for test user to newaccount newdemo | The G Suite Team <gsuite-noreply@google.com> | user@domain.io | UNREAD, CATEGORY_UPDATES, INBOX | multipart/alternative | From: "The G Suite Team" [gsuite-noreply@google.com]<br/>Subject:  Your G Suite data transfer was successful for test user to  <br/>newaccount newdemo<br/><br/>Hello Admin,<br/><br/>GÂ Suite recently processed a request from test user (user@domain.io)  <br/>to transfer data for test user (user@domain.io) to newaccount  <br/>newdemo (demo@domain.io).<br/><br/>The data transfer was successful.<br/><br/>Sincerely,<br/><br/>The GÂ Suite Team<br/><br/><br/>[Google Cloud]<br/><br/>(c) 2020 Google LLC 1600 Amphitheatre Parkway, Mountain View, CA 94043 *<br/>Google Ireland Ltd, Gordon House, Barrow Street, Dublin 4, Ireland* Google  <br/>Asia Pacific Pte. Ltd., 8 Marina View, #30-01, Asia Square 1, Singapore  <br/>018960<br/><br/>You're receiving this mandatory email service announcement to update you  <br/>about important changes to your Google Cloud product or account.<br/> |
 
 ### gmail-search
 
 ***
 Searches for Gmail records for a specific Google user.
-
 
 #### Base Command
 
@@ -778,52 +760,50 @@ Searches for Gmail records for a specific Google user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information see "https://support.google.com/mail/answer/7190?hl=en". | Optional | 
-| max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional | 
-| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional | 
-| labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional | 
-| page-token | Page token to retrieve a specific page of results in the list. | Optional | 
-| include-spam-trash | Include messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional | 
-| from | Specifies the sender. For example, "john". | Optional | 
-| to | Specifies the receiver. For example, "john". | Optional | 
-| subject | Words in the subject line. For example, "alert". | Optional | 
-| filename | Attachments with a certain name or file type. For example, "pdf" or "report.pdf". | Optional | 
-| in | Messages in any folder, including Spam and Trash. For example: shopping. | Optional | 
-| after | Search for messages sent after a specific date. For example: 2018/05/06. | Optional | 
-| before | Search for messages sent before a specific date. for example: 2018/05/09. | Optional | 
-| has-attachments | Whether to search for messages sent with attachments. Possible values are: True, False. | Optional | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information see "https://support.google.com/mail/answer/7190?hl=en". | Optional |
+| max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional |
+| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional |
+| labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional |
+| page-token | Page token to retrieve a specific page of results in the list. | Optional |
+| include-spam-trash | Include messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional |
+| from | Specifies the sender. For example, "john". | Optional |
+| to | Specifies the receiver. For example, "john". | Optional |
+| subject | Words in the subject line. For example, "alert". | Optional |
+| filename | Attachments with a certain name or file type. For example, "pdf" or "report.pdf". | Optional |
+| in | Messages in any folder, including Spam and Trash. For example: shopping. | Optional |
+| after | Search for messages sent after a specific date. For example: 2018/05/06. | Optional |
+| before | Search for messages sent before a specific date. for example: 2018/05/09. | Optional |
+| has-attachments | Whether to search for messages sent with attachments. Possible values are: True, False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ID | string | The inner ID of the Gmail message. | 
-| Gmail.ThreadId | string | The thread ID. | 
-| Gmail.Format | string | The MIME type of email. | 
-| Gmail.Labels | string | The labels of the specific email. | 
-| Gmail.To | string | The email address of the receiver. | 
-| Gmail.From | string | The email address of the sender. | 
-| Gmail.Cc | string | The additional recipient email address \(CC\). | 
-| Gmail.Bcc | string | The additional recipient email address \(BCC\). | 
-| Gmail.Subject | string | The subject of the specific email. | 
-| Gmail.Body | string | The content of the email. | 
-| Gmail.Attachments | unknown | Attachment details. Attachments IDs are separated by commas. | 
-| Gmail.Headers | unknown | All headers of a specific email \(list\). | 
-| Gmail.Mailbox | string | The email mailbox. | 
-| Email.To | String | The recipient of the email. | 
-| Email.From | String | The sender of the email. | 
-| Email.CC | String | The additional recipient email address \(CC\). | 
-| Email.BCC | String | The additional recipient email address \(BCC\). | 
-| Email.Format | String | The format of the email. | 
-| Email.Body/HTML | String | The HTML version of the email. | 
-| Email.Body/Text | String | The plain-text version of the email. | 
-| Email.Subject | String | The subject of the email. | 
-| Email.Headers | String | The headers of the email. | 
-| Email.Attachments.entryID | Unknown | Comma-separated email attachment IDs. | 
-| Email.Date | String | The date the email was received. | 
-
+| Gmail.ID | string | The inner ID of the Gmail message. |
+| Gmail.ThreadId | string | The thread ID. |
+| Gmail.Format | string | The MIME type of email. |
+| Gmail.Labels | string | The labels of the specific email. |
+| Gmail.To | string | The email address of the receiver. |
+| Gmail.From | string | The email address of the sender. |
+| Gmail.Cc | string | The additional recipient email address \(CC\). |
+| Gmail.Bcc | string | The additional recipient email address \(BCC\). |
+| Gmail.Subject | string | The subject of the specific email. |
+| Gmail.Body | string | The content of the email. |
+| Gmail.Attachments | unknown | Attachment details. Attachments IDs are separated by commas. |
+| Gmail.Headers | unknown | All headers of a specific email \(list\). |
+| Gmail.Mailbox | string | The email mailbox. |
+| Email.To | String | The recipient of the email. |
+| Email.From | String | The sender of the email. |
+| Email.CC | String | The additional recipient email address \(CC\). |
+| Email.BCC | String | The additional recipient email address \(BCC\). |
+| Email.Format | String | The format of the email. |
+| Email.Body/HTML | String | The HTML version of the email. |
+| Email.Body/Text | String | The plain-text version of the email. |
+| Email.Subject | String | The subject of the email. |
+| Email.Headers | String | The headers of the email. |
+| Email.Attachments.entryID | Unknown | Comma-separated email attachment IDs. |
+| Email.Date | String | The date the email was received. |
 
 #### Command Example
 
@@ -1332,14 +1312,14 @@ Searches for Gmail records for a specific Google user.
 
 #### Human Readable Output
 
->### Search in user@domain.io:
+>### Search in user@domain.io
 
 >query: "after:2020/03/20  before:2021/04/01  access"
+>
 >|Mailbox|ID|Subject|From|To|Labels|Format|Body|
 >|---|---|---|---|---|---|---|---|
 >| user@domain.io | 17503a0adab4557e | A new editing experience from Grammarly | Grammarly <info@send.grammarly.com> | <user@domain.io> | CATEGORY_PROMOTIONS, UNREAD, INBOX | multipart/alternative | Grammarly<br/> <br/><https://click.send.grammarly.com/?qs=63b8bce6088947298e58f6b209acbedec627da2c5a9e6db63c25d7a91cc5d033f20b5e98474ae6c26955d5953c80e198718e7c642c683f08> <br/><br/><br/><https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0> <br/><br/><br/>Your Guide to Great Writing<br/>When you&rsquo;re polishing an important message, there&rsquo;s a lot to consider. To better guide you through the editing process, we&rsquo;ve given Grammarly's browser extension a sleek new look. With suggestions organized by importance and theme, plus easy access to Grammarly&rsquo;s tone detector, it&rsquo;s never been easier to quickly and thoroughly improve your writing before sending it out into the world.<br/>Want to check it out for yourself?<br/><br/> Next time you&rsquo;re writing online, open Grammarly by clicking the green G in the lower right corner of your text field.<br/><br/><br/><br/><https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0> <br/>Learn More <br/><br/><br/>https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0 <br/><br/><br/>Floating sidebar<br/><br/>Now you can see all of Grammarlyâ€™s feedbackâ€”including suggestions about wordinessâ€”in a compact sidebar that you can position anywhere on your screen.<br/><br/>https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0 <br/><br/>Organized feedback<br/>Instead of one long list of fixes, Grammarly now groups suggestions by theme, so you can tackle issues in an order that makes sense to you.<br/><br/><br/><br/><https://click.send.grammarly.com/?qs=63b8bce60889472968c8fbdddda67d5ffe4e3e9510c3d039f51c5e6384a0dbf7f50df926ac0c45cffcc37d987e90c2db8d5a605ae2bf3c4a> <br/><br/><br/>What's new in Premium?<br/>If youâ€™re considering an upgrade to Grammarly Premium, nowâ€™s a fantastic time. Youâ€™ll get full access to Grammarlyâ€™s tone suggestions and some all-new suggestions, including full-sentence clarity rewrites. For multilingual speakers, weâ€™ve added tailored suggestions to help you write more fluently with natural phrasing and word choice.<br/><br/><https://click.send.grammarly.com/?qs=63b8bce60889472968c8fbdddda67d5ffe4e3e9510c3d039f51c5e6384a0dbf7f50df926ac0c45cffcc37d987e90c2db8d5a605ae2bf3c4a> <br/>Upgrade to Premium <br/><br/>  <br/> <br/><br/><https://click.send.grammarly.com/?qs=63b8bce6088947298205de4bc6f5baa6942035a27347bed70f376eb641988ce13553a98df548d5334c710496da40d701ea7f0747436cb35e> <br/><br/> <br/><https://click.send.grammarly.com/?qs=63b8bce60889472909674b9e1b80086f2f8a55a758ec0ff5422c7e418731df78a536f03419e5467ea3cdc46cfe13a7219c9c76aa43c18353> <br/><br/> <br/><https://click.send.grammarly.com/?qs=63b8bce60889472978abf8c16e483cf9963720144e7eedea2b7fae9baca38d9f366a74bfaa6a9c55bb716d0eb437e2b13b0e0b9aa03f956a> <br/><br/> <br/><https://click.send.grammarly.com/?qs=63b8bce608894729cd424fff00db5cfde8a9258b354120767b238dc40dc183b9789fa2f900ff0e57c8d9a6bc77ad2ef68d26c422e5e3e9c0> <br/><br/><br/> <br/><br/> <br/><br/> <br/><br/><https://view.send.grammarly.com/?qs=09877178720a4d39668e7a44fdd78d68f8393fb23acee0b64eff0a606379ca046d45856dfefd80f8302eadc8f7dec1dae314e6f038bafd98a388c93dc5a7bdddd160a54982f69a8f21b74bd31a5adbcf567ca0583163d53d> <br/>View Web Version  . <br/><https://click.send.grammarly.com/?qs=63b8bce608894729304de51e86d38d53940d8ee74804fd68ba82bccecdc473489f3ae530efe098cb4fad4d7796657104acd6cd72a37bcb4319ef4ac52472d689> <br/>Email Preferences .<br/><https://click.send.grammarly.com/?qs=63b8bce608894729304de51e86d38d53940d8ee74804fd68ba82bccecdc473489f3ae530efe098cb4fad4d7796657104acd6cd72a37bcb4319ef4ac52472d689> <br/>Unsubscribe <br/><br/><br/>You received this email because you are signed up to receive product update emails. If you would no longer like to receive these, please update your email preferences by visiting the link above.<br/><br/><br/>(c) 2020 Grammarly, Inc. 548 Market St. #35410, San Francisco, CA 94104<br/><br/><br/> <br/><br/><br/> <br/><br/><br/> |
 >| user@domain.io | 174dfdee81fa8346 | Write like a pro. Here's 20% off Grammarly Premium! | Grammarly <info@send.grammarly.com> | <user@domain.io> | CATEGORY_PROMOTIONS, UNREAD, INBOX | multipart/alternative | Grammarly Premium August 2019 Promo <br/><br/><https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f> <br/>Get 20% off Premium &rarr;  <br/> <br/><br/><https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f> <br/><br/> <br/>Are you ready to level up? Grammarly Premium empowers you to put your best foot forward through exclusive access to features like vocabulary enhancement and suggestions for improving style and tone.<br/><br/>Upgrade in the next 48 hours to receive 20% OFF and start writing compelling, effective content with greater confidence.<br/> <br/><br/>https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f <br/>Get 20% Off Premium <br/><br/> <br/><br/> <br/> <br/><br/>https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f <br/><br/> <br/> <br/> <br/><br/><https://click.send.grammarly.com/?qs=2a35c60cf790245dace2796a031670f49219f3c4a00cae25d2dab59f72e6be49671fdecec1ca6d0285eac535168d7d98d0174ae389750a82> <br/><br/><https://click.send.grammarly.com/?qs=a5f2bccb158ea90a0f6327f16256b045f7045b3ad3b9888cb4403400459f0be6bd90d7662bd64b837e1407368baedc62b0a80ca05f11d285> <br/><br/><https://click.send.grammarly.com/?qs=a8de5e2a924b74c72a9cab9ac340987e51210dfea60c966334c7fe8354d11d0ee4824a49abaf38276f8a4f57fe26b84881b2f518ca4e5c44> <br/><br/><https://click.send.grammarly.com/?qs=31d75588096fc8f0ecf301e89b11f8e90f5ea6e5283bd15266a2bbc89e4bec07c0a70213de591dfb18a0d88647f8a091eb0b527f013b4087> <br/><br/> <br/> <br/><br/><https://view.send.grammarly.com/?qs=04bdbe912f831db4355d68715de8fcc8bc879738444c98c65c7026b05760cc2e72cb475a3fcefe9843d4d8a929dbb99cca13e0eff2ed2b7693c950a77831230ebcc2421322e1194ee01f317d8b9ddb58e33dde99eb0db358> <br/>View Web Version   Â·  <br/><https://click.send.grammarly.com/?qs=19dd9fb895689c3f0dd49d01ba845db6ad830f8fea7e18f4f49ced631c9a973533f91f93115ca5afaf96b7e3a9d092eaa29d1a417ad1c7975ab94c6b36607509> <br/>Email Preferences   Â·  <br/><https://click.send.grammarly.com/?qs=19dd9fb895689c3f0dd49d01ba845db6ad830f8fea7e18f4f49ced631c9a973533f91f93115ca5afaf96b7e3a9d092eaa29d1a417ad1c7975ab94c6b36607509> <br/>Unsubscribe <br/> <br/>You received this offer for Grammarly Premium because you are currently opted in to receive them via your preference settings. You may adjust your preferences at any time by clicking the link above.<br/> <br/>Â© 2020 Grammarly, Inc., 548 Market St. #35410, San Francisco, CA 94104<br/> <br/><br/><br/> |
-
 
 ### gmail-search-all-mailboxes
 
@@ -1365,58 +1345,57 @@ Inspecting these messages should allow you to determine what percent the search 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en". | Optional | 
-| max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional | 
-| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional | 
-| labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional | 
-| page-token | Page token to retrieve a specific page of results in the list. | Optional | 
-| include-spam-trash | Includes messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional | 
-| from | Specifies the sender. For example, "john". | Optional | 
-| to | Specifies the receiver. For example, "john". | Optional | 
-| subject | Words in the subject line. For example, "alert". | Optional | 
-| filename | Attachments with a certain name or file type. For example, "pdf" or "report.pdf". | Optional | 
-| in | Messages in any folder, including Spam and Trash. For example, shopping. | Optional | 
-| after | Search for messages sent after a specific date. For example, 2018/05/06. | Optional | 
-| before | Search for messages sent before a specific date. For example, 2018/05/09. | Optional | 
-| has-attachments | Whether to search for messages sent with attachments. Possible values are: False, True. | Optional | 
-| show-only-mailboxes | Whether to return only mailboxes which contain the email. Default is "True". Possible values are: false, true. Default is True. | Optional | 
-| list_accounts | Accounts to search in. | Optional | 
-| search_from | Used to track search progress. | Optional | 
-| search_to | Used to track search progress. | Optional | 
-
+| query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en". | Optional |
+| max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional |
+| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional |
+| labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional |
+| page-token | Page token to retrieve a specific page of results in the list. | Optional |
+| include-spam-trash | Includes messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional |
+| from | Specifies the sender. For example, "john". | Optional |
+| to | Specifies the receiver. For example, "john". | Optional |
+| subject | Words in the subject line. For example, "alert". | Optional |
+| filename | Attachments with a certain name or file type. For example, "pdf" or "report.pdf". | Optional |
+| in | Messages in any folder, including Spam and Trash. For example, shopping. | Optional |
+| after | Search for messages sent after a specific date. For example, 2018/05/06. | Optional |
+| before | Search for messages sent before a specific date. For example, 2018/05/09. | Optional |
+| has-attachments | Whether to search for messages sent with attachments. Possible values are: False, True. | Optional |
+| show-only-mailboxes | Whether to return only mailboxes which contain the email. Default is "True". Possible values are: false, true. Default is True. | Optional |
+| list_accounts | Accounts to search in. | Optional |
+| search_from | Used to track search progress. | Optional |
+| search_to | Used to track search progress. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ID | string | The inner ID of the Gmail message. | 
-| Gmail.ThreadId | string | The thread ID. | 
-| Gmail.Format | string | The MIME type of the email. | 
-| Gmail.Labels | string | The labels of a specific email. | 
-| Gmail.To | string | The email address of the receiver. | 
-| Gmail.From | string | The email address of the sender. | 
-| Gmail.Cc | string | The additional recipient email address \(CC\). | 
-| Gmail.Bcc | string | The additional recipient email address \(BCC\). | 
-| Gmail.Subject | string | The subject of the specific email. | 
-| Gmail.Body | string | The content of the email. | 
-| Gmail.Attachments | unknown | The attachments of the email. IDs are separated by commas. | 
-| Gmail.Headers | unknown | All headers of a specific mail \(list\). | 
-| Gmail.Mailboxes | String | The Gmail mailboxes in which emails matching the query were found. | 
-| Gmail.UnsearchedAcounts | String | A list of accounts that were not searched due to an error accessing them. | 
-| PageToken.NextPageToken | String | Fetches the next list of accounts that will be searched. | 
-| SearchFromAccountIndex | String | A search is performed from an account index (Enables the search process to be followed). | 
-| SearchToAccountIndex | String | A search is performed to an account index (Enables the search process to be followed). | 
-| Email.To | String | The recipient of the email. | 
-| Email.From | String | The sender of the email. | 
-| Email.CC | String | The additional recipient email address \(CC\). | 
-| Email.BCC | String | The additional recipient email address \(BCC\). | 
-| Email.Format | String | The format of the email. | 
-| Email.Body/HTML | String | The HTML version of the email. | 
-| Email.Body/Text | String | The plain-text version of the email. | 
-| Email.Subject | String | The subject of the email. | 
-| Email.Headers | String | The headers of the email. | 
-| Email.Attachments.entryID | Unknown | Email Attachments. IDs are separated by commas. | 
-| Email.Date | String | The date the email was received. | 
+| Gmail.ID | string | The inner ID of the Gmail message. |
+| Gmail.ThreadId | string | The thread ID. |
+| Gmail.Format | string | The MIME type of the email. |
+| Gmail.Labels | string | The labels of a specific email. |
+| Gmail.To | string | The email address of the receiver. |
+| Gmail.From | string | The email address of the sender. |
+| Gmail.Cc | string | The additional recipient email address \(CC\). |
+| Gmail.Bcc | string | The additional recipient email address \(BCC\). |
+| Gmail.Subject | string | The subject of the specific email. |
+| Gmail.Body | string | The content of the email. |
+| Gmail.Attachments | unknown | The attachments of the email. IDs are separated by commas. |
+| Gmail.Headers | unknown | All headers of a specific mail \(list\). |
+| Gmail.Mailboxes | String | The Gmail mailboxes in which emails matching the query were found. |
+| Gmail.UnsearchedAcounts | String | A list of accounts that were not searched due to an error accessing them. |
+| PageToken.NextPageToken | String | Fetches the next list of accounts that will be searched. |
+| SearchFromAccountIndex | String | A search is performed from an account index (Enables the search process to be followed). |
+| SearchToAccountIndex | String | A search is performed to an account index (Enables the search process to be followed). |
+| Email.To | String | The recipient of the email. |
+| Email.From | String | The sender of the email. |
+| Email.CC | String | The additional recipient email address \(CC\). |
+| Email.BCC | String | The additional recipient email address \(BCC\). |
+| Email.Format | String | The format of the email. |
+| Email.Body/HTML | String | The HTML version of the email. |
+| Email.Body/Text | String | The plain-text version of the email. |
+| Email.Subject | String | The subject of the email. |
+| Email.Headers | String | The headers of the email. |
+| Email.Attachments.entryID | Unknown | Email Attachments. IDs are separated by commas. |
+| Email.Date | String | The date the email was received. |
 
 #### Command Example
 
@@ -3496,7 +3475,6 @@ Inspecting these messages should allow you to determine what percent the search 
 ***
 Lists all Google users in a domain.
 
-
 #### Base Command
 
 `gmail-list-users`
@@ -3505,33 +3483,31 @@ Lists all Google users in a domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| projection | The subset of fields to fetch for the user. Can be "basic": Do not include any custom fields for the user. (default), "custom": Include custom fields from schemas requested in customFieldMask, "full": Include all fields associated with this user. Possible values are: basic, custom, full. | Optional | 
-| domain | The domain name. Use this field to get fields from only one domain. To return all domains for a customer account, use the customer query parameter. | Optional | 
-| customer | The unique ID for the customer's Google account. Default is the value specified in the integration configuration. For a multi-domain account, to fetch all groups for a customer, use this field instead of domain. | Optional | 
-| max-results | Maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. | Optional | 
-| custom-field-mask | A comma-separated list of schema names. All fields from these schemas are fetched. Must be set when projection=custom. | Optional | 
-| query | Query string search. Should be of the form "". Complete documentation is at <https://developers.google.com/admin-sdk/directory/v1/guides/search-users>. | Optional | 
-| show-deleted | If true, retrieves the list of deleted users. Default is false. Possible values are: False, True. | Optional | 
-| sort-order | How to sort the results. Can be ASCENDING/DESCENDING. Possible values are: ASCENDING, DESCENDING. | Optional | 
-| token | Token to authorize and authenticate the action. | Optional | 
-| view-type-public-domain | Whether to fetch either the administrator or public view of the user. Can be admin_view (default), which includes both administrator and domain-public fields or "domain_public"(includes fields for the user that are publicly visible to other users in the domain). Possible values are: admin_view, domain_public. Default is admin_view. | Optional | 
-| page-token | Token to specify next page in the list. | Optional | 
-
+| projection | The subset of fields to fetch for the user. Can be "basic": Do not include any custom fields for the user. (default), "custom": Include custom fields from schemas requested in customFieldMask, "full": Include all fields associated with this user. Possible values are: basic, custom, full. | Optional |
+| domain | The domain name. Use this field to get fields from only one domain. To return all domains for a customer account, use the customer query parameter. | Optional |
+| customer | The unique ID for the customer's Google account. Default is the value specified in the integration configuration. For a multi-domain account, to fetch all groups for a customer, use this field instead of domain. | Optional |
+| max-results | Maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. | Optional |
+| custom-field-mask | A comma-separated list of schema names. All fields from these schemas are fetched. Must be set when projection=custom. | Optional |
+| query | Query string search. Should be of the form "". Complete documentation is at <https://developers.google.com/admin-sdk/directory/v1/guides/search-users>. | Optional |
+| show-deleted | If true, retrieves the list of deleted users. Default is false. Possible values are: False, True. | Optional |
+| sort-order | How to sort the results. Can be ASCENDING/DESCENDING. Possible values are: ASCENDING, DESCENDING. | Optional |
+| token | Token to authorize and authenticate the action. | Optional |
+| view-type-public-domain | Whether to fetch either the administrator or public view of the user. Can be admin_view (default), which includes both administrator and domain-public fields or "domain_public"(includes fields for the user that are publicly visible to other users in the domain). Possible values are: admin_view, domain_public. Default is admin_view. | Optional |
+| page-token | Token to specify next page in the list. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.Type | String | The account type. For example, "AD", "LocalOS", "Google", or "AppleID". | 
-| Account.ID | String | The unique ID for the account \(integration specific\). For AD accounts this is the Distinguished Name \(DN\). | 
-| Account.DisplayName | String | The display name. | 
-| Account.Gmail.Address | string | The email assigned with the current account. | 
-| Account.Email.Adderss | String | The email address of the account. | 
-| Account.Groups | String | Groups to which the account belongs \(integration specific\). For example, for AD these are the groups in which the account is member. | 
-| Account.Domain | String | The domain of the account. | 
-| Account.Username | String | The username of the account. | 
-| Account.OrganizationUnit | String | The Organization Unit \(OU\) of the account. | 
-
+| Account.Type | String | The account type. For example, "AD", "LocalOS", "Google", or "AppleID". |
+| Account.ID | String | The unique ID for the account \(integration specific\). For AD accounts this is the Distinguished Name \(DN\). |
+| Account.DisplayName | String | The display name. |
+| Account.Gmail.Address | string | The email assigned with the current account. |
+| Account.Email.Adderss | String | The email address of the account. |
+| Account.Groups | String | Groups to which the account belongs \(integration specific\). For example, for AD these are the groups in which the account is member. |
+| Account.Domain | String | The domain of the account. |
+| Account.Username | String | The username of the account. |
+| Account.OrganizationUnit | String | The Organization Unit \(OU\) of the account. |
 
 #### Command Example
 
@@ -3564,18 +3540,16 @@ Lists all Google users in a domain.
 
 #### Human Readable Output
 
->### Users:
+>### Users
 
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|VisibleInDirectory|
 >|---|---|---|---|---|---|---|---|---|
 >| Google | 113493660192005193453 | user | user test | admin#directory#user | C03puekhd | domain.io | Address: user@domain.io | true |
 
-
 ### gmail-list-labels
 
 ***
 Lists all labels in the user's mailbox.
-
 
 #### Base Command
 
@@ -3585,20 +3559,18 @@ Lists all labels in the user's mailbox.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GmailLabel.UserID | String | The UserID the label belongs to. | 
-| GmailLabel.Name | String | The name of the label. | 
-| GmailLabel.ID | String | The label ID. | 
-| GmailLabel.Type | String | The label type. | 
-| GmailLabel.MessageListVisibility | String | The label message list visibility. | 
-| GmailLabel.LabelListVisibility | String | The label list visibility. | 
-
+| GmailLabel.UserID | String | The UserID the label belongs to. |
+| GmailLabel.Name | String | The name of the label. |
+| GmailLabel.ID | String | The label ID. |
+| GmailLabel.Type | String | The label type. |
+| GmailLabel.MessageListVisibility | String | The label message list visibility. |
+| GmailLabel.LabelListVisibility | String | The label list visibility. |
 
 #### Command Example
 
@@ -3624,19 +3596,17 @@ Lists all labels in the user's mailbox.
 
 #### Human Readable Output
 
->### Labels for UserID me:
+>### Labels for UserID me
 
 >|Name|ID|Type|MessageListVisibility|LabelListVisibility|
 >|---|---|---|---|---|
 >| INBOX | INBOX | system | | |
 >| SPAM | SPAM | system | hide | labelShowIfUnread |
 
-
 ### gmail-revoke-user-role
 
 ***
 Revokes a role for a specified Google user.
-
 
 #### Base Command
 
@@ -3646,9 +3616,8 @@ Revokes a role for a specified Google user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The special value me can be used to indicate the authenticated user. | Optional | 
-| role-assignment-id | The immutable ID of the role assignment. | Required | 
-
+| user-id | The user's email address. The special value me can be used to indicate the authenticated user. | Optional |
+| role-assignment-id | The immutable ID of the role assignment. | Required |
 
 #### Context Output
 
@@ -3662,12 +3631,10 @@ There is no context output for this command.
 
 >Role has been deleted.
 
-
 ### gmail-create-user
 
 ***
 Creates a new Gmail user.
-
 
 #### Base Command
 
@@ -3677,26 +3644,24 @@ Creates a new Gmail user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The user's primary email address. The primary email address must be unique and cannot be an alias of another user. | Required | 
-| first-name | The user's first name. | Required | 
-| family-name | The user's last name. | Required | 
-| password | Stores the password for the user account. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. | Required | 
-
+| email | The user's primary email address. The primary email address must be unique and cannot be an alias of another user. | Required |
+| first-name | The user's first name. | Required |
+| family-name | The user's last name. | Required |
+| password | Stores the password for the user account. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.Type | String | The account type. For example, "AD", "LocalOS", "Google", or "AppleID". | 
-| Account.ID | String | The unique ID for the account \(integration specific\). For AD accounts this is the Distinguished Name \(DN\). | 
-| Account.DisplayName | string | The display name. | 
-| Account.Gmail.Address | string | The email assigned with the current account. | 
-| Account.Email.Address | String | The email address of the account. | 
-| Account.Username | String | The username of the account. | 
-| Account.Groups | String | Groups to which the account belongs \(integration specific\). For example, for AD these are groups in which the account is a member. | 
-| Account.Domain | String | The domain of the account. | 
-| Account.OrganizationUnit | String | The Organization Unit \(OU\) of the account. | 
-
+| Account.Type | String | The account type. For example, "AD", "LocalOS", "Google", or "AppleID". |
+| Account.ID | String | The unique ID for the account \(integration specific\). For AD accounts this is the Distinguished Name \(DN\). |
+| Account.DisplayName | string | The display name. |
+| Account.Gmail.Address | string | The email assigned with the current account. |
+| Account.Email.Address | String | The email address of the account. |
+| Account.Username | String | The username of the account. |
+| Account.Groups | String | Groups to which the account belongs \(integration specific\). For example, for AD these are groups in which the account is a member. |
+| Account.Domain | String | The domain of the account. |
+| Account.OrganizationUnit | String | The Organization Unit \(OU\) of the account. |
 
 #### Command Example
 
@@ -3729,18 +3694,16 @@ Creates a new Gmail user.
 
 #### Human Readable Output
 
->### New User:
+>### New User
 
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|
 >|---|---|---|---|---|---|---|---|
 >| Google | 103470368646956060577 | John | John Snow | admin#directory#user | C03puekhd | domain.io | Address: user1@domain.io |
 
-
 ### gmail-delete-mail
 
 ***
 Deletes an email in the user's mailbox.
-
 
 #### Base Command
 
@@ -3750,10 +3713,9 @@ Deletes an email in the user's mailbox.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The special value me can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the email to delete.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
-| permanent | Whether to delete the email permanently or move it to trash (default). Possible values are: False, True. | Optional | 
-
+| user-id | The user's email address. The special value me can be used to indicate the authenticated user. | Required |
+| message-id | The ID of the email to delete.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required |
+| permanent | Whether to delete the email permanently or move it to trash (default). Possible values are: False, True. | Optional |
 
 #### Context Output
 
@@ -3767,12 +3729,10 @@ There is no context output for this command.
 
 >Email has been successfully moved to trash.
 
-
 ### gmail-get-thread #
 
 ***
 Returns all messages in a thread.
-
 
 #### Base Command
 
@@ -3782,40 +3742,38 @@ Returns all messages in a thread.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The special value me can be used to indicate the authenticated user. | Required | 
-| thread-id | The ID of the thread to retrieve. | Required | 
-| format | The format in which to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only email message ID, labels, and email headers / "minimal": Returns only email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional | 
-
+| user-id | The user's email address. The special value me can be used to indicate the authenticated user. | Required |
+| thread-id | The ID of the thread to retrieve. | Required |
+| format | The format in which to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only email message ID, labels, and email headers / "minimal": Returns only email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ID | string | The inner ID of the Gmail message. | 
-| Gmail.ThreadId | string | The thread ID. | 
-| Gmail.Format | string | The MIME type of email. | 
-| Gmail.Labels | string | The labels of the specific email. | 
-| Gmail.To | string | The email address of the receiver. | 
-| Gmail.From | string | The email address of the sender. | 
-| Gmail.Cc | string | The additional recipient email address \(CC\). | 
-| Gmail.Bcc | string | The additional recipient email address \(BCC\). | 
-| Gmail.Subject | string | The subject of a specific email. | 
-| Gmail.Body | string | The content of the email. | 
-| Gmail.Attachments | unknown | The attachments of the email. IDs are separated by commas. | 
-| Gmail.Headers | unknown | All headers of the specific email \(list\). | 
-| Gmail.Mailbox | string | The Gmail mailbox. | 
-| Email.To | String | The recipient of the email. | 
-| Email.From | String | The sender of the email. | 
-| Email.CC | String | The additional recipient email address \(CC\). | 
-| Email.BCC | String | The additional recipient email address \(BCC\). | 
-| Email.Format | String | The format of the email. | 
-| Email.Body/HTML | String | The HTML version of the email. | 
-| Email.Body/Text | String | The plain-text version of the email. | 
-| Email.Subject | String | The subject of the email. | 
-| Email.Headers | String | The headers of the email. | 
-| Email.Attachments.entryID | Unknown | Email Attachments. IDs are separated by commas. | 
-| Email.Date | String | The date the email was received. | 
-
+| Gmail.ID | string | The inner ID of the Gmail message. |
+| Gmail.ThreadId | string | The thread ID. |
+| Gmail.Format | string | The MIME type of email. |
+| Gmail.Labels | string | The labels of the specific email. |
+| Gmail.To | string | The email address of the receiver. |
+| Gmail.From | string | The email address of the sender. |
+| Gmail.Cc | string | The additional recipient email address \(CC\). |
+| Gmail.Bcc | string | The additional recipient email address \(BCC\). |
+| Gmail.Subject | string | The subject of a specific email. |
+| Gmail.Body | string | The content of the email. |
+| Gmail.Attachments | unknown | The attachments of the email. IDs are separated by commas. |
+| Gmail.Headers | unknown | All headers of the specific email \(list\). |
+| Gmail.Mailbox | string | The Gmail mailbox. |
+| Email.To | String | The recipient of the email. |
+| Email.From | String | The sender of the email. |
+| Email.CC | String | The additional recipient email address \(CC\). |
+| Email.BCC | String | The additional recipient email address \(BCC\). |
+| Email.Format | String | The format of the email. |
+| Email.Body/HTML | String | The HTML version of the email. |
+| Email.Body/Text | String | The plain-text version of the email. |
+| Email.Subject | String | The subject of the email. |
+| Email.Headers | String | The headers of the email. |
+| Email.Attachments.entryID | Unknown | Email Attachments. IDs are separated by commas. |
+| Email.Date | String | The date the email was received. |
 
 #### Command Example
 
@@ -3964,18 +3922,16 @@ Returns all messages in a thread.
 
 #### Human Readable Output
 
->### Emails of Thread:
+>### Emails of Thread
 
 >|Mailbox|ID|Subject|From|To|Labels|Format|Body|
 >|---|---|---|---|---|---|---|---|
 >| user@domain.io | 1756d926adcca849 | hello Re: Untitled document - @user@domain.io @user@domain... | user1 test1 <user@domain.io> | 3d_qYXxAPBdI0CAA2BHG-BCF2D9M1C0G.4CC492.0CA12Jy9B6Az921yHy.6C@docos.bounces.google.com | SENT | text/plain | <br/> |
 
-
 ### gmail-move-mail
 
 ***
 Moves an email to a different folder.
-
 
 #### Base Command
 
@@ -3985,41 +3941,39 @@ Moves an email to a different folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the emaill to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
-| add-labels | A comma-separated list of labels to add to the email. | Optional | 
-| remove-labels | A comma-separated list of labels to remove from the email. | Optional | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| message-id | The ID of the emaill to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required |
+| add-labels | A comma-separated list of labels to add to the email. | Optional |
+| remove-labels | A comma-separated list of labels to remove from the email. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ID | string | The inner ID of the Gmail message. | 
-| Gmail.ThreadId | string | The thread ID. | 
-| Gmail.Format | string | The MIME type of email. | 
-| Gmail.Labels | string | The labels of the specific email. | 
-| Gmail.To | string | The Gmail address of the receiver. | 
-| Gmail.From | string | The Gmail address of the sender. | 
-| Gmail.Cc | string | The additional recipient email address \(CC\). | 
-| Gmail.Bcc | string | The additional recipient email address \(BCC\). | 
-| Gmail.Subject | string | The subject of the specific email. | 
-| Gmail.Body | string | The content of the email. | 
-| Gmail.Attachments | unknown | The attachments of the email. IDs are separated by commas. | 
-| Gmail.Headers | unknown | All headers of the specific email \(list\). | 
-| Gmail.Mailbox | string | The Gmail mailbox. | 
-| Email.To | String | The recipient of the email. | 
-| Email.From | String | The sender of the email. | 
-| Email.CC | Unknown | The additional recipient email address \(CC\). | 
-| Email.BCC | Unknown | The additional recipient email address \(BCC\). | 
-| Email.Format | String | The format of the email. | 
-| Email.Body/HTML | String | The HTML version of the email. | 
-| Email.Body/Text | String | The plain-text version of the email. | 
-| Email.Subject | String | The subject of the email. | 
-| Email.Headers | String | The headers of the email. | 
-| Email.Attachments.entryID | Unknown | Email attachments. IDs are separated by commas. | 
-| Email.Date | String | The date the email was received. | 
-
+| Gmail.ID | string | The inner ID of the Gmail message. |
+| Gmail.ThreadId | string | The thread ID. |
+| Gmail.Format | string | The MIME type of email. |
+| Gmail.Labels | string | The labels of the specific email. |
+| Gmail.To | string | The Gmail address of the receiver. |
+| Gmail.From | string | The Gmail address of the sender. |
+| Gmail.Cc | string | The additional recipient email address \(CC\). |
+| Gmail.Bcc | string | The additional recipient email address \(BCC\). |
+| Gmail.Subject | string | The subject of the specific email. |
+| Gmail.Body | string | The content of the email. |
+| Gmail.Attachments | unknown | The attachments of the email. IDs are separated by commas. |
+| Gmail.Headers | unknown | All headers of the specific email \(list\). |
+| Gmail.Mailbox | string | The Gmail mailbox. |
+| Email.To | String | The recipient of the email. |
+| Email.From | String | The sender of the email. |
+| Email.CC | Unknown | The additional recipient email address \(CC\). |
+| Email.BCC | Unknown | The additional recipient email address \(BCC\). |
+| Email.Format | String | The format of the email. |
+| Email.Body/HTML | String | The HTML version of the email. |
+| Email.Body/Text | String | The plain-text version of the email. |
+| Email.Subject | String | The subject of the email. |
+| Email.Headers | String | The headers of the email. |
+| Email.Attachments.entryID | Unknown | Email attachments. IDs are separated by commas. |
+| Email.Date | String | The date the email was received. |
 
 #### Command Example
 
@@ -4070,18 +4024,16 @@ Moves an email to a different folder.
 
 #### Human Readable Output
 
->### Email:
+>### Email
 
 >|Mailbox|ID|Labels|
 >|---|---|---|
 >| user@domain.io | 1756ad6c1dc2956a | SENT, INBOX |
 
-
 ### gmail-move-mail-to-mailbox
 
 ***
 Moves an email to a different mailbox.
-
 
 #### Base Command
 
@@ -4091,40 +4043,38 @@ Moves an email to a different mailbox.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| src-user-id | The source user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
-| dst-user-id | The destination user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-
+| src-user-id | The source user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| message-id | The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required |
+| dst-user-id | The destination user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ID | string | The inner ID of the Gmail message. | 
-| Gmail.ThreadId | string | The thread ID. | 
-| Gmail.Format | string | The MIME type of email. | 
-| Gmail.Labels | string | The labels of the specific email. | 
-| Gmail.To | string | The Gmail address of the receiver. | 
-| Gmail.From | string | The Gmail address of the sender. | 
-| Gmail.Cc | string | The additional recipient email address \(CC\). | 
-| Gmail.Bcc | string | The additional recipient email address \(BCC\). | 
-| Gmail.Subject | string | The subject of the specific email. | 
-| Gmail.Body | string | The content of the email. | 
-| Gmail.Attachments | unknown | The attachments of the email. IDs are separated by commas. | 
-| Gmail.Headers | unknown | All headers of specific the email \(list\). | 
-| Gmail.Mailbox | string | The Gmail mailbox. | 
-| Email.To | String | The recipient of the email. | 
-| Email.From | String | The sender of the email. | 
-| Email.CC | String | The additional recipient email address \(CC\). | 
-| Email.BCC | String | The additional recipient email address \(BCC\). | 
-| Email.Format | String | The format of the email. | 
-| Email.Body/HTML | String | The HTML version of the email. | 
-| Email.Body/Text | String | The plain-text version of the email. | 
-| Email.Subject | String | The subject of the email. | 
-| Email.Headers | String | The headers of the email. | 
-| Email.Attachments.entryID | Unknown | Emails attachments. IDs are separated by commas. | 
-| Email.Date | String | The date the email was received. | 
-
+| Gmail.ID | string | The inner ID of the Gmail message. |
+| Gmail.ThreadId | string | The thread ID. |
+| Gmail.Format | string | The MIME type of email. |
+| Gmail.Labels | string | The labels of the specific email. |
+| Gmail.To | string | The Gmail address of the receiver. |
+| Gmail.From | string | The Gmail address of the sender. |
+| Gmail.Cc | string | The additional recipient email address \(CC\). |
+| Gmail.Bcc | string | The additional recipient email address \(BCC\). |
+| Gmail.Subject | string | The subject of the specific email. |
+| Gmail.Body | string | The content of the email. |
+| Gmail.Attachments | unknown | The attachments of the email. IDs are separated by commas. |
+| Gmail.Headers | unknown | All headers of specific the email \(list\). |
+| Gmail.Mailbox | string | The Gmail mailbox. |
+| Email.To | String | The recipient of the email. |
+| Email.From | String | The sender of the email. |
+| Email.CC | String | The additional recipient email address \(CC\). |
+| Email.BCC | String | The additional recipient email address \(BCC\). |
+| Email.Format | String | The format of the email. |
+| Email.Body/HTML | String | The HTML version of the email. |
+| Email.Body/Text | String | The plain-text version of the email. |
+| Email.Subject | String | The subject of the email. |
+| Email.Headers | String | The headers of the email. |
+| Email.Attachments.entryID | Unknown | Emails attachments. IDs are separated by commas. |
+| Email.Date | String | The date the email was received. |
 
 #### Command Example
 
@@ -4195,21 +4145,18 @@ Moves an email to a different mailbox.
 
 ```
 
-
 #### Human Readable Output
 
->### Email:
+>### Email
 
 >|Mailbox|ID|Subject|From|To|Format|Body|
 >|---|---|---|---|---|---|---|
 >| user1@domain.io | 1756acc058c19cdb | Re: | user1 <user1@domain.io> | test.user@domain.com | text/plain | Body |
 
-
 ### gmail-add-delete-filter
 
 ***
 Adds a rule for email deletion by address.
-
 
 #### Base Command
 
@@ -4219,9 +4166,8 @@ Adds a rule for email deletion by address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| email-address | The email address to block messages. | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| email-address | The email address to block messages. | Required |
 
 #### Command Example
 
@@ -4260,21 +4206,18 @@ Adds a rule for email deletion by address.
 }
 ```
 
-
 #### Human Readable Output
 
->### New filter:
+>### New filter
 
 >|ID|Criteria|Action|
 >|---|---|---|
 >| ANe1BmjeWtVj1i4t6dCiDJ8F54cAlqebm2k3rQ | from: user1@domain.io | addLabelIds: TRASH |
 
-
 ### gmail-add-filter
 
 ***
 Adds a new filter.
-
 
 #### Base Command
 
@@ -4284,27 +4227,26 @@ Adds a new filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| from | The sender's display name or email address. | Optional | 
-| to | The recipient's display name or email address. Includes recipients in the "to", "cc", and "bcc" header fields. You can use the local part of the email address. For example, "example" and "example@" both match "example@gmail.com". This field is case-insensitive. | Optional | 
-| subject | The email subject. | Optional | 
-| query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com is:unread". | Optional | 
-| has-attachments | Whether the message has any attachments. | Optional | 
-| size | The size of the entire RFC822 message in bytes, including all headers and attachments. | Optional | 
-| add-labels | A comma-separated list of labels to add to the message. | Optional | 
-| remove-labels | A comma-separated list of labels to remove from the message. | Optional | 
-| forward | The email address that the message is to be forwarded to. The email needs to be configured as a forwarding address, see <https://support.google.com/mail/answer/10957?hl=en#null>. | Optional | 
-| size-comparison | The message size in bytes compared to the size field. Possible values are: larger, smaller. | Optional | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| from | The sender's display name or email address. | Optional |
+| to | The recipient's display name or email address. Includes recipients in the "to", "cc", and "bcc" header fields. You can use the local part of the email address. For example, "example" and "example@" both match "example@gmail.com". This field is case-insensitive. | Optional |
+| subject | The email subject. | Optional |
+| query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com is:unread". | Optional |
+| has-attachments | Whether the message has any attachments. | Optional |
+| size | The size of the entire RFC822 message in bytes, including all headers and attachments. | Optional |
+| add-labels | A comma-separated list of labels to add to the message. | Optional |
+| remove-labels | A comma-separated list of labels to remove from the message. | Optional |
+| forward | The email address that the message is to be forwarded to. The email needs to be configured as a forwarding address, see <https://support.google.com/mail/answer/10957?hl=en#null>. | Optional |
+| size-comparison | The message size in bytes compared to the size field. Possible values are: larger, smaller. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.Filter.ID | String | The filter ID. | 
-| Gmail.Filter.Mailbox | String | The mailbox containing the filter. | 
-| Gmail.Filter.Criteria | Unknown | The filter criteria. | 
-| Gmail.Filter.Action | Unknown | The filter action. | 
+| Gmail.Filter.ID | String | The filter ID. |
+| Gmail.Filter.Mailbox | String | The mailbox containing the filter. |
+| Gmail.Filter.Criteria | Unknown | The filter criteria. |
+| Gmail.Filter.Action | Unknown | The filter action. |
 
 #### Command Example
 
@@ -4343,19 +4285,16 @@ Adds a new filter.
 
 #### Human Readable Output
 
->### New filter:
+>### New filter
 
 >|ID|Criteria|Action|
 >|---|---|---|
 >| ANe1BmjTS0eUGRX96ncj1FZmbPKrXrJvVG05Pg | hasAttachment: true<br/>subject: Scam | forward: test@demistodev.com |
 
-
-
 ### gmail-list-filters
 
 ***
 Lists all filters in a user's mailbox.
-
 
 #### Base Command
 
@@ -4365,20 +4304,18 @@ Lists all filters in a user's mailbox.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| limit | The limit of the results list. Default is 100. | Optional | 
-| address | The list filters associated with the email address. | Optional | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| limit | The limit of the results list. Default is 100. | Optional |
+| address | The list filters associated with the email address. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.Filter.ID | String | The filter ID. | 
-| Gmail.Filter.Mailbox | String | The mailbox containing the filter. | 
-| Gmail.Filter.Criteria | Unknown | The filter criteria. | 
-| Gmail.Filter.Action | Unknown | The filter action. | 
-
+| Gmail.Filter.ID | String | The filter ID. |
+| Gmail.Filter.Mailbox | String | The mailbox containing the filter. |
+| Gmail.Filter.Criteria | Unknown | The filter criteria. |
+| Gmail.Filter.Action | Unknown | The filter action. |
 
 #### Command Example
 
@@ -4419,18 +4356,16 @@ Lists all filters in a user's mailbox.
 
 #### Human Readable Output
 
->### filters:
+>### filters
 
 >|ID|Criteria|Action|
 >|---|---|---|
 >| ANe1BmiEVq9vNXrutJQzaEKFaK2odmTyfG29RA | from: user@domain.io | addLabelIds: TRASH |
 
-
 ### gmail-remove-filter
 
 ***
 Removes a Filter.
-
 
 #### Base Command
 
@@ -4440,14 +4375,12 @@ Removes a Filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| filter_ids | A comma-separated list of filter IDs (can be retrieve using `gmail-list-filters` command). | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| filter_ids | A comma-separated list of filter IDs (can be retrieve using `gmail-list-filters` command). | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
 
 #### Command Example
 
@@ -4457,12 +4390,10 @@ There is no context output for this command.
 
 >filters were removed successfully.
 
-
 ### gmail-hide-user-in-directory
 
 ***
 Hides a user's contact information in the Global Directory, for example email address and profile information.
-
 
 #### Base Command
 
@@ -4472,25 +4403,23 @@ Hides a user's contact information in the Global Directory, for example email ad
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| visible-globally | Whether to hide the user's visibility in the Global Directory. Can be true to show the user in the directory (default) or false to hide the user. Possible values are: true, false. Default is true. | Optional | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| visible-globally | Whether to hide the user's visibility in the Global Directory. Can be true to show the user in the directory (default) or false to hide the user. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.Type | String | The account type. For example, "AD", "LocalOS", "Google", "AppleID", and so on. | 
-| Account.ID | String | The unique ID for the account \(integration specific\). For AD accounts this is the Distinguished Name \(DN\). | 
-| Account.DisplayName | String | The display name. | 
-| Account.Email.Address | String | The email address of the account. | 
-| Account.Gmail.Address | Unknown | The email assigned with current account. | 
-| Account.Domain | String | The domain of the account. | 
-| Account.Username | String | The username of the account. | 
-| Account.OrganizationUnit | String | The Organization Unit \(OU\) of the account. | 
-| Account.VisibleInDirectory | Boolean | Whether the account is visible in the Global Directory. | 
-| Account.Groups | String | Groups in which the account belongs \(integration specific\). For example, for AD these are groups of which the account is memberOf. | 
-
+| Account.Type | String | The account type. For example, "AD", "LocalOS", "Google", "AppleID", and so on. |
+| Account.ID | String | The unique ID for the account \(integration specific\). For AD accounts this is the Distinguished Name \(DN\). |
+| Account.DisplayName | String | The display name. |
+| Account.Email.Address | String | The email address of the account. |
+| Account.Gmail.Address | Unknown | The email assigned with current account. |
+| Account.Domain | String | The domain of the account. |
+| Account.Username | String | The username of the account. |
+| Account.OrganizationUnit | String | The Organization Unit \(OU\) of the account. |
+| Account.VisibleInDirectory | Boolean | Whether the account is visible in the Global Directory. |
+| Account.Groups | String | Groups in which the account belongs \(integration specific\). For example, for AD these are groups of which the account is memberOf. |
 
 #### Command Example
 
@@ -4523,18 +4452,16 @@ Hides a user's contact information in the Global Directory, for example email ad
 
 #### Human Readable Output
 
->### User user@domain.io:
+>### User user@domain.io
 
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|VisibleInDirectory|
 >|---|---|---|---|---|---|---|---|---|
 >| Google | 118105533760233960163 | user1 | user1 test1 | admin#directory#user | C03puekhd | domain.io | Address: user@domain.io | false |
 
-
 ### gmail-set-password
 
 ***
 Sets the password for the user.
-
 
 #### Base Command
 
@@ -4544,9 +4471,8 @@ Sets the password for the user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| password | A string formatted password for the user. Depends on the password policy of the organization. | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| password | A string formatted password for the user. Depends on the password policy of the organization. | Required |
 
 #### Context Output
 
@@ -4555,7 +4481,6 @@ There is no context output for this command.
 #### Command Example
 
 ```!gmail-set-password user-id=user@domain.io password=user@1234```
-
 
 #### Human Readable Output
 
@@ -4566,7 +4491,6 @@ There is no context output for this command.
 ***
 Returns the auto-reply message set for the user-account.
 
-
 #### Base Command
 
 `gmail-get-autoreply`
@@ -4575,20 +4499,18 @@ Returns the auto-reply message set for the user-account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.Gmail.AutoReply.EnableAutoReply | Boolean | A flag that controls whether Gmail automatically replies to messages. | 
-| Account.Gmail.AutoReply.ResponseBody | String | Response body in plain text format. | 
-| Account.Gmail.AutoReply.ResponseSubject | String | Optional text to add to the subject line in vacation responses. To enable auto-replies, the response subject or the response body must not be empty. | 
-| Account.Gmail.AutoReply.RestrictToContact | String | A flag that determines whether responses are sent to recipients who are not in the user's list of contacts. | 
-| Account.Gmail.AutoReply.RestrictToDomain | String | A flag that determines whether responses are sent to recipients who are outside of the user's domain. This feature is only available for G Suite users. | 
-| Account.Gmail.Address | String | Email assigned with the current account. | 
-
+| Account.Gmail.AutoReply.EnableAutoReply | Boolean | A flag that controls whether Gmail automatically replies to messages. |
+| Account.Gmail.AutoReply.ResponseBody | String | Response body in plain text format. |
+| Account.Gmail.AutoReply.ResponseSubject | String | Optional text to add to the subject line in vacation responses. To enable auto-replies, the response subject or the response body must not be empty. |
+| Account.Gmail.AutoReply.RestrictToContact | String | A flag that determines whether responses are sent to recipients who are not in the user's list of contacts. |
+| Account.Gmail.AutoReply.RestrictToDomain | String | A flag that determines whether responses are sent to recipients who are outside of the user's domain. This feature is only available for G Suite users. |
+| Account.Gmail.Address | String | Email assigned with the current account. |
 
 #### Command Example
 
@@ -4620,18 +4542,16 @@ Returns the auto-reply message set for the user-account.
 
 #### Human Readable Output
 
->### User user@domain.io:
+>### User user@domain.io
 
 >|EnableAutoReply|ResponseBody|ResponseSubject|RestrictToContact|RestrictToDomain|EnableAutoReply|
 >|---|---|---|---|---|---|
 >| false | body_test | subject_test | false | false | false |
 
-
 ### gmail-set-autoreply
 
 ***
 Sets the auto-reply for the user. Note: If the body is not set, the current body will be deleted.
-
 
 #### Base Command
 
@@ -4641,32 +4561,30 @@ Sets the auto-reply for the user. Note: If the body is not set, the current body
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value me can be used to indicate the authenticated user. | Required | 
-| enable-autoReply | Whether Gmail automatically replies to messages. Set to true to automatically reply (default). Possible values are: true, false. Default is true. | Optional | 
-| response-subject | Optional text to add to the subject line in vacation responses. To enable auto-replies, either the response subject or the response body must not be empty. | Optional | 
-| response-body | Response body in plain text format. | Optional | 
-| response-body-entry-id | Sets the away/vacation message by passing a War Room entryID of the file for the given user. | Optional | 
-| start-time | Sets a start date for the vacation message to be enabled for the given user. The valid format is YYYY-MM-DD or Epoch time in milliseconds. | Optional | 
-| end-time | Sets an end date for the vacation message to be enabled for the given user. The valid format is YYYY-MM-DD or Epoch time in milliseconds. | Optional | 
-| contacts-only | Whether to send away/vacation messages to users in the contact list when set to true. Possible values are: true, false. Default is false. | Optional | 
-| domain-only | Whether to prevent sending away/vacation messages to recipients who are outside of the user's domain when set to true. Possible values are: true, false. Default is false. | Optional | 
-| response-body-type | Whether message response body type is text or HTML. Possible values are: HTML, Text. Default is Text. | Optional | 
-
+| user-id | The user's email address. The "me" special value me can be used to indicate the authenticated user. | Required |
+| enable-autoReply | Whether Gmail automatically replies to messages. Set to true to automatically reply (default). Possible values are: true, false. Default is true. | Optional |
+| response-subject | Optional text to add to the subject line in vacation responses. To enable auto-replies, either the response subject or the response body must not be empty. | Optional |
+| response-body | Response body in plain text format. | Optional |
+| response-body-entry-id | Sets the away/vacation message by passing a War Room entryID of the file for the given user. | Optional |
+| start-time | Sets a start date for the vacation message to be enabled for the given user. The valid format is YYYY-MM-DD or Epoch time in milliseconds. | Optional |
+| end-time | Sets an end date for the vacation message to be enabled for the given user. The valid format is YYYY-MM-DD or Epoch time in milliseconds. | Optional |
+| contacts-only | Whether to send away/vacation messages to users in the contact list when set to true. Possible values are: true, false. Default is false. | Optional |
+| domain-only | Whether to prevent sending away/vacation messages to recipients who are outside of the user's domain when set to true. Possible values are: true, false. Default is false. | Optional |
+| response-body-type | Whether message response body type is text or HTML. Possible values are: HTML, Text. Default is Text. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.Gmail.AutoReply.EnableAutoReply | Boolean | A flag that controls whether Gmail automatically replies to messages. | 
-| Account.Gmail.AutoReply.ResponseBody | String | Response body in plain text format. | 
-| Account.Gmail.AutoReply.ResponseSubject | String | Optional text to add to the subject line in vacation responses. To enable auto-replies, either the response subject or the response body must not be empty. | 
-| Account.Gmail.AutoReply.RestrictToContact | String | Determines whether responses are sent to recipients who are not in the user's list of contacts. | 
-| Account.Gmail.AutoReply.RestrictToDomain | String | Determines whether responses are sent to recipients who are outside of the user's domain. This feature is only available for G Suite users. | 
-| Account.Gmail.Address | String | Email assigned with the current account. | 
-| Account.Gmail.AutoReply.ResponseBodyHtml | String | Response body in HTML format. | 
-| Account.Gmail.AutoReply.StartTime | Number | Start time for sending auto-replies. | 
-| Account.Gmail.AutoReply.EndTime | Number | End time for sending auto-replies. | 
-
+| Account.Gmail.AutoReply.EnableAutoReply | Boolean | A flag that controls whether Gmail automatically replies to messages. |
+| Account.Gmail.AutoReply.ResponseBody | String | Response body in plain text format. |
+| Account.Gmail.AutoReply.ResponseSubject | String | Optional text to add to the subject line in vacation responses. To enable auto-replies, either the response subject or the response body must not be empty. |
+| Account.Gmail.AutoReply.RestrictToContact | String | Determines whether responses are sent to recipients who are not in the user's list of contacts. |
+| Account.Gmail.AutoReply.RestrictToDomain | String | Determines whether responses are sent to recipients who are outside of the user's domain. This feature is only available for G Suite users. |
+| Account.Gmail.Address | String | Email assigned with the current account. |
+| Account.Gmail.AutoReply.ResponseBodyHtml | String | Response body in HTML format. |
+| Account.Gmail.AutoReply.StartTime | Number | Start time for sending auto-replies. |
+| Account.Gmail.AutoReply.EndTime | Number | End time for sending auto-replies. |
 
 #### Command Example
 
@@ -4698,18 +4616,16 @@ Sets the auto-reply for the user. Note: If the body is not set, the current body
 
 #### Human Readable Output
 
->### User user@domain.io:
+>### User user@domain.io
 
 >|EnableAutoReply|ResponseBody|ResponseSubject|RestrictToContact|RestrictToDomain|EnableAutoReply|
 >|---|---|---|---|---|---|
 >| false | body_test | subject_test | false | false | false |
 
-
 ### gmail-delegate-user-mailbox
 
 ***
 Adds a delegate to the mailbox, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user and must be added using their primary email address, and not an email alias.
-
 
 #### Base Command
 
@@ -4719,9 +4635,8 @@ Adds a delegate to the mailbox, without sending any verification email. The dele
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| delegate-email | The email address of the delegate. | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| delegate-email | The email address of the delegate. | Required |
 
 #### Context Output
 
@@ -4729,18 +4644,16 @@ There is no context output for this command.
 
 #### Command Example
 
-``` !gmail-delegate-user-mailbox delegate-email=shai@demistodev.com user-id=admin@demistodev.com```
+```!gmail-delegate-user-mailbox delegate-email=shai@demistodev.com user-id=admin@demistodev.com```
 
 #### Human Readable Output
 
 >Email shai@demistodev.com has been delegated
 
-
 ### send-mail
 
 ***
 Sends mail using Gmail.
-
 
 #### Base Command
 
@@ -4750,41 +4663,39 @@ Sends mail using Gmail.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | The email addresses of the receiver. | Required | 
-| from | The email address of the sender. | Optional | 
+| to | The email addresses of the receiver. | Required |
+| from | The email address of the sender. | Optional |
 | senderDisplayName | The sender Name that appears on the receiver side. | Optional |
-| body | The content (body) of the email to be sent in plain text. | Optional | 
-| subject | The subject for the email to be sent. | Required | 
-| attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need be attached to the email. | Optional | 
-| cc | The additional recipient email address (CC). | Optional | 
-| bcc | The additional recipient email address (BCC). | Optional | 
-| htmlBody | The content (body) of the email to be sent in HTML format. | Optional | 
+| body | The content (body) of the email to be sent in plain text. | Optional |
+| subject | The subject for the email to be sent. | Required |
+| attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need be attached to the email. | Optional |
+| cc | The additional recipient email address (CC). | Optional |
+| bcc | The additional recipient email address (BCC). | Optional |
+| htmlBody | The content (body) of the email to be sent in HTML format. | Optional |
 | force_handle_htmlBody | Choose true if you wish to handle html body as MimeMultipart. Possible values are: False, True. Default is False. | Optional |
-| replyTo | The address that needs to be used to reply to the message. | Optional | 
-| attachNames | A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.<br/>        Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3<br/>        To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5. | Optional | 
-| attachCIDs | A comma-separated list of CID images to embed attachments inside the email. | Optional | 
-| transientFile | Textual name for an attached file. Multiple files are supported as a<br/>        comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional | 
-| transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated<br/>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional | 
-| transientFileCID | CID image for an attached file to include within the email body. Multiple files are<br/>        supported as a comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"<br/>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional | 
-| additionalHeader | A CSV list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
-| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.<br/>       Note that only context data is accessible for this argument, while incident fields are not.'. | Optional | 
-
+| replyTo | The address that needs to be used to reply to the message. | Optional |
+| attachNames | A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.<br/>        Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3<br/>        To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5. | Optional |
+| attachCIDs | A comma-separated list of CID images to embed attachments inside the email. | Optional |
+| transientFile | Textual name for an attached file. Multiple files are supported as a<br/>        comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional |
+| transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated<br/>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional |
+| transientFileCID | CID image for an attached file to include within the email body. Multiple files are<br/>        supported as a comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"<br/>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional |
+| additionalHeader | A CSV list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional |
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.<br/>       Note that only context data is accessible for this argument, while incident fields are not.'. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.SentMail.ID | String | The immutable ID of the message. | 
-| Gmail.SentMail.Labels | String | The list of IDs of labels applied to this message. | 
-| Gmail.SentMail.ThreadId | String | The ID of the thread in which the message belongs. | 
-| Gmail.SentMail.To | String | The recipient of the email. | 
-| Gmail.SentMail.From | Unknown | The sender of the email. | 
-| Gmail.SentMail.Cc | String | The additional recipient email address \(CC\). | 
-| Gmail.SentMail.Bcc | String | The additional recipient email address \(BCC\). | 
-| Gmail.SentMail.Subject | String | The subject of the email. | 
-| Gmail.SentMail.Body | Unknown | The plain-text version of the email. | 
-| Gmail.SentMail.MailBox | String | The mailbox from which the mail was sent. | 
-
+| Gmail.SentMail.ID | String | The immutable ID of the message. |
+| Gmail.SentMail.Labels | String | The list of IDs of labels applied to this message. |
+| Gmail.SentMail.ThreadId | String | The ID of the thread in which the message belongs. |
+| Gmail.SentMail.To | String | The recipient of the email. |
+| Gmail.SentMail.From | Unknown | The sender of the email. |
+| Gmail.SentMail.Cc | String | The additional recipient email address \(CC\). |
+| Gmail.SentMail.Bcc | String | The additional recipient email address \(BCC\). |
+| Gmail.SentMail.Subject | String | The subject of the email. |
+| Gmail.SentMail.Body | Unknown | The plain-text version of the email. |
+| Gmail.SentMail.MailBox | String | The mailbox from which the mail was sent. |
 
 #### Command Example
 
@@ -4816,7 +4727,7 @@ Sends mail using Gmail.
 
 #### Human Readable Output
 
->### Email sent:
+>### Email sent
 
 >|Type|ID|To|From|Subject|Body|Labels|ThreadId|
 >|---|---|---|---|---|---|---|---|
@@ -4827,7 +4738,6 @@ Sends mail using Gmail.
 ***
 Replies to a mail using Gmail.
 
-
 #### Base Command
 
 `reply-mail`
@@ -4836,45 +4746,43 @@ Replies to a mail using Gmail.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | The email addresses of the recipients. | Required | 
-| from | The email address of the sender. | Optional | 
-| body | The contents (body) of the email to be sent in plain text. | Optional | 
-| subject | The subject of the email to be sent. Should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation. | Required | 
-| inReplyTo | A comma-separated list of message IDs to reply to. | Required | 
-| references | A comma-separated list of message IDs to refer to. | Optional | 
-| attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need to be attached to the email. | Optional | 
-| cc | The additional recipient email addresses (CC). | Optional | 
-| bcc | The additional recipient email addresses (BCC). | Optional | 
-| htmlBody | The content (body) of the email to be sent in HTML format. | Optional | 
-| replyTo | The address that needs to be used to reply to the message. | Optional | 
-| attachNames | A comma-separated list of new names used to rename attachments corresponding to the order in which they were attached to the email.<br/>        Examples - To rename the first and third file: attachNames=new_fileName1,,new_fileName3<br/>        To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileName5. | Optional | 
-| attachCIDs | A comma-separated list of CID images to embed as attachments inside the email. | Optional | 
-| transientFile | Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional | 
-| transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional | 
-| transientFileCID | CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional | 
-| additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
-| templateParams | 'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.'. | Optional | 
-
+| to | The email addresses of the recipients. | Required |
+| from | The email address of the sender. | Optional |
+| body | The contents (body) of the email to be sent in plain text. | Optional |
+| subject | The subject of the email to be sent. Should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation. | Required |
+| inReplyTo | A comma-separated list of message IDs to reply to. | Required |
+| references | A comma-separated list of message IDs to refer to. | Optional |
+| attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need to be attached to the email. | Optional |
+| cc | The additional recipient email addresses (CC). | Optional |
+| bcc | The additional recipient email addresses (BCC). | Optional |
+| htmlBody | The content (body) of the email to be sent in HTML format. | Optional |
+| replyTo | The address that needs to be used to reply to the message. | Optional |
+| attachNames | A comma-separated list of new names used to rename attachments corresponding to the order in which they were attached to the email.<br/>        Examples - To rename the first and third file: attachNames=new_fileName1,,new_fileName3<br/>        To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileName5. | Optional |
+| attachCIDs | A comma-separated list of CID images to embed as attachments inside the email. | Optional |
+| transientFile | Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional |
+| transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional |
+| transientFileCID | CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"). | Optional |
+| additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional |
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.'. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.SentMail.ID | String | The immutable ID of the message. | 
-| Gmail.SentMail.Labels | String | The list of IDs of the labels applied to this message. | 
-| Gmail.SentMail.ThreadId | String | The ID of the thread in which the message belongs. | 
-| Gmail.SentMail.To | String | The recipients of the email. | 
-| Gmail.SentMail.From | Unknown | The sender of the email. | 
-| Gmail.SentMail.Cc | String | The additional recipient email addresses \(CC\). | 
-| Gmail.SentMail.Bcc | String | The additional recipient email addresses \(BCC\). | 
-| Gmail.SentMail.Subject | String | The subject of the email. | 
-| Gmail.SentMail.Body | Unknown | The plain-text version of the email. | 
-| Gmail.SentMail.MailBox | String | The mailbox from which the mail was sent. | 
-
+| Gmail.SentMail.ID | String | The immutable ID of the message. |
+| Gmail.SentMail.Labels | String | The list of IDs of the labels applied to this message. |
+| Gmail.SentMail.ThreadId | String | The ID of the thread in which the message belongs. |
+| Gmail.SentMail.To | String | The recipients of the email. |
+| Gmail.SentMail.From | Unknown | The sender of the email. |
+| Gmail.SentMail.Cc | String | The additional recipient email addresses \(CC\). |
+| Gmail.SentMail.Bcc | String | The additional recipient email addresses \(BCC\). |
+| Gmail.SentMail.Subject | String | The subject of the email. |
+| Gmail.SentMail.Body | Unknown | The plain-text version of the email. |
+| Gmail.SentMail.MailBox | String | The mailbox from which the mail was sent. |
 
 #### Command Example
 
-``` !reply-mail subject="this is the subject" to=test@demistodev.com replyTo=test@demistodev.com body="this is the body" inReplyTo=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com> references=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com>```
+```!reply-mail subject="this is the subject" to=test@demistodev.com replyTo=test@demistodev.com body="this is the body" inReplyTo=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com> references=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com>```
 
 #### Context Example
 
@@ -4902,18 +4810,16 @@ Replies to a mail using Gmail.
 
 #### Human Readable Output
 
->### Email sent:
+>### Email sent
 
 >|Type|ID|To|From|Subject|Body|Labels|ThreadId|
 >|---|---|---|---|---|---|---|---|
 >| Gmail | 16d43287fc29b71a | test@demistodev.com | admin@demistodev.com | this is the subject |this is the body | SENT | 16d43287fc29b71a |
 
-
 ### gmail-remove-delegated-mailbox
 
 ***
 Removes a delegate from the mailbox without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user using their primary email address, and not an email alias.
-
 
 #### Base Command
 
@@ -4923,9 +4829,8 @@ Removes a delegate from the mailbox without sending any verification email. The 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| removed-mail | The email address to remove from delegation. | Required | 
-
+| user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required |
+| removed-mail | The email address to remove from delegation. | Required |
 
 #### Context Output
 
@@ -4939,12 +4844,10 @@ There is no context output for this command.
 
 >Email shai@demistodev.com has been removed from delegation
 
-
 ### gmail-get-role
 
 ***
 Gets details of a specific role.
-
 
 #### Base Command
 
@@ -4954,24 +4857,22 @@ Gets details of a specific role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role-id | The ID of the role. Can be retrieved using the get-user-roles command. | Required | 
-| customer-id | The immutable Google Apps ID. | Optional | 
-
+| role-id | The ID of the role. Can be retrieved using the get-user-roles command. | Required |
+| customer-id | The immutable Google Apps ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.Role.ETag | String | The ETag of the resource. | 
-| Gmail.Role.IsSuperAdminRole | Boolean | Indicates whether the role is a super admin role. | 
-| Gmail.Role.IsSystemRole | Boolean | Indicates whether the role is a pre-defined system role. | 
-| Gmail.Role.Kind | String | The kind of the role. | 
-| Gmail.Role.Description | String | The description of the role. | 
-| Gmail.Role.ID | String | The ID of the role. | 
-| Gmail.Role.Name | String | The name of the role. | 
-| Gmail.Role.Privilege.ServiceID | String | The ID of the service this privilege is for. | 
-| Gmail.Role.Privilege.Name | String | The name of the privilege. | 
-
+| Gmail.Role.ETag | String | The ETag of the resource. |
+| Gmail.Role.IsSuperAdminRole | Boolean | Indicates whether the role is a super admin role. |
+| Gmail.Role.IsSystemRole | Boolean | Indicates whether the role is a pre-defined system role. |
+| Gmail.Role.Kind | String | The kind of the role. |
+| Gmail.Role.Description | String | The description of the role. |
+| Gmail.Role.ID | String | The ID of the role. |
+| Gmail.Role.Name | String | The name of the role. |
+| Gmail.Role.Privilege.ServiceID | String | The ID of the service this privilege is for. |
+| Gmail.Role.Privilege.Name | String | The name of the privilege. |
 
 #### Command Example
 
@@ -5103,13 +5004,13 @@ Gets details of a specific role.
 
 #### Human Readable Output
 
->### Role 13801188331880449 details:
+>### Role 13801188331880449 details
 
 >|ETag|IsSuperAdminRole|IsSystemRole|Kind|Description|ID|Name|
 >|---|---|---|---|---|---|---|
 >| HKDSgTnCxrWl3RtRnlZSCPY3NjdWJxz53nrhwSz7ob4/Y2lKFcwh-5YCBqMXBNWR3Ezo8ik | true | true | admin#directory#role | Google Apps Administrator Seed Role | 13801188331880449 | _SEED_ADMIN_ROLE |
 
->### Role 13801188331880449 privileges:
+>### Role 13801188331880449 privileges
 
 >|ServiceID|Name|
 >|---|---|
@@ -5147,7 +5048,6 @@ Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will a
 
 This command is only available to service account clients who have been delegated domain-wide authority.
 
-
 #### Base Command
 
 `gmail-send-as-add`
@@ -5156,36 +5056,34 @@ This command is only available to service account clients who have been delegate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user's email address. | Required | 
-| send_as_email | The email address that appears in the "From:" header for email sent using this alias. | Required | 
-| display_name | The name that appears in the "From:" header for mail sent using this alias. For custom "from" addresses, when this is empty, Gmail will populate the "From:" header with the name that is used for the primary address associated with the account. If the admin disabled the ability for users to update their name format, requests to update this field for the primary login will silently fail. | Optional | 
-| signature | An optional HTML signature that is included in messages composed with this alias in the Gmail web UI. | Optional | 
-| reply_to_address | An optional email address that is included in a "Reply-To:" header for email sent using this alias. If this is empty, Gmail will not generate a "Reply-To:" header. | Optional | 
-| is_default | Whether this address is selected as the default "From:" address in situations such as composing a new message or sending a vacation auto-reply. Every Gmail account has exactly one default send-as address, so the only legal value that clients may write to this field is true. Changing this from false to true for an address will result in this field becoming false for the other previous default address. Default is "false". Possible values are: true, false. Default is false. | Optional | 
-| treat_as_alias | Whether Gmail should treat this address as an alias for the user's primary email address. This setting only applies to custom "from" aliases. Default is "false". Possible values are: true, false. Default is false. | Optional | 
-| smtp_host | The hostname of the SMTP service. Required for SMTP configuration. | Optional | 
-| smtp_port | The port of the SMTP service. Required for SMTP configuration. | Optional | 
-| smtp_username | The username that will be used for authentication with the SMTP service. This is a write-only field that can be specified in requests to create or update SendAs settings. | Optional | 
-| smtp_password | The password that will be used for authentication with the SMTP service. This is a write-only field that can be specified in requests to create or update SendAs settings. | Optional | 
-| smtp_securitymode | The protocol that will be used to secure communication with the SMTP service. Required for SMTP configuration.<br/><br/>Available Options:<br/>SECURITY_MODE_UNSPECIFIED - Unspecified security mode.<br/><br/>NONE - Communication with the remote SMTP service is unsecured. Requires port 25.<br/><br/>SSL - Communication with the remote SMTP service is secured using SSL.<br/><br/>STARTTLS - Communication with the remote SMTP service is secured using STARTTLS. Possible values are: SECURITY_MODE_UNSPECIFIED, NONE, SSL, STARTTLS. | Optional | 
-
+| user_id | The user's email address. | Required |
+| send_as_email | The email address that appears in the "From:" header for email sent using this alias. | Required |
+| display_name | The name that appears in the "From:" header for mail sent using this alias. For custom "from" addresses, when this is empty, Gmail will populate the "From:" header with the name that is used for the primary address associated with the account. If the admin disabled the ability for users to update their name format, requests to update this field for the primary login will silently fail. | Optional |
+| signature | An optional HTML signature that is included in messages composed with this alias in the Gmail web UI. | Optional |
+| reply_to_address | An optional email address that is included in a "Reply-To:" header for email sent using this alias. If this is empty, Gmail will not generate a "Reply-To:" header. | Optional |
+| is_default | Whether this address is selected as the default "From:" address in situations such as composing a new message or sending a vacation auto-reply. Every Gmail account has exactly one default send-as address, so the only legal value that clients may write to this field is true. Changing this from false to true for an address will result in this field becoming false for the other previous default address. Default is "false". Possible values are: true, false. Default is false. | Optional |
+| treat_as_alias | Whether Gmail should treat this address as an alias for the user's primary email address. This setting only applies to custom "from" aliases. Default is "false". Possible values are: true, false. Default is false. | Optional |
+| smtp_host | The hostname of the SMTP service. Required for SMTP configuration. | Optional |
+| smtp_port | The port of the SMTP service. Required for SMTP configuration. | Optional |
+| smtp_username | The username that will be used for authentication with the SMTP service. This is a write-only field that can be specified in requests to create or update SendAs settings. | Optional |
+| smtp_password | The password that will be used for authentication with the SMTP service. This is a write-only field that can be specified in requests to create or update SendAs settings. | Optional |
+| smtp_securitymode | The protocol that will be used to secure communication with the SMTP service. Required for SMTP configuration.<br/><br/>Available Options:<br/>SECURITY_MODE_UNSPECIFIED - Unspecified security mode.<br/><br/>NONE - Communication with the remote SMTP service is unsecured. Requires port 25.<br/><br/>SSL - Communication with the remote SMTP service is secured using SSL.<br/><br/>STARTTLS - Communication with the remote SMTP service is secured using STARTTLS. Possible values are: SECURITY_MODE_UNSPECIFIED, NONE, SSL, STARTTLS. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.SendAs.userId | String | The user's email address. | 
-| Gmail.SendAs.sendAsEmail | String | The updated send-as alias. | 
-| Gmail.SendAs.signature | String | An optional HTML signature that is included in messages composed with this alias in the Gmail web UI. | 
-| Gmail.SendAs.isPrimary | Boolean | Whether this address is the primary address used to login to the account. | 
-| Gmail.SendAs.isDefault | Boolean | Whether this address is selected as the default "From:" address in situations. | 
-| Gmail.SendAs.treatAsAlias | Boolean | Whether Gmail should treat this address as an alias for the user's primary email address. | 
-| Gmail.SendAs.smtpMsaHost | String | The hostname of the SMTP service. | 
-| Gmail.SendAs.smtpMsaPort | String | The port of the SMTP service. | 
-| Gmail.SendAs.smtpMsaSecurityMode | String | The protocol that will be used to secure communication with the SMTP service. | 
-| Gmail.SendAs.verificationStatus | String | Indicates whether this address has been verified for use as a send-as alias. | 
-| Gmail.SendAs.replyToAddress | String | A name that appears in the "From:" header for email sent using this alias. | 
-
+| Gmail.SendAs.userId | String | The user's email address. |
+| Gmail.SendAs.sendAsEmail | String | The updated send-as alias. |
+| Gmail.SendAs.signature | String | An optional HTML signature that is included in messages composed with this alias in the Gmail web UI. |
+| Gmail.SendAs.isPrimary | Boolean | Whether this address is the primary address used to login to the account. |
+| Gmail.SendAs.isDefault | Boolean | Whether this address is selected as the default "From:" address in situations. |
+| Gmail.SendAs.treatAsAlias | Boolean | Whether Gmail should treat this address as an alias for the user's primary email address. |
+| Gmail.SendAs.smtpMsaHost | String | The hostname of the SMTP service. |
+| Gmail.SendAs.smtpMsaPort | String | The port of the SMTP service. |
+| Gmail.SendAs.smtpMsaSecurityMode | String | The protocol that will be used to secure communication with the SMTP service. |
+| Gmail.SendAs.verificationStatus | String | Indicates whether this address has been verified for use as a send-as alias. |
+| Gmail.SendAs.replyToAddress | String | A name that appears in the "From:" header for email sent using this alias. |
 
 #### Command Example
 
@@ -5210,18 +5108,16 @@ This command is only available to service account clients who have been delegate
 
 #### Human Readable Output
 
->### A custom "user2@domain.io" send-as alias created for "user1@domain.io".
+>### A custom "user2@domain.io" send-as alias created for "user1@domain.io"
 
 >|Send As Email|Treat As Alias|
 >|---|---|
 >| user2@domain.io | false |
 
-
 ### gmail-forwarding-address-add
 
 ***
 Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority. The special value "me" can be used to indicate the authenticated user.
-
 
 #### Base Command
 
@@ -5231,17 +5127,16 @@ Creates a forwarding address. If ownership verification is required, a message w
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| forwarding_email | A comma-separated list of email addresses to which messages can be forwarded. | Required | 
-| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required | 
-
+| forwarding_email | A comma-separated list of email addresses to which messages can be forwarded. | Required |
+| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
-| Gmail.ForwardingAddress.userId | String | The user's email address. | 
-| Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. |
+| Gmail.ForwardingAddress.userId | String | The user's email address. |
+| Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. |
 
 #### Command example
 
@@ -5263,18 +5158,16 @@ Creates a forwarding address. If ownership verification is required, a message w
 
 #### Human Readable Output
 
->### Forwarding addresses results for "me":
+>### Forwarding addresses results for "me"
 
 >|forwardingEmail|userId|verificationStatus|
 >|---|---|---|
 >| test@gmail.com | me | accepted |
 
-
 ### gmail-forwarding-address-update
 
 ***
 Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
-
 
 #### Base Command
 
@@ -5284,19 +5177,18 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| disposition | The state that a message should be left in after it has been forwarded. Possible values are: archive, leaveInInbox, markRead, trash. | Optional | 
-| forwarding_email | A comma-separated list of emails addresses to which messages can be forwarded. | Required | 
-| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required | 
-
+| disposition | The state that a message should be left in after it has been forwarded. Possible values are: archive, leaveInInbox, markRead, trash. | Optional |
+| forwarding_email | A comma-separated list of emails addresses to which messages can be forwarded. | Required |
+| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
-| Gmail.ForwardingAddress.userId | String | The user's email address. | 
-| Gmail.ForwardingAddress.Disposition | String | The state that a message should be left in after it has been forwarded. | 
-| Gmail.ForwardingAddress.Enabled | Boolean | Indicates whether all incoming mail is automatically forwarded to another address. | 
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. |
+| Gmail.ForwardingAddress.userId | String | The user's email address. |
+| Gmail.ForwardingAddress.Disposition | String | The state that a message should be left in after it has been forwarded. |
+| Gmail.ForwardingAddress.Enabled | Boolean | Indicates whether all incoming mail is automatically forwarded to another address. |
 
 #### Command example
 
@@ -5319,7 +5211,7 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
 
 #### Human Readable Output
 
->### Forwarding addresses update results for "me":
+>### Forwarding addresses update results for "me"
 
 >|forwardingEmail|userId|disposition|enabled|
 >|---|---|---|---|
@@ -5330,7 +5222,6 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
 ***
 Gets the specified forwarding address or a list of the forwarding addresses for the specified account.
 
-
 #### Base Command
 
 `gmail-forwarding-address-get`
@@ -5339,16 +5230,15 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required | 
-| forwarding_email | The forwarding address to be retrieved. | Required | 
-
+| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required |
+| forwarding_email | The forwarding address to be retrieved. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ForwardingAddress.userId | String | The user email address or the user ID, use the \!gmail-list-users command, in order to get the user ID. | 
-| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
+| Gmail.ForwardingAddress.userId | String | The user email address or the user ID, use the \!gmail-list-users command, in order to get the user ID. |
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. |
 
 #### Command example
 
@@ -5376,12 +5266,10 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 >|---|---|
 >| test@gmail.com | accepted |
 
-
 ### gmail-forwarding-address-remove
 
 ***
 Deletes the specified forwarding address and revokes any verification that may have been required. This method is only available to service account clients that have been delegated domain-wide authority.
-
 
 #### Base Command
 
@@ -5391,9 +5279,8 @@ Deletes the specified forwarding address and revokes any verification that may h
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required | 
-| forwarding_email | The forwarding address to be retrieved. | Required | 
-
+| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required |
+| forwarding_email | The forwarding address to be retrieved. | Required |
 
 #### Context Output
 
@@ -5412,7 +5299,6 @@ There is no context output for this command.
 ***
 Lists the forwarding addresses for the specified account.
 
-
 #### Base Command
 
 `gmail-forwarding-address-list`
@@ -5421,16 +5307,15 @@ Lists the forwarding addresses for the specified account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. The special value "me" can be used to indicate the authenticated user. | Required | 
-| limit | The maximum number of addresses to return. The default value is 50. | Optional | 
-
+| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. The special value "me" can be used to indicate the authenticated user. | Required |
+| limit | The maximum number of addresses to return. The default value is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
-| Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. |
+| Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. |
 
 #### Command example
 
@@ -5477,5 +5362,3 @@ Lists the forwarding addresses for the specified account.
 >| test1@gmail.com | accepted |
 >| test2@gmail.com | accepted |
 >| test3@gmail.com | accepted |
-
-

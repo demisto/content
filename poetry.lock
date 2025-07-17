@@ -709,20 +709,20 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-py"
-version = "3.2.18"
+version = "3.2.20"
 description = "\"A Python library for the Demisto API\""
 optional = false
 python-versions = ">=3.9,<=3.13"
 groups = ["dev"]
 files = [
-    {file = "demisto_py-3.2.18-py3-none-any.whl", hash = "sha256:cd406ba97447d3fe919ff3d6729f9cbc5f4667736a0e2eced27493235ede43c1"},
-    {file = "demisto_py-3.2.18.tar.gz", hash = "sha256:b3fe3096f60f7dd43bebb6c3571a50005c5a5699c8e3c7efceaae28feb7aca58"},
+    {file = "demisto_py-3.2.20-py3-none-any.whl", hash = "sha256:3871177fbe686c3a1ac3c242b0f33b2c317d76e20be28af7a870fcfc9cdf7ac0"},
+    {file = "demisto_py-3.2.20.tar.gz", hash = "sha256:cefd770d08e6d9fac89b75afdd81f2ed229d7b588699636a0016b26c3cd1938f"},
 ]
 
 [package.dependencies]
 certifi = ">=2024.2.2,<2025.0.0"
 python-dateutil = ">=2.7.2,<3.0.0"
-setuptools = ">=75.5.0,<76.0.0"
+setuptools = ">=80.9.0"
 six = ">=1.16,<2.0"
 tzlocal = ">=5.2.0,<6.0.0"
 urllib3 = "<2.1.0"
@@ -734,14 +734,14 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.37.4"
+version = "1.38.6"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
 groups = ["dev"]
 files = [
-    {file = "demisto_sdk-1.37.4-py3-none-any.whl", hash = "sha256:6fa74502fe90aeca7393edf2f68c941e0a0fabe63bb1b1e9f5ccc5c7673428ac"},
-    {file = "demisto_sdk-1.37.4.tar.gz", hash = "sha256:770ea8c47ff7772b1e8e9a3f96f07c93bc159b771aebe44a623b255d4cdc33db"},
+    {file = "demisto_sdk-1.38.6-py3-none-any.whl", hash = "sha256:f377b8b09af0ed4631ce08bb0c05f0a34b3c9f1ebf9695caac427e249bac85dd"},
+    {file = "demisto_sdk-1.38.6.tar.gz", hash = "sha256:cfd504e2c1c134aced6ce2ae269b305cca95c9c9b89635f8939a2cd4e3df4601"},
 ]
 
 [package.dependencies]
@@ -754,7 +754,7 @@ configparser = ">=5.2.0,<6.0.0"
 coverage = ">=7.2.1,<7.4"
 dateparser = ">=1.1.1,<2.0.0"
 decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.17,<4.0.0"
+demisto-py = ">=3.2.20,<4.0.0"
 dictdiffer = ">=0.9.0,<0.10.0"
 dictor = ">=0.1.9,<0.2.0"
 docker = ">=7.1.0,<8.0.0"
@@ -795,7 +795,7 @@ pytest-freezegun = ">=0.4.2,<0.5.0"
 python-dotenv = ">=0.20.0,<0.21.0"
 requests = ">=2.27.1,<3.0.0"
 "ruamel.yaml" = ">=0.17.21,<0.18.0"
-setuptools = ">=75.5.0,<76.0.0"
+setuptools = ">=80.9.0"
 slack-sdk = ">=3.17.0,<4.0.0"
 tabulate = ">=0.8.9,<0.10.0"
 tenacity = ">=8.4.1,<9.0.0"
@@ -807,7 +807,7 @@ urllib3 = ">=1.26,<3"
 uv = ">=0.1.5,<0.2.0"
 vulture = ">=2.3,<3.0"
 wcmatch = ">=8.3,<9.0"
-werkzeug = ">=2.2.0,<3.0.0"
+werkzeug = ">=3.1.3,<4.0.0"
 yamlordereddictloader = ">=0.4.0,<0.5.0"
 
 [package.extras]
@@ -3621,24 +3621,24 @@ reference = "pypi-public"
 
 [[package]]
 name = "setuptools"
-version = "75.6.0"
+version = "80.9.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "setuptools-75.6.0-py3-none-any.whl", hash = "sha256:ce74b49e8f7110f9bf04883b730f4765b774ef3ef28f722cce7c273d253aaf7d"},
-    {file = "setuptools-75.6.0.tar.gz", hash = "sha256:8199222558df7c86216af4f84c30e9b34a61d8ba19366cc914424cdbd28252f6"},
+    {file = "setuptools-80.9.0-py3-none-any.whl", hash = "sha256:062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922"},
+    {file = "setuptools-80.9.0.tar.gz", hash = "sha256:f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c"},
 ]
 
 [package.extras]
-check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1) ; sys_platform != \"cygwin\"", "ruff (>=0.7.0) ; sys_platform != \"cygwin\""]
-core = ["importlib_metadata (>=6) ; python_version < \"3.10\"", "jaraco.collections", "jaraco.functools (>=4)", "jaraco.text (>=3.7)", "more_itertools", "more_itertools (>=8.8)", "packaging", "packaging (>=24.2)", "platformdirs (>=4.2.2)", "tomli (>=2.0.1) ; python_version < \"3.11\"", "wheel (>=0.43.0)"]
+check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1) ; sys_platform != \"cygwin\"", "ruff (>=0.8.0) ; sys_platform != \"cygwin\""]
+core = ["importlib_metadata (>=6) ; python_version < \"3.10\"", "jaraco.functools (>=4)", "jaraco.text (>=3.7)", "more_itertools", "more_itertools (>=8.8)", "packaging (>=24.2)", "platformdirs (>=4.2.2)", "tomli (>=2.0.1) ; python_version < \"3.11\"", "wheel (>=0.43.0)"]
 cover = ["pytest-cov"]
 doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "pyproject-hooks (!=1.1)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier", "towncrier (<24.7)"]
 enabler = ["pytest-enabler (>=2.2)"]
-test = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "ini2toml[lite] (>=0.14)", "jaraco.develop (>=7.21) ; python_version >= \"3.9\" and sys_platform != \"cygwin\"", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "jaraco.test (>=5.5)", "packaging (>=24.2)", "pip (>=19.1)", "pyproject-hooks (!=1.1)", "pytest (>=6,!=8.1.*)", "pytest-home (>=0.5)", "pytest-perf ; sys_platform != \"cygwin\"", "pytest-subprocess", "pytest-timeout", "pytest-xdist (>=3)", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel (>=0.44.0)"]
-type = ["importlib_metadata (>=7.0.2) ; python_version < \"3.10\"", "jaraco.develop (>=7.21) ; sys_platform != \"cygwin\"", "mypy (>=1.12,<1.14)", "pytest-mypy"]
+test = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "ini2toml[lite] (>=0.14)", "jaraco.develop (>=7.21) ; python_version >= \"3.9\" and sys_platform != \"cygwin\"", "jaraco.envs (>=2.2)", "jaraco.path (>=3.7.2)", "jaraco.test (>=5.5)", "packaging (>=24.2)", "pip (>=19.1)", "pyproject-hooks (!=1.1)", "pytest (>=6,!=8.1.*)", "pytest-home (>=0.5)", "pytest-perf ; sys_platform != \"cygwin\"", "pytest-subprocess", "pytest-timeout", "pytest-xdist (>=3)", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel (>=0.44.0)"]
+type = ["importlib_metadata (>=7.0.2) ; python_version < \"3.10\"", "jaraco.develop (>=7.21) ; sys_platform != \"cygwin\"", "mypy (==1.14.*)", "pytest-mypy"]
 
 [package.source]
 type = "legacy"
@@ -4579,14 +4579,14 @@ reference = "pypi-public"
 
 [[package]]
 name = "werkzeug"
-version = "2.3.8"
+version = "3.1.3"
 description = "The comprehensive WSGI web application library."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "werkzeug-2.3.8-py3-none-any.whl", hash = "sha256:bba1f19f8ec89d4d607a3bd62f1904bd2e609472d93cd85e9d4e178f472c3748"},
-    {file = "werkzeug-2.3.8.tar.gz", hash = "sha256:554b257c74bbeb7a0d254160a4f8ffe185243f52a52035060b761ca62d977f03"},
+    {file = "werkzeug-3.1.3-py3-none-any.whl", hash = "sha256:54b78bf3716d19a65be4fceccc0d1d7b89e608834989dfae50ea87564639213e"},
+    {file = "werkzeug-3.1.3.tar.gz", hash = "sha256:60723ce945c19328679790e3282cc758aa4a6040e4bb330f53d30fa546d44746"},
 ]
 
 [package.dependencies]
@@ -4729,4 +4729,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10,<3.12"
-content-hash = "80b7bb1f4aa61780a83662cdeff831902b1013a0adcd989de9214265f0952358"
+content-hash = "766693a1f0682cb7bb8992cac2dec31ca80c21f7a09e7d6c4c2f9c6296514580"

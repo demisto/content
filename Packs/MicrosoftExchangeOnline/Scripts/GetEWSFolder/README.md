@@ -1,6 +1,7 @@
 Get emails from multiple folders of an account all at once.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Get emails from multiple folders of an account all at once.
 | Script Type | python |
 | Tags |   ml |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,4 +20,3 @@ Get emails from multiple folders of an account all at once.
 | isPublic | Is the folder public? |
 | limit | Maximum number of items per folder. |
 | hashSeed | Use this hash seed. |
-

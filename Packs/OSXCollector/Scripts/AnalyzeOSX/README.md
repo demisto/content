@@ -1,11 +1,13 @@
 Uses this script to get file and URL reputation for osxcollector result.
 
 This script will use `VirusTotal` for URL checks, and IBM XForce for MD5 file hash checks.
- * maxchecks : for.
- * system  : system name to run agent on.
- * section : the type check that OSXCollector should run.
+
+* maxchecks : for.
+* system  : system name to run agent on.
+* section : the type check that OSXCollector should run.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,14 +15,16 @@ This script will use `VirusTotal` for URL checks, and IBM XForce for MD5 file ha
 | Script Type | javascript |
 | Tags | osx |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * url
 * file
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -31,5 +35,6 @@ This script uses the following commands and scripts.
 | system | THe OSX system to be used. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

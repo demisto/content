@@ -3,7 +3,6 @@ This integration was integrated and tested with version 2 of CrowdStrike Falcon 
 
 ## Configure CrowdStrike Falcon Intelligence Sandbox in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Cloud Base URL (e.g., https://api.crowdstrike.com) |  | False |
@@ -13,20 +12,23 @@ This integration was integrated and tested with version 2 of CrowdStrike Falcon 
 | Use system proxy settings |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data |  |
 
-
-
 ## Uploading a file to the sandbox
+
 There are 2 ways to upload a file to the sandbox.
+
 1. Using the ***cs-fx-upload-file*** command with **submit_file=yes**.
-2. Using the ***cs-fx-upload-file*** command and afterwards the ***cs-fx-submit-uploaded-file command***, 
+2. Using the ***cs-fx-upload-file*** command and afterwards the ***cs-fx-submit-uploaded-file command***,
 in this option the sha256 identifier from the ***cs-fx-upload-file*** command output is the input to the ***cs-fx-submit-uploaded-file command***.
 
 For more information review the documentation for the commands.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cs-fx-upload-file
+
 ***
 Uploads a file for sandbox analysis.
 Notice that the file identifier (SHA) can be changed as shown in the example below.
@@ -34,99 +36,100 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 #### Base Command
 
 `cs-fx-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_name | Name of the file to upload for sandbox analysis. | Optional | 
-| ids | This ia an internal argument used for the polling process, not to be used by the user. | Optional | 
-| comment | A descriptive comment to identify the file for other users. | Optional | 
-| is_confidential | Determines the visibility of this file in Falcon MalQuery. Can be "true" or "false". If "true", the file is confidential. Possible values are: true, false. | Optional | 
-| file | Content of the uploaded sample in binary format, This arg can also receive entry ID from war room. | Optional | 
-| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready. Possible values are: true, false. | Optional | 
-| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional | 
-| interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional | 
-| submit_file | Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no". Possible values are: no, yes. Default is no. | Optional | 
-
+| file_name | Name of the file to upload for sandbox analysis. | Optional |
+| ids | This ia an internal argument used for the polling process, not to be used by the user. | Optional |
+| comment | A descriptive comment to identify the file for other users. | Optional |
+| is_confidential | Determines the visibility of this file in Falcon MalQuery. Can be "true" or "false". If "true", the file is confidential. Possible values are: true, false. | Optional |
+| file | Content of the uploaded sample in binary format, This arg can also receive entry ID from war room. | Optional |
+| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready. Possible values are: true, false. | Optional |
+| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional |
+| interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional |
+| submit_file | Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no". Possible values are: no, yes. Default is no. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
+| csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. |
 | csfalconx.resource.file_name | String | Name of the uploaded file.  |
-| csfalconx.resource.tags | String | Analysis tags. | 
-| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. | 
-| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
-| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
-| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
-| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. | 
-| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. | 
-| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. | 
-| csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. | 
-| csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. | 
-| csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. | 
-| csfalconx.resource.sandbox.processes.handles.path | String | The sandbox handled path. | 
-| csfalconx.resource.sandbox.processes.name | String | The sandbox process name. | 
-| csfalconx.resource.sandbox.processes.normalized_path | String | The sandbox process normalized path. | 
-| csfalconx.resource.sandbox.processes.pid | Number | The sandbox process pid. | 
-| csfalconx.resource.sandbox.processes.sha256 | String | The sandbox process sha256. | 
-| csfalconx.resource.sandbox.architecture | String | The sandbox architecture. | 
-| csfalconx.resource.sandbox.classification | String | The sandbox classification. | 
-| csfalconx.resource.sandbox.classification_tags | String | The sandbox classification tags. | 
-| csfalconx.resource.sandbox.extracted_files.name | String | The sandbox extracted file name. | 
-| csfalconx.resource.sandbox.extracted_files.file_size | Number | The sandbox extracted file size. | 
-| csfalconx.resource.sandbox.extracted_files.sha256 | String | The sandbox extracted file sha256. | 
-| csfalconx.resource.sandbox.extracted_files.md5 | String | The sandbox extracted file md5. | 
-| csfalconx.resource.sandbox.extracted_files.sha1 | String | The sandbox extracted file sha1. | 
-| csfalconx.resource.sandbox.extracted_files.runtime_process | String | The sandbox extracted file runtime process. | 
-| csfalconx.resource.sandbox.extracted_files.type_tags | String | The sandbox extracted file tags type. | 
-| csfalconx.resource.sandbox.extracted_files.threat_level_readable | String | The sandbox extracted file threat level readable. | 
-| csfalconx.resource.sandbox.extracted_files.description | String | The sandbox extracted file description. | 
-| csfalconx.resource.sandbox.file_metadata.file_compositions | Unknown | The sandbox file metadata compositions. | 
-| csfalconx.resource.sandbox.file_metadata.imported_objects | Unknown | The sandbox file metadata imported objects. | 
-| csfalconx.resource.sandbox.file_metadata.file_analysis | Unknown | The sandbox file metadata analysis. | 
-| csfalconx.resource.sandbox.file_size | Number | The sandbox file size. | 
-| csfalconx.resource.sandbox.file_type | String | The sandbox file type. | 
-| csfalconx.resource.sandbox.file_type_short | String | The sandbox file type short. | 
-| csfalconx.resource.sandbox.packer | String | The sandbox packer. | 
-| csfalconx.resource.sandbox.screenshots_artifact_ids | String | The sandbox screenshots artifact ids. | 
-| csfalconx.resource.sandbox.dns_requests.address | String | The sandbox dns requests address. | 
-| csfalconx.resource.sandbox.dns_requests.country | String | The sandbox dns requests country. | 
-| csfalconx.resource.sandbox.dns_requests.domain | String | The sandbox dns requests domain. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. | 
-| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. | 
-| csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. | 
-| csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. | 
-| csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. | 
-| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. | 
-| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. | 
-| csfalconx.resource.sandbox.incidents | String | The sandbox incidents. | 
-| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. | 
-| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. | 
-| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. | 
-| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. | 
-| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. | 
-| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. | 
-| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. | 
-| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. | 
-| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. | 
-| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. | 
-| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. | 
-| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
-| csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
-| csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
-
+| csfalconx.resource.tags | String | Analysis tags. |
+| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. |
+| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. |
+| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. |
+| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. |
+| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. |
+| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. |
+| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. |
+| csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. |
+| csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. |
+| csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. |
+| csfalconx.resource.sandbox.processes.handles.path | String | The sandbox handled path. |
+| csfalconx.resource.sandbox.processes.name | String | The sandbox process name. |
+| csfalconx.resource.sandbox.processes.normalized_path | String | The sandbox process normalized path. |
+| csfalconx.resource.sandbox.processes.pid | Number | The sandbox process pid. |
+| csfalconx.resource.sandbox.processes.sha256 | String | The sandbox process sha256. |
+| csfalconx.resource.sandbox.architecture | String | The sandbox architecture. |
+| csfalconx.resource.sandbox.classification | String | The sandbox classification. |
+| csfalconx.resource.sandbox.classification_tags | String | The sandbox classification tags. |
+| csfalconx.resource.sandbox.extracted_files.name | String | The sandbox extracted file name. |
+| csfalconx.resource.sandbox.extracted_files.file_size | Number | The sandbox extracted file size. |
+| csfalconx.resource.sandbox.extracted_files.sha256 | String | The sandbox extracted file sha256. |
+| csfalconx.resource.sandbox.extracted_files.md5 | String | The sandbox extracted file md5. |
+| csfalconx.resource.sandbox.extracted_files.sha1 | String | The sandbox extracted file sha1. |
+| csfalconx.resource.sandbox.extracted_files.runtime_process | String | The sandbox extracted file runtime process. |
+| csfalconx.resource.sandbox.extracted_files.type_tags | String | The sandbox extracted file tags type. |
+| csfalconx.resource.sandbox.extracted_files.threat_level_readable | String | The sandbox extracted file threat level readable. |
+| csfalconx.resource.sandbox.extracted_files.description | String | The sandbox extracted file description. |
+| csfalconx.resource.sandbox.file_metadata.file_compositions | Unknown | The sandbox file metadata compositions. |
+| csfalconx.resource.sandbox.file_metadata.imported_objects | Unknown | The sandbox file metadata imported objects. |
+| csfalconx.resource.sandbox.file_metadata.file_analysis | Unknown | The sandbox file metadata analysis. |
+| csfalconx.resource.sandbox.file_size | Number | The sandbox file size. |
+| csfalconx.resource.sandbox.file_type | String | The sandbox file type. |
+| csfalconx.resource.sandbox.file_type_short | String | The sandbox file type short. |
+| csfalconx.resource.sandbox.packer | String | The sandbox packer. |
+| csfalconx.resource.sandbox.screenshots_artifact_ids | String | The sandbox screenshots artifact ids. |
+| csfalconx.resource.sandbox.dns_requests.address | String | The sandbox dns requests address. |
+| csfalconx.resource.sandbox.dns_requests.country | String | The sandbox dns requests country. |
+| csfalconx.resource.sandbox.dns_requests.domain | String | The sandbox dns requests domain. |
+| csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. |
+| csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. |
+| csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. |
+| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. |
+| csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. |
+| csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. |
+| csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. |
+| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. |
+| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. |
+| csfalconx.resource.sandbox.incidents | String | The sandbox incidents. |
+| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. |
+| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. |
+| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. |
+| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. |
+| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. |
+| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. |
+| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. |
+| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. |
+| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. |
+| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. |
+| csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. |
+| csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. |
 
 #### Command Example
+
 ```!cs-fx-upload-file file=895@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no```
 
 #### Context Example
+
 ```
 {
     "csfalconx": {
@@ -140,133 +143,134 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|file_name|sha256|
 >|---|---|
 >| test.pdf | c5fdd1fb2c53cd00aba5b01270f91fd5598f315bef99938ddeb92c23667ec2c9 |
 
-
 ### cs-fx-submit-uploaded-file
+
 ***
 Submits a sample SHA256 hash for sandbox analysis.
 Notice that the file identifiers, SHA and ID are not the same.
 
-
 #### Base Command
 
 `cs-fx-submit-uploaded-file`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                    | **Required** |
 | --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| sha256 | SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.                          | Optional | 
-| environment_id | Sandbox environment used for analysis. Possible values are: 310: Linux Ubuntu 20, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional | 
-| action_script | Runtime script for sandbox analysis. Possible values are: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie.                                               | Optional | 
-| command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters.                                                                                                          | Optional | 
-| document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.                                                                                                       | Optional | 
-| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Possible values are: true, false.                 | Optional | 
-| submit_name | Name of the malware sample that’s used for file type detection. and analysis.                                                                                                                      | Optional | 
-| system_date | Set a custom date for the sandbox environment in the format yyyy-MM-dd.                                                                                                                            | Optional | 
-| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false.                  | Optional | 
-| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false.                                   | Optional | 
-| ids | This ia an internal argument used for the polling process, not to be used by the user.                                                                                                             | Optional | 
-| interval_in_seconds | Interval in seconds between each poll. Default is 600.                                                                                                                                             | Optional | 
-| system_time | Sets a custom time for the sandbox environment in the format HH:mm.                                                                                                                                | Optional | 
-
+| sha256 | SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.                          | Optional |
+| environment_id | Sandbox environment used for analysis. Possible values are: 310: Linux Ubuntu 20, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional |
+| action_script | Runtime script for sandbox analysis. Possible values are: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie.                                               | Optional |
+| command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters.                                                                                                          | Optional |
+| document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.                                                                                                       | Optional |
+| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Possible values are: true, false.                 | Optional |
+| submit_name | Name of the malware sample that’s used for file type detection. and analysis.                                                                                                                      | Optional |
+| system_date | Set a custom date for the sandbox environment in the format yyyy-MM-dd.                                                                                                                            | Optional |
+| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false.                  | Optional |
+| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false.                                   | Optional |
+| ids | This ia an internal argument used for the polling process, not to be used by the user.                                                                                                             | Optional |
+| interval_in_seconds | Interval in seconds between each poll. Default is 600.                                                                                                                                             | Optional |
+| system_time | Sets a custom time for the sandbox environment in the format HH:mm.                                                                                                                                | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | csfalconx.resource.uploaded_id | String | Analysis ID received after uploading the file. |
-| csfalconx.resource.state | String | Analysis state. | 
-| csfalconx.resource.created_timestamp | Date | Analysis start time. | 
-| csfalconx.resource.submitted_id | String | Analysis ID received after submitting the file. | 
-| csfalconx.resource.sha256 | Unknown | SHA256 hash of the scanned file. | 
-| csfalconx.resource.environment_id | Unknown | Environment ID of the analysis.  | 
-| csfalconx.resource.file_name | String | Name of the uploaded file.  | 
-| csfalconx.resource.tags | String | Analysis tags. | 
-| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. | 
-| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
-| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
-| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
-| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. | 
-| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. | 
-| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. | 
-| csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. | 
-| csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. | 
-| csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. | 
-| csfalconx.resource.sandbox.processes.handles.path | String | The sandbox handled path. | 
-| csfalconx.resource.sandbox.processes.name | String | The sandbox process name. | 
-| csfalconx.resource.sandbox.processes.normalized_path | String | The sandbox process normalized path. | 
-| csfalconx.resource.sandbox.processes.pid | Number | The sandbox process pid. | 
-| csfalconx.resource.sandbox.processes.sha256 | String | The sandbox process sha256. | 
-| csfalconx.resource.sandbox.architecture | String | The sandbox architecture. | 
-| csfalconx.resource.sandbox.classification | String | The sandbox classification. | 
-| csfalconx.resource.sandbox.classification_tags | String | The sandbox classification tags. | 
-| csfalconx.resource.sandbox.extracted_files.name | String | The sandbox extracted file name. | 
-| csfalconx.resource.sandbox.extracted_files.file_size | Number | The sandbox extracted file size. | 
-| csfalconx.resource.sandbox.extracted_files.sha256 | String | The sandbox extracted file sha256. | 
-| csfalconx.resource.sandbox.extracted_files.md5 | String | The sandbox extracted file md5. | 
-| csfalconx.resource.sandbox.extracted_files.sha1 | String | The sandbox extracted file sha1. | 
-| csfalconx.resource.sandbox.extracted_files.runtime_process | String | The sandbox extracted file runtime process. | 
-| csfalconx.resource.sandbox.extracted_files.type_tags | String | The sandbox extracted file tags type. | 
-| csfalconx.resource.sandbox.extracted_files.threat_level_readable | String | The sandbox extracted file threat level readable. | 
-| csfalconx.resource.sandbox.extracted_files.description | String | The sandbox extracted file description. | 
-| csfalconx.resource.sandbox.file_metadata.file_compositions | Unknown | The sandbox file metadata compositions. | 
-| csfalconx.resource.sandbox.file_metadata.imported_objects | Unknown | The sandbox file metadata imported objects. | 
-| csfalconx.resource.sandbox.file_metadata.file_analysis | Unknown | The sandbox file metadata analysis. | 
-| csfalconx.resource.sandbox.file_size | Number | The sandbox file size. | 
-| csfalconx.resource.sandbox.file_type | String | The sandbox file type. | 
-| csfalconx.resource.sandbox.file_type_short | String | The sandbox file type short. | 
-| csfalconx.resource.sandbox.packer | String | The sandbox packer. | 
-| csfalconx.resource.sandbox.screenshots_artifact_ids | String | The sandbox screenshots artifact ids. | 
-| csfalconx.resource.sandbox.dns_requests.address | String | The sandbox dns requests address. | 
-| csfalconx.resource.sandbox.dns_requests.country | String | The sandbox dns requests country. | 
-| csfalconx.resource.sandbox.dns_requests.domain | String | The sandbox dns requests domain. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. | 
-| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. | 
-| csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. | 
-| csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. | 
-| csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. | 
-| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. | 
-| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. | 
-| csfalconx.resource.sandbox.incidents | String | The sandbox incidents. | 
-| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. | 
-| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. | 
-| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. | 
-| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. | 
-| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. | 
-| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. | 
-| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. | 
-| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. | 
-| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. | 
-| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. | 
-| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. | 
-| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
-| csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
+| csfalconx.resource.state | String | Analysis state. |
+| csfalconx.resource.created_timestamp | Date | Analysis start time. |
+| csfalconx.resource.submitted_id | String | Analysis ID received after submitting the file. |
+| csfalconx.resource.sha256 | Unknown | SHA256 hash of the scanned file. |
+| csfalconx.resource.environment_id | Unknown | Environment ID of the analysis.  |
+| csfalconx.resource.file_name | String | Name of the uploaded file.  |
+| csfalconx.resource.tags | String | Analysis tags. |
+| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. |
+| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. |
+| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. |
+| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. |
+| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. |
+| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. |
+| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. |
+| csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. |
+| csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. |
+| csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. |
+| csfalconx.resource.sandbox.processes.handles.path | String | The sandbox handled path. |
+| csfalconx.resource.sandbox.processes.name | String | The sandbox process name. |
+| csfalconx.resource.sandbox.processes.normalized_path | String | The sandbox process normalized path. |
+| csfalconx.resource.sandbox.processes.pid | Number | The sandbox process pid. |
+| csfalconx.resource.sandbox.processes.sha256 | String | The sandbox process sha256. |
+| csfalconx.resource.sandbox.architecture | String | The sandbox architecture. |
+| csfalconx.resource.sandbox.classification | String | The sandbox classification. |
+| csfalconx.resource.sandbox.classification_tags | String | The sandbox classification tags. |
+| csfalconx.resource.sandbox.extracted_files.name | String | The sandbox extracted file name. |
+| csfalconx.resource.sandbox.extracted_files.file_size | Number | The sandbox extracted file size. |
+| csfalconx.resource.sandbox.extracted_files.sha256 | String | The sandbox extracted file sha256. |
+| csfalconx.resource.sandbox.extracted_files.md5 | String | The sandbox extracted file md5. |
+| csfalconx.resource.sandbox.extracted_files.sha1 | String | The sandbox extracted file sha1. |
+| csfalconx.resource.sandbox.extracted_files.runtime_process | String | The sandbox extracted file runtime process. |
+| csfalconx.resource.sandbox.extracted_files.type_tags | String | The sandbox extracted file tags type. |
+| csfalconx.resource.sandbox.extracted_files.threat_level_readable | String | The sandbox extracted file threat level readable. |
+| csfalconx.resource.sandbox.extracted_files.description | String | The sandbox extracted file description. |
+| csfalconx.resource.sandbox.file_metadata.file_compositions | Unknown | The sandbox file metadata compositions. |
+| csfalconx.resource.sandbox.file_metadata.imported_objects | Unknown | The sandbox file metadata imported objects. |
+| csfalconx.resource.sandbox.file_metadata.file_analysis | Unknown | The sandbox file metadata analysis. |
+| csfalconx.resource.sandbox.file_size | Number | The sandbox file size. |
+| csfalconx.resource.sandbox.file_type | String | The sandbox file type. |
+| csfalconx.resource.sandbox.file_type_short | String | The sandbox file type short. |
+| csfalconx.resource.sandbox.packer | String | The sandbox packer. |
+| csfalconx.resource.sandbox.screenshots_artifact_ids | String | The sandbox screenshots artifact ids. |
+| csfalconx.resource.sandbox.dns_requests.address | String | The sandbox dns requests address. |
+| csfalconx.resource.sandbox.dns_requests.country | String | The sandbox dns requests country. |
+| csfalconx.resource.sandbox.dns_requests.domain | String | The sandbox dns requests domain. |
+| csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. |
+| csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. |
+| csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. |
+| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. |
+| csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. |
+| csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. |
+| csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. |
+| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. |
+| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. |
+| csfalconx.resource.sandbox.incidents | String | The sandbox incidents. |
+| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. |
+| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. |
+| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. |
+| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. |
+| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. |
+| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. |
+| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. |
+| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. |
+| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. |
+| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. |
+| csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
 | File.Name | String | The name of the file. |
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
-| File.Malicious.Description | String | For malicious files, the reason that the vendor made the decision. | 
-
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
+| File.Malicious.Description | String | For malicious files, the reason that the vendor made the decision. |
 
 #### Command Example
+
 ```!cs-fx-submit-uploaded-file sha256="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee" environment_id="160: Windows 10" action_script="default" command_line="command" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -284,208 +288,209 @@ Notice that the file identifiers, SHA and ID are not the same.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|created_timestamp|environment_id|sha256|state|submitted_id|file_name|
 >|---|---|---|---|---|
 >| 2022-03-09T08:58:33Z | 160 | d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | created | 20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa | test.pdf |
 
-
 ### cs-fx-get-full-report
+
 ***
 Gets a full version of a sandbox report.
-
 
 #### Base Command
 
 `cs-fx-get-full-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command. | Required | 
-| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional | 
-
+| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command. | Required |
+| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.submitted_id | String | Analysis ID received after submitting the file. | 
-| csfalconx.resource.verdict | String | Analysis verdict. | 
-| csfalconx.resource.created_timestamp | String | Analysis start time. | 
-| csfalconx.resource.environment_id | String | Environment ID. | 
+| csfalconx.resource.submitted_id | String | Analysis ID received after submitting the file. |
+| csfalconx.resource.verdict | String | Analysis verdict. |
+| csfalconx.resource.created_timestamp | String | Analysis start time. |
+| csfalconx.resource.environment_id | String | Environment ID. |
 | csfalconx.resource.sandbox.environment_description | String | Environment description. |
-| csfalconx.resource.threat_score | Int | Score of the threat. | 
-| csfalconx.resource.submit_url | String | URL submitted for analysis. | 
-| csfalconx.resource.submission_type | String | Type of submitted artifact, for example file, URL, etc. | 
-| csfalconx.resource.file_type | String | File type. | 
-| csfalconx.resource.file_size | Int | File size. | 
-| csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. | 
-| csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
-| csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
-| csfalconx.resource.ioc_report_strict_json_artifact_id | Int | ID of the IOC pack to download \(JSON\). | 
-| csfalconx.resource.ioc_report_broad_json_artifact_id | String | ID of the IOC pack to download \(JSON\). | 
-| csfalconx.resource.ioc_report_strict_stix_artifact_id | String | ID of the IOC pack to download \(STIX\). | 
-| csfalconx.resource.ioc_report_broad_stix_artifact_id | Int | ID of the IOC pack to download \(STIX\). | 
-| csfalconx.resource.ioc_report_strict_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
-| csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
-| csfalconx.resource.tags | String | Analysis tags. | 
-| csfalconx.resource.file_name | String | Name of the uploaded file.  | 
-| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. | 
-| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
-| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
-| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
-| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. | 
-| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. | 
-| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. | 
-| csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. | 
-| csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. | 
-| csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. | 
-| csfalconx.resource.sandbox.processes.handles.path | String | The sandbox handled path. | 
-| csfalconx.resource.sandbox.processes.name | String | The sandbox process name. | 
-| csfalconx.resource.sandbox.processes.normalized_path | String | The sandbox process normalized path. | 
-| csfalconx.resource.sandbox.processes.pid | Number | The sandbox process pid. | 
-| csfalconx.resource.sandbox.processes.sha256 | String | The sandbox process sha256. | 
-| csfalconx.resource.sandbox.architecture | String | The sandbox architecture. | 
-| csfalconx.resource.sandbox.classification | String | The sandbox classification. | 
-| csfalconx.resource.sandbox.classification_tags | String | The sandbox classification tags. | 
-| csfalconx.resource.sandbox.extracted_files.name | String | The sandbox extracted file name. | 
-| csfalconx.resource.sandbox.extracted_files.file_size | Number | The sandbox extracted file size. | 
-| csfalconx.resource.sandbox.extracted_files.sha256 | String | The sandbox extracted file sha256. | 
-| csfalconx.resource.sandbox.extracted_files.md5 | String | The sandbox extracted file md5. | 
-| csfalconx.resource.sandbox.extracted_files.sha1 | String | The sandbox extracted file sha1. | 
-| csfalconx.resource.sandbox.extracted_files.runtime_process | String | The sandbox extracted file runtime process. | 
-| csfalconx.resource.sandbox.extracted_files.type_tags | String | The sandbox extracted file tags type. | 
-| csfalconx.resource.sandbox.extracted_files.threat_level_readable | String | The sandbox extracted file threat level readable. | 
-| csfalconx.resource.sandbox.extracted_files.description | String | The sandbox extracted file description. | 
-| csfalconx.resource.sandbox.file_metadata.file_compositions | Unknown | The sandbox file metadata compositions. | 
-| csfalconx.resource.sandbox.file_metadata.imported_objects | Unknown | The sandbox file metadata imported objects. | 
-| csfalconx.resource.sandbox.file_metadata.file_analysis | Unknown | The sandbox file metadata analysis. | 
-| csfalconx.resource.sandbox.file_size | Number | The sandbox file size. | 
-| csfalconx.resource.sandbox.file_type | String | The sandbox file type. | 
-| csfalconx.resource.sandbox.file_type_short | String | The sandbox file type short. | 
-| csfalconx.resource.sandbox.packer | String | The sandbox packer. | 
-| csfalconx.resource.sandbox.screenshots_artifact_ids | String | The sandbox screenshots artifact ids. | 
-| csfalconx.resource.sandbox.dns_requests.address | String | The sandbox dns requests address. | 
-| csfalconx.resource.sandbox.dns_requests.country | String | The sandbox dns requests country. | 
-| csfalconx.resource.sandbox.dns_requests.domain | String | The sandbox dns requests domain. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. | 
-| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. | 
-| csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. | 
-| csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. | 
-| csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. | 
-| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. | 
-| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. | 
-| csfalconx.resource.sandbox.incidents | String | The sandbox incidents. | 
-| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. | 
-| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. | 
-| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. | 
-| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. | 
-| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. | 
-| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. | 
-| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. | 
-| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. | 
-| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. | 
-| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. | 
-| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. | 
-| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
-| csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
-| csfalconx.resource.architecture | String | The architecture of the machine on which the report was created. | 
-| csfalconx.resource.classification | String | Classification | 
-| csfalconx.resource.classification_tags | String | Tags related to the classification. | 
-| csfalconx.resource.contacted_hosts.address | String | Address of a contacted host. | 
-| csfalconx.resource.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. | 
-| csfalconx.resource.contacted_hosts.associated_runtime.pid | Number | The sandbox contacted hosts associated runtime pid. | 
-| csfalconx.resource.contacted_hosts.country | String | The sandbox contacted hosts country. | 
-| csfalconx.resource.contacted_hosts.port | Number | The sandbox contacted hosts port. | 
-| csfalconx.resource.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. | 
-| csfalconx.resource.created_timestamp | Date | Analysis start time. | 
-| csfalconx.resource.dns_requests.country | String | Country the DNS request was sent to. | 
-| csfalconx.resource.dns_requests.domain | String | Domain the DNS request was sent to. | 
-| csfalconx.resource.dns_requests.address | String | Address the DNS request was sent to. | 
-| csfalconx.resource.environment_description | String | Environment description. | 
-| csfalconx.resource.extracted_files.description | String | Description of an extracted file. | 
-| csfalconx.resource.extracted_files.file_size | Number | Size of an extracted file | 
-| csfalconx.resource.extracted_files.md5 | String | MD5 of an extracted file. | 
-| csfalconx.resource.extracted_files.name | String | Name of an extracted file. | 
-| csfalconx.resource.extracted_files.sha1 | String | SHA1 of an extracted file. | 
-| csfalconx.resource.extracted_files.sha256 | String | SHA256 of an extracted file. | 
-| csfalconx.resource.extracted_files.threat_level_readable | String | Threat level of an extracted file. | 
-| csfalconx.resource.extracted_files.type_tags | String | Type tags of an extracted file. | 
-| csfalconx.resource.file_size | Number | File size. | 
-| csfalconx.resource.file_type | String | File type. | 
-| csfalconx.resource.file_type_short | String | File type \(short\). | 
-| csfalconx.resource.http_requests.header | String | HTTP request header. | 
-| csfalconx.resource.http_requests.host | String | HTTP request host. | 
-| csfalconx.resource.http_requests.host_ip | String | HTTP request host IP. | 
-| csfalconx.resource.http_requests.host_port | Number | HTTP request host IP. | 
-| csfalconx.resource.http_requests.method | String | HTTP request method. | 
-| csfalconx.resource.http_requests.url | String | HTTP request URL. | 
-| csfalconx.resource.id | String | Analysis ID. | 
-| csfalconx.resource.incidents.details | String | Indicent details. | 
-| csfalconx.resource.incidents.name | String | Indicent name. | 
-| csfalconx.resource.processes.command_line | String | Process command line. | 
-| csfalconx.resource.processes.file_accesses.mask | String | File access mask. | 
-| csfalconx.resource.processes.file_accesses.path | String | File access path. | 
-| csfalconx.resource.processes.file_accesses.type | String | File access type. | 
-| csfalconx.resource.processes.handles.id | Number | Process handle ID. | 
-| csfalconx.resource.processes.handles.path | String | Process handle path. | 
-| csfalconx.resource.processes.handles.type | String | Process handle type. | 
-| csfalconx.resource.processes.icon_artifact_id | String | Process icon artifact ID. | 
-| csfalconx.resource.processes.mutants | String | Process mutants. | 
-| csfalconx.resource.processes.name | String | Process name. | 
-| csfalconx.resource.processes.normalized_path | String | Process normalized path. | 
-| csfalconx.resource.processes.pid | Number | Process ID \(PID\). | 
-| csfalconx.resource.processes.sha256 | String | Process SHA256. | 
-| csfalconx.resource.processes.uid | String | Process UID. | 
-| csfalconx.resource.processes.parent_uid | String | Process parent UID. | 
-| csfalconx.resource.processes.process_flags.name | String | Process flag name. | 
-| csfalconx.resource.sandbox.http_requests.header | String | Sandbox HTTP request header. | 
-| csfalconx.resource.sandbox.http_requests.host | String | Sandbox HTTP request host. | 
-| csfalconx.resource.sandbox.http_requests.host_ip | String | Sandbox HTTP request host IP. | 
-| csfalconx.resource.sandbox.http_requests.host_port | Number | Sandbox HTTP request host port. | 
-| csfalconx.resource.sandbox.http_requests.method | String | Sandbox HTTP request method. | 
-| csfalconx.resource.sandbox.http_requests.url | String | Sandbox HTTP request URL. | 
-| csfalconx.resource.sandbox.incidents.details | String | Sandbox incident details. | 
-| csfalconx.resource.sandbox.incidents.name | String | Sandbox incident name. | 
-| csfalconx.resource.sandbox.processes.file_accesses.mask | String | Sandbox process file access mask. | 
-| csfalconx.resource.sandbox.processes.file_accesses.path | String | Sandbox process file access path. | 
-| csfalconx.resource.sandbox.processes.file_accesses.type | String | Sandbox process file access type. | 
-| csfalconx.resource.sandbox.processes.icon_artifact_id | String | Sandbox process file access icon artifact ID. | 
-| csfalconx.resource.sandbox.processes.mutants | String | Sandbox process file access process mutants. | 
-| csfalconx.resource.sandbox.processes.uid | String | Sandbox process file access process UID. | 
-| csfalconx.resource.sandbox.processes.parent_uid | String | Sandbox process file access process parent UID. | 
-| csfalconx.resource.sandbox.processes.process_flags.name | String | Sandbox process file access process flag name. | 
-| csfalconx.resource.sandbox.submit_name | String | Sandbox submit name. | 
-| csfalconx.resource.screenshots_artifact_ids | String | Screenshot artifact IDs. | 
-| csfalconx.resource.submit_name | String | Submit name. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| File.Name | String | The name of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Type | String | The type of the file. | 
-| File.Malicious.Description | Unknown | A description explaining why the file was determined to be malicious | 
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
-| File.Size | Number | The size of the file. | 
-| File.Relationships.EntityA | String | The source of the relationship. | 
-| File.Relationships.EntityAType | String | The type of the source of the relationship. | 
-| File.Relationships.EntityB | String | The destination of the relationship. | 
-| File.Relationships.EntityBType | String | The type of the destination of the relationship. | 
-| File.Relationships.Relationship | String | The name of the relationship. | 
-
+| csfalconx.resource.threat_score | Int | Score of the threat. |
+| csfalconx.resource.submit_url | String | URL submitted for analysis. |
+| csfalconx.resource.submission_type | String | Type of submitted artifact, for example file, URL, etc. |
+| csfalconx.resource.file_type | String | File type. |
+| csfalconx.resource.file_size | Int | File size. |
+| csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. |
+| csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). |
+| csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). |
+| csfalconx.resource.ioc_report_strict_json_artifact_id | Int | ID of the IOC pack to download \(JSON\). |
+| csfalconx.resource.ioc_report_broad_json_artifact_id | String | ID of the IOC pack to download \(JSON\). |
+| csfalconx.resource.ioc_report_strict_stix_artifact_id | String | ID of the IOC pack to download \(STIX\). |
+| csfalconx.resource.ioc_report_broad_stix_artifact_id | Int | ID of the IOC pack to download \(STIX\). |
+| csfalconx.resource.ioc_report_strict_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). |
+| csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). |
+| csfalconx.resource.tags | String | Analysis tags. |
+| csfalconx.resource.file_name | String | Name of the uploaded file.  |
+| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. |
+| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. |
+| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. |
+| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. |
+| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. |
+| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. |
+| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. |
+| csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. |
+| csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. |
+| csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. |
+| csfalconx.resource.sandbox.processes.handles.path | String | The sandbox handled path. |
+| csfalconx.resource.sandbox.processes.name | String | The sandbox process name. |
+| csfalconx.resource.sandbox.processes.normalized_path | String | The sandbox process normalized path. |
+| csfalconx.resource.sandbox.processes.pid | Number | The sandbox process pid. |
+| csfalconx.resource.sandbox.processes.sha256 | String | The sandbox process sha256. |
+| csfalconx.resource.sandbox.architecture | String | The sandbox architecture. |
+| csfalconx.resource.sandbox.classification | String | The sandbox classification. |
+| csfalconx.resource.sandbox.classification_tags | String | The sandbox classification tags. |
+| csfalconx.resource.sandbox.extracted_files.name | String | The sandbox extracted file name. |
+| csfalconx.resource.sandbox.extracted_files.file_size | Number | The sandbox extracted file size. |
+| csfalconx.resource.sandbox.extracted_files.sha256 | String | The sandbox extracted file sha256. |
+| csfalconx.resource.sandbox.extracted_files.md5 | String | The sandbox extracted file md5. |
+| csfalconx.resource.sandbox.extracted_files.sha1 | String | The sandbox extracted file sha1. |
+| csfalconx.resource.sandbox.extracted_files.runtime_process | String | The sandbox extracted file runtime process. |
+| csfalconx.resource.sandbox.extracted_files.type_tags | String | The sandbox extracted file tags type. |
+| csfalconx.resource.sandbox.extracted_files.threat_level_readable | String | The sandbox extracted file threat level readable. |
+| csfalconx.resource.sandbox.extracted_files.description | String | The sandbox extracted file description. |
+| csfalconx.resource.sandbox.file_metadata.file_compositions | Unknown | The sandbox file metadata compositions. |
+| csfalconx.resource.sandbox.file_metadata.imported_objects | Unknown | The sandbox file metadata imported objects. |
+| csfalconx.resource.sandbox.file_metadata.file_analysis | Unknown | The sandbox file metadata analysis. |
+| csfalconx.resource.sandbox.file_size | Number | The sandbox file size. |
+| csfalconx.resource.sandbox.file_type | String | The sandbox file type. |
+| csfalconx.resource.sandbox.file_type_short | String | The sandbox file type short. |
+| csfalconx.resource.sandbox.packer | String | The sandbox packer. |
+| csfalconx.resource.sandbox.screenshots_artifact_ids | String | The sandbox screenshots artifact ids. |
+| csfalconx.resource.sandbox.dns_requests.address | String | The sandbox dns requests address. |
+| csfalconx.resource.sandbox.dns_requests.country | String | The sandbox dns requests country. |
+| csfalconx.resource.sandbox.dns_requests.domain | String | The sandbox dns requests domain. |
+| csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. |
+| csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. |
+| csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. |
+| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. |
+| csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. |
+| csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. |
+| csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. |
+| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. |
+| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. |
+| csfalconx.resource.sandbox.incidents | String | The sandbox incidents. |
+| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. |
+| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. |
+| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. |
+| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. |
+| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. |
+| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. |
+| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. |
+| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. |
+| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. |
+| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. |
+| csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. |
+| csfalconx.resource.architecture | String | The architecture of the machine on which the report was created. |
+| csfalconx.resource.classification | String | Classification |
+| csfalconx.resource.classification_tags | String | Tags related to the classification. |
+| csfalconx.resource.contacted_hosts.address | String | Address of a contacted host. |
+| csfalconx.resource.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. |
+| csfalconx.resource.contacted_hosts.associated_runtime.pid | Number | The sandbox contacted hosts associated runtime pid. |
+| csfalconx.resource.contacted_hosts.country | String | The sandbox contacted hosts country. |
+| csfalconx.resource.contacted_hosts.port | Number | The sandbox contacted hosts port. |
+| csfalconx.resource.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. |
+| csfalconx.resource.created_timestamp | Date | Analysis start time. |
+| csfalconx.resource.dns_requests.country | String | Country the DNS request was sent to. |
+| csfalconx.resource.dns_requests.domain | String | Domain the DNS request was sent to. |
+| csfalconx.resource.dns_requests.address | String | Address the DNS request was sent to. |
+| csfalconx.resource.environment_description | String | Environment description. |
+| csfalconx.resource.extracted_files.description | String | Description of an extracted file. |
+| csfalconx.resource.extracted_files.file_size | Number | Size of an extracted file |
+| csfalconx.resource.extracted_files.md5 | String | MD5 of an extracted file. |
+| csfalconx.resource.extracted_files.name | String | Name of an extracted file. |
+| csfalconx.resource.extracted_files.sha1 | String | SHA1 of an extracted file. |
+| csfalconx.resource.extracted_files.sha256 | String | SHA256 of an extracted file. |
+| csfalconx.resource.extracted_files.threat_level_readable | String | Threat level of an extracted file. |
+| csfalconx.resource.extracted_files.type_tags | String | Type tags of an extracted file. |
+| csfalconx.resource.file_size | Number | File size. |
+| csfalconx.resource.file_type | String | File type. |
+| csfalconx.resource.file_type_short | String | File type \(short\). |
+| csfalconx.resource.http_requests.header | String | HTTP request header. |
+| csfalconx.resource.http_requests.host | String | HTTP request host. |
+| csfalconx.resource.http_requests.host_ip | String | HTTP request host IP. |
+| csfalconx.resource.http_requests.host_port | Number | HTTP request host IP. |
+| csfalconx.resource.http_requests.method | String | HTTP request method. |
+| csfalconx.resource.http_requests.url | String | HTTP request URL. |
+| csfalconx.resource.id | String | Analysis ID. |
+| csfalconx.resource.incidents.details | String | Indicent details. |
+| csfalconx.resource.incidents.name | String | Indicent name. |
+| csfalconx.resource.processes.command_line | String | Process command line. |
+| csfalconx.resource.processes.file_accesses.mask | String | File access mask. |
+| csfalconx.resource.processes.file_accesses.path | String | File access path. |
+| csfalconx.resource.processes.file_accesses.type | String | File access type. |
+| csfalconx.resource.processes.handles.id | Number | Process handle ID. |
+| csfalconx.resource.processes.handles.path | String | Process handle path. |
+| csfalconx.resource.processes.handles.type | String | Process handle type. |
+| csfalconx.resource.processes.icon_artifact_id | String | Process icon artifact ID. |
+| csfalconx.resource.processes.mutants | String | Process mutants. |
+| csfalconx.resource.processes.name | String | Process name. |
+| csfalconx.resource.processes.normalized_path | String | Process normalized path. |
+| csfalconx.resource.processes.pid | Number | Process ID \(PID\). |
+| csfalconx.resource.processes.sha256 | String | Process SHA256. |
+| csfalconx.resource.processes.uid | String | Process UID. |
+| csfalconx.resource.processes.parent_uid | String | Process parent UID. |
+| csfalconx.resource.processes.process_flags.name | String | Process flag name. |
+| csfalconx.resource.sandbox.http_requests.header | String | Sandbox HTTP request header. |
+| csfalconx.resource.sandbox.http_requests.host | String | Sandbox HTTP request host. |
+| csfalconx.resource.sandbox.http_requests.host_ip | String | Sandbox HTTP request host IP. |
+| csfalconx.resource.sandbox.http_requests.host_port | Number | Sandbox HTTP request host port. |
+| csfalconx.resource.sandbox.http_requests.method | String | Sandbox HTTP request method. |
+| csfalconx.resource.sandbox.http_requests.url | String | Sandbox HTTP request URL. |
+| csfalconx.resource.sandbox.incidents.details | String | Sandbox incident details. |
+| csfalconx.resource.sandbox.incidents.name | String | Sandbox incident name. |
+| csfalconx.resource.sandbox.processes.file_accesses.mask | String | Sandbox process file access mask. |
+| csfalconx.resource.sandbox.processes.file_accesses.path | String | Sandbox process file access path. |
+| csfalconx.resource.sandbox.processes.file_accesses.type | String | Sandbox process file access type. |
+| csfalconx.resource.sandbox.processes.icon_artifact_id | String | Sandbox process file access icon artifact ID. |
+| csfalconx.resource.sandbox.processes.mutants | String | Sandbox process file access process mutants. |
+| csfalconx.resource.sandbox.processes.uid | String | Sandbox process file access process UID. |
+| csfalconx.resource.sandbox.processes.parent_uid | String | Sandbox process file access process parent UID. |
+| csfalconx.resource.sandbox.processes.process_flags.name | String | Sandbox process file access process flag name. |
+| csfalconx.resource.sandbox.submit_name | String | Sandbox submit name. |
+| csfalconx.resource.screenshots_artifact_ids | String | Screenshot artifact IDs. |
+| csfalconx.resource.submit_name | String | Submit name. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| File.Name | String | The name of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Type | String | The type of the file. |
+| File.Malicious.Description | Unknown | A description explaining why the file was determined to be malicious |
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
+| File.Size | Number | The size of the file. |
+| File.Relationships.EntityA | String | The source of the relationship. |
+| File.Relationships.EntityAType | String | The type of the source of the relationship. |
+| File.Relationships.EntityB | String | The destination of the relationship. |
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. |
+| File.Relationships.Relationship | String | The name of the relationship. |
 
 #### Command Example
+
 ```!cs-fx-get-full-report ids="20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1475,26 +1480,26 @@ Gets a full version of a sandbox report.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|sha256|environment_description|environment_id|created_timestamp|id|submission_type|threat_score|verdict|
 >|---|---|---|---|---|---|---|---|
 >| d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | Windows 7 64 bit | 110 | 2022-02-13T14:20:21Z | 20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730 | file | 100 | malicious |
 
-
 ### cs-fx-get-report-summary
+
 ***
 Gets a short summary version of a sandbox report.
-
 
 #### Base Command
 
 `cs-fx-get-report-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command. | Required | 
-
+| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command. | Required |
 
 #### Context Output
 
@@ -1502,31 +1507,32 @@ Gets a short summary version of a sandbox report.
 | --- | --- | --- |
 | csfalconx.resource.tags | String | Analysis tags. |
 | csfalconx.resource.tag | String | Analysis tags. |
-| csfalconx.resource.id | String | Analysis ID. | 
-| csfalconx.resource.verdict | String | Analysis verdict. | 
-| csfalconx.resource.created_timestamp | String | Analysis start time. | 
-| csfalconx.resource.environment_id | String | Environment ID. | 
-| csfalconx.resource.environment_description | String | Environment description. | 
-| csfalconx.resource.threat_score | Int | Score of the threat. | 
-| csfalconx.resource.submit_url | String | URL submitted for analysis. | 
-| csfalconx.resource.submission_type | String | Type of submitted artifact. For example, file, URL, etc. | 
-| csfalconx.resource.file_type | String | File type. | 
-| csfalconx.resource.file_size | Int | File size. | 
-| csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. | 
-| csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
-| csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
-| csfalconx.resource.ioc_report_strict_json_artifact_id | Int | ID of the IOC pack to download \(JSON\). | 
-| csfalconx.resource.ioc_report_broad_json_artifact_id | String | ID of the IOC pack to download \(JSON\). | 
-| csfalconx.resource.ioc_report_strict_stix_artifact_id | String | ID of the IOC pack to download \(STIX\). | 
-| csfalconx.resource.ioc_report_broad_stix_artifact_id | Int | ID of the IOC pack to download \(STIX\). | 
-| csfalconx.resource.ioc_report_strict_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
-| csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
-
+| csfalconx.resource.id | String | Analysis ID. |
+| csfalconx.resource.verdict | String | Analysis verdict. |
+| csfalconx.resource.created_timestamp | String | Analysis start time. |
+| csfalconx.resource.environment_id | String | Environment ID. |
+| csfalconx.resource.environment_description | String | Environment description. |
+| csfalconx.resource.threat_score | Int | Score of the threat. |
+| csfalconx.resource.submit_url | String | URL submitted for analysis. |
+| csfalconx.resource.submission_type | String | Type of submitted artifact. For example, file, URL, etc. |
+| csfalconx.resource.file_type | String | File type. |
+| csfalconx.resource.file_size | Int | File size. |
+| csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. |
+| csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). |
+| csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). |
+| csfalconx.resource.ioc_report_strict_json_artifact_id | Int | ID of the IOC pack to download \(JSON\). |
+| csfalconx.resource.ioc_report_broad_json_artifact_id | String | ID of the IOC pack to download \(JSON\). |
+| csfalconx.resource.ioc_report_strict_stix_artifact_id | String | ID of the IOC pack to download \(STIX\). |
+| csfalconx.resource.ioc_report_broad_stix_artifact_id | Int | ID of the IOC pack to download \(STIX\). |
+| csfalconx.resource.ioc_report_strict_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). |
+| csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). |
 
 #### Command Example
+
 ```!cs-fx-get-report-summary ids="20879a8064904ecfbb62c118a6a19411_8cb7c75003264edfaf5a60c33d2846fc"```
 
 #### Context Example
+
 ```json
 {
   "DBotScore(val.Indicator \u0026\u0026 val.Indicator == obj.Indicator \u0026\u0026 val.Vendor == obj.Vendor \u0026\u0026 val.Type == obj.Type)": [
@@ -1566,55 +1572,57 @@ Gets a short summary version of a sandbox report.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|created_timestamp|environment_description|environment_id|id|ioc_report_broad_csv_artifact_id|ioc_report_broad_json_artifact_id|ioc_report_broad_maec_artifact_id|ioc_report_broad_stix_artifact_id|ioc_report_strict_csv_artifact_id|ioc_report_strict_json_artifact_id|ioc_report_strict_maec_artifact_id|ioc_report_strict_stix_artifact_id|sha256|submission_type|submit_url|verdict|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-03-03T14:39:19Z | Windows 10 64 bit | 160 | 20879a8064904ecfbb62c118a6a19411_8cb7c75003264edfaf5a60c33d2846fc | 46915810cc20d82d879c81c2b35d20ab720f2dc287fcb3acc5f921f6bd408be6 | e8ac23ff7d0ce989cae5730bfd5df1ba39e16069e772a0496bd681d3b50137f9 | 029a36683578573726f2a39a7ff2ad22da97ff55e84a0a2ca73284283bbbc39a | 9e62387d0f8bb854a932c61ad0f418a8721033f46bfe879877bb0b4f0af2ad86 | 46915810cc20d82d879c81c2b35d20ab720f2dc287fcb3acc5f921f6bd408be6 | e8ac23ff7d0ce989cae5730bfd5df1ba39e16069e772a0496bd681d3b50137f9 | 029a36683578573726f2a39a7ff2ad22da97ff55e84a0a2ca73284283bbbc39a | 9e62387d0f8bb854a932c61ad0f418a8721033f46bfe879877bb0b4f0af2ad86 | 15fea7cc23194aea10dce58cff8fff050c81e1be0d16e4da542f4fedd5a421c3 | page_url | hxxps://www.google.com | no specific threat |
 
 ### cs-fx-get-analysis-status
+
 ***
 Checks the status of a sandbox analysis.
-
 
 #### Base Command
 
 `cs-fx-get-analysis-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command. | Required | 
-
+| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | String | Analysis ID. | 
-| csfalconx.resource.verdict | String | Analysis verdict. | 
-| csfalconx.resource.created_timestamp | String | Analysis start time. | 
-| csfalconx.resource.environment_id | String | Environment ID. | 
-| csfalconx.resource.environment_description | String | Environment description. | 
-| csfalconx.resource.threat_score | Int | Score of the threat. | 
-| csfalconx.resource.submit_url | String | URL submitted for analysis. | 
-| csfalconx.resource.submission_type | String | Type of submitted artifact. For example, file, URL, etc. | 
-| csfalconx.resource.file_type | String | File type. | 
-| csfalconx.resource.file_size | Int | File size. | 
-| csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. | 
-| csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
-| csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
-| csfalconx.resource.ioc_report_strict_json_artifact_id | Int | ID of the IOC pack to download \(JSON\). | 
-| csfalconx.resource.ioc_report_broad_json_artifact_id | String | ID of the IOC pack to download \(JSON\). | 
-| csfalconx.resource.ioc_report_strict_stix_artifact_id | String | ID of the IOC pack to download \(STIX\). | 
-| csfalconx.resource.ioc_report_broad_stix_artifact_id | Int | ID of the IOC pack to download \(STIX\). | 
-| csfalconx.resource.ioc_report_strict_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
-| csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
-
+| csfalconx.resource.id | String | Analysis ID. |
+| csfalconx.resource.verdict | String | Analysis verdict. |
+| csfalconx.resource.created_timestamp | String | Analysis start time. |
+| csfalconx.resource.environment_id | String | Environment ID. |
+| csfalconx.resource.environment_description | String | Environment description. |
+| csfalconx.resource.threat_score | Int | Score of the threat. |
+| csfalconx.resource.submit_url | String | URL submitted for analysis. |
+| csfalconx.resource.submission_type | String | Type of submitted artifact. For example, file, URL, etc. |
+| csfalconx.resource.file_type | String | File type. |
+| csfalconx.resource.file_size | Int | File size. |
+| csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. |
+| csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). |
+| csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). |
+| csfalconx.resource.ioc_report_strict_json_artifact_id | Int | ID of the IOC pack to download \(JSON\). |
+| csfalconx.resource.ioc_report_broad_json_artifact_id | String | ID of the IOC pack to download \(JSON\). |
+| csfalconx.resource.ioc_report_strict_stix_artifact_id | String | ID of the IOC pack to download \(STIX\). |
+| csfalconx.resource.ioc_report_broad_stix_artifact_id | Int | ID of the IOC pack to download \(STIX\). |
+| csfalconx.resource.ioc_report_strict_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). |
+| csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). |
 
 #### Command Example
+
 ```!cs-fx-get-analysis-status ids="05cca3437abcb4057c157ed8b933b07fb198aa0fa0eb7f7c27e97029e9e0ad61"```
 
 #### Context Example
+
 ```json
 {
   "csfalconx.resource(val.id \u0026\u0026 val.id == obj.id)": 
@@ -1630,20 +1638,21 @@ Checks the status of a sandbox analysis.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|created_timestamp|environment_id|id|sha256|state|
 >|---|---|---|---|---|
 >| 2020-05-26T21:24:41Z | 160 | 1c9fe398b2294301aa3080ede8d77356_8cfaaf951fff412090df3d27d4b4193d | 05cca3437abcb4057c157ed8b933b07fb198aa0fa0eb7f7c27e97029e9e0ad61 | success |
 
-
 ### cs-fx-check-quota
+
 ***
 Returns the total quota number and the in use quota number.
-
 
 #### Base Command
 
 `cs-fx-check-quota`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1652,15 +1661,16 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.in_progress | Number | The number of calls in progress | 
-| csfalconx.resource.total | Number | The total available quota | 
-| csfalconx.resource.used | Number | The number of calls used | 
-
+| csfalconx.resource.in_progress | Number | The number of calls in progress |
+| csfalconx.resource.total | Number | The total available quota |
+| csfalconx.resource.used | Number | The number of calls used |
 
 #### Command Example
+
 ```!cs-fx-check-quota```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -1675,30 +1685,30 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|in_progress|total|used|
 >|---|---|---|
 >| 3 | 500 | 11 |
 
-
 ### cs-fx-find-reports
+
 ***
 Finds sandbox reports by providing an FQL filter and paging details.
-
 
 #### Base Command
 
 `cs-fx-find-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Optional filter and sort criteria in the form of an FQL query. Takes precedence over the *hash* argument (if provided). | Optional | 
-| offset | The offset from which to start retrieving reports. | Optional | 
-| hashes | SHA256 hashes to search for. Overridden by the *filter* argument (if provided). | Optional | 
-| limit | Maximum number of report IDs to return. Maximum is 5000. Default is 50. | Optional | 
-| sort | Sort order. Can be "asc" or "desc". Possible values are: asc, desc. | Optional | 
-
+| filter | Optional filter and sort criteria in the form of an FQL query. Takes precedence over the *hash* argument (if provided). | Optional |
+| offset | The offset from which to start retrieving reports. | Optional |
+| hashes | SHA256 hashes to search for. Overridden by the *filter* argument (if provided). | Optional |
+| limit | Maximum number of report IDs to return. Maximum is 5000. Default is 50. | Optional |
+| sort | Sort order. Can be "asc" or "desc". Possible values are: asc, desc. | Optional |
 
 #### Context Output
 
@@ -1708,11 +1718,12 @@ Finds sandbox reports by providing an FQL filter and paging details.
 | csfalconx.resource.FindReport.sha256 | String | queried SHA256 value (when applicable). |
 | csfalconx.resource.FindReport.foundIds | Set | Set of report ids that match this queried SHA256 value. |
 
-
 #### Command Example
+
 ```!cs-fx-find-reports offset=1 limit=5```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -1731,7 +1742,8 @@ Finds sandbox reports by providing an FQL filter and paging details.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|resources|
 >|---|
 >| 20879a8064904ecfbb62c118a6a19411_944bce16178742c58beccd0e6eb1a000 |
@@ -1740,24 +1752,23 @@ Finds sandbox reports by providing an FQL filter and paging details.
 >| 20879a8064904ecfbb62c118a6a19411_1f31944a613549fe95939e9c0017be78 |
 >| 20879a8064904ecfbb62c118a6a19411_64e16e63c67649f4bb203a41f0139a26 |
 
-
 ### cs-fx-find-submission-id
+
 ***
 Finds submission IDs for uploaded files by providing an FQL filter and paging details. Returns a set of submission IDs that match the search criteria.
-
 
 #### Base Command
 
 `cs-fx-find-submission-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Optional filter and sort criteria in the form of an FQL query. | Optional | 
-| offset | The offset from which to start retrieving reports. | Optional | 
-| limit | Maximum number of report IDs to return. Maximum is 5000. | Optional | 
-| sort | Sort order. Possible values are: asc, desc. | Optional | 
-
+| filter | Optional filter and sort criteria in the form of an FQL query. | Optional |
+| offset | The offset from which to start retrieving reports. | Optional |
+| limit | Maximum number of report IDs to return. Maximum is 5000. | Optional |
+| sort | Sort order. Possible values are: asc, desc. | Optional |
 
 #### Context Output
 
@@ -1765,11 +1776,12 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 | --- | --- | --- |
 | csfalconx.resource.resources | String | Set of report IDs that match the search criteria.  |
 
-
 #### Command Example
+
 ```!cs-fx-find-submission-id offset=1 limit=5```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -1788,7 +1800,8 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|resources|
 >|---|
 >| 20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa |
@@ -1797,50 +1810,50 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 >| 20879a8064904ecfbb62c118a6a19411_70a75d10dbc74cfdaeeba2661bc96f05 |
 >| 20879a8064904ecfbb62c118a6a19411_f6552785fd2d4219bbca4f2bcda8db0f |
 
-
 ### file
+
 ***
 Gets reputation info for one or more files, by their sha256 hash.
-
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The file hash(es) to search for. | Required | 
-
+| file | The file hash(es) to search for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | csfalconx.resource.id | Set | Set of report IDs that match the search criteria.  |
-| csfalconx.resource.file_size | Number | The file size. | 
-| csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
-| csfalconx.resource.threat_score | Number | Score of the threat. | 
-| csfalconx.resource.verdict | String | Analysis verdict. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| File.Malicious.Description | Unknown | A description explaining why the file was determined to be malicious | 
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
-| File.Name | String | The name of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Size | Number | The size of the file. | 
-| File.Type | String | The type of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-
+| csfalconx.resource.file_size | Number | The file size. |
+| csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. |
+| csfalconx.resource.threat_score | Number | Score of the threat. |
+| csfalconx.resource.verdict | String | Analysis verdict. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| File.Malicious.Description | Unknown | A description explaining why the file was determined to be malicious |
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
+| File.Name | String | The name of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Size | Number | The size of the file. |
+| File.Type | String | The type of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.MD5 | String | The MD5 hash of the file. |
 
 #### Command Example
+
 ```!file d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1873,123 +1886,124 @@ Gets reputation info for one or more files, by their sha256 hash.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|file_size|sha256|threat_score|verdict|
 >|---|---|---|---|
 >| 177195 | d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | 100 | malicious |
 
-
 ### cs-fx-submit-url
+
 ***
 Submits a URL or FTP for sandbox analysis.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
-
 #### Base Command
 
 `cs-fx-submit-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A web page or file URL. It can be HTTP(S) or FTP.<br/>For example: “https://url.com”,“ftp://ftp.com”. | Optional | 
-| environment_id | Sandbox environment used for analysis. Possible values are: 310: Linux Ubuntu 20, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional | 
-| action_script | Runtime script for sandbox analysis. Values:<br/>default<br/>default_maxantievasion<br/>default_randomfiles<br/>default_randomtheme<br/>default_openie. | Optional | 
-| command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters. | Optional | 
-| document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. | Optional | 
-| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false. Possible values are: false,  true. Default is false. | Optional | 
-| submit_name | Name of the malware sample that’s used for file type detection and analysis. | Optional | 
-| system_date | Sets a custom date for the sandbox environment in the format yyyy-MM-dd. | Optional | 
-| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false. | Optional | 
-| interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional | 
-| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional | 
-| ids | This ia an internal argument used for the polling process, not to be used by the user. | Optional | 
-| system_time | Sets a custom time for the sandbox environment in the format HH:mm. | Optional | 
-
+| url | A web page or file URL. It can be HTTP(S) or FTP.<br/>For example: “https://url.com”,“ftp://ftp.com”. | Optional |
+| environment_id | Sandbox environment used for analysis. Possible values are: 310: Linux Ubuntu 20, 64-bit, 200: Android (static analysis), 160: Windows 10, 64-bit, 110: Windows 7, 64-bit, 100: Windows 7, 32-bit. | Optional |
+| action_script | Runtime script for sandbox analysis. Values:<br/>default<br/>default_maxantievasion<br/>default_randomfiles<br/>default_randomtheme<br/>default_openie. | Optional |
+| command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters. | Optional |
+| document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. | Optional |
+| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false. Possible values are: false,  true. Default is false. | Optional |
+| submit_name | Name of the malware sample that’s used for file type detection and analysis. | Optional |
+| system_date | Sets a custom date for the sandbox environment in the format yyyy-MM-dd. | Optional |
+| polling | Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota. Possible values are: true, false. | Optional |
+| interval_in_seconds | Interval in seconds between each poll. Default is 600. | Optional |
+| extended_data | If set to true, the report will return extended data which includes mitre attacks and signature information. Possible values are: true, false. Default is false. | Optional |
+| ids | This ia an internal argument used for the polling process, not to be used by the user. | Optional |
+| system_time | Sets a custom time for the sandbox environment in the format HH:mm. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.submitted_id | String | Analysis ID received after submitting the file. | 
-| csfalconx.resource.file_name | String | Analysis file_name. | 
-| csfalconx.resource.tags | String | Analysis tags. | 
-| csfalconx.resource.state | String | Analysis state. | 
-| csfalconx.resource.created_timestamp | String | Analysis start time. | 
-| csfalconx.resource.sha256 | Unknown | SHA256 hash of the scanned file. | 
-| csfalconx.resource.environment_id | Unknown | Environment ID of the analysis. | 
-| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. | 
-| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
-| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
-| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
-| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. | 
-| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. | 
-| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. | 
-| csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. | 
-| csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. | 
-| csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. | 
-| csfalconx.resource.sandbox.processes.handles.path | String | The sandbox handled path. | 
-| csfalconx.resource.sandbox.processes.name | String | The sandbox process name. | 
-| csfalconx.resource.sandbox.processes.normalized_path | String | The sandbox process normalized path. | 
-| csfalconx.resource.sandbox.processes.pid | Number | The sandbox process pid. | 
-| csfalconx.resource.sandbox.processes.sha256 | String | The sandbox process sha256. | 
-| csfalconx.resource.sandbox.architecture | String | The sandbox architecture. | 
-| csfalconx.resource.sandbox.classification | String | The sandbox classification. | 
-| csfalconx.resource.sandbox.classification_tags | String | The sandbox classification tags. | 
-| csfalconx.resource.sandbox.extracted_files.name | String | The sandbox extracted file name. | 
-| csfalconx.resource.sandbox.extracted_files.file_size | Number | The sandbox extracted file size. | 
-| csfalconx.resource.sandbox.extracted_files.sha256 | String | The sandbox extracted file sha256. | 
-| csfalconx.resource.sandbox.extracted_files.md5 | String | The sandbox extracted file md5. | 
-| csfalconx.resource.sandbox.extracted_files.sha1 | String | The sandbox extracted file sha1. | 
-| csfalconx.resource.sandbox.extracted_files.runtime_process | String | The sandbox extracted file runtime process. | 
-| csfalconx.resource.sandbox.extracted_files.type_tags | String | The sandbox extracted file tags type. | 
-| csfalconx.resource.sandbox.extracted_files.threat_level_readable | String | The sandbox extracted file threat level readable. | 
-| csfalconx.resource.sandbox.extracted_files.description | String | The sandbox extracted file description. | 
-| csfalconx.resource.sandbox.file_metadata.file_compositions | Unknown | The sandbox file metadata compositions. | 
-| csfalconx.resource.sandbox.file_metadata.imported_objects | Unknown | The sandbox file metadata imported objects. | 
-| csfalconx.resource.sandbox.file_metadata.file_analysis | Unknown | The sandbox file metadata analysis. | 
-| csfalconx.resource.sandbox.file_size | Number | The sandbox file size. | 
-| csfalconx.resource.sandbox.file_type | String | The sandbox file type. | 
-| csfalconx.resource.sandbox.file_type_short | String | The sandbox file type short. | 
-| csfalconx.resource.sandbox.packer | String | The sandbox packer. | 
-| csfalconx.resource.sandbox.screenshots_artifact_ids | String | The sandbox screenshots artifact ids. | 
-| csfalconx.resource.sandbox.dns_requests.address | String | The sandbox dns requests address. | 
-| csfalconx.resource.sandbox.dns_requests.country | String | The sandbox dns requests country. | 
-| csfalconx.resource.sandbox.dns_requests.domain | String | The sandbox dns requests domain. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. | 
-| csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. | 
-| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. | 
-| csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. | 
-| csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. | 
-| csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. | 
-| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. | 
-| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. | 
-| csfalconx.resource.sandbox.incidents | String | The sandbox incidents. | 
-| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. | 
-| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. | 
-| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. | 
-| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. | 
-| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. | 
-| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. | 
-| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. | 
-| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. | 
-| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. | 
-| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. | 
-| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. | 
-| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. | 
-| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
-| csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
-| csfalconx.resource.url_name | String | Submitted URL. | 
-
+| csfalconx.resource.submitted_id | String | Analysis ID received after submitting the file. |
+| csfalconx.resource.file_name | String | Analysis file_name. |
+| csfalconx.resource.tags | String | Analysis tags. |
+| csfalconx.resource.state | String | Analysis state. |
+| csfalconx.resource.created_timestamp | String | Analysis start time. |
+| csfalconx.resource.sha256 | Unknown | SHA256 hash of the scanned file. |
+| csfalconx.resource.environment_id | Unknown | Environment ID of the analysis. |
+| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. |
+| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. |
+| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. |
+| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. |
+| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. |
+| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. |
+| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. |
+| csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. |
+| csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. |
+| csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. |
+| csfalconx.resource.sandbox.processes.handles.path | String | The sandbox handled path. |
+| csfalconx.resource.sandbox.processes.name | String | The sandbox process name. |
+| csfalconx.resource.sandbox.processes.normalized_path | String | The sandbox process normalized path. |
+| csfalconx.resource.sandbox.processes.pid | Number | The sandbox process pid. |
+| csfalconx.resource.sandbox.processes.sha256 | String | The sandbox process sha256. |
+| csfalconx.resource.sandbox.architecture | String | The sandbox architecture. |
+| csfalconx.resource.sandbox.classification | String | The sandbox classification. |
+| csfalconx.resource.sandbox.classification_tags | String | The sandbox classification tags. |
+| csfalconx.resource.sandbox.extracted_files.name | String | The sandbox extracted file name. |
+| csfalconx.resource.sandbox.extracted_files.file_size | Number | The sandbox extracted file size. |
+| csfalconx.resource.sandbox.extracted_files.sha256 | String | The sandbox extracted file sha256. |
+| csfalconx.resource.sandbox.extracted_files.md5 | String | The sandbox extracted file md5. |
+| csfalconx.resource.sandbox.extracted_files.sha1 | String | The sandbox extracted file sha1. |
+| csfalconx.resource.sandbox.extracted_files.runtime_process | String | The sandbox extracted file runtime process. |
+| csfalconx.resource.sandbox.extracted_files.type_tags | String | The sandbox extracted file tags type. |
+| csfalconx.resource.sandbox.extracted_files.threat_level_readable | String | The sandbox extracted file threat level readable. |
+| csfalconx.resource.sandbox.extracted_files.description | String | The sandbox extracted file description. |
+| csfalconx.resource.sandbox.file_metadata.file_compositions | Unknown | The sandbox file metadata compositions. |
+| csfalconx.resource.sandbox.file_metadata.imported_objects | Unknown | The sandbox file metadata imported objects. |
+| csfalconx.resource.sandbox.file_metadata.file_analysis | Unknown | The sandbox file metadata analysis. |
+| csfalconx.resource.sandbox.file_size | Number | The sandbox file size. |
+| csfalconx.resource.sandbox.file_type | String | The sandbox file type. |
+| csfalconx.resource.sandbox.file_type_short | String | The sandbox file type short. |
+| csfalconx.resource.sandbox.packer | String | The sandbox packer. |
+| csfalconx.resource.sandbox.screenshots_artifact_ids | String | The sandbox screenshots artifact ids. |
+| csfalconx.resource.sandbox.dns_requests.address | String | The sandbox dns requests address. |
+| csfalconx.resource.sandbox.dns_requests.country | String | The sandbox dns requests country. |
+| csfalconx.resource.sandbox.dns_requests.domain | String | The sandbox dns requests domain. |
+| csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. |
+| csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. |
+| csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. |
+| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. |
+| csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. |
+| csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. |
+| csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. |
+| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name | String | The sandbox contacted hosts associated runtime name. |
+| csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid | String | The sandbox contacted hosts associated runtime pid. |
+| csfalconx.resource.sandbox.incidents | String | The sandbox incidents. |
+| csfalconx.resource.sandbox.mitre_attacks.tactic | String | The sndbox MITRE tactic name. |
+| csfalconx.resource.sandbox.mitre_attacks.technique | String | The sndbox MITRE technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.attack_id | String | The sndbox MITRE technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers | String | The sndbox MITRE malicious identifiers. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.technique | String | The sndbox MITRE parent technique name. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id | String | The sndbox MITRE parent technique ID. |
+| csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki | String | The sndbox MITRE parent technique wiki URL link. |
+| csfalconx.resource.sandbox.signatures.threat_level_human | String | The sndbox signatures threat level. |
+| csfalconx.resource.sandbox.signatures.category | String | The sndbox signatures category. |
+| csfalconx.resource.sandbox.signatures.identifier | String | The sndbox signatures identifier. |
+| csfalconx.resource.sandbox.signatures.type | Number | The sndbox signatures type. |
+| csfalconx.resource.sandbox.signatures.relevance | Number | The sndbox signatures relevance. |
+| csfalconx.resource.sandbox.signatures.name | String | The sndbox signatures name. |
+| csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. |
+| csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. |
+| csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. |
+| csfalconx.resource.url_name | String | Submitted URL. |
 
 #### Command Example
+
 ```!cs-fx-submit-url url="https://www.google.com" environment_id="160: Windows 10" action_script="default" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -2006,37 +2020,39 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >|created_timestamp|environment_id|state|submitted_id|url_name|
 >|---|---|---|---|---|
 >| 2020-07-03T06:36:19Z | 160 | created | 1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542 | https://www.google.com |
 
-
 ### cs-fx-download-ioc
+
 ***
 Downloads IOC packs, PCAP files, and other analysis artifacts.
-
 
 #### Base Command
 
 `cs-fx-download-ioc`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary. | Required | 
-| name | The name given to then downloaded file. | Optional | 
-| accept_encoding | Format used to compress the downloaded file. Currently, you must provide the value of the GZIP file. Default is gzip. | Optional | 
-
+| id | ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary. | Required |
+| name | The name given to then downloaded file. | Optional |
+| accept_encoding | Format used to compress the downloaded file. Currently, you must provide the value of the GZIP file. Default is gzip. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!cs-fx-download-ioc id="cd1db2f53e8760792a48a2ec544a29e6f876643204598621783f71017f6b4266" name="test" accept_encoding="gzip"```
 
 #### Context Example
+
 ```json
 {
     "csfalconx": {
@@ -3890,5 +3906,6 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon Intelligence Sandbox response:
+>### CrowdStrike Falcon Intelligence Sandbox response
+>
 >**No entries.**

@@ -1,5 +1,6 @@
 
 ### Additional information
+
 Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
 This integration was integrated and tested with version 1 of Skyhigh Security.
 
@@ -10,7 +11,6 @@ The solution is to restart the last-run.
 
 ## Configure Skyhigh Security in Cortex
 
-
    | **Parameter**  | **Description** | **Required** |
    | ---- | -------- | ------------ |
    | Base URL (e.g., https://www.myshn.net)|    | True   |
@@ -19,7 +19,6 @@ The solution is to restart the last-run.
    | First fetch in timestamp format (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. |   | False   |
    | Trust any certificate (not secure) |  | False  |
    | Use system proxy settings |  | False   |
-
 
 ## Commands
 

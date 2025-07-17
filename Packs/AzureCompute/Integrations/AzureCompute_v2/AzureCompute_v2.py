@@ -340,10 +340,10 @@ class MsGraphClient:
         url = self.server + "/subscriptions"
         return self.ms_client.http_request(method="GET", full_url=url, params=parameters, url_suffix="")
 
-    def list_vms(self, resource_group):
-        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines"
-
-        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=self.default_params)
+    def list_vms(self, resource_group, full_url):
+        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines" if not full_url else ""
+        params = self.default_params if not full_url else {}
+        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params, full_url=full_url)
 
     def get_vm(self, resource_group, vm_name, expand="instanceView"):
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
@@ -562,30 +562,38 @@ def list_vms_command(client: MsGraphClient, args: dict, params: dict):
         Virtual Machine Objects
     """
     resource_group = get_from_args_or_params(args=args, params=params, key="resource_group")
-    response = client.list_vms(resource_group)
+    limit = int(args.get("limit", 50))
+    vms: List[dict] = []
 
-    vm_objects_list = response.get("value")
+    next_link = True
+    while next_link and len(vms) < limit:
+        full_url = next_link if isinstance(next_link, str) else None
+        response = client.list_vms(resource_group, full_url=full_url)
+        # Retrieve relevant properties to return to context
+        vm_objects_list = response.get("value")
+        next_link = response.get("nextLink")
 
-    vms = []
-    for vm_object in vm_objects_list:
-        vm_name = vm_object.get("name").lower()
-        location = vm_object.get("location")
-        properties = vm_object.get("properties")
-        provisioning_state = properties.get("provisioningState")
-        os_disk = properties.get("storageProfile", {}).get("osDisk")
-        datadisk = os_disk.get("diskSizeGB", "NA")
-        vm_id = properties.get("vmId")
-        os_type = os_disk.get("osType")
-        vm = {
-            "Name": vm_name,
-            "ID": vm_id,
-            "Size": datadisk,
-            "OS": os_type,
-            "Location": location,
-            "ProvisioningState": provisioning_state,
-            "ResourceGroup": resource_group,
-        }
-        vms.append(vm)
+        for vm_object in vm_objects_list:
+            vm_name = vm_object.get("name").lower()
+            location = vm_object.get("location")
+            properties = vm_object.get("properties")
+            provisioning_state = properties.get("provisioningState")
+            os_disk = properties.get("storageProfile", {}).get("osDisk")
+            datadisk = os_disk.get("diskSizeGB", "NA")
+            vm_id = properties.get("vmId")
+            os_type = os_disk.get("osType")
+            vm = {
+                "Name": vm_name,
+                "ID": vm_id,
+                "Size": datadisk,
+                "OS": os_type,
+                "Location": location,
+                "ProvisioningState": provisioning_state,
+                "ResourceGroup": resource_group,
+            }
+            vms.append(vm)
+
+    vms = vms[:limit]
 
     title = f'Microsoft Azure - List of Virtual Machines in Resource Group "{resource_group}"'
     table_headers = ["Name", "ID", "Size", "OS", "Location", "ProvisioningState", "ResourceGroup"]

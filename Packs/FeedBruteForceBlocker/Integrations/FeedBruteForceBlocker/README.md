@@ -2,7 +2,6 @@ BruteForceBlocker is a Perl script that works with pf – firewall developed by 
 
 ## Configure BruteForceBlocker Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -18,22 +17,24 @@ BruteForceBlocker is a Perl script that works with pf – firewall developed by 
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### bruteforceblocker-get-indicators
+
 ***
 Gets the feed indicators.
-
 
 #### Base Command
 
 `bruteforceblocker-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional | 
-
+| limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional |
 
 #### Context Output
 

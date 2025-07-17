@@ -2,7 +2,6 @@ This is the Aruba Central event collector integration for Cortex XSIAM.
 
 ## Configure HPE Aruba Central Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Domain URL for API gateway access | True |
@@ -16,7 +15,6 @@ This is the Aruba Central event collector integration for Cortex XSIAM.
 | The maximum number of networking events per fetch | Default - 5000 | False |
 | Trust any certificate (not secure) || False |
 | Use system proxy settings || False |
-
 
 ## Commands
 
@@ -36,9 +34,9 @@ Gets events from Aruba Central.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. Default is 3 hours prior. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of results to return. | Required |
+| from_date | Date from which to get events. Default is 3 hours prior. | Optional |
 
 #### Command Example
 

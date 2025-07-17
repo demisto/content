@@ -2190,7 +2190,7 @@ script:
       description: Tunnel type i.e., SSL or VPN.
     - contextPath: CDL.Logging.GlobalProtect.VendorName
       description: The vendor that produced the data.
-  dockerimage: demisto/python_pancloud_v2:1.0.0.2027056
+  dockerimage: demisto/python_pancloud_v2:1.0.0.3540031
   isfetch: true
   runonce: false
   script: '-'

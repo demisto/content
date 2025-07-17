@@ -20,7 +20,8 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
 
 The integration was tested with 4.x version of Tanium Threat Response, and is compatible with it.
 
-  ## Configuration Parameters
+## Configuration Parameters
+
   <ul>
   <li><i>Hostname</i>
    - The network address of the Tanium server host.

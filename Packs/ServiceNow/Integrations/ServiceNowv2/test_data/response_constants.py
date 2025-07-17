@@ -3503,4 +3503,6 @@ OAUTH_PARAMS = {
     "use_oauth": True,
 }
 
+JWT_PARAMS = {"private_key": "-----BEGIN PRIVATE KEY----- test_token -----END PRIVATE KEY-----", "kid": "test1", "sub": "test"}
+
 RESPONSE_GENERIC_TICKET = {"sys_created_by": "svc.SecOps_SplunkPhantom", "sys_class_name": "sn_si_incident"}

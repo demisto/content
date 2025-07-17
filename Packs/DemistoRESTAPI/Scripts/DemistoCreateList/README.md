@@ -9,7 +9,6 @@ Creates a new list.
 | Script Type | javascript |
 | Tags | DemistoAPI |
 
-
 ## Dependencies
 
 ---

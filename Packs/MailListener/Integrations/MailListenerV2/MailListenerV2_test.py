@@ -85,7 +85,7 @@ EXPECTED_LABELS = [
     {"type": "Email/headers/To", "value": "to@test1.com"},
     {"type": "Email/headers/Content-Type", "value": 'multipart/alternative; boundary="0000000000002b271405ac80bf8b"'},
     {"type": "Email", "value": "to@test1.com"},
-    {"type": "Email/html", "value": '<div dir="ltr"><br></div>\n<p>C:\\\\Users</p>\n<p>C:\\\\Users</p>'},
+    {"type": "Email/html", "value": '<div dir="ltr"><br></div>\n<p>C:\\Users</p>\n<p>C:\\\\Users</p>'},
 ]
 
 
@@ -215,7 +215,7 @@ def test_generate_labels():
     - Generating mail labels
 
     Then:
-    - Validate all expected labels are in the generated labels
+    - Validate all expected labels are in the generated labels, and are from type string
     """
     from MailListenerV2 import Email
 

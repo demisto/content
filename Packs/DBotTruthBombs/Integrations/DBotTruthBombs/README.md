@@ -12,7 +12,7 @@ Returns a previously undisclosed fact about DBot.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| category | Filter DBot truth bomb by category. Possible values are: Dev, Career, History, Money, Movie, Music, Science, Sport, Travel. | Optional | 
+| category | Filter DBot truth bomb by category. Possible values are: Dev, Career, History, Money, Movie, Music, Science, Sport, Travel. | Optional |
 
 #### Context Output
 

@@ -1,6 +1,7 @@
 Generates an investigation summary report in an automated way. This can be used in post-processing flow as well.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Generates an investigation summary report in an automated way. This can be used 
 | Cortex XSOAR Version | 3.5.0+ |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +21,7 @@ Generates an investigation summary report in an automated way. This can be used 
 | incidentId | The incident ID to generate the report for. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

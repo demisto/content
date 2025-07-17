@@ -22,4 +22,4 @@ If you receive an HTTP 400 or HTTP 401 status code when running the command, ver
 
 When opening a support case, include the results you obtained from running the retarus-get-last-run-results command.
 
-Note, due to the Retarus API limitation, only one instance can be configured for each token and channel. It is important to note that while two instances with the same token but different channels are allowed, configuring two instances with the same token and channel may result in errors and/or missing events. 
+Note, due to the Retarus API limitation, only one instance can be configured for each token and channel. It is important to note that while two instances with the same token but different channels are allowed, configuring two instances with the same token and channel may result in errors and/or missing events.

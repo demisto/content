@@ -3,7 +3,6 @@ This integration was integrated and tested with version 2.0 of RSS.
 
 ## Configure RSS Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Feed URL | The RSS URL should be a URL with 'feed' as the suffix or prefix. | True |
@@ -21,35 +20,37 @@ This integration was integrated and tested with version 2.0 of RSS.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### rss-get-indicators
+
 ***
 Gets the reports from the RSS feed.
-
 
 #### Base Command
 
 `rss-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default is 10. | Optional | 
-
+| limit | The maximum number of indicators to return. Default is 10. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
-```!rss-get-indicators ```
+
+```!rss-get-indicators```
 
 #### Human Readable Output
 
 RSS Feed:
 
-
 | **Title** | **Link** | **Type** |
 | --- | --- | --- |
-| Title of an article | https://article-example.com | Report | 
+| Title of an article | https://article-example.com | Report |

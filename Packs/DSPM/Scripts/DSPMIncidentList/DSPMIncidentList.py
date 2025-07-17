@@ -48,9 +48,7 @@ def timeDifferenceInHours(incident_time, rerun_time):
     current_time = datetime.now()
     difference = current_time - given_time
     hours_difference = difference.total_seconds() / 3600
-    if hours_difference >= float(rerun_time):
-        return True
-    return False
+    return hours_difference >= float(rerun_time)
 
 
 def get_incident_list(incident_object):

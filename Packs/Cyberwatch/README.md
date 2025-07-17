@@ -8,3 +8,4 @@ This content pack provides the Cyberwatch integration in order to fetch data reg
 - Fetch details on one CVE from the Cyberwatch Vulnerability Encyclopedia.
 - Get a list of Security Issues from the Cyberwatch Security Issues Encyclopedia.
 - Fetch details on one Security Issue from the Cyberwatch Security Issues Encyclopedia.
+- Fetch incidents from Cyberwatch.

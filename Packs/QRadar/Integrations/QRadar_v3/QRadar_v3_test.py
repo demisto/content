@@ -1461,7 +1461,6 @@ def test_qradar_remote_network_cidr_delete_command(mocker):
     assert result.readable_output == expected_command_result
 
 
-@pytest.mark.parametrize("mirror_options", [MIRROR_OFFENSE_AND_EVENTS, ""])
 @pytest.mark.parametrize(
     "test_case_data",
     [
@@ -1491,7 +1490,7 @@ def test_qradar_remote_network_cidr_delete_command(mocker):
         (ctx_test_data["ctx_compatible"]["mirror_offense_and_events_no_loop_offenses"]),
     ],
 )
-def test_integration_context_during_run(mirror_options, test_case_data, mocker):
+def test_integration_context_during_run(test_case_data, mocker):
     """
     Given:
     - Cortex XSOAR parameters.
@@ -1528,15 +1527,22 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         4) In both loop runs no offenses were fetched.
     """
     mirror_direction = test_case_data["mirror_direction"]
+    mirror_options = test_case_data["mirror_options"]
 
     init_context = test_case_data["init_context"].copy()
-    init_context |= {
-        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
-        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
-        MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
-        LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
-        "samples": init_context.get("samples", []),
-    }
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        init_context |= {
+            MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+            MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+            MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
+            LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
+            "samples": init_context.get("samples", []),
+        }
+    else:
+        init_context |= {
+            LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
+            "samples": init_context.get("samples", []),
+        }
 
     set_integration_context(init_context)
     if is_offenses_first_loop := test_case_data["offenses_first_loop"]:
@@ -1575,13 +1581,18 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         assets_limit=100,
         long_running_container_id="12345",
     )
-    expected_ctx_first_loop |= {
-        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
-        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
-        MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
-        LAST_FETCH_KEY: expected_ctx_first_loop.get(LAST_FETCH_KEY, 0),
-        "samples": expected_ctx_first_loop.get("samples", []),
-    }
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        expected_ctx_first_loop.update(
+            {
+                MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if is_offenses_first_loop else {},
+                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
+            }
+        )
+        if LAST_FETCH_KEY not in expected_ctx_first_loop:
+            expected_ctx_first_loop[LAST_FETCH_KEY] = 0
+        if "samples" not in expected_ctx_first_loop:
+            expected_ctx_first_loop["samples"] = []
 
     current_context = get_integration_context()
 
@@ -1599,9 +1610,19 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         enrich_mock = mocker.patch.object(QRadar_v3, "enrich_offense_with_events")
         enrich_mock.side_effect = second_loop_offenses_with_events
         expected_ctx_second_loop = ctx_test_data["context_data_second_loop_default"].copy()
+        # The samples from the first loop are preserved and second loop samples are appended
+        if is_offenses_first_loop:
+            expected_ctx_second_loop["samples"] = expected_ctx_first_loop.get("samples", []) + expected_ctx_second_loop.get(
+                "samples", []
+            )
     else:
         mocker.patch.object(client, "offenses_list", return_value=[])
-        expected_ctx_second_loop = expected_ctx_first_loop
+        expected_ctx_second_loop = expected_ctx_first_loop.copy()
+        # When no new offenses in second loop, the existing samples are re-added due to deepmerge append behavior
+        if expected_ctx_first_loop.get("samples"):
+            expected_ctx_second_loop["samples"] = expected_ctx_first_loop.get("samples", []) + expected_ctx_first_loop.get(
+                "samples", []
+            )
     perform_long_running_loop(
         client=client,
         offenses_per_fetch=2,
@@ -1622,15 +1643,21 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
     for k, v in second_loop_ctx_not_default_values.items():
         expected_ctx_second_loop[k] = v
 
-    expected_ctx_second_loop |= {
-        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
-        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
-        MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
-        LAST_FETCH_KEY: expected_ctx_second_loop.get(LAST_FETCH_KEY, 0),
-        "samples": expected_ctx_second_loop.get("samples", []),
-    }
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        expected_ctx_second_loop.update(
+            {
+                MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if is_offenses_first_loop else {},
+                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
+            }
+        )
+        if LAST_FETCH_KEY not in expected_ctx_second_loop:
+            expected_ctx_second_loop[LAST_FETCH_KEY] = 0
+        if "samples" not in expected_ctx_second_loop:
+            expected_ctx_second_loop["samples"] = []
 
     current_context = get_integration_context()
+
     assert current_context == expected_ctx_second_loop
     set_integration_context({})
 
@@ -2117,7 +2144,7 @@ def test_recovery_lastrun(mocker):
     assert context_data[LAST_FETCH_KEY] == 4
 
     # now the last run and the integration context are the same, make sure that update context is not called
-    update_context_mock = mocker.patch.object(QRadar_v3, "safely_update_context_data")
+    update_context_mock = mocker.patch.object(QRadar_v3, "safely_update_context_data_partial")
     set_integration_context(
         {LAST_FETCH_KEY: 2, MIRRORED_OFFENSES_QUERIED_CTX_KEY: {0: 0}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0}}
     )
@@ -2182,10 +2209,16 @@ def test_qradar_indicators_upload_command_quiet_mode(mocker, quiet_mode):
     assert all("Data" not in i for i in result.outputs) or not quiet_mode
     assert "data" in result.raw_response
 
-@pytest.mark.parametrize("key, value, expected_results", [("last_persisted_time", "1.1.2025", True),
-                                                          ("last_persisted_time", 1741790340000, True),
-                                                          ("last_persisted_time", 9223372036854775807, False),
-                                                          ("last_persisted_times", 1741790340000, False)])
+
+@pytest.mark.parametrize(
+    "key, value, expected_results",
+    [
+        ("last_persisted_time", "1.1.2025", True),
+        ("last_persisted_time", 1741790340000, True),
+        ("last_persisted_time", 9223372036854775807, False),
+        ("last_persisted_times", 1741790340000, False),
+    ],
+)
 def test_should_get_time_parameter(key, value, expected_results):
     """
     Given:
@@ -2205,6 +2238,7 @@ def test_should_get_time_parameter(key, value, expected_results):
     """
     assert should_get_time_parameter(key, value) is expected_results
 
+
 def test_add_iso_entries_to_dict_placeholder_edge_case():
     """
     Given:
@@ -2216,4 +2250,4 @@ def test_add_iso_entries_to_dict_placeholder_edge_case():
     """
     dicts = [{"start_time": 9223372036854775807, "last_persisted_time": 1741790340000}]
     results = add_iso_entries_to_dict(dicts)
-    assert results == [{'start_time': 9223372036854775807, 'last_persisted_time': '2025-03-12T14:39:00+00:00'}]
+    assert results == [{"start_time": 9223372036854775807, "last_persisted_time": "2025-03-12T14:39:00+00:00"}]

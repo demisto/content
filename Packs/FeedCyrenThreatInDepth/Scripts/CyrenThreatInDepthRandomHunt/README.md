@@ -8,6 +8,7 @@ The main query parameters for the resulting, internal indicator query are:
 * Must have relationships to other indicators.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -17,6 +18,7 @@ The main query parameters for the resulting, internal indicator query are:
 | XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,11 +27,13 @@ The main query parameters for the resulting, internal indicator query are:
 | incident_type | *Optional*: If not provided, an incident of type "Hunt" is created |
 
 ## Outputs
+
 ---
 
 There are no outputs for this script.
 
 ## Human Readable Output
+
 ---
 
 Successfully created incident Cyren Threat InDepth Threat Hunt.

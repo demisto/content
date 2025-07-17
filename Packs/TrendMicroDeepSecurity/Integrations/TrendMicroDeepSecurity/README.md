@@ -2,7 +2,9 @@ Trend Micro Deep Security
 This integration was integrated and tested with version 20.0 of Trend Micro Deep Security, and v1 of the API.
 
 ## Changes compared to TrendMicroDsm
+
 # Changes in commands
+
 1. trendmicro-create-computer - New command.
 2. trendmicro-search-computers - New command.
 3. trendmicro-get-computer - New command.
@@ -44,7 +46,6 @@ This integration was integrated and tested with version 20.0 of Trend Micro Deep
 
 ## Configure Trend Micro Deep Security in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Server URL for TrendMicro console. e.g: https://ip:port/ | True |
@@ -54,48 +55,51 @@ This integration was integrated and tested with version 20.0 of Trend Micro Deep
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trendmicro-create-computer
+
 ***
 Create a new computer
-
 
 #### Base Command
 
 `trendmicro-create-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| expand | Determines the computer information to include in the response. Notice that the information is appended to the context data only. Possible values are: none, all, computerStatus, tasks, securityUpdates, computerSettings, allSecurityModules, antiMalware, webReputation, activityMonitoring, firewall, intrusionPrevention, integrityMonitoring, logInspection, applicationControl, SAP, interfaces, ESXSummary, allVirtualMachineSummaries, azureARMVirtualMachineSummary, azureVMVirtualMachineSummary, ec2VirtualMachineSummary, noConnectorVirtualMachineSummary, vmwareVMVirtualMachineSummary, vcloudVMVirtualMachineSummary, workspaceVirtualMachineSummary, gcpVirtualMachineSummary. Default is none. | Optional | 
-| overrides | Show only overrides defined for the current computer. Possible values are: true, false. Default is false. | Optional | 
-| host_name | Hostname of the computer. | Optional | 
-| display_name | Display name of the computer. | Optional | 
-| description | Description of the computer. | Optional | 
-| group_id | ID of the computer group to which the computer belongs. | Optional | 
-| policy_id | ID of the policy assigned to the computer. | Optional | 
-| asset_importance_id | ID of the asset importance assigned to the computer. | Optional | 
-| relay_list_id | ID of the relay list that is assigned to the computer. | Optional | 
-
+| expand | Determines the computer information to include in the response. Notice that the information is appended to the context data only. Possible values are: none, all, computerStatus, tasks, securityUpdates, computerSettings, allSecurityModules, antiMalware, webReputation, activityMonitoring, firewall, intrusionPrevention, integrityMonitoring, logInspection, applicationControl, SAP, interfaces, ESXSummary, allVirtualMachineSummaries, azureARMVirtualMachineSummary, azureVMVirtualMachineSummary, ec2VirtualMachineSummary, noConnectorVirtualMachineSummary, vmwareVMVirtualMachineSummary, vcloudVMVirtualMachineSummary, workspaceVirtualMachineSummary, gcpVirtualMachineSummary. Default is none. | Optional |
+| overrides | Show only overrides defined for the current computer. Possible values are: true, false. Default is false. | Optional |
+| host_name | Hostname of the computer. | Optional |
+| display_name | Display name of the computer. | Optional |
+| description | Description of the computer. | Optional |
+| group_id | ID of the computer group to which the computer belongs. | Optional |
+| policy_id | ID of the policy assigned to the computer. | Optional |
+| asset_importance_id | ID of the asset importance assigned to the computer. | Optional |
+| relay_list_id | ID of the relay list that is assigned to the computer. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Computers.hostName | string | Hostname of the computer | 
-| TrendMicro.Computers.displayName | string | Display name of the computer | 
-| TrendMicro.Computers.description | string | Description of the computer | 
-| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs | 
-| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer | 
-| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer | 
-| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer | 
-
+| TrendMicro.Computers.hostName | string | Hostname of the computer |
+| TrendMicro.Computers.displayName | string | Display name of the computer |
+| TrendMicro.Computers.description | string | Description of the computer |
+| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs |
+| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer |
+| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer |
+| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer |
 
 #### Command Example
+
 ```!trendmicro-create-computer host_name="example_computer"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -118,48 +122,49 @@ Create a new computer
 #### Human Readable Output
 
 >### Details for the new computer example_computer
+>
 >|ID|Host Name|Group ID|
 >|---|---|---|
 >| 217 | example_computer | 0 |
 
-
 ### trendmicro-search-computers
+
 ***
 Search for specific computers by some field name with a certain type. Every field has a specific type. It can be a simple type like a string, a numeric or a boolean. However, it can also be a choice, which is a string with specific options (enumeration). To search, you must provide the field_name & field_type, the operation to perform, and the value to search.
-
 
 #### Base Command
 
 `trendmicro-search-computers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| max_items | Limits the number of objects returned. | Optional | 
-| field_name | The field name to search for. Possible values are: hostName, displayName, description, groupID, policyID, assetImportanceID, relayListID. | Required | 
-| field_type | The type of the field. Possible values are: boolean, numeric, choice, id, string. | Required | 
-| operation | The search conditional to test on the field name. Possible values are: less-than, less-than-or-equal, equal, greater-than-or-equal, greater-than, not-equal. | Required | 
-| value | The value to compare. | Required | 
-| sort_by_object_id | If true, forces the response objects to be sorted by ID, overriding the default sort order. | Optional | 
-
+| max_items | Limits the number of objects returned. | Optional |
+| field_name | The field name to search for. Possible values are: hostName, displayName, description, groupID, policyID, assetImportanceID, relayListID. | Required |
+| field_type | The type of the field. Possible values are: boolean, numeric, choice, id, string. | Required |
+| operation | The search conditional to test on the field name. Possible values are: less-than, less-than-or-equal, equal, greater-than-or-equal, greater-than, not-equal. | Required |
+| value | The value to compare. | Required |
+| sort_by_object_id | If true, forces the response objects to be sorted by ID, overriding the default sort order. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Computers.hostName | string | Hostname of the computer | 
-| TrendMicro.Computers.displayName | string | Display name of the computer | 
-| TrendMicro.Computers.description | string | Description of the computer | 
-| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs | 
-| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer | 
-| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer | 
-| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer | 
-
+| TrendMicro.Computers.hostName | string | Hostname of the computer |
+| TrendMicro.Computers.displayName | string | Display name of the computer |
+| TrendMicro.Computers.description | string | Description of the computer |
+| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs |
+| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer |
+| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer |
+| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer |
 
 #### Command Example
+
 ```!trendmicro-search-computers field_name=groupID field_type=numeric operation=equal value=0```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -4624,6 +4629,7 @@ Search for specific computers by some field name with a certain type. Every fiel
 #### Human Readable Output
 
 >### Matched Computers
+>
 >|ID|Host Name|Description|Group ID|
 >|---|---|---|---|
 >| 1 | q1 | Modified Test | 0 |
@@ -4633,41 +4639,41 @@ Search for specific computers by some field name with a certain type. Every fiel
 >| 166 | poc1 | Modified Test | 0 |
 >| 216 | example_computer |  | 0 |
 
-
 ### trendmicro-get-computer
+
 ***
 Get information about a certain computer
-
 
 #### Base Command
 
 `trendmicro-get-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The ID number of the computer to get. | Required | 
-| expand | Determines the computer information to include in the response. Notice that the information is appended to the context data only. Possible values are: none, all, computerStatus, tasks, securityUpdates, computerSettings, allSecurityModules, antiMalware, webReputation, activityMonitoring, firewall, intrusionPrevention, integrityMonitoring, logInspection, applicationControl, SAP, interfaces, ESXSummary, allVirtualMachineSummaries, azureARMVirtualMachineSummary, azureVMVirtualMachineSummary, ec2VirtualMachineSummary, noConnectorVirtualMachineSummary, vmwareVMVirtualMachineSummary, vcloudVMVirtualMachineSummary, workspaceVirtualMachineSummary, gcpVirtualMachineSummary. Default is none. | Optional | 
-| overrides | Show only overrides defined for the current computer. Possible values are: true, false. Default is false. | Optional | 
-
+| computer_id | The ID number of the computer to get. | Required |
+| expand | Determines the computer information to include in the response. Notice that the information is appended to the context data only. Possible values are: none, all, computerStatus, tasks, securityUpdates, computerSettings, allSecurityModules, antiMalware, webReputation, activityMonitoring, firewall, intrusionPrevention, integrityMonitoring, logInspection, applicationControl, SAP, interfaces, ESXSummary, allVirtualMachineSummaries, azureARMVirtualMachineSummary, azureVMVirtualMachineSummary, ec2VirtualMachineSummary, noConnectorVirtualMachineSummary, vmwareVMVirtualMachineSummary, vcloudVMVirtualMachineSummary, workspaceVirtualMachineSummary, gcpVirtualMachineSummary. Default is none. | Optional |
+| overrides | Show only overrides defined for the current computer. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Computers.hostName | string | Hostname of the computer | 
-| TrendMicro.Computers.displayName | string | Display name of the computer | 
-| TrendMicro.Computers.description | string | Description of the computer | 
-| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs | 
-| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer | 
-| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer | 
-| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer | 
-
+| TrendMicro.Computers.hostName | string | Hostname of the computer |
+| TrendMicro.Computers.displayName | string | Display name of the computer |
+| TrendMicro.Computers.description | string | Description of the computer |
+| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs |
+| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer |
+| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer |
+| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer |
 
 #### Command Example
+
 ```!trendmicro-get-computer computer_id=216```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -4690,44 +4696,45 @@ Get information about a certain computer
 #### Human Readable Output
 
 >### Details for the computer example_computer
+>
 >|ID|Host Name|Group ID|
 >|---|---|---|
 >| 216 | example_computer | 0 |
 
-
 ### trendmicro-list-computers
+
 ***
 Get information of all existing computers
-
 
 #### Base Command
 
 `trendmicro-list-computers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| expand | Determines the computer information to include in the response. Notice that the information is appended to the context data only. Possible values are: none, all, computerStatus, tasks, securityUpdates, computerSettings, allSecurityModules, antiMalware, webReputation, activityMonitoring, firewall, intrusionPrevention, integrityMonitoring, logInspection, applicationControl, SAP, interfaces, ESXSummary, allVirtualMachineSummaries, azureARMVirtualMachineSummary, azureVMVirtualMachineSummary, ec2VirtualMachineSummary, noConnectorVirtualMachineSummary, vmwareVMVirtualMachineSummary, vcloudVMVirtualMachineSummary, workspaceVirtualMachineSummary, gcpVirtualMachineSummary. Default is none. | Optional | 
-| overrides | Show only overrides defined for the current computer. Possible values are: true, false. Default is false. | Optional | 
-
+| expand | Determines the computer information to include in the response. Notice that the information is appended to the context data only. Possible values are: none, all, computerStatus, tasks, securityUpdates, computerSettings, allSecurityModules, antiMalware, webReputation, activityMonitoring, firewall, intrusionPrevention, integrityMonitoring, logInspection, applicationControl, SAP, interfaces, ESXSummary, allVirtualMachineSummaries, azureARMVirtualMachineSummary, azureVMVirtualMachineSummary, ec2VirtualMachineSummary, noConnectorVirtualMachineSummary, vmwareVMVirtualMachineSummary, vcloudVMVirtualMachineSummary, workspaceVirtualMachineSummary, gcpVirtualMachineSummary. Default is none. | Optional |
+| overrides | Show only overrides defined for the current computer. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Computers.hostName | string | Hostname of the computer | 
-| TrendMicro.Computers.displayName | string | Display name of the computer | 
-| TrendMicro.Computers.description | string | Description of the computer | 
-| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs | 
-| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer | 
-| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer | 
-| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer | 
-
+| TrendMicro.Computers.hostName | string | Hostname of the computer |
+| TrendMicro.Computers.displayName | string | Display name of the computer |
+| TrendMicro.Computers.description | string | Description of the computer |
+| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs |
+| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer |
+| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer |
+| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer |
 
 #### Command Example
+
 ```!trendmicro-list-computers expand="firewall"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -4872,6 +4879,7 @@ Get information of all existing computers
 #### Human Readable Output
 
 >### All computers list
+>
 >|ID|Host Name|Description|Group ID|
 >|---|---|---|---|
 >| 1 | q1 | Modified Test | 0 |
@@ -4881,48 +4889,48 @@ Get information of all existing computers
 >| 166 | poc1 | Modified Test | 0 |
 >| 216 | example_computer |  | 0 |
 
-
 ### trendmicro-modify-computer
+
 ***
 Modify properties of a certain computer
-
 
 #### Base Command
 
 `trendmicro-modify-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The ID number of the computer to modify. | Required | 
-| expand | Determines the computer information to include in the response. Notice that the information is appended to the context data only. Possible values are: none, all, computerStatus, tasks, securityUpdates, computerSettings, allSecurityModules, antiMalware, webReputation, activityMonitoring, firewall, intrusionPrevention, integrityMonitoring, logInspection, applicationControl, SAP, interfaces, ESXSummary, allVirtualMachineSummaries, azureARMVirtualMachineSummary, azureVMVirtualMachineSummary, ec2VirtualMachineSummary, noConnectorVirtualMachineSummary, vmwareVMVirtualMachineSummary, vcloudVMVirtualMachineSummary, workspaceVirtualMachineSummary, gcpVirtualMachineSummary. Default is none. | Optional | 
-| host_name | Hostname of the computer. | Optional | 
-| display_name | Display name of the computer. | Optional | 
-| description | Description of the computer. | Optional | 
-| group_id | ID of the computer group to which the computer belongs. | Optional | 
-| policy_id | ID of the policy assigned to the computer. | Optional | 
-| asset_importance_id | ID of the asset importance assigned to the computer. | Optional | 
-| relay_list_id | ID of the relay list that is assigned to the computer. | Optional | 
-| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional | 
-
+| computer_id | The ID number of the computer to modify. | Required |
+| expand | Determines the computer information to include in the response. Notice that the information is appended to the context data only. Possible values are: none, all, computerStatus, tasks, securityUpdates, computerSettings, allSecurityModules, antiMalware, webReputation, activityMonitoring, firewall, intrusionPrevention, integrityMonitoring, logInspection, applicationControl, SAP, interfaces, ESXSummary, allVirtualMachineSummaries, azureARMVirtualMachineSummary, azureVMVirtualMachineSummary, ec2VirtualMachineSummary, noConnectorVirtualMachineSummary, vmwareVMVirtualMachineSummary, vcloudVMVirtualMachineSummary, workspaceVirtualMachineSummary, gcpVirtualMachineSummary. Default is none. | Optional |
+| host_name | Hostname of the computer. | Optional |
+| display_name | Display name of the computer. | Optional |
+| description | Description of the computer. | Optional |
+| group_id | ID of the computer group to which the computer belongs. | Optional |
+| policy_id | ID of the policy assigned to the computer. | Optional |
+| asset_importance_id | ID of the asset importance assigned to the computer. | Optional |
+| relay_list_id | ID of the relay list that is assigned to the computer. | Optional |
+| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Computers.hostName | string | Hostname of the computer | 
-| TrendMicro.Computers.displayName | string | Display name of the computer | 
-| TrendMicro.Computers.description | string | Description of the computer | 
-| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs | 
-| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer | 
-| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer | 
-| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer | 
-
+| TrendMicro.Computers.hostName | string | Hostname of the computer |
+| TrendMicro.Computers.displayName | string | Display name of the computer |
+| TrendMicro.Computers.description | string | Description of the computer |
+| TrendMicro.Computers.groupID | integer | ID of the computer group to which the computer belongs |
+| TrendMicro.Computers.policyID | integer | ID of the policy assigned to the computer |
+| TrendMicro.Computers.assetImportanceID | integer | ID of the asset importance assigned to the computer |
+| TrendMicro.Computers.relayListID | integer | ID of the relay list that is assigned to the computer |
 
 #### Command Example
+
 ```!trendmicro-modify-computer computer_id=216 description="Example computer description"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -4946,31 +4954,32 @@ Modify properties of a certain computer
 #### Human Readable Output
 
 >### Details for the computer example_computer
+>
 >|ID|Host Name|Description|Group ID|
 >|---|---|---|---|
 >| 216 | example_computer | Example computer description | 0 |
 
-
 ### trendmicro-delete-computer
+
 ***
 Delete a certain computer
-
 
 #### Base Command
 
 `trendmicro-delete-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The ID number of the computer to delete. | Required | 
-
+| computer_id | The ID number of the computer to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-delete-computer computer_id=216```
 
 #### Human Readable Output
@@ -4978,35 +4987,36 @@ There is no context output for this command.
 >The computer was successfully deleted!
 
 ### trendmicro-get-computer-setting
+
 ***
 Get information about a setting of a certain computer
-
 
 #### Base Command
 
 `trendmicro-get-computer-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The ID number of the computer. | Required | 
-| name | The name of the setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required | 
-| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional | 
-
+| computer_id | The ID number of the computer. | Required |
+| name | The name of the setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required |
+| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ComputersSettings.computerId | integer | The computer id that owns the computer | 
-| TrendMicro.ComputersSettings.name | string | The name of the setting | 
-| TrendMicro.ComputersSettings.value | string | The value of a setting | 
-
+| TrendMicro.ComputersSettings.computerId | integer | The computer id that owns the computer |
+| TrendMicro.ComputersSettings.name | string | The name of the setting |
+| TrendMicro.ComputersSettings.value | string | The value of a setting |
 
 #### Command Example
+
 ```!trendmicro-get-computer-setting computer_id=216 name=activityMonitoringSettingActivityEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5022,42 +5032,43 @@ Get information about a setting of a certain computer
 #### Human Readable Output
 
 >### Settings for computer 216
+>
 >|Computer ID|Name|Value|
 >|---|---|---|
 >|  | activityMonitoringSettingActivityEnabled | Off |
 
-
 ### trendmicro-modify-computer-setting
+
 ***
 Modify a setting of a certain computer
-
 
 #### Base Command
 
 `trendmicro-modify-computer-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The ID number of the computer. | Required | 
-| name | The name of the setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required | 
-| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional | 
-| value | Value of a Setting. | Required | 
-
+| computer_id | The ID number of the computer. | Required |
+| name | The name of the setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required |
+| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional |
+| value | Value of a Setting. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ComputersSettings.computerId | integer | The ID of the computer that owns the setting | 
-| TrendMicro.ComputersSettings.name | string | The name of the setting | 
-| TrendMicro.ComputersSettings.value | string | Value of a Setting | 
-
+| TrendMicro.ComputersSettings.computerId | integer | The ID of the computer that owns the setting |
+| TrendMicro.ComputersSettings.name | string | The name of the setting |
+| TrendMicro.ComputersSettings.value | string | Value of a Setting |
 
 #### Command Example
+
 ```!trendmicro-modify-computer-setting computer_id=216 name=activityMonitoringSettingActivityEnabled value=on```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5073,41 +5084,42 @@ Modify a setting of a certain computer
 #### Human Readable Output
 
 >### Settings for computer 216
+>
 >|Computer ID|Name|Value|
 >|---|---|---|
 >|  | activityMonitoringSettingActivityEnabled | On |
 
-
 ### trendmicro-reset-computer-setting
+
 ***
 Reset a setting of certain computer to its default value.
-
 
 #### Base Command
 
 `trendmicro-reset-computer-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The ID number of the computer. | Required | 
-| name | The name of the setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required | 
-| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional | 
-
+| computer_id | The ID number of the computer. | Required |
+| name | The name of the setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required |
+| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ComputersSettings.computerId | integer | The ID of the computer that owns the setting | 
-| TrendMicro.ComputersSettings.name | string | The name of the setting | 
-| TrendMicro.ComputersSettings.value | string | The value of the setting | 
-
+| TrendMicro.ComputersSettings.computerId | integer | The ID of the computer that owns the setting |
+| TrendMicro.ComputersSettings.name | string | The name of the setting |
+| TrendMicro.ComputersSettings.value | string | The value of the setting |
 
 #### Command Example
+
 ```!trendmicro-reset-computer-setting computer_id=216 name=activityMonitoringSettingActivityEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5123,38 +5135,39 @@ Reset a setting of certain computer to its default value.
 #### Human Readable Output
 
 >### Settings for computer 216
+>
 >|Computer ID|Name|Value|
 >|---|---|---|
 >|  | activityMonitoringSettingActivityEnabled | Off |
 
-
 ### trendmicro-list-computer-groups
+
 ***
 Get information about all existing computer groups
-
 
 #### Base Command
 
 `trendmicro-list-computer-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ComputerGroups.name | string | Name of the computer group | 
-| TrendMicro.ComputerGroups.description | string | Description of the computer group | 
-| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group | 
-
+| TrendMicro.ComputerGroups.name | string | Name of the computer group |
+| TrendMicro.ComputerGroups.description | string | Description of the computer group |
+| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group |
 
 #### Command Example
+
 ```!trendmicro-list-computer-groups```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5187,43 +5200,44 @@ Get information about all existing computer groups
 #### Human Readable Output
 
 >### Computer Groups
+>
 >|ID|Name|Description|Parent Group ID|
 >|---|---|---|---|
 >| 1 | PoC Group | Testing Group |  |
 >| 100 | Test | Test Group | 1 |
 >| 110 | Example Computer Group |  | 1 |
 
-
 ### trendmicro-create-computer-group
+
 ***
 Create a new computer group
-
 
 #### Base Command
 
 `trendmicro-create-computer-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the computer group. | Required | 
-| description | Description of the computer group. | Optional | 
-| parent_group_id | ID of the computer group's parent group. | Optional | 
-
+| name | Name of the computer group. | Required |
+| description | Description of the computer group. | Optional |
+| parent_group_id | ID of the computer group's parent group. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ComputerGroups.name | string | Name of the computer group | 
-| TrendMicro.ComputerGroups.description | string | Description of the computer group | 
-| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group | 
-
+| TrendMicro.ComputerGroups.name | string | Name of the computer group |
+| TrendMicro.ComputerGroups.description | string | Description of the computer group |
+| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group |
 
 #### Command Example
+
 ```!trendmicro-create-computer-group name="Example Computer Group" description="Example computer group description" parent_group_id=1```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5241,44 +5255,45 @@ Create a new computer group
 #### Human Readable Output
 
 >### Computer Groups
+>
 >|ID|Name|Description|Parent Group ID|
 >|---|---|---|---|
 >| 111 | Example Computer Group | Example computer group description | 1 |
 
-
 ### trendmicro-search-computer-groups
+
 ***
 Search for specific computer groups by some field name with a certain type. Every field has a specific type. It can be a simple type like a string, a numeric or a boolean. However, it can also be a choice, which is a string with specific options (enumeration). To search, you must provide the field_name & field_type, the operation to perform, and the value to search.
-
 
 #### Base Command
 
 `trendmicro-search-computer-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| max_items | Limits the number of objects returned. | Optional | 
-| field_name | The name of the field. Possible values are: ID, type, name, description, parentGroupID. | Required | 
-| field_type | The type of the field. Possible values are: boolean, numeric, choice, id, string. | Required | 
-| operation | The operation to compare with. Possible values are: less-than, less-than-or-equal, equal, greater-than-or-equal, greater-than, not-equal. | Required | 
-| value | The value compare against the field name. | Required | 
-| sort_by_object_id | If true, forces the response objects to be sorted by ID, overriding the default sort order. | Optional | 
-
+| max_items | Limits the number of objects returned. | Optional |
+| field_name | The name of the field. Possible values are: ID, type, name, description, parentGroupID. | Required |
+| field_type | The type of the field. Possible values are: boolean, numeric, choice, id, string. | Required |
+| operation | The operation to compare with. Possible values are: less-than, less-than-or-equal, equal, greater-than-or-equal, greater-than, not-equal. | Required |
+| value | The value compare against the field name. | Required |
+| sort_by_object_id | If true, forces the response objects to be sorted by ID, overriding the default sort order. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ComputerGroups.name | string | Name of the computer group | 
-| TrendMicro.ComputerGroups.description | string | Description of the computer group | 
-| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group | 
-
+| TrendMicro.ComputerGroups.name | string | Name of the computer group |
+| TrendMicro.ComputerGroups.description | string | Description of the computer group |
+| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group |
 
 #### Command Example
+
 ```!trendmicro-search-computer-groups field_name=ID operation=equal field_type=id value=110```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5296,39 +5311,40 @@ Search for specific computer groups by some field name with a certain type. Ever
 #### Human Readable Output
 
 >### Matched Computer Groups
+>
 >|ID|Name|Parent Group ID|
 >|---|---|---|
 >| 110 | Example Computer Group | 1 |
 
-
 ### trendmicro-get-computer-group
+
 ***
 Get information of a certain computer group
-
 
 #### Base Command
 
 `trendmicro-get-computer-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_group_id | The ID number of the computer group to get. | Required | 
-
+| computer_group_id | The ID number of the computer group to get. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ComputerGroups.name | string | Name of the computer group | 
-| TrendMicro.ComputerGroups.description | string | Description of the computer group | 
-| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group | 
-
+| TrendMicro.ComputerGroups.name | string | Name of the computer group |
+| TrendMicro.ComputerGroups.description | string | Description of the computer group |
+| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group |
 
 #### Command Example
+
 ```!trendmicro-get-computer-group computer_group_id=110```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5346,42 +5362,43 @@ Get information of a certain computer group
 #### Human Readable Output
 
 >### Computer Group 110 Details
+>
 >|ID|Name|Parent Group ID|
 >|---|---|---|
 >| 110 | Example Computer Group | 1 |
 
-
 ### trendmicro-modify-computer-group
+
 ***
 Modify the properties of a certain computer group
-
 
 #### Base Command
 
 `trendmicro-modify-computer-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_group_id | The ID number of the computer group to modify. | Required | 
-| name | Name of the computer group. | Optional | 
-| description | Description of the computer group. | Optional | 
-| parent_group_id | ID of the computer group's parent group. | Optional | 
-
+| computer_group_id | The ID number of the computer group to modify. | Required |
+| name | Name of the computer group. | Optional |
+| description | Description of the computer group. | Optional |
+| parent_group_id | ID of the computer group's parent group. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ComputerGroups.name | string | Name of the computer group | 
-| TrendMicro.ComputerGroups.description | string | Description of the computer group | 
-| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group | 
-
+| TrendMicro.ComputerGroups.name | string | Name of the computer group |
+| TrendMicro.ComputerGroups.description | string | Description of the computer group |
+| TrendMicro.ComputerGroups.parentGroupID | integer | ID of the computer group's parent group |
 
 #### Command Example
+
 ```!trendmicro-modify-computer-group computer_group_id=110 description="Example computer group description"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -5399,31 +5416,32 @@ Modify the properties of a certain computer group
 #### Human Readable Output
 
 >### Computer Group
+>
 >|ID|Name|Description|Parent Group ID|
 >|---|---|---|---|
 >| 110 | Example Computer Group | Example computer group description | 1 |
 
-
 ### trendmicro-delete-computer-group
+
 ***
 Delete a certain computer group
-
 
 #### Base Command
 
 `trendmicro-delete-computer-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_group_id | The ID number of the computer group to delete. | Required | 
-
+| computer_group_id | The ID number of the computer group to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-delete-computer-group computer_group_id=110```
 
 #### Human Readable Output
@@ -5431,91 +5449,92 @@ There is no context output for this command.
 >The computer group was successfully deleted!
 
 ### trendmicro-search-firewall-rules
+
 ***
 Search for specific firewall rules by some field name with a certain type. Every field has a specific type. It can be a simple type like a string, a numeric or a boolean. However, it can also be a choice, which is a string with specific options (enumeration). To search, you must provide the field_name & field_type, the operation to perform, and the value to search.
-
 
 #### Base Command
 
 `trendmicro-search-firewall-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| max_items | Limits the number of objects returned. | Optional | 
-| field_name | The field name to search. Possible values are: ID, name, description, action, priority, direction, frameType, frameNumber, frameNot, protocol, protocolNumber, protocolNot, sourceIPType, sourceIPValue, sourceIPMask, sourceIPRangeFrom, sourceIPRangeTo, sourceIPMultiple, sourceIPListID, sourceIPNot, sourceMACType, sourceMACValue, sourceMACMultiple, sourceMACListID, sourceMACNot, sourcePortType, sourcePortMultiple, sourcePortListID, sourcePortNot, destinationIPType, destinationIPValue, destinationIPMask, destinationIPRangeFrom, destinationIPRangeTo, destinationIPMultiple, destinationIPListID, destinationIPNot, destinationMACType, destinationMACValue, destinationMACMultiple, destinationMACListID, destinationMACNot, destinationPortType, destinationPortMultiple, destinationPortListID, destinationPortNot, anyFlags, logDisabled, includePacketData, alertEnabled, scheduleID, contextID. | Required | 
-| field_type | The field type. Possible values are: boolean, numeric, choice, id, string. Default is string. | Optional | 
-| operation | The operation to test against the field. Possible values are: less-than, less-than-or-equal, equal, greater-than-or-equal, greater-than, not-equal. | Required | 
-| value | The value to compare against the field. | Required | 
-| sort_by_object_id | If true, forces the response objects to be sorted by ID, overriding the default sort order. | Optional | 
-
+| max_items | Limits the number of objects returned. | Optional |
+| field_name | The field name to search. Possible values are: ID, name, description, action, priority, direction, frameType, frameNumber, frameNot, protocol, protocolNumber, protocolNot, sourceIPType, sourceIPValue, sourceIPMask, sourceIPRangeFrom, sourceIPRangeTo, sourceIPMultiple, sourceIPListID, sourceIPNot, sourceMACType, sourceMACValue, sourceMACMultiple, sourceMACListID, sourceMACNot, sourcePortType, sourcePortMultiple, sourcePortListID, sourcePortNot, destinationIPType, destinationIPValue, destinationIPMask, destinationIPRangeFrom, destinationIPRangeTo, destinationIPMultiple, destinationIPListID, destinationIPNot, destinationMACType, destinationMACValue, destinationMACMultiple, destinationMACListID, destinationMACNot, destinationPortType, destinationPortMultiple, destinationPortListID, destinationPortNot, anyFlags, logDisabled, includePacketData, alertEnabled, scheduleID, contextID. | Required |
+| field_type | The field type. Possible values are: boolean, numeric, choice, id, string. Default is string. | Optional |
+| operation | The operation to test against the field. Possible values are: less-than, less-than-or-equal, equal, greater-than-or-equal, greater-than, not-equal. | Required |
+| value | The value to compare against the field. | Required |
+| sort_by_object_id | If true, forces the response objects to be sorted by ID, overriding the default sort order. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.FirewallRules.name | string | Name of the firewall rule | 
-| TrendMicro.FirewallRules.description | string | Description of the firewall rule | 
-| TrendMicro.FirewallRules.action | string | Action of the packet filter | 
-| TrendMicro.FirewallRules.priority | string | Priority of the packet filter | 
-| TrendMicro.FirewallRules.direction | string | Packet direction | 
-| TrendMicro.FirewallRules.frameType | string | Supported frame types | 
-| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number | 
-| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted | 
-| TrendMicro.FirewallRules.protocol | string | Protocol | 
-| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number | 
-| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted | 
-| TrendMicro.FirewallRules.sourceIPType | string | Source IP type | 
-| TrendMicro.FirewallRules.sourceIPValue | string | Source IP | 
-| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask | 
-| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list | 
-| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted | 
-| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type | 
-| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address | 
-| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses | 
-| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted | 
-| TrendMicro.FirewallRules.sourcePortType | string | The type of source port | 
-| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports | 
-| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list | 
-| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted | 
-| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type | 
-| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP | 
-| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask | 
-| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list | 
-| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted | 
-| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type | 
-| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address | 
-| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses | 
-| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted | 
-| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port | 
-| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports | 
-| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list | 
-| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted | 
-| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used | 
-| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled | 
-| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log | 
-| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on | 
-| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" | 
-| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter | 
-| TrendMicro.FirewallRules.tcpflags | array | TCP flags | 
-| TrendMicro.FirewallRules.TCPNot | boolean | Whther the TCP settings are inverted or not | 
-| TrendMicro.FirewallRules.ICMPType | integer | ICMP type | 
-| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code | 
-| TrendMicro.FirewallRules.ICMPNot | boolean | Whther the ICMP settings are inverted or not | 
-
+| TrendMicro.FirewallRules.name | string | Name of the firewall rule |
+| TrendMicro.FirewallRules.description | string | Description of the firewall rule |
+| TrendMicro.FirewallRules.action | string | Action of the packet filter |
+| TrendMicro.FirewallRules.priority | string | Priority of the packet filter |
+| TrendMicro.FirewallRules.direction | string | Packet direction |
+| TrendMicro.FirewallRules.frameType | string | Supported frame types |
+| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number |
+| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted |
+| TrendMicro.FirewallRules.protocol | string | Protocol |
+| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number |
+| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted |
+| TrendMicro.FirewallRules.sourceIPType | string | Source IP type |
+| TrendMicro.FirewallRules.sourceIPValue | string | Source IP |
+| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask |
+| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list |
+| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted |
+| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type |
+| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address |
+| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses |
+| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted |
+| TrendMicro.FirewallRules.sourcePortType | string | The type of source port |
+| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports |
+| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list |
+| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted |
+| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type |
+| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP |
+| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask |
+| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list |
+| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted |
+| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type |
+| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address |
+| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses |
+| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted |
+| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port |
+| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports |
+| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list |
+| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted |
+| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used |
+| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled |
+| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log |
+| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on |
+| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" |
+| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter |
+| TrendMicro.FirewallRules.tcpflags | array | TCP flags |
+| TrendMicro.FirewallRules.TCPNot | boolean | Whther the TCP settings are inverted or not |
+| TrendMicro.FirewallRules.ICMPType | integer | ICMP type |
+| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code |
+| TrendMicro.FirewallRules.ICMPNot | boolean | Whther the ICMP settings are inverted or not |
 
 #### Command Example
+
 ```!trendmicro-search-firewall-rules field_name="action" field_type="choice" operation="equal" value="allow"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -6460,6 +6479,7 @@ Search for specific firewall rules by some field name with a certain type. Every
 #### Human Readable Output
 
 >### Matched Firewall Rules
+>
 >|ID|Name|Description|Direction|Action|
 >|---|---|---|---|---|
 >| 20 | Deep Security Agent | Allow incoming traffic to Deep Security Agent | incoming | allow |
@@ -6494,87 +6514,87 @@ Search for specific firewall rules by some field name with a certain type. Every
 >| 166 | UDP |  | incoming | allow |
 >| 174 | Example Rule |  | incoming | allow |
 
-
 ### trendmicro-list-firewall-rules
+
 ***
 List all existing firewall rules
-
 
 #### Base Command
 
 `trendmicro-list-firewall-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.FirewallRules.name | string | Name of the firewall rule | 
-| TrendMicro.FirewallRules.description | string | Description of the firewall rule | 
-| TrendMicro.FirewallRules.action | string | Action of the packet filter | 
-| TrendMicro.FirewallRules.priority | string | Priority of the packet filter | 
-| TrendMicro.FirewallRules.direction | string | Packet direction | 
-| TrendMicro.FirewallRules.frameType | string | Supported frame types | 
-| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number | 
-| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted | 
-| TrendMicro.FirewallRules.protocol | string | Protocol | 
-| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number | 
-| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted | 
-| TrendMicro.FirewallRules.sourceIPType | string | Source IP type | 
-| TrendMicro.FirewallRules.sourceIPValue | string | Source IP | 
-| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask | 
-| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list | 
-| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted | 
-| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type | 
-| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address | 
-| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses | 
-| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted | 
-| TrendMicro.FirewallRules.sourcePortType | string | The type of source port | 
-| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports | 
-| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list | 
-| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted | 
-| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type | 
-| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP | 
-| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask | 
-| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list | 
-| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted | 
-| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type | 
-| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address | 
-| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses | 
-| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted | 
-| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port | 
-| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports | 
-| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list | 
-| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted | 
-| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used | 
-| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled | 
-| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log | 
-| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on | 
-| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" | 
-| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter | 
-| TrendMicro.FirewallRules.tcpflags | array | TCP flags | 
-| TrendMicro.FirewallRules.TCPNot | boolean | Whther the TCP settings are inverted or not | 
-| TrendMicro.FirewallRules.ICMPType | integer | ICMP type | 
-| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code | 
-| TrendMicro.FirewallRules.ICMPNot | boolean | Whther the ICMP settings are inverted or not | 
-
+| TrendMicro.FirewallRules.name | string | Name of the firewall rule |
+| TrendMicro.FirewallRules.description | string | Description of the firewall rule |
+| TrendMicro.FirewallRules.action | string | Action of the packet filter |
+| TrendMicro.FirewallRules.priority | string | Priority of the packet filter |
+| TrendMicro.FirewallRules.direction | string | Packet direction |
+| TrendMicro.FirewallRules.frameType | string | Supported frame types |
+| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number |
+| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted |
+| TrendMicro.FirewallRules.protocol | string | Protocol |
+| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number |
+| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted |
+| TrendMicro.FirewallRules.sourceIPType | string | Source IP type |
+| TrendMicro.FirewallRules.sourceIPValue | string | Source IP |
+| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask |
+| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list |
+| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted |
+| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type |
+| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address |
+| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses |
+| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted |
+| TrendMicro.FirewallRules.sourcePortType | string | The type of source port |
+| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports |
+| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list |
+| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted |
+| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type |
+| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP |
+| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask |
+| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list |
+| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted |
+| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type |
+| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address |
+| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses |
+| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted |
+| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port |
+| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports |
+| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list |
+| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted |
+| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used |
+| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled |
+| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log |
+| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on |
+| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" |
+| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter |
+| TrendMicro.FirewallRules.tcpflags | array | TCP flags |
+| TrendMicro.FirewallRules.TCPNot | boolean | Whther the TCP settings are inverted or not |
+| TrendMicro.FirewallRules.ICMPType | integer | ICMP type |
+| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code |
+| TrendMicro.FirewallRules.ICMPNot | boolean | Whther the ICMP settings are inverted or not |
 
 #### Command Example
+
 ```!trendmicro-list-firewall-rules```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -8995,6 +9015,7 @@ List all existing firewall rules
 #### Human Readable Output
 
 >### Firewall Rules
+>
 >|ID|Name|Description|Direction|Action|
 >|---|---|---|---|---|
 >| 1 | Off Domain Exceptions - Domain Client (UDP) |  | outgoing | force-allow |
@@ -9077,143 +9098,143 @@ List all existing firewall rules
 >| 166 | UDP |  | incoming | allow |
 >| 174 | Example Rule |  | incoming | allow |
 
-
 ### trendmicro-create-firewall-rule
+
 ***
 Create a new firewall rule
-
 
 #### Base Command
 
 `trendmicro-create-firewall-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the firewall rule. | Required | 
-| description | Description of the firewall rule. | Optional | 
-| action | Action of the packet filter. Possible values are: log-only, allow, deny, force-allow, bypass. | Required | 
-| priority | Priority of the packet filter. Possible values are: 0, 1, 2, 3, 4. | Optional | 
-| direction | Packet direction. Possible values are: incoming, outgoing. | Required | 
-| frame_type | Supported frame types. Possible values are: any, ip, arp, revarp, ipv4, ipv6, other. | Optional | 
-| frame_number | Ethernet frame number. | Optional | 
-| frame_not | Controls if the frame setting should be inverted. | Optional | 
-| protocol | Protocol. Possible values are: any, icmp, igmp, ggp, tcp, udp, pup, idp, nd, raw, tcp-udp, icmpv6, other. | Optional | 
-| protocol_number | Two-byte protocol number. | Optional | 
-| protocol_not | Controls if the protocol setting should be inverted. | Optional | 
-| source_ip_type | Source IP type. Possible values are: any, single, multiple, masked-ip, range, ip-list. | Optional | 
-| source_ip_value | Source IP. | Optional | 
-| source_ip_mask | Source IP mask. | Optional | 
-| source_ip_range_from | The first value for a range of source IP addresses. | Optional | 
-| source_ip_range_to | The last value for a range of source IP addresses. | Optional | 
-| source_ip_multiple | List of source IP addresses. | Optional | 
-| source_ip_list_id | ID of source IP list. | Optional | 
-| source_ip_not | Controls if the source IP setting should be inverted. | Optional | 
-| source_mac_type | Source MAC type. Possible values are: any, single, multiple, mac-list. | Optional | 
-| source_mac_value | Source MAC address. | Optional | 
-| source_mac_multiple | List of MAC addresses. | Optional | 
-| source_mac_list_id | ID of MAC address list. | Optional | 
-| source_mac_not | Controls if the source MAC setting should be inverted. | Optional | 
-| source_port_type | The type of source port. Possible values are: any, multiple, port-list. | Optional | 
-| source_port_multiple | List of comma-delimited source ports. | Optional | 
-| source_port_list_id | ID of source port list. | Optional | 
-| source_port_not | Controls if the source port setting should be inverted. | Optional | 
-| destination_ip_type | Destination IP type. Possible values are: any, single, multiple, range, masked-ip, ip-list. | Optional | 
-| destination_ip_value | Destination IP. | Optional | 
-| destination_ip_mask | Destination IP mask. | Optional | 
-| destination_ip_range_from | The first value for a range of destination IP addresses. | Optional | 
-| destination_ip_range_to | The last value for a range of destination IP addresses. | Optional | 
-| destination_ip_multiple | List of comma-delimited destination IP addresses. | Optional | 
-| destination_ip_list_id | ID of destination IP list. | Optional | 
-| destination_ip_not | Controls if the destination IP setting should be inverted. | Optional | 
-| destination_mac_type | Destination MAC type. Possible values are: any, single, multiple, mac-list. | Optional | 
-| destination_mac_value | Destination MAC address. | Optional | 
-| destination_mac_multiple | List of comma-delimited MAC addresses. | Optional | 
-| destination_mac_list_id | ID of MAC address list. | Optional | 
-| destination_mac_not | Controls if the destination MAC setting should be inverted. | Optional | 
-| destination_port_type | The type of destination port. Possible values are: any, multiple, port-list. | Optional | 
-| destination_port_multiple | List of comma-delimited destination ports. | Optional | 
-| destination_port_list_id | ID of destination port list. | Optional | 
-| destination_port_not | Controls if the destination port setting should be inverted. | Optional | 
-| any_flags | True if any flags are used. | Optional | 
-| log_disabled | Controls if logging for this filter is disabled. | Optional | 
-| include_packet_data | Controls if this filter should capture data for every log. | Optional | 
-| alert_enabled | Controls if this filter should be alerted on. | Optional | 
-| schedule_id | ID of the schedule to control when this filter is "on". | Optional | 
-| context_id | RuleContext that is applied to this filter. | Optional | 
-| tcpflags | The TCP flags the rule should filter by. Possible values are: syn, ack, psh, urg, fin, rst. | Optional | 
-| tcp_not | Controls if the TCP settings should be inverted. | Optional | 
-| icmp_type | The ICMP type the rule should filter by. | Optional | 
-| icmp_code | The ICMP code the rule should filter by. | Optional | 
-| icmp_not | Controls if the ICMP settings should be inverted. | Optional | 
-
+| name | Name of the firewall rule. | Required |
+| description | Description of the firewall rule. | Optional |
+| action | Action of the packet filter. Possible values are: log-only, allow, deny, force-allow, bypass. | Required |
+| priority | Priority of the packet filter. Possible values are: 0, 1, 2, 3, 4. | Optional |
+| direction | Packet direction. Possible values are: incoming, outgoing. | Required |
+| frame_type | Supported frame types. Possible values are: any, ip, arp, revarp, ipv4, ipv6, other. | Optional |
+| frame_number | Ethernet frame number. | Optional |
+| frame_not | Controls if the frame setting should be inverted. | Optional |
+| protocol | Protocol. Possible values are: any, icmp, igmp, ggp, tcp, udp, pup, idp, nd, raw, tcp-udp, icmpv6, other. | Optional |
+| protocol_number | Two-byte protocol number. | Optional |
+| protocol_not | Controls if the protocol setting should be inverted. | Optional |
+| source_ip_type | Source IP type. Possible values are: any, single, multiple, masked-ip, range, ip-list. | Optional |
+| source_ip_value | Source IP. | Optional |
+| source_ip_mask | Source IP mask. | Optional |
+| source_ip_range_from | The first value for a range of source IP addresses. | Optional |
+| source_ip_range_to | The last value for a range of source IP addresses. | Optional |
+| source_ip_multiple | List of source IP addresses. | Optional |
+| source_ip_list_id | ID of source IP list. | Optional |
+| source_ip_not | Controls if the source IP setting should be inverted. | Optional |
+| source_mac_type | Source MAC type. Possible values are: any, single, multiple, mac-list. | Optional |
+| source_mac_value | Source MAC address. | Optional |
+| source_mac_multiple | List of MAC addresses. | Optional |
+| source_mac_list_id | ID of MAC address list. | Optional |
+| source_mac_not | Controls if the source MAC setting should be inverted. | Optional |
+| source_port_type | The type of source port. Possible values are: any, multiple, port-list. | Optional |
+| source_port_multiple | List of comma-delimited source ports. | Optional |
+| source_port_list_id | ID of source port list. | Optional |
+| source_port_not | Controls if the source port setting should be inverted. | Optional |
+| destination_ip_type | Destination IP type. Possible values are: any, single, multiple, range, masked-ip, ip-list. | Optional |
+| destination_ip_value | Destination IP. | Optional |
+| destination_ip_mask | Destination IP mask. | Optional |
+| destination_ip_range_from | The first value for a range of destination IP addresses. | Optional |
+| destination_ip_range_to | The last value for a range of destination IP addresses. | Optional |
+| destination_ip_multiple | List of comma-delimited destination IP addresses. | Optional |
+| destination_ip_list_id | ID of destination IP list. | Optional |
+| destination_ip_not | Controls if the destination IP setting should be inverted. | Optional |
+| destination_mac_type | Destination MAC type. Possible values are: any, single, multiple, mac-list. | Optional |
+| destination_mac_value | Destination MAC address. | Optional |
+| destination_mac_multiple | List of comma-delimited MAC addresses. | Optional |
+| destination_mac_list_id | ID of MAC address list. | Optional |
+| destination_mac_not | Controls if the destination MAC setting should be inverted. | Optional |
+| destination_port_type | The type of destination port. Possible values are: any, multiple, port-list. | Optional |
+| destination_port_multiple | List of comma-delimited destination ports. | Optional |
+| destination_port_list_id | ID of destination port list. | Optional |
+| destination_port_not | Controls if the destination port setting should be inverted. | Optional |
+| any_flags | True if any flags are used. | Optional |
+| log_disabled | Controls if logging for this filter is disabled. | Optional |
+| include_packet_data | Controls if this filter should capture data for every log. | Optional |
+| alert_enabled | Controls if this filter should be alerted on. | Optional |
+| schedule_id | ID of the schedule to control when this filter is "on". | Optional |
+| context_id | RuleContext that is applied to this filter. | Optional |
+| tcpflags | The TCP flags the rule should filter by. Possible values are: syn, ack, psh, urg, fin, rst. | Optional |
+| tcp_not | Controls if the TCP settings should be inverted. | Optional |
+| icmp_type | The ICMP type the rule should filter by. | Optional |
+| icmp_code | The ICMP code the rule should filter by. | Optional |
+| icmp_not | Controls if the ICMP settings should be inverted. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.FirewallRules.name | string | Name of the firewall rule | 
-| TrendMicro.FirewallRules.description | string | Description of the firewall rule | 
-| TrendMicro.FirewallRules.action | string | Action of the packet filter | 
-| TrendMicro.FirewallRules.priority | string | Priority of the packet filter | 
-| TrendMicro.FirewallRules.direction | string | Packet direction | 
-| TrendMicro.FirewallRules.frameType | string | Supported frame types | 
-| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number | 
-| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted | 
-| TrendMicro.FirewallRules.protocol | string | Protocol | 
-| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number | 
-| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted | 
-| TrendMicro.FirewallRules.sourceIPType | string | Source IP type | 
-| TrendMicro.FirewallRules.sourceIPValue | string | Source IP | 
-| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask | 
-| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list | 
-| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted | 
-| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type | 
-| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address | 
-| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses | 
-| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted | 
-| TrendMicro.FirewallRules.sourcePortType | string | The type of source port | 
-| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports | 
-| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list | 
-| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted | 
-| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type | 
-| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP | 
-| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask | 
-| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list | 
-| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted | 
-| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type | 
-| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address | 
-| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses | 
-| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted | 
-| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port | 
-| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports | 
-| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list | 
-| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted | 
-| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used | 
-| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled | 
-| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log | 
-| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on | 
-| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" | 
-| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter | 
-| TrendMicro.FirewallRules.tcpflags | array | TCP flags | 
-| TrendMicro.FirewallRules.TCPNot | boolean | Whether the TCP settings are inverted | 
-| TrendMicro.FirewallRules.ICMPType | integer | ICMP type | 
-| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code | 
-| TrendMicro.FirewallRules.ICMPNot | boolean | Whether the ICMP settings are inverted | 
-
+| TrendMicro.FirewallRules.name | string | Name of the firewall rule |
+| TrendMicro.FirewallRules.description | string | Description of the firewall rule |
+| TrendMicro.FirewallRules.action | string | Action of the packet filter |
+| TrendMicro.FirewallRules.priority | string | Priority of the packet filter |
+| TrendMicro.FirewallRules.direction | string | Packet direction |
+| TrendMicro.FirewallRules.frameType | string | Supported frame types |
+| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number |
+| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted |
+| TrendMicro.FirewallRules.protocol | string | Protocol |
+| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number |
+| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted |
+| TrendMicro.FirewallRules.sourceIPType | string | Source IP type |
+| TrendMicro.FirewallRules.sourceIPValue | string | Source IP |
+| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask |
+| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list |
+| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted |
+| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type |
+| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address |
+| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses |
+| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted |
+| TrendMicro.FirewallRules.sourcePortType | string | The type of source port |
+| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports |
+| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list |
+| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted |
+| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type |
+| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP |
+| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask |
+| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list |
+| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted |
+| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type |
+| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address |
+| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses |
+| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted |
+| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port |
+| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports |
+| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list |
+| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted |
+| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used |
+| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled |
+| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log |
+| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on |
+| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" |
+| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter |
+| TrendMicro.FirewallRules.tcpflags | array | TCP flags |
+| TrendMicro.FirewallRules.TCPNot | boolean | Whether the TCP settings are inverted |
+| TrendMicro.FirewallRules.ICMPType | integer | ICMP type |
+| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code |
+| TrendMicro.FirewallRules.ICMPNot | boolean | Whether the ICMP settings are inverted |
 
 #### Command Example
+
 ```!trendmicro-create-firewall-rule name="Example Rule" action=allow protocol=udp direction=incoming```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9253,92 +9274,93 @@ Create a new firewall rule
 #### Human Readable Output
 
 >### Firewall Rules
+>
 >|ID|Name|Direction|Action|
 >|---|---|---|---|
 >| 175 | Example Rule | incoming | allow |
 
-
 ### trendmicro-get-firewall-rule
+
 ***
 Get information about a certain firewall rule
-
 
 #### Base Command
 
 `trendmicro-get-firewall-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_rule_id | The ID number of the firewall rule to get. | Required | 
-
+| firewall_rule_id | The ID number of the firewall rule to get. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.FirewallRules.name | string | Name of the firewall rule | 
-| TrendMicro.FirewallRules.description | string | Description of the firewall rule | 
-| TrendMicro.FirewallRules.action | string | Action of the packet filter | 
-| TrendMicro.FirewallRules.priority | string | Priority of the packet filter | 
-| TrendMicro.FirewallRules.direction | string | Packet direction | 
-| TrendMicro.FirewallRules.frameType | string | Supported frame types | 
-| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number | 
-| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted | 
-| TrendMicro.FirewallRules.protocol | string | Protocol | 
-| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number | 
-| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted | 
-| TrendMicro.FirewallRules.sourceIPType | string | Source IP type | 
-| TrendMicro.FirewallRules.sourceIPValue | string | Source IP | 
-| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask | 
-| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list | 
-| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted | 
-| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type | 
-| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address | 
-| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses | 
-| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted | 
-| TrendMicro.FirewallRules.sourcePortType | string | The type of source port | 
-| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports | 
-| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list | 
-| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted | 
-| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type | 
-| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP | 
-| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask | 
-| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list | 
-| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted | 
-| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type | 
-| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address | 
-| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses | 
-| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted | 
-| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port | 
-| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports | 
-| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list | 
-| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted | 
-| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used | 
-| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled | 
-| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log | 
-| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on | 
-| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" | 
-| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter | 
-| TrendMicro.FirewallRules.tcpflags | array | TCP flags | 
-| TrendMicro.FirewallRules.TCPNot | boolean | Whether the TCP settings are inverted or not | 
-| TrendMicro.FirewallRules.ICMPType | integer | ICMP type | 
-| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code | 
-| TrendMicro.FirewallRules.ICMPNot | boolean | Whether the ICMP settings are inverted or not | 
-
+| TrendMicro.FirewallRules.name | string | Name of the firewall rule |
+| TrendMicro.FirewallRules.description | string | Description of the firewall rule |
+| TrendMicro.FirewallRules.action | string | Action of the packet filter |
+| TrendMicro.FirewallRules.priority | string | Priority of the packet filter |
+| TrendMicro.FirewallRules.direction | string | Packet direction |
+| TrendMicro.FirewallRules.frameType | string | Supported frame types |
+| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number |
+| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted |
+| TrendMicro.FirewallRules.protocol | string | Protocol |
+| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number |
+| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted |
+| TrendMicro.FirewallRules.sourceIPType | string | Source IP type |
+| TrendMicro.FirewallRules.sourceIPValue | string | Source IP |
+| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask |
+| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list |
+| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted |
+| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type |
+| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address |
+| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses |
+| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted |
+| TrendMicro.FirewallRules.sourcePortType | string | The type of source port |
+| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports |
+| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list |
+| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted |
+| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type |
+| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP |
+| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask |
+| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list |
+| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted |
+| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type |
+| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address |
+| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses |
+| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted |
+| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port |
+| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports |
+| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list |
+| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted |
+| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used |
+| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled |
+| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log |
+| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on |
+| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" |
+| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter |
+| TrendMicro.FirewallRules.tcpflags | array | TCP flags |
+| TrendMicro.FirewallRules.TCPNot | boolean | Whether the TCP settings are inverted or not |
+| TrendMicro.FirewallRules.ICMPType | integer | ICMP type |
+| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code |
+| TrendMicro.FirewallRules.ICMPNot | boolean | Whether the ICMP settings are inverted or not |
 
 #### Command Example
+
 ```!trendmicro-get-firewall-rule firewall_rule_id=174```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9378,148 +9400,149 @@ Get information about a certain firewall rule
 #### Human Readable Output
 
 >### Details of The Firewall Rule 174
+>
 >|ID|Name|Direction|Action|
 >|---|---|---|---|
 >| 174 | Example Rule | incoming | allow |
 
-
 ### trendmicro-modify-firewall-rule
+
 ***
 Modify the properties of a certain firewall rule
-
 
 #### Base Command
 
 `trendmicro-modify-firewall-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_rule_id | The ID number of the firewall rule to modify. | Required | 
-| name | Name of the firewall rule. | Optional | 
-| description | Description of the firewall rule. | Optional | 
-| action | Action of the packet filter. Possible values are: log-only, allow, deny, force-allow, bypass. | Optional | 
-| priority | Priority of the packet filter. Possible values are: 0, 1, 2, 3, 4. | Optional | 
-| direction | Packet direction. Possible values are: incoming, outgoing. | Optional | 
-| frame_type | Supported frame types. Possible values are: any, ip, arp, revarp, ipv4, ipv6, other. | Optional | 
-| frame_number | Ethernet frame number. | Optional | 
-| frame_not | Controls if the frame setting should be inverted. | Optional | 
-| protocol | Protocol. Possible values are: any, icmp, igmp, ggp, tcp, pup, udp, idp, nd, raw, tcp-udp, icmpv6, other. | Optional | 
-| protocol_number | Two-byte protocol number. | Optional | 
-| protocol_not | Controls if the protocol setting should be inverted. | Optional | 
-| source_ip_type | Source IP type. Possible values are: any, masked-ip, range, ip-list, single, multiple. | Optional | 
-| source_ip_value | Source IP. | Optional | 
-| source_ip_mask | Source IP mask. | Optional | 
-| source_ip_range_from | The first value for a range of source IP addresses. | Optional | 
-| source_ip_range_to | The last value for a range of source IP addresses. | Optional | 
-| source_ip_multiple | List of source IP addresses. | Optional | 
-| source_ip_list_id | ID of source IP list. | Optional | 
-| source_ip_not | Controls if the source IP setting should be inverted. | Optional | 
-| source_mac_type | Source MAC type. Possible values are: any, single, mac-list, multiple. | Optional | 
-| source_mac_value | Source MAC address. | Optional | 
-| source_mac_multiple | List of MAC addresses. | Optional | 
-| source_mac_list_id | ID of MAC address list. | Optional | 
-| source_mac_not | Controls if the source MAC setting should be inverted. | Optional | 
-| source_port_type | The type of source port. Possible values are: any, multiple, port-list. | Optional | 
-| source_port_multiple | List of comma-delimited source ports. | Optional | 
-| source_port_list_id | ID of source port list. | Optional | 
-| source_port_not | Controls if the source port setting should be inverted. | Optional | 
-| destination_ip_type | Destination IP type. Possible values are: any, single, multiple, range, masked-ip, ip-list. | Optional | 
-| destination_ip_value | Destination IP. | Optional | 
-| destination_ip_mask | Destination IP mask. | Optional | 
-| destination_ip_range_from | The first value for a range of destination IP addresses. | Optional | 
-| destination_ip_range_to | The last value for a range of destination IP addresses. | Optional | 
-| destination_ip_multiple | List of comma-delimited destination IP addresses. | Optional | 
-| destination_ip_list_id | ID of destination IP list. | Optional | 
-| destination_ip_not | Controls if the destination IP setting should be inverted. | Optional | 
-| destination_mac_type | Destination MAC type. Possible values are: any, single, multiple, mac-list. | Optional | 
-| destination_mac_value | Destination MAC address. | Optional | 
-| destination_mac_multiple | List of comma-delimited MAC addresses. | Optional | 
-| destination_mac_list_id | ID of MAC address list. | Optional | 
-| destination_mac_not | Controls if the destination MAC setting should be inverted. | Optional | 
-| destination_port_type | The type of destination port. Possible values are: any, port-list, multiple. | Optional | 
-| destination_port_multiple | List of comma-delimited destination ports. | Optional | 
-| destination_port_list_id | ID of destination port list. | Optional | 
-| destination_port_not | Controls if the destination port setting should be inverted. | Optional | 
-| any_flags | True if any flags are used. | Optional | 
-| log_disabled | Controls if logging for this filter is disabled. | Optional | 
-| include_packet_data | Controls if this filter should capture data for every log. | Optional | 
-| alert_enabled | Controls if this filter should be alerted on. | Optional | 
-| schedule_id | ID of the schedule to control when this filter is "on". | Optional | 
-| context_id | RuleContext that is applied to this filter. | Optional | 
-| tcpflags | The TCP flags the rule should filter by. Possible values are: syn, ack, psh, urg, fin, rst. | Optional | 
-| tcp_not | Controls if the TCP settings should be inverted. | Optional | 
-| icmp_type | The ICMP type the rule should filter by. | Optional | 
-| icmp_code | The ICMP code the rule should filter by. | Optional | 
-| icmp_not | Controls if the ICMP settings should be inverted. | Optional | 
-
+| firewall_rule_id | The ID number of the firewall rule to modify. | Required |
+| name | Name of the firewall rule. | Optional |
+| description | Description of the firewall rule. | Optional |
+| action | Action of the packet filter. Possible values are: log-only, allow, deny, force-allow, bypass. | Optional |
+| priority | Priority of the packet filter. Possible values are: 0, 1, 2, 3, 4. | Optional |
+| direction | Packet direction. Possible values are: incoming, outgoing. | Optional |
+| frame_type | Supported frame types. Possible values are: any, ip, arp, revarp, ipv4, ipv6, other. | Optional |
+| frame_number | Ethernet frame number. | Optional |
+| frame_not | Controls if the frame setting should be inverted. | Optional |
+| protocol | Protocol. Possible values are: any, icmp, igmp, ggp, tcp, pup, udp, idp, nd, raw, tcp-udp, icmpv6, other. | Optional |
+| protocol_number | Two-byte protocol number. | Optional |
+| protocol_not | Controls if the protocol setting should be inverted. | Optional |
+| source_ip_type | Source IP type. Possible values are: any, masked-ip, range, ip-list, single, multiple. | Optional |
+| source_ip_value | Source IP. | Optional |
+| source_ip_mask | Source IP mask. | Optional |
+| source_ip_range_from | The first value for a range of source IP addresses. | Optional |
+| source_ip_range_to | The last value for a range of source IP addresses. | Optional |
+| source_ip_multiple | List of source IP addresses. | Optional |
+| source_ip_list_id | ID of source IP list. | Optional |
+| source_ip_not | Controls if the source IP setting should be inverted. | Optional |
+| source_mac_type | Source MAC type. Possible values are: any, single, mac-list, multiple. | Optional |
+| source_mac_value | Source MAC address. | Optional |
+| source_mac_multiple | List of MAC addresses. | Optional |
+| source_mac_list_id | ID of MAC address list. | Optional |
+| source_mac_not | Controls if the source MAC setting should be inverted. | Optional |
+| source_port_type | The type of source port. Possible values are: any, multiple, port-list. | Optional |
+| source_port_multiple | List of comma-delimited source ports. | Optional |
+| source_port_list_id | ID of source port list. | Optional |
+| source_port_not | Controls if the source port setting should be inverted. | Optional |
+| destination_ip_type | Destination IP type. Possible values are: any, single, multiple, range, masked-ip, ip-list. | Optional |
+| destination_ip_value | Destination IP. | Optional |
+| destination_ip_mask | Destination IP mask. | Optional |
+| destination_ip_range_from | The first value for a range of destination IP addresses. | Optional |
+| destination_ip_range_to | The last value for a range of destination IP addresses. | Optional |
+| destination_ip_multiple | List of comma-delimited destination IP addresses. | Optional |
+| destination_ip_list_id | ID of destination IP list. | Optional |
+| destination_ip_not | Controls if the destination IP setting should be inverted. | Optional |
+| destination_mac_type | Destination MAC type. Possible values are: any, single, multiple, mac-list. | Optional |
+| destination_mac_value | Destination MAC address. | Optional |
+| destination_mac_multiple | List of comma-delimited MAC addresses. | Optional |
+| destination_mac_list_id | ID of MAC address list. | Optional |
+| destination_mac_not | Controls if the destination MAC setting should be inverted. | Optional |
+| destination_port_type | The type of destination port. Possible values are: any, port-list, multiple. | Optional |
+| destination_port_multiple | List of comma-delimited destination ports. | Optional |
+| destination_port_list_id | ID of destination port list. | Optional |
+| destination_port_not | Controls if the destination port setting should be inverted. | Optional |
+| any_flags | True if any flags are used. | Optional |
+| log_disabled | Controls if logging for this filter is disabled. | Optional |
+| include_packet_data | Controls if this filter should capture data for every log. | Optional |
+| alert_enabled | Controls if this filter should be alerted on. | Optional |
+| schedule_id | ID of the schedule to control when this filter is "on". | Optional |
+| context_id | RuleContext that is applied to this filter. | Optional |
+| tcpflags | The TCP flags the rule should filter by. Possible values are: syn, ack, psh, urg, fin, rst. | Optional |
+| tcp_not | Controls if the TCP settings should be inverted. | Optional |
+| icmp_type | The ICMP type the rule should filter by. | Optional |
+| icmp_code | The ICMP code the rule should filter by. | Optional |
+| icmp_not | Controls if the ICMP settings should be inverted. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.FirewallRules.name | string | Name of the firewall rule | 
-| TrendMicro.FirewallRules.description | string | Description of the firewall rule | 
-| TrendMicro.FirewallRules.action | string | Action of the packet filter | 
-| TrendMicro.FirewallRules.priority | string | Priority of the packet filter | 
-| TrendMicro.FirewallRules.direction | string | Packet direction | 
-| TrendMicro.FirewallRules.frameType | string | Supported frame types | 
-| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number | 
-| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted | 
-| TrendMicro.FirewallRules.protocol | string | Protocol | 
-| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number | 
-| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted | 
-| TrendMicro.FirewallRules.sourceIPType | string | Source IP type | 
-| TrendMicro.FirewallRules.sourceIPValue | string | Source IP | 
-| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask | 
-| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses | 
-| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list | 
-| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted | 
-| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type | 
-| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address | 
-| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses | 
-| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted | 
-| TrendMicro.FirewallRules.sourcePortType | string | The type of source port | 
-| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports | 
-| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list | 
-| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted | 
-| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type | 
-| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP | 
-| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask | 
-| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses | 
-| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list | 
-| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted | 
-| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type | 
-| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address | 
-| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses | 
-| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list | 
-| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted | 
-| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port | 
-| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports | 
-| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list | 
-| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted | 
-| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used | 
-| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled | 
-| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log | 
-| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on | 
-| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" | 
-| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter | 
-| TrendMicro.FirewallRules.tcpflags | array | TCP flags | 
-| TrendMicro.FirewallRules.TCPNot | boolean | Whether the TCP settings are inverted or not | 
-| TrendMicro.FirewallRules.ICMPType | integer | ICMP type | 
-| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code | 
-| TrendMicro.FirewallRules.ICMPNot | boolean | Whether the ICMP settings are inverted or not | 
-
+| TrendMicro.FirewallRules.name | string | Name of the firewall rule |
+| TrendMicro.FirewallRules.description | string | Description of the firewall rule |
+| TrendMicro.FirewallRules.action | string | Action of the packet filter |
+| TrendMicro.FirewallRules.priority | string | Priority of the packet filter |
+| TrendMicro.FirewallRules.direction | string | Packet direction |
+| TrendMicro.FirewallRules.frameType | string | Supported frame types |
+| TrendMicro.FirewallRules.frameNumber | integer | Ethernet frame number |
+| TrendMicro.FirewallRules.frameNot | boolean | Controls if the frame setting should be inverted |
+| TrendMicro.FirewallRules.protocol | string | Protocol |
+| TrendMicro.FirewallRules.protocolNumber | integer | Two-byte protocol number |
+| TrendMicro.FirewallRules.protocolNot | boolean | Controls if the protocol setting should be inverted |
+| TrendMicro.FirewallRules.sourceIPType | string | Source IP type |
+| TrendMicro.FirewallRules.sourceIPValue | string | Source IP |
+| TrendMicro.FirewallRules.sourceIPMask | string | Source IP mask |
+| TrendMicro.FirewallRules.sourceIPRangeFrom | string | The first value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPRangeTo | string | The last value for a range of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPMultiple | array | List of source IP addresses |
+| TrendMicro.FirewallRules.sourceIPListID | integer | ID of source IP list |
+| TrendMicro.FirewallRules.sourceIPNot | boolean | Controls if the source IP setting should be inverted |
+| TrendMicro.FirewallRules.sourceMACType | string | Source MAC type |
+| TrendMicro.FirewallRules.sourceMACValue | string | Source MAC address |
+| TrendMicro.FirewallRules.sourceMACMultiple | array | List of MAC addresses |
+| TrendMicro.FirewallRules.sourceMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.sourceMACNot | boolean | Controls if the source MAC setting should be inverted |
+| TrendMicro.FirewallRules.sourcePortType | string | The type of source port |
+| TrendMicro.FirewallRules.sourcePortMultiple | array | List of comma-delimited source ports |
+| TrendMicro.FirewallRules.sourcePortListID | integer | ID of source port list |
+| TrendMicro.FirewallRules.sourcePortNot | boolean | Controls if the source port setting should be inverted |
+| TrendMicro.FirewallRules.destinationIPType | string | Destination IP type |
+| TrendMicro.FirewallRules.destinationIPValue | string | Destination IP |
+| TrendMicro.FirewallRules.destinationIPMask | string | Destination IP mask |
+| TrendMicro.FirewallRules.destinationIPRangeFrom | string | The first value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPRangeTo | string | The last value for a range of destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPMultiple | array | List of comma-delimited destination IP addresses |
+| TrendMicro.FirewallRules.destinationIPListID | integer | ID of destination IP list |
+| TrendMicro.FirewallRules.destinationIPNot | boolean | Controls if the destination IP setting should be inverted |
+| TrendMicro.FirewallRules.destinationMACType | string | Destination MAC type |
+| TrendMicro.FirewallRules.destinationMACValue | string | Destination MAC address |
+| TrendMicro.FirewallRules.destinationMACMultiple | array | List of comma-delimited MAC addresses |
+| TrendMicro.FirewallRules.destinationMACListID | integer | ID of MAC address list |
+| TrendMicro.FirewallRules.destinationMACNot | boolean | Controls if the destination MAC setting should be inverted |
+| TrendMicro.FirewallRules.destinationPortType | string | The type of destination port |
+| TrendMicro.FirewallRules.destinationPortMultiple | array | List of comma-delimited destination ports |
+| TrendMicro.FirewallRules.destinationPortListID | integer | ID of destination port list |
+| TrendMicro.FirewallRules.destinationPortNot | boolean | Controls if the destination port setting should be inverted |
+| TrendMicro.FirewallRules.anyFlags | boolean | True if any flags are used |
+| TrendMicro.FirewallRules.logDisabled | boolean | Controls if logging for this filter is disabled |
+| TrendMicro.FirewallRules.includePacketData | boolean | Controls if this filter should capture data for every log |
+| TrendMicro.FirewallRules.alertEnabled | boolean | Controls if this filter should be alerted on |
+| TrendMicro.FirewallRules.scheduleID | integer | ID of the schedule to control when this filter is "on" |
+| TrendMicro.FirewallRules.contextID | integer | RuleContext that is applied to this filter |
+| TrendMicro.FirewallRules.tcpflags | array | TCP flags |
+| TrendMicro.FirewallRules.TCPNot | boolean | Whether the TCP settings are inverted or not |
+| TrendMicro.FirewallRules.ICMPType | integer | ICMP type |
+| TrendMicro.FirewallRules.ICMPCode | integer | ICMP code |
+| TrendMicro.FirewallRules.ICMPNot | boolean | Whether the ICMP settings are inverted or not |
 
 #### Command Example
+
 ```!trendmicro-modify-firewall-rule firewall_rule_id=174 action=deny```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9559,31 +9582,32 @@ Modify the properties of a certain firewall rule
 #### Human Readable Output
 
 >### Details About The Modified Firewall Rule 174
+>
 >|ID|Name|Direction|Action|
 >|---|---|---|---|
 >| 174 | Example Rule | incoming | deny |
 
-
 ### trendmicro-delete-firewall-rule
+
 ***
 Delete a certain firewall rule
-
 
 #### Base Command
 
 `trendmicro-delete-firewall-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firewall_rule_id | The ID number of the firewall rule to delete. | Required | 
-
+| firewall_rule_id | The ID number of the firewall rule to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-delete-firewall-rule firewall_rule_id=174```
 
 #### Human Readable Output
@@ -9591,32 +9615,33 @@ There is no context output for this command.
 >The firewall rule was successfully deleted!
 
 ### trendmicro-list-firewall-rule-ids-of-computer
+
 ***
 List all IDs of the firewall rules that are assigned to a certain computer
-
 
 #### Base Command
 
 `trendmicro-list-firewall-rule-ids-of-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The ID number of the computer. | Required | 
-| overrides | Return only rule IDs assigned directly to the current computer. Possible values are: true, false. Default is false. | Optional | 
-
+| computer_id | The ID number of the computer. | Required |
+| overrides | Return only rule IDs assigned directly to the current computer. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.FirewallAssignments.assignedRuleIDs | array | List of assigned firewall rule IDs | 
-
+| TrendMicro.FirewallAssignments.assignedRuleIDs | array | List of assigned firewall rule IDs |
 
 #### Command Example
+
 ```!trendmicro-list-firewall-rule-ids-of-computer computer_id=216```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9629,36 +9654,37 @@ List all IDs of the firewall rules that are assigned to a certain computer
 
 #### Human Readable Output
 
->The firewall rules IDs that are assigned to 216: 
+>The firewall rules IDs that are assigned to 216:
 
 ### trendmicro-add-firewall-rule-ids-to-computer
+
 ***
 Add firewall rule IDs to a certain computer
-
 
 #### Base Command
 
 `trendmicro-add-firewall-rule-ids-to-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The ID number of the computer. | Required | 
-| overrides | Return only rule IDs assigned directly to the current computer. Possible values are: true, false. Default is false. | Optional | 
-| rule_ids | The rule IDs to add to the computer. | Required | 
-
+| computer_id | The ID number of the computer. | Required |
+| overrides | Return only rule IDs assigned directly to the current computer. Possible values are: true, false. Default is false. | Optional |
+| rule_ids | The rule IDs to add to the computer. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.FirewallAssignments.assignedRuleIDs | array | List of assigned firewall rule IDs | 
-
+| TrendMicro.FirewallAssignments.assignedRuleIDs | array | List of assigned firewall rule IDs |
 
 #### Command Example
+
 ```!trendmicro-add-firewall-rule-ids-to-computer computer_id=216 rule_ids=31```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9678,33 +9704,34 @@ Add firewall rule IDs to a certain computer
 >The firewall rules IDs that are assigned to computer 216: 21, 22, 31
 
 ### trendmicro-set-firewall-rule-ids-to-computer
+
 ***
 Assign firewall rule IDs to a certain computer
-
 
 #### Base Command
 
 `trendmicro-set-firewall-rule-ids-to-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The ID number of the computer. | Required | 
-| overrides | Return only rule IDs assigned directly to the current computer. Possible values are: true, false. Default is false. | Optional | 
-| rule_ids | The rule IDs to assign to the computer. | Required | 
-
+| computer_id | The ID number of the computer. | Required |
+| overrides | Return only rule IDs assigned directly to the current computer. Possible values are: true, false. Default is false. | Optional |
+| rule_ids | The rule IDs to assign to the computer. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.FirewallAssignments.assignedRuleIDs | array | List of assigned firewall rule IDs | 
-
+| TrendMicro.FirewallAssignments.assignedRuleIDs | array | List of assigned firewall rule IDs |
 
 #### Command Example
+
 ```!trendmicro-set-firewall-rule-ids-to-computer computer_id=216 rule_ids=21,22```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -9723,36 +9750,37 @@ Assign firewall rule IDs to a certain computer
 >The firewall rules IDs that are assigned to computer 216: 21, 22
 
 ### trendmicro-get-policy
+
 ***
 Get information about a certain policy
-
 
 #### Base Command
 
 `trendmicro-get-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The ID number of the policy to get. | Required | 
-| overrides | Show only overrides defined for the current policy. Possible values are: true, false. Default is false. | Optional | 
-
+| policy_id | The ID number of the policy to get. | Required |
+| overrides | Show only overrides defined for the current policy. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Policies.parentID | integer | ID of the parent policy | 
-| TrendMicro.Policies.name | string | Name of the policy | 
-| TrendMicro.Policies.description | string | Description of the policy | 
-| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy | 
-| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes | 
-
+| TrendMicro.Policies.parentID | integer | ID of the parent policy |
+| TrendMicro.Policies.name | string | Name of the policy |
+| TrendMicro.Policies.description | string | Description of the policy |
+| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy |
+| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes |
 
 #### Command Example
+
 ```!trendmicro-get-policy policy_id=105```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -10495,47 +10523,48 @@ Get information about a certain policy
 #### Human Readable Output
 
 >### Details About The Policy 105
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 105 | Example Policy | Example policy description |
 
-
 ### trendmicro-modify-policy
+
 ***
 Modify a certain policy
-
 
 #### Base Command
 
 `trendmicro-modify-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The ID number of the policy to modify. | Required | 
-| overrides | Show only overrides defined for the current policy. Possible values are: true, false. Default is false. | Optional | 
-| parent_id | ID of the parent policy. | Optional | 
-| name | Name of the policy. | Optional | 
-| description | Description of the policy. | Optional | 
-| recommendation_scan_mode | Enable or disable ongoing recommendation scans for computers assigned this policy. | Optional | 
-| auto_requires_update | Automatically update computers assigned this policy when the configuration changes. | Optional | 
-
+| policy_id | The ID number of the policy to modify. | Required |
+| overrides | Show only overrides defined for the current policy. Possible values are: true, false. Default is false. | Optional |
+| parent_id | ID of the parent policy. | Optional |
+| name | Name of the policy. | Optional |
+| description | Description of the policy. | Optional |
+| recommendation_scan_mode | Enable or disable ongoing recommendation scans for computers assigned this policy. | Optional |
+| auto_requires_update | Automatically update computers assigned this policy when the configuration changes. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Policies.parentID | integer | ID of the parent policy | 
-| TrendMicro.Policies.name | string | Name of the policy | 
-| TrendMicro.Policies.description | string | Description of the policy | 
-| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy | 
-| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes | 
-
+| TrendMicro.Policies.parentID | integer | ID of the parent policy |
+| TrendMicro.Policies.name | string | Name of the policy |
+| TrendMicro.Policies.description | string | Description of the policy |
+| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy |
+| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes |
 
 #### Command Example
+
 ```!trendmicro-modify-policy policy_id=105 description="Example policy description"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -11278,31 +11307,32 @@ Modify a certain policy
 #### Human Readable Output
 
 >### Details About The Policy 105
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 105 | Example Policy | Example policy description |
 
-
 ### trendmicro-delete-policy
+
 ***
 Delete a certain policy
-
 
 #### Base Command
 
 `trendmicro-delete-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The ID number of the policy to delete. | Required | 
-
+| policy_id | The ID number of the policy to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-delete-policy policy_id=105```
 
 #### Human Readable Output
@@ -11310,35 +11340,36 @@ There is no context output for this command.
 >The policy was successfully deleted!
 
 ### trendmicro-get-policy-setting
+
 ***
 Get information about a setting of a certain policy
-
 
 #### Base Command
 
 `trendmicro-get-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The ID number of the policy. | Required | 
-| name | The name of the policy setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required | 
-| overrides | Show the value only if defined for the current policy. Possible values are: true, false. Default is false. | Optional | 
-
+| policy_id | The ID number of the policy. | Required |
+| name | The name of the policy setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required |
+| overrides | Show the value only if defined for the current policy. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.PolicySettings.policyId | integer | Policy ID of a Setting | 
-| TrendMicro.PolicySettings.name | string | Name of a Setting | 
-| TrendMicro.PolicySettings.value | string | Value of a Setting | 
-
+| TrendMicro.PolicySettings.policyId | integer | Policy ID of a Setting |
+| TrendMicro.PolicySettings.name | string | Name of a Setting |
+| TrendMicro.PolicySettings.value | string | Value of a Setting |
 
 #### Command Example
+
 ```!trendmicro-get-policy-setting policy_id=105 name=firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -11354,42 +11385,43 @@ Get information about a setting of a certain policy
 #### Human Readable Output
 
 >### The Policy Setting
+>
 >|Policy Id|Name|Value|
 >|---|---|---|
 >| 105 | firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled | false |
 
-
 ### trendmicro-modify-policy-setting
+
 ***
 Modify the value of a setting of a certain policy
-
 
 #### Base Command
 
 `trendmicro-modify-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The ID number of the policy. | Required | 
-| name | The name of the setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required | 
-| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional | 
-| value | Value of a Setting. | Optional | 
-
+| policy_id | The ID number of the policy. | Required |
+| name | The name of the setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required |
+| overrides | Show the value only if defined for the current computer. Possible values are: true, false. Default is false. | Optional |
+| value | Value of a Setting. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.PolicySettings.policyId | integer | Policy Id of a Setting | 
-| TrendMicro.PolicySettings.name | string | Name of a Setting | 
-| TrendMicro.PolicySettings.value | string | Value of a Setting | 
-
+| TrendMicro.PolicySettings.policyId | integer | Policy Id of a Setting |
+| TrendMicro.PolicySettings.name | string | Name of a Setting |
+| TrendMicro.PolicySettings.value | string | Value of a Setting |
 
 #### Command Example
+
 ```!trendmicro-modify-policy-setting name=firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled policy_id=105 value=true```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -11404,42 +11436,43 @@ Modify the value of a setting of a certain policy
 
 #### Human Readable Output
 
->### The Policy Setting: 
+>### The Policy Setting
+>
 >|Policy Id|Name|Value|
 >|---|---|---|
 >| 105 | firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled | true |
 
-
 ### trendmicro-reset-policy-setting
+
 ***
 Reset the value of a setting of a certain policy
-
 
 #### Base Command
 
 `trendmicro-reset-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The ID number of the policy. | Required | 
-| name | The name of the policy setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required | 
-| overrides | Show the value only if defined for the current policy. Possible values are: true, false. Default is false. | Optional | 
-
+| policy_id | The ID number of the policy. | Required |
+| name | The name of the policy setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required |
+| overrides | Show the value only if defined for the current policy. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.PolicySettings.policyId | integer | Policy Id of a Setting | 
-| TrendMicro.PolicySettings.name | string | Name of a Setting | 
-| TrendMicro.PolicySettings.value | string | Value of a Setting | 
-
+| TrendMicro.PolicySettings.policyId | integer | Policy Id of a Setting |
+| TrendMicro.PolicySettings.name | string | Name of a Setting |
+| TrendMicro.PolicySettings.value | string | Value of a Setting |
 
 #### Command Example
+
 ```!trendmicro-reset-policy-setting name=firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled policy_id=105```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -11455,41 +11488,42 @@ Reset the value of a setting of a certain policy
 #### Human Readable Output
 
 >### The Policy Setting
+>
 >|Policy Id|Name|Value|
 >|---|---|---|
 >| 105 | firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled | false |
 
-
 ### trendmicro-list-policies
+
 ***
 List all existing policies
-
 
 #### Base Command
 
 `trendmicro-list-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| overrides | Show only overrides defined for the current policy. Possible values are: true, false. Default is false. | Optional | 
-
+| overrides | Show only overrides defined for the current policy. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Policies.parentID | integer | ID of the parent policy | 
-| TrendMicro.Policies.name | string | Name of the policy | 
-| TrendMicro.Policies.description | string | Description of the policy | 
-| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy | 
-| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes | 
-
+| TrendMicro.Policies.parentID | integer | ID of the parent policy |
+| TrendMicro.Policies.name | string | Name of the policy |
+| TrendMicro.Policies.description | string | Description of the policy |
+| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy |
+| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes |
 
 #### Command Example
+
 ```!trendmicro-list-policies```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -21338,6 +21372,7 @@ List all existing policies
 #### Human Readable Output
 
 >### Policies list
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 1 | Base Policy | A policy from which all other policies can inherit. Only the most general settings should be applied to this policy as they will apply to all policies that inherit from it, unless overridden. More specific settings and rules should be added to sub-policies that are assigned to computers. |
@@ -21354,43 +21389,43 @@ List all existing policies
 >| 102 | test policy |  |
 >| 105 | Example Policy | Example policy description |
 
-
 ### trendmicro-search-policies
+
 ***
 Search for specific policies by some field name with a certain type. Every field has a specific type. It can be a simple type like a string, a numeric or a boolean. However, it can also be a choice, which is a string with specific options (enumeration). To search, you must provide the field_name & field_type, the operation to perform, and the value to search.
-
 
 #### Base Command
 
 `trendmicro-search-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| overrides | Show only overrides defined for the current computer. Possible values are: true, false. Default is false. | Optional | 
-| max_items | Limits the number of objects returned. | Optional | 
-| field_name | The field name to search for. Possible values are: ID, parentID, name, description, recommendationScanMode, autoRequiresUpdate. | Required | 
-| field_type | The type of the field. Possible values are: boolean, numeric, choice, id, string. | Required | 
-| operation | The search conditional to test on the field name. Possible values are: less-than, less-than-or-equal, equal, greater-than-or-equal, greater-than, not-equal. | Required | 
-| value | The value to compare. | Required | 
-| sort_by_object_id | If true, forces the response objects to be sorted by ID, overriding the default sort order. | Optional | 
-
+| overrides | Show only overrides defined for the current computer. Possible values are: true, false. Default is false. | Optional |
+| max_items | Limits the number of objects returned. | Optional |
+| field_name | The field name to search for. Possible values are: ID, parentID, name, description, recommendationScanMode, autoRequiresUpdate. | Required |
+| field_type | The type of the field. Possible values are: boolean, numeric, choice, id, string. | Required |
+| operation | The search conditional to test on the field name. Possible values are: less-than, less-than-or-equal, equal, greater-than-or-equal, greater-than, not-equal. | Required |
+| value | The value to compare. | Required |
+| sort_by_object_id | If true, forces the response objects to be sorted by ID, overriding the default sort order. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Policies.parentID | integer | ID of the parent policy | 
-| TrendMicro.Policies.name | string | Name of the policy | 
-| TrendMicro.Policies.description | string | Description of the policy | 
-| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy | 
-| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes | 
-
+| TrendMicro.Policies.parentID | integer | ID of the parent policy |
+| TrendMicro.Policies.name | string | Name of the policy |
+| TrendMicro.Policies.description | string | Description of the policy |
+| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy |
+| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes |
 
 #### Command Example
+
 ```!trendmicro-search-policies field_name=name operation=equal field_type=string value="Example Policy"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -22133,46 +22168,47 @@ Search for specific policies by some field name with a certain type. Every field
 #### Human Readable Output
 
 >### Matched Policies
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 105 | Example Policy | Example policy description |
 
-
 ### trendmicro-create-policy
+
 ***
 Create a new policy
-
 
 #### Base Command
 
 `trendmicro-create-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| overrides | Show only overrides defined for the current policy. Possible values are: true, false. Default is false. | Optional | 
-| parent_id | ID of the parent policy. | Optional | 
-| name | Name of the policy. | Required | 
-| description | Description of the policy. | Optional | 
-| recommendation_scan_mode | Enable or disable ongoing recommendation scans for computers assigned this policy. Possible values are: off, ongoing. | Optional | 
-| auto_requires_update | Automatically update computers assigned this policy when the configuration changes. Possible values are: off, on. | Optional | 
-
+| overrides | Show only overrides defined for the current policy. Possible values are: true, false. Default is false. | Optional |
+| parent_id | ID of the parent policy. | Optional |
+| name | Name of the policy. | Required |
+| description | Description of the policy. | Optional |
+| recommendation_scan_mode | Enable or disable ongoing recommendation scans for computers assigned this policy. Possible values are: off, ongoing. | Optional |
+| auto_requires_update | Automatically update computers assigned this policy when the configuration changes. Possible values are: off, on. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.Policies.parentID | integer | ID of the parent policy | 
-| TrendMicro.Policies.name | string | Name of the policy | 
-| TrendMicro.Policies.description | string | Description of the policy | 
-| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy | 
-| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes | 
-
+| TrendMicro.Policies.parentID | integer | ID of the parent policy |
+| TrendMicro.Policies.name | string | Name of the policy |
+| TrendMicro.Policies.description | string | Description of the policy |
+| TrendMicro.Policies.recommendationScanMode | string | Enable or disable ongoing recommendation scans for computers assigned this policy |
+| TrendMicro.Policies.autoRequiresUpdate | string | Automatically update computers assigned this policy when the configuration changes |
 
 #### Command Example
+
 ```!trendmicro-create-policy name="Example Policy" parent_id=2 description="Example policy description"```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -22915,32 +22951,33 @@ Create a new policy
 #### Human Readable Output
 
 >### The New Policy
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 106 | Example Policy | Example policy description |
 
-
 ### trendmicro-remove-firewall-rule-id-from-computer
+
 ***
 Remove a firewall rule ID from a certain computer
-
 
 #### Base Command
 
 `trendmicro-remove-firewall-rule-id-from-computer`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_id | The computer ID. | Required | 
-| firewall_rule_id | The firewall rule ID to remove. | Required | 
-
+| computer_id | The computer ID. | Required |
+| firewall_rule_id | The firewall rule ID to remove. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trendmicro-remove-firewall-rule-id-from-computer computer_id=216 firewall_rule_id=31```
 
 #### Human Readable Output
@@ -22948,31 +22985,32 @@ There is no context output for this command.
 >The firewall rule 31 was successfully deleted from computer 216!
 
 ### trendmicro-list-default-policy-settings
+
 ***
 List default policy settings
-
 
 #### Base Command
 
 `trendmicro-list-default-policy-settings`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.DefaultPolicySettings.name | string | The name of the default policy setting | 
-| TrendMicro.DefaultPolicySettings.value | string | The value of the default policy setting | 
-
+| TrendMicro.DefaultPolicySettings.name | string | The name of the default policy setting |
+| TrendMicro.DefaultPolicySettings.value | string | The value of the default policy setting |
 
 #### Command Example
+
 ```!trendmicro-list-default-policy-settings```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -23893,38 +23931,39 @@ List default policy settings
 #### Human Readable Output
 
 >### The Default Policy Settings
+>
 >|Activity Monitoring Setting Activity Enabled|Activity Monitoring Setting Indicator Enabled|Activity Monitoring Setting State|Activity Monitoring Setting Syslog Config Id|Anti Malware Setting Combined Mode Protection Source|Anti Malware Setting Connected Threat Defense Suspicious File Ddan Submission Enabled|Anti Malware Setting Connected Threat Defense Use Control Manager Suspicious Object List Enabled|Anti Malware Setting File Hash Enabled|Anti Malware Setting File Hash Md 5 Enabled|Anti Malware Setting File Hash Sha 256 Enabled|Anti Malware Setting File Hash Size Max Mbytes|Anti Malware Setting Identified Files Space Max Mbytes|Anti Malware Setting Malware Scan Multithreaded Processing Enabled|Anti Malware Setting Nsx Security Tagging Enabled|Anti Malware Setting Nsx Security Tagging On Remediation Failure Enabled|Anti Malware Setting Nsx Security Tagging Remove On Clean Scan Enabled|Anti Malware Setting Nsx Security Tagging Value|Anti Malware Setting Scan File Size Max Mbytes|Anti Malware Setting Smart Protection Global Server Enabled|Anti Malware Setting Smart Protection Global Server Use Proxy Enabled|Anti Malware Setting Smart Protection Local Server Allow Off Domain Global|Anti Malware Setting Smart Protection Server Connection Lost Warning Enabled|Anti Malware Setting Smart Scan State|Anti Malware Setting State|Anti Malware Setting Syslog Config Id|Anti Malware Setting Virtual Appliance On Demand Scan Cache Entries Max|Anti Malware Setting Virtual Appliance Real Time Scan Cache Entries Max|Application Control Setting Execution Enforcement Level|Application Control Setting Ruleset Mode|Application Control Setting Shared Ruleset Id|Application Control Setting State|Application Control Setting Syslog Config Id|Firewall Setting Anti Evasion Check Evasive Retransmit|Firewall Setting Anti Evasion Check Fin No Connection|Firewall Setting Anti Evasion Check Fragmented Packets|Firewall Setting Anti Evasion Check Out No Connection|Firewall Setting Anti Evasion Check Paws|Firewall Setting Anti Evasion Check Rst No Connection|Firewall Setting Anti Evasion Check Tcp Check sum|Firewall Setting Anti Evasion Check Tcp Congestion Flags|Firewall Setting Anti Evasion Check Tcp Paws Zero|Firewall Setting Anti Evasion Check Tcp Rst Fin Flags|Firewall Setting Anti Evasion Check Tcp Split Handshake|Firewall Setting Anti Evasion Check Tcp Syn Fin Flags|Firewall Setting Anti Evasion Check Tcp Syn Rst Flags|Firewall Setting Anti Evasion Check Tcp Syn With Data|Firewall Setting Anti Evasion Check Tcp Urgent Flags|Firewall Setting Anti Evasion Check Tcp Zero Flags|Firewall Setting Anti Evasion Security Posture|Firewall Setting Anti Evasion Tcp Paws Window Policy|Firewall Setting Combined Mode Protection Source|Firewall Setting Config Package Exceeds Alert Max Enabled|Firewall Setting Engine Option Ack Timeout|Firewall Setting Engine Option Allow Null Ip Enabled|Firewall Setting Engine Option Block Ipv 6 Agent 8 And Earlier Enabled|Firewall Setting Engine Option Block Ipv 6 Agent 9 And Later Enabled|Firewall Setting Engine Option Block Same Src Dst Ip Enabled|Firewall Setting Engine Option Boot Start Timeout|Firewall Setting Engine Option Bypass Cisco Waas Connections Enabled|Firewall Setting Engine Option Close Timeout|Firewall Setting Engine Option Close Wait Timeout|Firewall Setting Engine Option Closing Timeout|Firewall Setting Engine Option Cold Start Timeout|Firewall Setting Engine Option Connection Cleanup Timeout|Firewall Setting Engine Option Connections Cleanup Max|Firewall Setting Engine Option Connections Num Icmp Max|Firewall Setting Engine Option Connections Num Tcp Max|Firewall Setting Engine Option Connections Num Udp Max|Firewall Setting Engine Option Debug Mode Enabled|Firewall Setting Engine Option Debug Packet Num Max|Firewall Setting Engine Option Disconnect Timeout|Firewall Setting Engine Option Drop 6 To 4 Bogons Addresses Enabled|Firewall Setting Engine Option Drop Evasive Retransmit Enabled|Firewall Setting Engine Option Drop Ip Zero Payload Enabled|Firewall Setting Engine Option Drop Ipv 6 Bogons Addresses Enabled|Firewall Setting Engine Option Drop Ipv 6 Ext Type 0 Enabled|Firewall Setting Engine Option Drop Ipv 6 Fragments Lower Than Min Mtu Enabled|Firewall Setting Engine Option Drop Ipv 6 Reserved Addresses Enabled|Firewall Setting Engine Option Drop Ipv 6 Site Local Addresses Enabled|Firewall Setting Engine Option Drop Teredo Anomalies Enabled|Firewall Setting Engine Option Drop Unknown Ssl Protocol Enabled|Firewall Setting Engine Option Error Timeout|Firewall Setting Engine Option Established Timeout|Firewall Setting Engine Option Event Nodes Max|Firewall Setting Engine Option Filter Ipv 4 Tunnels|Firewall Setting Engine Option Filter Ipv 6 Tunnels|Firewall Setting Engine Option Fin Wait 1 Timeout|Firewall Setting Engine Option Force Allow Dhcp Dns|Firewall Setting Engine Option Force Allow Icmp Type 3 Code 4|Firewall Setting Engine Option Fragment Offset Min|Firewall Setting Engine Option Fragment Size Min|Firewall Setting Engine Option Generate Connection Events Icmp Enabled|Firewall Setting Engine Option Generate Connection Events Tcp Enabled|Firewall Setting Engine Option Generate Connection Events Udp Enabled|Firewall Setting Engine Option Icmp Timeout|Firewall Setting Engine Option Ignore Status Code 0|Firewall Setting Engine Option Ignore Status Code 1|Firewall Setting Engine Option Ignore Status Code 2|Firewall Setting Engine Option Last Ack Timeout|Firewall Setting Engine Option Log All Packet Data Enabled|Firewall Setting Engine Option Log Events Per Second Max|Firewall Setting Engine Option Log One Packet Period|Firewall Setting Engine Option Log One Packet Within Period Enabled|Firewall Setting Engine Option Log Packet Length Max|Firewall Setting Engine Option Logging Policy|Firewall Setting Engine Option Silent Tcp Connection Drop Enabled|Firewall Setting Engine Option Ssl Session Size|Firewall Setting Engine Option Ssl Session Time|Firewall Setting Engine Option Strict Terodo Port Check Enabled|Firewall Setting Engine Option Syn Rcvd Timeout|Firewall Setting Engine Option Syn Sent Timeout|Firewall Setting Engine Option Tcp Mss Limit|Firewall Setting Engine Option Tunnel Depth Max|Firewall Setting Engine Option Tunnel Depth Max Exceeded Action|Firewall Setting Engine Option Udp Timeout|Firewall Setting Engine Option Verify Tcp Checksum Enabled|Firewall Setting Engine Options Enabled|Firewall Setting Event Log File Cached Entries Life Time|Firewall Setting Event Log File Cached Entries Num|Firewall Setting Event Log File Cached Entries Stale Time|Firewall Setting Event Log File Retain Num|Firewall Setting Event Log File Size Max|Firewall Setting Events Out Of Allowed Policy Enabled|Firewall Setting Failure Response Engine System|Firewall Setting Failure Response Packet Sanity Check|Firewall Setting Interface Isolation Enabled|Firewall Setting Interface Limit One Active Enabled|Firewall Setting Network Engine Mode|Firewall Setting Reconnaissance Block Fingerprint Probe Duration|Firewall Setting Reconnaissance Block Network Or Port Scan Duration|Firewall Setting Reconnaissance Block Tcp Null Scan Duration|Firewall Setting Reconnaissance Block Tcp Syn Fin Scan Duration|Firewall Setting Reconnaissance Block Tcp Xmas Attack Duration|Firewall Setting Reconnaissance Detect Fingerprint Probe Enabled|Firewall Setting Reconnaissance Detect Network Or Port Scan Enabled|Firewall Setting Reconnaissance Detect Tcp Null Scan Enabled|Firewall Setting Reconnaissance Detect Tcp Syn Fin Scan Enabled|Firewall Setting Reconnaissance Detect Tcp Xmas Attack Enabled|Firewall Setting Reconnaissance Enabled|Firewall Setting Reconnaissance Notify Fingerprint Probe Enabled|Firewall Setting Reconnaissance Notify Network Or Port Scan Enabled|Firewall Setting Reconnaissance Notify Tcp Null Scan Enabled|Firewall Setting Reconnaissance Notify Tcp Syn Fin Scan Enabled|Firewall Setting Reconnaissance Notify Tcp Xmas Attack Enabled|Firewall Setting State|Firewall Setting Syslog Config Id|Firewall Setting Virtual And Container Network Scan Enabled|Integrity Monitoring Setting Auto Apply Recommendations Enabled|Integrity Monitoring Setting Combined Mode Protection Source|Integrity Monitoring Setting Content Hash Algorithm|Integrity Monitoring Setting Cpu Usage Level|Integrity Monitoring Setting Realtime Enabled|Integrity Monitoring Setting State|Integrity Monitoring Setting Syslog Config Id|Integrity Monitoring Setting Virtual Appliance Optimization Scan Cache Entries Max|Intrusion Prevention Setting Auto Apply Recommendations Enabled|Intrusion Prevention Setting Combined Mode Protection Source|Intrusion Prevention Setting Engine Option Fragmented Ip Keep Max|Intrusion Prevention Setting Engine Option Fragmented Ip Packet Send Icmp Enabled|Intrusion Prevention Setting Engine Option Fragmented Ip Timeout|Intrusion Prevention Setting Engine Option Fragmented Ip Unconcerned Mac Address Bypass Enabled|Intrusion Prevention Setting Engine Options Enabled|Intrusion Prevention Setting Log Data Rule First Match Enabled|Intrusion Prevention Setting Nsx Security Tagging Detect Mode Level|Intrusion Prevent ion Setting Nsx Security Tagging Prevent Mode Level|Intrusion Prevention Setting State|Intrusion Prevention Setting Virtual And Container Network Scan Enabled|Log Inspection Setting Auto Apply Recommendations Enabled|Log Inspection Setting Severity Clipping Agent Event Send Sys Log Level Min|Log Inspection Setting Severity Clipping Agent Event Store Level Min|Log Inspection Setting State|Log Inspection Setting Sys Log Config Id|Platform Setting Agent Communications Direction|Platform Setting Agent Events Send Interval|Platform Setting Agent Self Protection Enabled|Platform Setting Agent Self Protection Password Enabled|Platform Setting Auto Assign New Intrusion Prevention Rules Enabled|Platform Setting Auto Update Anti Malware Engine Enabled|Platform Setting Combined Mode Network Group Protection Source|Platform Setting Heartbeat Inactive Vm Offline Alert Enabled|Platform Setting Heartbeat Interval|Platform Setting Heartbeat Local Time Shift Alert Threshold|Platform Setting Heartbeat Missed Alert Threshold|Platform Setting Inactive Agent Cleanup Override Enabled|Platform Setting Notifications Suppress Popups Enabled|Platform Setting Recommendation Ongoing Scans Interval|Platform Setting Relay State|Platform Setting Scan Cache Concurrency Max|Platform Setting Scan Open Port List Id|Platform Setting Smart Protection Global Server Enabled|Platform Setting Smart Protection Global Server Use Proxy Enabled|Platform Setting Troubleshooting Logging Level|Web Reputation Setting Alerting Enabled|Web Reputation Setting Blocking Page Link|Web Reputation Setting Combined Mode Protection Source|Web Reputation Setting Monitor Port List Id|Web Reputation Setting Security Block Untested Pages Enabled|Web Reputation Setting Security Level|Web Reputation Setting Smart Protection Global Server Use Proxy Enabled|Web Reputation Setting Smart Protection Local Server Allow Off Domain Global|Web Reputation Setting Smart Protection Local Server Enabled|Web Reputation Setting Smart Protection Server Connection Lost Warning Enabled|Web Reputation Setting State|Web Reputation Setting Syslog Config Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Off | Off | Off | 0 | Appliance preferred | true | true | false | false | false | 128 | 1024 | false | true | true | true | ANTI_VIRUS.VirusFound.threat=medium | 0 | true | false | false | true | Automatic | Off | 0 | 500000 | 500000 | Allow unrecognized software until it is explicitly blocked | Use local ruleset | 0 | Off | 0 | Allow | Allow | Allow | Allow | Ignore | Allow | Allow | Allow | Allow | Deny | Deny | Deny | Deny | Deny | Allow | Deny | Normal | 0 | Agent preferred | true | 1 Second | true | true | false | true | 20 Seconds | false | 0 Seconds | 2 Minutes | 1 Second | 5 Minutes | 10 Seconds | 1000 | 10000 | 1000000 | 1000000 | false | 8 | 60 Seconds | true | false | true | true | true | true | true | false | true | true | 10 Seconds | 3 Hours | 20000 | Disable Detection of IPv4 Tunnels | Disable Detection of IPv6 Tunnels | 2 Minutes | Allow DNS Query and DHCP Client | Add Force Allow rule for ICMP type3 code4 | 60 | 120 | false | false | false | 60 Seconds | None | None | None | 30 Seconds | false | 100 | 5 Minutes | false | 1500 Bytes | Default | false | Low - 2500 | 24 Hours | true | 60 Seconds | 20 Seconds | 128 Bytes | 1 | Drop | 20 Seconds | false | false | 30 Minutes | 128 | 15 Minutes | 3 | 4 MB | true | Fail closed | Fail closed | false | false | Inline | No | No | No | No | No | true | true | true | true | true | true | true | true | true | true | true | Off | 0 | false | No | Appliance preferred | sha1 | High | false | Off | 0 | 500000 | No | Agent preferred | 1000 | true | 60 Seconds | false | false | true | No Tagging | No Tagging | Off | true | No | Medium (6) | Medium (6) | Off | 0 | Agent/Appliance Initiated | 60 Seconds | false | false | true | false | Agent preferred | false | 10 Minutes | Unlimited | 2 | false | false | 7 Days | false | 1 | 1-1024 | true | false | Do Not Override | false | http://sitesafety.trendmicro.com/ | Agent preferred | 80,8080 | false | Medium | false | false | false | true | Off | 0 |
 
-
 ### trendmicro-get-default-policy-setting
+
 ***
 Get information about a certain default policy setting
-
 
 #### Base Command
 
 `trendmicro-get-default-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the default setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required | 
-
+| name | The name of the default setting. Possible values are: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin, firewallSettingEngineOptionConnectionsCleanupMax, firewallSettingEngineOptionVerifyTcpChecksumEnabled, antiMalwareSettingScanCacheOnDemandConfigId, applicationControlSettingSharedRulesetId, webReputationSettingSmartProtectionServerConnectionLostWarningEnabled, applicationControlSettingExecutionEnforcementLevel, webReputationSettingBlockedUrlDomains, firewallSettingEngineOptionSynSentTimeout, platformSettingAgentSelfProtectionPassword, firewallSettingReconnaissanceBlockTcpXmasAttackDuration, intrusionPreventionSettingVirtualAndContainerNetworkScanEnabled, logInspectionSettingSyslogConfigId, firewallSettingEngineOptionDebugModeEnabled, firewallSettingVirtualAndContainerNetworkScanEnabled, antiMalwareSettingFileHashSha256Enabled, firewallSettingReconnaissanceNotifyFingerprintProbeEnabled, firewallSettingEventLogFileRetainNum, firewallSettingAntiEvasionCheckTcpPawsZero, antiMalwareSettingConnectedThreatDefenseUseControlManagerSuspiciousObjectListEnabled, intrusionPreventionSettingEngineOptionFragmentedIpKeepMax, firewallSettingEngineOptionDrop6To4BogonsAddressesEnabled, logInspectionSettingSeverityClippingAgentEventStoreLevelMin, platformSettingScanCacheConcurrencyMax, antiMalwareSettingSyslogConfigId, firewallSettingAntiEvasionTcpPawsWindowPolicy, firewallSettingReconnaissanceDetectTcpXmasAttackEnabled, applicationControlSettingRulesetMode, antiMalwareSettingSmartProtectionGlobalServerUseProxyEnabled, webReputationSettingSmartProtectionLocalServerAllowOffDomainGlobal, integrityMonitoringSettingCombinedModeProtectionSource, firewallSettingEngineOptionCloseWaitTimeout, platformSettingScanOpenPortListId, platformSettingAgentSelfProtectionPasswordEnabled, firewallSettingEngineOptionAckTimeout, firewallSettingEventLogFileCachedEntriesStaleTime, firewallSettingCombinedModeProtectionSource, platformSettingAgentEventsSendInterval, platformSettingInactiveAgentCleanupOverrideEnabled, firewallSettingFailureResponseEngineSystem, platformSettingRelayState, firewallSettingEngineOptionDropEvasiveRetransmitEnabled, activityMonitoringSettingIndicatorEnabled, intrusionPreventionSettingEngineOptionFragmentedIpTimeout, firewallSettingAntiEvasionCheckTcpZeroFlags, webReputationSettingSmartProtectionGlobalServerUseProxyEnabled, intrusionPreventionSettingNsxSecurityTaggingPreventModeLevel, firewallSettingReconnaissanceNotifyTcpXmasAttackEnabled, firewallSettingEngineOptionUdpTimeout, webReputationSettingSmartProtectionLocalServerEnabled, firewallSettingEngineOptionTcpMssLimit, firewallSettingEngineOptionColdStartTimeout, firewallSettingEngineOptionEstablishedTimeout, antiMalwareSettingIdentifiedFilesSpaceMaxMbytes, firewallSettingEngineOptionAllowNullIpEnabled, platformSettingNotificationsSuppressPopupsEnabled, firewallSettingAntiEvasionCheckTcpRstFinFlags, firewallSettingEngineOptionDisconnectTimeout, firewallSettingEngineOptionCloseTimeout, firewallSettingEngineOptionTunnelDepthMaxExceededAction, firewallSettingReconnaissanceDetectTcpNullScanEnabled, platformSettingSmartProtectionAntiMalwareGlobalServerProxyId, firewallSettingEngineOptionFilterIpv4Tunnels, webReputationSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionLogOnePacketPeriod, firewallSettingEngineOptionFilterIpv6Tunnels, firewallSettingAntiEvasionCheckTcpCongestionFlags, platformSettingHeartbeatMissedAlertThreshold, intrusionPreventionSettingEngineOptionsEnabled, firewallSettingEngineOptionConnectionsNumUdpMax, integrityMonitoringSettingAutoApplyRecommendationsEnabled, firewallSettingEngineOptionTunnelDepthMax, firewallSettingEngineOptionDropUnknownSslProtocolEnabled, antiMalwareSettingNsxSecurityTaggingValue, intrusionPreventionSettingLogDataRuleFirstMatchEnabled, firewallSettingEngineOptionLoggingPolicy, platformSettingTroubleshootingLoggingLevel, antiMalwareSettingVirtualApplianceOnDemandScanCacheEntriesMax, webReputationSettingCombinedModeProtectionSource, firewallSettingEngineOptionClosingTimeout, firewallSettingAntiEvasionCheckPaws, intrusionPreventionSettingAutoApplyRecommendationsEnabled, firewallSettingReconnaissanceDetectFingerprintProbeEnabled, antiMalwareSettingNsxSecurityTaggingRemoveOnCleanScanEnabled, firewallSettingEngineOptionLogPacketLengthMax, firewallSettingEngineOptionDropTeredoAnomaliesEnabled, webReputationSettingSecurityLevel, firewallSettingEngineOptionDropIpv6SiteLocalAddressesEnabled, activityMonitoringSettingActivityEnabled, firewallSettingEngineOptionStrictTerodoPortCheckEnabled, webReputationSettingBlockedUrlKeywords, webReputationSettingSyslogConfigId, firewallSettingFailureResponsePacketSanityCheck, firewallSettingNetworkEngineMode, firewallSettingEventLogFileSizeMax, antiMalwareSettingMalwareScanMultithreadedProcessingEnabled, firewallSettingReconnaissanceDetectTcpSynFinScanEnabled, firewallSettingEngineOptionDropIpZeroPayloadEnabled, firewallSettingEngineOptionBlockIpv6Agent8AndEarlierEnabled, intrusionPreventionSettingEngineOptionFragmentedIpPacketSendIcmpEnabled, antiMalwareSettingPredictiveMachineLearningExceptions, firewallSettingEngineOptionLogEventsPerSecondMax, firewallSettingEngineOptionSslSessionTime, antiMalwareSettingBehaviorMonitoringScanExclusionList, antiMalwareSettingSmartProtectionGlobalServerEnabled, firewallSettingEngineOptionLogOnePacketWithinPeriodEnabled, firewallSettingEngineOptionGenerateConnectionEventsIcmpEnabled, platformSettingHeartbeatInactiveVmOfflineAlertEnabled, webReputationSettingSmartProtectionWebReputationGlobalServerProxyId, antiMalwareSettingNsxSecurityTaggingEnabled, firewallSettingAntiEvasionCheckFragmentedPackets, firewallSettingEngineOptionConnectionsNumIcmpMax, firewallSettingAntiEvasionCheckTcpSplitHandshake, antiMalwareSettingCombinedModeProtectionSource, firewallSettingEngineOptionEventNodesMax, webReputationSettingMonitorPortListId, applicationControlSettingSyslogConfigId, firewallSettingAntiEvasionCheckOutNoConnection, firewallSettingEngineOptionBlockIpv6Agent9AndLaterEnabled, integrityMonitoringSettingVirtualApplianceOptimizationScanCacheEntriesMax, firewallSettingReconnaissanceNotifyTcpNullScanEnabled, firewallSettingEngineOptionIgnoreStatusCode1, firewallSettingEngineOptionIgnoreStatusCode0, firewallSettingEngineOptionIgnoreStatusCode2, firewallSettingEngineOptionSslSessionSize, antiMalwareSettingScanCacheRealTimeConfigId, platformSettingRecommendationOngoingScansInterval, platformSettingSmartProtectionGlobalServerUseProxyEnabled, firewallSettingInterfaceLimitOneActiveEnabled, firewallSettingAntiEvasionCheckTcpChecksum, firewallSettingEngineOptionDropIpv6ExtType0Enabled, antiMalwareSettingScanFileSizeMaxMbytes, firewallSettingEngineOptionGenerateConnectionEventsTcpEnabled, antiMalwareSettingFileHashSizeMaxMbytes, firewallSettingEventLogFileCachedEntriesLifeTime, platformSettingSmartProtectionGlobalServerProxyId, logInspectionSettingAutoApplyRecommendationsEnabled, antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled, webReputationSettingBlockingPageLink, firewallSettingSyslogConfigId, platformSettingAgentCommunicationsDirection, integrityMonitoringSettingScanCacheConfigId, antiMalwareSettingDocumentExploitProtectionRuleExceptions, firewallSettingAntiEvasionCheckTcpSynWithData, antiMalwareSettingFileHashEnabled, firewallSettingReconnaissanceBlockFingerprintProbeDuration, firewallSettingEngineOptionDropIpv6BogonsAddressesEnabled, firewallSettingEngineOptionBootStartTimeout, firewallSettingEngineOptionConnectionsNumTcpMax, firewallSettingAntiEvasionSecurityPosture, firewallSettingInterfacePatterns, firewallSettingInterfaceIsolationEnabled, antiMalwareSettingVirtualApplianceRealTimeScanCacheEntriesMax, firewallSettingEventsOutOfAllowedPolicyEnabled, firewallSettingAntiEvasionCheckEvasiveRetransmit, firewallSettingEngineOptionIcmpTimeout, integrityMonitoringSettingSyslogConfigId, firewallSettingEngineOptionConnectionCleanupTimeout, antiMalwareSettingSmartProtectionLocalServerAllowOffDomainGlobal, firewallSettingReconnaissanceNotifyTcpSynFinScanEnabled, firewallSettingEngineOptionErrorTimeout, webReputationSettingAllowedUrls, firewallSettingReconnaissanceNotifyNetworkOrPortScanEnabled, firewallSettingEngineOptionFinWait1Timeout, firewallSettingEngineOptionGenerateConnectionEventsUdpEnabled, activityMonitoringSettingSyslogConfigId, firewallSettingAntiEvasionCheckTcpSynRstFlags, antiMalwareSettingSpywareApprovedList, firewallSettingAntiEvasionCheckTcpUrgentFlags, intrusionPreventionSettingNsxSecurityTaggingDetectModeLevel, intrusionPreventionSettingEngineOptionFragmentedIpUnconcernedMacAddressBypassEnabled, firewallSettingEngineOptionLogAllPacketDataEnabled, firewallSettingAntiEvasionCheckTcpSynFinFlags, platformSettingHeartbeatInterval, firewallSettingEngineOptionFragmentSizeMin, antiMalwareSettingSmartProtectionServerConnectionLostWarningEnabled, firewallSettingReconnaissanceBlockNetworkOrPortScanDuration, integrityMonitoringSettingContentHashAlgorithm, antiMalwareSettingSmartScanState, firewallSettingConfigPackageExceedsAlertMaxEnabled, platformSettingEnvironmentVariableOverrides, firewallSettingEngineOptionFragmentOffsetMin, antiMalwareSettingSmartProtectionLocalServerUrls, firewallSettingEngineOptionSynRcvdTimeout, firewallSettingEventLogFileCachedEntriesNum, firewallSettingEngineOptionForceAllowIcmpType3Code4, firewallSettingReconnaissanceBlockTcpNullScanDuration, platformSettingSmartProtectionGlobalServerEnabled, integrityMonitoringSettingRealtimeEnabled, firewallSettingEngineOptionLastAckTimeout, firewallSettingReconnaissanceExcludeIpListId, platformSettingAgentSelfProtectionEnabled, firewallSettingEngineOptionDropIpv6ReservedAddressesEnabled, firewallSettingAntiEvasionCheckFinNoConnection, firewallSettingEngineOptionDebugPacketNumMax, firewallSettingEngineOptionBypassCiscoWaasConnectionsEnabled, firewallSettingReconnaissanceEnabled, platformSettingHeartbeatLocalTimeShiftAlertThreshold, antiMalwareSettingFileHashMd5Enabled, firewallSettingReconnaissanceDetectNetworkOrPortScanEnabled, firewallSettingEngineOptionSilentTcpConnectionDropEnabled, firewallSettingEngineOptionBlockSameSrcDstIpEnabled, firewallSettingEngineOptionForceAllowDhcpDns, firewallSettingReconnaissanceIncludeIpListId, firewallSettingEngineOptionsEnabled, firewallSettingReconnaissanceBlockTcpSynFinScanDuration, webReputationSettingSecurityBlockUntestedPagesEnabled, webReputationSettingAllowedUrlDomains, firewallSettingEventLogFileIgnoreSourceIpListId, firewallSettingEngineOptionDropIpv6FragmentsLowerThanMinMtuEnabled, platformSettingAutoAssignNewIntrusionPreventionRulesEnabled, firewallSettingAntiEvasionCheckRstNoConnection, webReputationSettingBlockedUrls, platformSettingCombinedModeNetworkGroupProtectionSource, webReputationSettingAlertingEnabled, antiMalwareSettingNsxSecurityTaggingOnRemediationFailureEnabled, integrityMonitoringSettingCpuUsageLevel, platformSettingAutoUpdateAntiMalwareEngineEnabled, intrusionPreventionSettingCombinedModeProtectionSource. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.DefaultPolicySettings.name | string | The name of the default policy setting | 
-| TrendMicro.DefaultPolicySettings.value | string | The value of the default policy setting | 
-
+| TrendMicro.DefaultPolicySettings.name | string | The name of the default policy setting |
+| TrendMicro.DefaultPolicySettings.value | string | The value of the default policy setting |
 
 #### Command Example
+
 ```!trendmicro-get-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -23939,39 +23978,40 @@ Get information about a certain default policy setting
 #### Human Readable Output
 
 >### Default Policy Setting
+>
 >|Name|Value|
 >|---|---|
 >| antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled | true |
 
-
 ### trendmicro-modify-default-policy-setting
+
 ***
 Modify the value of a certain default policy setting
-
 
 #### Base Command
 
 `trendmicro-modify-default-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the default setting. | Required | 
-| value | The new value of the default setting. | Required | 
-
+| name | The name of the default setting. | Required |
+| value | The new value of the default setting. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.DefaultPolicySettings.name | string | The name of the default policy setting | 
-| TrendMicro.DefaultPolicySettings.value | unknown | The value of the default policy setting | 
-
+| TrendMicro.DefaultPolicySettings.name | string | The name of the default policy setting |
+| TrendMicro.DefaultPolicySettings.value | unknown | The value of the default policy setting |
 
 #### Command Example
+
 ```!trendmicro-modify-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled value=false```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -23986,38 +24026,39 @@ Modify the value of a certain default policy setting
 #### Human Readable Output
 
 >### Default Policy Setting
+>
 >|Name|Value|
 >|---|---|
 >| antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled | false |
 
-
 ### trendmicro-reset-default-policy-setting
+
 ***
 Reset the value of a certain default policy setting
-
 
 #### Base Command
 
 `trendmicro-reset-default-policy-setting`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the default setting. | Required | 
-
+| name | The name of the default setting. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.DefaultPolicySettings.name | unknown | The name of the default policy setting | 
-| TrendMicro.DefaultPolicySettings.value | unknown | The value of the default policy setting | 
-
+| TrendMicro.DefaultPolicySettings.name | unknown | The name of the default policy setting |
+| TrendMicro.DefaultPolicySettings.value | unknown | The value of the default policy setting |
 
 #### Command Example
+
 ```!trendmicro-reset-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled```
 
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -24032,6 +24073,7 @@ Reset the value of a certain default policy setting
 #### Human Readable Output
 
 >### Default Policy Setting
+>
 >|Name|Value|
 >|---|---|
 >| antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled | true |
@@ -24049,27 +24091,30 @@ Get information on all scheduled tasks.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The ID of the task to retrieve. | Optional | 
+| task_id | The ID of the task to retrieve. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ScheduledTask.name | String | The name of the scheduled task. | 
-| TrendMicro.ScheduledTask.type | String | The type of the scheduled task. | 
-| TrendMicro.ScheduledTask.scheduleDetails.timeZone | String | The timezone of the scheduled task. | 
-| TrendMicro.ScheduledTask.scheduleDetails.recurrenceType | String | The recurrence type of the scheduled task. | 
-| TrendMicro.ScheduledTask.scheduleDetails.onceOnlyScheduleParameters.startTime | Number | The start time of the scheduled task. | 
-| TrendMicro.ScheduledTask.enabled | Boolean | Whether the scheduled task is enabled. | 
-| TrendMicro.ScheduledTask.nextRunTime | Date | The next run time of the scheduled task. | 
-| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type | String | The type of the computer filter of the scheduled task. | 
-| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID | Number | The computer ID of the scheduled task. | 
-| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout | String | The timeout for the scheduled task. | 
-| TrendMicro.ScheduledTask.ID | Number | The ID of the scheduled task. | 
+| TrendMicro.ScheduledTask.name | String | The name of the scheduled task. |
+| TrendMicro.ScheduledTask.type | String | The type of the scheduled task. |
+| TrendMicro.ScheduledTask.scheduleDetails.timeZone | String | The timezone of the scheduled task. |
+| TrendMicro.ScheduledTask.scheduleDetails.recurrenceType | String | The recurrence type of the scheduled task. |
+| TrendMicro.ScheduledTask.scheduleDetails.onceOnlyScheduleParameters.startTime | Number | The start time of the scheduled task. |
+| TrendMicro.ScheduledTask.enabled | Boolean | Whether the scheduled task is enabled. |
+| TrendMicro.ScheduledTask.nextRunTime | Date | The next run time of the scheduled task. |
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type | String | The type of the computer filter of the scheduled task. |
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID | Number | The computer ID of the scheduled task. |
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout | String | The timeout for the scheduled task. |
+| TrendMicro.ScheduledTask.ID | Number | The ID of the scheduled task. |
 
 #### Command example
+
 ```!trendmicro-list-scheduled-task task_id=1```
+
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -24102,6 +24147,7 @@ Get information on all scheduled tasks.
 #### Human Readable Output
 
 >### Scheduled Tasks
+>
 >|ID|Name|Type|Enabled|Last Run Time|
 >|---|---|---|---|---|
 >| 1 | Daily check for Security Updates | check-for-security-updates | true | 2023-06-19 14:30:43 |
@@ -24119,29 +24165,32 @@ Creates a once-only scheduled task with a specific computer ID and runs it.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the scheduled task. | Required | 
-| type | The type of the scheduled task. Possible values are: scan-for-open-ports, send-alert-summary, discover-computers, run-script, send-policy, generate-report, synchronize-directory, synchronize-users, scan-for-recommendations, synchronize-vcenter, scan-for-integrity-changes, scan-for-malware, check-for-security-updates, synchronize-cloud-account, check-for-software-updates, update-suspicious-objects-list. | Required | 
-| computer_id | The computer ID to create the task on. Can be retrieved from the trendmicro-list-computers command. | Required | 
+| name | The name of the scheduled task. | Required |
+| type | The type of the scheduled task. Possible values are: scan-for-open-ports, send-alert-summary, discover-computers, run-script, send-policy, generate-report, synchronize-directory, synchronize-users, scan-for-recommendations, synchronize-vcenter, scan-for-integrity-changes, scan-for-malware, check-for-security-updates, synchronize-cloud-account, check-for-software-updates, update-suspicious-objects-list. | Required |
+| computer_id | The computer ID to create the task on. Can be retrieved from the trendmicro-list-computers command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicro.ScheduledTask.name | String | The name of the scheduled task. | 
-| TrendMicro.ScheduledTask.type | String | The type of the scheduled task. | 
-| TrendMicro.ScheduledTask.scheduleDetails.timeZone | String | The timezone of the scheduled task. | 
-| TrendMicro.ScheduledTask.scheduleDetails.recurrenceType | String | The recurrence type of the scheduled task. | 
-| TrendMicro.ScheduledTask.scheduleDetails.onceOnlyScheduleParameters.startTime | Number | The start time of the scheduled task. | 
-| TrendMicro.ScheduledTask.enabled | Boolean | Whether the scheduled task is enabled. | 
-| TrendMicro.ScheduledTask.nextRunTime | Date | The next run time of the scheduled task. | 
-| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type | String | The type of the computer filter of the scheduled task. | 
-| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID | Number | The computer ID of the scheduled task. | 
-| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout | String | The timeout for the scheduled task. | 
-| TrendMicro.ScheduledTask.ID | Number | The ID of the scheduled task. | 
+| TrendMicro.ScheduledTask.name | String | The name of the scheduled task. |
+| TrendMicro.ScheduledTask.type | String | The type of the scheduled task. |
+| TrendMicro.ScheduledTask.scheduleDetails.timeZone | String | The timezone of the scheduled task. |
+| TrendMicro.ScheduledTask.scheduleDetails.recurrenceType | String | The recurrence type of the scheduled task. |
+| TrendMicro.ScheduledTask.scheduleDetails.onceOnlyScheduleParameters.startTime | Number | The start time of the scheduled task. |
+| TrendMicro.ScheduledTask.enabled | Boolean | Whether the scheduled task is enabled. |
+| TrendMicro.ScheduledTask.nextRunTime | Date | The next run time of the scheduled task. |
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type | String | The type of the computer filter of the scheduled task. |
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID | Number | The computer ID of the scheduled task. |
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout | String | The timeout for the scheduled task. |
+| TrendMicro.ScheduledTask.ID | Number | The ID of the scheduled task. |
 
 #### Command example
+
 ```!trendmicro-create-onceonly-scheduled-task name=test computer_id=1 type="scan-for-malware"```
+
 #### Context Example
+
 ```json
 {
     "TrendMicro": {
@@ -24173,6 +24222,7 @@ Creates a once-only scheduled task with a specific computer ID and runs it.
 #### Human Readable Output
 
 >Once-only scheduled task, named test for the computer ID 1 has been successfully created and run.
+>
 ### trendmicro-delete-scheduled-task
 
 ***
@@ -24186,13 +24236,16 @@ Deletes a scheduled task.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_ids | A comma seperated of task-IDs to delete. | Required | 
+| task_ids | A comma seperated of task-IDs to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!trendmicro-delete-scheduled-task task_id=1```
+
 #### Human Readable Output
 
 >Scheduled task with ID 1 has been successfully deleted.

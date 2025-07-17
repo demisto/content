@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.37.0 of DelineaDSV
 
 ## Configure DelineaDSV in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g. https://example.com) | True |
@@ -13,33 +12,37 @@ This integration was integrated and tested with version 1.37.0 of DelineaDSV
 | Client Secret | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### dsv-secret-get
+
 ***
 Getting a secret fom DSV
-
 
 #### Base Command
 
 `dsv-secret-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Secret name for DSV. | Required | 
-
+| name | Secret name for DSV. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| secret | String | Received JSON object secret | 
+| secret | String | Received JSON object secret |
 
 #### Command Example
+
 ```!dsv-secret-get name="accounts/xsoar"```
 
 #### Context Example
+
 ```json
 {
     "DSV": {

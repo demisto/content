@@ -1,5 +1,7 @@
 Extracts domain and its details from the Chronicle IOC Domain match response.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ Extracts domain and its details from the Chronicle IOC Domain match response.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +19,7 @@ Extracts domain and its details from the Chronicle IOC Domain match response.
 | json_response | JSON response of IOC Domain Match |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -26,11 +30,12 @@ Extracts domain and its details from the Chronicle IOC Domain match response.
 | ChronicleIOCDomainMatches.FirstSeen | Time\(UTC\) the artifact was first seen within your enterprise. | date |
 | ChronicleIOCDomainMatches.LastSeen | Time\(UTC\) the artifact was most recently seen within your enterprise. | date |
 
-
 ## Script Example
+
 ```!ExtractDomainFromIOCDomainMatchRes json_response="{\"Artifact\": \"e9428.b.akamaiedge.net\", \"IocIngestTime\": \"2020-07-17T20:00:00Z\", \"FirstAccessedTime\": \"2018-11-05T12:01:29Z\", \"LastAccessedTime\": \"2018-11-09T11:51:03Z\", \"Sources\": [{\"Category\": \"Observed serving executables\", \"IntRawConfidenceScore\": 0, \"NormalizedConfidenceScore\": \"Low\", \"RawSeverity\": \"Low\", \"Source\": \"ET Intelligence Rep List\"}]}"```
 
 ## Context Example
+
 ```
 {
     "ChronicleIOCDomainMatches": {
@@ -46,4 +51,5 @@ Extracts domain and its details from the Chronicle IOC Domain match response.
 ```
 
 ## Human Readable Output
+
 {}

@@ -1,5 +1,7 @@
 This script is a helper script for the Ransomware Exposure - RiskSense playbook and retrieves information of CVEs and trending CVEs from host finding details.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ This script is a helper script for the Ransomware Exposure - RiskSense playbook 
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +19,7 @@ This script is a helper script for the Ransomware Exposure - RiskSense playbook 
 | trending | Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers in the wild based on activity in hacker forums and Twitter feeds, as well as analysis of 3rd party threat intelligence sources. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

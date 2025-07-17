@@ -1,0 +1,71 @@
+[
+    {
+        "id": 1,
+        "eventCode": 11,
+        "eventLevel": 0,
+        "eventText": "Dummy Text 1",
+        "eventTime": "2025-01-23T08:03:50.33",
+        "eventTimeUTC": "2025-01-23T15:03:50",
+        "computerName": "DUMMY COMPUTER",
+        "userAccount": "ROOT",
+        "userName": "ROOT",
+        "alertAccount": null,
+        "auditLogURL": null,
+        "rollback": false,
+        "additionalData": null,
+        "application": {
+            "file": null,
+            "path": null,
+            "name": null,
+            "vendor": null,
+            "version": null,
+            "sha256": null
+        }
+    },
+    {
+        "id": 2,
+        "eventCode": 22,
+        "eventLevel": 0,
+        "eventText": "Dummy Text 2",
+        "eventTime": "2025-05-04T00:07:53",
+        "eventTimeUTC": "2025-05-04T06:07:53",
+        "computerName": "DUMMY COMPUTER",
+        "userAccount": "ROOT",
+        "userName": "Root",
+        "alertAccount": null,
+        "auditLogURL": null,
+        "rollback": false,
+        "additionalData": "",
+        "application": {
+            "file": null,
+            "path": null,
+            "name": null,
+            "vendor": null,
+            "version": null,
+            "sha256": null
+        }
+    },
+    {
+        "id": 3,
+        "eventCode": 33,
+        "eventLevel": 0,
+        "eventText": "Dummy Text 3",
+        "eventTime": "2025-05-04T00:09:08",
+        "eventTimeUTC": "2025-05-04T06:09:08",
+        "computerName": "DUMMY COMPUTER",
+        "userAccount": "ROOT",
+        "userName": "Root",
+        "alertAccount": null,
+        "auditLogURL": null,
+        "rollback": false,
+        "additionalData": "",
+        "application": {
+            "file": null,
+            "path": null,
+            "name": null,
+            "vendor": null,
+            "version": null,
+            "sha256": null
+        }
+    }
+]
