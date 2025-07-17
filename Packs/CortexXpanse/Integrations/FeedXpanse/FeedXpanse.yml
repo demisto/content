@@ -119,12 +119,12 @@ configuration:
 - display: Indicator types to fetch
   name: indicatorTypes
   type: 16
-  required: true
+  required: false
   options:
   - IP
   - Domain
   - Certificate
-  additionalinfo: 'Indicator types to fetch.'
+  additionalinfo: 'Indicator types to fetch.  Default is to pull all.'
   section: Collect
 description: Use this feed to retrieve the discovered IPs/domains/certificates from the Cortex Xpanse asset database.
 display: 'Xpanse Feed'
