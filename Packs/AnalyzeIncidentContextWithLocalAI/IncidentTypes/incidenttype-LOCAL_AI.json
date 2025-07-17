@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#B1EE95",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "LOCAL AI",
+    "layout": "Local AI Layout",
+    "locked": false,
+    "name": "LOCAL AI",
+    "onChangeRepAlg": 2,
+    "playbookId": "Analyze Incident Context With Local AI",
+    "readonly": false,
+    "reputationCalc": 2,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}
