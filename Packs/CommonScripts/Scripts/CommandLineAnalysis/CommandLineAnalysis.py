@@ -6,7 +6,6 @@ import ipaddress
 import json
 import re
 from typing import Any
-from collections.abc import Callable
 
 
 KNOWN_POWERSHELL_COMMANDS_BREAKPOINTS = [
@@ -21,211 +20,1221 @@ KNOWN_POWERSHELL_COMMANDS_BREAKPOINTS = [
 ]
 
 
-POWERSHELL_SUSPICIOUS_PATTERNS = [
-    r"%\w+:~\d+,\d+%",
-    r"(\[char\[[^\]]+\]\]){3,}",
-    r"(cmd\.exe.*\/V:ON|setlocal.*EnableDelayedExpansion)",
-    r"\$(env:[a-zA-Z]+)\[\d+\]\s*\+\s*\$env:[a-zA-Z]+\[\d+\]",
-    r"\.AcceptTcpClient\(",
-    r"\.Connect\(",
-    r"\.ConnectAsync\(",
-    r"\.Receive\(",
-    r"\.Send\(",
-    r"\[char\[\]\]\s*\([\d,\s]+\)|-join\s*\(\s*\[char\[\]\][^\)]+\)",
-    r"\b(?:Invoke\-Expression|IEX)\b",
-    r"\b(?:Invoke\-WebRequest|\biwr\b)",
-    r"\b(?:Upload|Download)String\b",
-    r"\bInvoke\-RestMethod.*-Uri\b",
-    r"\bNew\-Object\s+(?:System\.)?Net\.WebClient\b",
-    r"\bNew\-Object\s+Net\.Sockets\.(?:TcpClient|UdpClient)\b",
-    r"\bOutFile\b",
-    r"\bSystem\.Net\.Sockets\.Tcp(?:Client|listener)\b",
-    r"\bSystem\.Net\.WebSockets\.ClientWebSocket\b",
-    r"for\s+%?\w+%?\s+in\s*\([^)]{50,}\)",
-    r"if\s+%?\w+%?\s+geq\s+\d+\s+call\s+%?\w+%?:~\d+%?",
-]
+PATTERNS = {
+    "powershell_suspicious_patterns": [
+        {
+            "pattern": r"%\w+:~\d+,\d+%",
+            "mitreid": "T1027",
+            "technique": "Obfuscated Files or Information",
+            "tactic": "Defense Evasion",
+        },
+        {
+            "pattern": r"(\[char\[[^\]]+\]\]){3,}",
+            "mitreid": "T1027",
+            "technique": "Obfuscated Files or Information",
+            "tactic": "Defense Evasion",
+        },
+        {
+            "pattern": r"(cmd\.exe.*\/V:ON|setlocal.*EnableDelayedExpansion)",
+            "mitreid": "T1059.003",
+            "technique": "Windows Command Shell",
+            "tactic": "Execution",
+        },
+        {
+            "pattern": r"\$(env:[a-zA-Z]+)\[\d+\]\s*\+\s*\$env:[a-zA-Z]+\[\d+\]",
+            "mitreid": "T1027",
+            "technique": "Obfuscated Files or Information",
+            "tactic": "Defense Evasion",
+        },
+        {
+            "pattern": r"\.AcceptTcpClient\(",
+            "mitreid": "T1071",
+            "technique": "Application Layer Protocol",
+            "tactic": "Command and Control"
+        },
+        {
+            "pattern": r"\.Connect\(",
+            "mitreid": "T1071",
+            "technique": "Application Layer Protocol",
+            "tactic": "Command and Control"
+        },
+        {
+            "pattern": r"\.ConnectAsync\(",
+            "mitreid": "T1071",
+            "technique": "Application Layer Protocol",
+            "tactic": "Command and Control"
+        },
+        {
+            "pattern": r"\.Receive\(",
+            "mitreid": "T1071",
+            "technique": "Application Layer Protocol",
+            "tactic": "Command and Control"
+        },
+        {
+            "pattern": r"\.Send\(",
+            "mitreid": "T1071",
+            "technique": "Application Layer Protocol",
+            "tactic": "Command and Control"
+        },
+        {
+            "pattern": r"\[char\[\]\]\s*\([\d,\s]+\)|-join\s*\(\s*\[char\[\]\][^\]]+\)",
+            "mitreid": "T1027",
+            "technique": "Obfuscated Files or Information",
+            "tactic": "Defense Evasion",
+        },
+        {
+            "pattern": r"\b(?:Invoke\-Expression|IEX)\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"},
+        {
+            "pattern": r"\b(?:Invoke\-WebRequest|\biwr\b)",
+            "mitreid": "T1105",
+            "technique": "Ingress Tool Transfer",
+            "tactic": "Initial Access"
+        },
+        {
+            "pattern": r"\b(?:Upload|Download)String\b",
+            "mitreid": "T1105",
+            "technique": "Ingress Tool Transfer",
+            "tactic": "Initial Access"
+        },
+        {
+            "pattern": r"\bInvoke\-RestMethod.*-Uri\b",
+            "mitreid": "T1105", 
+            "technique": "Ingress Tool Transfer",
+            "tactic": "Initial Access"
+        },
+        {
+            "pattern": r"\bNew\-Object\s+(?:System\.)?Net\.WebClient\b",
+            "mitreid": "T1105",
+            "technique": "Ingress Tool Transfer",
+            "tactic": "Initial Access",
+        },
+        {
+            "pattern": r"\bNew\-Object\s+Net\.Sockets\.(?:TcpClient|UdpClient)\b",
+            "mitreid": "T1071",
+            "technique": "Application Layer Protocol",
+            "tactic": "Command and Control",
+        },
+        {
+            "pattern": r"\bOutFile\b",
+            "mitreid": "T1105", 
+            "technique": "Ingress Tool Transfer", 
+            "tactic": "Initial Access"
+        },
+        {
+            "pattern": r"\bSystem\.Net\.Sockets\.Tcp(?:Client|listener)\b",
+            "mitreid": "T1071",
+            "technique": "Application Layer Protocol",
+            "tactic": "Command and Control",
+        },
+        {
+            "pattern": r"\bSystem\.Net\.WebSockets\.ClientWebSocket\b",
+            "mitreid": "T1071",
+            "technique": "Application Layer Protocol",
+            "tactic": "Command and Control",
+        },
+        {
+            "pattern": r"for\s+%?\w+%?\s+in\s*\([^)]{50,}\)",
+            "mitreid": "T1027",
+            "technique": "Obfuscated Files or Information",
+            "tactic": "Defense Evasion",
+        },
+        {
+            "pattern": r"if\s+%?\w+%?\s+geq\s+\d+\s+call\s+%?\w+%?:~\d+%?",
+            "mitreid": "T1027",
+            "technique": "Obfuscated Files or Information",
+            "tactic": "Defense Evasion",
+        },
+    ],
 
-RECON_COMMANDS = [
-    r"\barp\b",
-    r"\battrib\b",
-    r"\bdir\b",
-    r"\bfsutil\b",
-    r"\bhostname\b",
-    r"\bipconfig\b",
-    r"\bnet\s+(?:group|localgroup|user)\b",
-    r"\bnetstat\b",
-    r"\bnslookup\b",
-    r"\bping\b",
-    r"\bquery\s+user\b",
-    r"\breg\s+query\b",
-    r"\broute\s+print\b",
-    r"\bsc\s+query\b",
-    r"\bsysteminfo\b",
-    r"\btasklist\b",
-    r"\btracert\b",
-    r"\btree\b",
-    r"\bwhoami\b",
-    r"\bwmic\s+process\s+list\b",
-]
+    "recon_commands": [
+        {
+            "pattern": r"\barp\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\battrib\b",
+            "mitreid": "T1083",
+            "technique": "File and Directory Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bdir\b",
+            "mitreid": "T1083",
+            "technique": "File and Directory Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bfsutil\b",
+            "mitreid": "T1083",
+            "technique": "File and Directory Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bhostname\b",
+            "mitreid": "T1082",
+            "technique": "System Information Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bipconfig\b",
+            "mitreid": "T1016",
+            "technique": "System Network Configuration Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bnet\s+(?:group|localgroup|user)\b",
+            "mitreid": "T1087",
+            "technique": "Account Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bnetstat\b",
+            "mitreid": "T1049",
+            "technique": "System Network Connections Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bnslookup\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bping\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bquery\s+user\b",
+            "mitreid": "T1033",
+            "technique": "System Owner/User Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\breg\s+query\b",
+            "mitreid": "T1012",
+            "technique": "Query Registry",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\broute\s+print\b",
+            "mitreid": "T1016",
+            "technique": "System Network Configuration Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bsc\s+query\b",
+            "mitreid": "T1007",
+            "technique": "System Service Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bsysteminfo\b",
+            "mitreid": "T1082",
+            "technique": "System Information Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\btasklist\b",
+            "mitreid": "T1057",
+            "technique": "Process Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\btracert\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\btree\b",
+            "mitreid": "T1083",
+            "technique": "File and Directory Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bwhoami\b",
+            "mitreid": "T1033",
+            "technique": "System Owner/User Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bwmic\s+process\s+list\b",
+            "mitreid": "T1057",
+            "technique": "Process Discovery",
+            "tactic": "Discovery"
+        },
+    ],
+
+    "macos_recon_commmands": [
+        {
+            "pattern": r"\b(ifconfig)\b",
+            "mitreid": "T1016",
+            "technique": "System Network Configuration Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(netstat)\b",
+            "mitreid": "T1049",
+            "technique": "System Network Connections Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(dscl)\b",
+            "mitreid": "T1087.002",
+            "technique": "Domain Account",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(system_profiler)\b",
+            "mitreid": "T1082",
+            "technique": "System Information Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(sw_vers)\b",
+            "mitreid": "T1082",
+            "technique": "System Information Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(whoami)\b",
+            "mitreid": "T1033",
+            "technique": "System Owner/User Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(ps\s+aux)\b",
+            "mitreid": "T1057",
+            "technique": "Process Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(ls\s+-la)\b",
+            "mitreid": "T1083",
+            "technique": "File and Directory Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(find)\b",
+            "mitreid": "T1083",
+            "technique": "File and Directory Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(mdfind)\b",
+            "mitreid": "T1083",
+            "technique": "File and Directory Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(lsof)\b",
+            "mitreid": "T1007",
+            "technique": "System Service Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(kextstat)\b",
+            "mitreid": "T1082",
+            "technique": "System Information Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(ioreg)\b",
+            "mitreid": "T1082",
+            "technique": "System Information Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(arp\s+-a)\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(ping)\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(traceroute)\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(nslookup)\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(dig)\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(host)\b",
+            "mitreid": "T1018",
+            "technique": "Remote System Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\b(ssh)\b",
+            "mitreid": "T1021.004",
+            "technique": "SSH",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\b(scp)\b",
+            "mitreid": "T1021.004",
+            "technique": "SSH",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\b(sftp)\b",
+            "mitreid": "T1021.004",
+            "technique": "SSH",
+            "tactic": "Lateral Movement"
+        }
+    ],
+
+    "windows_temp_paths": [
+        {"pattern": r"%(?:TEMP|TMP)%", "mitreid": "T1074", "technique": "Data Staged", "tactic": "Exfiltration"},
+        {"pattern": r"\bC:\\(?:Windows\\System32\\)?Temp\b",
+         "mitreid": "T1074",
+         "technique": "Data Staged",
+         "tactic": "Exfiltration"
+        },
+        {"pattern": r"\\AppData\\Local\\Temp\b",
+         "mitreid": "T1074",
+         "technique": "Data Staged",
+         "tactic": "Exfiltration"
+        },
+        {"pattern": r"\\ProgramData\\Microsoft\\Windows\\Caches\b",
+         "mitreid": "T1074",
+         "technique": "Data Staged",
+         "tactic": "Exfiltration"
+        },
+        {"pattern": r"\\Users\\Public\\Public\s+Downloads\b",
+         "mitreid": "T1074",
+         "technique": "Data Staged",
+         "tactic": "Exfiltration"
+        },
+        {"pattern": r"\\Windows\\(?:System32\\spool|Tasks|debug|Temp)\b",
+         "mitreid": "T1074",
+         "technique": "Data Staged",
+         "tactic": "Exfiltration"
+        },
+    ],
+
+    "amsi_techniques": [
+        {"pattern": r"\bamsiInitFailed\b",
+         "mitreid": "T1562.001",
+         "technique": "Disable or Modify Tools",
+         "tactic": "Defense Evasion"
+        },
+        {"pattern": r"\bAmsiScanBuffer\(\)",
+         "mitreid": "T1562.001",
+         "technique": "Disable or Modify Tools",
+         "tactic": "Defense Evasion"
+        },
+        {"pattern": r"\bLoadLibrary\(\"amsi\.dll\"\)",
+         "mitreid": "T1562.001",
+         "technique": "Disable or Modify Tools",
+         "tactic": "Defense Evasion"
+        },
+        {"pattern": r"\bSystem\.Management\.Automation\.AmsiUtils\b",
+         "mitreid": "T1562.001",
+         "technique": "Disable or Modify Tools",
+         "tactic": "Defense Evasion"
+        },
+    ],
+
+    "lateral_movement": [
+        {
+            "pattern": r"\\\\[a-zA-Z0-9_.-]+\\C\$\b",
+            "mitreid": "T1021.002",
+            "technique": "SMB/Windows Admin Shares",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\b(?:cmd(?:\.exe)?)\s+(?=.*\/q)(?=.*\/c).*?((?:1>\s?.*?)?\s*2>&1)\b",
+            "mitreid": "T1021.002",
+            "technique": "SMB/Windows Admin Shares",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b",
+            "mitreid": "T1021.002",
+            "technique": "SMB/Windows Admin Shares",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bmstsc(\.exe)?",
+            "mitreid": "T1021.001",
+            "technique": "Remote Desktop Protocol",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bnet use \\\\.*\\IPC\$\b",
+            "mitreid": "T1021.002",
+            "technique": "SMB/Windows Admin Shares",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bpowershell.*(?:Enter-PSSession|Invoke\-Command)\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-(?:Credential|ScriptBlock)\b",
+            "mitreid": "T1021.006",
+            "technique": "Windows Remote Management",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bpsexec([.]exe)?",
+            "mitreid": "T1570",
+            "technique": "Lateral Tool Transfer",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bpsexesvc[.](?:exe|log)\b",
+            "mitreid": "T1570",
+            "technique": "Lateral Tool Transfer",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bssh.*?-o.*?StrictHostKeyChecking=no\b",
+            "mitreid": "T1021.004",
+            "technique": "SSH",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bwmic\s+/node:\s*[a-zA-Z0-9_.-]+",
+            "mitreid": "T1047",
+            "technique": "Windows Management Instrumentation",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+\".*\"\b',
+            "mitreid": "T1570",
+            "technique": "Lateral Tool Transfer",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r'\bschtasks\s+/create\s+/tn\s+[a-zA-Z0-9_.-]+\s+/tr\s+\".*\"\s+/sc\s+[a-zA-Z]+\b',
+            "mitreid": "T1053.005",
+            "technique": "Scheduled Task",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r'\bwmiexec\.py\s+[a-zA-Z0-9_.-]+\s+\".*\"\b',
+            "mitreid": "T1047",
+            "technique": "Windows Management Instrumentation",
+            "tactic": "Lateral Movement"
+        },
+    ],
+
+    "malicious_commands": [
+        {
+            "pattern": r"\bb374k\.php\b",
+            "mitreid": "T1505.003",
+            "technique": "Web Shell",
+            "tactic": "Initial Access"
+        },
+        {
+            "pattern": r"\bbeacon\.exe\b",
+            "mitreid": "T1059",
+            "technique": "Command and Scripting Interpreter",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bbloodhound\.exe\b",
+            "mitreid": "T1087",
+            "technique": "Account Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bc99\.php\b",
+            "mitreid": "T1505.003",
+            "technique": "Web Shell",
+            "tactic": "Initial Access"
+        },
+        {
+            "pattern": r"\bchopper\.php\b",
+            "mitreid": "T1505.003",
+            "technique": "Web Shell",
+            "tactic": "Initial Access"
+        },
+        {
+            "pattern": r"\bcme\.exe\b",
+            "mitreid": "T1021",
+            "technique": "Remote Services",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bcobaltstrike_beacon\.exe\b",
+            "mitreid": "T1059",
+            "technique": "Command and Scripting Interpreter",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bcovenant\.exe\b",
+            "mitreid": "T1059",
+            "technique": "Command and Scripting Interpreter",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bdarkcomet\.exe\b",
+            "mitreid": "T1219",
+            "technique": "Remote Access Software",
+            "tactic": "Command and Control"
+        },
+        {
+            "pattern": r"\beternalblue\.exe\b",
+            "mitreid": "T1210",
+            "technique": "Exploitation of Remote Services",
+            "tactic": "Initial Access"
+        },
+        {
+            "pattern": r"\beternalromance\.exe\b",
+            "mitreid": "T1210",
+            "technique": "Exploitation of Remote Services",
+            "tactic": "Initial Access"
+        },
+        {
+            "pattern": r"\bGetUserSPNs\.py\b",
+            "mitreid": "T1558.003",
+            "technique": "Kerberoasting",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bimpacket\-scripts\b",
+            "mitreid": "T1021",
+            "technique": "Remote Services",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bInvoke\-(?:ReflectivePEInjection|Shellcode|Expression|WmiMethod|KickoffAtomicRunner|SMBExec|Obfuscation|"
+            r"CradleCrafter|PSRemoting|TheHash)\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bkoadic\b",
+            "mitreid": "T1059",
+            "technique": "Command and Scripting Interpreter",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bLaZagne\.exe\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\blsassdump\.py\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bmeterpreter\.exe\b",
+            "mitreid": "T1059",
+            "technique": "Command and Scripting Interpreter",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bmimikatz\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bmsfconsole\b",
+            "mitreid": "T1059",
+            "technique": "Command and Scripting Interpreter",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bmsfvenom\b",
+            "mitreid": "T1059",
+            "technique": "Command and Scripting Interpreter",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bnanocore\.exe\b",
+            "mitreid": "T1219",
+            "technique": "Remote Access Software",
+            "tactic": "Command and Control"
+        },
+        {
+            "pattern": r"\bnjRAT\.exe\b",
+            "mitreid": "T1219",
+            "technique": "Remote Access Software",
+            "tactic": "Command and Control"
+        },
+        {
+            "pattern": r"\bPowerUp\.ps1\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bpowercat\.ps1\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bPowGoop\.ps1\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bprocdump\.exe\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bquasar\.exe\b",
+            "mitreid": "T1219",
+            "technique": "Remote Access Software",
+            "tactic": "Command and Control"
+        },
+        {
+            "pattern": r"\bresponder\.py\b",
+            "mitreid": "T1557",
+            "technique": "Man-in-the-Middle",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\brubeus\.exe\b",
+            "mitreid": "T1558",
+            "technique": "Steal or Forge Kerberos Tickets",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bseatbelt\.exe\b",
+            "mitreid": "T1005",
+            "technique": "Data from Local System",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bsharphound\.exe\b",
+            "mitreid": "T1087",
+            "technique": "Account Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bsharpview\.exe\b",
+            "mitreid": "T1087",
+            "technique": "Account Discovery",
+            "tactic": "Discovery"
+        },
+        {
+            "pattern": r"\bsmbexec\.py\b",
+            "mitreid": "T1021.002",
+            "technique": "SMB/Windows Admin Shares",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bwinrm\.vbs\b",
+            "mitreid": "T1021.006",
+            "technique": "Windows Remote Management",
+            "tactic": "Lateral Movement"
+        },
+        {
+            "pattern": r"\bwso\.php\b",
+            "mitreid": "T1505.003",
+            "technique": "Web Shell",
+            "tactic": "Initial Access"
+        },
+    ],
+
+    "credentials_dumping": [
+        {
+            "pattern": r"\bGet\-Credential\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bInvoke\-Mimikatz\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\blsass\.dmp\b",
+            "mitreid": "T1003.001",
+            "technique": "LSASS Memory",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bMiniDumpWriteDump\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bntds\.dit\b",
+            "mitreid": "T1003.003",
+            "technique": "NTDS",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bntdsutil\.exe.*ntds.*create\b",
+            "mitreid": "T1003.003",
+            "technique": "NTDS",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bprocdump(\.exe)?\s+-ma\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp",
+            "mitreid": "T1003.001",
+            "technique": "LSASS Memory",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bprocdump.*lsass\b",
+            "mitreid": "T1003.001",
+            "technique": "LSASS Memory",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bProcessHacker\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\breg\s+save\s+hklm\\(sam|system)\s+[a-zA-Z0-9_.-]+\.hive",
+            "mitreid": "T1003.002",
+            "technique": "Security Account Manager",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\brundll32(\.exe)?\s+comsvcs\.dll,\s+MiniDump\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp.*",
+            "mitreid": "T1003.001",
+            "technique": "LSASS Memory",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\brundll32.*comsvcs\.dll\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bsecretsdump(\.py)?\s+.*domain/.*:.*@.*",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bsekurlsa\:\:",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\btasklist.*lsass\b",
+            "mitreid": "T1003.001",
+            "technique": "LSASS Memory",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\btaskmgr(\.exe)?\s+/create\s+/PID:\d+\s+/DumpFile:[a-zA-Z0-9_.-]+\.dmp",
+            "mitreid": "T1003.001",
+            "technique": "LSASS Memory",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bwce(\.exe)?\s+-o",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r"\bwmic\s+process\s+call\s+create.*(?:lsass|mimikatz)\b",
+            "mitreid": "T1003",
+            "technique": "OS Credential Dumping",
+            "tactic": "Credential Access"
+        },
+        {
+            "pattern": r'\bntdsutil(\.exe)?\s+".*ac i ntds.*" "ifm" "create full\s+[a-zA-Z]:\\.*"',
+            "mitreid": "T1003.003",
+            "technique": "NTDS",
+            "tactic": "Credential Access"
+        },
+    ],
+
+    "data_exfiltration": [
+        {
+            "pattern": r"\bcurl\s+-X\s+(POST|PUT)\s+-d\s+@[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bwget\s+--post-file=[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bscp\s+-r\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+@.*:.*\b",
+            "mitreid": "T1048",
+            "technique": "Exfiltration Over Alternative Protocol",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bsftp\s+-b\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+@.*\b",
+            "mitreid": "T1048",
+            "technique": "Exfiltration Over Alternative Protocol",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bftp\s+-s:[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+\b",
+            "mitreid": "T1048.003",
+            "technique": "Exfiltration Over Unencrypted Protocol",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\btftp\s+-i\s+[a-zA-Z0-9_.-]+\s+put\s+[a-zA-Z0-9_.-]+\b",
+            "mitreid": "T1048.003",
+            "technique": "Exfiltration Over Unencrypted Protocol",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bnetcat\s+[a-zA-Z0-9_.-]+\s+\d+\s+<\s+[a-zA-Z0-9_.-]+\b",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bnc\s+[a-zA-Z0-9_.-]+\s+\d+\s+<\s+[a-zA-Z0-9_.-]+\b",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bpowershell.*New-Object\s+System\.Net\.Sockets\.TCPClient.*stream.*write.*",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bpowershell.*Start-BitsTransfer\s+-Source\s+[a-zA-Z0-9_.-]+\s+-Destination\s+https?://[a-zA-Z0-9_.-]+/.*\b",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bpython\s+-c\s+\"import\s+socket;.*socket\.socket\(socket\.AF_INET,\s+socket\.SOCK_STREAM\)\.connect\(.*;.*\.send\(.*\)\"",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bperl\s+-e\s+'use\s+Socket;.*socket\(S,\s*PF_INET,\s*SOCK_STREAM,\s*getprotobyname\(\"tcp\"\)\);.*connect\(S,.*\);.*print\s+S\s+.*'",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bruby\s+-rsocket\s+-e\s+'c\s*=\s*TCPSocket\.new\(.*\);c\.print\(.*\)'",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bphp\s+-r\s+'\$s\s*=\s*fsockopen\(.*\);.*fwrite\(\$s,.*\);'",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bopenssl\s+s_client\s+-connect\s+[a-zA-Z0-9_.-]+:\d+\s+-quiet\s+<\s+[a-zA-Z0-9_.-]+\b",
+            "mitreid": "T1048",
+            "technique": "Exfiltration Over Alternative Protocol",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\baws\s+s3\s+cp\s+[a-zA-Z0-9_.-]+\s+s3://[a-zA-Z0-9_.-]+/.*\b",
+            "mitreid": "T1537",
+            "technique": "Transfer Data to Cloud Account",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bgsutil\s+cp\s+[a-zA-Z0-9_.-]+\s+gs://[a-zA-Z0-9_.-]+/.*\b",
+            "mitreid": "T1537",
+            "technique": "Transfer Data to Cloud Account",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\baz\s+storage\s+blob\s+upload\s+-f\s+[a-zA-Z0-9_.-]+\s+-c\s+[a-zA-Z0-9_.-]+.*\b",
+            "mitreid": "T1537",
+            "technique": "Transfer Data to Cloud Account",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\bpowershell.*System\.Net\.WebClient.*UploadFile.*https?://[a-zA-Z0-9_.-]+/.*\b",
+            "mitreid": "T1041",
+            "technique": "Exfiltration Over C2 Channel",
+            "tactic": "Exfiltration"
+        },
+        {
+            "pattern": r"\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
+            "mitreid": "T1048",
+            "technique": "Exfiltration Over Alternative Protocol",
+            "tactic": "Exfiltration"
+        },
+    ],
+
+    "mshta": [
+        {
+            "pattern": r"mshta(?:\.exe)?\s*[\"\']?.*?(?:vbscript|javascript)\s*:",
+            "mitreid": "T1218.011",
+            "technique": "Signed Binary Proxy Execution",
+            "tactic": "Defense Evasion"
+        },
+        {
+            "pattern": r"mshta(?:\.exe)?\s*[\"\']?\s*(?:https?|ftp|file)://",
+            "mitreid": "T1218.011",
+            "technique": "Signed Binary Proxy Execution",
+            "tactic": "Defense Evasion"
+        },
+        {
+            "pattern": r"mshta(?:\.exe)?.*(?:CreateObject|Wscript\.Shell|Shell\.Application|powershell|document\.write)",
+            "mitreid": "T1218.011",
+            "technique": "Signed Binary Proxy Execution",
+            "tactic": "Defense Evasion"
+        },
+        {
+            "pattern": r"mshta(?:\.exe)?.*(?:-enc|base64)",
+            "mitreid": "T1027",
+            "technique": "Obfuscated Files or Information",
+            "tactic": "Defense Evasion"
+        },
+    ],
+
+    "suspicious_parameters": [
+        {
+            "pattern": r"\-(?:EncodedCommand|enc|e)\b",
+            "mitreid": "T1027",
+            "technique": "Obfuscated Files or Information",
+            "tactic": "Defense Evasion"
+        },
+        {
+            "pattern": r"\-(?:ExecutionPolicy|exec)\s+Bypass\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\-(?:NonInteractive|noi)\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\-(?:noprofile|nop)\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\-(?:WindowStyle|window|w)\s+(?:hidden|h)\b",
+            "mitreid": "T1564.003",
+            "technique": "Hidden Window",
+            "tactic": "Defense Evasion"
+        },
+        {
+            "pattern": r"\bbcedit\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bBypass\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bcertutil.*\-encodehex\b",
+            "mitreid": "T1027",
+            "technique": "Obfuscated Files or Information",
+            "tactic": "Defense Evasion"
+        },
+        {
+            "pattern": r"\bClipboardContents\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bGet\-GPPPassword\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bGet\-LSASecret\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\blsass\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bnet\s+user\s+\/\s+add\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bnetsh\s+firewall\s+set\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\breg\s+add\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\brundll32\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\bschtasks\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\btaskkill\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"\s*\<NUL\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"wevtutil\s+cl\b",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+        {
+            "pattern": r"(?i)opacity=0\.0[0-9]?\d*",
+            "mitreid": "T1059.001",
+            "technique": "PowerShell",
+            "tactic": "Execution"
+        },
+    ],
+}
 
 
-WINDOWS_TEMP_PATHS = [
-    r"%TEMP%",
-    r"%TMP%",
-    r"\bC:\\Temp\b",
-    r"\bC:\\Windows\\System32\\Temp\b",
-    r"\\AppData\\Local\\Temp\b",
-    r"\\ProgramData\\Microsoft\\Windows\\Caches\b",
-    r"\\Users\\Public\\Public\s+Downloads\b",
-    r"\\Windows\\(?:Tasks|debug|Temp)\b",
-    r"\\Windows\\System32\\spool\b",
-]
+def find_suspicious_patterns(command_line: str, patterns: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    Finds suspicious patterns in a command line string based on a list of pattern dictionaries.
+
+    Args:
+        command_line (str): The command line string to analyze.
+        patterns (list[dict[str, str]]): A list of pattern dictionaries to search for.
+
+    Returns:
+        list[dict[str, str]]: A list of found suspicious patterns with their MITRE ATT&CK details.
+    """
+    found_patterns = []
+    
+    for pattern_info in patterns:
+        
+        match = re.search(pattern_info["pattern"], command_line, re.IGNORECASE)
+        
+        if match:
+            found_pattern = match.group(0)
+            found_patterns.append(
+                {"match": found_pattern, **pattern_info}
+            )
+            
+    return found_patterns
 
 
-AMSI = [
-    r"\bamsiInitFailed\b",
-    r"\bAmsiScanBuffer\(\)\b",
-    r"\bLoadLibrary\(\"amsi\.dll\"\)\b",
-    r"\bSystem\.Management\.Automation\.AmsiUtils\b",
-]
+def check_macOS_suspicious_commands(command_line: str) -> dict[str, list[list[str]]]:
+    """
+    Checks for suspicious macOS/AppleScript commands by grouping multiple sets
+    of required substrings under a category. If all required substrings appear,
+    that combination is recorded under its category.
 
+    Args:
+        command_line (str): The command line to check for suspicious macOS/AppleScript commands.
 
-LATERAL_MOVEMENT = [
-    r"\\\\[a-zA-Z0-9_.-]+\\C\$\b",
-    r"\b(?:cmd(?:\.exe)?)\s+(?=.*\/q)(?=.*\/c).*?((?:1>\s?.*?)?\s*2>&1)\b",
-    r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b",
-    r"\bmstsc(\.exe)?",
-    r"\bnet use \\\\.*\\IPC\$\b",
-    r"\bpowershell.*(?:Enter-PSSession|Invoke\-Command)\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-(?:Credential|ScriptBlock)\b",
-    r"\bpsexec([.]exe)?",
-    r"\bpsexesvc[.](?:exe|log)\b",
-    r"\bssh.*?-o.*?StrictHostKeyChecking=no\b",
-    r"\bwmic\s+/node:\s*[a-zA-Z0-9_.-]+",
-    r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b',
-    r'\bschtasks\s+/create\s+/tn\s+[a-zA-Z0-9_.-]+\s+/tr\s+".*"\s+/sc\s+[a-zA-Z]+\b',
-    r'\bwmiexec\.py\s+[a-zA-Z0-9_.-]+\s+".*"\b',
-]
+    Returns:
+        dict[str, list[list[str]]]: A dictionary where keys are categories of suspicious behavior
+                                    and values are lists of matched substring combinations.
+    """
 
+    text = command_line.lower()
 
-MALICIOUS_COMMANDS = [
-    r"\bb374k\.php\b",
-    r"\bbeacon\.exe\b",
-    r"\bbloodhound\.exe\b",
-    r"\bc99\.php\b",
-    r"\bchopper\.php\b",
-    r"\bcme\.exe\b",
-    r"\bcobaltstrike_beacon\.exe\b",
-    r"\bcovenant\.exe\b",
-    r"\bdarkcomet\.exe\b",
-    r"\beternalblue\.exe\b",
-    r"\beternalromance\.exe\b",
-    r"\bGetUserSPNs\.py\b",
-    r"\bimpacket\-scripts\b",
-    r"\bInvoke\-(?:ReflectivePEInjection|Shellcode|Expression|WmiMethod|KickoffAtomicRunner|SMBExec|Obfuscation|CradleCrafter|PSRemoting|TheHash)\b",
-    r"\bkoadic\b",
-    r"\bLaZagne\.exe\b",
-    r"\blsassdump\.py\b",
-    r"\bmeterpreter\.exe\b",
-    r"\bmimikatz\b",
-    r"\bmsfconsole\b",
-    r"\bmsfvenom\b",
-    r"\bnanocore\.exe\b",
-    r"\bnjRAT\.exe\b",
-    r"\bPowerUp\.ps1\b",
-    r"\bpowercat\.ps1\b",
-    r"\bPowGoop\.ps1\b",
-    r"\bprocdump\.exe\b",
-    r"\bquasar\.exe\b",
-    r"\bresponder\.py\b",
-    r"\brubeus\.exe\b",
-    r"\bseatbelt\.exe\b",
-    r"\bsharphound\.exe\b",
-    r"\bsharpview\.exe\b",
-    r"\bsmbexec\.py\b",
-    r"\bwinrm\.vbs\b",
-    r"\bwso\.php\b",
-]
+    # Define categories and the sets of required substrings belonging to each
+    patterns_by_category = {
+        "infostealer_characteristics": [
+            ["telegram", "deskwallet"],
+            ["to set visible", "false"],
+            ["chflags hidden"],
+            ["osascript -e", "system_profiler", "hidden answer"],
+            ["tell application finder", "duplicate"],
+            ["tell application finder", "duplicate"],
+        ],
+        "possible_exfiltration": [
+            ["display dialog", "curl -"],
+            ["osascript -e", "curl -x", "system_profiler"],
+            ["osascript -e", "curl -"],
+        ],
+    }
 
+    results: dict[str, list[list[str]]] = {}
+    for category, pattern_groups in patterns_by_category.items():
+        matched_combinations = []
+        for required_phrases in pattern_groups:
+            # If all required substrings appear in text
+            if all(phrase in text for phrase in required_phrases):
+                matched_combinations.append(required_phrases)
+        # Store only if we found matches
+        if matched_combinations:
+            results[category] = matched_combinations
 
-CREDENTIALS_DUMPING = [
-    r"\bGet\-Credential\b",
-    r"\bInvoke\-Mimikatz\b",
-    r"\blsass\.dmp\b",
-    r"\bMiniDumpWriteDump\b",
-    r"\bntds\.dit\b",
-    r"\bntdsutil\.exe.*ntds.*create\b",
-    r"\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*",
-    r"\bprocdump(\.exe)?\s+-ma\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp",
-    r"\bprocdump.*lsass\b",
-    r"\bProcessHacker\b",
-    r"\breg\s+save\s+hklm\\(sam|system)\s+[a-zA-Z0-9_.-]+\.hive",
-    r"\brundll32(\.exe)?\s+comsvcs\.dll,\s+MiniDump\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp.*",
-    r"\brundll32.*comsvcs\.dll\b",
-    r"\bsecretsdump(\.py)?\s+.*domain/.*:.*@.*",
-    r"\bsekurlsa\:\:",
-    r"\btasklist.*lsass\b",
-    r"\btaskmgr(\.exe)?\s+/create\s+/PID:\d+\s+/DumpFile:[a-zA-Z0-9_.-]+\.dmp",
-    r"\bwce(\.exe)?\s+-o",
-    r"\bwmic\s+process\s+call\s+create.*(?:lsass|mimikatz)\b",
-    r'\bntdsutil(\.exe)?\s+".*ac i ntds.*" "ifm" "create full\s+[a-zA-Z]:\\.*"',
-]
-
-
-DATA_EXFILTRATION = [
-    r"\bcurl\s+-X\s+(POST|PUT)\s+-d\s+@[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
-    r"\bwget\s+--post-file=[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
-    r"\bscp\s+-i\s+[a-zA-Z0-9_.-]+\.pem\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
-    r"\bftp\s+-n\s+[a-zA-Z0-9_.-]+\s+<<END_SCRIPT.*put\s+.*END_SCRIPT\b",
-    r"\bnc\s+[a-zA-Z0-9_.-]+\s+\d+\s+<\s+[a-zA-Z0-9_.-]+\b",
-    r"\baws\s+s3\s+cp\s+[a-zA-Z0-9_.-]+\s+s3://[a-zA-Z0-9_.-]+/.*\b",
-    r"\bgsutil\s+cp\s+[a-zA-Z0-9_.-]+\s+gs://[a-zA-Z0-9_.-]+/.*\b",
-    r"\baz\s+storage\s+blob\s+upload\s+-f\s+[a-zA-Z0-9_.-]+\s+-c\s+[a-zA-Z0-9_.-]+.*\b",
-    r"\bpowershell.*System\.Net\.WebClient.*UploadFile.*https?://[a-zA-Z0-9_.-]+/.*\b",
-    r"\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
-    r"\bcurl\s+-X\s+(POST|PUT)\s+-d\s+@[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
-    r"\bwget\s+--post-file=[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
-    r"\bscp\s+-i\s+[a-zA-Z0-9_.-]+\.pem\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
-    r"\bftp\s+-n\s+[a-zA-Z0-9_.-]+\s+<<END_SCRIPT.*put\s+.*END_SCRIPT\b",
-    r"\bnc\s+[a-zA-Z0-9_.-]+\s+\d+\s+<\s+[a-zA-Z0-9_.-]+\b",
-    r"\baws\s+s3\s+cp\s+[a-zA-Z0-9_.-]+\s+s3://[a-zA-Z0-9_.-]+/.*\b",
-    r"\bgsutil\s+cp\s+[a-zA-Z0-9_.-]+\s+gs://[a-zA-Z0-9_.-]+/.*\b",
-    r"\baz\s+storage\s+blob\s+upload\s+-f\s+[a-zA-Z0-9_.-]+\s+-c\s+[a-zA-Z0-9_.-]+.*\b",
-    r"\bpowershell.*System\.Net\.WebClient.*UploadFile.*https?://[a-zA-Z0-9_.-]+/.*\b",
-    r"\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
-]
-
-
-MSHTA = [
-    r"mshta(?:\.exe)?\s*[\"\']?.*?(?:vbscript|javascript)\s*:",
-    r"mshta(?:\.exe)?\s*[\"\']?\s*(?:https?|ftp|file)://",
-    r"mshta(?:\.exe)?.*(?:CreateObject|Wscript\.Shell|Shell\.Application|powershell|document\.write)",
-    r"mshta(?:\.exe)?.*(?:-enc|base64)",
-]
-
-
-SUSPICIOUS_COMMAND_PATTERNS = [
-    r"\-(?:EncodedCommand|enc|e)\b",
-    r"\-(?:ExecutionPolicy|exec)\s+Bypass\b",
-    r"\-(?:NonInteractive|noi)\b",
-    r"\-(?:noprofile|nop)\b",
-    r"\-(?:WindowStyle|window|w)\s+(?:hidden|h)\b",
-    r"\bbcedit\b",
-    r"\bBypass\b",
-    r"\bcertutil.*\-encodehex\b",
-    r"\bClipboardContents\b",
-    r"\bGet\-GPPPassword\b",
-    r"\bGet\-LSASecret\b",
-    r"\blsass\b",
-    r"\bnet\s+user\s+\/\s+add\b",
-    r"\bnetsh\s+firewall\s+set\b",
-    r"\breg\s+add\b",
-    r"\brundll32\b",
-    r"\bschtasks\b",
-    r"\btaskkill\b",
-    r"\s*\<NUL\b",
-    r"wevtutil\s+cl\b",
-    r"(?i)opacity=0\.0[0-9]?\d*",
-]
+    return results
 
 
 def check_for_obfuscation(command_line: str) -> tuple[dict[str, bool], str]:
@@ -270,6 +1279,42 @@ def check_for_obfuscation(command_line: str) -> tuple[dict[str, bool], str]:
         parsed_command_line = decoded_command_line
 
     return flags, parsed_command_line
+
+
+def check_social_engineering(command_line: str) -> list[str]:
+    """
+    Detects social engineering tactics in a given command line.
+
+    This function searches for patterns that indicate social engineering attempts, such as:
+    - Use of checkmark emojis that might be used to suggest legitimacy
+    - Comment characters in mshta commands that may be used to trick users
+
+    Args:
+        command_line (str): The command line text to analyze
+
+    Returns:
+        list[str]: A list of matched social engineering patterns
+    """
+
+    checkmark_emojis = [
+        "\u2705",  # ✅ Check Mark Button
+        "\u2714",  # ✔️ Heavy Check Mark
+        "\u2611",  # ☑️ Ballot Box with Check
+        "\u1f5f8",  # 🗸 Light Check Mark
+        "\u1f5f9",  # 🗹 Ballot Box with Bold Check
+    ]
+
+    demisto.debug("Checking for social engineering patterns in command.")
+
+    for emoji in checkmark_emojis:
+        if emoji in command_line:
+            return ["Emoji Found in command line"]
+
+    if re.search("mshta.*?#", command_line, re.IGNORECASE):
+        # This is used by attackers to fool a victim to run the mshta command via the explorer
+        return ["Comment character detected in mshta command line"]
+
+    return []
 
 
 def encode_hex_and_oct_chars(command_line: str):
@@ -617,166 +1662,6 @@ def reverse_command(command_line: str) -> tuple[str, bool]:
     return command_line, False
 
 
-def check_macOS_suspicious_commands(command_line: str) -> dict[str, list[list[str]]]:
-    """
-    Checks for suspicious macOS/AppleScript commands by grouping multiple sets
-    of required substrings under a category. If all required substrings appear,
-    that combination is recorded under its category.
-
-    Args:
-        command_line (str): The command line to check for suspicious macOS/AppleScript commands.
-
-    Returns:
-        dict[str, list[list[str]]]: A dictionary where keys are categories of suspicious behavior
-                                    and values are lists of matched substring combinations.
-    """
-
-    text = command_line.lower()
-
-    # Define categories and the sets of required substrings belonging to each
-    patterns_by_category = {
-        "infostealer_characteristics": [
-            ["telegram", "deskwallet"],
-            ["to set visible", "false"],
-            ["chflags hidden"],
-            ["osascript -e", "system_profiler", "hidden answer"],
-            ["tell application finder", "duplicate"],
-            ["tell application finder", "duplicate"],
-        ],
-        "possible_exfiltration": [
-            ["display dialog", "curl -"],
-            ["osascript -e", "curl -x", "system_profiler"],
-            ["osascript -e", "curl -"],
-        ],
-    }
-
-    results: dict[str, list[list[str]]] = {}
-    for category, pattern_groups in patterns_by_category.items():
-        matched_combinations = []
-        for required_phrases in pattern_groups:
-            # If all required substrings appear in text
-            if all(phrase in text for phrase in required_phrases):
-                matched_combinations.append(required_phrases)
-        # Store only if we found matches
-        if matched_combinations:
-            results[category] = matched_combinations
-
-    return results
-
-
-def check_malicious_commands(command_line: str) -> list[str]:
-    """
-    Checks for known malicious commands or patterns in the given command line.
-
-    Args:
-        command_line (str): The command line string to analyze.
-
-    Returns:
-        list[str]: A list of matched malicious commands or patterns found in the command line.
-    """
-
-    matches: list[str] = []
-
-    demisto.debug("Checking for malicious commands.")
-
-    for pattern in MALICIOUS_COMMANDS:
-        matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
-def check_reconnaissance_temp(command_line: str) -> list[str]:
-    """
-    Checks for reconnaissance patterns in the given command line.
-
-    Args:
-        command_line (str): The command line string to analyze.
-
-    Returns:
-        list[str]: A list of matched reconnaissance patterns found in the command line.
-    """
-
-    demisto.debug("Checking for reconnaissance patterns.")
-
-    matches: list[str] = []
-    for pattern in RECON_COMMANDS:
-        matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
-def check_windows_temp_paths(command_line: str) -> list[str]:
-    """
-    Identifies given occurrences of Windows temporary paths in the given command line.
-
-    This function scans the command line for common Windows temporary directory paths
-    such as %TEMP%, %TMP%, AppData\\Local\\Temp, or Windows\\Temp. Threat actors often
-    use these locations to store and execute malicious payloads.
-
-    Args:
-        command_line (str): The command line string to analyze.
-
-    Returns:
-        list[str]: A list of matched temporary paths found in the command line.
-    """
-
-    demisto.debug("Checking for windows temp paths in command line.")
-
-    matches: list[str] = []
-    for pattern in WINDOWS_TEMP_PATHS:
-        matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
-def check_suspicious_content(command_line: str) -> list[str]:
-    """
-    Scans the command line for suspicious content patterns.
-
-    This function examines the command line for potentially malicious patterns defined
-    in SUSPICIOUS_COMMAND_PATTERNS. These patterns could indicate suspicious activities
-    such as obfuscation, encoded commands, or other evasion techniques commonly used
-    in malicious scripts.
-
-    Args:
-        command_line (str): The command line string to analyze.
-
-    Returns:
-        list[str]: A list of suspicious patterns found in the command line.
-    """
-
-    demisto.debug("Checking for suspicious content.")
-
-    matches: list[str] = []
-    for pattern in SUSPICIOUS_COMMAND_PATTERNS:
-        matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
-def check_amsi(command_line: str) -> list[str]:
-    """
-    Detects potential AMSI (Antimalware Scan Interface) bypass techniques in a command line.
-
-    This function searches for patterns associated with AMSI bypass attempts, which are
-    commonly used by attackers to evade antimalware detection when executing PowerShell code.
-
-    Args:
-        command_line (str): The command line text to analyze
-
-    Returns:
-        list[str]: A list of matched AMSI bypass patterns found in the command line
-    """
-
-    demisto.debug("Checking for amsi patterns.")
-
-    matches: list[str] = []
-    for pattern in AMSI:
-        matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
 def check_mixed_case_powershell(command_line: str) -> list[str]:
     """
     Detects mixed case obfuscation of the word 'powershell' in a command line.
@@ -806,178 +1691,6 @@ def check_mixed_case_powershell(command_line: str) -> list[str]:
     }
 
     return [match.group() for match in mixed_case_powershell_regex.finditer(command_line) if match.group() not in exclusions]
-
-
-def check_powershell_suspicious_patterns(command_line: str) -> list[str]:
-    """
-    Detects suspicious PowerShell patterns in a given command line.
-
-    This function searches for potentially malicious PowerShell patterns such as:
-    - Obfuscation techniques
-    - Encoded commands
-    - Execution policy bypass
-    - Hidden window usage
-    - Known malicious cmdlets and parameters
-    - Script execution with suspicious flags
-
-    Args:
-        command_line (str): The command line text to analyze
-
-    Returns:
-        list[str]: A list of matched suspicious PowerShell patterns
-    """
-
-    demisto.debug("Checking for powershell suspicious patterns.")
-
-    matches: list[str] = []
-    for pattern in POWERSHELL_SUSPICIOUS_PATTERNS:
-        matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
-def check_credential_dumping(command_line: str) -> list[str]:
-    """
-    Detects credential dumping attempts from a given command line.
-
-    This function searches for patterns that indicate credential dumping activities such as:
-    - LSASS dumping techniques
-    - Mimikatz commands and parameters
-    - Registry operations targeting credential storage
-    - SAM/SYSTEM/SECURITY file access
-    - Windows Credential Editor (WCE) usage
-    - Other known credential extraction tools and commands
-
-    Args:
-        command_line (str): The command line text to analyze
-
-    Returns:
-        list[str]: A list of matched suspicious credential dumping patterns
-    """
-
-    demisto.debug("Checking for credential dumping.")
-
-    matches: list[str] = []
-    for pattern in CREDENTIALS_DUMPING:
-        matches.extend(match.group() for match in re.finditer(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
-def check_lateral_movement(command_line: str) -> list[str]:
-    """
-    Detects techniques and commands commonly used for lateral movement in a network.
-
-    This function searches for patterns that indicate lateral movement attempts such as:
-    - Remote access tools (PsExec, WMI, WinRM)
-    - Remote file copy techniques
-    - Remote service creation
-    - Remote scheduled task creation
-    - Use of administrative shares
-    - Pass-the-hash or pass-the-ticket techniques
-
-    Args:
-        command_line (str): The command line text to analyze
-
-    Returns:
-        list[str]: A list of matched suspicious lateral movement patterns
-    """
-
-    demisto.debug("Checking for lateral movement patterns.")
-
-    matches: list[str] = []
-    for pattern in LATERAL_MOVEMENT:
-        matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
-def check_data_exfiltration(command_line: str) -> list[str]:
-    """
-    Detects potential data exfiltration techniques from a given command line.
-
-    This function searches for patterns that indicate data exfiltration attempts such as:
-    - Data compression (zip, rar, tar)
-    - Network data transfer commands (curl, wget, scp)
-    - Unusual upload/download behaviors
-    - Data staging before exfiltration
-    - DNS/ICMP tunneling techniques
-    - Usage of non-standard ports or protocols for data transfer
-
-    Args:
-        command_line (str): The command line text to analyze
-
-    Returns:
-        list[str]: A list of matched suspicious data exfiltration patterns
-    """
-
-    demisto.debug("Checking for data exfiltration patterns.")
-
-    matches: list[str] = []
-    for pattern in DATA_EXFILTRATION:
-        matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
-def check_suspicious_mshta(command_line: str) -> list[str]:
-    """
-    Detects suspicious mshta usage in a given command line.
-
-    This function searches for patterns that indicate potential abuse of
-    Microsoft HTML Application Host (mshta.exe) for malicious purposes.
-
-    Args:
-        command_line (str): The command line text to analyze
-
-    Returns:
-        list[str]: A list of matched suspicious mshta patterns
-    """
-
-    demisto.debug("Checking for suspicious mshta usage.")
-
-    matches: list[str] = []
-
-    for pattern in MSHTA:
-        matches.extend(re.findall(pattern, command_line, re.IGNORECASE))
-
-    return matches
-
-
-def check_social_engineering(command_line: str) -> list[str]:
-    """
-    Detects social engineering tactics in a given command line.
-
-    This function searches for patterns that indicate social engineering attempts, such as:
-    - Use of checkmark emojis that might be used to suggest legitimacy
-    - Comment characters in mshta commands that may be used to trick users
-
-    Args:
-        command_line (str): The command line text to analyze
-
-    Returns:
-        list[str]: A list of matched social engineering patterns
-    """
-
-    checkmark_emojis = [
-        "\u2705",  # ✅ Check Mark Button
-        "\u2714",  # ✔️ Heavy Check Mark
-        "\u2611",  # ☑️ Ballot Box with Check
-        "\u1f5f8",  # 🗸 Light Check Mark
-        "\u1f5f9",  # 🗹 Ballot Box with Bold Check
-    ]
-
-    demisto.debug("Checking for social engineering patterns in command.")
-
-    for emoji in checkmark_emojis:
-        if emoji in command_line:
-            return ["Emoji Found in command line"]
-
-    if re.search("mshta.*?#", command_line, re.IGNORECASE):
-        # This is used by attackers to fool a victim to run the mshta command via the explorer
-        return ["Comment character detected in mshta command line"]
-
-    return []
 
 
 def check_custom_patterns(command_line: str, custom_patterns: list[str] | None = None) -> list[str]:
@@ -1108,7 +1821,8 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
         "obfuscated": 15,
         "windows_temp_path": 10,
         "indicators": 10,
-        "reconnaissance": 10,
+        "recon_commands": 10,
+        "macos_recon_commands": 10,
         "base64_encoding": 5,
         "suspicious_parameters": 5,
     }
@@ -1142,11 +1856,10 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
     low_risk_keys = {
         "suspicious_parameters",
         "windows_temp_path",
-        "reconnaissance",
+        "recon_commands",
+        "macos_recon_commands",
         "base64_encoding",
-        "suspicious_parameters",
-        "windows_temp_path",
-        "reconnaissance",
+        "windows_temp_paths",
     }
 
     risk_bonuses: dict[str, int] = {
@@ -1245,22 +1958,6 @@ def analyze_command_line(command_line: str, custom_patterns: list[str] | None = 
             - risk: Overall risk assessment (Low/Medium/High/Critical Risk)
     """
 
-    checks: dict[str, Callable] = {
-        "malicious_commands": check_malicious_commands,
-        "windows_temp_path": check_windows_temp_paths,
-        "suspicious_parameters": check_suspicious_content,
-        "mixed_case_powershell": check_mixed_case_powershell,
-        "powershell_suspicious_patterns": check_powershell_suspicious_patterns,
-        "credential_dumping": check_credential_dumping,
-        "suspicious_mshta": check_suspicious_mshta,
-        "reconnaissance": check_reconnaissance_temp,
-        "lateral_movement": check_lateral_movement,
-        "data_exfiltration": check_data_exfiltration,
-        "amsi_techniques": check_amsi,
-        "indicators": extract_indicators,
-        "social_engineering": check_social_engineering,
-    }
-
     results: dict[str, Any] = {
         "original_command": command_line,
         "analysis": {"original": {}},
@@ -1271,21 +1968,22 @@ def analyze_command_line(command_line: str, custom_patterns: list[str] | None = 
     if parsed_command_line:
         results["parsed_command"] = parsed_command_line
 
-    # Perform checks on the original command line
-    for check_name, check in checks.items():
-        results["analysis"]["original"][check_name] = check(parsed_command_line)
+    # Perform pattern-based checks on the original command line
+    for pattern_name, patterns in PATTERNS.items():
+        results["analysis"]["original"][pattern_name] = find_suspicious_patterns(parsed_command_line, patterns)
 
+    # Perform other specific checks
+    results["analysis"]["original"]["mixed_case_powershell"] = check_mixed_case_powershell(parsed_command_line)
+    results["analysis"]["original"]["indicators"] = extract_indicators(parsed_command_line)
     results["analysis"]["original"]["custom_patterns"] = (
         check_custom_patterns(parsed_command_line, custom_patterns) if custom_patterns else []
     )
 
     # Only set "base64_encoding" if we actually decoded something
-
     for flag, value in flags.items():
         if value:
             results["analysis"]["original"][flag] = value
-
-    # Handle macOS
+    
     if "osascript" in parsed_command_line.lower():
         results["analysis"]["original"]["macOS_suspicious_commands"] = check_macOS_suspicious_commands(parsed_command_line)
 
@@ -1303,7 +2001,7 @@ def main():
     args = demisto.args()
     command_lines = argToList(args.get("command_line", []), separator=" , ")
     custom_patterns = argToList(args.get("custom_patterns", []))
-    readable_output = ""
+    parsed_results = []
 
     # Analyze each command line
     results = [analyze_command_line(cmd, custom_patterns) for cmd in command_lines]
@@ -1311,29 +2009,53 @@ def main():
     # Prepare readable output for the results
 
     for result in results:
+        readable_output = ""
+        mitre_results = []
+        
         if result.get("parsed_command", None) != result["original_command"]:
             parsed_command = f"**Decoded Command**: {result['parsed_command']}\n"
 
         else:
             parsed_command = None
 
+        for findings in result["analysis"]["original"].values():
+            if findings:
+                for match in findings:
+                    try:
+                        mitre_results.append(
+                            {
+                                'mitreid': match['mitreid'],
+                                'technique': match['technique'],
+                                'tactic': match['tactic'],
+                            }
+                        )
+                    
+                    except TypeError:
+                        continue
+        
+        result["findings"]["MITRE"] = [dict(t) for t in {d['mitreid']: d for d in mitre_results}.values()]  # deduping
+        mitre_readable = ', '.join([f'{mitre["mitreid"]} - {mitre["technique"]}' for mitre in result['findings']['MITRE']])
+        
         readable_output += (
             f"**Command Line**: {result['original_command']}\n"
             f"{parsed_command if parsed_command else ''}"
             f"**Risk**: {result['risk']}\n"
             f"**Score**: {result['score']}\n"
-            f"**Findings (Original)**: {', '.join(result['findings']['original'])}\n\n\n"
+            f"**Findings (Original)**: {', '.join(result['findings']['original'])}\n"
+            f"**MITRE**: {mitre_readable}\n\n\n"
+        )
+        
+        parsed_results.append(
+            CommandResults(
+                readable_output=readable_output,
+                outputs_prefix="CommandLineAnalysis",
+                outputs_key_field="original_command",
+                outputs=result,
+            )
         )
 
     # Return results
-    return_results(
-        CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="CommandLineAnalysis",
-            outputs_key_field="original_command",
-            outputs=results,
-        )
-    )
+    return_results(parsed_results)
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
