@@ -91,7 +91,7 @@ The integration can use OAuth 2.0 and OpenID Connect standard-compliant authenti
     - Machine.Read.All - Application / Machine.Read - Delegated
 7. Click **Grant consent**.
 8. To add a secret to the application, select **Certificates & secrets**, write a helpful description, and click **Add**.
-9. In the integration instance configuration window, select **Use a self-deployed Azure Application** and copy the application details based on the chosen permissions type:
+9. In the integration instance configuration window, select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
     - If **Delegated Permissions** was selected:
         - In the **ID** field, enter the Application (client) ID.
         - In the **Key** field, enter the Client secret.
