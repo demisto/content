@@ -179,8 +179,7 @@ class Client:
             list: A list of intelligence profile indicators, each containing information such as
                     ID, source, first/last seen timestamps, and associated artifacts.
         """
-        odata_query = "?"
-        odata_query += f"$top={limit}&"
+        odata_query = f"?$top={limit}&"
         if odata:
             odata_query += odata
 

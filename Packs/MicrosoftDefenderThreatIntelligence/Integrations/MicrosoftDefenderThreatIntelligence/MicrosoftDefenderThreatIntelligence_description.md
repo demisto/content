@@ -1,3 +1,5 @@
+**This integration requires Defender Threat Intelligence—premium version**
+
 ## Authorization
 To use Microsoft Graph Services, you need to configure authentication. There are three authentication methods available:
 - Client Credentials Flow (Recommended)
@@ -18,7 +20,7 @@ At the end of the process you'll see a message that you've logged in successfull
 
 #### Cortex XSOAR Graph App
 
-To use the Cortex XSOAR Azure application, use the default application ID (597c0375-766f-4e6d-ad2a-f48117044ac5).  
+To use the Cortex XSOAR Azure application, use the default application ID (7f55ea8c-2e5c-4a52-aafa-d0bfc632b242).  
 A detailed explanation on how to register an app can be found [here](https://docs.microsoft.com/en-us/power-apps/developer/data-platform/walkthrough-register-app-azure-active-directory).
 
 #### Self-Deployed Azure App

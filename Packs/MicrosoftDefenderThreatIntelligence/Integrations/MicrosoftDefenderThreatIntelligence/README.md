@@ -1,5 +1,6 @@
+**This integration requires Defender Threat Intelligence—premium version**
+
 Use the Microsoft Defender Threat Intelligence integration to query enriched threat intelligence data such as articles, threat actor profiles, WHOIS records, and host-related infrastructure.
-This integration was integrated and tested with version 14.0 of MicrosoftDefenderThreatIntelligence.
 
 ## Configure MicrosoftDefenderThreatIntelligence in Cortex
 
