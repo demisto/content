@@ -43,13 +43,13 @@ class Client(BaseClient):
         """
 
         integration_context = get_integration_context()
- 
+
         if token := integration_context.get("access_token"):
             access_until = integration_context.get("access_until")
             if access_until and not self.is_token_expired(access_until):
                 demisto.debug("Access token is valid, will use it to login")
                 return token
-     
+
             elif refresh_token := integration_context.get("refresh_token"):
                 refresh_until = integration_context.get("refresh_until")
                 if refresh_until and not self.is_token_expired(refresh_until):
@@ -103,12 +103,14 @@ class Client(BaseClient):
         access_until = arg_to_number(access_token_obj.get("expires")) or int(get_current_time().timestamp())
         refresh_until = arg_to_number(access_token_obj.get("refresh_until")) or int(get_current_time().timestamp())
 
-        set_integration_context({
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "access_until":  access_until,
-            "refresh_until": refresh_until,
-        })
+        set_integration_context(
+            {
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "access_until": access_until,
+                "refresh_until": refresh_until,
+            }
+        )
 
         return access_token
 

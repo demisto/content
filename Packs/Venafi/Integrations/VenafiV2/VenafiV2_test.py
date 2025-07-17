@@ -25,10 +25,7 @@ def mock_client_with_valid_token(mocker) -> Client:
         Client: Connection to client.
     """
 
-    mocker.patch("VenafiV2.get_integration_context", return_value={
-        "access_token": "access_token", 
-        "access_until": 1715032135
-    })
+    mocker.patch("VenafiV2.get_integration_context", return_value={"access_token": "access_token", "access_until": 1715032135})
     mocker.patch("VenafiV2.get_current_time")
 
     return Client(
@@ -91,10 +88,10 @@ def test_login_with_invalid_token_refresh_required(mocker):
     mocker.patch(
         "VenafiV2.get_integration_context",
         return_value={
-            "access_token": "access_token", 
-            "access_until": 1615032135, 
+            "access_token": "access_token",
+            "access_until": 1615032135,
             "refresh_token": "refresh_token",
-            "refresh_until": 1745566543
+            "refresh_until": 1745566543,
         },
     )
 
