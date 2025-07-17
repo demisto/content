@@ -359,7 +359,7 @@ tasks:
       closeReason:
         simple: Resolved - True Positive
       id:
-        simple: alert.id
+        simple: ${alert.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -401,17 +401,19 @@ tasks:
           left:
             value:
               complex:
-                root: Core.Endpoint.endpoint_id
+                root: Core.Endpoint.endpoint_type
                 filters:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: Core.Endpoint.endpoint_id
+                        simple: Core.Endpoint.endpoint_type
                       iscontext: true
                     right:
                       value:
                         simple: AGENT_TYPE_SERVER
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -566,7 +568,7 @@ tasks:
           - - operator: greaterThanOrEqual
               left:
                 value:
-                  simple: Core.OriginalAlert Core.OriginalAlert.stateful_raw_data.count_distinct_target_user_administrator
+                  simple: Core.OriginalAlert.stateful_raw_data.count_distinct_target_user_administrator
                 iscontext: true
               right:
                 value:
@@ -782,7 +784,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 219,
+          "x": 244,
           "y": 783
         }
       }
@@ -874,7 +876,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "The investigation shows a combination of suspicious indicators that require your attention.\n\nReview the following findings and decide whether you want to disable the user.\n\n#### User Information\nUsername: `${alert.username.[0]}`\n\n---\n\n**Risky User:** \n### Risky Host\nDetected (Core IR): `${.=val.Evidence && val.Evidence.RiskyUser ? \"Risky\" : \"Not risky\"}`\n\n---\n\n### Risky Host\nDetected (Core IR): `${.=val.Evidence && val.Evidence.RiskHost? \"Risky\" : \"Not risky\"}`\n\n---\n\n### **Related Alerts**\nDetected Related Alerts: `${.=val.Evidence && val. Evidence.RelatedAlerts ? \"Alerts found for the user\" : \"Alerts not found\"}`\n\n---\n\n### Deleted Users\n\n${Core.OriginalAlert=val._all_events.map(e => e.normalized_evtlog_target_user).filter((v, i, a) => v && a.indexOf(v) === i).map(u => \"- \" + u).join(\"\\n\")}\n\n---\n### User Type\n\nUser Type: `${.=val.Evidence && val.Evidence.SpecialTargetUser ? \"User Type\" : \"User is not sensitive/administrator/service account\"}`\n\n---\n\n### **🔍 Analyst Action Required**   \n\n- **Review and take action if needed:**  \n  - It is recommended to review the information displayed in this task and if needed, disable the user by choosing `Disable User` or \"Isolate host\" below. If no action is required, choose `No Action`."
+          simple: "The investigation shows a combination of suspicious indicators that require your attention.\n\nReview the following findings and decide whether you want to disable the user.\n\n#### User Information\nUsername: `${alert.username.[0]}`\n\n---\n\n**Risky User:** \n### Risky Host\nDetected (Core IR): `${.=val.Evidence && val.Evidence.RiskyUser ? \"Risky\" : \"Not risky\"}`\n\n---\n\n### Risky Host\nDetected (Core IR): `${.=val.Evidence && val.Evidence.RiskyHost? \"Risky\" : \"Not risky\"}`\n\n---\n\n### **Related Alerts**\nDetected Related Alerts: `${.=val.Evidence && val. Evidence.RelatedAlerts ? \"Alerts found for the user\" : \"Alerts not found\"}`\n\n---\n\n### Deleted Users\n\n${Core.OriginalAlert=val._all_events.map(e => e.normalized_evtlog_target_user).filter((v, i, a) => v && a.indexOf(v) === i).map(u => \"- \" + u).join(\"\\n\")}\n\n---\n### User Type\n\nUser Type: `${.=val.Evidence && val.Evidence.SpecialTargetUser ? \"User Type\" : \"User is not sensitive/administrator/service account\"}`\n\n---\n\n### **🔍 Analyst Action Required**   \n\n- **Review and take action if needed:**  \n  - It is recommended to review the information displayed in this task and if needed, disable the user by choosing `Disable User` or \"Isolate host\" below. If no action is required, choose `No Action`."
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1027,7 +1029,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 643,
+          "x": 670,
           "y": 285
         }
       }
