@@ -1,0 +1,14 @@
+{
+  "name": "ThreatMon",
+  "description": "This integration pulls data from the ThreatMon API and updates XSOAR incidents. You can also update the status of your Incedents in the ThreatMon dashboard from the XSOAR interface with this integration.",
+  "support": "community",
+  "currentVersion": "1.0.0",
+  "author": "ThreatMon",
+  "url": "https://www.threatmon.io",
+  "email": "integration@threatmonit.io",
+  "categories": ["Threat Intelligence"],
+  "tags": ["Threat Intelligence", "API", "Incident Update"],
+  "useCases": ["Threat enrichment", "Incident response"],
+  "certification": "certified",
+  "premium": false
+}
