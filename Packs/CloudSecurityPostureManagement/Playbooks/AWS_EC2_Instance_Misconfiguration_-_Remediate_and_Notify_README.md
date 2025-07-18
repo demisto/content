@@ -5,7 +5,7 @@ Caution: If you do not provide a reviewer email, the playbook will automatically
 
 This playbook can fix the following misconfigurations:
 
-- AWS EC2 instances not configured with Instance Metadata Service v2 (IMDSv2).
+- AWS EC2 instance not configured with Instance Metadata Service v2 (IMDSv2).
 
 ## Dependencies
 
@@ -13,23 +13,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-- Create Ticket and Notify
+* Create Ticket and Notify
+* Update Ticket and Notify
 
 ### Integrations
 
-- AWS
-- Cortex Core - Platform
+* AWS
+* Cortex Core - Platform
 
 ### Scripts
 
-- IsIntegrationAvailable
-- Print
+* IsIntegrationAvailable
+* Print
 
 ### Commands
 
-- aws-ec2-instance-metadata-options-modify
-- core-get-asset-details
-- setIssueStatus
+* aws-ec2-instance-metadata-options-modify
+* core-get-asset-details
+* setIssueStatus
 
 ## Playbook Inputs
 

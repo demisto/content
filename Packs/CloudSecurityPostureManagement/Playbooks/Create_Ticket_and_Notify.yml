@@ -1,21 +1,41 @@
 id: Create Ticket and Notify
 version: -1
+contentitemexportablefields:
+  contentitemfields:
+    packID: "CloudSecurityPostureManagement"
+    packName: Cloud Security Posture Management Playbooks
+    itemVersion: 1.0.0
+    fromServerVersion: 6.10.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+    isoverridable: false
+    supportedModules: []
+vcShouldKeepItemLegacyProdMachine: false
 name: Create Ticket and Notify
-description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will send an email with the issue details directly to the selected issue owner.
+description: This playbook automates the handling of issues, sending them through
+  ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams,
+  or email. You have the flexibility to create or update a ticket using Jira or ServiceNow,
+  to notify other teams using Slack or Microsoft Teams, or to send an email. You can
+  choose to only create or update a ticket and skip the notification, skip creating
+  or updating a ticket and send only a notification, or both create or update a ticket
+  and notify relevant parties. This playbook requires existing integrations with Jira,
+  ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these
+  integrations are found in your account, the playbook will send an email with the
+  issue details directly to the selected issue owner.
 starttaskid: "0"
-fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: f858df93-d2f7-4a53-88b1-3ad58b93cbf3
+    taskid: c1750ed1-e9e8-4ea1-89a3-3cc1e7d67945
     type: start
     task:
-      id: f858df93-d2f7-4a53-88b1-3ad58b93cbf3
+      id: c1750ed1-e9e8-4ea1-89a3-3cc1e7d67945
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "30"
@@ -37,16 +57,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d4c92572-e7c7-4bb6-854b-af7b9b8dab73
+    taskid: 768c58c2-fa1c-4caf-8419-7b49e24bae1f
     type: condition
     task:
-      id: d4c92572-e7c7-4bb6-854b-af7b9b8dab73
+      id: 768c58c2-fa1c-4caf-8419-7b49e24bae1f
       version: -1
       name: Use ServiceNow for Issue ticket
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "32"
@@ -155,16 +175,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 57d66085-0ff8-436f-89ec-ff30fdb1a203
+    taskid: d667c82d-72ef-4795-8182-893c647a41a8
     type: title
     task:
-      id: 57d66085-0ff8-436f-89ec-ff30fdb1a203
+      id: d667c82d-72ef-4795-8182-893c647a41a8
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -183,16 +203,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 3d669cbb-9b68-4fa5-842f-c13da7b3d93c
+    taskid: 35d689bd-97ce-48bd-87db-975ab59d43c5
     type: condition
     task:
-      id: 3d669cbb-9b68-4fa5-842f-c13da7b3d93c
+      id: 35d689bd-97ce-48bd-87db-975ab59d43c5
       version: -1
       name: Notify using Microsoft Teams?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "40"
@@ -273,10 +293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 80c9915e-c810-4296-85ff-175633d63179
+    taskid: f6e297a7-2b6c-446d-bf6b-2fc2740c5cf4
     type: regular
     task:
-      id: 80c9915e-c810-4296-85ff-175633d63179
+      id: f6e297a7-2b6c-446d-bf6b-2fc2740c5cf4
       version: -1
       name: Create Issue ServiceNow ticket
       description: Creates new ServiceNow ticket.
@@ -284,28 +304,32 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "32"
     scriptarguments:
       description:
         simple: |-
+          Issue Detected for Asset: ${inputs.System Input - Asset details.xdm__asset__type__name}
+
           Issue Details
 
-          Issue ID: ${issue.id}
-          Issue Details: ${issue.details}
-          Resource: ${inputs.System Input - Asset details.xdm__asset__name}
-          Cloud Provider: ${inputs.System Input - Asset details.xdm__asset__provider}
-          Misconfiguration Type: CSPM
+          Issue Name: ${issue.name}
           Severity Level: ${issue.severity}
-          Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
-          Issue URL: ${demistoUrls.investigation}
+          Category: ${issue.alert_category}
+          Asset Name: ${inputs.System Input - Asset details.xdm__asset__name}
+          Asset Type: ${inputs.System Input - Asset details.xdm__asset__type__name}
+          Cloud Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
+          Cloud Account ID: ${inputs.System Input - Asset details.xdm__asset__realm}
+          Issue Created: ${issue.created}
+          Issue URL: ${demistoUrls.server}/issue-view/${issue.id}
       severity:
         simple: ${issue.severity}
       short_description:
         simple: Detected Issue - ${issue.details}
       ticket_type:
-        simple: incident
+        simple: alert
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -324,10 +348,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 9693022d-b305-4fb3-888d-7273c653db0c
+    taskid: bdef12e8-43d4-4125-85e6-00333d93d05c
     type: regular
     task:
-      id: 9693022d-b305-4fb3-888d-7273c653db0c
+      id: bdef12e8-43d4-4125-85e6-00333d93d05c
       version: -1
       name: Create Issue Jira ticket
       description: Creates a new issue in Jira.
@@ -335,22 +359,26 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
     scriptarguments:
       description:
-        simple: |
+        simple: |-
+          Issue Detected for Asset: ${inputs.System Input - Asset details.xdm__asset__type__name}
+
           Issue Details
 
-          Issue ID: ${issue.id}
-          Issue Details: ${issue.details}
-          Resource: ${inputs.System Input - Asset details.xdm__asset__name}
-          Cloud Provider: ${inputs.System Input - Asset details.xdm__asset__provider}
-          Misconfiguration Type: CSPM
+          Issue Name: ${issue.name}
           Severity Level: ${issue.severity}
-          Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
-          Issue URL: ${demistoUrls.workPlan}
+          Category: ${issue.alert_category}
+          Asset Name: ${inputs.System Input - Asset details.xdm__asset__name}
+          Asset Type: ${inputs.System Input - Asset details.xdm__asset__type__name}
+          Cloud Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
+          Cloud Account ID: ${inputs.System Input - Asset details.xdm__asset__realm}
+          Issue Created: ${issue.created}
+          Issue URL: ${demistoUrls.server}/issue-view/${issue.id}
       issue_type_name:
         simple: Task
       project_key:
@@ -375,16 +403,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 2655b434-f53f-4a74-8368-94b7754329e8
+    taskid: a0033ab1-1d78-4da9-8c23-c49346010ba7
     type: condition
     task:
-      id: 2655b434-f53f-4a74-8368-94b7754329e8
+      id: a0033ab1-1d78-4da9-8c23-c49346010ba7
       version: -1
       name: Send email to recipients
       description: commands.server.mail.sendmail
       type: condition
       iscommand: false
       brand: Builtin
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "15"
@@ -446,16 +475,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 33edfa4e-71da-4456-8b4b-f25cdb9f6966
+    taskid: de9afa66-dbfc-4482-8b61-59a8ac38cae7
     type: title
     task:
-      id: 33edfa4e-71da-4456-8b4b-f25cdb9f6966
+      id: de9afa66-dbfc-4482-8b61-59a8ac38cae7
       version: -1
       name: Create or Update Issue ticket
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "12"
@@ -477,16 +506,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: b1781fe9-8509-455b-84c4-43ff52ccb623
+    taskid: f7ef663b-5bba-4893-8b25-2a7f62fe0e80
     type: title
     task:
-      id: b1781fe9-8509-455b-84c4-43ff52ccb623
+      id: f7ef663b-5bba-4893-8b25-2a7f62fe0e80
       version: -1
       name: Issue Notification
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "16"
@@ -508,16 +537,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 24153736-6038-4d0d-8122-d200e3c84480
+    taskid: c13a4449-b304-4d2b-843a-e4a4ec7de905
     type: condition
     task:
-      id: 24153736-6038-4d0d-8122-d200e3c84480
+      id: c13a4449-b304-4d2b-843a-e4a4ec7de905
       version: -1
       name: Use Jira for Issue ticket
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "31"
@@ -626,10 +655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: fd099cdc-e3de-4fc1-8b49-049ea61c6e42
+    taskid: cf647d05-5201-44f4-a86b-6b731d54332d
     type: regular
     task:
-      id: fd099cdc-e3de-4fc1-8b49-049ea61c6e42
+      id: cf647d05-5201-44f4-a86b-6b731d54332d
       version: -1
       name: Send Email Notification
       description: commands.server.mail.sendmail
@@ -637,23 +666,62 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
       htmlBody:
-        simple: |-
-          <b>Issue Details</b><br><br>
-          <b>Issue ID</b>: ${issue.id}<br>
-          <b>Issue Details</b>: ${issue.details}<br>
-          <b>Resource</b>: ${inputs.System Input - Asset details.xdm__asset__name}<br>
-          <b>Cloud Provider</b>: ${inputs.System Input - Asset details.xdm__asset__provider}<br>
-          <b>Misconfiguration Type</b>: CSPM<br>
-          <b>Severity Level</b>: ${issue.severity}<br>
-          <b>Region</b>: ${inputs.System Input - Asset details.xdm__asset__cloud__region}<br>
-          <b>Issue URL</b>: ${demistoUrls.workPlan}<br>
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
+          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
+          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
+          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
+          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
+          25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <p style=\"font-size:
+          14px; margin-bottom: 25px;\">\n      A cloud misconfiguration has been detected
+          and requires your review.\n    </p>\n\n    <table style=\"width: 100%; border-collapse:
+          collapse; margin-bottom: 20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n
+          \     <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;
+          background-color: #f9f9f9; font-weight: bold; width: 40%;\">Issue Name</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Severity</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.severity}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Details</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.details}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Category</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.alert_category}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${inputs.System
+          Input - Asset details.xdm__asset__name}</td>\n      </tr>\n      <tr>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color:
+          #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0;\">${inputs.System Input - Asset details.xdm__asset__type__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${inputs.System
+          Input - Asset details.xdm__asset__cloud__region}</td>\n      </tr>\n      <tr>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color:
+          #f9f9f9; font-weight: bold;\">Cloud Account ID</td>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0;\">${inputs.System Input - Asset details.xdm__asset__realm}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.created}</td>\n
+          \     </tr>\n    </table>\n\n    <div style=\"font-weight: bold; font-size:
+          14px; margin: 15px 0 8px;\">Asset Tags</div>\n    <div style=\"background-color:
+          #f2f2f2; border-radius: 4px; font-family: monospace; font-size: 13px; color:
+          #444; padding: 10px; white-space: pre-wrap;\">\n      { \"Key\": \"Purpose\",
+          \"Value\": \"CortexXSIAMFlowLogs\" }\n    </div>\n\n    <div style=\"text-align:
+          center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
       subject:
-        simple: Detected Issue - ${issue.details}
+        simple: 'Issue Detected for Asset: ${Core.CoreAsset.xdm__asset__type__name}'
       to:
         simple: ${inputs.Notification email recipients}
     separatecontext: false
@@ -674,16 +742,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: e52a21d1-aa12-411b-83b5-5b4bbd44488f
+    taskid: df35cf28-a20e-41a0-81b2-fe489fd55842
     type: title
     task:
-      id: e52a21d1-aa12-411b-83b5-5b4bbd44488f
+      id: df35cf28-a20e-41a0-81b2-fe489fd55842
       version: -1
       name: Email Notification
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "25"
@@ -705,10 +773,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 9e4cbac1-1b98-402c-8043-ea6782527ee9
+    taskid: 2238db1f-cb8f-402e-b251-b38e05084743
     type: regular
     task:
-      id: 9e4cbac1-1b98-402c-8043-ea6782527ee9
+      id: 2238db1f-cb8f-402e-b251-b38e05084743
       version: -1
       name: Send Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -716,6 +784,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -724,16 +793,19 @@ tasks:
         simple: ${inputs.Slack Channel Name}
       message:
         simple: |-
-          Issue Detected:
+          Issue Detected for Asset: ${inputs.System Input - Asset details.xdm__asset__type__name}
 
-          Issue ID: ${issue.id}
-          Issue Details: ${issue.details}
-          Resource: ${inputs.System Input - Asset details.xdm__asset__name}
-          Cloud Provider: ${inputs.System Input - Asset details.xdm__asset__provider}
-          Misconfiguration Type: CSPM
+          Issue Details
+
+          Issue Name: ${issue.name}
           Severity Level: ${issue.severity}
-          Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
-          Issue URL: ${demistoUrls.workPlan}
+          Category: ${issue.alert_category}
+          Asset Name: ${inputs.System Input - Asset details.xdm__asset__name}
+          Asset Type: ${inputs.System Input - Asset details.xdm__asset__type__name}
+          Cloud Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
+          Cloud Account ID: ${inputs.System Input - Asset details.xdm__asset__realm}
+          Issue Created: ${issue.created}
+          Issue URL: ${demistoUrls.server}/issue-view/${issue.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -752,10 +824,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 3b00b055-9629-4f21-8e8e-1d4e7e78dd86
+    taskid: ecf2c96e-a3e4-4d73-b9e6-6d76bfe08a50
     type: regular
     task:
-      id: 3b00b055-9629-4f21-8e8e-1d4e7e78dd86
+      id: ecf2c96e-a3e4-4d73-b9e6-6d76bfe08a50
       version: -1
       name: Update Microsoft Teams Notification
       description: Sends a message to the specified teams.
@@ -763,6 +835,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "40"
@@ -771,11 +844,16 @@ tasks:
         simple: ${inputs.Teams Channel Name}
       message:
         simple: |-
-          Issue Resolved:
+          Issue Resolved for Asset: ${inputs.System Input - Asset details.xdm__asset__type__name}
 
-          Issue - ${issue.details}
-          Asset Name - ${inputs.System Input - Asset details.xdm__asset__name}
-          Remediation - Success
+          Issue - ${issue.name}
+          Category: ${issue.alert_category}
+          Asset Name: ${inputs.System Input - Asset details.xdm__asset__name}
+          Asset Type: ${inputs.System Input - Asset details.xdm__asset__type__name}
+          Cloud Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
+          Cloud Account ID: ${inputs.System Input - Asset details.xdm__asset__realm}
+          Remediation: Success
+          Issue Status: Resolved
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -794,16 +872,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: abbdba9e-4bd1-4319-81ba-5c476c099e88
+    taskid: 263ac54d-2a15-4078-8802-8fe45855670c
     type: condition
     task:
-      id: abbdba9e-4bd1-4319-81ba-5c476c099e88
+      id: 263ac54d-2a15-4078-8802-8fe45855670c
       version: -1
       name: Notify using Slack?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "34"
@@ -884,10 +962,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 85e5827a-114d-4ad7-87bd-c801c9b00c44
+    taskid: 98c05735-7a2c-4f3a-9bb4-4955e528f2b2
     type: regular
     task:
-      id: 85e5827a-114d-4ad7-87bd-c801c9b00c44
+      id: 98c05735-7a2c-4f3a-9bb4-4955e528f2b2
       version: -1
       name: Update Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -895,6 +973,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -903,11 +982,16 @@ tasks:
         simple: ${inputs.Slack Channel Name}
       message:
         simple: |-
-          Issue Resolved:
+          Issue Resolved for Asset: ${inputs.System Input - Asset details.xdm__asset__type__name}
 
-          Issue - ${issue.details}
-          Asset Name - ${inputs.System Input - Asset details.xdm__asset__name}
-          Remediation - Success
+          Issue - ${issue.name}
+          Category: ${issue.alert_category}
+          Asset Name: ${inputs.System Input - Asset details.xdm__asset__name}
+          Asset Type: ${inputs.System Input - Asset details.xdm__asset__type__name}
+          Cloud Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
+          Cloud Account ID: ${inputs.System Input - Asset details.xdm__asset__realm}
+          Remediation: Success
+          Issue Status: Resolved
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -926,10 +1010,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 65f23762-bd92-4526-83b3-e2e35f1292b2
+    taskid: 6dd8067a-66a3-4bc6-8f35-79c48fc5e125
     type: regular
     task:
-      id: 65f23762-bd92-4526-83b3-e2e35f1292b2
+      id: 6dd8067a-66a3-4bc6-8f35-79c48fc5e125
       version: -1
       name: Send Microsoft Teams Notification
       description: Sends a message to the specified teams.
@@ -937,6 +1021,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "40"
@@ -945,16 +1030,19 @@ tasks:
         simple: ${inputs.Teams Channel Name}
       message:
         simple: |-
-          Issue Detected:
+          Issue Detected for Asset: ${inputs.System Input - Asset details.xdm__asset__type__name}
 
-          Issue ID: ${issue.id}
-          Issue Details: ${issue.details}
-          Resource: ${inputs.System Input - Asset details.xdm__asset__name}
-          Cloud Provider: ${inputs.System Input - Asset details.xdm__asset__provider}
-          Misconfiguration Type: CSPM
+          Issue Details
+
+          Issue Name: ${issue.name}
           Severity Level: ${issue.severity}
-          Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
-          Issue URL: ${demistoUrls.workPlan}
+          Category: ${issue.alert_category}
+          Asset Name: ${inputs.System Input - Asset details.xdm__asset__name}
+          Asset Type: ${inputs.System Input - Asset details.xdm__asset__type__name}
+          Cloud Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
+          Cloud Account ID: ${inputs.System Input - Asset details.xdm__asset__realm}
+          Issue Created: ${issue.created}
+          Issue URL: ${demistoUrls.server}/issue-view/${issue.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -973,10 +1061,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: f7e5c6c8-6d0e-428b-8f01-1f588880afbb
+    taskid: 83dbde5e-0e55-4ce3-8c5d-c7e12ee5ff85
     type: regular
     task:
-      id: f7e5c6c8-6d0e-428b-8f01-1f588880afbb
+      id: 83dbde5e-0e55-4ce3-8c5d-c7e12ee5ff85
       version: -1
       name: Update Email Notification
       description: commands.server.mail.sendmail
@@ -984,18 +1072,47 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
       htmlBody:
-        simple: |-
-          Issue Resolved:<br><br>
-          <b>Issue:</b> ${issue.details}<br>
-          <b>Resource:</b> ${inputs.System Input - Asset details.xdm__asset__name}<br>
-          <b>Remediation:</b> Success<br>
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
+          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
+          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
+          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
+          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
+          25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <table style=\"width:
+          100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border:
+          1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width:
+          40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight:
+          bold;\">Asset Name</td>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0;\">${inputs.System Input - Asset details.xdm__asset__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${inputs.System
+          Input - Asset details.xdm__asset__type__name}</td>\n      </tr>\n      <tr>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color:
+          #f9f9f9; font-weight: bold;\">Cloud Region</td>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0;\">${inputs.System Input - Asset details.xdm__asset__cloud__region}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
+          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${inputs.System
+          Input - Asset details.xdm__asset__realm}</td>\n      </tr>\n      <tr>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color:
+          #f9f9f9; font-weight: bold;\">Remediation</td>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0;\">Success</td>\n      </tr>\n    </table>\n
+          \   <div style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
       subject:
-        simple: Resolved Issue - ${issue.details}
+        simple: Issue Resolved for Asset - ${Core.CoreAsset.xdm__asset__type__name}
       to:
         simple: ${inputs.Notification email recipients}
     separatecontext: false
@@ -1016,10 +1133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 08fe800c-1f87-435d-8a35-443b3bf8aff7
+    taskid: 61bcbd5c-c50e-48e7-b7c7-6d083e572608
     type: regular
     task:
-      id: 08fe800c-1f87-435d-8a35-443b3bf8aff7
+      id: 61bcbd5c-c50e-48e7-b7c7-6d083e572608
       version: -1
       name: Update Issue ServiceNow ticket
       description: Updates the specified ticket.
@@ -1027,17 +1144,23 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "32"
     scriptarguments:
       comments:
         simple: |-
-          Issue Resolved:
+          Issue Resolved for Asset: ${inputs.System Input - Asset details.xdm__asset__type__name}
 
-          Issue - ${issue.details}
-          Asset Name - ${inputs.System Input - Asset details.xdm__asset__name}
-          Remediation - Success
+          Issue - ${issue.name}
+          Category: ${issue.alert_category}
+          Asset Name: ${inputs.System Input - Asset details.xdm__asset__name}
+          Asset Type: ${inputs.System Input - Asset details.xdm__asset__type__name}
+          Cloud Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
+          Cloud Account ID: ${inputs.System Input - Asset details.xdm__asset__realm}
+          Remediation: Success
+          Issue Status: Resolved
       id:
         simple: ${inputs.System Input -ServiceNow Ticket ID}
     separatecontext: false
@@ -1058,10 +1181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 6f556fb4-570f-4af2-8dde-ddc9d275162c
+    taskid: f296f6bf-57a7-4e0b-9387-87c03338ad8c
     type: regular
     task:
-      id: 6f556fb4-570f-4af2-8dde-ddc9d275162c
+      id: f296f6bf-57a7-4e0b-9387-87c03338ad8c
       version: -1
       name: Update Issue Jira ticket
       description: Adds a new comment to an existing Jira issue.
@@ -1069,17 +1192,23 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
     scriptarguments:
       comment:
         simple: |-
-          Issue Resolved:
+          Issue Resolved for Asset: ${inputs.System Input - Asset details.xdm__asset__type__name}
 
-          Issue - ${issue.details}
-          Asset Name - ${inputs.System Input - Asset details.xdm__asset__name}
-          Remediation - Success
+          Issue - ${issue.name}
+          Category: ${issue.alert_category}
+          Asset Name: ${inputs.System Input - Asset details.xdm__asset__name}
+          Asset Type: ${inputs.System Input - Asset details.xdm__asset__type__name}
+          Cloud Region: ${inputs.System Input - Asset details.xdm__asset__cloud__region}
+          Cloud Account ID: ${inputs.System Input - Asset details.xdm__asset__realm}
+          Remediation: Success
+          Issue Status: Resolved
       issue_id:
         simple: ${inputs.System Input -Jira Ticket ID}
     separatecontext: false
@@ -1124,7 +1253,7 @@ inputs:
     - Both
 
     Note: If you leave this empty, no issue ticket will be generated, and the playbook will skip this step.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Preferred notification platform
   value: {}
   required: false
@@ -1134,7 +1263,7 @@ inputs:
     - Slack
 
     Note: If you leave this blank, no notification message will be sent and the playbook will skip this step.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Notification email recipients
   value: {}
   required: false
@@ -1142,42 +1271,46 @@ inputs:
     Provide the email address to send email notifications.
 
     Note: If you leave this blank, no email notification will be sent and the playbook will skip this step.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: System Input - Asset details
   value: {}
   required: false
-  description: 'Note: No input is required here; issue asset details will be automatically pulled from the remediation playbook.'
-  playbookInputQuery:
+  description: 'Note: No input is required here; issue asset details will be automatically
+    pulled from the remediation playbook.'
+  playbookInputQuery: null
 - key: System Input - Issue State
   value: {}
   required: false
-  description: 'Note: No input is required here; issue state value will be automatically entered from the remediation playbook.'
-  playbookInputQuery:
+  description: 'Note: No input is required here; issue state value will be automatically
+    entered from the remediation playbook.'
+  playbookInputQuery: null
 - key: System Input -ServiceNow Ticket ID
   value: {}
   required: false
-  description: 'Note: No input is required here; ServiceNow ticket ID will be automatically pulled from the remediation playbook.'
-  playbookInputQuery:
+  description: 'Note: No input is required here; ServiceNow ticket ID will be automatically
+    pulled from the remediation playbook.'
+  playbookInputQuery: null
 - key: System Input -Jira Ticket ID
   value: {}
   required: false
-  description: 'Note: No input is required here; Jira ticket ID will be automatically pulled from the remediation playbook.'
-  playbookInputQuery:
+  description: 'Note: No input is required here; Jira ticket ID will be automatically
+    pulled from the remediation playbook.'
+  playbookInputQuery: null
 - key: Jira Project Key
   value: {}
   required: false
   description: Provide Jira project key where the issue will be created.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Teams Channel Name
   value: {}
   required: false
   description: Provide Microsoft Teams channel name to which to send messages.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Slack Channel Name
   value: {}
   required: false
   description: Provide Slack channel name to which to send messages.
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
   - Preferred ticketing platform
@@ -1205,5 +1338,6 @@ outputs:
 - contextPath: ServiceNow.Ticket.ID
   description: Service Now Ticket ID.
   type: string
-tests:
-- No tests (auto formatted)
+sourceplaybookid: Create Ticket and Notify
+dirtyInputs: true
+adopted: true

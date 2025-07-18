@@ -1,5 +1,17 @@
 id: AWS S3 Bucket Publicly Accessible - Remediate and Notify
 version: -1
+contentitemexportablefields:
+  contentitemfields:
+    packID: "CloudSecurityPostureManagement"
+    packName: Cloud Security Posture Management Playbooks
+    itemVersion: 1.0.0
+    fromServerVersion: 6.10.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+    isoverridable: false
+    supportedModules: []
+vcShouldKeepItemLegacyProdMachine: false
 name: AWS S3 Bucket Publicly Accessible - Remediate and Notify
 description: |-
   This playbook helps you fix cloud security misconfigurations related to your AWS S3 bucket. It also makes it easy to involve your team by creating tickets and sending notifications through your chosen services.
@@ -12,19 +24,18 @@ description: |-
   - AWS S3 bucket publicly readable
   - AWS S3 bucket publicly writable.
 starttaskid: "0"
-fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: fe287f50-55d6-4e06-8eec-0bbf3546154e
+    taskid: 782ade81-ce3d-4635-8e10-cc9dbb592e96
     type: start
     task:
-      id: fe287f50-55d6-4e06-8eec-0bbf3546154e
+      id: 782ade81-ce3d-4635-8e10-cc9dbb592e96
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "5"
@@ -46,10 +57,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b34f5b2e-6361-4712-a671-a9ebe063a99b
+    taskid: 3441e9dc-e603-4024-8846-72623cdba9e9
     type: regular
     task:
-      id: b34f5b2e-6361-4712-a671-a9ebe063a99b
+      id: 3441e9dc-e603-4024-8846-72623cdba9e9
       version: -1
       name: Get Asset details
       description: Get asset information.
@@ -57,6 +68,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Cortex Core - Platform
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -81,16 +93,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 1076c054-e8f8-4658-8416-b3a717d7e708
+    taskid: 0833b2ba-c950-480c-8ce6-dba28375bffd
     type: title
     task:
-      id: 1076c054-e8f8-4658-8416-b3a717d7e708
+      id: 0833b2ba-c950-480c-8ce6-dba28375bffd
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -109,16 +121,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9f2c9d4f-8c12-45e1-82f3-d20729c9f47c
+    taskid: 8afd3f8b-f81d-4157-9075-92018d28bb5b
     type: condition
     task:
-      id: 9f2c9d4f-8c12-45e1-82f3-d20729c9f47c
+      id: 8afd3f8b-f81d-4157-9075-92018d28bb5b
       version: -1
       name: Send email for review consent
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       Approve:
       - "29"
@@ -134,7 +148,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
+          "x": 655,
           "y": 550
         }
       }
@@ -145,14 +159,63 @@ tasks:
       to:
         simple: ${inputs.Reviewer email address}
       subject:
-        simple: Detected Issue - ${issue.details}
+        simple: 'Action Required: Review Detected Issue and Remediation Plan for Asset
+          – ${Core.CoreAsset.xdm__asset__type__name}'
       body:
-        simple: "A cloud misconfiguration has been detected and requires your review.<br><br>\n<b>Issue ID</b>: ${issue.id}<br>\n<b>Issue Details</b>: ${issue.details}<br>\n<b>Resource</b>: ${Core.CoreAsset.xdm__asset__name}<br>\n<b>Cloud Provider</b>: ${Core.CoreAsset.xdm__asset__provider}<br>\n<b>Misconfiguration Type</b>: CSPM<br>\n<b>Severity Level</b>: ${issue.severity}<br>\n<b>Region</b>: ${Core.CoreAsset.xdm__asset__cloud__region}<br>\n<b>Issue URL</b>: ${demistoUrls.workPlan}<br><br>\nPlease select <b>Approve</b> to approve the recommended remediation in the issue work plan, or \n<b>Reject</b> to reject and handle it manually.<br><br>"
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
+          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
+          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
+          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
+          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
+          25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <p style=\"font-size:
+          14px; margin-bottom: 25px;\">\n      A cloud misconfiguration has been detected
+          and requires your review.\n    </p>\n\n    <table style=\"width: 100%; border-collapse:
+          collapse; margin-bottom: 20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n
+          \     <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;
+          background-color: #f9f9f9; font-weight: bold; width: 40%;\">Issue Name</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Severity</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.severity}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Details</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.details}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Category</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.alert_category}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
+          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.created}</td>\n
+          \     </tr>\n    </table>\n\n    <div style=\"font-weight: bold; font-size:
+          14px; margin: 15px 0 8px;\">Asset Tags</div>\n    <div style=\"background-color:
+          #f2f2f2; border-radius: 4px; font-family: monospace; font-size: 13px; color:
+          #444; padding: 10px; white-space: pre-wrap;\">\n      { \"Key\": \"Purpose\",
+          \"Value\": \"CortexXSIAMFlowLogs\" }\n    </div>\n\n    <div style=\"text-align:
+          center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Issue\n      </a>\n    </div>\n\n    <p style=\"font-size:
+          14px; margin-bottom: 25px;\">\n      Please select <b>Approve</b> to approve
+          the recommended remediation in the issue work plan, or \n      <b>Reject</b>
+          to reject and handle it manually.\n    </p>\n  </div>\n</body>\n</html>\n"
       methods:
       - email
       format: html
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -163,22 +226,33 @@ tasks:
       - Approve
       - Reject
       defaultOption: Reject
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+      isexternalrtl: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 6618c4f7-da18-4f96-84cc-fd75abc49bc2
+    taskid: cc991575-ecef-4886-8cb7-4088e57df2bf
     type: condition
     task:
-      id: 6618c4f7-da18-4f96-84cc-fd75abc49bc2
+      id: cc991575-ecef-4886-8cb7-4088e57df2bf
       version: -1
       name: Is remediation available?
       description: Check if remediation is available for the issue ruleid.
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "10"
@@ -271,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 4cacb705-70a7-4887-86f7-9f0060028baf
+    taskid: d605da48-7cac-4b6c-85db-d5bb7a366166
     type: regular
     task:
-      id: 4cacb705-70a7-4887-86f7-9f0060028baf
+      id: d605da48-7cac-4b6c-85db-d5bb7a366166
       version: -1
       name: 'Update Issue details to War Room '
       description: Prints text to war room (Markdown supported)
@@ -282,6 +356,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "32"
@@ -303,10 +378,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 451a370d-539a-4b47-88ba-e7cb60a78ed3
+    taskid: d06bab95-b600-4073-8bf0-7f4e690b99e3
     type: regular
     task:
-      id: 451a370d-539a-4b47-88ba-e7cb60a78ed3
+      id: d06bab95-b600-4073-8bf0-7f4e690b99e3
       version: -1
       name: Update Issue Status to Resolved - Fixed
       description: commands.local.cmd.set.alert.status
@@ -314,6 +389,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "10"
@@ -338,16 +414,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 9b7fb6ef-bb5e-4368-8e51-c18bf3a42676
+    taskid: bd346a95-c45f-43d2-85c3-60f03dd538db
     type: condition
     task:
-      id: 9b7fb6ef-bb5e-4368-8e51-c18bf3a42676
+      id: bd346a95-c45f-43d2-85c3-60f03dd538db
       version: -1
       name: Is reviewer assigned?
       description: Check if reviewer email address is provided in playbook inputs.
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "29"
@@ -388,17 +465,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: d5fc6a15-b1fb-4a80-826b-bb2231a9e380
+    taskid: e1eab127-42d7-40d4-8d5a-9767f051807e
     type: condition
     task:
-      id: d5fc6a15-b1fb-4a80-826b-bb2231a9e380
+      id: e1eab127-42d7-40d4-8d5a-9767f051807e
       version: -1
       name: Is AWS integration available ?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       "no":
       - "33"
@@ -425,17 +504,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: b7c1424a-d59a-4626-87c9-207d9ba178a1
+    taskid: 8832e854-bca6-4482-815a-071960fc2041
     type: regular
     task:
-      id: b7c1424a-d59a-4626-87c9-207d9ba178a1
+      id: 8832e854-bca6-4482-815a-071960fc2041
       version: -1
       name: Update AWS S3 Block Public Access setting
-      description: Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
+      description: Create or Modify the PublicAccessBlock configuration for an Amazon
+        S3 bucket.
       script: AWS|||aws-s3-public-access-block-update
       type: regular
       iscommand: true
       brand: AWS
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "23"
@@ -472,17 +553,28 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: ca8c9e9c-49c0-4dcb-815d-ffb82cb17542
+    taskid: b255568a-b65c-4fc3-834e-b049fa9787c0
     type: playbook
     task:
-      id: ca8c9e9c-49c0-4dcb-815d-ffb82cb17542
+      id: b255568a-b65c-4fc3-834e-b049fa9787c0
       version: -1
       name: Create Ticket and Notify
-      description: 'This playbook automates the dispatching of issues through ServiceNow v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or email. With this playbook you can choose to create or update a ticket using Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or by sending an Email. It gives you the flexibility to create a ticket only and skip the notification step, skip the creation of a ticket and notify only, or choose to create a ticket and notify stakeholders. The playbook checks for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations to perform the ticketing and notification actions. If none of these integrations are found in your account, then the playbook sends an email with the issue details to the selected issue owner. '
+      description: 'This playbook automates the dispatching of issues through ServiceNow
+        v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or
+        email. With this playbook you can choose to create or update a ticket using
+        Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or
+        by sending an Email. It gives you the flexibility to create a ticket only
+        and skip the notification step, skip the creation of a ticket and notify only,
+        or choose to create a ticket and notify stakeholders. The playbook checks
+        for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations
+        to perform the ticketing and notification actions. If none of these integrations
+        are found in your account, then the playbook sends an email with the issue
+        details to the selected issue owner. '
       playbookName: Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "14"
@@ -530,17 +622,28 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: e36e0a90-aaea-481b-829f-df67c9720c73
+    taskid: 412226a9-e4e1-48c5-8b9e-b3e9df05bfc3
     type: playbook
     task:
-      id: e36e0a90-aaea-481b-829f-df67c9720c73
+      id: 412226a9-e4e1-48c5-8b9e-b3e9df05bfc3
       version: -1
       name: Update Ticket and Notify
-      description: 'This playbook automates the dispatching of issues through ServiceNow v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or email. With this playbook you can choose to create or update a ticket using Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or by sending an Email. It gives you the flexibility to create a ticket only and skip the notification step, skip the creation of a ticket and notify only, or choose to create a ticket and notify stakeholders. The playbook checks for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations to perform the ticketing and notification actions. If none of these integrations are found in your account, then the playbook sends an email with the issue details to the selected issue owner. '
+      description: 'This playbook automates the dispatching of issues through ServiceNow
+        v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or
+        email. With this playbook you can choose to create or update a ticket using
+        Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or
+        by sending an Email. It gives you the flexibility to create a ticket only
+        and skip the notification step, skip the creation of a ticket and notify only,
+        or choose to create a ticket and notify stakeholders. The playbook checks
+        for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations
+        to perform the ticketing and notification actions. If none of these integrations
+        are found in your account, then the playbook sends an email with the issue
+        details to the selected issue owner. '
       playbookName: Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "25"
@@ -588,16 +691,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: fed4a6aa-71c5-4909-829d-6686f4c8712a
+    taskid: 12340725-e67c-4e4f-8673-c32c1d3f36ee
     type: condition
     task:
-      id: fed4a6aa-71c5-4909-829d-6686f4c8712a
+      id: 12340725-e67c-4e4f-8673-c32c1d3f36ee
       version: -1
       name: Confirm AWS Pack Integration
       description: Confirm if AWS dependency pack is installed and integrated.
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "10"
@@ -616,14 +720,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body:
         simple: Is AWS dependency pack installed and integrated?
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -639,17 +743,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: e8055ed1-f4b5-49fe-8d9c-1d312f88f47e
+    taskid: df31a062-860f-4709-8c65-75582863f3c4
     type: condition
     task:
-      id: e8055ed1-f4b5-49fe-8d9c-1d312f88f47e
+      id: df31a062-860f-4709-8c65-75582863f3c4
       version: -1
       name: Is AWS integration available ?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       "no":
       - "10"
@@ -691,7 +797,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2710,
-        "width": 1290,
+        "width": 1295,
         "x": -260,
         "y": -940
       }
@@ -708,7 +814,7 @@ inputs:
     - Both
 
     Note: If you leave this empty, no issue ticket will be generated, and the playbook will skip this step.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Preferred notification platform
   value: {}
   required: false
@@ -718,7 +824,7 @@ inputs:
     - Slack
 
     Note: If you leave this blank, no notification message will be sent and the playbook will skip this step.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Notification email recipients
   value: {}
   required: false
@@ -726,7 +832,7 @@ inputs:
     Provide the email address to send email notifications.
 
     Note: If you leave this blank, no email notification will be sent and the playbook will skip this step.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Reviewer email address
   value: {}
   required: false
@@ -734,22 +840,22 @@ inputs:
     Provide the designated reviewer's email address to request approval for executing the remediation command.
 
     Note: If you leave this blank, no email notification will be sent for reviewer approval, and the playbook will skip directly to execute the remediation command.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Jira project key
   value: {}
   required: false
   description: Provide Jira project key where the issue will be created.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Teams Channel Name
   value: {}
   required: false
   description: Provide Microsoft Teams channel name to which to send messages.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Slack Channel Name
   value: {}
   required: false
   description: Provide Slack channel name to which to send messages.
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
   - Preferred ticketing platform
@@ -766,5 +872,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-tests:
-- No tests (auto formatted)
+sourceplaybookid: AWS S3 Bucket Publicly Accessible - Remediate and Notify
+dirtyInputs: true
+adopted: true

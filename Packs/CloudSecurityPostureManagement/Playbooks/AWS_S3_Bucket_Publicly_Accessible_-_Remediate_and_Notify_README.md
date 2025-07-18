@@ -14,23 +14,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-- Create Ticket and Notify
+* Create Ticket and Notify
+* Update Ticket and Notify
 
 ### Integrations
 
-- AWS
-- Cortex Core - Platform
+* AWS
+* Cortex Core - Platform
 
 ### Scripts
 
-- IsIntegrationAvailable
-- Print
+* IsIntegrationAvailable
+* Print
 
 ### Commands
 
-- aws-s3-public-access-block-update
-- core-get-asset-details
-- setIssueStatus
+* aws-s3-public-access-block-update
+* core-get-asset-details
+* setIssueStatus
 
 ## Playbook Inputs
 

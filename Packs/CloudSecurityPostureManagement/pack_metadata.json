@@ -1,4 +1,5 @@
 {
+    "id": "CloudSecurityPostureManagement",
     "name": "Cloud Security Posture Management Playbooks",
     "description": "This pack provides the remediation playbooks for Cortex Cloud Issues and Cases.",
     "support": "xsoar",
