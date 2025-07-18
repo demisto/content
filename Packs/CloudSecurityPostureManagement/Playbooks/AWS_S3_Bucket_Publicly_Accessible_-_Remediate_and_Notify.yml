@@ -24,6 +24,7 @@ description: |-
   - AWS S3 bucket publicly readable
   - AWS S3 bucket publicly writable.
 starttaskid: "0"
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"

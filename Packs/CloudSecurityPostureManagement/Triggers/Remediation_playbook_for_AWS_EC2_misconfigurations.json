@@ -8,8 +8,8 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "rule_id",
-            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "EQ",
             "SEARCH_VALUE": "81c165ce-f66e-441a-8ea0-56a107175ccc"
         }
       ]

@@ -24,6 +24,7 @@ description: This playbook automates the handling of issues, sending them throug
   integrations are found in your account, the playbook will send an email with the
   issue details directly to the selected issue owner.
 starttaskid: "0"
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"

@@ -23,6 +23,7 @@ description: |-
 
   - AWS EC2 instance not configured with Instance Metadata Service v2 (IMDSv2).
 starttaskid: "0"
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
