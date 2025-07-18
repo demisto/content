@@ -2,22 +2,28 @@ Detonates one or more URLs using the `ANYRUN` sandbox integration.
 Returns relevant reports to the War Room and URL reputations to the context data.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * GenericPolling
 
 ### Integrations
+
 * ANYRUN
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * anyrun-run-analysis
 * anyrun-get-report
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
@@ -27,6 +33,7 @@ This playbook does not use any scripts.
 | Timeout | The duration after which to stop pooling and to resume the playbook (in minutes). | 15 | - | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -93,5 +100,6 @@ This playbook does not use any scripts.
 | ANYRUN.Task.Status | The task analysis status. | String |
 
 ## Playbook Image
+
 ---
 ![Detonate_URL_ANYRUN](../doc_files/Detonate_URL_-_ANYRUN.png)
