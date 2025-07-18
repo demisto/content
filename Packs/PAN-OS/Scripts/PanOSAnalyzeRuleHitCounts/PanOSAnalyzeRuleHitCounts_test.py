@@ -60,5 +60,5 @@ def test_main(mocker):
 
     assert (
         mock_return_error.call_args[0][0] == "Failed to execute PAN-OS-AnalyzeRuleHitCounts. Error: Missing data: HAState. "
-        "Please run necessary commands to populate this data."
+        "Please run the 'pan-os-platform-get-ha-state' command to populate this data."
     )

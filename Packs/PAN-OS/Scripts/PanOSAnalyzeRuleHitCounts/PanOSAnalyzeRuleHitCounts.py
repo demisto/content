@@ -213,8 +213,21 @@ def main():
             for data, value in [("RuleHitCount", rule_hitcount_data), ("HAState", ha_state_data), ("ShowSystemInfo", system_info)]
             if not value
         ]
+        
         if missing_data:
-            raise Exception(f"Missing data: {', '.join(missing_data)}. Please run necessary commands to populate this data.")
+            necessary_commands = {
+                "RuleHitCount": "pan-os-get-rule-hitcounts",
+                "HAState": "pan-os-platform-get-ha-state",
+                "ShowSystemInfo": "pan-os-platform-get-system-info"
+            }
+
+            # Create detailed error messages for each missing data type
+            error_messages = []
+            for data_type in missing_data:
+                command = necessary_commands.get(data_type, "the necessary")
+                error_messages.append(f"Missing data: {data_type}. Please run the '{command}' command to populate this data.")
+
+            raise Exception("\n".join(error_messages))
 
         # Analyze rule hitcounts for Panorama pushed rules
         total_panorama_rules, panorama_unused_rules, panorama_used_rules = analyze_panorama_rules(
