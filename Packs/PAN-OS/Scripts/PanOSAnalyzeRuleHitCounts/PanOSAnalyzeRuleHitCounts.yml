@@ -90,3 +90,5 @@ dockerimage: demisto/python3:3.12.11.4095827
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- agentix
