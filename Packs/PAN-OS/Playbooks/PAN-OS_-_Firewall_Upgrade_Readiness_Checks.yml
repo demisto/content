@@ -29,7 +29,7 @@ inputs:
 - description: The target PAN-OS version to check upgrade readiness for.
   key: targetVersion
   playbookInputQuery: null
-  required: true
+  required: false
   value: {}
 name: PAN-OS - Firewall Upgrade Readiness Checks
 outputSections:
@@ -70,7 +70,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -964
+          "y": -1164
         }
       }
   "1":
@@ -100,7 +100,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3160,
+          "x": 3230,
           "y": 200
         }
       }
@@ -169,7 +169,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
+          "x": 1370,
           "y": 340
         }
       }
@@ -223,7 +223,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
+          "x": 1370,
           "y": 517
         }
       }
@@ -265,7 +265,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
+          "x": 1370,
           "y": 700
         }
       }
@@ -307,7 +307,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1740,
+          "x": 1790,
           "y": 700
         }
       }
@@ -338,7 +338,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
+          "x": 1370,
           "y": 200
         }
       }
@@ -431,7 +431,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2180,
+          "x": 2320,
           "y": 200
         }
       }
@@ -773,7 +773,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3160,
+          "x": 3230,
           "y": 340
         }
       }
@@ -843,7 +843,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3160,
+          "x": 3230,
           "y": 700
         }
       }
@@ -885,7 +885,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3600,
+          "x": 3670,
           "y": 887
         }
       }
@@ -927,7 +927,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3160,
+          "x": 3230,
           "y": 887
         }
       }
@@ -973,7 +973,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3160,
+          "x": 3230,
           "y": 1077
         }
       }
@@ -1015,7 +1015,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3600,
+          "x": 3670,
           "y": 1277
         }
       }
@@ -1057,7 +1057,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3160,
+          "x": 3230,
           "y": 1277
         }
       }
@@ -1102,7 +1102,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3160,
+          "x": 3230,
           "y": 1460
         }
       }
@@ -1144,7 +1144,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3600,
+          "x": 3670,
           "y": 1670
         }
       }
@@ -1186,7 +1186,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3160,
+          "x": 3230,
           "y": 1670
         }
       }
@@ -1511,7 +1511,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "69"
+      - "125"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1631,20 +1631,20 @@ tasks:
     task:
       brand: ""
       description: Set the value of Storage for Needed Downloads in context.
-      id: 7609db2b-6531-4809-bdba-2351ce2bad26
+      id: c924878f-2ab2-4726-91e9-d032c4066020
       iscommand: false
       name: Calculate Storage for Needed Downloads
       script: Set
       type: regular
       version: -1
-    taskid: 7609db2b-6531-4809-bdba-2351ce2bad26
+    taskid: c924878f-2ab2-4726-91e9-d032c4066020
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": -1122,
-          "y": 887
+          "y": 1087
         }
       }
   "64":
@@ -1701,7 +1701,7 @@ tasks:
       {
         "position": {
           "x": -1122,
-          "y": 1267
+          "y": 1467
         }
       }
   "65":
@@ -1743,7 +1743,7 @@ tasks:
       {
         "position": {
           "x": -682,
-          "y": 1460
+          "y": 1660
         }
       }
   "66":
@@ -1785,7 +1785,7 @@ tasks:
       {
         "position": {
           "x": -1122,
-          "y": 1460
+          "y": 1660
         }
       }
   "69":
@@ -1842,19 +1842,19 @@ tasks:
       brand: ""
       description: Check if software image(s) need to be downloaded or if they are
         already present on the system, meaning no additional disk space is needed.
-      id: cbd9f02b-cc23-44e6-8a87-06c158d4488e
+      id: e2b86aaf-febe-44cf-8b7a-d08ada8c0afc
       iscommand: false
       name: Does Software Need To Be Downloaded?
       type: condition
       version: -1
-    taskid: cbd9f02b-cc23-44e6-8a87-06c158d4488e
+    taskid: e2b86aaf-febe-44cf-8b7a-d08ada8c0afc
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": -1122,
-          "y": 697
+          "y": 897
         }
       }
   "73":
@@ -1896,8 +1896,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2180,
-          "y": 510
+          "x": 2320,
+          "y": 517
         }
       }
   "74":
@@ -1938,7 +1938,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2180,
+          "x": 2320,
           "y": 700
         }
       }
@@ -1968,19 +1968,19 @@ tasks:
     task:
       brand: ""
       description: Set 'Failed' - Content Check Result in context.
-      id: b2e28a01-a2fc-4fe4-b5cc-be6d02691805
+      id: 381ed720-70e5-41e5-b2a4-838513bc071f
       iscommand: false
       name: Set 'Failed' - Content Check Result
       script: Set
       type: regular
       version: -1
-    taskid: b2e28a01-a2fc-4fe4-b5cc-be6d02691805
+    taskid: 381ed720-70e5-41e5-b2a4-838513bc071f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 2600,
+          "x": 2730,
           "y": 700
         }
       }
@@ -2091,12 +2091,12 @@ tasks:
       brand: ""
       description: Check if the target device is already running the desired PAN-OS
         version.  If so, no upgrade is needed.
-      id: d8841377-4aef-44bc-bfad-f316d155acfd
+      id: 8ba7d2dc-7c75-4e12-8062-8f627b826e4f
       iscommand: false
       name: Is Target Device Already Running Requested Version?
       type: condition
       version: -1
-    taskid: d8841377-4aef-44bc-bfad-f316d155acfd
+    taskid: 8ba7d2dc-7c75-4e12-8062-8f627b826e4f
     timertriggers: []
     type: condition
     view: |-
@@ -2204,7 +2204,7 @@ tasks:
       {
         "position": {
           "x": -1122,
-          "y": 1077
+          "y": 1277
         }
       }
   "106":
@@ -2223,20 +2223,20 @@ tasks:
     task:
       brand: ""
       description: Gets information from all PAN-OS systems in the topology.
-      id: 453c9042-77d9-4174-9a53-516d46f1b55b
+      id: dfd93aa8-650f-4306-b39b-250701a97652
       iscommand: true
       name: Get Version Currently Running On Device
       script: '|||pan-os-platform-get-system-info'
       type: regular
       version: -1
-    taskid: 453c9042-77d9-4174-9a53-516d46f1b55b
+    taskid: dfd93aa8-650f-4306-b39b-250701a97652
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -603
+          "y": -803
         }
       }
   "107":
@@ -2325,19 +2325,19 @@ tasks:
       brand: ""
       description: Checks for the latest available dynamic update versions and returns
         a list of latest available / currently installed content.
-      id: 41fad803-6c9a-43c3-807e-39904461af16
+      id: bb507505-9734-444e-8acf-a267cde6ef29
       iscommand: true
       name: Get Dynamic Update Status
       script: '|||pan-os-check-dynamic-updates-status'
       type: regular
       version: -1
-    taskid: 41fad803-6c9a-43c3-807e-39904461af16
+    taskid: bb507505-9734-444e-8acf-a267cde6ef29
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 2180,
+          "x": 2320,
           "y": 340
         }
       }
@@ -2349,7 +2349,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "100"
+      - "123"
     note: false
     quietmode: 0
     scriptarguments:
@@ -2380,20 +2380,20 @@ tasks:
     task:
       brand: ""
       description: Set a value of Panorama integration instance name in context.
-      id: 82880fbb-058e-44bb-a3d5-45ad8b13ab41
+      id: e6150739-eb12-4bcb-9c28-32798db80268
       iscommand: false
       name: Identify Connected Integration Instance Type (Panorama or Firewall)
       script: Set
       type: regular
       version: -1
-    taskid: 82880fbb-058e-44bb-a3d5-45ad8b13ab41
+    taskid: e6150739-eb12-4bcb-9c28-32798db80268
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -440
+          "y": -640
         }
       }
   "115":
@@ -2441,7 +2441,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3160,
+          "x": 3230,
           "y": 517
         }
       }
@@ -2505,7 +2505,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -790
+          "y": -990
         }
       }
   "118":
@@ -2539,8 +2539,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1970,
-          "y": -603
+          "x": -2450,
+          "y": -803
         }
       }
   "119":
@@ -2574,14 +2574,199 @@ tasks:
           "y": 2165
         }
       }
-version: -1
+  "123":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: IntegrationInstanceType
+          operator: isEqualString
+          right:
+            value:
+              simple: Panorama
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.targetDevice
+          operator: isEmpty
+      label: Panorama with missing targetDevice
+    continueonerrortype: ""
+    id: "123"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "100"
+      Panorama with missing targetDevice:
+      - "124"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Conditional task to check if the Integration Instance type being
+        used is Panorama then was a target device id provided.
+      id: 0e8a0870-388e-40fa-96d1-894313cf1303
+      iscommand: false
+      name: If IntegrationInstanceType is Panorama, is targetDevice provided?
+      type: condition
+      version: -1
+    taskid: 0e8a0870-388e-40fa-96d1-894313cf1303
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -452
+        }
+      }
+  "124":
+    continueonerrortype: ""
+    id: "124"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "119"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Target Device ID is required for Panorama Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry for Target Device ID is required for Panorama
+        Instance.
+      id: 2eaa27eb-9c2d-45ef-82b2-cab82fda9f45
+      iscommand: false
+      name: Target Device ID is required for Panorama Instance
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 2eaa27eb-9c2d-45ef-82b2-cab82fda9f45
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1975,
+          "y": -265
+        }
+      }
+  "125":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.targetVersion
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: BaseImage
+          operator: in
+          right:
+            iscontext: true
+            value:
+              simple: PANOS.SoftwareVersions.Summary.version
+      label: "yes"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.targetVersion
+          operator: isEmpty
+      label: no target version
+    continueonerrortype: ""
+    id: "125"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "126"
+      no target version:
+      - "13"
+      "yes":
+      - "69"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 33fc4326-92ef-4412-aceb-00ef8d207752
+      iscommand: false
+      name: Check if targetVersion is valid
+      type: condition
+      version: -1
+    taskid: 33fc4326-92ef-4412-aceb-00ef8d207752
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1122,
+          "y": 660
+        }
+      }
+  "126":
+    continueonerrortype: ""
+    id: "126"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "119"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: The Target Version provided has an invalid base version. Please verify
+          and try again. Skipping Disk Space check.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message.
+      id: aa28cc06-6018-42d2-8db3-cce1494d6e1e
+      iscommand: false
+      name: Invalid Target Version
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: aa28cc06-6018-42d2-8db3-cce1494d6e1e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1530,
+          "y": 897
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
+      "100_102_yes": 0.22,
       "100_91_#default#": 0.49,
       "115_13_#default#": 0.1,
       "115_29_yes": 0.41,
       "116_106_yes": 0.38,
+      "116_118_#default#": 0.2,
+      "123_100_#default#": 0.42,
+      "123_124_Panorama with missing targetDevice": 0.21,
+      "125_13_no target version": 0.1,
+      "125_69_yes": 0.39,
       "22_23_No Active Support": 0.55,
       "22_24_#default#": 0.48,
       "29_30_App/AV/Threat Mismatch": 0.56,
@@ -2595,16 +2780,20 @@ view: |-
       "41_42_Pending Changes": 0.5,
       "41_43_#default#": 0.47,
       "64_66_yes": 0.43,
+      "69_46_yes": 0.58,
       "69_66_#default#": 0.28,
+      "73_74_#default#": 0.45,
       "73_75_Not Latest Version": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 3404,
-        "width": 5950,
-        "x": -1970,
-        "y": -964
+        "height": 3604,
+        "width": 6500,
+        "x": -2450,
+        "y": -1164
       }
     }
   }
 fromversion: 6.10.0
+supportedModules:
+- agentix

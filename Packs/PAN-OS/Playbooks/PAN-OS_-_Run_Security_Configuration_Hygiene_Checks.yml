@@ -61,7 +61,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - "19"
     note: false
     quietmode: 0
     separatecontext: false
@@ -69,7 +69,6 @@ tasks:
     task:
       brand: ""
       id: 257a493e-7e6a-4096-8f4d-62a0dcbab700
-      description: Initialization of the playbook
       iscommand: false
       name: ""
       version: -1
@@ -80,7 +79,7 @@ tasks:
       {
         "position": {
           "x": 449,
-          "y": 30
+          "y": -150
         }
       }
   "1":
@@ -432,19 +431,118 @@ tasks:
           "y": 1257.5
         }
       }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 453ebb29-65cb-40b3-a7bc-00c26048955e
+      iscommand: false
+      name: Is the Panorama integration enabled?
+      type: condition
+      version: -1
+    taskid: 453ebb29-65cb-40b3-a7bc-00c26048955e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 27.25
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Please configure and enable an instance of the Panorama integration.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry for no active Panorama integration instances
+        found.
+      id: a5e72e6f-8c87-44f2-869c-3dfa3c639331
+      iscommand: false
+      name: No active Panorama Integration instance
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: a5e72e6f-8c87-44f2-869c-3dfa3c639331
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 917.75,
+          "y": 216
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
       "17_16_yes": 0.47,
-      "17_7_#default#": 0.31
+      "17_7_#default#": 0.31,
+      "19_1_yes": 0.52,
+      "19_20_#default#": 0.33
     },
     "paper": {
       "dimensions": {
-        "height": 1630,
-        "width": 380,
+        "height": 1810,
+        "width": 848.75,
         "x": 449,
-        "y": 30
+        "y": -150
       }
     }
   }
