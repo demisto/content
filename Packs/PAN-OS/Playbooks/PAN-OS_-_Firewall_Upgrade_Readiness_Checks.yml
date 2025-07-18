@@ -1,7 +1,19 @@
-contentitemexportablefields:
-  contentitemfields: {}
-description: "This playbook uses the PAN-OS integration to check NGFW device conditions that can affect its readiness to perform a PAN-OS upgrade.  Included checks examine the following:\n1. Available disk space for the target version (base image + release image)\n2. Presence of any uncommitted configuration changes\n3. Whether device has an active Support license\n4. Whether NTP is configured and synced\n5. Whether the latest App/Threat dynamic update is installed\n6. For devices in HA groups, check that devices in the group have:\n    1. App/Threat, AntiVirus, and GlobalProtect Client are at the same level and compatible for HA failover\n    2. Running configuration synchronized among peers\n\nPlaybook output includes a register of the checks performed, a brief description, and their result.\n\nNOTE: This playbook is intended for use with a single PAN-OS Integration Instance."
+description: |-
+  This playbook uses the PAN-OS integration to check NGFW device conditions that can affect its readiness to perform a PAN-OS upgrade.  Included checks examine the following:
+  1. Available disk space for the target version (base image and release image)
+  2. Presence of any uncommitted configuration changes
+  3. Whether device has an active Support license
+  4. Whether NTP is configured and synced
+  5. Whether the latest App/Threat dynamic update is installed
+  6. For devices in HA groups, check that devices in the group have:
+      1. App/Threat, AntiVirus, and GlobalProtect Client are at the same level and compatible for HA failover
+      2. Running configuration synchronized among peers
+
+  Playbook output includes a register of the checks performed, a brief description, and their result.
+
+  NOTE: This playbook is intended for use with a single PAN-OS Integration Instance.
 id: PAN-OS - Firewall Upgrade Readiness Checks
+version: -1
 inputSections:
 - description: Generic group for inputs
   inputs:
@@ -11,12 +23,12 @@ inputSections:
 inputs:
 - description: Serial Number of the firewall to check upgrade readiness for.
   key: targetDevice
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
   value: {}
 - description: The target PAN-OS version to check upgrade readiness for.
   key: targetVersion
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
   value: {}
 name: PAN-OS - Firewall Upgrade Readiness Checks
@@ -29,66 +41,78 @@ outputs:
 - contextPath: ReadinessChecks
   description: List of upgrade readiness checks performed and their result (Passed/Failed).
   type: unknown
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    continueonerrortype: ''
-    id: '0'
+  "0":
+    continueonerrortype: ""
+    id: "0"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '106'
+      - "116"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      id: 3bb6c16d-db64-492b-82bd-9da1b667703f
+      brand: ""
+      id: 638c4236-6211-4b56-8f3a-c0b7bdc67e01
+      description: Playbook Initialization header
       iscommand: false
-      name: ''
+      name: ""
       version: -1
-      description: ''
-    taskid: 3bb6c16d-db64-492b-82bd-9da1b667703f
+    taskid: 638c4236-6211-4b56-8f3a-c0b7bdc67e01
     timertriggers: []
     type: start
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -954\n  }\n}"
-  '1':
-    continueonerrortype: ''
-    id: '1'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -964
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '28'
+      - "28"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Gets information from all PAN-OS systems in the topology.
-      id: 9673bab0-fdc6-4875-801d-c8021bcc73f4
+      brand: ""
+      description: Section header to launch HA Peers Synced Check.
+      id: ee3ff73d-0b44-4de8-90ec-54770e79c864
       iscommand: false
       name: HA Peers Synced Check
       type: title
       version: -1
-    taskid: 9673bab0-fdc6-4875-801d-c8021bcc73f4
+    taskid: ee3ff73d-0b44-4de8-90ec-54770e79c864
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 200\n  }\n}"
-  '2':
-    continueonerrortype: ''
-    id: '2'
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 200
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     note: false
     quietmode: 0
     scriptarguments:
@@ -97,7 +121,7 @@ tasks:
       extend-context:
         simple: CommandNTPCheck=.=>val
       ignore-outputs:
-        simple: 'true'
+        simple: "true"
       target:
         complex:
           root: inputs.targetDevice
@@ -131,19 +155,25 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Runs any command supported in the API.
-      id: 2a34a63e-de5b-41dd-9a17-7d65eab9d0e6
+      id: 48e7f459-9945-4be3-8c68-7412db23d690
       iscommand: true
       name: Get NTP Status
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: 2a34a63e-de5b-41dd-9a17-7d65eab9d0e6
+    taskid: 48e7f459-9945-4be3-8c68-7412db23d690
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 340\n  }\n}"
-  '3':
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 340
+        }
+      }
+  "3":
     conditions:
     - condition:
       - - left:
@@ -164,258 +194,318 @@ tasks:
           operator: isExists
           right:
             value: {}
-      label: ERROR - NTP Not Synched
-    continueonerrortype: ''
-    id: '3'
+      label: NTP Not Synched
+    continueonerrortype: ""
+    id: "3"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '5'
-      ERROR - NTP Not Synched:
-      - '6'
+      - "5"
+      NTP Not Synched:
+      - "6"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Check if NTP is configured and synchronized.
-      id: a5fab286-b893-4afc-9811-4b44da6bef86
+      id: 3951180f-e2a2-43d9-b9aa-f3027ac24d82
       iscommand: false
       name: Determine NTP Sync Status
       type: condition
       version: -1
-    taskid: a5fab286-b893-4afc-9811-4b44da6bef86
+    taskid: 3951180f-e2a2-43d9-b9aa-f3027ac24d82
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 530\n  }\n}"
-  '5':
-    continueonerrortype: ''
-    id: '5'
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 517
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '26'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"NTP Synchronized\",\n\"CheckDescription\":\"Verifies that the device has at least one NTP server configured and NTP is currently synched.\",\n\"CheckResult\":\"Passed\"}"
+        simple: |-
+          {"CheckName":"NTP Synchronized",
+          "CheckDescription":"Verifies that the device has at least one NTP server configured and NTP is currently synched.",
+          "CheckResult":"Passed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 55408b38-978a-49b1-b5e0-870a59f0597c
+      brand: ""
+      description: Set 'Success' - NTP Sync Check Result in context.
+      id: c78998e4-9cbc-47be-a228-06c68a32ae0f
       iscommand: false
-      name: Store NTP Check Result - Success
+      name: Set 'Success' - NTP Sync Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 55408b38-978a-49b1-b5e0-870a59f0597c
+    taskid: c78998e4-9cbc-47be-a228-06c68a32ae0f
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 860\n  }\n}"
-  '6':
-    continueonerrortype: ''
-    id: '6'
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 700
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '26'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"NTP Synchronized\",\n\"CheckDescription\":\"Verifies that the device has at least one NTP server configured and NTP is currently synched.\",\n\"CheckResult\":\"Failed\"}"
+        simple: |-
+          {"CheckName":"NTP Synchronized",
+          "CheckDescription":"Verifies that the device has at least one NTP server configured and NTP is currently synched.",
+          "CheckResult":"Failed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 734cf38f-b72e-4666-ad9c-4b92f4eeafaf
+      brand: ""
+      description: Set 'Failed' - NTP Sync Check Result in context.
+      id: 8078cb85-5210-42ba-9230-91ed4f4dacf0
       iscommand: false
-      name: Store NTP Check Result - Fail
+      name: Set 'Failed' - NTP Sync Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 734cf38f-b72e-4666-ad9c-4b92f4eeafaf
+    taskid: 8078cb85-5210-42ba-9230-91ed4f4dacf0
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 1100,\n    \"y\": 710\n  }\n}"
-  '7':
-    continueonerrortype: ''
-    id: '7'
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 700
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      id: 7cef3a04-05be-433e-8afd-b4fc29444cad
+      brand: ""
+      description: Section header to launch NTP Sync Check.
+      id: dc891bd3-4034-4528-9aa1-6af47556bb02
       iscommand: false
       name: NTP Sync Check
       type: title
       version: -1
-      description: ''
-    taskid: 7cef3a04-05be-433e-8afd-b4fc29444cad
+    taskid: dc891bd3-4034-4528-9aa1-6af47556bb02
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 200\n  }\n}"
-  '8':
-    continueonerrortype: ''
-    id: '8'
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 200
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '21'
+      - "21"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      id: 96822301-5eb9-4259-893f-f7f85a32bf2e
+      brand: ""
+      description: Section header to launch Active Support License Check.
+      id: bb317961-f417-4d96-9b4c-3758216caca4
       iscommand: false
       name: Active Support License Check
       type: title
       version: -1
-      description: ''
-    taskid: 96822301-5eb9-4259-893f-f7f85a32bf2e
+    taskid: bb317961-f417-4d96-9b4c-3758216caca4
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
-  '9':
-    continueonerrortype: ''
-    id: '9'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '39'
+      - "39"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      id: 9415cb73-933e-4b3a-80ab-d45b7e3a1674
+      brand: ""
+      description: Section header to launch Uncommitted Configuration Changes Check.
+      id: e8d2dfe4-f851-4a1d-b82f-933659a9ed6f
       iscommand: false
       name: Uncommitted Configuration Changes Check
       type: title
       version: -1
-      description: ''
-    taskid: 9415cb73-933e-4b3a-80ab-d45b7e3a1674
+    taskid: e8d2dfe4-f851-4a1d-b82f-933659a9ed6f
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 207\n  }\n}"
-  '10':
-    continueonerrortype: ''
-    id: '10'
+    view: |-
+      {
+        "position": {
+          "x": -322,
+          "y": 200
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '108'
+      - "108"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      id: e84a213e-3495-4c90-b07f-d1a981a55857
+      brand: ""
+      description: Section header to launch Latest App/Threat Content Check.
+      id: 44dd697e-9a32-4a9f-9bfb-1b72cf806bd4
       iscommand: false
       name: Latest App/Threat Content Check
       type: title
       version: -1
-      description: ''
-    taskid: e84a213e-3495-4c90-b07f-d1a981a55857
+    taskid: 44dd697e-9a32-4a9f-9bfb-1b72cf806bd4
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 200\n  }\n}"
-  '12':
-    continueonerrortype: ''
-    id: '12'
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 200
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '44'
+      - "44"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      id: e98c192d-6e74-4bd2-8a3e-776e44590ff6
+      brand: ""
+      description: Section header to launch Image Storage Disk Space Check.
+      id: a913254f-5b46-481a-bcc7-f0254d032203
       iscommand: false
       name: Image Storage Disk Space Check
       type: title
       version: -1
-      description: ''
-    taskid: e98c192d-6e74-4bd2-8a3e-776e44590ff6
+    taskid: a913254f-5b46-481a-bcc7-f0254d032203
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 207\n  }\n}"
-  '13':
-    continueonerrortype: ''
-    id: '13'
+    view: |-
+      {
+        "position": {
+          "x": -1122,
+          "y": 197
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '107'
+      - "107"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      id: 8d7995f1-d462-41e3-864d-2762a8461529
+      brand: ""
+      description: Section header to conclude checks and continue to formatting results.
+      id: 77d1f548-d7c8-4311-b545-1a973542f08f
       iscommand: false
-      name: Format & Store Results
+      name: Format & Set Results table
       type: title
       version: -1
-      description: ''
-    taskid: 8d7995f1-d462-41e3-864d-2762a8461529
+    taskid: 77d1f548-d7c8-4311-b545-1a973542f08f
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 2417\n  }\n}"
-  '21':
-    continueonerrortype: ''
-    id: '21'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1980
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     note: false
     quietmode: 0
     scriptarguments:
@@ -424,7 +514,7 @@ tasks:
       extend-context:
         simple: CommandSupportCheck=.=>val
       ignore-outputs:
-        simple: 'true'
+        simple: "true"
       target:
         complex:
           root: inputs.targetDevice
@@ -458,19 +548,25 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Runs any command supported in the API.
-      id: afac6a1d-46f0-421b-af28-812dda71dc76
+      id: 30907790-5cf5-40f8-8d4b-47c7ea4c9413
       iscommand: true
       name: Get Support Status
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: afac6a1d-46f0-421b-af28-812dda71dc76
+    taskid: 30907790-5cf5-40f8-8d4b-47c7ea4c9413
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 340\n  }\n}"
-  '22':
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+  "22":
     conditions:
     - condition:
       - - left:
@@ -495,158 +591,132 @@ tasks:
           operator: isNotExists
           right:
             value: {}
-      label: Error - No Active Support
-    continueonerrortype: ''
-    id: '22'
+      label: No Active Support
+    continueonerrortype: ""
+    id: "22"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '24'
-      Error - No Active Support:
-      - '23'
+      - "24"
+      No Active Support:
+      - "23"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Check whether an active support license is present.
-      id: 49d5b4ce-236a-49b2-ad43-275de1c5703b
+      id: f5362a86-38bd-4e1d-b832-f0bc78f17ff6
       iscommand: false
       name: Determine Support Status
       type: condition
       version: -1
-    taskid: 49d5b4ce-236a-49b2-ad43-275de1c5703b
+    taskid: f5362a86-38bd-4e1d-b832-f0bc78f17ff6
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 510\n  }\n}"
-  '23':
-    continueonerrortype: ''
-    id: '23'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '25'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Active Support License\",\n\"CheckDescription\":\"Verifies that the device has a current and valid support license.\",\n\"CheckResult\":\"Failed\"}"
+        simple: |-
+          {"CheckName":"Active Support License",
+          "CheckDescription":"Verifies that the device has a current and valid support license.",
+          "CheckResult":"Failed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 4656b3b9-60ec-4103-b45c-8848e2b1c766
+      brand: ""
+      description: Set 'Failed' - Active Support Check Result in context.
+      id: e7f69949-bfe5-465e-afcb-b33d62cb3a3d
       iscommand: false
-      name: Store Support Check Result - Fail
+      name: Set 'Failed' - Active Support Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 4656b3b9-60ec-4103-b45c-8848e2b1c766
+    taskid: e7f69949-bfe5-465e-afcb-b33d62cb3a3d
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 160,\n    \"y\": 710\n  }\n}"
-  '24':
-    continueonerrortype: ''
-    id: '24'
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 710
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '25'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Active Support License\",\n\"CheckDescription\":\"Verifies that the device has a current and valid support license.\",\n\"CheckResult\":\"Passed\"}"
+        simple: |-
+          {"CheckName":"Active Support License",
+          "CheckDescription":"Verifies that the device has a current and valid support license.",
+          "CheckResult":"Passed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 016ade12-acef-437f-8611-336cc9ce3523
+      brand: ""
+      description: Set 'Success' - Active Support Check Result in context.
+      id: dc4acc5d-2c37-4308-8477-b60970241971
       iscommand: false
-      name: Store Support Check Result - Success
+      name: Set 'Success' - Active Support Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 016ade12-acef-437f-8611-336cc9ce3523
+    taskid: dc4acc5d-2c37-4308-8477-b60970241971
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 880\n  }\n}"
-  '25':
-    continueonerrortype: ''
-    id: '25'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 710
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '13'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 517ac792-25f6-4889-8180-933f7d0df880
-      iscommand: false
-      name: Active Support License Check Done
-      type: title
-      version: -1
-      description: ''
-    taskid: 517ac792-25f6-4889-8180-933f7d0df880
-    timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2180\n  }\n}"
-  '26':
-    continueonerrortype: ''
-    id: '26'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '13'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 498c48a8-fa73-49bf-8f69-a7f7e7429b24
-      iscommand: false
-      name: NTP Sync Check Done
-      type: title
-      version: -1
-      description: ''
-    taskid: 498c48a8-fa73-49bf-8f69-a7f7e7429b24
-    timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 2180\n  }\n}"
-  '28':
-    continueonerrortype: ''
-    id: '28'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '115'
+      - "115"
     note: false
     quietmode: 0
     scriptarguments:
@@ -655,7 +725,7 @@ tasks:
       extend-context:
         simple: CommandHAState=.=>val
       ignore-outputs:
-        simple: 'true'
+        simple: "true"
       target:
         complex:
           root: inputs.targetDevice
@@ -689,19 +759,25 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Runs any command supported in the API.
-      id: f7e3f98f-5138-48de-b4c5-b21dfd984c77
+      id: 2921499c-1d4c-4e9d-8978-595c79e1e256
       iscommand: true
       name: Get Full HA Configuration
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: f7e3f98f-5138-48de-b4c5-b21dfd984c77
+    taskid: 2921499c-1d4c-4e9d-8978-595c79e1e256
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 340\n  }\n}"
-  '29':
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 340
+        }
+      }
+  "29":
     conditions:
     - condition:
       - - left:
@@ -737,100 +813,125 @@ tasks:
           operator: isNotExists
           right:
             value: {}
-      label: Error - App/AV/Threat Mismatch
-    continueonerrortype: ''
-    id: '29'
+      label: App/AV/Threat Mismatch
+    continueonerrortype: ""
+    id: "29"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '31'
-      Error - App/AV/Threat Mismatch:
-      - '30'
+      - "31"
+      App/AV/Threat Mismatch:
+      - "30"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Determine if App / AV / Threat content is compatible between HA members for proper failover.
-      id: ab9500a4-de39-4a51-bd78-93d3912b4641
+      brand: ""
+      description: Determine if App / AV / Threat content is compatible between HA
+        members for proper failover.
+      id: 4ffbdf8d-2661-4433-a9f0-0df710942e4c
       iscommand: false
       name: App/AV/Threat Compatible?
       type: condition
       version: -1
-    taskid: ab9500a4-de39-4a51-bd78-93d3912b4641
+    taskid: 4ffbdf8d-2661-4433-a9f0-0df710942e4c
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 660\n  }\n}"
-  '30':
-    continueonerrortype: ''
-    id: '30'
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 700
+        }
+      }
+  "30":
+    continueonerrortype: ""
+    id: "30"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '32'
+      - "32"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"HA Compatibility - App/Av/Threat Content\",\n\"CheckDescription\":\"Verifies that App/Threat and AV content versions are compatible among HA group members.\",\n\"CheckResult\":\"Failed\"}"
+        simple: |-
+          {"CheckName":"HA Compatibility - App/Av/Threat Content",
+          "CheckDescription":"Verifies that App/Threat and AV content versions are compatible among HA group members.",
+          "CheckResult":"Failed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 513566c0-9e5b-4078-9fe0-57f82adf5923
+      brand: ""
+      description: Set 'Failed' - App/Av/Threat Compat Check Result in context.
+      id: 903127fa-916f-4e85-953c-a301939b8ba6
       iscommand: false
-      name: Store App/Av/Threat Compat Check Result - Fail
+      name: Set 'Failed' - App/Av/Threat Compat Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 513566c0-9e5b-4078-9fe0-57f82adf5923
+    taskid: 903127fa-916f-4e85-953c-a301939b8ba6
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 2610,\n    \"y\": 830\n  }\n}"
-  '31':
-    continueonerrortype: ''
-    id: '31'
+    view: |-
+      {
+        "position": {
+          "x": 3600,
+          "y": 887
+        }
+      }
+  "31":
+    continueonerrortype: ""
+    id: "31"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '32'
+      - "32"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"HA Compatibility - App/Av/Threat Content\",\n\"CheckDescription\":\"Verifies that App/Threat and AV content versions are compatible among HA group members.\",\n\"CheckResult\":\"Passed\"}"
+        simple: |-
+          {"CheckName":"HA Compatibility - App/Av/Threat Content",
+          "CheckDescription":"Verifies that App/Threat and AV content versions are compatible among HA group members.",
+          "CheckResult":"Passed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: ca6cbd72-f6b3-4607-b553-bc63dbc1c18d
+      brand: ""
+      description: Set 'Success' - App/Av/Threat Compat Check Result in context.
+      id: b75e5697-0ba6-4265-bf40-07ffd5b5b6be
       iscommand: false
-      name: Store App/Av/Threat Compat Check Result - Success
+      name: Set 'Success' - App/Av/Threat Compat Check Result
       script: Set
       type: regular
       version: -1
-    taskid: ca6cbd72-f6b3-4607-b553-bc63dbc1c18d
+    taskid: b75e5697-0ba6-4265-bf40-07ffd5b5b6be
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 990\n  }\n}"
-  '32':
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 887
+        }
+      }
+  "32":
     conditions:
     - condition:
       - - ignorecase: true
@@ -842,125 +943,125 @@ tasks:
           right:
             value:
               simple: Match
-      label: Error - GP Client Mismatch
-    continueonerrortype: ''
-    id: '32'
+      label: GP Client Mismatch
+    continueonerrortype: ""
+    id: "32"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '34'
-      Error - GP Client Mismatch:
-      - '33'
+      - "34"
+      GP Client Mismatch:
+      - "33"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Check that the active GlobalProtect client is compatible between HA members for proper failover.
-      id: 6f559753-8498-4121-b350-ab2aa95ebef9
+      brand: ""
+      description: Check that the active GlobalProtect client is compatible between
+        HA members for proper failover.
+      id: c9a360e9-fd23-402c-9d9d-ad52f884b269
       iscommand: false
       name: GP Client Compatible?
       type: condition
       version: -1
-    taskid: 6f559753-8498-4121-b350-ab2aa95ebef9
+    taskid: c9a360e9-fd23-402c-9d9d-ad52f884b269
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 1190\n  }\n}"
-  '33':
-    continueonerrortype: ''
-    id: '33'
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 1077
+        }
+      }
+  "33":
+    continueonerrortype: ""
+    id: "33"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '36'
+      - "36"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"HA Compatibility - GP Client\",\n\"CheckDescription\":\"Verifies that the installed GlobalProtect client is compatible among HA group members.\",\n\"CheckResult\":\"Failed\"}"
+        simple: |-
+          {"CheckName":"HA Compatibility - GP Client",
+          "CheckDescription":"Verifies that the installed GlobalProtect client is compatible among HA group members.",
+          "CheckResult":"Failed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 376acdeb-dfb9-41ed-9eaf-05c48705a26f
+      brand: ""
+      description: Set 'Failed' - GP Client Compat Check Result in context.
+      id: 7e99fb1d-95e9-44a2-aeae-ac714b2c5da8
       iscommand: false
-      name: Store GP Client Compat Check Result - Fail
+      name: Set 'Failed' - GP Client Compat Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 376acdeb-dfb9-41ed-9eaf-05c48705a26f
+    taskid: 7e99fb1d-95e9-44a2-aeae-ac714b2c5da8
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 2610,\n    \"y\": 1360\n  }\n}"
-  '34':
-    continueonerrortype: ''
-    id: '34'
+    view: |-
+      {
+        "position": {
+          "x": 3600,
+          "y": 1277
+        }
+      }
+  "34":
+    continueonerrortype: ""
+    id: "34"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '36'
+      - "36"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"HA Compatibility - GP Client\",\n\"CheckDescription\":\"Verifies that the installed GlobalProtect client is compatible among HA group members.\",\n\"CheckResult\":\"Passed\"}"
+        simple: |-
+          {"CheckName":"HA Compatibility - GP Client",
+          "CheckDescription":"Verifies that the installed GlobalProtect client is compatible among HA group members.",
+          "CheckResult":"Passed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 459624eb-30c5-41fc-8d7f-c24e142d6e07
+      brand: ""
+      description: Set 'Success' - GP Client Compat Check Result in context.
+      id: 0f391b06-2f70-4973-9202-f48f75a649a3
       iscommand: false
-      name: Store GP Client Compat Check Result - Success
+      name: Set 'Success' - GP Client Compat Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 459624eb-30c5-41fc-8d7f-c24e142d6e07
+    taskid: 0f391b06-2f70-4973-9202-f48f75a649a3
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 1485\n  }\n}"
-  '35':
-    continueonerrortype: ''
-    id: '35'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '13'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: e16fda54-1714-4c9c-871a-3e6a62509878
-      iscommand: false
-      name: HA Peers Synched Check Done
-      type: title
-      version: -1
-      description: ''
-    taskid: e16fda54-1714-4c9c-871a-3e6a62509878
-    timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": 3140,\n    \"y\": 2180\n  }\n}"
-  '36':
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 1277
+        }
+      }
+  "36":
     conditions:
     - condition:
       - - ignorecase: true
@@ -972,108 +1073,132 @@ tasks:
           right:
             value:
               simple: synchronized
-      label: Error - Running Config Not Synced
-    continueonerrortype: ''
-    id: '36'
+      label: Running Config Not Synced
+    continueonerrortype: ""
+    id: "36"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '38'
-      Error - Running Config Not Synced:
-      - '37'
+      - "38"
+      Running Config Not Synced:
+      - "37"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Check that running configuration is synchronized.
-      id: 0368db99-2dee-460c-9a38-c94fd98084a7
+      id: bf7dd772-27f5-499f-a56d-c9b5779cfbe1
       iscommand: false
       name: Running Config Synced?
       type: condition
       version: -1
-    taskid: 0368db99-2dee-460c-9a38-c94fd98084a7
+    taskid: bf7dd772-27f5-499f-a56d-c9b5779cfbe1
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 1670\n  }\n}"
-  '37':
-    continueonerrortype: ''
-    id: '37'
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 1460
+        }
+      }
+  "37":
+    continueonerrortype: ""
+    id: "37"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '35'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"HA Compatibility - Running Config Sync\",\n\"CheckDescription\":\"Verifies that the running config is synched between HA group members.\",\n\"CheckResult\":\"Failed\"}"
+        simple: |-
+          {"CheckName":"HA Compatibility - Running Config Sync",
+          "CheckDescription":"Verifies that the running config is synched between HA group members.",
+          "CheckResult":"Failed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 3f55fd64-e66a-444c-b481-9aa4b900b862
+      brand: ""
+      description: Set 'Failed' - Running Config Sync Check Result.
+      id: 47776e55-e696-4766-b94a-74f66feabbc0
       iscommand: false
-      name: Store Running Config Sync Check Result - Fail
+      name: Set 'Failed' - Running Config Sync Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 3f55fd64-e66a-444c-b481-9aa4b900b862
+    taskid: 47776e55-e696-4766-b94a-74f66feabbc0
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 2610,\n    \"y\": 1850\n  }\n}"
-  '38':
-    continueonerrortype: ''
-    id: '38'
+    view: |-
+      {
+        "position": {
+          "x": 3600,
+          "y": 1670
+        }
+      }
+  "38":
+    continueonerrortype: ""
+    id: "38"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '35'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"HA Compatibility - Running Config Sync\",\n\"CheckDescription\":\"Verifies that the running config is synched between HA group members.\",\n\"CheckResult\":\"Passed\"}"
+        simple: |-
+          {"CheckName":"HA Compatibility - Running Config Sync",
+          "CheckDescription":"Verifies that the running config is synched between HA group members.",
+          "CheckResult":"Passed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 03ac03e6-0450-4867-aae9-cb3c67669db0
+      brand: ""
+      description: Set 'Success' - Running Config Sync Check Result in context.
+      id: be5643d4-9f82-4590-88b7-735a12992010
       iscommand: false
-      name: Store Running Config Sync Check Result - Success
+      name: Set 'Success' - Running Config Sync Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 03ac03e6-0450-4867-aae9-cb3c67669db0
+    taskid: be5643d4-9f82-4590-88b7-735a12992010
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 1985\n  }\n}"
-  '39':
-    continueonerrortype: ''
-    id: '39'
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 1670
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '40'
+      - "40"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1082,7 +1207,7 @@ tasks:
       extend-context:
         simple: CommandFullCommitRequired=.=>val
       ignore-outputs:
-        simple: 'true'
+        simple: "true"
       target:
         complex:
           root: inputs.targetDevice
@@ -1116,27 +1241,33 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Runs any command supported in the API.
-      id: c7a43e8f-a1a6-4621-81b3-4bea617ac659
+      id: 5a1dbb82-eceb-45da-803a-8faadebfe265
       iscommand: true
       name: Get Full Commit Required Info
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: c7a43e8f-a1a6-4621-81b3-4bea617ac659
+    taskid: 5a1dbb82-eceb-45da-803a-8faadebfe265
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 340\n  }\n}"
-  '40':
-    continueonerrortype: ''
-    id: '40'
+    view: |-
+      {
+        "position": {
+          "x": -322,
+          "y": 340
+        }
+      }
+  "40":
+    continueonerrortype: ""
+    id: "40"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '41'
+      - "41"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1145,7 +1276,7 @@ tasks:
       extend-context:
         simple: CommandPendingChanges=.=>val
       ignore-outputs:
-        simple: 'true'
+        simple: "true"
       target:
         complex:
           root: inputs.targetDevice
@@ -1179,19 +1310,25 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Runs any command supported in the API.
-      id: ae7f6834-2786-430e-a97a-c1464f28b724
+      id: cdb07dbb-1ad1-4b7f-8f16-e0a03157d6c9
       iscommand: true
       name: Get Pending Changes Info
       script: '|||pan-os'
       type: regular
       version: -1
-    taskid: ae7f6834-2786-430e-a97a-c1464f28b724
+    taskid: cdb07dbb-1ad1-4b7f-8f16-e0a03157d6c9
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 517\n  }\n}"
-  '41':
+    view: |-
+      {
+        "position": {
+          "x": -322,
+          "y": 517
+        }
+      }
+  "41":
     conditions:
     - condition:
       - - left:
@@ -1201,7 +1338,7 @@ tasks:
           operator: isNotEqualString
           right:
             value:
-              simple: no
+              simple: "no"
         - left:
             iscontext: true
             value:
@@ -1209,140 +1346,172 @@ tasks:
           operator: isNotEqualString
           right:
             value:
-              simple: no
-      label: Error - Pending Changes
-    continueonerrortype: ''
-    id: '41'
+              simple: "no"
+      label: Pending Changes
+    continueonerrortype: ""
+    id: "41"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '43'
-      Error - Pending Changes:
-      - '42'
+      - "43"
+      Pending Changes:
+      - "42"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Check if there are any pending configuration changes not committed.
-      id: fe940cc1-7bc5-4dfe-aa66-b93795e1b224
+      id: 27cda63a-afd5-44e3-86de-5993cf5c1e3e
       iscommand: false
       name: Are Any Pending Changes / Full Commit Needed?
       type: condition
       version: -1
-    taskid: fe940cc1-7bc5-4dfe-aa66-b93795e1b224
+    taskid: 27cda63a-afd5-44e3-86de-5993cf5c1e3e
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 717\n  }\n}"
-  '42':
-    continueonerrortype: ''
-    id: '42'
+    view: |-
+      {
+        "position": {
+          "x": -322,
+          "y": 710
+        }
+      }
+  "42":
+    continueonerrortype: ""
+    id: "42"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '68'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Pending Configuration Changes\",\n\"CheckDescription\":\"Verifies that the firewall does not have any pending configuration changes that have not been committed.\",\n\"CheckResult\":\"Failed\"}"
+        simple: |-
+          {"CheckName":"Pending Configuration Changes",
+          "CheckDescription":"Verifies that the firewall does not have any pending configuration changes that have not been committed.",
+          "CheckResult":"Failed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 6d153346-5dd9-4fa8-bbd2-099fab25c121
+      brand: ""
+      description: Set 'Failed' - Pending Changes Check Result in context.
+      id: d30fa55a-dff6-46f5-a0c0-48ae06d895b9
       iscommand: false
-      name: Store Pending Changes Check Result - Fail
+      name: Set 'Failed' - Pending Changes Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 6d153346-5dd9-4fa8-bbd2-099fab25c121
+    taskid: d30fa55a-dff6-46f5-a0c0-48ae06d895b9
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -642,\n    \"y\": 897\n  }\n}"
-  '43':
-    continueonerrortype: ''
-    id: '43'
+    view: |-
+      {
+        "position": {
+          "x": 108,
+          "y": 897
+        }
+      }
+  "43":
+    continueonerrortype: ""
+    id: "43"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '68'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Pending Configuration Changes\",\n\"CheckDescription\":\"Verifies that the firewall does not have any pending configuration changes that have not been committed.\",\n\"CheckResult\":\"Passed\"}"
+        simple: |-
+          {"CheckName":"Pending Configuration Changes",
+          "CheckDescription":"Verifies that the firewall does not have any pending configuration changes that have not been committed.",
+          "CheckResult":"Passed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 769c5719-5785-48f0-bfaa-e97662281567
+      brand: ""
+      description: Set 'Success' - Pending Changes Check Result in context.
+      id: 38294e5f-d36f-4972-978b-4223a24ab83e
       iscommand: false
-      name: Store Pending Changes Check Result - Success
+      name: Set 'Success' - Pending Changes Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 769c5719-5785-48f0-bfaa-e97662281567
+    taskid: 38294e5f-d36f-4972-978b-4223a24ab83e
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 1047\n  }\n}"
-  '44':
-    continueonerrortype: ''
-    id: '44'
+    view: |-
+      {
+        "position": {
+          "x": -322,
+          "y": 897
+        }
+      }
+  "44":
+    continueonerrortype: ""
+    id: "44"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '45'
+      - "45"
     note: false
     quietmode: 0
     scriptarguments:
       newer_images_only:
-        simple: yes
+        simple: "yes"
       target:
         simple: ${inputs.targetDevice}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: This script is a wrapper for the 'pano-os-platform-get-available-software' command, adding options to return only images newer than is currently installed to minimize amount of context data generated.
-      id: a451e634-53a4-49c5-889d-60fff5a46a9a
+      brand: ""
+      description: This script is a wrapper for the 'pano-os-platform-get-available-software'
+        command, adding options to return only images newer than is currently installed
+        to minimize amount of context data generated.
+      id: 902ddd93-8b4e-4dbc-8613-7a8387bef40d
       iscommand: false
       name: Get Available Software
       script: PAN-OS-GetAvailablePANOSSoftware
       type: regular
       version: -1
-    taskid: a451e634-53a4-49c5-889d-60fff5a46a9a
+    taskid: 902ddd93-8b4e-4dbc-8613-7a8387bef40d
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 347\n  }\n}"
-  '45':
-    continueonerrortype: ''
-    id: '45'
+    view: |-
+      {
+        "position": {
+          "x": -1122,
+          "y": 337
+        }
+      }
+  "45":
+    continueonerrortype: ""
+    id: "45"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '69'
+      - "69"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1360,10 +1529,10 @@ tasks:
           - args:
               from:
                 value:
-                  simple: '0'
+                  simple: "0"
               to:
                 value:
-                  simple: '2'
+                  simple: "2"
             operator: slice
           - args:
               separator:
@@ -1374,32 +1543,38 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: '.0'
+                  simple: ".0"
             operator: concat
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 2ca3254b-74d5-47ee-8d35-43723e7c47f8
+      brand: ""
+      description: Set Base Software Version in context.
+      id: bf70f2ce-b680-4f1b-8f6d-849e25fe1c60
       iscommand: false
       name: Set Base Software Version
       script: Set
       type: regular
       version: -1
-    taskid: 2ca3254b-74d5-47ee-8d35-43723e7c47f8
+    taskid: bf70f2ce-b680-4f1b-8f6d-849e25fe1c60
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 517\n  }\n}"
-  '46':
-    continueonerrortype: ''
-    id: '46'
+    view: |-
+      {
+        "position": {
+          "x": -1122,
+          "y": 507
+        }
+      }
+  "46":
+    continueonerrortype: ""
+    id: "46"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '105'
+      - "105"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1435,7 +1610,7 @@ tasks:
               operator: isNotEqualString
               right:
                 value:
-                  simple: 'True'
+                  simple: "True"
           root: PANOS.SoftwareVersions.Summary
           transformers:
           - operator: SumList
@@ -1449,31 +1624,37 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: '0'
+                  simple: "0"
             operator: SetIfEmpty
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: ffeb3538-c93e-4b2a-88ce-7e1b163aa721
+      brand: ""
+      description: Set the value of Storage for Needed Downloads in context.
+      id: 7609db2b-6531-4809-bdba-2351ce2bad26
       iscommand: false
-      name: Calculate Storage for Needed Downloads (Base + Target Version)
+      name: Calculate Storage for Needed Downloads
       script: Set
       type: regular
       version: -1
-    taskid: ffeb3538-c93e-4b2a-88ce-7e1b163aa721
+    taskid: 7609db2b-6531-4809-bdba-2351ce2bad26
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 897\n  }\n}"
-  '64':
+    view: |-
+      {
+        "position": {
+          "x": -1122,
+          "y": 887
+        }
+      }
+  "64":
     conditions:
     - condition:
       - - left:
             iscontext: true
             value:
               simple: ImageStorageNeeded
-          operator: greaterThanOrEqual
+          operator: lessThan
           right:
             iscontext: true
             value:
@@ -1489,150 +1670,125 @@ tasks:
                       value:
                         simple: /opt/panrepo
                 root: PANOS.DiskSpace.FileSystems
-      label: Error - Insufficient Space
-    continueonerrortype: ''
-    id: '64'
+      label: "yes"
+    continueonerrortype: ""
+    id: "64"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '66'
-      Error - Insufficient Space:
-      - '65'
+      - "65"
+      "yes":
+      - "66"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Check that the system disk has enough free space to download the required image(s).
-      id: a76f89b8-d6f4-4499-b208-8f0260a62fa2
+      brand: ""
+      description: Check that the system disk has enough free space to download the
+        required image(s).
+      id: 84860c44-d332-4d03-aa9d-34206b8f93b0
       iscommand: false
       name: Is Sufficient Disk Space Free?
       type: condition
       version: -1
-    taskid: a76f89b8-d6f4-4499-b208-8f0260a62fa2
+    taskid: 84860c44-d332-4d03-aa9d-34206b8f93b0
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1277\n  }\n}"
-  '65':
-    continueonerrortype: ''
-    id: '65'
+    view: |-
+      {
+        "position": {
+          "x": -1122,
+          "y": 1267
+        }
+      }
+  "65":
+    continueonerrortype: ""
+    id: "65"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '67'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Image Storage Disk Space\",\n\"CheckDescription\":\"Verifies that the target device has enough free disk space to download the required images, or that they are already downloaded.\",\n\"CheckResult\":\"Failed\"}"
+        simple: |-
+          {"CheckName":"Image Storage Disk Space",
+          "CheckDescription":"Verifies that the target device has enough free disk space to download the required images, or that they are already downloaded.",
+          "CheckResult":"Failed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 18d73db0-9f14-4285-9022-76e7aced07de
+      brand: ""
+      description: Set 'Failed' - Image Disk Space Check Result in context.
+      id: bb8bf5d8-a296-40eb-ae1d-c85868714a10
       iscommand: false
-      name: Store Image Disk Space Check Result - Fail
+      name: Set 'Failed' - Image Disk Space Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 18d73db0-9f14-4285-9022-76e7aced07de
+    taskid: bb8bf5d8-a296-40eb-ae1d-c85868714a10
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1582\n  }\n}"
-  '66':
-    continueonerrortype: ''
-    id: '66'
+    view: |-
+      {
+        "position": {
+          "x": -682,
+          "y": 1460
+        }
+      }
+  "66":
+    continueonerrortype: ""
+    id: "66"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '67'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Image Storage Disk Space\",\n\"CheckDescription\":\"Verifies that the target device has enough free disk space to download the required images, or that they are already downloaded.\",\n\"CheckResult\":\"Passed\"}"
+        simple: |-
+          {"CheckName":"Image Storage Disk Space",
+          "CheckDescription":"Verifies that the target device has enough free disk space to download the required images, or that they are already downloaded.",
+          "CheckResult":"Passed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: cfb31e3b-336d-45d6-9912-b10d1231107d
+      brand: ""
+      description: Set 'Success' - Image Disk Space Check Result in context.
+      id: b4441c5d-57d3-41c3-8118-88b28243d1ef
       iscommand: false
-      name: Store Image Storage Space Check Result - Success
+      name: Set 'Success' - Image Disk Space Check Result
       script: Set
       type: regular
       version: -1
-    taskid: cfb31e3b-336d-45d6-9912-b10d1231107d
+    taskid: b4441c5d-57d3-41c3-8118-88b28243d1ef
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -1442,\n    \"y\": 1447\n  }\n}"
-  '67':
-    continueonerrortype: ''
-    id: '67'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '13'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: c75fd01e-1ead-4a1e-89fb-e809efc456bd
-      iscommand: false
-      name: Image Storage Disk Space Check Done
-      type: title
-      version: -1
-      description: ''
-    taskid: c75fd01e-1ead-4a1e-89fb-e809efc456bd
-    timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 2180\n  }\n}"
-  '68':
-    continueonerrortype: ''
-    id: '68'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '13'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: dc742ded-ee4e-415f-8f6a-0794ea01559f
-      iscommand: false
-      name: Uncommitted Configuration Changes Check Done
-      type: title
-      version: -1
-      description: ''
-    taskid: dc742ded-ee4e-415f-8f6a-0794ea01559f
-    timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": -322,\n    \"y\": 2180\n  }\n}"
-  '69':
+    view: |-
+      {
+        "position": {
+          "x": -1122,
+          "y": 1460
+        }
+      }
+  "69":
     conditions:
     - condition:
       - - left:
@@ -1667,34 +1823,41 @@ tasks:
           operator: isNotEmpty
           right:
             value: {}
-      label: yes
-    continueonerrortype: ''
-    id: '69'
+      label: "yes"
+    continueonerrortype: ""
+    id: "69"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '66'
-      yes:
-      - '46'
+      - "66"
+      "yes":
+      - "46"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Check if software image(s) need to be downloaded or if they are already present on the system, meaning no additional disk space is needed.
-      id: 4b94ce28-4b0e-4e5a-b977-dd38de5aa7d4
+      brand: ""
+      description: Check if software image(s) need to be downloaded or if they are
+        already present on the system, meaning no additional disk space is needed.
+      id: cbd9f02b-cc23-44e6-8a87-06c158d4488e
       iscommand: false
       name: Does Software Need To Be Downloaded?
       type: condition
       version: -1
-    taskid: 4b94ce28-4b0e-4e5a-b977-dd38de5aa7d4
+    taskid: cbd9f02b-cc23-44e6-8a87-06c158d4488e
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 707\n  }\n}"
-  '73':
+    view: |-
+      {
+        "position": {
+          "x": -1122,
+          "y": 697
+        }
+      }
+  "73":
     conditions:
     - condition:
       - - left:
@@ -1704,157 +1867,162 @@ tasks:
           operator: isFalse
           right:
             value: {}
-      label: Error - Not Latest Version
-    continueonerrortype: ''
-    id: '73'
+      label: Not Latest Version
+    continueonerrortype: ""
+    id: "73"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '74'
-      Error - Not Latest Version:
-      - '75'
+      - "74"
+      Not Latest Version:
+      - "75"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Check that the latest available App/Threat content is installed.
-      id: 5c0bd159-edb5-495d-8e86-9b77912f9c3c
+      id: c2e8b663-94a0-4e35-ac41-7c834db124da
       iscommand: false
       name: Is The Latest Available Content Installed?
       type: condition
       version: -1
-    taskid: 5c0bd159-edb5-495d-8e86-9b77912f9c3c
+    taskid: c2e8b663-94a0-4e35-ac41-7c834db124da
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 510\n  }\n}"
-  '74':
-    continueonerrortype: ''
-    id: '74'
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 510
+        }
+      }
+  "74":
+    continueonerrortype: ""
+    id: "74"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '76'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Latest Content Major Version Installed\",\n\"CheckDescription\":\"Verifies that the device has the latest available App/Threat dynamic update downloaded and installed.\",\n\"CheckResult\":\"Passed\"}"
+        simple: |-
+          {"CheckName":"Latest Content Major Version Installed",
+          "CheckDescription":"Verifies that the device has the latest available App/Threat dynamic update downloaded and installed.",
+          "CheckResult":"Passed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 30376c91-417f-48db-b83f-6021e444ebb4
+      brand: ""
+      description: Set 'Success' - Content Check Result in context.
+      id: c59c7494-a890-4086-8dd3-e7a3ae6f7363
       iscommand: false
-      name: Store Content Check Result - Success
+      name: Set 'Success' - Content Check Result
       script: Set
       type: regular
       version: -1
-    taskid: 30376c91-417f-48db-b83f-6021e444ebb4
+    taskid: c59c7494-a890-4086-8dd3-e7a3ae6f7363
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 880\n  }\n}"
-  '75':
-    continueonerrortype: ''
-    id: '75'
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 700
+        }
+      }
+  "75":
+    continueonerrortype: ""
+    id: "75"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '76'
+      - "13"
     note: false
     quietmode: 0
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Latest Content Major Version Installed\",\n\"CheckDescription\":\"Verifies that the device has the latest available App/Threat dynamic update downloaded and installed.\",\n\"CheckResult\":\"Failed\"}"
+        simple: |-
+          {"CheckName":"Latest Content Major Version Installed",
+          "CheckDescription":"Verifies that the device has the latest available App/Threat dynamic update downloaded and installed.",
+          "CheckResult":"Failed"}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: fb6f1eeb-4def-47d2-8213-cda7c2f6c7f9
+      brand: ""
+      description: Set 'Failed' - Content Check Result in context.
+      id: b2e28a01-a2fc-4fe4-b5cc-be6d02691805
       iscommand: false
-      name: Store Content Check Result - Fail
+      name: Set 'Failed' - Content Check Result
       script: Set
       type: regular
       version: -1
-    taskid: fb6f1eeb-4def-47d2-8213-cda7c2f6c7f9
+    taskid: b2e28a01-a2fc-4fe4-b5cc-be6d02691805
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 1865,\n    \"y\": 700\n  }\n}"
-  '76':
-    continueonerrortype: ''
-    id: '76'
+    view: |-
+      {
+        "position": {
+          "x": 2600,
+          "y": 700
+        }
+      }
+  "91":
+    continueonerrortype: ""
+    id: "91"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '13'
+      - "12"
+      - "9"
+      - "7"
+      - "10"
+      - "1"
+      - "8"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      id: 15d602d7-107f-42f0-8967-db5153c21e0e
-      iscommand: false
-      name: Content Version Check Done
-      type: title
-      version: -1
-      description: ''
-    taskid: 15d602d7-107f-42f0-8967-db5153c21e0e
-    timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 2180\n  }\n}"
-  '91':
-    continueonerrortype: ''
-    id: '91'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '12'
-      - '9'
-      - '7'
-      - '10'
-      - '1'
-      - '8'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 819a3be4-d75d-42c1-8a40-b27a9718d555
+      brand: ""
+      description: Section header to launch readiness checks.
+      id: a4a91f58-8bae-4a13-8937-358c6d5f0ccd
       iscommand: false
       name: Execute Readiness Checks
       type: title
       version: -1
-      description: ''
-    taskid: 819a3be4-d75d-42c1-8a40-b27a9718d555
+    taskid: a4a91f58-8bae-4a13-8937-358c6d5f0ccd
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -58\n  }\n}"
-  '96':
-    continueonerrortype: ''
-    id: '96'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -58
+        }
+      }
+  "96":
+    continueonerrortype: ""
+    id: "96"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -1863,18 +2031,24 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      id: 64133786-66c8-428a-8aaf-b31b85cd6786
+      brand: ""
+      description: Section header to mark conclusion of playbook.
+      id: ef45e94b-3473-46b0-a316-b6c606d58a43
       iscommand: false
       name: Done
       type: title
       version: -1
-      description: ''
-    taskid: 64133786-66c8-428a-8aaf-b31b85cd6786
+    taskid: ef45e94b-3473-46b0-a316-b6c606d58a43
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 2749\n  }\n}"
-  '100':
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2380
+        }
+      }
+  "100":
     conditions:
     - condition:
       - - left:
@@ -1898,108 +2072,86 @@ tasks:
             iscontext: true
             value:
               simple: inputs.targetVersion
-      label: yes
-    continueonerrortype: ''
-    id: '100'
+      label: "yes"
+    continueonerrortype: ""
+    id: "100"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '101'
-      yes:
-      - '102'
+      - "91"
+      "yes":
+      - "102"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Check if the target device is already running the desired PAN-OS version.  If so, no upgrade is needed.
-      id: fbc60a34-5f23-4747-9d9a-d513c7fc0091
+      brand: ""
+      description: Check if the target device is already running the desired PAN-OS
+        version.  If so, no upgrade is needed.
+      id: d8841377-4aef-44bc-bfad-f316d155acfd
       iscommand: false
       name: Is Target Device Already Running Requested Version?
       type: condition
       version: -1
-    taskid: fbc60a34-5f23-4747-9d9a-d513c7fc0091
+    taskid: d8841377-4aef-44bc-bfad-f316d155acfd
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -445\n  }\n}"
-  '101':
-    continueonerrortype: ''
-    id: '101'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -265
+        }
+      }
+  "102":
+    continueonerrortype: ""
+    id: "102"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '91'
+      - "119"
     note: false
     quietmode: 0
     scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: ReadinessChecks
       value:
-        simple: "{\"CheckName\":\"Target Version Already Installed\",\n\"CheckDescription\":\"Verifies whether the target PAN-OS version is already installed and running. If the target version is already installed, this check will result as Failed.\",\n\"CheckResult\":\"Passed\"}"
+        simple: The target version is already installed on your firewall. Skipping
+          readiness checks.
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 9e770981-e72e-4ac4-89ea-04f6f9ba23c4
+      brand: ""
+      description: Print message to indicate that target version is already installed
+        on the connected firewall.
+      id: 6dbd4745-ebfd-417e-b500-a9a589adb211
       iscommand: false
-      name: Store Running Version Check - Success
-      script: Set
+      name: Firewall is already on target version
+      script: Print
       type: regular
       version: -1
-    taskid: 9e770981-e72e-4ac4-89ea-04f6f9ba23c4
+    taskid: 6dbd4745-ebfd-417e-b500-a9a589adb211
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -200\n  }\n}"
-  '102':
-    continueonerrortype: ''
-    id: '102'
+    view: |-
+      {
+        "position": {
+          "x": -1750,
+          "y": -63
+        }
+      }
+  "105":
+    continueonerrortype: ""
+    id: "105"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '13'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: ReadinessChecks
-      value:
-        simple: "{\"CheckName\":\"Target Version Already Installed\",\n\"CheckDescription\":\"Verifies whether the target PAN-OS version is already installed and running. If the target version is already installed, this check will result as Failed.\",\n\"CheckResult\":\"Failed\"}"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: a689cfa0-c4a4-4444-beb1-05d3972896a3
-      iscommand: false
-      name: Store Running Version Check - Fail
-      script: Set
-      type: regular
-      version: -1
-    taskid: a689cfa0-c4a4-4444-beb1-05d3972896a3
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": -290\n  }\n}"
-  '105':
-    continueonerrortype: ''
-    id: '105'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '64'
+      - "64"
     note: false
     quietmode: 0
     scriptarguments:
@@ -2036,86 +2188,106 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: This script fetches disk space info from the target device and returns all information or a subset as specified in command arguments.
-      id: 523ee02a-7ad8-4ce1-b06a-edb9f910ecd6
+      brand: ""
+      description: This script fetches disk space info from the target device and
+        returns all information or a subset as specified in command arguments.
+      id: 7b6c3775-28ad-41cc-817d-4bb372f99537
       iscommand: false
       name: Get Disk Space Info
       script: PAN-OS-GetDeviceDiskSpace
       type: regular
       version: -1
-    taskid: 523ee02a-7ad8-4ce1-b06a-edb9f910ecd6
+    taskid: 7b6c3775-28ad-41cc-817d-4bb372f99537
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": -1122,\n    \"y\": 1087\n  }\n}"
-  '106':
-    continueonerrortype: ''
-    id: '106'
+    view: |-
+      {
+        "position": {
+          "x": -1122,
+          "y": 1077
+        }
+      }
+  "106":
+    continueonerrortype: ""
+    id: "106"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '114'
+      - "114"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Gets information from all PAN-OS systems in the topology.
-      id: 87c15f0d-da73-4848-81ae-bcc82f39e761
+      id: 453c9042-77d9-4174-9a53-516d46f1b55b
       iscommand: true
       name: Get Version Currently Running On Device
       script: '|||pan-os-platform-get-system-info'
       type: regular
       version: -1
-    taskid: 87c15f0d-da73-4848-81ae-bcc82f39e761
+    taskid: 453c9042-77d9-4174-9a53-516d46f1b55b
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -783\n  }\n}"
-  '107':
-    continueonerrortype: ''
-    id: '107'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -603
+        }
+      }
+  "107":
+    continueonerrortype: ""
+    id: "107"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '96'
+      - "96"
     note: false
     quietmode: 0
     scriptarguments:
       headers:
         simple: CheckName, CheckResult
       title:
-        simple: Upgrade Readiness Check Result for Device ${PANOS.ShowSystemInfo.Summary.hostid} to Version ${inputs.targetVersion}.
+        simple: Upgrade Readiness Check Result for Device ${PANOS.ShowSystemInfo.Summary.hostid}
+          to Version ${inputs.targetVersion}.
       value:
         simple: ${ReadinessChecks}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Accepts a json object and returns a markdown. Supports clickable links.
-      id: b96ef1c2-f49f-440e-b966-aaa8bd94e24d
+      brand: ""
+      description: Generate Readiness Checks Result markdown Table from json.
+      id: ce3c8a38-7dc3-442a-94e3-f5ad2d93a4f8
       iscommand: false
       name: Generate Readiness Checks Result Table
       script: JsonToTable
       type: regular
       version: -1
-    taskid: b96ef1c2-f49f-440e-b966-aaa8bd94e24d
+    taskid: ce3c8a38-7dc3-442a-94e3-f5ad2d93a4f8
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 2572\n  }\n}"
-  '108':
-    continueonerrortype: ''
-    id: '108'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2160
+        }
+      }
+  "108":
+    continueonerrortype: ""
+    id: "108"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '73'
+      - "73"
     note: false
     quietmode: 0
     scriptarguments:
@@ -2150,27 +2322,34 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
-      id: 0b791a61-5f28-4ef7-965b-3b7ed5544630
+      brand: ""
+      description: Checks for the latest available dynamic update versions and returns
+        a list of latest available / currently installed content.
+      id: 41fad803-6c9a-43c3-807e-39904461af16
       iscommand: true
       name: Get Dynamic Update Status
       script: '|||pan-os-check-dynamic-updates-status'
       type: regular
       version: -1
-    taskid: 0b791a61-5f28-4ef7-965b-3b7ed5544630
+    taskid: 41fad803-6c9a-43c3-807e-39904461af16
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 2130,\n    \"y\": 340\n  }\n}"
-  '114':
-    continueonerrortype: ''
-    id: '114'
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 340
+        }
+      }
+  "114":
+    continueonerrortype: ""
+    id: "114"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '100'
+      - "100"
     note: false
     quietmode: 0
     scriptarguments:
@@ -2199,19 +2378,25 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 90d1ca8e-42a0-466e-81e4-9ed582d7c024
+      brand: ""
+      description: Set a value of Panorama integration instance name in context.
+      id: 82880fbb-058e-44bb-a3d5-45ad8b13ab41
       iscommand: false
       name: Identify Connected Integration Instance Type (Panorama or Firewall)
       script: Set
       type: regular
       version: -1
-    taskid: 90d1ca8e-42a0-466e-81e4-9ed582d7c024
+    taskid: 82880fbb-058e-44bb-a3d5-45ad8b13ab41
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -620\n  }\n}"
-  '115':
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -440
+        }
+      }
+  "115":
     conditions:
     - condition:
       - - left:
@@ -2221,45 +2406,205 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: yes
+              simple: "yes"
       - - left:
             iscontext: true
             value:
               simple: CommandHAState.response.result.group.peer-info
           operator: isNotEmpty
-      label: yes
-    continueonerrortype: ''
-    id: '115'
+      label: "yes"
+    continueonerrortype: ""
+    id: "115"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - '35'
-      yes:
-      - '29'
+      - "13"
+      "yes":
+      - "29"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Check whether firewall has HA enabled.
-      id: c4f826b8-a675-4c38-a21f-81461fbf6e55
+      id: a9818eeb-3940-49fa-8af4-3d237a9620a1
       iscommand: false
       name: Is High Availability Enabled?
       type: condition
       version: -1
-    taskid: c4f826b8-a675-4c38-a21f-81461fbf6e55
+    taskid: a9818eeb-3940-49fa-8af4-3d237a9620a1
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 2900,\n    \"y\": 490\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 517
+        }
+      }
+  "116":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "116"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "118"
+      "yes":
+      - "106"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Conditional task to check if active Panorama integration instance
+        is available.
+      id: fabe203f-5b0d-4e0f-ab5e-7c8bbc8102a0
+      iscommand: false
+      name: Is the Panorama integration enabled?
+      type: condition
+      version: -1
+    taskid: fabe203f-5b0d-4e0f-ab5e-7c8bbc8102a0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -790
+        }
+      }
+  "118":
+    continueonerrortype: ""
+    id: "118"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "119"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Please configure and enable a Panorama integration instance.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry for missing active Panorama integration instance.
+      id: 473a35b6-ed51-4eed-8c68-b4a2144e536c
+      iscommand: false
+      name: No active Panorama integration instance found
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 473a35b6-ed51-4eed-8c68-b4a2144e536c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1970,
+          "y": -603
+        }
+      }
+  "119":
+    continueonerrortype: ""
+    id: "119"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "96"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook concluded without readiness checks.
+      id: 0dfa7057-8ece-4184-86b7-a2b948fe266f
+      iscommand: false
+      name: Done without readiness checks
+      type: title
+      version: -1
+    taskid: 0dfa7057-8ece-4184-86b7-a2b948fe266f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1750,
+          "y": 2165
+        }
+      }
 version: -1
-view: "{\n  \"linkLabelsPosition\": {\n    \"69_66_#default#\": 0.28\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3763,\n      \"width\": 4962,\n      \"x\": -1442,\n      \"y\": -954\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "100_91_#default#": 0.49,
+      "115_13_#default#": 0.1,
+      "115_29_yes": 0.41,
+      "116_106_yes": 0.38,
+      "22_23_No Active Support": 0.55,
+      "22_24_#default#": 0.48,
+      "29_30_App/AV/Threat Mismatch": 0.56,
+      "29_31_#default#": 0.54,
+      "32_33_GP Client Mismatch": 0.56,
+      "32_34_#default#": 0.55,
+      "36_37_Running Config Not Synced": 0.56,
+      "36_38_#default#": 0.5,
+      "3_5_#default#": 0.39,
+      "3_6_NTP Not Synched": 0.53,
+      "41_42_Pending Changes": 0.5,
+      "41_43_#default#": 0.47,
+      "64_66_yes": 0.43,
+      "69_66_#default#": 0.28,
+      "73_75_Not Latest Version": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3404,
+        "width": 5950,
+        "x": -1970,
+        "y": -964
+      }
+    }
+  }
 fromversion: 6.10.0
-tests:
-- palo_alto_panorama_test_pb
-- PAN-OS-panorama-topology-test-pb
-- PAN-OS-firewall-topology-test-pb
-supportedModules:
-- agentix
