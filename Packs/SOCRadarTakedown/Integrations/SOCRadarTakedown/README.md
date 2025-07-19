@@ -8,7 +8,6 @@ Submit and monitor takedown requests for phishing domains, impersonating account
 | Company ID | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
-| Reliability | False |
 
 ## Commands
 
@@ -18,7 +17,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### socradar-submit-phishing-domain
 
 ***
-Submits a takedown request for a phishing or malicious domain
+Submits a takedown request for a phishing domain or URL
 
 #### Base Command
 
@@ -28,9 +27,9 @@ Submits a takedown request for a phishing or malicious domain
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The phishing domain to submit for takedown. | Required |
-| abuse_type | Type of abuse (default is potential_phishing). Possible values are: potential_phishing, malware, fake_site. | Optional |
-| type | Type of domain (default is phishing_domain). Possible values are: phishing_domain, malicious_domain. | Optional |
+| domain | The phishing domain or URL to submit for takedown. | Required |
+| abuse_type | Type of abuse (default is potential_phishing). Possible values are: potential_phishing, confirmed_phishing. | Optional |
+| type | Type of domain/URL (default is phishing_domain). Possible values are: phishing_domain, phishing_url. | Optional |
 | notes | Additional information about the takedown request. | Optional |
 | send_alarm | Whether to send an alarm (default is true). Possible values are: true, false. | Optional |
 | email | Email to receive notifications about the takedown request. | Required |
@@ -61,13 +60,10 @@ Submits a takedown request for an impersonating social media account
 | --- | --- | --- |
 | username | Username of the impersonating account. | Required |
 | full_name | Full name shown on the impersonating account. | Required |
-| account_type | Type of social media platform. Possible values are: facebook, twitter, instagram, linkedin, tiktok, youtube, other. | Required |
-| description | Description or ID of the impersonation case. | Optional |
-| followers | Number of followers (default is 0). | Optional |
-| profile_picture | URL to the profile picture. | Optional |
+| account_type | Type of social media platform. Possible values are: facebook, instagram, twitter, tiktok, linkedin, youtube, meta, other. | Required |
 | notes | Additional information about the takedown request. | Optional |
-| send_alarm | Whether to send an alarm (default is false). Possible values are: true, false. | Optional |
-| email | Email to receive notifications about the takedown request. | Optional |
+| send_alarm | Whether to send an alarm (default is true). Possible values are: true, false. | Optional |
+| email | Email to receive notifications about the takedown request. | Required |
 
 #### Context Output
 
@@ -76,36 +72,11 @@ Submits a takedown request for an impersonating social media account
 | SOCRadarTakedown.SocialMediaImpersonation.Username | string | Username of the impersonating account |
 | SOCRadarTakedown.SocialMediaImpersonation.FullName | string | Full name shown on the impersonating account |
 | SOCRadarTakedown.SocialMediaImpersonation.AccountType | string | Type of social media platform |
+| SOCRadarTakedown.SocialMediaImpersonation.AbuseType | string | Type of abuse reported |
 | SOCRadarTakedown.SocialMediaImpersonation.Status | string | Status of the takedown request |
 | SOCRadarTakedown.SocialMediaImpersonation.Message | string | Message returned from the API |
 | SOCRadarTakedown.SocialMediaImpersonation.SendAlarm | boolean | Whether an alarm was sent |
 | SOCRadarTakedown.SocialMediaImpersonation.Notes | string | Notes provided with the takedown request |
-
-### socradar-get-takedown-progress
-
-***
-Gets the progress of a takedown request
-
-#### Base Command
-
-`socradar-get-takedown-progress`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| asset_id | The ID of the asset for which to check progress. | Required |
-| type | Type of takedown request. Possible values are: phishing_domain, impersonating_accounts, source_code_leaks, rogue_mobile_apps. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| SOCRadarTakedown.Progress.AssetID | string | The ID of the asset |
-| SOCRadarTakedown.Progress.Type | string | Type of takedown request |
-| SOCRadarTakedown.Progress.Status | string | Status of the API request |
-| SOCRadarTakedown.Progress.Data | unknown | Progress data returned from the API |
-| SOCRadarTakedown.Progress.Message | string | Message returned from the API |
 
 ### socradar-submit-source-code-leak
 
@@ -129,6 +100,7 @@ Submits a takedown request for leaked source code
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SOCRadarTakedown.SourceCodeLeak.LeakID | number | ID of the source code leak |
+| SOCRadarTakedown.SourceCodeLeak.AbuseType | string | Type of abuse reported |
 | SOCRadarTakedown.SourceCodeLeak.Status | string | Status of the takedown request |
 | SOCRadarTakedown.SourceCodeLeak.Message | string | Message returned from the API |
 | SOCRadarTakedown.SourceCodeLeak.Notes | string | Notes provided with the takedown request |
@@ -148,6 +120,8 @@ Submits a takedown request for a rogue mobile app
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the rogue mobile app to takedown. | Required |
+| notes | Additional information about the takedown request. | Optional |
+| send_alarm | Whether to send an alarm (default is true). Possible values are: true, false. | Optional |
 | email | Email to receive notifications about the takedown request. | Optional |
 
 #### Context Output
@@ -155,6 +129,9 @@ Submits a takedown request for a rogue mobile app
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SOCRadarTakedown.RogueApp.AppID | string | ID of the rogue mobile app |
+| SOCRadarTakedown.RogueApp.AbuseType | string | Type of abuse reported |
 | SOCRadarTakedown.RogueApp.Status | string | Status of the takedown request |
 | SOCRadarTakedown.RogueApp.Message | string | Message returned from the API |
+| SOCRadarTakedown.RogueApp.SendAlarm | boolean | Whether alarm notification is enabled |
+| SOCRadarTakedown.RogueApp.Notes | string | Additional notes for the request |
 | SOCRadarTakedown.RogueApp.Email | string | Email provided for notifications |
