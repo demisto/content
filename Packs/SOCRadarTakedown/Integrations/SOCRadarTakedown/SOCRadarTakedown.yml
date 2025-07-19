@@ -38,7 +38,7 @@ script:
     description: Submit a takedown request for a phishing domain.
     arguments:
     - name: domain
-      description: The phishing domain to be taken down.
+      description: The phishing domain or URL to be taken down.
       required: true
     - name: abuse_type
       description: Type of abuse.
@@ -47,11 +47,11 @@ script:
       - potential_phishing
       - confirmed_phishing
     - name: type
-      description: Domain type.
+      description: Domain/URL type.
       defaultValue: phishing_domain
       predefined:
       - phishing_domain
-      - lookalike_domain
+      - phishing_url
     - name: notes
       description: Additional notes for the takedown request.
       required: false
@@ -83,18 +83,28 @@ script:
     - contextPath: SOCRadarTakedown.PhishingDomain.Notes
       description: Additional notes for the request.
       type: String
+  
   - name: socradar-submit-social-media-impersonation
     description: Submit a takedown request for social media impersonation.
     arguments:
-    - name: url
-      description: URL of the impersonating social media account.
+    - name: username
+      description: Username of the impersonating account.
       required: true
-    - name: abuse_type
-      description: Type of abuse.
-      defaultValue: impersonating_accounts
+    - name: full_name
+      description: Full name shown on the impersonating account.
+      required: true
+    - name: account_type
+      description: Type of social media platform.
+      required: true
       predefined:
-      - impersonating_accounts
-      - fake_profiles
+      - facebook
+      - instagram
+      - twitter
+      - tiktok
+      - linkedin
+      - youtube
+      - meta
+      - other
     - name: notes
       description: Additional notes for the takedown request.
       required: false
@@ -108,8 +118,14 @@ script:
       description: Email address for notifications.
       required: true
     outputs:
-    - contextPath: SOCRadarTakedown.SocialMediaImpersonation.URL
-      description: The URL that was reported.
+    - contextPath: SOCRadarTakedown.SocialMediaImpersonation.Username
+      description: Username of the impersonating account.
+      type: String
+    - contextPath: SOCRadarTakedown.SocialMediaImpersonation.FullName
+      description: Full name shown on the impersonating account.
+      type: String
+    - contextPath: SOCRadarTakedown.SocialMediaImpersonation.AccountType
+      description: Type of social media platform.
       type: String
     - contextPath: SOCRadarTakedown.SocialMediaImpersonation.AbuseType
       description: Type of abuse reported.
@@ -126,34 +142,23 @@ script:
     - contextPath: SOCRadarTakedown.SocialMediaImpersonation.Notes
       description: Additional notes for the request.
       type: String
+  
   - name: socradar-submit-source-code-leak
     description: Submit a takedown request for leaked source code.
     arguments:
-    - name: url
-      description: URL where the source code leak is found.
+    - name: id
+      description: ID of the source code leak to takedown.
       required: true
-    - name: abuse_type
-      description: Type of abuse.
-      defaultValue: source_code_leak
-      predefined:
-      - source_code_leak
-      - data_leak
     - name: notes
       description: Additional notes for the takedown request.
       required: false
-    - name: send_alarm
-      description: Whether to send alarm notification.
-      defaultValue: "true"
-      predefined:
-      - "true"
-      - "false"
     - name: email
       description: Email address for notifications.
-      required: true
+      required: false
     outputs:
-    - contextPath: SOCRadarTakedown.SourceCodeLeak.URL
-      description: The URL that was reported.
-      type: String
+    - contextPath: SOCRadarTakedown.SourceCodeLeak.LeakID
+      description: ID of the source code leak.
+      type: Number
     - contextPath: SOCRadarTakedown.SourceCodeLeak.AbuseType
       description: Type of abuse reported.
       type: String
@@ -163,24 +168,19 @@ script:
     - contextPath: SOCRadarTakedown.SourceCodeLeak.Message
       description: Response message from the API.
       type: String
-    - contextPath: SOCRadarTakedown.SourceCodeLeak.SendAlarm
-      description: Whether alarm notification is enabled.
-      type: Boolean
     - contextPath: SOCRadarTakedown.SourceCodeLeak.Notes
       description: Additional notes for the request.
       type: String
+    - contextPath: SOCRadarTakedown.SourceCodeLeak.Email
+      description: Email provided for notifications.
+      type: String
+  
   - name: socradar-submit-rogue-app
     description: Submit a takedown request for a rogue mobile app.
     arguments:
-    - name: app_info
-      description: Information about the rogue mobile app (name, store URL, etc.).
+    - name: id
+      description: ID of the rogue mobile app to takedown.
       required: true
-    - name: abuse_type
-      description: Type of abuse.
-      defaultValue: rogue_mobile_app
-      predefined:
-      - rogue_mobile_app
-      - malicious_app
     - name: notes
       description: Additional notes for the takedown request.
       required: false
@@ -192,10 +192,10 @@ script:
       - "false"
     - name: email
       description: Email address for notifications.
-      required: true
+      required: false
     outputs:
-    - contextPath: SOCRadarTakedown.RogueApp.AppInfo
-      description: Information about the app that was reported.
+    - contextPath: SOCRadarTakedown.RogueApp.AppID
+      description: ID of the rogue mobile app.
       type: String
     - contextPath: SOCRadarTakedown.RogueApp.AbuseType
       description: Type of abuse reported.
@@ -212,6 +212,10 @@ script:
     - contextPath: SOCRadarTakedown.RogueApp.Notes
       description: Additional notes for the request.
       type: String
+    - contextPath: SOCRadarTakedown.RogueApp.Email
+      description: Email provided for notifications.
+      type: String
+  
   runonce: false
   ismappable: false
   isremotesyncin: false
