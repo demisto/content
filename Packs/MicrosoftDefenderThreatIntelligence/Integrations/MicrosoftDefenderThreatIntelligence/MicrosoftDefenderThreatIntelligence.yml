@@ -93,12 +93,12 @@ script:
   - description: Run this command to complete the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command.
     name: msg-defender-threat-intel-auth-complete
   - arguments:
-    - description: Article ID to retrieve specific article details.
+    - description: "Article ID to retrieve specific article details.\nIf no value is provided all articles will be returned."
       name: article_id
     - defaultValue: '50'
       description: Number of incidents in the list.
       name: limit
-    - description: Filter incidents using "odata" query.
+    - description: "Use odata query to customize the response."
       name: odata
     description: Get articles including their properties and relationships.
     name: msg-defender-threat-intel-article-list
@@ -110,14 +110,14 @@ script:
       description: The title of the Microsoft Defender Threat Intelligence article.
       type: String
   - arguments:
-    - description: The unique identifier of the article to retrieve indicators from.
+    - description: "The unique identifier of the article to retrieve indicators from.\nYou can choose only one of the following arguments: article_id or article_indicator_id."
       name: article_id
-    - description: The unique identifier of a specific indicator within the article.
+    - description: "The unique identifier of a specific indicator within the article.\nYou can choose only one of the following arguments: article_id or article_indicator_id."
       name: article_indicator_id
     - defaultValue: '50'
-      description: Number of incidents in the list.
+      description: Number of indicators in the list.
       name: limit
-    - description: Filter incidents using "odata" query.
+    - description: "Use odata query to customize the response."
       name: odata
     description: Get indicators of threat or compromise related to the contents of an article.
     name: msg-defender-threat-intel-article-indicators-list
@@ -130,13 +130,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The unique identifier of the intelligence profile.
+      description: "The unique identifier of the intelligence profile.\nIf no value is provided all profiles will be returned."
       name: intel_profile_id
     - defaultValue: '50'
       description: 'Number of incidents in the list.'
       name: limit
     - default: false
-      description: 'Filter incidents using "odata" query.'
+      description: "Use odata query to customize the response."
       name: odata
     description: 'Get Intelligence Profiles including their properties and relationships.'
     name: msg-defender-threat-intel-profile-list
@@ -147,16 +147,16 @@ script:
       description: The title or name of the threat actor profile.
       type: String
   - arguments:
-    - description: The unique identifier of the intelligence profile.
+    - description: "The unique identifier of the intelligence profile.\nYou can choose only one of the following arguments: intel_profile_id or intel_profile_indicator_id."
       name: intel_profile_id
     - default: false
-      description: The unique identifier of a specific indicator related to an intelligence profile.
+      description: "The unique identifier of a specific indicator related to an intelligence profile.\nYou can choose only one of the following arguments: intel_profile_id or intel_profile_indicator_id."
       name: intel_profile_indicator_id
     - defaultValue: '50'
       description: Number of incidents in the list.
       name: limit
     - default: false
-      description: Filter incidents using "odata" query.
+      description: "Use odata query to customize the response."
       name: odata
     description: Get Intelligence Profiles Indicators and their properties.
     name: msg-defender-threat-intel-profile-indicators-list
@@ -170,7 +170,7 @@ script:
     - description: The unique identifier of the host.
       name: host_id
       required: true
-    - description: Filter incidents using "odata" query.
+    - description: "Use odata query to customize the response."
       name: odata
     description: Read the properties and relationships of a host object.
     name: msg-defender-threat-intel-host
@@ -185,11 +185,11 @@ script:
       type: String
 
   - arguments:
-    - description: 'hostname or IP address.'
+    - description: 'hostname or IP address.\nYou can choose only one of the following arguments: host_id or whois_record_id.'
       name: host_id
-    - description: The unique identifier of a specific whois record.
+    - description: "The unique identifier of a specific whois record.\nYou can choose only one of the following arguments: host_id or whois_record_id."
       name: whois_record_id
-    - description: Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.
+    - description: "Use odata query to customize the response."
       name: odata
     - defaultValue: '50'
       description: Number of records in the list.
@@ -207,13 +207,13 @@ script:
       type: String
 
   - arguments:
-    - description: 'Hostname or IP address.'
+    - description: "Hostname or IP address.\nYou can choose only one of the following arguments: host_id, whois_record_id or whois_history_record_id."
       name: host_id
-    - description: The unique identifier of the whois record whose history you want to retrieve.
+    - description: "The unique identifier of the whois record whose history you want to retrieve.\nYou can choose only one of the following arguments: host_id, whois_record_id or whois_history_record_id."
       name: whois_record_id
-    - description: The unique identifier of a specific WHOIS history record.
+    - description: "The unique identifier of a specific WHOIS history record.\nYou can choose only one of the following arguments: host_id, whois_record_id or whois_history_record_id."
       name: whois_history_record_id
-    - description: 'Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top.'
+    - description: 'Use "odata" query to customize the response.'
       name: odata
     - defaultValue: '50'
       description: 'Number of records in the list.'
