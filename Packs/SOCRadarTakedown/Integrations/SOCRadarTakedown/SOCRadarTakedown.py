@@ -51,17 +51,76 @@ class Client:
         except requests.exceptions.RequestException as e:
             raise Exception(f"Connection error: {str(e)}")
 
-    def submit_takedown_request(
-        self, entity: str, request_type: str, abuse_type: str, notes: str = "", send_alarm: bool = True, email: str = ""
+    def submit_phishing_domain_takedown(
+        self, domain: str, abuse_type: str, domain_type: str, notes: str = "", send_alarm: bool = True, email: str = ""
     ) -> dict[str, Any]:
-        """Generic method to submit takedown requests"""
+        """Submit phishing domain takedown request"""
         url = f"{self.base_url}/add/company/{self.company_id}/takedown/request"
         data = {
             "abuse_type": abuse_type,
-            "entity": entity,
-            "type": request_type,
+            "entity": domain,
+            "type": domain_type,
             "notes": notes,
             "send_alarm": send_alarm,
+            "email": email,
+        }
+
+        response = requests.post(url, json=data, headers=self.headers, verify=self.verify)
+
+        if response.status_code >= 400:
+            raise Exception(f"API Error: {response.status_code} - {response.text}")
+
+        return response.json()
+
+    def submit_social_media_impersonation_takedown(
+        self, username: str, full_name: str, account_type: str, notes: str = "", send_alarm: bool = True, email: str = ""
+    ) -> dict[str, Any]:
+        """Submit social media impersonation takedown request"""
+        url = f"{self.base_url}/add/company/{self.company_id}/takedown/request/social_media_risks"
+        data = {
+            "impersonating_account": {
+                "username": username,
+                "full_name": full_name,
+                "account_type": account_type
+            },
+            "notes": notes,
+            "send_alarm": send_alarm,
+            "email": email,
+        }
+
+        response = requests.post(url, json=data, headers=self.headers, verify=self.verify)
+
+        if response.status_code >= 400:
+            raise Exception(f"API Error: {response.status_code} - {response.text}")
+
+        return response.json()
+
+    def submit_source_code_leak_takedown(
+        self, leak_id: int, notes: str = "", email: str = ""
+    ) -> dict[str, Any]:
+        """Submit source code leak takedown request"""
+        url = f"{self.base_url}/add/company/{self.company_id}/takedown/request/source_code_leaks"
+        data = {
+            "id": leak_id,
+            "notes": notes,
+            "email": email,
+        }
+
+        response = requests.post(url, json=data, headers=self.headers, verify=self.verify)
+
+        if response.status_code >= 400:
+            raise Exception(f"API Error: {response.status_code} - {response.text}")
+
+        return response.json()
+
+    def submit_rogue_app_takedown(
+        self, app_id: int, notes: str = "", email: str = ""
+    ) -> dict[str, Any]:
+        """Submit rogue mobile app takedown request"""
+        url = f"{self.base_url}/add/company/{self.company_id}/takedown/request/rogue_mobile_apps"
+        data = {
+            "id": app_id,
+            "notes": notes,
             "email": email,
         }
 
@@ -140,7 +199,7 @@ def test_module(client: Client) -> str:
 
 
 def submit_phishing_domain_takedown_command(client: Client) -> CommandResults:
-    """Submits a takedown request for a phishing domain"""
+    """Submits a takedown request for a phishing domain or URL"""
     args = demisto.args()
     domain = args.get("domain", "")
     abuse_type = args.get("abuse_type", "potential_phishing")
@@ -149,12 +208,15 @@ def submit_phishing_domain_takedown_command(client: Client) -> CommandResults:
     send_alarm = args.get("send_alarm", "true").lower() == "true"
     email = args.get("email", "")
 
-    # Validate domain
-    Validator.raise_if_domain_not_valid(domain)
+    # Validate based on type
+    if domain_type == "phishing_url":
+        Validator.raise_if_url_not_valid(domain)
+    else:  # phishing_domain
+        Validator.raise_if_domain_not_valid(domain)
 
     # Submit request
-    raw_response = client.submit_takedown_request(
-        entity=domain, request_type=domain_type, abuse_type=abuse_type, notes=notes, send_alarm=send_alarm, email=email
+    raw_response = client.submit_phishing_domain_takedown(
+        domain=domain, abuse_type=abuse_type, domain_type=domain_type, notes=notes, send_alarm=send_alarm, email=email
     )
 
     # Prepare output
@@ -186,20 +248,18 @@ def submit_phishing_domain_takedown_command(client: Client) -> CommandResults:
 def submit_social_media_impersonation_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for social media impersonation"""
     args = demisto.args()
-    url_link = args.get("url", "")
-    abuse_type = args.get("abuse_type", "impersonating_accounts")
+    username = args.get("username", "")
+    full_name = args.get("full_name", "")
+    account_type = args.get("account_type", "")
     notes = args.get("notes", "")
     send_alarm = args.get("send_alarm", "true").lower() == "true"
     email = args.get("email", "")
 
-    # Validate URL
-    Validator.raise_if_url_not_valid(url_link)
-
     # Submit request
-    raw_response = client.submit_takedown_request(
-        entity=url_link,
-        request_type="impersonating_accounts",
-        abuse_type=abuse_type,
+    raw_response = client.submit_social_media_impersonation_takedown(
+        username=username,
+        full_name=full_name,
+        account_type=account_type,
         notes=notes,
         send_alarm=send_alarm,
         email=email,
@@ -207,15 +267,19 @@ def submit_social_media_impersonation_takedown_command(client: Client) -> Comman
 
     # Prepare output
     readable_output = "### Social Media Impersonation Takedown Request\n"
-    readable_output += f"**URL**: {url_link}\n"
+    readable_output += f"**Username**: {username}\n"
+    readable_output += f"**Full Name**: {full_name}\n"
+    readable_output += f"**Account Type**: {account_type}\n"
     readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
     if raw_response.get("message"):
         readable_output += f"**Message**: {raw_response.get('message')}\n"
 
     outputs = {
-        "URL": url_link,
-        "AbuseType": abuse_type,
+        "Username": username,
+        "FullName": full_name,
+        "AccountType": account_type,
+        "AbuseType": "impersonating_accounts",
         "Status": "Success" if raw_response.get("is_success", False) else "Failed",
         "Message": raw_response.get("message", ""),
         "SendAlarm": send_alarm,
@@ -224,7 +288,7 @@ def submit_social_media_impersonation_takedown_command(client: Client) -> Comman
 
     return CommandResults(
         outputs_prefix="SOCRadarTakedown.SocialMediaImpersonation",
-        outputs_key_field="URL",
+        outputs_key_field="Username",
         outputs=outputs,
         readable_output=readable_output,
         raw_response=raw_response,
@@ -234,40 +298,35 @@ def submit_social_media_impersonation_takedown_command(client: Client) -> Comman
 def submit_source_code_leak_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for leaked source code"""
     args = demisto.args()
-    url_link = args.get("url", "")
-    abuse_type = args.get("abuse_type", "source_code_leak")
+    leak_id = int(args.get("id", "0"))
     notes = args.get("notes", "")
-    send_alarm = args.get("send_alarm", "true").lower() == "true"
     email = args.get("email", "")
 
-    # Validate URL
-    Validator.raise_if_url_not_valid(url_link)
-
     # Submit request
-    raw_response = client.submit_takedown_request(
-        entity=url_link, request_type="source_code_leak", abuse_type=abuse_type, notes=notes, send_alarm=send_alarm, email=email
+    raw_response = client.submit_source_code_leak_takedown(
+        leak_id=leak_id, notes=notes, email=email
     )
 
     # Prepare output
     readable_output = "### Source Code Leak Takedown Request\n"
-    readable_output += f"**URL**: {url_link}\n"
+    readable_output += f"**Leak ID**: {leak_id}\n"
     readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
     if raw_response.get("message"):
         readable_output += f"**Message**: {raw_response.get('message')}\n"
 
     outputs = {
-        "URL": url_link,
-        "AbuseType": abuse_type,
+        "LeakID": leak_id,
+        "AbuseType": "source_code_leak",
         "Status": "Success" if raw_response.get("is_success", False) else "Failed",
         "Message": raw_response.get("message", ""),
-        "SendAlarm": send_alarm,
         "Notes": notes,
+        "Email": email,
     }
 
     return CommandResults(
         outputs_prefix="SOCRadarTakedown.SourceCodeLeak",
-        outputs_key_field="URL",
+        outputs_key_field="LeakID",
         outputs=outputs,
         readable_output=readable_output,
         raw_response=raw_response,
@@ -277,37 +336,37 @@ def submit_source_code_leak_takedown_command(client: Client) -> CommandResults:
 def submit_rogue_app_takedown_command(client: Client) -> CommandResults:
     """Submits a takedown request for a rogue mobile app"""
     args = demisto.args()
-    app_info = args.get("app_info", "")
-    abuse_type = args.get("abuse_type", "rogue_mobile_app")
+    app_id = int(args.get("id", "0"))
     notes = args.get("notes", "")
     send_alarm = args.get("send_alarm", "true").lower() == "true"
     email = args.get("email", "")
 
     # Submit request
-    raw_response = client.submit_takedown_request(
-        entity=app_info, request_type="rogue_mobile_app", abuse_type=abuse_type, notes=notes, send_alarm=send_alarm, email=email
+    raw_response = client.submit_rogue_app_takedown(
+        app_id=app_id, notes=notes, email=email
     )
 
     # Prepare output
     readable_output = "### Rogue App Takedown Request\n"
-    readable_output += f"**App Info**: {app_info}\n"
+    readable_output += f"**App ID**: {app_id}\n"
     readable_output += f"**Status**: {'Success' if raw_response.get('is_success', False) else 'Failed'}\n"
 
     if raw_response.get("message"):
         readable_output += f"**Message**: {raw_response.get('message')}\n"
 
     outputs = {
-        "AppInfo": app_info,
-        "AbuseType": abuse_type,
+        "AppID": str(app_id),
+        "AbuseType": "rogue_mobile_app",
         "Status": "Success" if raw_response.get("is_success", False) else "Failed",
         "Message": raw_response.get("message", ""),
         "SendAlarm": send_alarm,
         "Notes": notes,
+        "Email": email,
     }
 
     return CommandResults(
         outputs_prefix="SOCRadarTakedown.RogueApp",
-        outputs_key_field="AppInfo",
+        outputs_key_field="AppID",
         outputs=outputs,
         readable_output=readable_output,
         raw_response=raw_response,
