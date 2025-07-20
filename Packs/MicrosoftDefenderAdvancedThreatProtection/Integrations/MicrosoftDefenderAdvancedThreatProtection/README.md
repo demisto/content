@@ -42,11 +42,10 @@ Two application authentication methods are available:
 
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-**Note**: When using the Authentication Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the required role permissions. This can be done via the Microsoft Defender Portal:
+**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the required role permissions. This can be done via the Microsoft Defender Portal:
 
-- If you are using the **New Unified RBAC permissions model**, navigate to [**Defender Portal** > **Permissions**](https://security.microsoft.com/securitypermissions) and select **Roles** under **Microsoft Defender XDR**.
-
-- If you are using the **Legacy permissions model**, navigate to [**Defender Portal** > **Settings** > **Endpoints** > **Roles**](https://security.microsoft.com/securitysettings/endpoints/user_roles).
+- If you are using the new unified RBAC permissions model, navigate to [**Defender Portal** > **Permissions**](https://security.microsoft.com/securitypermissions) and select **Roles** under **Microsoft Defender XDR**.
+- If you are using the legacy permissions model, navigate to [**Defender Portal** > **Settings** > **Endpoints** > **Roles**](https://security.microsoft.com/securitysettings/endpoints/user_roles).
 
 For a detailed comparison between the new and legacy permission models, refer to the [permission mapping table](https://learn.microsoft.com/en-us/defender-xdr/compare-rbac-roles#map-defender-for-endpoint-and-defender-vulnerability-management-permissions-to-the-microsoft-defender-xdr-rbac-permissions).
 
@@ -54,49 +53,39 @@ For a detailed comparison between the new and legacy permission models, refer to
 
 The integration can use OAuth 2.0 and OpenID Connect standard-compliant authentication services to sign-in or delegate authentication on behalf of a user. For more information, refer to the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
 
-1. To allow Cortex access to Microsoft Defender for Endpoint, click on the following [link](https://oproxy.demisto.ninja/ms-defender-atp).
+To configure Cortex XSOAR application access to Microsoft Defender for Endpoint:
 
+1. Navigate to the [Cortex Authorization page for Microsoft Defender for Endpoint](https://oproxy.demisto.ninja/ms-defender-atp).
 2. Select the user account with sufficient role permissions.
-
-3. After authorizing the application, copy the **ID**, **Token**, and **Key** values and insert them in the corresponding fields in the integration instance configuration window.
-
+3. After authorizing the application, copy the **ID**, **Token**, and **Key** values and insert them in integration instance settings corresponding fields.
 4. Ensure **Authentication Type** is set to "Authorization Code".
-
 5. Click **Save & Exit**.
-
-6. Run the **!microsoft-atp-test** command to verify correct configuration.
+6. Run the **microsoft-atp-test** command to verify correct configuration.
 
 ### Self-deployed Azure Application
 
 1. Navigate to the [Azure portal](https://portal.azure.com/) and search for **Microsoft Entra ID**.
-
 2. On the **App registrations** page, click **New registration**.
-
 3. Click **API Permissions** > **Add permission** > **APIs my organization uses**, and type **WindowsDefenderATP**.
-
 4. Choose the type of permissions:
     - **Delegated Permissions** - used by applications that act on behalf of a signed-in user. The application will have access to the resources that the user has access to, limited by the permissions granted to the application. Choose this option if you prefer the **Authorization Code** flow.
     - **Application Permissions** - used by applications that run without a signed-in user. The application acts as its own identity and is granted direct access to data or resources. This is common for background services or daemons. Choose this option if you prefer the the **Client Credentials** flow.
-
 5. Select the [permissions required by the integration](#required-permissions) (based on the chosen permission type) and then click **Add permissions**.
-
 6. Click **Grant consent**.
-
 7. To add a secret to the application, select **Certificates & secrets**, write a helpful description, and click **Add**.
-
 8. In the integration instance configuration window, select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
-    - If **Delegated Permissions** was selected:
-        - In the **ID** field, enter the Application (client) ID.
-        - In the **Key** field, enter the Client secret.
-        - In the **Token** field, enter the Directory (tenant) ID.
+    - For **Delegated Permissions**:
+        - In the **ID** field, enter the application (client) ID.
+        - In the **Token** field, enter the directory (tenant) ID.
+        - In the **Key** field, enter the client secret.
         - In the **Authentication Type** field, select "Authorization Code".
         - In the **Application Redirect URI** field, enter the Application redirect URI.
         - Click **Save & Exit**.
         - Run the **microsoft-atp-generate-login-url** command and follow the instructions.
-    - If **Application Permissions** was selected:
-        - In the **ID** field, enter the Application (client) ID.
-        - In the **Key** field, enter the Client secret.
-        - In the **Token** field, enter the Directory (tenant) ID.
+    - For **Application Permissions**:
+        - In the **ID** field, enter the application (client) ID.
+        - In the **Token** field, enter the directory (tenant) ID.
+        - In the **Key** field, enter the client secret.
         - In the **Authentication Type** field, select "Client Credentials".
         - Click **Test** to verify correct configuration.
         - Click **Save & Exit**.
@@ -119,7 +108,7 @@ Choose **Application Permissions** for the Client Credentials flow, or **Delegat
 - Machine.Scan - Application / Delegated
 - Machine.StopAndQuarantine - Application / Delegated
 - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated.
-  - **Note**: This permission is only used for the deprecated **microsoft-atp-indicator-list** command. If you are not using this command, it is not required.
+  **Note**: This permission is only used for the deprecated **microsoft-atp-indicator-list** command. If you are not using this command, it is not required.
 - Url.Read.All - Application / Delegated
 - User.Read.All - Application / Delegated
 - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
@@ -173,7 +162,7 @@ Choose **Application Permissions** for the Client Credentials flow, or **Delegat
  | DoD | Microsoft Defender for Endpoint for the USA Department of Defence (DoD) |
  | Custom | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
 
-**Note**: In most cases, setting Endpoint type is preferred to setting Server URL; only use it cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
+**Note**: In most cases, setting the Endpoint type is preferred over setting the Server URL. Only set the Server URL when a custom URL is required for accessing a national cloud, or for self-deployment.
 
 ## Fetched Incidents Data
 
