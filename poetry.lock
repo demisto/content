@@ -709,14 +709,14 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-py"
-version = "3.2.20"
+version = "3.2.21"
 description = "\"A Python library for the Demisto API\""
 optional = false
 python-versions = ">=3.9,<=3.13"
 groups = ["dev"]
 files = [
-    {file = "demisto_py-3.2.20-py3-none-any.whl", hash = "sha256:3871177fbe686c3a1ac3c242b0f33b2c317d76e20be28af7a870fcfc9cdf7ac0"},
-    {file = "demisto_py-3.2.20.tar.gz", hash = "sha256:cefd770d08e6d9fac89b75afdd81f2ed229d7b588699636a0016b26c3cd1938f"},
+    {file = "demisto_py-3.2.21-py3-none-any.whl", hash = "sha256:305e6dcb9ac0b498a47ace21adb16a8f20b1fbf3387f7b87c5ff823563474d3f"},
+    {file = "demisto_py-3.2.21.tar.gz", hash = "sha256:27063b600e8652fdfb60f09fb5bcf2da2e8173ccd4a938f1145754d4d8cb7e1e"},
 ]
 
 [package.dependencies]
@@ -734,14 +734,14 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.6"
+version = "1.38.7"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
 groups = ["dev"]
 files = [
-    {file = "demisto_sdk-1.38.6-py3-none-any.whl", hash = "sha256:f377b8b09af0ed4631ce08bb0c05f0a34b3c9f1ebf9695caac427e249bac85dd"},
-    {file = "demisto_sdk-1.38.6.tar.gz", hash = "sha256:cfd504e2c1c134aced6ce2ae269b305cca95c9c9b89635f8939a2cd4e3df4601"},
+    {file = "demisto_sdk-1.38.7-py3-none-any.whl", hash = "sha256:5b2401f8a8a10dfddc4032689259eda8f59b602818367d024bcbb26811fddee8"},
+    {file = "demisto_sdk-1.38.7.tar.gz", hash = "sha256:142d40272fed4432c0acaf914259dfbe72d498e0cb0d8c8ec4580bf343ada7c3"},
 ]
 
 [package.dependencies]
@@ -754,7 +754,7 @@ configparser = ">=5.2.0,<6.0.0"
 coverage = ">=7.2.1,<7.4"
 dateparser = ">=1.1.1,<2.0.0"
 decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.20,<4.0.0"
+demisto-py = ">=3.2.21,<4.0.0"
 dictdiffer = ">=0.9.0,<0.10.0"
 dictor = ">=0.1.9,<0.2.0"
 docker = ">=7.1.0,<8.0.0"
@@ -4729,4 +4729,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10,<3.12"
-content-hash = "766693a1f0682cb7bb8992cac2dec31ca80c21f7a09e7d6c4c2f9c6296514580"
+content-hash = "4f4858539f9c4dd55c4789b018243717199de172530eed8c6376eb4275b10765"
