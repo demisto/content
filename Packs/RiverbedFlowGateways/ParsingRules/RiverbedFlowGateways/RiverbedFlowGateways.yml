@@ -1,6 +1,6 @@
 id: riverbed_flow_gateways_ParsingRule
 name: Riverbed Flow Gateways Parsing Rule
-fromversion: 8.10.0
+fromversion: 8.9.0
 tags: []
 rules: ''
 samples: ''
