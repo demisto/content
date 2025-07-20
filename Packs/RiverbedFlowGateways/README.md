@@ -11,9 +11,10 @@ Data normalization capabilities:
 * Rules for parsing and modeling of network logs that are ingested via Broker VM on Cortex XSIAM.
 * The ingested Riverbed Flow Gateway logs can be queried in XQL Search using the *`riverbed_flow_gateways_raw`* dataset.
 
-### Supported Timestamp Formats
+### Supported Timestamp Format
 
-RFC 5424
+* The syslog is in **RFC 5424 format**, and the parsing rule supports UTC timezone. For example: *`1985-04-12T23:20:50.52Z`*.
+
 ***
 
 ## Data Collection
@@ -53,7 +54,7 @@ Follow the below steps to configure the Broker VM to receive Riverbed Flow Gatew
     |:-------------|:-----------------------------------------------------------------------------------------------------------------------------------------|
     | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Riverbed Flow Gateways). |
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Riverbed Flow Gateway.    |
-    | `Format`     | Enter syslog.                                                                                                                            |
+    | `Format`     | Enter **syslog**.                                                                                                                        |
     | `Vendor`     | Enter **riverbed**.                                                                                                                      |
     | `Product`    | Enter **flow_gateways**.                                                                                                                 |
 

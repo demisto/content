@@ -1,6 +1,6 @@
 id: riverbed_flow_gateways_ParsingRule
 name: Riverbed Flow Gateways Parsing Rule
-fromversion: 8.4.0   # Will be updated with XSIAM version updates
+fromversion: 8.12.0
 tags: []
 rules: ''
 samples: ''

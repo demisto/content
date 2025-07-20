@@ -1,24 +1,31 @@
 [MODEL: dataset = riverbed_flow_gateways_raw]
+// Extracting fields from the parsed payloads.
 alter
     origin_ip = parsed_fields1 -> origin_ip,
-    priority = to_integer(parsed_header -> priority),
     ipaddr = parsed_fields1 -> ipaddr,
     success = parsed_fields1 -> success,
-    subtype = parsed_fields1 -> subtype
+    subtype = parsed_fields1 -> subtype,
+    priority = to_integer(parsed_header -> priority)
+
+// Determining IP address versions (IPv4/IPv6) and calculating syslog facility
 | alter
     facility = floor(divide(priority, 8)),
     origin_ipv4 = if(incidr(origin_ip, "0.0.0.0/0"), origin_ip),
     origin_ipv6 = arrayindex(regextract(origin_ip, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
     ipaddrv4 = if(incidr(ipaddr, "0.0.0.0/0"), ipaddr),
     ipaddrv6 = arrayindex(regextract(ipaddr, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0)
+
+// Calculating syslog severity from the priority field
 | alter
     severity = to_string(subtract(priority, multiply(facility, 8)))
+
+//XDM Mapping
 | alter
     xdm.alert.severity = severity,
     xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
     xdm.event.id = parsed_fields1 -> id,
     xdm.event.type = parsed_fields1 -> type,
-    xdm.event.operation_sub_type = if(subtype = "Linux_Audit", parsed_fields2 -> Linux_Audit_Type, subtype),
+    xdm.event.operation_sub_type = if(subtype = "Linux_Audit", parsed_fields2 -> Linux_Audit_Type, subtype), // In "Linux_Audit" subtype, more specific subtype can be found in the "Linux_audit_type" field.
     xdm.event.original_event_type = if(subtype = "Linux_Audit", subtype),
     xdm.source.user.identifier = parsed_fields1 -> uid,
     xdm.source.user.username = parsed_fields1 -> UserLogin,
