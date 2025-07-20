@@ -36,7 +36,6 @@ tasks:
       - "9"
       - "14"
       - "15"
-      - "18"
       - "19"
       - "20"
       - "23"
@@ -82,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 2880,
-          "y": 710
+          "y": 1320
         }
       }
     note: false
@@ -401,7 +400,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 670,
           "y": 370
         }
       }
@@ -745,6 +744,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 9a6ceb8b-af9e-4e7f-8ff3-a4900825e4a0
+    type: condition
+    task:
+      id: 9a6ceb8b-af9e-4e7f-8ff3-a4900825e4a0
+      version: -1
+      name: Check the correctness of the ANY.RUN parameters
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.anyrun_os
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.incident
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6060,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
     taskid: 5a218a31-9417-4da1-818f-e46204e57f90
@@ -766,8 +810,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 370
+          "x": 6060,
+          "y": 880
         }
       }
     note: false
@@ -798,8 +842,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -130,
-          "y": 370
+          "x": 6490,
+          "y": 880
         }
       }
     note: false
@@ -830,8 +874,73 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -530,
-          "y": 370
+          "x": 5630,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 14380930-6dd7-4dbf-9f13-c90cd8f7798a
+    type: condition
+    task:
+      id: 14380930-6dd7-4dbf-9f13-c90cd8f7798a
+      version: -1
+      name: Select ANY.RUN playbook
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      condition-2:
+      - "37"
+      condition-3:
+      - "38"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.anyrun_os
+            iscontext: true
+          right:
+            value:
+              simple: windows
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.anyrun_os
+            iscontext: true
+          right:
+            value:
+              simple: android
+    - label: condition-3
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.anyrun_os
+            iscontext: true
+          right:
+            value:
+              simple: linux
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6060,
+          "y": 720
         }
       }
     note: false
@@ -850,9 +959,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 545,
-        "width": 5740,
-        "x": 270,
+        "height": 1150,
+        "width": 6200,
+        "x": 670,
         "y": 230
       }
     }
@@ -873,6 +982,31 @@ inputs:
   required: false
   description: File object of file to be detonated
   playbookInputQuery:
+- key: anyrun_os
+  value:
+    simple: windows
+  required: false
+  description: 'Specify ANY.RUN operation system type. Supports: windows, linux, android'
+  playbookInputQuery: null
+- key: incident
+  value:
+    simple: ${incident}
+  required: false
+  description: Information about the active incident where the found indicators will
+    be linked
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - EntryID
+  - File
+  name: General (Inputs group)
+  description: Generic group for inputs
+- inputs:
+  - anyrun_os
+  - incident
+  name: ANY.RUN
+  description: ANY.RUN group for inputs
+outputSections:
 outputs:
 - contextPath: Joe.Analysis.Status
   description: Analysis Status.
