@@ -636,6 +636,10 @@ def main():
             return_results(start_auth(client))
         elif command == "msg-defender-threat-intel-auth-complete":
             return_results(complete_auth(client))
+        elif command == "msg-defender-threat-intel-auth-test":
+            return_results(test_connection(client))
+        elif command == "msg-defender-threat-intel-auth-reset":
+            return_results(reset_auth())
         elif command == "msg-defender-threat-intel-article-list":
             return_results(article_list_command(client, args))
         elif command == "msg-defender-threat-intel-article-indicators-list":

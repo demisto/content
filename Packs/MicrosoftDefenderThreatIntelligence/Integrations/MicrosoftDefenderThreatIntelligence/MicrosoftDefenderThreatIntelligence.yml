@@ -92,6 +92,10 @@ script:
     name: msg-defender-threat-intel-auth-start
   - description: Run this command to complete the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command.
     name: msg-defender-threat-intel-auth-complete
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: msg-defender-threat-intel-auth-reset
+  - description: Tests connectivity to Microsoft.
+    name: msg-defender-threat-intel-auth-test
   - arguments:
     - description: "Article ID to retrieve specific article details.\nIf no value is provided all articles will be returned."
       name: article_id
