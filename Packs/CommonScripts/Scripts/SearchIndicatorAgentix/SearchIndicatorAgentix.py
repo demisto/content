@@ -1,7 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-KEYS_TO_EXCLUDE_FROM_QUERY = ['size']
+KEYS_TO_EXCLUDE_FROM_QUERY = ["size"]
+
+
 def prepare_query(args: dict) -> str:
     """
     Prepares a query for list-based searches with safe handling
@@ -21,7 +23,7 @@ def prepare_query(args: dict) -> str:
 
         if not values:
             continue
-        
+
         values_as_list = argToList(values)
         if len(values_as_list) > 1:
             query = " OR ".join(f"{key}:{str(v).strip()}" for v in values_as_list)
