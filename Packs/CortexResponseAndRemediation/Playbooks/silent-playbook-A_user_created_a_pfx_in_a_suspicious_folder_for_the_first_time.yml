@@ -1339,6 +1339,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Check if process name is exists."
     nexttasks:
       '#default#':
       - "5"
