@@ -21,7 +21,7 @@ DEFAULT_RISK_SCORE_THRESHOLD_VALUE: int = 0
 INTEGRATION_NAME = "Recorded Future"
 
 # taken from recorded future docs
-RF_CRITICALITY_LABELS = {"Very Critical": 90, "Critical": 80, "High": 65, "Medium": 25, "Low": 5, "None": 0}
+RF_CRITICALITY_LABELS = {"Very Critical": 90, "Critical": 80, "High": 65, "Medium": 25, "Low": 5}
 
 RF_INDICATOR_TYPES = {"ip": "ip", "domain": "domain", "url": "url", "CVE(vulnerability)": "vulnerability", "hash": "hash"}
 
@@ -406,14 +406,16 @@ def ip_to_indicator_type(ip):
 
 def calculate_recorded_future_criticality_label(risk_from_feed):
     risk_from_feed = int(risk_from_feed)
-    if risk_from_feed >= RF_CRITICALITY_LABELS["Very_Malicious"]:
-        return "Very Malicious"
-    elif risk_from_feed >= RF_CRITICALITY_LABELS["Malicious"]:
-        return "Malicious"
-    elif risk_from_feed >= RF_CRITICALITY_LABELS["Suspicious"]:
-        return "Suspicious"
-    elif risk_from_feed >= RF_CRITICALITY_LABELS["Unusual"]:
-        return "Unusual"
+    if risk_from_feed >= RF_CRITICALITY_LABELS["Very Critical"]:
+        return "Very Critical"
+    elif risk_from_feed >= RF_CRITICALITY_LABELS["Critical"]:
+        return "Critical"
+    elif risk_from_feed >= RF_CRITICALITY_LABELS["High"]:
+        return "High"
+    elif risk_from_feed >= RF_CRITICALITY_LABELS["Medium"]:
+        return "Medium"
+    elif risk_from_feed >= RF_CRITICALITY_LABELS["Low"]:
+        return "Low"
     else:
         return "No current evidence of risk"
 

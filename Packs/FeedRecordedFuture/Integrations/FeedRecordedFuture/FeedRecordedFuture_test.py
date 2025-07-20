@@ -391,7 +391,7 @@ def test_fetch_indicators_risk_threshold_command(mocker):
     assert client_outputs[0] == {
         "fields": {"recordedfutureevidencedetails": [], "recordedfutureriskscore": "80", "tags": []},
         "rawJSON": {
-            "Criticality Label": "Malicious",
+            "Criticality Label": "Critical",
             "Name": "192.168.0.1",
             "Risk": "80",
             "score": 3,
