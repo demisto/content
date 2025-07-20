@@ -78,25 +78,7 @@ The integration can use OAuth 2.0 and OpenID Connect standard-compliant authenti
     - **Delegated Permissions** - used by applications that act on behalf of a signed-in user. The application will have access to the resources that the user has access to, limited by the permissions granted to the application. Choose this option if you prefer the **Authorization Code** flow.
     - **Application Permissions** - used by applications that run without a signed-in user. The application acts as its own identity and is granted direct access to data or resources. This is common for background services or daemons. Choose this option if you prefer the the **Client Credentials** flow.
 
-5. Select the permissions required by the integration (based on the chosen permission type) and then click **Add permissions**.
-    - AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
-    - Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
-    - File.Read.All - Application / Delegated
-    - Ip.Read.All - Application / Delegated
-    - Machine.CollectForensics - Application / Delegated
-    - Machine.Isolate - Application / Delegated
-    - Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
-    - Machine.RestrictExecution - Application / Delegated
-    - Machine.Scan - Application / Delegated
-    - Machine.StopAndQuarantine - Application / Delegated
-    - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. **Note**: This permission is only used for the deprecated **microsoft-atp-indicator-list** command. If you are not using this command, it is not required.
-    - Url.Read.All - Application / Delegated
-    - User.Read.All - Application / Delegated
-    - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
-    - Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
-    - Software.Read.All - Application / Software.Read - Delegated
-    - Machine.LiveResponse - Application / Delegated
-    - Machine.Read.All - Application / Machine.Read - Delegated
+5. Select the [permissions required by the integration](#required-permissions) (based on the chosen permission type) and then click **Add permissions**.
 
 6. Click **Grant consent**.
 
@@ -120,6 +102,31 @@ The integration can use OAuth 2.0 and OpenID Connect standard-compliant authenti
         - Click **Save & Exit**.
 
 **Note**: If you previously configured the *Windows* Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
+
+### Required Permissions
+
+Add the following permissions of the **WindowsDefenderATP** API during app registration.
+Choose **Application Permissions** for the Client Credentials flow, or **Delegated Permissions** for the Authorization Code flow.
+
+- AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
+- Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
+- File.Read.All - Application / Delegated
+- Ip.Read.All - Application / Delegated
+- Machine.CollectForensics - Application / Delegated
+- Machine.Isolate - Application / Delegated
+- Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+- Machine.RestrictExecution - Application / Delegated
+- Machine.Scan - Application / Delegated
+- Machine.StopAndQuarantine - Application / Delegated
+- ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated.
+  - **Note**: This permission is only used for the deprecated **microsoft-atp-indicator-list** command. If you are not using this command, it is not required.
+- Url.Read.All - Application / Delegated
+- User.Read.All - Application / Delegated
+- Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
+- Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
+- Software.Read.All - Application / Software.Read - Delegated
+- Machine.LiveResponse - Application / Delegated
+- Machine.Read.All - Application / Machine.Read - Delegated
 
 **Note**: Access permissions can be verified by running the **microsoft-atp-list-auth-permissions** command after configuring the integration instance.
 
