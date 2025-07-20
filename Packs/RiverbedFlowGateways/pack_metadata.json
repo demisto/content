@@ -7,11 +7,24 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Network",
+        "Data Source"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Riverbed",
+        "SteelConnect",
+        "SteelHead SD",
+        "SteelHead",
+        "SteelConnect Manager",
+        "SCM"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
