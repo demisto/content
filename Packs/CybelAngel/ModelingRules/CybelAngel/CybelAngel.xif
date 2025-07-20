@@ -30,7 +30,7 @@ filter
      xdm.target.ipv6 = ipv6,
      xdm.target.host.hostname = if(machine_name != null and machine_name != "", machine_name, hostnames_list != null and hostnames_list != "", hostnames_list),
      xdm.target.file.path = malware_location,
-     xdm.target.port = port,
+     xdm.target.port = to_integer(port),
      xdm.target.location.city = if(city != null and city != "",city),
      xdm.target.location.country = if(location != null and location != "", location),
      xdm.target.url = if(url != null and url != "",url),
