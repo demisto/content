@@ -33,7 +33,7 @@ To use a self-configured Azure application:
 - Select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
   - ##### To use Delegated Permissions
     - In the **ID** field, enter the application (client) ID.
-    - In the **Key** field, enter the Client secret.
+    - In the **Key** field, enter the client secret.
     - In the **Token** field, enter the directory (tenant) ID.
     - In the **Authentication Type** field, select "Authorization Code".
     - In the **Application Redirect URI** field, enter the application redirect URI.
