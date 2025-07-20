@@ -39,7 +39,7 @@ To use a self-configured Azure application:
     - In the **Authentication Type** field, select "Authorization Code".
     - In the **Application Redirect URI** field, enter the Application redirect URI.
     - Click **Save & Exit**.
-    - Run the **!microsoft-atp-generate-login-url** command and follow the instructions.
+    - Run the **microsoft-atp-generate-login-url** command and follow the instructions.
 
   - ##### To use Application Permissions
     - In the **ID** field, enter the Application (client) ID.

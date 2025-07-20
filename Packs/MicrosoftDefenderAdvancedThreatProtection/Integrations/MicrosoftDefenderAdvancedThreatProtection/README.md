@@ -55,21 +55,30 @@ For a detailed comparison between the new and legacy permission models, refer to
 The integration can use OAuth 2.0 and OpenID Connect standard-compliant authentication services to sign-in or delegate authentication on behalf of a user. For more information, refer to the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
 
 1. To allow Cortex access to Microsoft Defender for Endpoint, click on the following [link](https://oproxy.demisto.ninja/ms-defender-atp).
+
 2. Select the user account with sufficient role permissions.
+
 3. After authorizing the application, copy the **ID**, **Token**, and **Key** values and insert them in the corresponding fields in the integration instance configuration window.
+
 4. Ensure **Authentication Type** is set to "Authorization Code".
+
 5. Click **Save & Exit**.
+
 6. Run the **!microsoft-atp-test** command to verify correct configuration.
 
 ### Self-deployed Azure Application
 
 1. Navigate to the [Azure portal](https://portal.azure.com/) and search for **Microsoft Entra ID**.
+
 2. On the **App registrations** page, click **New registration**.
-4. Click **API Permissions** > **Add permission** > **APIs my organization uses**, and type **WindowsDefenderATP**.
-5. Choose the type of permissions:
+
+3. Click **API Permissions** > **Add permission** > **APIs my organization uses**, and type **WindowsDefenderATP**.
+
+4. Choose the type of permissions:
     - **Delegated Permissions** - used by applications that act on behalf of a signed-in user. The application will have access to the resources that the user has access to, limited by the permissions granted to the application. Choose this option if you prefer the **Authorization Code** flow.
     - **Application Permissions** - used by applications that run without a signed-in user. The application acts as its own identity and is granted direct access to data or resources. This is common for background services or daemons. Choose this option if you prefer the the **Client Credentials** flow.
-6. Select the permissions required by the integration (based on the chosen permission type) and then click **Add permissions**.
+
+5. Select the permissions required by the integration (based on the chosen permission type) and then click **Add permissions**.
     - AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
     - Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
     - File.Read.All - Application / Delegated
@@ -80,8 +89,7 @@ The integration can use OAuth 2.0 and OpenID Connect standard-compliant authenti
     - Machine.RestrictExecution - Application / Delegated
     - Machine.Scan - Application / Delegated
     - Machine.StopAndQuarantine - Application / Delegated
-    - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated.
-        - **Note**: This permission is only used for the deprecated **microsoft-atp-indicator-list** command. If you are not using this command, it is not required.
+    - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. **Note**: This permission is only used for the deprecated **microsoft-atp-indicator-list** command. If you are not using this command, it is not required.
     - Url.Read.All - Application / Delegated
     - User.Read.All - Application / Delegated
     - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
@@ -89,9 +97,12 @@ The integration can use OAuth 2.0 and OpenID Connect standard-compliant authenti
     - Software.Read.All - Application / Software.Read - Delegated
     - Machine.LiveResponse - Application / Delegated
     - Machine.Read.All - Application / Machine.Read - Delegated
-7. Click **Grant consent**.
-8. To add a secret to the application, select **Certificates & secrets**, write a helpful description, and click **Add**.
-9. In the integration instance configuration window, select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
+
+6. Click **Grant consent**.
+
+7. To add a secret to the application, select **Certificates & secrets**, write a helpful description, and click **Add**.
+
+8. In the integration instance configuration window, select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
     - If **Delegated Permissions** was selected:
         - In the **ID** field, enter the Application (client) ID.
         - In the **Key** field, enter the Client secret.
@@ -99,7 +110,7 @@ The integration can use OAuth 2.0 and OpenID Connect standard-compliant authenti
         - In the **Authentication Type** field, select "Authorization Code".
         - In the **Application Redirect URI** field, enter the Application redirect URI.
         - Click **Save & Exit**.
-        - Run the **!microsoft-atp-generate-login-url** command and follow the instructions.
+        - Run the **microsoft-atp-generate-login-url** command and follow the instructions.
     - If **Application Permissions** was selected:
         - In the **ID** field, enter the Application (client) ID.
         - In the **Key** field, enter the Client secret.
@@ -261,7 +272,7 @@ Isolates a machine from accessing external network.
 
 Machine.Isolate
 
-**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -907,7 +918,7 @@ Initiates Microsoft Defender Antivirus scan on a machine.
 
 Machine.Scan
 
-**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 #### Base Command
 
@@ -1806,7 +1817,7 @@ Collects an investigation package from a machine.
 
 Machine.CollectForensics
 
-**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -1880,7 +1891,7 @@ Gets a URI that allows downloading of an investigation package.
 
 Machine.CollectForensics
 
-**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -1926,7 +1937,7 @@ Restricts the execution of all applications on the machine except a predefined s
 
 Machine.RestrictExecution
 
-**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -2000,7 +2011,7 @@ Enables the execution of any application on the machine.
 
 Machine.RestrictExecution
 
-**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -2074,7 +2085,7 @@ Stops the execution of a file on a machine and deletes it.
 
 Machine.StopAndQuarantine
 
-**Note**: When using the Authorization Code Flow, ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
