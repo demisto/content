@@ -21,7 +21,7 @@ DEFAULT_RISK_SCORE_THRESHOLD_VALUE: int = 0
 INTEGRATION_NAME = "Recorded Future"
 
 # taken from recorded future docs
-RF_CRITICALITY_LABELS = {"Very_Malicious": 90, "Malicious": 65, "Suspicious": 25, "Unusual": 5}
+RF_CRITICALITY_LABELS = {"Very Critical": 90, "Critical": 80, "High": 65, "Medium": 25, "Low": 5, "None": 0}
 
 RF_INDICATOR_TYPES = {"ip": "ip", "domain": "domain", "url": "url", "CVE(vulnerability)": "vulnerability", "hash": "hash"}
 
