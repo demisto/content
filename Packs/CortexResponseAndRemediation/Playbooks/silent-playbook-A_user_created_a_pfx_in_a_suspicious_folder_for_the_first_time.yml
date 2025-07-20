@@ -27,8 +27,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 61
+          "x": 459,
+          "y": -77
         }
       }
     note: false
@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 173
+          "x": 459,
+          "y": 35
         }
       }
     note: false
@@ -95,8 +95,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 276
+          "x": 459,
+          "y": 138
         }
       }
     note: false
@@ -127,8 +127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 394
+          "x": 459,
+          "y": 256
         }
       }
     note: false
@@ -162,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 1148
+          "x": 682,
+          "y": 1234
         }
       }
     note: false
@@ -197,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 1011
+          "x": 682,
+          "y": 1112
         }
       }
     note: false
@@ -222,14 +222,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "43"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 514
+          "x": 682,
+          "y": 376
         }
       }
     note: false
@@ -260,7 +260,7 @@ tasks:
       {
         "position": {
           "x": 228,
-          "y": 514
+          "y": 376
         }
       }
     note: false
@@ -297,7 +297,7 @@ tasks:
       {
         "position": {
           "x": 228,
-          "y": 644
+          "y": 484
         }
       }
     note: false
@@ -349,7 +349,7 @@ tasks:
       {
         "position": {
           "x": 228,
-          "y": 1148
+          "y": 1127
         }
       }
     note: false
@@ -391,8 +391,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 644
+          "x": 682,
+          "y": 606
         }
       }
     note: false
@@ -417,7 +417,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "44"
     scriptarguments:
       key:
         simple: SuspiciousCommandLines
@@ -451,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 769
+          "x": 682,
+          "y": 731
         }
       }
     note: false
@@ -486,8 +486,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 892
+          "x": 682,
+          "y": 983
         }
       }
     note: false
@@ -671,7 +671,7 @@ tasks:
       {
         "position": {
           "x": 228,
-          "y": 1011
+          "y": 995
         }
       }
     note: false
@@ -706,7 +706,7 @@ tasks:
       {
         "position": {
           "x": 228,
-          "y": 769
+          "y": 609
         }
       }
     note: false
@@ -733,8 +733,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 28,
-          "y": 1274
+          "x": -55,
+          "y": 1258
         }
       }
     note: false
@@ -751,25 +751,28 @@ tasks:
     task:
       id: 00147d5b-75bc-4aa5-8c39-089122952851
       version: -1
-      name: Extract PFX from ZIP
+      name: Extract PFX from ZIP using 7zip
       description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
+      '#error#':
+      - "45"
       '#none#':
       - "19"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
           "x": 228,
-          "y": 892
+          "y": 731
         }
       }
     note: false
@@ -1284,27 +1287,149 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: a5ebfd37-bd9b-4611-9338-a759db5e7452
+    type: condition
+    task:
+      id: a5ebfd37-bd9b-4611-9338-a759db5e7452
+      version: -1
+      name: 'Is there a command line? '
+      description: 'Check if the command line exists. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.actor_process_command_line
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 682,
+          "y": 484
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 4a936c96-aa51-4132-b4cd-e79ad923ec7c
+    type: condition
+    task:
+      id: 4a936c96-aa51-4132-b4cd-e79ad923ec7c
+      version: -1
+      name: Is there actor process?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.actor_process_file_original_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 682,
+          "y": 864
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: e3fd423b-a242-41bd-a5b9-ceecc7e3caa2
+    type: regular
+    task:
+      id: e3fd423b-a242-41bd-a5b9-ceecc7e3caa2
+      version: -1
+      name: Extract PFX from ZIP using zipfile
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "21"
+      '#none#':
+      - "19"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      zipTool:
+        simple: zipfile
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -55,
+          "y": 864
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "17_30_yes": 0.53,
       "18_17_#default#": 0.33,
       "18_41_yes": 0.48,
-      "19_16_#default#": 0.5,
       "19_9_yes": 0.57,
+      "22_45_#error#": 0.54,
       "30_38_No": 0.14,
       "30_41_Yes": 0.34,
       "34_38_No": 0.54,
       "36_38_#default#": 0.49,
       "39_38_#default#": 0.38,
-      "9_21_#error#": 0.41
+      "44_15_yes": 0.3,
+      "9_21_#error#": 0.38
     },
     "paper": {
       "dimensions": {
-        "height": 2750,
-        "width": 1543,
-        "x": 28,
-        "y": 61
+        "height": 2888,
+        "width": 1626,
+        "x": -55,
+        "y": -77
       }
     }
   }
