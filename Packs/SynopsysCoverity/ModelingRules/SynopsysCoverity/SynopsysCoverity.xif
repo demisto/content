@@ -9,7 +9,7 @@
         xdm.event.id = _raw_log -> id,
         xdm.event.duration = to_integer(_raw_log -> duration),
         xdm.event.description = _raw_log -> details,
-        xdm.event.operation = coalesce(_raw_log -> method, _raw_log -> action, _raw_log -> eventType), add enumsssss
+        xdm.event.operation = coalesce(_raw_log -> method, _raw_log -> action, _raw_log -> eventType),
         xdm.event.operation_sub_type = coalesce(to_string(_raw_log -> viewId), to_string(_raw_log -> protocol), to_string(_raw_log -> queueType)),
         xdm.event.outcome_reason = _raw_log -> failureReason,
         xdm.event.outcome = if(_raw_log -> logInSucceeded = "true", XDM_CONST.OUTCOME_SUCCESS),
