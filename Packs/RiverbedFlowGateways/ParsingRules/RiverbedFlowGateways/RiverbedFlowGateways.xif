@@ -13,5 +13,4 @@ filter _raw_log ~= "\<\d+\>.+\s\S+\s\S+\[\d+\]\:"
     parsed_fields2 = if(tmp_get_values2 = null or tmp_get_values2 ~= "^\s*$", null, regexcapture(tmp_get_values2, tmp_get_keys2)),
     parsed_header = regexcapture(_raw_log, "<(?P<priority>\d+)>(?P<time_stamp>.+) (?P<hostname>\S+) (?P<app_name>\S+)\[(?P<process_id>\d+)\]:")
 | alter _time = parse_timestamp("%FT%R:%E*S", replex(parsed_fields1 -> created, "Z", ""))
-| fields parsed_*, _time
 | fields -tmp*;
