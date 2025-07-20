@@ -3,6 +3,18 @@
       "_raw_log": {
         "type": "string",
         "is_array": false
+      },
+      "parsed_fields1": {
+        "type": "string",
+        "is_array": false
+      },
+      "parsed_fields2": {
+        "type": "string",
+        "is_array": false
+      },
+      "parsed_header": {
+        "type": "string",
+        "is_array": false
       }
     }
   }
