@@ -124,7 +124,7 @@ configuration:
   - IP
   - Domain
   - Certificate
-  additionalinfo: 'Indicator types to fetch.  Default is to pull all.'
+  additionalinfo: 'Indicator types to fetch.  Default is to fetch all.'
   section: Collect
 description: Use this feed to retrieve the discovered IPs/domains/certificates from the Cortex Xpanse asset database.
 display: 'Xpanse Feed'
