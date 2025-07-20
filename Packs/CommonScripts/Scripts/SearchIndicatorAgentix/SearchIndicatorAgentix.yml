@@ -17,8 +17,6 @@ args:
 - defaultValue: "25"
   description: The number of indicators to return, defaults to a max of 25.
   name: size
-- description: 'A comma seperated list of fields to return to the context, (default: id,indicator_type,value,score,verdict))'
-  name: add_fields_to_context
 comment: |-
   Searches Cortex XSOAR Indicators.
 

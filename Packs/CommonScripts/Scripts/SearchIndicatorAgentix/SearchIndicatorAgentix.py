@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-KEYS_TO_EXCLUDE_FROM_QUERY = ['size', 'add_fields_to_context']
+KEYS_TO_EXCLUDE_FROM_QUERY = ['size']
 def prepare_query(args: dict) -> str:
     """
     Prepares a query for list-based searches with safe handling
@@ -21,11 +21,12 @@ def prepare_query(args: dict) -> str:
 
         if not values:
             continue
-
-        if isinstance(values, list):
-            query = " OR ".join(f"{key}:{str(v).strip()}" for v in values)
+        
+        values_as_list = argToList(values)
+        if len(values_as_list) > 1:
+            query = " OR ".join(f"{key}:{str(v).strip()}" for v in values_as_list)
         else:
-            query = f"{key}:{str(values).strip()}"
+            query = f"{key}:{str(values_as_list[0]).strip()}"
 
         query_sections.append(query)
 
@@ -51,7 +52,7 @@ def search_indicators(args):
         filtered_indicators.append(style_indicator)
 
     headers = fields + ["verdict"]
-    markdown = tableToMarkdown("Indicators Found", filtered_indicators, headers)
+    markdown = tableToMarkdown(f"Indicators Found: {query=}", filtered_indicators, headers)
     return markdown, filtered_indicators
 
 
