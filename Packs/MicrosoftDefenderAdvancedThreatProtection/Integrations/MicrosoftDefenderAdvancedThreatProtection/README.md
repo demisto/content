@@ -72,8 +72,8 @@ To configure Cortex XSOAR application access to Microsoft Defender for Endpoint:
     - **Application Permissions** - used by applications that run without a signed-in user. The application acts as its own identity and is granted direct access to data or resources. This is common for background services or daemons. Choose this option if you prefer the the **Client Credentials** flow.
 5. Select the [permissions required by the integration](#required-permissions) (based on the chosen permission type) and then click **Add permissions**.
 6. Click **Grant consent**.
-7. To add a secret to the application, select **Certificates & secrets**, write a helpful description, and click **Add**.
-8. In the integration instance configuration window, select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
+7. To add a secret to the application, select **Certificates & secrets**, add a meaningful description, and click **Add**.
+8. In the integration instance settings, select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
     - For **Delegated Permissions**:
         - In the **ID** field, enter the application (client) ID.
         - In the **Token** field, enter the directory (tenant) ID.
@@ -94,7 +94,7 @@ To configure Cortex XSOAR application access to Microsoft Defender for Endpoint:
 
 ### Required Permissions
 
-Add the following permissions of the **WindowsDefenderATP** API during app registration.
+Add the following **WindowsDefenderATP** API permissions during app registration.
 Choose **Application Permissions** for the Client Credentials flow, or **Delegated Permissions** for the Authorization Code flow.
 
 - AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
