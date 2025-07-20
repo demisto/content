@@ -33,9 +33,6 @@ def prepare_query(args: dict) -> str:
     return " AND ".join(f"({qs})" for qs in query_sections) if query_sections else ""
 
 
-# def prepare_query(args: dict):
-
-
 def search_indicators(args):
     # search for indicators
     query = prepare_query(args)

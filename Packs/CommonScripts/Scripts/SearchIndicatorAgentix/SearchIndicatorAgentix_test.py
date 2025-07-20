@@ -3,6 +3,11 @@ from Packs.CommonScripts.Scripts.SearchIndicatorAgentix.SearchIndicatorAgentix i
 
 
 def test_main(mocker):
+    """
+    Given: A mocked demisto environment with executeCommand returning indicator data
+    When: search_indicators is called with add_fields_to_context parameter
+    Then: Returns formatted markdown table and context data with specified fields
+    """
     mocker.patch.object(demisto, "results", return_value={})
     mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": [{"CustomFields": {"field": "score"}}]}])
     assert search_indicators({"add_fields_to_context": "a,b,c"}) == (
@@ -23,6 +28,11 @@ def test_main(mocker):
 
 
 def test_prepare_list_query():
+    """
+    Given: Arguments with multiple values for each field including value, expirationStatus, verdict, and type
+    When: prepare_query is called with these arguments
+    Then: Returns a properly formatted query string with OR conditions for multiple values and AND conditions between fields
+    """
     args = {
         "value": ["example.com", "example.org"],  # List of values to search
         "expirationStatus": ["active"],  # Possible expiration statuses
@@ -36,6 +46,11 @@ def test_prepare_list_query():
 
 
 def test_prepare_query_with_empty_values():
+    """
+    Given: Arguments with mixed empty lists and populated lists, including custom fields
+    When: prepare_query is called with these arguments
+    Then: Returns a query string that excludes empty fields and includes only populated fields
+    """
     args = {
         "value": ["example.com"],  # Single value
         "expirationStatus": [],  # Empty list
@@ -49,6 +64,11 @@ def test_prepare_query_with_empty_values():
 
 
 def test_prepare_query_edge_cases():
+    """
+    Given: Arguments with special characters, spaces, email formats, empty strings, and mixed data types
+    When: prepare_query is called with these edge case arguments
+    Then: Returns a properly formatted query string that handles special characters and excludes empty values
+    """
     args = {
         "value": ["test with spaces", "test@email.com", "192.168.1.1"],  # Special characters and formats
         "expirationStatus": ["expired"],  # Single status
@@ -61,4 +81,3 @@ def test_prepare_query_edge_cases():
            "(expirationStatus:expired) AND (type:Email OR type:IP) AND (anotherField:value1)")
     generated_query = prepare_query(args)
     assert res == generated_query
-
