@@ -13,7 +13,7 @@ The Check Point XDR (Extended Detection and Response) integration allows you to 
 
 - A valid Check Point XDR account with API access.
 - API credentials (Client ID and Access Key) for authentication.
-- Cortex XSOAR version 6.0 or higher.
+- Cortex XSOAR version 6.8.0 or higher.
 
 ## Setup Instructions
 

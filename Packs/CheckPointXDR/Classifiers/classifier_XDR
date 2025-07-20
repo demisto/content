@@ -5,7 +5,7 @@
     "definitionId": "",
     "description": "",
     "feed": false,
-    "fromServerVersion": "",
+    "fromServerVersion": "6.8.0",
     "id": "e33ce6d8-0300-415d-89e4-b2748084d18e",
     "incidentSamples": null,
     "indicatorSamples": null,

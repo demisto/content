@@ -69,7 +69,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to Cortex XSOAR), Outgoing (from Cortex XSOAR to ServiceNow), or Incoming and Outgoing (from/to Cortex XSOAR and ServiceNow).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from XDR to Cortex XSOAR), Outgoing (from Cortex XSOAR to XDR), or Incoming and Outgoing (from/to Cortex XSOAR and XDR).'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -98,6 +98,6 @@ script:
 defaultclassifier: Microsoft Sentinel - Classifier
 defaultmapperin: Microsoft Sentinel - Incoming Mapper
 defaultmapperout: Microsoft Sentinel - Outgoing Mapper
-fromversion: 6.9.0
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

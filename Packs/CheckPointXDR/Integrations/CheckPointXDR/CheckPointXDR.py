@@ -29,7 +29,7 @@ class Client(BaseClient):
 
         if res.status_code == 200:
             self.token = res.json().get("data").get("token")
-            demisto.debug(f"Log-in successful! Token: {self.token}")
+            demisto.debug(f"Log-in successful! client's token was set!")
         else:
             raise DemistoException(f"Log-in failed: {str(res.status_code)}: {res.text}")
 
@@ -37,30 +37,33 @@ class Client(BaseClient):
         self._login()
         headers = {"Authorization": f"Bearer {self.token}"}
         demisto.debug(f"Fetching XDR incidents with start timestamp: {startTS} and max fetch: {max_fetch}")
-        res = self._http_request('GET', url_suffix=f"/app/xdr/api/xdr/v1/incidents?limit={max_fetch}&offset=0&from={startTS}",
-                                 headers=headers, resp_type='response')
-        if res.status_code != 200:
-            raise DemistoException(f"Failed to fetch XDR incidents: {str(res.status_code)}: {res.text}")
+        try:
+            res = self._http_request('GET', url_suffix=f"/app/xdr/api/xdr/v1/incidents?limit={max_fetch}&offset=0&from={startTS}",
+                                    headers=headers, resp_type='response')
+        except Exception as e:
+            demisto.error(f"Failed to fetch XDR incidents: {str(e)}")
+            raise DemistoException(f"Failed to fetch XDR incidents: {str(e)}")
+
         incidents = res.json().get("data")
         demisto.debug(f"Fetched {len(incidents)} XDR Incidents.")
 
         return incidents
 
-    def update_incident(self, status: int, close_reason: str = "", incident_id: Optional[str] = None) -> dict:
+    def update_incident(self, status: int, close_reason: str = "", incident_id: str = "" ) -> dict:
         """
         Update an incident in CheckPoint XDR.
 
         Args:
             status (Optional[str]): The new status of the incident.
-            incident_id (Optional[str]): The ID of the incident to update. If not provided, uses dbotMirrorId from context.
+            incident_id (Optional[str]): The ID of the incident to update.
 
         Returns:
             dict: The response from the API.
         """
-        demisto.debug(f"XDR - Starting update_incident with status: {status}")
+        demisto.debug(f"XDR - Starting to update_incident with status: {status}")
 
         if not incident_id:
-            raise DemistoException("No incident ID provided and could not find dbotMirrorId in the current incident")
+            raise DemistoException("No incident ID provided")
 
         demisto.debug(f"XDR - Updating incident with ID: {incident_id}")
 
@@ -191,7 +194,7 @@ def parse_incidents(xdr_incidents: dict[str, Any], mirroring_fields: dict, start
 
 def fetch_incidents(client: Client, mirroring_fields: dict, last_run: dict[str, str], first_fetch: datetime, max_fetch: int):
     last_fetch = last_run.get('last_fetch', first_fetch.isoformat())
-    last_fetch_time = dateparser.parse(last_fetch)
+    last_fetch_time = arg_to_datetime(last_fetch)
     if not last_fetch_time:
         raise Exception(f"Invalid last fetch time value '{last_fetch}'")
     startTS = int(last_fetch_time.timestamp() * 1000)
@@ -243,7 +246,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def main() -> None:  # pragma: no cover
+def main() -> None:
     params = demisto.params()
 
     base_url = params.get('url', "")
@@ -254,7 +257,7 @@ def main() -> None:  # pragma: no cover
     max_fetch = int(params.get('max_fetch', 1000))
 
     fetch_time = params.get('first_fetch', '3 days').strip()
-    first_fetch = dateparser.parse(fetch_time, settings={'TIMEZONE': 'UTC'})
+    first_fetch = arg_to_datetime(fetch_time, is_utc=True)
     if not first_fetch:
         raise Exception(f"Invalid first fetch time value '{fetch_time}', must be '<number> <time unit>', e.g., '24 hours'")
 
@@ -276,8 +279,8 @@ def main() -> None:  # pragma: no cover
             demisto.debug('XDR - fetch-incidents')
             next_run, incidents = fetch_incidents(client, mirroring_fields, last_run, first_fetch, max_fetch)
             demisto.incidents(incidents)
-            demisto.debug(f"Set last run to {next_run.get('last_fetch')}")
             demisto.setLastRun(next_run)
+            demisto.debug(f"Set last run to {next_run.get('last_fetch')}")
         elif command == "update-remote-system":
             demisto.debug('XDR - update-remote-system')
             return_results(update_remote_system_command(client, args))

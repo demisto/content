@@ -27,9 +27,7 @@
         "Extended Detection and Response"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
+        "xsoar"
     ],
     "devEmail": [
         "xdr@checkpoint.com"
