@@ -48,6 +48,8 @@ tasks:
       - "33"
       - "34"
       - "35"
+      - "36"
+      - "40"
     separatecontext: false
     view: |-
       {
@@ -752,6 +754,7 @@ tasks:
       id: 9a6ceb8b-af9e-4e7f-8ff3-a4900825e4a0
       version: -1
       name: Check the correctness of the ANY.RUN parameters
+      description: Check the correctness of the ANY.RUN parameters
       type: condition
       iscommand: false
       brand: ""
@@ -893,6 +896,7 @@ tasks:
       id: 14380930-6dd7-4dbf-9f13-c90cd8f7798a
       version: -1
       name: Select ANY.RUN playbook
+      description: Select ANY.RUN playbook
       type: condition
       iscommand: false
       brand: ""
@@ -1006,7 +1010,6 @@ inputSections:
   - incident
   name: ANY.RUN
   description: ANY.RUN group for inputs
-outputSections:
 outputs:
 - contextPath: Joe.Analysis.Status
   description: Analysis Status.

@@ -637,6 +637,7 @@ tasks:
       id: d52344a0-57e4-45ea-8b33-1ad8c3b7484f
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -833,6 +834,7 @@ tasks:
       id: df46af7d-b2ae-4a77-8fd9-901ff7e65a18
       version: -1
       name: Check the correctness of the ANY.RUN parameters
+      description: Check the correctness of the ANY.RUN parameters
       type: condition
       iscommand: false
       brand: ""
@@ -974,6 +976,7 @@ tasks:
       id: 38738a9c-5b9e-45ce-ba11-06273e329bf3
       version: -1
       name: Select ANY.RUN playbook
+      description: Select ANY.RUN playbook
       type: condition
       iscommand: false
       brand: ""
@@ -1091,7 +1094,6 @@ inputSections:
   - incident
   name: ANY.RUN
   description: ANY.RUN group for inputs
-outputSections:
 outputs:
 - contextPath: ThreatGrid.Sample.id
   description: The sample id.
