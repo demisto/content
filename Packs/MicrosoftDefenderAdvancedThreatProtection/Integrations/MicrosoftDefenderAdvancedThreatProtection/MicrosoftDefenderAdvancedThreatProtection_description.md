@@ -28,7 +28,7 @@ There are two different authentication methods for self-deployed configuration:
 
 To use a self-configured Azure application:
 
-- Add a App Registration in Microsoft Entra ID with the required permissions, as described in steps 1-7 under the **Self-deployed Azure Application** section of the integration documentation [here](https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-advanced-threat-protection#self-deployed-azure-application).
+- Add an App Registration in Microsoft Entra ID with the required permissions, as described in steps 1-7 under the **Self-deployed Azure Application** section of the integration documentation [here](https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-advanced-threat-protection#self-deployed-azure-application).
 
 - Select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
   - ##### To use Delegated Permissions
