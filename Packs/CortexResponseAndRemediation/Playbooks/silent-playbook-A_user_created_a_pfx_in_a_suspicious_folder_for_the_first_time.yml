@@ -1335,7 +1335,7 @@ tasks:
     task:
       id: 4a936c96-aa51-4132-b4cd-e79ad923ec7c
       version: -1
-      name: Is there actor process?
+      name: Does actor process exist?
       type: condition
       iscommand: false
       brand: ""
