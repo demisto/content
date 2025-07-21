@@ -97,7 +97,9 @@ Classifier and Incoming Mapper allows you to classify and map fetched incident o
 
 ---
 ​
+
 ### Recorded Future - Playbook Alerts (deprecated)
+
 Fetch & triage Recorded Future Playbook Alerts
 
 **Deprecated**: Use the *Recorded Future Alerts* integration from *Recorded Future* pack instead.
