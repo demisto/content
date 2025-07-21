@@ -277,7 +277,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"last_run after the fetch {last_run}")
             demisto.setLastRun(next_run) 
  
-    # Log exceptions and return errors
+    # Log exceptions and return errors 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
