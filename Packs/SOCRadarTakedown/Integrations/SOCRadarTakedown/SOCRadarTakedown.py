@@ -81,11 +81,7 @@ class Client:
         """Submit social media impersonation takedown request"""
         url = f"{self.base_url}/add/company/{self.company_id}/takedown/request/social_media_risks"
         data = {
-            "impersonating_account": {
-                "username": username,
-                "full_name": full_name,
-                "account_type": account_type
-            },
+            "impersonating_account": {"username": username, "full_name": full_name, "account_type": account_type},
             "notes": notes,
             "send_alarm": send_alarm,
             "email": email,
@@ -98,9 +94,7 @@ class Client:
 
         return response.json()
 
-    def submit_source_code_leak_takedown(
-        self, leak_id: int, notes: str = "", email: str = ""
-    ) -> dict[str, Any]:
+    def submit_source_code_leak_takedown(self, leak_id: int, notes: str = "", email: str = "") -> dict[str, Any]:
         """Submit source code leak takedown request"""
         url = f"{self.base_url}/add/company/{self.company_id}/takedown/request/source_code_leaks"
         data = {
@@ -116,9 +110,7 @@ class Client:
 
         return response.json()
 
-    def submit_rogue_app_takedown(
-        self, app_id: int, notes: str = "", email: str = ""
-    ) -> dict[str, Any]:
+    def submit_rogue_app_takedown(self, app_id: int, notes: str = "", email: str = "") -> dict[str, Any]:
         """Submit rogue mobile app takedown request"""
         url = f"{self.base_url}/add/company/{self.company_id}/takedown/request/rogue_mobile_apps"
         data = {
@@ -306,9 +298,7 @@ def submit_source_code_leak_takedown_command(client: Client) -> CommandResults:
     email = args.get("email", "")
 
     # Submit request
-    raw_response = client.submit_source_code_leak_takedown(
-        leak_id=leak_id, notes=notes, email=email
-    )
+    raw_response = client.submit_source_code_leak_takedown(leak_id=leak_id, notes=notes, email=email)
 
     # Prepare output
     readable_output = "### Source Code Leak Takedown Request\n"
@@ -345,9 +335,7 @@ def submit_rogue_app_takedown_command(client: Client) -> CommandResults:
     email = args.get("email", "")
 
     # Submit request
-    raw_response = client.submit_rogue_app_takedown(
-        app_id=app_id, notes=notes, email=email
-    )
+    raw_response = client.submit_rogue_app_takedown(app_id=app_id, notes=notes, email=email)
 
     # Prepare output
     readable_output = "### Rogue App Takedown Request\n"
