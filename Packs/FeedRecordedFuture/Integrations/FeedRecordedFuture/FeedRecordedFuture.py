@@ -21,7 +21,8 @@ DEFAULT_RISK_SCORE_THRESHOLD_VALUE: int = 0
 INTEGRATION_NAME = "Recorded Future"
 
 # taken from recorded future docs
-RF_CRITICALITY_LABELS = {"Very Critical": 90, "Critical": 80, "High": 65, "Medium": 25, "Low": 5}
+RF_CRITICALITY_LABELS = {"Very_Malicious": 90, "Malicious": 65, "Suspicious": 25, "Unusual": 5}
+RF_CVE_CRITICALITY_LABELS = {"Very Critical": 90, "Critical": 80, "High": 65, "Medium": 25, "Low": 5}
 
 RF_INDICATOR_TYPES = {"ip": "ip", "domain": "domain", "url": "url", "CVE(vulnerability)": "vulnerability", "hash": "hash"}
 
@@ -407,6 +408,20 @@ def ip_to_indicator_type(ip):
 
 def calculate_recorded_future_criticality_label(risk_from_feed):
     risk_from_feed = int(risk_from_feed)
+    if risk_from_feed >= RF_CRITICALITY_LABELS["Very_Malicious"]:
+        return "Very Malicious"
+    elif risk_from_feed >= RF_CRITICALITY_LABELS["Malicious"]:
+        return "Malicious"
+    elif risk_from_feed >= RF_CRITICALITY_LABELS["Suspicious"]:
+        return "Suspicious"
+    elif risk_from_feed >= RF_CRITICALITY_LABELS["Unusual"]:
+        return "Unusual"
+    else:
+        return "No current evidence of risk"
+
+
+def calculate_recorded_future_cve_criticality_label(risk_from_feed):
+    risk_from_feed = int(risk_from_feed)
     if risk_from_feed >= RF_CRITICALITY_LABELS["Very Critical"]:
         return "Very Critical"
     elif risk_from_feed >= RF_CRITICALITY_LABELS["Critical"]:
@@ -478,7 +493,10 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 risk = item.get("Risk")
                 if isinstance(risk, str) and risk.isdigit():
                     raw_json["score"] = score = client.calculate_indicator_score(risk)
-                    raw_json["Criticality Label"] = calculate_recorded_future_criticality_label(risk)
+                    if raw_json["type"] == FeedIndicatorType.CVE:
+                        raw_json["Criticality Label"] = calculate_recorded_future_cve_criticality_label(risk)
+                    else:
+                        raw_json["Criticality Label"] = calculate_recorded_future_criticality_label(risk)
                     # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
                     if not client.check_indicator_risk_score(risk):
                         continue
