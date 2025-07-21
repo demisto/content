@@ -12,10 +12,12 @@ configuration:
   required: true
   defaultvalue: https://api.silentpush.com
 - display: API Key
+  hiddenusername: true
+  displaypassword: API Key
   name: credentials
   type: 9
-  required: false
-  hiddenpassword: true
+  required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
