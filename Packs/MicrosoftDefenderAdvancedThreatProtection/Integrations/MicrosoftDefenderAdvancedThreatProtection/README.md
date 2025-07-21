@@ -35,6 +35,8 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ---
 
+The integration can use OAuth 2.0 and OpenID Connect standard-compliant authentication services to sign-in or delegate authentication on behalf of a user. For more information, refer to the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
+
 Two application authentication methods are available:
 
 - [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
@@ -50,8 +52,6 @@ For more details about the authentication used in this integration, see [Microso
 For a detailed comparison between the new and legacy permission models, refer to the [permission mapping table](https://learn.microsoft.com/en-us/defender-xdr/compare-rbac-roles#map-defender-for-endpoint-and-defender-vulnerability-management-permissions-to-the-microsoft-defender-xdr-rbac-permissions).
 
 ### Cortex XSOAR Application
-
-The integration can use OAuth 2.0 and OpenID Connect standard-compliant authentication services to sign-in or delegate authentication on behalf of a user. For more information, refer to the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
 
 To configure Cortex XSOAR application access to Microsoft Defender for Endpoint:
 
@@ -268,7 +268,7 @@ Isolates a machine from accessing external network.
 
 Machine.Isolate
 
-**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -914,7 +914,7 @@ Initiates Microsoft Defender Antivirus scan on a machine.
 
 Machine.Scan
 
-**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 #### Base Command
 
@@ -1813,7 +1813,7 @@ Collects an investigation package from a machine.
 
 Machine.CollectForensics
 
-**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -1887,7 +1887,7 @@ Gets a URI that allows downloading of an investigation package.
 
 Machine.CollectForensics
 
-**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -1933,7 +1933,7 @@ Restricts the execution of all applications on the machine except a predefined s
 
 Machine.RestrictExecution
 
-**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -2007,7 +2007,7 @@ Enables the execution of any application on the machine.
 
 Machine.RestrictExecution
 
-**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -2081,7 +2081,7 @@ Stops the execution of a file on a machine and deletes it.
 
 Machine.StopAndQuarantine
 
-**Note**: When using the Authorization Code Flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
