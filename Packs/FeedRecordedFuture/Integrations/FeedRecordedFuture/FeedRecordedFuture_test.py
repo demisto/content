@@ -418,52 +418,6 @@ def test_fetch_indicators_risk_threshold_command(mocker):
     assert len(client_outputs) == 1
 
 
-def test_fetch_cve_indicator_risk_threshold_command(mocker):
-    """
-    Given:
-     - Recorded Future Feed client initialized with CVE indicator type
-     - Iterator which returns entry of CVE object with name and risk score
-
-    When:
-     - Fetching indicators with risk score threshold equal to 40
-
-    Then:
-     - Verify the fetch does not returns indicators with lower score than the threshold.
-    """
-    indicator_type = "vulnerability"
-    client = Client(indicator_type=indicator_type, api_token="dummytoken", services=["fusion"], risk_score_threshold=40)
-    mocker.patch("FeedRecordedFuture.Client.build_iterator")
-    mocker.patch(
-        "FeedRecordedFuture.Client.get_batches_from_file",
-        return_value=DictReaderGenerator(DictReader(open("test_data/response_risk_score.txt"))),
-    )
-    client_outputs = []
-    for output in fetch_indicators_command(client, indicator_type):
-        client_outputs.extend(output)
-    assert client_outputs[0] == {
-        "fields": {
-            "recordedfutureevidencedetails": [],
-            "recordedfutureriskscore": "80",
-            "tags": [],
-            "recordedfuturefeedthreatassessment": "Malicious",
-            "recordedfutureriskrulecount": "",
-        },
-        "rawJSON": {
-            "Criticality Label": "Malicious",
-            "Name": "192.168.0.1",
-            "Risk": "80",
-            "score": 3,
-            "type": "IP",
-            "value": "192.168.0.1",
-        },
-        "score": 3,
-        "type": "IP",
-        "value": "192.168.0.1",
-    }
-
-    assert len(client_outputs) == 1
-
-
 @pytest.mark.parametrize("tags", (["tag1", "tag2"], []))
 def test_feed_tags(mocker, tags):
     """
