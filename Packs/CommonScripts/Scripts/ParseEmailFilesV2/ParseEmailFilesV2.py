@@ -2,7 +2,6 @@ import mimetypes
 from pathlib import Path
 
 import demistomock as demisto  # noqa: F401
-˚
 from CommonServerPython import *  # noqa: F401
 from parse_emails.parse_emails import EmailParser
 
