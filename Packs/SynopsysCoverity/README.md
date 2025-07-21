@@ -1,4 +1,4 @@
-# This pack includes:
+# This pack includes
 
 Data normalization capabilities:
 
