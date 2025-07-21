@@ -215,6 +215,7 @@ class PychromeEventHandler:
         self.path = path
         self.navigation_timeout = navigation_timeout
         self.is_private_network_url = False
+        self.document_url = ""
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}, {self.tab.id=}, {self.path=}")
@@ -357,7 +358,7 @@ class PychromeEventHandler:
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
         demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}, {self.tab.id=}, {self.path=}")
-
+        self.document_url = documentURL
         self.is_mailto = documentURL.lower().startswith("mailto:")
         self.is_private_network_url = is_private_network(documentURL)
         demisto.debug(f"Private network URL check for {documentURL=}: {self.is_private_network_url}")
@@ -876,8 +877,25 @@ def screenshot_image(
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     if tab_event_handler.is_mailto:
-        demisto.info(f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}, {tab.id=}.')
-        return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
+        # Determine the appropriate URL to display in the error message
+        display_url = tab_event_handler.document_url if tab_event_handler.document_url != tab_event_handler.path else path
+
+        # Create a more descriptive error message
+        if tab_event_handler.document_url != tab_event_handler.path:
+            # Handle redirect case where original URL redirects to mailto
+            error_msg = (
+                f'URLs that start with "mailto:" cannot be rasterized.\n'
+                f"Original URL: {path}\n"
+                f"Redirected to: {tab_event_handler.document_url}"
+            )
+            demisto.info(f"Mailto redirect detected - {error_msg}, tab_id={tab.id}")
+        else:
+            # Handle direct mailto URL case
+            error_msg = f'URLs that start with "mailto:" cannot be rasterized.\nURL: {display_url}'
+            demisto.info(f"Direct mailto URL detected - {error_msg}, tab_id={tab.id}")
+
+        return None, error_msg
+
     if tab_event_handler.is_private_network_url:
         demisto.info(
             'URLs that belong to the "This" Network (0.0.0.0/8), or'
@@ -1468,6 +1486,13 @@ def get_list_item(list_of_items: list, index: int, default_value: str):
     return list_of_items[index]
 
 
+def process_urls(urls):
+    if isinstance(urls, str) and urls.startswith("["):
+        urls = argToList(urls)
+    urls = [urls] if isinstance(urls, str) else urls
+    return urls
+
+
 def add_filename_suffix(file_names: list, file_extension: str):
     ret_value = []
     for current_filename in file_names:
@@ -1477,8 +1502,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg("url")
-    #  Rasterize does not support array in `url`. Please consult the owner before changing this.
-    urls = [urls] if isinstance(urls, str) else urls
+    urls = process_urls(urls)
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
     rasterize_type = RasterizeType(demisto.args().get("type", "png").lower())
