@@ -438,6 +438,25 @@ def iam_get_user(
     return readable_outputs_list, account_output
 
 
+def gsuite_get_user(
+    command: Command,
+    additional_fields: bool,
+) -> tuple[list[CommandResults], dict[str, Any]]:
+    readable_outputs_list = []
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
+    readable_outputs_list.extend(readable_errors)
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
+    output_key = get_output_key("GSuite.User", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
+    account_output = create_user(
+        source=command.brand,
+        email_address=outputs.get("primaryEmail"),
+        **outputs,
+        additional_fields=additional_fields,
+    )
+    return readable_outputs_list, account_output
+
+
 def xdr_list_risky_users(
     command: Command,
     outputs_key_field: str,
@@ -661,6 +680,22 @@ def main():
                 if readable_output and outputs:
                     users_outputs.append(outputs)
                     users_readables.extend(readable_output)
+                
+                #################################
+                ### Running for AWS-ILM ###
+                #################################
+                readable_output, outputs = get_data(
+                    modules=modules,
+                    brand_name="AWS-ILM",
+                    command_name="iam-get-user",
+                    arg_name="user-profile",
+                    arg_value=f"{{\"login\":\"{user_name}\"}}",
+                    cmd=iam_get_user,
+                    additional_fields=additional_fields,
+                )
+                if readable_output and outputs:
+                    users_outputs.append(outputs)
+                    users_readables.extend(readable_output)
 
             else:
                 demisto.debug(f"Skipping commands that do not support domain in user_name: {user_name}")
@@ -774,6 +809,38 @@ def main():
             if readable_output and outputs:
                 users_outputs.append(outputs)
                 users_readables.extend(readable_output)
+            
+            #################################
+            ### Running for AWS-ILM ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="AWS-ILM",
+                command_name="iam-get-user",
+                arg_name="user-profile",
+                arg_value=f"{{\"id\":\"{user_id}\"}}",
+                cmd=iam_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.append(outputs)
+                users_readables.extend(readable_output)
+            
+            #################################
+            ### Running for GSuiteAdmin ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="GSuiteAdmin",
+                command_name="gsuite-user-get",
+                arg_name="user",
+                arg_value=user_id,
+                cmd=gsuite_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.append(outputs)
+                users_readables.extend(readable_output)
 
         #################################
         ### Running for Users Emails ###
@@ -807,6 +874,38 @@ def main():
             arg_name="user-profile",
             arg_value=f"{{\"email\":\"{user_email}\"}}",
             cmd=iam_get_user,
+            additional_fields=additional_fields,
+        )
+        if readable_output and outputs:
+            users_outputs.append(outputs)
+            users_readables.extend(readable_output)
+        
+        #################################
+        ### Running for AWS-ILM ###
+        #################################
+        readable_output, outputs = get_data(
+            modules=modules,
+            brand_name="AWS-ILM",
+            command_name="iam-get-user",
+            arg_name="user-profile",
+            arg_value=f"{{\"email\":\"{user_email}\"}}",
+            cmd=iam_get_user,
+            additional_fields=additional_fields,
+        )
+        if readable_output and outputs:
+            users_outputs.append(outputs)
+            users_readables.extend(readable_output)
+        
+        #################################
+        ### Running for GSuiteAdmin ###
+        #################################
+        readable_output, outputs = get_data(
+            modules=modules,
+            brand_name="GSuiteAdmin",
+            command_name="gsuite-user-get",
+            arg_name="user",
+            arg_value=user_email,
+            cmd=gsuite_get_user,
             additional_fields=additional_fields,
         )
         if readable_output and outputs:
