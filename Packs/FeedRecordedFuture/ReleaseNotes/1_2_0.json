@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Updated the CVE risk labels to be compatible with the Recorded Future documentation"
+}
