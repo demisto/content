@@ -1590,7 +1590,7 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                 filter_query += f"collection_type%3A{collection_type}"
             args = f"filter={filter_query}&exclude_attributes=aggregations"
             requests_mock.get(
-                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections?{args}",
+                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/associations?{args}",
                 json=data_json,
             )
 
