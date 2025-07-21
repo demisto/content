@@ -194,6 +194,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         ],
         "microsoft-teams-message-send-to-chat": [
             Perms.USER_READ_ALL,
+            Perms.CHAT_READBASIC,
             Perms.CHAT_CREATE,
             Perms.CHATMESSAGE_SEND,
             Perms.APPCATALOG_READ_ALL,
