@@ -1486,6 +1486,13 @@ def get_list_item(list_of_items: list, index: int, default_value: str):
     return list_of_items[index]
 
 
+def process_urls(urls):
+    if isinstance(urls, str) and urls.startswith("["):
+        urls = argToList(urls)
+    urls = [urls] if isinstance(urls, str) else urls
+    return urls
+
+
 def add_filename_suffix(file_names: list, file_extension: str):
     ret_value = []
     for current_filename in file_names:
@@ -1495,8 +1502,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg("url")
-    #  Rasterize does not support array in `url`. Please consult the owner before changing this.
-    urls = [urls] if isinstance(urls, str) else urls
+    urls = process_urls(urls)
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
     rasterize_type = RasterizeType(demisto.args().get("type", "png").lower())
