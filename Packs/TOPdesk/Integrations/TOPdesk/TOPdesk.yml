@@ -2208,6 +2208,10 @@ script:
       required: true
     description: Update Asset Fields.
     name: topdesk-asset-update
+    outputs:
+    - contextPath: TOPdesk.Asset
+      description: Dictionary of all Asset Data specific to company.
+      type: Dict
   - arguments:
     - description: The caller ID for this incident. For an unregistered caller provide a name. For a list of registered persons or operator IDs run !topdesk-persons-list or !topdesk-operators-list.
       name: caller
