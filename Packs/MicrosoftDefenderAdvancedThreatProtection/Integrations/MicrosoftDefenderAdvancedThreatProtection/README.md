@@ -57,10 +57,10 @@ To configure Cortex XSOAR application access to Microsoft Defender for Endpoint:
 
 1. Navigate to the [Cortex Authorization page for Microsoft Defender for Endpoint](https://oproxy.demisto.ninja/ms-defender-atp).
 2. Select the user account with sufficient role permissions.
-3. After authorizing the application, copy the **ID**, **Token**, and **Key** values and insert them in integration instance settings corresponding fields.
-4. Ensure **Authentication Type** is set to "Authorization Code".
-5. Click **Save & Exit**.
-6. Run the **microsoft-atp-test** command to verify correct configuration.
+3. After authorizing the application, copy the *ID*, *Token*, and *Key* values and insert them in integration instance settings corresponding fields.
+4. Ensure *Authentication Type* field is set to the **Authorization Code** option.
+5. Save the instance.
+6. Run the `!microsoft-atp-test` command in the War Room to verify correct configuration.
 
 ### Self-deployed Azure Application
 
@@ -70,25 +70,24 @@ To configure Cortex XSOAR application access to Microsoft Defender for Endpoint:
 4. Choose the type of permissions:
     - **Delegated Permissions** - used by applications that act on behalf of a signed-in user. The application will have access to the resources that the user has access to, limited by the permissions granted to the application. Choose this option if you prefer the **Authorization Code** flow.
     - **Application Permissions** - used by applications that run without a signed-in user. The application acts as its own identity and is granted direct access to data or resources. This is common for background services or daemons. Choose this option if you prefer the the **Client Credentials** flow.
-5. Select the [permissions required by the integration](#required-permissions) (based on the chosen permission type) and then click **Add permissions**.
-6. Click **Grant consent**.
-7. To add a secret to the application, select **Certificates & secrets**, add a meaningful description, and click **Add**.
-8. In the integration instance settings, select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
+5. Select the [permissions required by the integration](#required-permissions) (based on the chosen permission type), click **Add permissions** and **Grant consent**.
+6. To add a secret to the application, select **Certificates & secrets**, add a meaningful description, and click **Add**.
+7. In the integration instance settings, select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
     - For **Delegated Permissions**:
-        - In the **ID** field, enter the application (client) ID.
-        - In the **Token** field, enter the directory (tenant) ID.
-        - In the **Key** field, enter the client secret.
-        - In the **Authentication Type** field, select "Authorization Code".
-        - In the **Application Redirect URI** field, enter the Application redirect URI.
-        - Click **Save & Exit**.
-        - Run the **microsoft-atp-generate-login-url** command and follow the instructions.
+        - In the *ID* field, enter the application (client) ID.
+        - In the *Token* field, enter the directory (tenant) ID.
+        - In the *Key* field, enter the client secret.
+        - In the *Authentication Type* field, select the **Authorization Code** option.
+        - In the *Application Redirect URI* field, enter the Application redirect URI.
+        - Save the instance.
+        - Run the `!microsoft-atp-generate-login-url` command in the War Room and follow the instructions.
     - For **Application Permissions**:
-        - In the **ID** field, enter the application (client) ID.
-        - In the **Token** field, enter the directory (tenant) ID.
-        - In the **Key** field, enter the client secret.
-        - In the **Authentication Type** field, select "Client Credentials".
+        - In the *ID* field, enter the application (client) ID.
+        - In the *Token* field, enter the directory (tenant) ID.
+        - In the *Key* field, enter the client secret.
+        - In the *Authentication Type* field, select the **Client Credentials** option.
         - Click **Test** to verify correct configuration.
-        - Click **Save & Exit**.
+        - Save the instance.
 
 **Note**: If you previously configured the *Windows* Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
 
@@ -108,7 +107,7 @@ Choose **Application Permissions** for the Client Credentials flow, or **Delegat
 - Machine.Scan - Application / Delegated
 - Machine.StopAndQuarantine - Application / Delegated
 - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated.
-  **Note**: This permission is only used for the deprecated **microsoft-atp-indicator-list** command. If you are not using this command, it is not required.
+  **Note**: This permission is only used for the deprecated `!microsoft-atp-indicator-list` command. If you are not using this command, it is not required.
 - Url.Read.All - Application / Delegated
 - User.Read.All - Application / Delegated
 - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
@@ -117,7 +116,7 @@ Choose **Application Permissions** for the Client Credentials flow, or **Delegat
 - Machine.LiveResponse - Application / Delegated
 - Machine.Read.All - Application / Machine.Read - Delegated
 
-**Note**: Access permissions can be verified by running the **microsoft-atp-list-auth-permissions** command after configuring the integration instance.
+**Note**: Access permissions can be verified by running the `!microsoft-atp-list-auth-permissions` command after configuring the integration instance.
 
 ## Configure Microsoft Defender for Endpoint in Cortex
 
