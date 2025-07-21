@@ -280,7 +280,7 @@ def main() -> None:  # pragma: no cover
     # Log exceptions and return errors 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
-
+ 
 
 """ ENTRY POINT """
 
