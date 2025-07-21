@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
-    """
+    r"""
     This is an extended function of demisto.get().
     The `path` argument parameter supports a syntax of path escaped with backslash
     in order to support a key including period characters.
@@ -33,11 +33,11 @@ def demisto_get(obj: Any, path: Any) -> Any:
         node = []
         itr = iter(path)
         for c in itr:
-            if c == "\\":
+            if c == r"\\":
                 try:
                     node.append(next(itr))
                 except StopIteration:
-                    node.append("\\")
+                    node.append(r"\\")
             elif c == ".":
                 nodes.append("".join(node))
                 node = []
