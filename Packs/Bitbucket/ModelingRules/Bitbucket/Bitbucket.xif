@@ -5,7 +5,7 @@ alter
     affected_objects_type = arraystring(arraymap(json_extract_array(_raw_log, "$.affectedObjects"), "@element" -> type), ", "),
     changed_values_from = arraystring(arraymap(json_extract_array(_raw_log, "$.changedValues"), "@element" -> from), ", "),
     changed_values_to = arraystring(arraymap(json_extract_array(_raw_log, "$.changedValues"), "@element" -> to), ", "),
-    extra_data = object_create("Area",_raw_log -> auditType.area,"Category", _raw_log -> auditType.category, "Level",_raw_log -> auditType.level),
+    extra_data = object_create("Area",_raw_log -> auditType.area,"Category", _raw_log -> auditType.category, "Level",_raw_log -> auditType.level,"Method",_raw_log -> method),
     source_ip_address = _raw_log -> source
 | alter
     parsed_fields = object_merge(extra_data ,parsed_fields),
