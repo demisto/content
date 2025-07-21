@@ -195,8 +195,7 @@ view: |-
   }
 inputs: []
 inputSections:
-- inputs:
-  - Check if Asimily Insight Integration is enabled.
+- inputs: []
   name: General (Inputs group)
   description: Generic group for inputs
 outputSections:
