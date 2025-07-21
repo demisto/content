@@ -6,7 +6,7 @@ Caution: If you do not provide a reviewer email, the playbook will automatically
 This playbook can fix the following misconfigurations.
 
 - AWS S3 bucket publicly readable
-- AWS S3 bucket publicly writable.
+- AWS S3 bucket publicly writable
 
 ## Dependencies
 

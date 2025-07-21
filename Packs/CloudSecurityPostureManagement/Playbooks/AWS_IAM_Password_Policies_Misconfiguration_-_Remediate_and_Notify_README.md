@@ -13,7 +13,7 @@ This playbook can fix the following misconfigurations:
 - AWS IAM password policy does not have a symbol
 - AWS IAM password policy does not have an uppercase character
 - AWS IAM password policy does not have password expiration period
-- AWS IAM Password policy is unsecure.
+- AWS IAM Password policy is unsecure
 
 ## Dependencies
 

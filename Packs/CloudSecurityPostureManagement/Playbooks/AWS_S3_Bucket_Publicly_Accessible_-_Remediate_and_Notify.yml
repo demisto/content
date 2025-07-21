@@ -22,16 +22,16 @@ description: |-
   This playbook can fix the following misconfigurations.
 
   - AWS S3 bucket publicly readable
-  - AWS S3 bucket publicly writable.
+  - AWS S3 bucket publicly writable
 starttaskid: "0"
 fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: 782ade81-ce3d-4635-8e10-cc9dbb592e96
+    taskid: a812dc71-4547-4440-81fb-d0512768c09b
     type: start
     task:
-      id: 782ade81-ce3d-4635-8e10-cc9dbb592e96
+      id: a812dc71-4547-4440-81fb-d0512768c09b
       version: -1
       name: ""
       iscommand: false
@@ -58,10 +58,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3441e9dc-e603-4024-8846-72623cdba9e9
+    taskid: 289a7c22-fce9-4acb-8cd0-70254f1ea458
     type: regular
     task:
-      id: 3441e9dc-e603-4024-8846-72623cdba9e9
+      id: 289a7c22-fce9-4acb-8cd0-70254f1ea458
       version: -1
       name: Get Asset details
       description: Get asset information.
@@ -94,10 +94,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0833b2ba-c950-480c-8ce6-dba28375bffd
+    taskid: ab0fb73d-94a3-4893-852b-133d52bb0217
     type: title
     task:
-      id: 0833b2ba-c950-480c-8ce6-dba28375bffd
+      id: ab0fb73d-94a3-4893-852b-133d52bb0217
       version: -1
       name: Done
       type: title
@@ -122,10 +122,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 8afd3f8b-f81d-4157-9075-92018d28bb5b
+    taskid: e049e3f2-243d-4c60-8af8-fcdfc206db50
     type: condition
     task:
-      id: 8afd3f8b-f81d-4157-9075-92018d28bb5b
+      id: e049e3f2-243d-4c60-8af8-fcdfc206db50
       version: -1
       name: Send email for review consent
       description: Check whether the values provided in arguments are equal. If either
@@ -243,10 +243,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: cc991575-ecef-4886-8cb7-4088e57df2bf
+    taskid: 8a2ea82c-058e-4883-8d71-096a7cffba9d
     type: condition
     task:
-      id: cc991575-ecef-4886-8cb7-4088e57df2bf
+      id: 8a2ea82c-058e-4883-8d71-096a7cffba9d
       version: -1
       name: Is remediation available?
       description: Check if remediation is available for the issue ruleid.
@@ -346,10 +346,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: d605da48-7cac-4b6c-85db-d5bb7a366166
+    taskid: 9d842b0d-bfb8-453d-8cd1-9b38af0fd7e0
     type: regular
     task:
-      id: d605da48-7cac-4b6c-85db-d5bb7a366166
+      id: 9d842b0d-bfb8-453d-8cd1-9b38af0fd7e0
       version: -1
       name: 'Update Issue details to War Room '
       description: Prints text to war room (Markdown supported)
@@ -361,6 +361,12 @@ tasks:
     nexttasks:
       '#none#':
       - "32"
+    scriptarguments:
+      value:
+        simple: |-
+          Issue - ${issue.details}
+          Asset Name - ${inputs.System Input - Asset details.xdm__asset__name}
+          Remediation - Success
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -379,10 +385,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: d06bab95-b600-4073-8bf0-7f4e690b99e3
+    taskid: 85d6186e-a754-463e-8290-0e7a705a5ca0
     type: regular
     task:
-      id: d06bab95-b600-4073-8bf0-7f4e690b99e3
+      id: 85d6186e-a754-463e-8290-0e7a705a5ca0
       version: -1
       name: Update Issue Status to Resolved - Fixed
       description: commands.local.cmd.set.alert.status
@@ -415,10 +421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: bd346a95-c45f-43d2-85c3-60f03dd538db
+    taskid: 755717f9-edf0-494e-8324-ae97bf273123
     type: condition
     task:
-      id: bd346a95-c45f-43d2-85c3-60f03dd538db
+      id: 755717f9-edf0-494e-8324-ae97bf273123
       version: -1
       name: Is reviewer assigned?
       description: Check if reviewer email address is provided in playbook inputs.
@@ -466,10 +472,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: e1eab127-42d7-40d4-8d5a-9767f051807e
+    taskid: db060d74-6e3c-4410-8cc7-40131b70de43
     type: condition
     task:
-      id: e1eab127-42d7-40d4-8d5a-9767f051807e
+      id: db060d74-6e3c-4410-8cc7-40131b70de43
       version: -1
       name: Is AWS integration available ?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -505,10 +511,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 8832e854-bca6-4482-815a-071960fc2041
+    taskid: f80eae59-c552-4e71-81ed-4ad64a26ac37
     type: regular
     task:
-      id: 8832e854-bca6-4482-815a-071960fc2041
+      id: f80eae59-c552-4e71-81ed-4ad64a26ac37
       version: -1
       name: Update AWS S3 Block Public Access setting
       description: Create or Modify the PublicAccessBlock configuration for an Amazon
@@ -554,10 +560,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: b255568a-b65c-4fc3-834e-b049fa9787c0
+    taskid: ab2a521c-d49d-49e1-88a9-fd98d7373ac9
     type: playbook
     task:
-      id: b255568a-b65c-4fc3-834e-b049fa9787c0
+      id: ab2a521c-d49d-49e1-88a9-fd98d7373ac9
       version: -1
       name: Create Ticket and Notify
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -623,10 +629,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 412226a9-e4e1-48c5-8b9e-b3e9df05bfc3
+    taskid: 63fea75a-5999-4552-8594-890ce26b8bae
     type: playbook
     task:
-      id: 412226a9-e4e1-48c5-8b9e-b3e9df05bfc3
+      id: 63fea75a-5999-4552-8594-890ce26b8bae
       version: -1
       name: Update Ticket and Notify
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -692,10 +698,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 12340725-e67c-4e4f-8673-c32c1d3f36ee
+    taskid: 15df621a-7346-4e9c-888b-1f7f422fff75
     type: condition
     task:
-      id: 12340725-e67c-4e4f-8673-c32c1d3f36ee
+      id: 15df621a-7346-4e9c-888b-1f7f422fff75
       version: -1
       name: Confirm AWS Pack Integration
       description: Confirm if AWS dependency pack is installed and integrated.
@@ -744,10 +750,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: df31a062-860f-4709-8c65-75582863f3c4
+    taskid: 4b45d4a2-a4a8-4d76-813f-fb8ce42ce261
     type: condition
     task:
-      id: df31a062-860f-4709-8c65-75582863f3c4
+      id: 4b45d4a2-a4a8-4d76-813f-fb8ce42ce261
       version: -1
       name: Is AWS integration available ?
       description: Returns 'yes' if integration brand is available. Otherwise returns

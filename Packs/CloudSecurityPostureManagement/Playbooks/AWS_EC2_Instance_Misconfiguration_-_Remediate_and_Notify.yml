@@ -21,16 +21,16 @@ description: |-
 
   This playbook can fix the following misconfigurations:
 
-  - AWS EC2 instance not configured with Instance Metadata Service v2 (IMDSv2).
+  - AWS EC2 instance not configured with Instance Metadata Service v2 (IMDSv2)
 starttaskid: "0"
 fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: 15268141-9d98-4f72-812e-b4b66a2425e8
+    taskid: a838ab7d-6e86-4d69-862e-5cf5042c5a31
     type: start
     task:
-      id: 15268141-9d98-4f72-812e-b4b66a2425e8
+      id: a838ab7d-6e86-4d69-862e-5cf5042c5a31
       version: -1
       name: ""
       iscommand: false
@@ -57,10 +57,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: a9ba23f1-43bb-46b2-8f4f-76eabf357359
+    taskid: 9d6927a3-f6eb-412b-8e79-018493869f0e
     type: regular
     task:
-      id: a9ba23f1-43bb-46b2-8f4f-76eabf357359
+      id: 9d6927a3-f6eb-412b-8e79-018493869f0e
       version: -1
       name: Get Asset details
       description: Get asset information.
@@ -93,10 +93,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 9ca0909d-f35a-4fe6-88c1-4247f6bce2d4
+    taskid: 7b6e7678-2b2e-4ca6-8bc6-8ec9b18c6ef3
     type: title
     task:
-      id: 9ca0909d-f35a-4fe6-88c1-4247f6bce2d4
+      id: 7b6e7678-2b2e-4ca6-8bc6-8ec9b18c6ef3
       version: -1
       name: Done
       type: title
@@ -121,10 +121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: cf4fca9c-b741-473c-95d9-2b082813cad7
+    taskid: 1911a145-4775-4d59-8ed3-20381d0ceb14
     type: condition
     task:
-      id: cf4fca9c-b741-473c-95d9-2b082813cad7
+      id: 1911a145-4775-4d59-8ed3-20381d0ceb14
       version: -1
       name: Send email for review consent
       description: Check whether the values provided in arguments are equal. If either
@@ -237,10 +237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b8e99701-6fb5-4e88-8fc4-c2b2ed3c7ac7
+    taskid: 3533967e-3412-423c-8762-abd7eb4007ab
     type: condition
     task:
-      id: b8e99701-6fb5-4e88-8fc4-c2b2ed3c7ac7
+      id: 3533967e-3412-423c-8762-abd7eb4007ab
       version: -1
       name: Is remediation available?
       description: Check if remediation is available for the issue ruleid.
@@ -308,10 +308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 1113fe72-3099-4895-8773-9e91512d268e
+    taskid: cb7da3e7-f931-490b-801e-44723fa5524a
     type: regular
     task:
-      id: 1113fe72-3099-4895-8773-9e91512d268e
+      id: cb7da3e7-f931-490b-801e-44723fa5524a
       version: -1
       name: Update Issue  details to War Room
       description: Prints text to war room (Markdown supported)
@@ -330,7 +330,6 @@ tasks:
           Asset Name - ${inputs.System Input - Asset details.xdm__asset__name}
           Remediation - Success
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -348,10 +347,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: c0ea95ac-03d9-4aa2-8475-7bf26059c98c
+    taskid: c27ff1f8-6ee0-4748-84b9-5ee426fb5a17
     type: regular
     task:
-      id: c0ea95ac-03d9-4aa2-8475-7bf26059c98c
+      id: c27ff1f8-6ee0-4748-84b9-5ee426fb5a17
       version: -1
       name: Update Issue status to Resolved - Fixed
       description: commands.local.cmd.set.alert.status
@@ -384,10 +383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 33f4f6e1-25c4-4437-8597-fdd1e55a1417
+    taskid: 8eb45639-8e5e-4a07-8e4e-32be78601528
     type: regular
     task:
-      id: 33f4f6e1-25c4-4437-8597-fdd1e55a1417
+      id: 8eb45639-8e5e-4a07-8e4e-32be78601528
       version: -1
       name: 'Update AWS EC2 Instance Metadata Service '
       description: Modify the EC2 instance metadata parameters on a running or stopped
@@ -429,10 +428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: c83fb708-a8fb-4dd6-8ff4-0bdcd2803cee
+    taskid: a100968c-fcfc-4613-878e-9b1b7a15f896
     type: condition
     task:
-      id: c83fb708-a8fb-4dd6-8ff4-0bdcd2803cee
+      id: a100968c-fcfc-4613-878e-9b1b7a15f896
       version: -1
       name: Is AWS integration available?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -468,10 +467,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 8d01bf07-d57a-4387-840c-031ad13a22be
+    taskid: ce052f27-f4aa-4825-8a0e-2805135691c0
     type: condition
     task:
-      id: 8d01bf07-d57a-4387-840c-031ad13a22be
+      id: ce052f27-f4aa-4825-8a0e-2805135691c0
       version: -1
       name: Is reviewer assigned?
       description: Check if reviewer email address is provided in playbook inputs.
@@ -519,10 +518,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 2b704029-79b7-4ad4-8ee1-3e40d0752328
+    taskid: be875d72-1aaa-4049-8e6f-ee306207b830
     type: playbook
     task:
-      id: 2b704029-79b7-4ad4-8ee1-3e40d0752328
+      id: be875d72-1aaa-4049-8e6f-ee306207b830
       version: -1
       name: Create Ticket and Notify
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -588,10 +587,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 64a9054f-d62a-4f92-8a21-9b554e2ca7c4
+    taskid: 85e39284-b0ff-4ea6-8aec-93fab66351cb
     type: playbook
     task:
-      id: 64a9054f-d62a-4f92-8a21-9b554e2ca7c4
+      id: 85e39284-b0ff-4ea6-8aec-93fab66351cb
       version: -1
       name: Update Ticket and Notify
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -657,10 +656,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 7e071239-6063-4736-8fc1-4bf202331f62
+    taskid: b065afc7-920c-405b-8d4f-ad6fabfd8d0b
     type: condition
     task:
-      id: 7e071239-6063-4736-8fc1-4bf202331f62
+      id: b065afc7-920c-405b-8d4f-ad6fabfd8d0b
       version: -1
       name: Confirm AWS Pack Integration
       description: Confirm if AWS dependency pack is installed and integrated.
@@ -710,10 +709,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 66957b8a-57ee-4768-8d6d-fc7662b65b6b
+    taskid: 2bb7d7a3-709d-429a-87c1-279fc745dd93
     type: condition
     task:
-      id: 66957b8a-57ee-4768-8d6d-fc7662b65b6b
+      id: 2bb7d7a3-709d-429a-87c1-279fc745dd93
       version: -1
       name: Is AWS integration available?
       description: Returns 'yes' if integration brand is available. Otherwise returns

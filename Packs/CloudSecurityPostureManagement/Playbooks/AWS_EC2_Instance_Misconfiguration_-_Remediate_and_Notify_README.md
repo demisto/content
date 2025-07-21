@@ -5,7 +5,7 @@ Caution: If you do not provide a reviewer email, the playbook will automatically
 
 This playbook can fix the following misconfigurations:
 
-- AWS EC2 instance not configured with Instance Metadata Service v2 (IMDSv2).
+- AWS EC2 instance not configured with Instance Metadata Service v2 (IMDSv2)
 
 ## Dependencies
 

@@ -28,10 +28,10 @@ fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: c1750ed1-e9e8-4ea1-89a3-3cc1e7d67945
+    taskid: 0b7e54da-fcf9-4b93-888e-f25a64b3b0dc
     type: start
     task:
-      id: c1750ed1-e9e8-4ea1-89a3-3cc1e7d67945
+      id: 0b7e54da-fcf9-4b93-888e-f25a64b3b0dc
       version: -1
       name: ""
       iscommand: false
@@ -58,10 +58,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 768c58c2-fa1c-4caf-8419-7b49e24bae1f
+    taskid: 871e8313-0e29-4341-827e-9bdb99354954
     type: condition
     task:
-      id: 768c58c2-fa1c-4caf-8419-7b49e24bae1f
+      id: 871e8313-0e29-4341-827e-9bdb99354954
       version: -1
       name: Use ServiceNow for Issue ticket
       type: condition
@@ -176,10 +176,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: d667c82d-72ef-4795-8182-893c647a41a8
+    taskid: bd039434-4c55-4a3f-8910-787bee280887
     type: title
     task:
-      id: d667c82d-72ef-4795-8182-893c647a41a8
+      id: bd039434-4c55-4a3f-8910-787bee280887
       version: -1
       name: Done
       type: title
@@ -204,10 +204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 35d689bd-97ce-48bd-87db-975ab59d43c5
+    taskid: a28d558f-0fc8-4fc9-8425-7956dd654e9e
     type: condition
     task:
-      id: 35d689bd-97ce-48bd-87db-975ab59d43c5
+      id: a28d558f-0fc8-4fc9-8425-7956dd654e9e
       version: -1
       name: Notify using Microsoft Teams?
       type: condition
@@ -294,10 +294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: f6e297a7-2b6c-446d-bf6b-2fc2740c5cf4
+    taskid: b275b20c-2cb2-489a-8f2f-8626ef9d5d7a
     type: regular
     task:
-      id: f6e297a7-2b6c-446d-bf6b-2fc2740c5cf4
+      id: b275b20c-2cb2-489a-8f2f-8626ef9d5d7a
       version: -1
       name: Create Issue ServiceNow ticket
       description: Creates new ServiceNow ticket.
@@ -349,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: bdef12e8-43d4-4125-85e6-00333d93d05c
+    taskid: 8050bfd2-9ba8-40cc-8905-7316f998dd6d
     type: regular
     task:
-      id: bdef12e8-43d4-4125-85e6-00333d93d05c
+      id: 8050bfd2-9ba8-40cc-8905-7316f998dd6d
       version: -1
       name: Create Issue Jira ticket
       description: Creates a new issue in Jira.
@@ -404,10 +404,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: a0033ab1-1d78-4da9-8c23-c49346010ba7
+    taskid: 157c78ef-5794-4ab8-8796-7d66e9db352d
     type: condition
     task:
-      id: a0033ab1-1d78-4da9-8c23-c49346010ba7
+      id: 157c78ef-5794-4ab8-8796-7d66e9db352d
       version: -1
       name: Send email to recipients
       description: commands.server.mail.sendmail
@@ -476,10 +476,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: de9afa66-dbfc-4482-8b61-59a8ac38cae7
+    taskid: e938f992-3647-44fc-81a6-0541b7cbf2d7
     type: title
     task:
-      id: de9afa66-dbfc-4482-8b61-59a8ac38cae7
+      id: e938f992-3647-44fc-81a6-0541b7cbf2d7
       version: -1
       name: Create or Update Issue ticket
       type: title
@@ -507,10 +507,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: f7ef663b-5bba-4893-8b25-2a7f62fe0e80
+    taskid: 41a857e4-b63c-4bd6-809f-4166c7d484ce
     type: title
     task:
-      id: f7ef663b-5bba-4893-8b25-2a7f62fe0e80
+      id: 41a857e4-b63c-4bd6-809f-4166c7d484ce
       version: -1
       name: Issue Notification
       type: title
@@ -538,10 +538,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: c13a4449-b304-4d2b-843a-e4a4ec7de905
+    taskid: 6937951b-9bc4-44a5-8fbb-bb0603d2e3b4
     type: condition
     task:
-      id: c13a4449-b304-4d2b-843a-e4a4ec7de905
+      id: 6937951b-9bc4-44a5-8fbb-bb0603d2e3b4
       version: -1
       name: Use Jira for Issue ticket
       type: condition
@@ -656,10 +656,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: cf647d05-5201-44f4-a86b-6b731d54332d
+    taskid: 1f377eee-a11c-4c5e-81f7-ad98a5973a69
     type: regular
     task:
-      id: cf647d05-5201-44f4-a86b-6b731d54332d
+      id: 1f377eee-a11c-4c5e-81f7-ad98a5973a69
       version: -1
       name: Send Email Notification
       description: commands.server.mail.sendmail
@@ -743,10 +743,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: df35cf28-a20e-41a0-81b2-fe489fd55842
+    taskid: bdbb7f93-ad58-44fc-839d-46c162a455ab
     type: title
     task:
-      id: df35cf28-a20e-41a0-81b2-fe489fd55842
+      id: bdbb7f93-ad58-44fc-839d-46c162a455ab
       version: -1
       name: Email Notification
       type: title
@@ -774,10 +774,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 2238db1f-cb8f-402e-b251-b38e05084743
+    taskid: a8960da1-6451-475f-8471-078ab6a3132a
     type: regular
     task:
-      id: 2238db1f-cb8f-402e-b251-b38e05084743
+      id: a8960da1-6451-475f-8471-078ab6a3132a
       version: -1
       name: Send Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -825,10 +825,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: ecf2c96e-a3e4-4d73-b9e6-6d76bfe08a50
+    taskid: a24b8730-c209-4853-820f-eb655e8bf6a2
     type: regular
     task:
-      id: ecf2c96e-a3e4-4d73-b9e6-6d76bfe08a50
+      id: a24b8730-c209-4853-820f-eb655e8bf6a2
       version: -1
       name: Update Microsoft Teams Notification
       description: Sends a message to the specified teams.
@@ -873,10 +873,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 263ac54d-2a15-4078-8802-8fe45855670c
+    taskid: a1bd2004-72d4-46b2-807d-f49a379f4298
     type: condition
     task:
-      id: 263ac54d-2a15-4078-8802-8fe45855670c
+      id: a1bd2004-72d4-46b2-807d-f49a379f4298
       version: -1
       name: Notify using Slack?
       type: condition
@@ -963,10 +963,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 98c05735-7a2c-4f3a-9bb4-4955e528f2b2
+    taskid: 84eda2e8-82a4-4d4a-869c-96ea4ef14f92
     type: regular
     task:
-      id: 98c05735-7a2c-4f3a-9bb4-4955e528f2b2
+      id: 84eda2e8-82a4-4d4a-869c-96ea4ef14f92
       version: -1
       name: Update Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -1011,10 +1011,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 6dd8067a-66a3-4bc6-8f35-79c48fc5e125
+    taskid: cc9e95b6-8143-4f81-8b80-6d77a8b00358
     type: regular
     task:
-      id: 6dd8067a-66a3-4bc6-8f35-79c48fc5e125
+      id: cc9e95b6-8143-4f81-8b80-6d77a8b00358
       version: -1
       name: Send Microsoft Teams Notification
       description: Sends a message to the specified teams.
@@ -1062,10 +1062,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 83dbde5e-0e55-4ce3-8c5d-c7e12ee5ff85
+    taskid: 78553c3e-9902-4cb5-84cf-8ced093bbf51
     type: regular
     task:
-      id: 83dbde5e-0e55-4ce3-8c5d-c7e12ee5ff85
+      id: 78553c3e-9902-4cb5-84cf-8ced093bbf51
       version: -1
       name: Update Email Notification
       description: commands.server.mail.sendmail
@@ -1134,10 +1134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 61bcbd5c-c50e-48e7-b7c7-6d083e572608
+    taskid: 5b1b44c4-7a62-4461-853a-8169af508eea
     type: regular
     task:
-      id: 61bcbd5c-c50e-48e7-b7c7-6d083e572608
+      id: 5b1b44c4-7a62-4461-853a-8169af508eea
       version: -1
       name: Update Issue ServiceNow ticket
       description: Updates the specified ticket.
@@ -1182,10 +1182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: f296f6bf-57a7-4e0b-9387-87c03338ad8c
+    taskid: 06700da0-966e-4267-8694-55faf750a664
     type: regular
     task:
-      id: f296f6bf-57a7-4e0b-9387-87c03338ad8c
+      id: 06700da0-966e-4267-8694-55faf750a664
       version: -1
       name: Update Issue Jira ticket
       description: Adds a new comment to an existing Jira issue.
