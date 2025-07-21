@@ -3,6 +3,7 @@
 Atlassian Bitbucket is a Git-based source code management platform that enables teams to collaborate, review code, and deploy with built-in CI/CD tools
 
 <~XSIAM>
+
 ## What does this pack contain?
 
 - Filebeat log collection manual
@@ -54,6 +55,7 @@ This configuration will collect the data into a dataset named `atlassian_bitbuck
 </~XSIAM>
 
 <~XSOAR>
+
 ### What does this pack do?
 
 - Returns a specific project or a list of projects in a workspace.
