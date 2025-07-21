@@ -2,6 +2,9 @@ import urllib3
 import re
 from typing import Any
 
+# Import SOAR common functions
+from CommonServerPython import *
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
