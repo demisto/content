@@ -2661,14 +2661,10 @@ def _get_curated_collections_command(client: Client, args: dict, collection_type
     for collection in data:
         attributes = collection.get("attributes", {})
         targeted_regions = {
-            item.get("country_iso2")
-            for item in attributes.get("targeted_regions_hierarchy", [])
-            if item.get("country_iso2")
+            item.get("country_iso2") for item in attributes.get("targeted_regions_hierarchy", []) if item.get("country_iso2")
         }
         targeted_industries = {
-            item.get("industry_group")
-            for item in attributes.get("targeted_industries_tree", [])
-            if item.get("industry_group")
+            item.get("industry_group") for item in attributes.get("targeted_industries_tree", []) if item.get("industry_group")
         }
         collections.append(
             {
