@@ -801,13 +801,16 @@ def add_data_to_actions(card_json, data_value):
 
 def handle_raw_adaptive_card(adaptive_card_obj: dict) -> dict:
     """
-        Check if the adaptive card is already wrapped with the contentType and content keys, otherwise try to fix it.
+    Check if the adaptive card is already wrapped with the contentType and content keys, otherwise try to fix it.
 
-        :param adaptive_card_obj: The user supplied adaptive card
-        :return: Adaptive card with contentType and content keys
+    :param adaptive_card_obj: The user supplied adaptive card
+    :return: Adaptive card with contentType and content keys
     """
-    if ("contentType" not in adaptive_card_obj and "content" not in adaptive_card_obj and
-        adaptive_card_obj.get("type") == "AdaptiveCard"):
+    if (
+        "contentType" not in adaptive_card_obj
+        and "content" not in adaptive_card_obj
+        and adaptive_card_obj.get("type") == "AdaptiveCard"
+    ):
         # This is a 'raw' adaptive card
         wrapped_adaptive_card = {
             "contentType": "application/vnd.microsoft.card.adaptive",
@@ -817,6 +820,7 @@ def handle_raw_adaptive_card(adaptive_card_obj: dict) -> dict:
 
     # We are not completely sure this is a raw adaptive card so we will not modify it
     return adaptive_card_obj
+
 
 def process_teams_ask_adaptive_card(adaptive_card_obj: dict) -> dict:
     """

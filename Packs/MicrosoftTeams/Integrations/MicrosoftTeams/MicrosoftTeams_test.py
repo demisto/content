@@ -3479,6 +3479,7 @@ def test_process_ask_user():
     }
     assert process_ask_user(json.dumps(message)) == expected_adaptive_card
 
+
 def test_send_notification_with_raw_adaptive_card(mocker, requests_mock):
     """
     Given:
@@ -3515,14 +3516,12 @@ def test_send_notification_with_raw_adaptive_card(mocker, requests_mock):
                 {"type": "Action.Submit", "title": "Yes"},
                 {"type": "Action.Submit", "title": "No"},
             ],
-        }
+        },
     }
     requests_mock.post(f"{service_url}/v3/conversations", json={"id": "conversation-id"})
     mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
     mocker.patch.object(demisto, "params", return_value={"team": "The-A-Team"})
-    mocker.patch.object(
-        demisto, "args", return_value={"adaptive_card": json.dumps(adaptive_card), "to": "bwillis@email.com"}
-    )
+    mocker.patch.object(demisto, "args", return_value={"adaptive_card": json.dumps(adaptive_card), "to": "bwillis@email.com"})
     send_message_request = requests_mock.post(f"{service_url}/v3/conversations/conversation-id/activities", json={})
 
     send_message()
