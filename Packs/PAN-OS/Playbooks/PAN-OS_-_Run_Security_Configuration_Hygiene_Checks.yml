@@ -72,6 +72,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ""
     taskid: 257a493e-7e6a-4096-8f4d-62a0dcbab700
     timertriggers: []
     type: start
@@ -480,6 +481,7 @@ tasks:
       id: 453ebb29-65cb-40b3-a7bc-00c26048955e
       iscommand: false
       name: Is the Panorama integration enabled?
+      description: Check if an active Panorama integration instance is configured and available.
       type: condition
       version: -1
     taskid: 453ebb29-65cb-40b3-a7bc-00c26048955e

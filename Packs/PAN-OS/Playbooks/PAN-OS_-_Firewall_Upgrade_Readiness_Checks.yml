@@ -2703,6 +2703,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Check if the targetVersion input is set and a base software image was correctly identified for it.
       id: 33fc4326-92ef-4412-aceb-00ef8d207752
       iscommand: false
       name: Check if targetVersion is valid

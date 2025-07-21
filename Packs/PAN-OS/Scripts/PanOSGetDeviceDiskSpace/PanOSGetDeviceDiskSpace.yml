@@ -1,11 +1,12 @@
 args:
-- description: The serial number of the device to get disk space info from.
+- description: The serial number of the device to get disk space info from.  Required on Panorama instances.
   name: target
 - description: The Instance Name of the PAN-OS Integration to use. Specify only one Instance.
   name: panos_instance_name
-- description: The units to represent disk space.
-  auto: PREDEFINED
+- auto: PREDEFINED
+  description: The units to represent disk space.
   name: disk_space_units
+  defaultValue: G
   predefined:
   - T
   - G
