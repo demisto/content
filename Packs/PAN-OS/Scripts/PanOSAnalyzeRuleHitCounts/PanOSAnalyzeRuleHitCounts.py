@@ -213,12 +213,12 @@ def main():
             for data, value in [("RuleHitCount", rule_hitcount_data), ("HAState", ha_state_data), ("ShowSystemInfo", system_info)]
             if not value
         ]
-        
+
         if missing_data:
             necessary_commands = {
                 "RuleHitCount": "pan-os-get-rule-hitcounts",
                 "HAState": "pan-os-platform-get-ha-state",
-                "ShowSystemInfo": "pan-os-platform-get-system-info"
+                "ShowSystemInfo": "pan-os-platform-get-system-info",
             }
 
             # Create detailed error messages for each missing data type
