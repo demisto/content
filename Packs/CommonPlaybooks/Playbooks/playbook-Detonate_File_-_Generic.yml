@@ -45,12 +45,9 @@ tasks:
       - "29"
       - "30"
       - "31"
-      - "33"
-      - "34"
-      - "35"
       - "36"
-      - "40"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -63,7 +60,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -79,6 +75,7 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -91,7 +88,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -137,6 +133,7 @@ tasks:
       Timeout:
         simple: "15"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -154,7 +151,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -185,6 +181,7 @@ tasks:
       Timeout:
         simple: "15"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -202,7 +199,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -530,7 +526,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5230,
+          "x": 5200,
           "y": 540
         }
       }
@@ -746,52 +742,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 9a6ceb8b-af9e-4e7f-8ff3-a4900825e4a0
-    type: condition
-    task:
-      id: 9a6ceb8b-af9e-4e7f-8ff3-a4900825e4a0
-      version: -1
-      name: Check the correctness of the ANY.RUN parameters
-      description: Check the correctness of the ANY.RUN parameters
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "40"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.anyrun_os
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.incident
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 6060,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "33":
     id: "33"
     taskid: 5a218a31-9417-4da1-818f-e46204e57f90
@@ -888,6 +838,52 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 9a6ceb8b-af9e-4e7f-8ff3-a4900825e4a0
+    type: condition
+    task:
+      id: 9a6ceb8b-af9e-4e7f-8ff3-a4900825e4a0
+      version: -1
+      name: Check the correctness of the ANY.RUN parameters
+      description: Check the correctness of the ANY.RUN parameters
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.anyrun_os
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.incident
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6060,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "40":
     id: "40"
     taskid: 14380930-6dd7-4dbf-9f13-c90cd8f7798a
@@ -902,11 +898,11 @@ tasks:
       brand: ""
     nexttasks:
       condition-2:
-      - "37"
+      - "33"
       condition-3:
-      - "38"
+      - "34"
       "yes":
-      - "39"
+      - "35"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -959,7 +955,8 @@ view: |-
     "linkLabelsPosition": {
       "25_21_yes": 0.71,
       "25_26_yes": 0.5,
-      "25_3_#default#": 0.1
+      "25_3_#default#": 0.1,
+      "40_33_condition-2": 0.52
     },
     "paper": {
       "dimensions": {

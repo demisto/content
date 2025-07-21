@@ -88,8 +88,6 @@ tasks:
       - "23"
       - "24"
       - "25"
-      - "26"
-      - "27"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -123,7 +121,8 @@ tasks:
       id: f880c851-c874-4f45-8e30-a31dcd6bd034
       version: -1
       name: Detonate URL - McAfee ATD
-      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox integration.
+      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
+        integration.
       playbookName: Detonate URL - McAfee ATD
       type: playbook
       iscommand: false
@@ -861,44 +860,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4250,
-          "y": 510
+          "x": 4260,
+          "y": 490
         }
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: df46af7d-b2ae-4a77-8fd9-901ff7e65a18
-    type: playbook
-    task:
-      id: df46af7d-b2ae-4a77-8fd9-901ff7e65a18
-      description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It automates the analysis of potentially malicious URLs on Android OS.
-      version: -1
-      name: ANYRUN Detonate Url Android
-      playbookName: ANYRUN Detonate Url Android
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-        - "20"
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3800,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -919,18 +886,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "20"
+      - "20"
     separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 4700,
-          "y": 850
+          "y": 830
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -951,14 +918,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "20"
+      - "20"
     separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 4250,
-          "y": 850
+          "x": 3840,
+          "y": 830
         }
       }
     note: false
@@ -981,14 +948,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "20"
       condition-2:
-      - "28"
+      - "30"
       condition-3:
       - "27"
       "yes":
-      - "26"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1025,17 +990,49 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4250,
+          "x": 4260,
           "y": 660
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: adea056d-65aa-49f2-8e38-29a06b05bd03
+    type: playbook
+    task:
+      id: adea056d-65aa-49f2-8e38-29a06b05bd03
+      version: -1
+      name: ANYRUN Detonate Url Android
+      playbookName: ANYRUN Detonate Url Android
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4260,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
