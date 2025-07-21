@@ -1,4 +1,4 @@
-> **Note**: This pack is designed to work with Expander 2.x and XSIAM 2.x. If you are using XSIAM 3.x, please refer to the [Cortex Exposure Management](https://github.com/demisto/content/blob/master/Packs/CortexExposureManagement/README.md) pack, which contains similar playbooks and content for addressing identified ASM risks.
+> **Note**: This pack works with Cortex Xpanse Expander 2.x and Cortex XSIAM 2.x. If you are using Cortex XSIAM 3.x, see the [Cortex Exposure Management](https://github.com/demisto/content/blob/master/Packs/CortexExposureManagement/README.md) pack, which contains playbooks and content for addressing identified ASM risks with Cortex XSIAM 3.x.
 
 The **Cortex Attack Surface Management** pack is supported by Cortex Xpanse Expander and the (Attack Surface Management) ASM module for Cortex XSIAM.
 
