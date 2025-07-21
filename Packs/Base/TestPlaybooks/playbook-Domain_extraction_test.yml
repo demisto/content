@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1555,
           "y": 50
         }
       }
@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 195
+          "x": 1555,
+          "y": 210
         }
       }
     note: false
@@ -89,8 +89,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 370
+          "x": 1555,
+          "y": 380
         }
       }
     note: false
@@ -120,15 +120,14 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: "\"none.zip\",\n\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\",
-          \n\"ötest.com\", \n\"defang[.]com\",  \n\"見.香港\",\n\"sub_domain.domain.com\",\n`www.walla.co.il`"
+        simple: "\"none.zip\",\n\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\", \n\"ötest.com\", \n\"defang[.]com\",  \n\"見.香港\",\n\"sub_domain.domain.com\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 515
+          "x": 1555,
+          "y": 540
         }
       }
     note: false
@@ -161,7 +160,6 @@ tasks:
       - "80"
       - "25"
       - "85"
-      - "87"
     scriptarguments:
       execution-timeout:
         simple: "30"
@@ -173,8 +171,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 690
+          "x": 1555,
+          "y": 710
         }
       }
     note: false
@@ -191,7 +189,7 @@ tasks:
     task:
       id: 08c2ef18-8ffe-42c7-8ed1-6b5c2c59bb52
       version: -1
-      name: check auto extract - `www.walla.co.il`
+      name: check auto extract - 見.香港
       type: condition
       iscommand: false
       brand: ""
@@ -215,7 +213,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 880
         }
       }
     note: false
@@ -251,8 +249,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 1040
+          "x": 1555,
+          "y": 1050
         }
       }
     note: false
@@ -289,8 +287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 1215
+          "x": 1555,
+          "y": 1220
         }
       }
     note: false
@@ -331,7 +329,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 865
+          "y": 880
         }
       }
     note: false
@@ -362,8 +360,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 1565
+          "x": 1555,
+          "y": 1560
         }
       }
     note: false
@@ -404,7 +402,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 865
+          "y": 880
         }
       }
     note: false
@@ -445,7 +443,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 865
+          "y": 880
         }
       }
     note: false
@@ -486,7 +484,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 865
+          "y": 880
         }
       }
     note: false
@@ -527,7 +525,7 @@ tasks:
       {
         "position": {
           "x": 2200,
-          "y": 865
+          "y": 880
         }
       }
     note: false
@@ -568,7 +566,7 @@ tasks:
       {
         "position": {
           "x": 2630,
-          "y": 865
+          "y": 880
         }
       }
     note: false
@@ -608,7 +606,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 1390
         }
       }
@@ -649,7 +647,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1555,
           "y": 1390
         }
       }
@@ -691,7 +689,7 @@ tasks:
       {
         "position": {
           "x": 3060,
-          "y": 865
+          "y": 880
         }
       }
     note: false
@@ -731,49 +729,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 1985,
           "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "87":
-    id: "87"
-    taskid: c909a430-75b9-43e1-81dd-965158ca3659
-    type: condition
-    task:
-      id: c909a430-75b9-43e1-81dd-965158ca3659
-      version: -1
-      name: check auto extract - 見.香港
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "23"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: '`www.walla.co.il`'
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3490,
-          "y": 865
         }
       }
     note: false
@@ -788,8 +745,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
-        "width": 3820,
+        "height": 1580,
+        "width": 3390,
         "x": 50,
         "y": 50
       }
