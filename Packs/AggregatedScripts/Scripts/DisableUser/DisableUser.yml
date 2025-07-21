@@ -28,28 +28,28 @@ enabled: false
 name: disable-user
 outputs:
 - contextPath: DisableUser.Brand
-  description: Should be Hello **something** here.
+  description: The brand (integration) used to disable the user.
   type: String
 - contextPath: DisableUser.Instance
-  description: Should be Hello **something** here.
+  description: The integration instance used to disable the user.
   type: String
-- contextPath: DisableUser.Disable
-  description: Should be Hello **something** here.
-  type: String
+- contextPath: DisableUser.Disabled
+  description: Whether the user is disabled.
+  type: Boolean
 - contextPath: DisableUser.Result
-  description: Should be Hello **something** here.
+  description: 'Whether the disable action was successful. The result does not indicate whether the user is disabled. Possible values are: "Success", "Failed"'
   type: String
 - contextPath: DisableUser.Message
-  description: Should be Hello **something** here.
+  description: The output message of the disable action.
   type: String
 - contextPath: DisableUser.UserProfile.Username
-  description: Should be Hello **something** here.
+  description: The username of the user.
   type: String
-- contextPath: DisableUser.UserProfile.UserId
-  description: Should be Hello **something** here.
+- contextPath: DisableUser.UserProfile.ID
+  description: The ID of the user.
   type: String
 - contextPath: DisableUser.UserProfile.Email
-  description: Should be Hello **something** here.
+  description: The Email address of the user.
   type: String
 script: '-'
 system: false
