@@ -142,7 +142,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: 'Fetch and triage alerts from Recorded Future'
+description: 'Fetch and triage alerts from Recorded Future.'
 display: Recorded Future Alerts
 name: RecordedFutureAlerts
 script:
