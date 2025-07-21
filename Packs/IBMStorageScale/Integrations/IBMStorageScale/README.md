@@ -1,11 +1,13 @@
 # IBM Storage Scale Integration
 
 ## Overview
+
 This integration collects Command Line Interface (CLI) audit log records from the IBM Storage Scale API. CLI audit logs provide a detailed history of all administrative and management commands executed on the Storage Scale system, making them a critical data source for security monitoring, compliance, and operational troubleshooting.
 
 The integration is engineered for high performance in demanding, large-scale environments. It utilizes a concurrent producer-consumer pattern to fetch multiple pages of data simultaneously, ensuring efficient and timely data ingestion into Cortex XSIAM.
 
 Use this integration to:
+
 * **Enhance Security Posture**: Monitor for unauthorized or suspicious administrative activities by tracking all executed commands, such as changes to filesystems, access controls, and network configurations.
 * **Meet Compliance Requirements**: Maintain a comprehensive audit trail of all administrative actions to satisfy regulatory and compliance mandates.
 * **Accelerate Troubleshooting**: Quickly identify configuration changes that may have led to operational issues by reviewing the command history.
@@ -13,17 +15,21 @@ Use this integration to:
 ---
 
 ## Prerequisites
+
 Before configuring the integration, you must complete the following steps in your IBM Storage Scale environment.
 
 ### 1. Create a Dedicated Service Account
+
 For security and manageability, create a dedicated user account for this integration. Do not use a personal administrator account.
 
 ### 2. Assign Required Permissions
+
 The service account requires the **ProtocolAdmin** role. This role grants the necessary permissions to access the `/scalemgmt/v2/cliauditlog` API endpoint used by the integration.
 
 For detailed instructions on creating users and assigning roles, refer to the official IBM documentation: [Managing user accounts and roles](https://www.ibm.com/docs/en/storage-scale/latest/admin/gui-managing-user-accounts-roles).
 
 ### 3. Configure a Non-Expiring Password (Recommended)
+
 By default, user passwords in IBM Storage Scale may expire after 90 days, which would cause the integration to stop collecting events. To ensure uninterrupted operation, it is highly recommended to configure the service account's password to **not expire**.
 
 This can typically be done during user creation or by modifying the user's properties. Please consult your IBM Storage Scale documentation for the specific commands or GUI steps.
@@ -31,9 +37,10 @@ This can typically be done during user creation or by modifying the user's prope
 ---
 
 ## Configure IBM Storage Scale on Cortex XSIAM
-1.  Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2.  Search for **IBM Storage Scale**.
-3.  Click **Add instance** to create and configure a new integration instance.
+
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
+2. Search for **IBM Storage Scale**.
+3. Click **Add instance** to create and configure a new integration instance.
 
     | Parameter | Description | Required |
     | --- | --- | --- |
@@ -44,18 +51,24 @@ This can typically be done during user creation or by modifying the user's prope
     | **Trust any certificate (not secure)** | This option bypasses SSL certificate validation. Only select this if your API server uses a self-signed certificate. Not recommended for production. | False |
     | **Use system proxy settings** | Select this to route traffic from the integration through the system's configured proxy server. | False |
 
-4.  Click **Test** to validate the URL, credentials, and connection to the API.
+4. Click **Test** to validate the URL, credentials, and connection to the API.
 
 ---
+
 ## Technical Details
+
 ### API Endpoint
+
 This integration collects data from the following IBM Storage Scale API endpoint:
+
 * `GET /scalemgmt/v2/cliauditlog`
 
 For more information, see the official API documentation: [cliauditlog GET](https://www.ibm.com/docs/en/storage-scale/latest/rest-api-reference/cliauditlog_get.html).
 
 ### Concurrent Fetching Mechanism
+
 To achieve high throughput, the integration does not fetch event pages sequentially. Instead, it uses an asynchronous producer-consumer model:
+
 * A **producer** task discovers the URLs for subsequent pages of events.
 * A pool of **consumer** tasks concurrently fetches the data from those URLs.
 
@@ -64,27 +77,37 @@ This allows the integration to overlap network requests, significantly reducing 
 ---
 
 ## Commands
+
 You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook. After running a command, a DBot message appears in the War Room with the command results.
 
 #### 1. test-module
+
 Tests the API connectivity to the IBM Storage Scale server. This command validates the server URL, credentials, and permissions.
+
 ```
 !test-module instance="IBM Storage Scale_instance_1"
 ```
+
 There is no context output for this command. If successful, it will return `'ok'`.
 
 #### 2. ibm-storage-scale-get-events
+
 Gets a limited number of the most recent audit log events for interactive investigation.
+
 ```
 !ibm-storage-scale-get-events limit=10
 ```
+
 ##### Arguments
+
 | Argument | Description | Required |
 | --- | --- | --- |
 | limit | The maximum number of events to return. The default is 50. The maximum is 1000. | False |
 
 ##### Context Output
+
 The command returns a list of audit log events. The context data can be found at `IBMStorageScale.AuditLog`.
+
 ```json
 {
     "IBMStorageScale.AuditLog": [
@@ -107,6 +130,7 @@ The command returns a list of audit log events. The context data can be found at
 ---
 
 ## Troubleshooting
+
 * **Authorization Error**: If you receive an authorization error (e.g., 401 or 403 status code), verify that the provided username and password are correct and that the user has been assigned the **ProtocolAdmin** role.
 
 * **Connection Error**: If the integration cannot connect to the server, ensure the **Server URL** is correct, accessible from the XSIAM engine, and that there are no firewalls blocking the connection.
