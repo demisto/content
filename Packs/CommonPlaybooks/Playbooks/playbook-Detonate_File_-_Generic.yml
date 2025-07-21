@@ -45,14 +45,13 @@ tasks:
       - "29"
       - "30"
       - "31"
-      - "36"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2880,
-          "y": 230
+          "x": 2415,
+          "y": 50
         }
       }
     note: false
@@ -79,8 +78,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2880,
-          "y": 1320
+          "x": 3295,
+          "y": 890
         }
       }
     note: false
@@ -142,8 +141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": 370
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -190,8 +189,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1870,
-          "y": 370
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -226,6 +225,7 @@ tasks:
       timeout:
         simple: "10"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -234,8 +234,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 370
+          "x": 910,
+          "y": 720
         }
       }
     note: false
@@ -243,7 +243,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
@@ -271,6 +270,7 @@ tasks:
       Timeout:
         simple: "30"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -279,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3880,
-          "y": 370
+          "x": 1340,
+          "y": 720
         }
       }
     note: false
@@ -288,7 +288,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
@@ -318,6 +317,7 @@ tasks:
       timeout:
         simple: "10"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -326,8 +326,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4280,
-          "y": 370
+          "x": 1770,
+          "y": 720
         }
       }
     note: false
@@ -335,7 +335,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
@@ -363,11 +362,12 @@ tasks:
         complex:
           root: inputs.EntryID
     separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 5630,
-          "y": 540
+          "x": 3510,
+          "y": 720
         }
       }
     note: false
@@ -375,7 +375,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
@@ -395,11 +394,12 @@ tasks:
       '#none#':
       - "3"
     separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 370
+          "x": 2200,
+          "y": 720
         }
       }
     note: false
@@ -409,7 +409,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "24":
     id: "24"
     taskid: f19de2c0-c4f0-4e34-8922-c319d40a1781
@@ -442,8 +441,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3080,
-          "y": 370
+          "x": 2630,
+          "y": 720
         }
       }
     note: false
@@ -471,6 +470,7 @@ tasks:
       "yes":
       - "26"
       - "21"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -487,8 +487,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5077.5,
-          "y": 370
+          "x": 3295,
+          "y": 210
         }
       }
     note: false
@@ -526,8 +526,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5200,
-          "y": 540
+          "x": 3080,
+          "y": 720
         }
       }
     note: false
@@ -571,8 +571,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3480,
-          "y": 370
+          "x": 5250,
+          "y": 720
         }
       }
     note: false
@@ -616,8 +616,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2680,
-          "y": 370
+          "x": 5680,
+          "y": 720
         }
       }
     note: false
@@ -688,8 +688,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4680,
-          "y": 370
+          "x": 6110,
+          "y": 720
         }
       }
     note: false
@@ -731,8 +731,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1470,
-          "y": 370
+          "x": 6540,
+          "y": 720
         }
       }
     note: false
@@ -763,8 +763,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6060,
-          "y": 880
+          "x": 3960,
+          "y": 720
         }
       }
     note: false
@@ -795,8 +795,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6490,
-          "y": 880
+          "x": 4390,
+          "y": 720
         }
       }
     note: false
@@ -827,8 +827,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5630,
-          "y": 880
+          "x": 4820,
+          "y": 720
         }
       }
     note: false
@@ -873,8 +873,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6060,
-          "y": 540
+          "x": 4062.5,
+          "y": 380
         }
       }
     note: false
@@ -886,10 +886,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 14380930-6dd7-4dbf-9f13-c90cd8f7798a
+    taskid: 9d870bdd-181b-4f7b-b175-04b532a4efbd
     type: condition
     task:
-      id: 14380930-6dd7-4dbf-9f13-c90cd8f7798a
+      id: 9d870bdd-181b-4f7b-b175-04b532a4efbd
       version: -1
       name: Select ANY.RUN playbook
       description: Select ANY.RUN playbook
@@ -897,15 +897,15 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      condition-2:
+      Android:
       - "33"
-      condition-3:
+      Linux:
       - "34"
-      "yes":
+      Windows:
       - "35"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Windows
       condition:
       - - operator: isEqualString
           left:
@@ -915,7 +915,7 @@ tasks:
           right:
             value:
               simple: windows
-    - label: condition-2
+    - label: Android
       condition:
       - - operator: isEqualString
           left:
@@ -925,7 +925,7 @@ tasks:
           right:
             value:
               simple: android
-    - label: condition-3
+    - label: Linux
       condition:
       - - operator: isEqualString
           left:
@@ -939,12 +939,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6060,
-          "y": 720
+          "x": 4390,
+          "y": 550
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -956,14 +956,14 @@ view: |-
       "25_21_yes": 0.71,
       "25_26_yes": 0.5,
       "25_3_#default#": 0.1,
-      "40_33_condition-2": 0.52
+      "40_33_Android": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 1150,
-        "width": 6200,
-        "x": 670,
-        "y": 230
+        "height": 900,
+        "width": 6870,
+        "x": 50,
+        "y": 50
       }
     }
   }
