@@ -365,7 +365,7 @@ def _exercise_main(monkeypatch: pytest.MonkeyPatch, command: str, actions_attr: 
     monkeypatch.setattr(
         demisto,
         "params",
-        lambda: {"url": "x", "apikey": "token"},
+        lambda: {"url": "x", "credentials": {"password": "token"}},
         raising=True,
     )
 
