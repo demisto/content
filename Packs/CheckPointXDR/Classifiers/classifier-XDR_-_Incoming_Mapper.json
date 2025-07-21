@@ -2,10 +2,10 @@
     "defaultIncidentType": "Check Point XDR Incident",
     "description": "Maps incoming CheckPoint XDR incidents to XSOAR incidents",
     "feed": false,
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.10.0",
     "id": "CheckPointXDR_Incoming_Mapper",
     "mapping": {
-        "dbot_classification_incident_type_all": {
+        "Check Point XDR Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Additional Indicators": {
@@ -98,6 +98,12 @@
                 },
                 "severity": {
                     "simple": "severity"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
                 }
             }
         }

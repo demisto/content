@@ -3,16 +3,13 @@
     "feed": false,
     "id": "CheckPointXDR_Out_Mapper",
     "mapping": {
-        "dbot_classification_incident_type_all": {
+        "Check Point XDR Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Severity": {
                     "simple": "severity"
                 },
                 "Status": {
-                    "simple": "status"
-                },
-                "Status Reason": {
                     "simple": "status"
                 }
             }
@@ -21,5 +18,5 @@
     "name": "CheckPointXDR_Out_Mapper",
     "type": "mapping-outgoing",
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.10.0"
 }

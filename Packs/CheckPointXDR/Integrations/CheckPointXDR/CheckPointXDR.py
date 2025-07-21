@@ -29,7 +29,7 @@ class Client(BaseClient):
 
         if res.status_code == 200:
             self.token = res.json().get("data").get("token")
-            demisto.debug(f"Log-in successful! client's token was set!")
+            demisto.debug("Log-in successful! client's token was set!")
         else:
             raise DemistoException(f"Log-in failed: {str(res.status_code)}: {res.text}")
 
@@ -39,7 +39,7 @@ class Client(BaseClient):
         demisto.debug(f"Fetching XDR incidents with start timestamp: {startTS} and max fetch: {max_fetch}")
         try:
             res = self._http_request('GET', url_suffix=f"/app/xdr/api/xdr/v1/incidents?limit={max_fetch}&offset=0&from={startTS}",
-                                    headers=headers, resp_type='response')
+                                     headers=headers, resp_type='response')
         except Exception as e:
             demisto.error(f"Failed to fetch XDR incidents: {str(e)}")
             raise DemistoException(f"Failed to fetch XDR incidents: {str(e)}")
@@ -49,17 +49,17 @@ class Client(BaseClient):
 
         return incidents
 
-    def update_incident(self, status: int, close_reason: str = "", incident_id: str = "" ) -> dict:
+    def update_incident(self, status: int, close_reason: str = "", incident_id: str = "") -> dict:
         """
-        Update an incident in CheckPoint XDR.
+         Update an incident in CheckPoint XDR.
 
-        Args:
-            status (Optional[str]): The new status of the incident.
-            incident_id (Optional[str]): The ID of the incident to update.
+         Args:
+             status (Optional[str]): The new status of the incident.
+             incident_id (Optional[str]): The ID of the incident to update.
 
-        Returns:
-            dict: The response from the API.
-        """
+         Returns:
+             dict: The response from the API.
+         """
         demisto.debug(f"XDR - Starting to update_incident with status: {status}")
 
         if not incident_id:
@@ -291,5 +291,5 @@ def main() -> None:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

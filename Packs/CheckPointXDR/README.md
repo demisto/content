@@ -13,7 +13,7 @@ The Check Point XDR (Extended Detection and Response) integration allows you to 
 
 - A valid Check Point XDR account with API access.
 - API credentials (Client ID and Access Key) for authentication.
-- Cortex XSOAR version 6.8.0 or higher.
+- Cortex XSOAR version 6.10.0 or higher.
 
 ## Setup Instructions
 
@@ -39,10 +39,12 @@ The Check Point XDR (Extended Detection and Response) integration allows you to 
 The integration provides the following commands:
 
 ### 1. `test-module`
+
 - **Description**: Tests the connection to Check Point XDR.
 - **Usage**: Run this command to ensure the integration is configured correctly.
 
 ### 2. `fetch-incidents`
+
 - **Description**: Fetches incidents from Check Point XDR and converts them into Cortex XSOAR format.
 - **Usage**: This command is executed automatically when the "Fetches incidents" option is enabled.
 

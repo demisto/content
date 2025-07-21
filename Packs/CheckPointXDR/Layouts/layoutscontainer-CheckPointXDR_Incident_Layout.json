@@ -7,7 +7,7 @@
     "name": "Check Point XDR Incident Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.10.0",
 	"description": "Check Point XDR Incident",
 	"detailsV2": {
 		"TypeName": "",

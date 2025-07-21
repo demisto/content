@@ -55,6 +55,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
+  defaultvalue: "Check Point XDR Incident"
 - section: Collect
   display: Maximum number of incidents per fetch
   name: max_fetch
@@ -87,6 +88,12 @@ description: Fetch and manage incidents from Check Point XDR.
 display: 'Check Point XDR'
 name: CheckPointXDR
 script:
+  commands:
+  - arguments: []
+    deprecated: false
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    execution: false
+    name: get-mapping-fields
   isfetch: true
   script: '-'
   subtype: python3
@@ -95,9 +102,9 @@ script:
   isremotesyncin: true
   isremotesyncout: true
   dockerimage: demisto/python3:3.11.10.113941
-defaultclassifier: Microsoft Sentinel - Classifier
-defaultmapperin: Microsoft Sentinel - Incoming Mapper
-defaultmapperout: Microsoft Sentinel - Outgoing Mapper
-fromversion: 6.8.0
+defaultclassifier: CheckpointXDR_classifier
+defaultmapperin: CheckPointXDR_Incoming_Mapper
+defaultmapperout: CheckPointXDR_Out_Mapper
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
