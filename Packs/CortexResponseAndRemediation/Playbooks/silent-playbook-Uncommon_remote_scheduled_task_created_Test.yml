@@ -1031,6 +1031,7 @@ tasks:
       ip:
         simple: ${Core.OriginalAlert.event.actor_remote_ip}
     separatecontext: false
+    continueonerror: true
     skipunavailable: true
     task:
       brand: ''

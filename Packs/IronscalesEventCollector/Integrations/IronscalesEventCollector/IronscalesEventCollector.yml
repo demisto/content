@@ -81,7 +81,6 @@ script:
     description: Gets events from Ironscales.
     name: ironscales-get-events
   dockerimage: demisto/python3:3.12.8.3296088
-
   isfetchevents: true
   script: ''
   subtype: python3

@@ -1229,6 +1229,7 @@ Gets compliance search action from the Security & Compliance Center.
 >| Preview | 11/29/2020 7:24:05 AM | 11/29/2020 7:23:50 AM | example\_Preview | XSOAR-user | example | Completed
 
 ## Tips for finding messages to remove
+
 - Keyword Query Language (KQL)
   - If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query, e.g., `(subject:give me all ur money)`.
   - If you know that exact date (or date range) of the message, include the Received property in the search query, e.g., `(received:6/13/2021..6/16/2021)`.

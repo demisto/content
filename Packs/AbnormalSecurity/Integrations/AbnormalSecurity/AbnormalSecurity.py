@@ -34,7 +34,7 @@ def try_str_to_datetime(time: str) -> datetime:
         return datetime.strptime(time, ISO_8601_FORMAT).astimezone(timezone.utc)
     except Exception as _:
         pass
-    return datetime.strptime((time[:26] + 'Z') if len(time) > 26 else time, TIME_FORMAT_WITHMS).astimezone(timezone.utc)
+    return datetime.strptime((time[:26] + "Z") if len(time) > 26 else time, TIME_FORMAT_WITHMS).astimezone(timezone.utc)
 
 
 def get_current_datetime() -> datetime:
@@ -159,7 +159,7 @@ class Client(BaseClient):
         max_iterations = (max_incidents_to_fetch // page_size) + 1
         return page_size, max_iterations
 
-    def get_paginated_cases_list(self, filter_='', max_incidents_to_fetch=FETCH_LIMIT):
+    def get_paginated_cases_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT):
         cases_response: dict[str, list[dict]] = {"cases": []}
         if max_incidents_to_fetch < 1:
             return cases_response
@@ -171,14 +171,14 @@ class Client(BaseClient):
             response = self.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
                 filter_=filter_, page_size=page_size, page_number=page_number
             )
-            cases_response["cases"].extend(response.get('cases', []))
-            page_number = response.get('nextPageNumber', None)
+            cases_response["cases"].extend(response.get("cases", []))
+            page_number = response.get("nextPageNumber", None)
             current_iteration += 1
             if current_iteration > max_iterations:
                 break
         return cases_response
 
-    def get_paginated_threats_list(self, filter_='', max_incidents_to_fetch=FETCH_LIMIT):
+    def get_paginated_threats_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT):
         threats_response: dict[str, list[dict]] = {"threats": []}
         if max_incidents_to_fetch < 1:
             return threats_response
@@ -187,17 +187,15 @@ class Client(BaseClient):
         page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
 
         while page_number is not None:
-            response = self.get_a_list_of_threats_request(
-                filter_=filter_, page_size=page_size, page_number=page_number
-            )
-            threats_response["threats"].extend(response.get('threats', []))
-            page_number = response.get('nextPageNumber', None)
+            response = self.get_a_list_of_threats_request(filter_=filter_, page_size=page_size, page_number=page_number)
+            threats_response["threats"].extend(response.get("threats", []))
+            page_number = response.get("nextPageNumber", None)
             current_iteration += 1
             if current_iteration > max_iterations:
                 break
         return threats_response
 
-    def get_paginated_abusecampaigns_list(self, filter_='', max_incidents_to_fetch=FETCH_LIMIT):
+    def get_paginated_abusecampaigns_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT):
         campaigns_response: dict[str, list[dict]] = {"campaigns": []}
         if max_incidents_to_fetch < 1:
             return campaigns_response
@@ -209,8 +207,8 @@ class Client(BaseClient):
             response = self.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
                 filter_=filter_, page_size=page_size, page_number=page_number
             )
-            campaigns_response["campaigns"].extend(response.get('campaigns', []))
-            page_number = response.get('nextPageNumber', None)
+            campaigns_response["campaigns"].extend(response.get("campaigns", []))
+            page_number = response.get("nextPageNumber", None)
             current_iteration += 1
             if current_iteration > max_iterations:
                 break
@@ -232,7 +230,7 @@ class Client(BaseClient):
         headers = self._headers
         params = assign_params(subtenant=subtenant, pageSize=page_size, pageNumber=page_number)
 
-        response = self._http_request('get', f'threats/{threat_id}', params=params, headers=headers)
+        response = self._http_request("get", f"threats/{threat_id}", params=params, headers=headers)
 
         return response
 
@@ -511,10 +509,10 @@ def get_a_list_of_threats_command(client, args):
 
 
 def get_details_of_a_threat_command(client, args):
-    threat_id = str(args.get('threat_id', ''))
-    subtenant = args.get('subtenant', None)
-    page_size = args.get('page_size', None)
-    page_number = args.get('page_number', None)
+    threat_id = str(args.get("threat_id", ""))
+    subtenant = args.get("subtenant", None)
+    page_size = args.get("page_size", None)
+    page_number = args.get("page_number", None)
 
     response = client.get_details_of_a_threat_request(threat_id, subtenant, page_size, page_number)
     headers = [
@@ -568,16 +566,8 @@ def get_details_of_an_abnormal_case_command(client, args):
     case_id = str(args.get("case_id", ""))
     subtenant = args.get("subtenant", None)
     response = client.get_details_of_an_abnormal_case_request(case_id, subtenant)
-    headers = [
-        'caseId',
-        'severity',
-        'affectedEmployee',
-        'firstObserved',
-        'threatIds',
-        'genai_summary'
-    ]
-    markdown = tableToMarkdown(
-        f"Details of Case {response.get('caseId', '')}", response, headers=headers, removeNull=True)
+    headers = ["caseId", "severity", "affectedEmployee", "firstObserved", "threatIds", "genai_summary"]
+    markdown = tableToMarkdown(f"Details of Case {response.get('caseId', '')}", response, headers=headers, removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix="AbnormalSecurity.AbnormalCaseDetails",
@@ -857,7 +847,7 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
                     all_filtered_messages.append(message)
                 if remediation_datetime and remediation_datetime < start_datetime:
                     break
-            page_number = threat_details.get('nextPageNumber', None)
+            page_number = threat_details.get("nextPageNumber", None)
             if page_number is not None and page_number > max_page_number:
                 break
 
@@ -886,8 +876,8 @@ def generate_abuse_campaign_incidents(client, campaigns):
             "dbotMirrorId": str(campaign.get("campaignId", "")),
             "name": "Abuse Campaign",
             "occurred": first_reported[:26] if len(first_reported) > 26 else first_reported,
-            'details': "Abuse Campaign",
-            "rawJSON": json.dumps(campaign_details) if campaign_details else {}
+            "details": "Abuse Campaign",
+            "rawJSON": json.dumps(campaign_details) if campaign_details else {},
         }
         incidents.append(incident)
     return incidents
@@ -903,22 +893,22 @@ def generate_account_takeover_cases_incidents(client, cases):
             "occurred": case_details["firstObserved"],
             "details": case["description"],
             "genaiSummary": case_details["genai_summary"],
-            "rawJSON": json.dumps(case_details) if case_details else {}
+            "rawJSON": json.dumps(case_details) if case_details else {},
         }
         incidents.append(incident)
     return incidents
 
 
 def fetch_incidents(
-        client: Client,
-        last_run: dict[str, Any],
-        first_fetch_time: str,
-        fetch_threats: bool,
-        fetch_abuse_campaigns: bool,
-        fetch_account_takeover_cases: bool,
-        max_page_number: int = 8,
-        max_incidents_to_fetch: int = FETCH_LIMIT,
-        polling_lag: timedelta = timedelta(minutes=0),
+    client: Client,
+    last_run: dict[str, Any],
+    first_fetch_time: str,
+    fetch_threats: bool,
+    fetch_abuse_campaigns: bool,
+    fetch_account_takeover_cases: bool,
+    max_page_number: int = 8,
+    max_incidents_to_fetch: int = FETCH_LIMIT,
+    polling_lag: timedelta = timedelta(minutes=0),
 ):
     """
     Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
@@ -939,7 +929,7 @@ def fetch_incidents(
         last_fetch = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
 
         current_datetime = get_current_datetime()
-        start_time = last_fetch
+        start_time = last_fetch + timedelta(milliseconds=1)  # Not to overlap with previous polling window
         end_time = get_current_datetime()
 
         if polling_lag is not None:
@@ -954,36 +944,38 @@ def fetch_incidents(
         threat_incidents, abuse_campaign_incidents, account_takeover_cases_incidents = [], [], []
 
         if fetch_threats and current_pending_incidents_to_fetch > 0:
-            threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lt {end_timestamp}"
+            threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lte {end_timestamp}"
             threats_response = client.get_paginated_threats_list(
-                filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
+                filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch
+            )
             threat_incidents = generate_threat_incidents(
-                client, threats_response.get('threats', []), max_page_number, start_time, end_time
+                client, threats_response.get("threats", []), max_page_number, start_time, end_time
             )
         current_pending_incidents_to_fetch -= len(threat_incidents)
 
         if fetch_abuse_campaigns and current_pending_incidents_to_fetch > 0:
-            abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp} and lastReportedTime lt {end_timestamp}"
+            abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp} and lastReportedTime lte {end_timestamp}"
             abuse_campaigns_response = client.get_paginated_abusecampaigns_list(
-                filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
-            abuse_campaign_incidents = generate_abuse_campaign_incidents(client, abuse_campaigns_response.get('campaigns', []))
+                filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch
+            )
+            abuse_campaign_incidents = generate_abuse_campaign_incidents(client, abuse_campaigns_response.get("campaigns", []))
         current_pending_incidents_to_fetch -= len(abuse_campaign_incidents)
 
         if fetch_account_takeover_cases and current_pending_incidents_to_fetch > 0:
-            account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp} and lastModifiedTime lt {end_timestamp}"
+            account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp} and lastModifiedTime lte {end_timestamp}"
             account_takeover_cases_response = client.get_paginated_cases_list(
-                filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
+                filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch
+            )
             account_takeover_cases_incidents = generate_account_takeover_cases_incidents(
-                client, account_takeover_cases_response.get('cases', []))
+                client, account_takeover_cases_response.get("cases", [])
+            )
 
         all_incidents = threat_incidents + abuse_campaign_incidents + account_takeover_cases_incidents
     except Exception as e:
         logging.error(f"Failed fetching incidents: {e}")
         raise FetchIncidentsError(f"Error while fetching incidents: {e}")
 
-    next_run = {
-        "last_fetch": current_datetime.strftime(ISO_8601_FORMAT)
-    }
+    next_run = {"last_fetch": current_datetime.strftime(ISO_8601_FORMAT)}
 
     return next_run, all_incidents[:max_incidents_to_fetch]
 
@@ -1059,8 +1051,8 @@ def main():  # pragma: nocover
             max_incidents_to_fetch = arg_to_number(params.get("max_fetch", FETCH_LIMIT))
             fetch_threats = params.get("fetch_threats", False)
             # Get the polling lag time parameter
-            polling_lag_minutes = int(params.get('polling_lag', 2))
-            max_page_number = int(params.get('max_page_number', 8))
+            polling_lag_minutes = int(params.get("polling_lag", 2))
+            max_page_number = int(params.get("max_page_number", 8))
             polling_lag_delta = timedelta(minutes=polling_lag_minutes)
             fetch_abuse_campaigns = params.get("fetch_abuse_campaigns", False)
             fetch_account_takeover_cases = params.get("fetch_account_takeover_cases", False)

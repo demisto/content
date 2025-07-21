@@ -3,43 +3,45 @@ This integration was integrated and tested with McAfee ePO v5.3.2.
 
 ## Configure McAfee ePO in Cortex
 
-*   **Name**: a textual name for the integration instance.
-*   **Url**: for example: `https://****:port`
-*   **Username**
-*   **Password**
-*   **Trust any certificate (not secure)** Mark to trust Certificate Authority.
-*   **Use system proxy settings**
-
+* **Name**: a textual name for the integration instance.
+* **Url**: for example: `https://****:port`
+* **Username**
+* **Password**
+* **Trust any certificate (not secure)** Mark to trust Certificate Authority.
+* **Use system proxy settings**
 
 ## Permissions
-McAfee ePO has a highly flexible and powerful permissions system. The permissions required for the user that uses this integration depend on which operations they need to perform. The API user should have the same permissions a regular user would have in order to access the data via the UI. It is possible to view the exact permissions needed for a specific command by running the `!epo-help` command. The `!epo-help` command's output will include help information for the specific command including required permissions. 
+
+McAfee ePO has a highly flexible and powerful permissions system. The permissions required for the user that uses this integration depend on which operations they need to perform. The API user should have the same permissions a regular user would have in order to access the data via the UI. It is possible to view the exact permissions needed for a specific command by running the `!epo-help` command. The `!epo-help` command's output will include help information for the specific command including required permissions.
 More info about McAfee ePO's permissions model is available [here](https://docs.mcafee.com/bundle/epolicy-orchestrator-5.10.0-product-guide/page/GUID-1AEFA219-0726-4090-A8C2-BCAA1CAA7B37.html).
 
-Example `!epo-help` outputs with permission information: 
+Example `!epo-help` outputs with permission information:
+
 * `!epo-help command="repository.findPackages"`:
 ![](../../doc_files/epo-help-find-pkg.png)
 * `!epo-help command="repository.deletePackage"`:
 ![](../../doc_files/epo-help-delete-pkg.png)
 
 ## Playbooks
+
 * McAfee ePO Endpoint Connectivity Diagnostics - Perform a check on ePO endpoints to see if any endpoints are unmanaged or lost connectivity with ePO and take steps to return to valid state.
 * McAfee ePO Endpoint Compliance - Discover endpoints that are not using the latest McAfee AV Signatures
-* McAfee ePO Repository Compliance - Ensures that ePO servers are updated to the latest McAfee published AV signatures (DAT file version). 
+* McAfee ePO Repository Compliance - Ensures that ePO servers are updated to the latest McAfee published AV signatures (DAT file version).
 * Endpoint Enrichment - Generic v2: uses `epo-find-systems` to enrich an endpoint by hostname.
 
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1.  Print help for ePO commands: epo-help
-2.  Get the latest DAT file: epo-get-latest-dat
-3.  Check the current DAT file version: epo-get-current-dat
-4.  Update the DAT file: epo-update-client-dat
-5.  Update a repository: epo-update-repository
-6.  Get system tree groups: epo-get-system-tree-group
-7.  Find systems in the system tree: epo-find-systems
-8.  epo-command
-9.  epo-advanced-command
+1. Print help for ePO commands: epo-help
+2. Get the latest DAT file: epo-get-latest-dat
+3. Check the current DAT file version: epo-get-current-dat
+4. Update the DAT file: epo-update-client-dat
+5. Update a repository: epo-update-repository
+6. Get system tree groups: epo-get-system-tree-group
+7. Find systems in the system tree: epo-find-systems
+8. epo-command
+9. epo-advanced-command
 10. Wake up an agent: epo-wakeup-agent
 11. Apply a tag: epo-apply-tag
 12. Clear a tag: epo-clear-tag
@@ -78,8 +80,6 @@ There is no context output for this command.
 
 ### 2. Get the latest DAT file
 
-
-
 Checks for the latest DAT file in the McAfee repository.
 
 ##### Base Command
@@ -88,7 +88,7 @@ Checks for the latest DAT file in the McAfee repository.
 
 ##### Input
 
-There is no input for this command. 
+There is no input for this command.
 
 ##### Context Output
 
@@ -105,8 +105,6 @@ There is no input for this command. 
 [![screen shot 2018-08-26 at 10 15 58](../../doc_files/44625740-2b44b600-a919-11e8-9d18-ecca5185ffef.png)](../../doc_files/44625740-2b44b600-a919-11e8-9d18-ecca5185ffef.png)
 
 ### 3. Check the current DAT file version
-
-
 
 Checks the existing DAT file version in ePO.
 
@@ -134,26 +132,23 @@ There is no input for this command.
 
 ### 4. Update the DAT file
 
-
-
 Run client task to update the DAT file.
 
 To run this command, you need to create a task on the ePO server with a specific name.
 
-1.  Log on to the ePO server.
-2.  Select **System Tree**.
-3.  Select **Assigned Client Tasks** > **Actions** > **New Client Task Assignment**.
-4.  Configure the **Select Task** section.  
-    
+1. Log on to the ePO server.
+2. Select **System Tree**.
+3. Select **Assigned Client Tasks** > **Actions** > **New Client Task Assignment**.
+4. Configure the **Select Task** section.  
+
 |Field|Value|
 |--- |--- |
 |Product|McAfee Agent|
 |Task Type|Product Update|
 |Task Name|DAT Update|
 
-    
-5.  Select **Create New Task**.  
-    
+5. Select **Create New Task**.  
+
 |Field|Value|
 |--- |--- |
 |Task Name|VSEContentUpdateDemisto|
@@ -189,8 +184,6 @@ There is no context output for this command.
 
 ### 5. Update a repository
 
-
-
 Triggers a server task in specific ePO servers to retrieve the latest signatures from the update server.
 
 ##### Base Command
@@ -215,8 +208,6 @@ There is no context output for this command.
 
 ### 6. Get system tree groups
 
-
-
 Returns system tree groups.
 
 ##### Base Command
@@ -228,7 +219,6 @@ Returns system tree groups.
 |Argument Name|Description|Required|
 |--- |--- |--- |
 |search|String to search for in the system tree group.|Optional|
-
 
 ##### Context Output
 
@@ -242,8 +232,6 @@ Returns system tree groups.
 [![screen shot 2018-08-26 at 9 59 49](../../doc_files/44625635-d0aa5a80-a916-11e8-826d-15bae934412c.png)](../../doc_files/44625635-d0aa5a80-a916-11e8-826d-15bae934412c.png)
 
 ### 7. Find systems in the system tree
-
-
 
 Find systems in the System Tree - by group ID or by search
 
@@ -283,8 +271,6 @@ Find systems in the System Tree - by group ID or by search
 
 ### 8. epo-command
 
-
-
 Executes the ePO command. Receives the mandatory ''command'' argument, and other optional arguments.
 
 To get a list of available commands, run the ''epo-help'' command to get a list of available commands. You can also specify the ''headers'' argument to filter table headers. Example/:/ !epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
@@ -297,17 +283,13 @@ epo-command
 
 !epo-command command=system.find searchText=10.0.0.1
 
-  
 [![screen shot 2018-10-02 at 9 44 34](../../doc_files/46333148-e1da3b80-c627-11e8-82cf-40970f8e5aab.png)](../../doc_files/46333148-e1da3b80-c627-11e8-82cf-40970f8e5aab.png)
 
 !epo-command command=agentmgmt.listAgentHandlers
 
-  
 [![screen shot 2018-10-02 at 9 46 00](../../doc_files/46333232-37164d00-c628-11e8-91a7-1be03063edb0.png)](../../doc_files/46333232-37164d00-c628-11e8-91a7-1be03063edb0.png)
 
 ### 9. epo-advanced-command
-
-
 
 Executes the ePO command.
 
@@ -332,12 +314,9 @@ To get a list of available commands, run the ''epo-help'' command. For example/:
 
 !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand"
 
-  
 [![screen shot 2018-10-29 at 13 31 53](../../doc_files/47647276-27cee480-db7f-11e8-9430-b3685d914cde.png)](../../doc_files/47647276-27cee480-db7f-11e8-9430-b3685d914cde.png)
 
 ### 10. Wake up an agent
-
-
 
 Wakes up an agent.
 
@@ -348,8 +327,6 @@ Wakes up an agent.
 |names|Agent hostname.|Required|
 
 ### 11. Apply a tag
-
-
 
 Applies a tag to hostnames.
 
@@ -366,8 +343,6 @@ Applies a tag to hostnames.
 
 ### 12. Clear a tag
 
-
-
 Clears a tag from hostnames.
 
 ##### Input
@@ -382,8 +357,6 @@ Clears a tag from hostnames.
 !epo-clear-tag names="ADMIN-PC" tagName="Compromised"
 
 ### 13. Query an ePO table
-
-
 
 Queries an ePO table.
 
@@ -413,22 +386,18 @@ Queries an ePO table.
 
 `!epo-query-table target=EPOLeafNode select="(select EPOLeafNode.NodeName EPOLeafNode.Tags EPOBranchNode.NodeName)" where="(hasTag EPOLeafNode.AppliedTags 4)"`
 
-  
 [![screen shot 2018-10-29 at 15 17 18](../../doc_files/47652110-bf3b3400-db8d-11e8-934d-56542c178b6f.png)](../../doc_files/47652110-bf3b3400-db8d-11e8-934d-56542c178b6f.png)
 
 `!epo-query-table target=EPOLeafNode select="(select (top 3) EPOLeafNode.NodeName EPOLeafNode.Tags EPOBranchNode.NodeName)"`
 
-  
 [![screen shot 2018-10-29 at 15 17 43](../../doc_files/47652140-d417c780-db8d-11e8-819b-542dcc01c925.png)](../../doc_files/47652140-d417c780-db8d-11e8-819b-542dcc01c925.png)
 
 `!epo-query-table target="EPOEvents" select="(select EPOEvents.AutoID EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)" order="(order(desc EPOEvents.DetectedUTC))"`
 
-  
 [![screen shot 2018-10-29 at 16 35 41](../../doc_files/47656891-b734c180-db98-11e8-9c65-1b58fd4c8268.png)](../../doc_files/47656891-b734c180-db98-11e8-9c65-1b58fd4c8268.png)
 
 `!epo-query-table target="EPExtendedEvent" select="(select (top 250) EPOEvents.ThreatName EPOEvents.AutoID EPExtendedEvent.EventAutoID EPExtendedEvent.TargetHash EPExtendedEvent.TargetPath EPOEvents.SourceHostName)" order="(order(desc EPExtendedEvent.TargetHash))" joinTables="EPOEvents"where="(where(eq EPOEvents.ThreatName "real Protect-LS!d5435f1fea5e"))"`
 
-  
 [![screen shot 2018-10-31 at 10 03 49](../../doc_files/47773949-4b676b80-dcf4-11e8-9562-c67fced9176c.png)](../../doc_files/47773949-4b676b80-dcf4-11e8-9562-c67fced9176c.png)
 
 ### 14. Get an ePO table
@@ -445,7 +414,6 @@ Returns an ePO table.
 |--- |--- |--- |
 |table|Name of the table to return.|Optional|
 
-
 ##### Context Output
 
 There is no context output for this command.
@@ -460,8 +428,6 @@ There is no context output for this command.
 
 ### 15. Get the ePO version
 
-
-
 Gets the ePO version. This command requires global admin permissions.
 
 ##### Base Command
@@ -474,12 +440,10 @@ Gets the ePO version. This command requires global admin permissions.
 |--- |--- |--- |
 |McAfee.ePO.Version|string|ePO version.|
 
-
 ##### Human Readable Output
 
 !epo-get-version
 
-  
 [![screen shot 2018-11-06 at 15 43 18](../../doc_files/48068154-b58f7d00-e1da-11e8-97c1-410d77954d6d.png)](../../doc_files/48068154-b58f7d00-e1da-11e8-97c1-410d77954d6d.png)
 
 ### 16. Find systems in the system tree
@@ -496,7 +460,6 @@ Finds systems in the system tree.
 |--- |--- |--- |
 |searchText|Hostname to search.|Optional|
 |verbose|Print all system data|Optional|
-
 
 ##### Context Output
 
@@ -521,17 +484,13 @@ Finds systems in the system tree.
 | McAfee.ePO.Endpoint.Processors   |number|Number of processors.|
 | McAfee.ePO.Endpoint.Memory       |number|Endpoint memory.|
 
-
 ##### Human Readable Output
 
 !epo-find-system searchText=mar
 
-  
 [![screen shot 2018-11-06 at 15 46 12](../../doc_files/48068300-1fa82200-e1db-11e8-9b4c-1df113f5934d.png)](../../doc_files/48068300-1fa82200-e1db-11e8-9b4c-1df113f5934d.png)
 
 ### 17. Move a system to a different group
-
-
 
 Moves a system to a different group.
 
@@ -545,7 +504,6 @@ Moves a system to a different group.
 |--- |--- |--- |
 |names|Asset name.|Required|
 |parentGroupId|Group ID.|Required|
-
 
 ##### Context Output
 

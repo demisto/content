@@ -1,6 +1,5 @@
 """IMPORTS"""
 
-
 import pytz
 import urllib3
 
@@ -19,8 +18,9 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._secret = secret
 
-    def http_request(self, method="GET", url_suffix=None, resp_type="json", headers=None, json_data=None,
-                     params=None, data=None) -> Any:
+    def http_request(
+        self, method="GET", url_suffix=None, resp_type="json", headers=None, json_data=None, params=None, data=None
+    ) -> Any:
         """
         Function to make http requests using inbuilt _http_request() method.
         Handles token expiration case and makes request using secret key.
@@ -39,17 +39,31 @@ class Client(BaseClient):
 
         try:
             token = self._get_token()
-            headers['Authorization'] = str(token)
-            response = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
-                                          headers=headers, resp_type=resp_type, data=data)
+            headers["Authorization"] = str(token)
+            response = self._http_request(
+                method=method,
+                url_suffix=url_suffix,
+                params=params,
+                json_data=json_data,
+                headers=headers,
+                resp_type=resp_type,
+                data=data,
+            )
         except DemistoException as e:
-            if 'Error in API call [401]' in str(e):
-                demisto.debug(f'One retry for 401 error. Error: {str(e)}')
+            if "Error in API call [401]" in str(e):
+                demisto.debug(f"One retry for 401 error. Error: {str(e)}")
                 # Token has expired, refresh token and retry request
                 token = self._get_token(force_new=True)
-                headers['Authorization'] = str(token)
-                response = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
-                                              headers=headers, resp_type=resp_type, data=data)
+                headers["Authorization"] = str(token)
+                response = self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    json_data=json_data,
+                    headers=headers,
+                    resp_type=resp_type,
+                    data=data,
+                )
             else:
                 raise e
         return response
@@ -109,18 +123,14 @@ class Client(BaseClient):
         if page_from is not None:
             params["from"] = str(page_from)
 
-        response = self.http_request(
-            "GET", "/search/", params=params, headers={"accept": "application/json"}
-        )
+        response = self.http_request("GET", "/search/", params=params, headers={"accept": "application/json"})
         if max_results is None:
             # if max results was not specified get all results.
             results: list = response.get("data", {}).get("results")
             while response.get("data", {}).get("next") is not None:
                 # while the response says there are more results use the 'page from' parameter to get the next results
                 params["from"] = str(len(results))
-                response = self.http_request(
-                    "GET", "/search/", params=params, headers={"accept": "application/json"}
-                )
+                response = self.http_request("GET", "/search/", params=params, headers={"accept": "application/json"})
                 results.extend(response.get("data", {}).get("results", []))
 
             response["data"]["results"] = results
@@ -156,15 +166,15 @@ class Client(BaseClient):
         aql_string = ["in:alerts", f'timeFrame:"{time_frame}"']
         if severity:
             severity_string = ",".join(list(severity))
-            aql_string.append(f"riskLevel:{severity_string}")
+            aql_string.append(f"riskLevel:{severity_string}")  # noqa: E231
         if status:
             status_string = ",".join(list(status))
-            aql_string.append(f"status:{status_string}")
+            aql_string.append(f"status:{status_string}")  # noqa: E231
         if alert_type:
             alert_string = ",".join([f'"{alert_option}"' for alert_option in alert_type])
-            aql_string.append(f"type:{alert_string}")
+            aql_string.append(f"type:{alert_string}")  # noqa: E231
         if alert_id:
-            aql_string.append(f"alertId:({alert_id})")
+            aql_string.append(f"alertId:({alert_id})")  # noqa: E231
 
         aql_string = " ".join(aql_string)  # type: ignore
         # type: ignore
@@ -182,7 +192,10 @@ class Client(BaseClient):
             dict: A JSON containing a list of matching Alerts represented by JSON objects
         """
         return self.search_by_aql_string(
-            f"in:alerts {aql_string}", order_by=order_by, max_results=max_results, page_from=page_from
+            f"in:alerts {aql_string}",  # noqa: E231
+            order_by=order_by,
+            max_results=max_results,
+            page_from=page_from,
         )
 
     def update_alert_status(self, alert_id: str, status: str):
@@ -261,19 +274,19 @@ class Client(BaseClient):
         time_frame = "3 Days" if time_frame is None else time_frame
         aql_string = ["in:devices", f'timeFrame:"{time_frame}"']
         if name is not None:
-            aql_string.append(f"name:({name})")
+            aql_string.append(f"name:({name})")  # noqa: E231
         if device_type is not None:
             type_string = ",".join([f'"{type_option}"' for type_option in device_type])
-            aql_string.append(f"type:{type_string}")
+            aql_string.append(f"type:{type_string}")  # noqa: E231
         if mac_address is not None:
-            aql_string.append(f"macAddress:({mac_address})")
+            aql_string.append(f"macAddress:({mac_address})")  # noqa: E231
         if ip_address is not None:
-            aql_string.append(f"ipAddress:({ip_address})")
+            aql_string.append(f"ipAddress:({ip_address})")  # noqa: E231
         if device_id is not None:
-            aql_string.append(f"deviceId:({device_id})")
+            aql_string.append(f"deviceId:({device_id})")  # noqa: E231
         if risk_level is not None:
             risk_level_string = ",".join(list(risk_level))
-            aql_string.append(f"riskLevel:{risk_level_string}")
+            aql_string.append(f"riskLevel:{risk_level_string}")  # noqa: E231
 
         aql_string = " ".join(aql_string)  # type: ignore
         return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results)  # type: ignore
@@ -288,7 +301,7 @@ class Client(BaseClient):
         Returns:
             dict: A JSON containing a list of matching Devices represented by JSON objects
         """
-        return self.search_by_aql_string(f"in:devices {aql_string}", order_by=order_by, max_results=max_results)
+        return self.search_by_aql_string(f"in:devices {aql_string}", order_by=order_by, max_results=max_results)  # noqa: E231
 
 
 def test_module(client: Client, params: dict):
@@ -304,11 +317,20 @@ def test_module(client: Client, params: dict):
     """
 
     try:
-        if argToBoolean(params.get('isFetch', False)):
-            demisto.debug('Calling fetch incidents')
+        if argToBoolean(params.get("isFetch", False)):
+            demisto.debug("Calling fetch incidents")
             first_fetch_time, minimum_severity, alert_type, alert_status, free_search_string, max_fetch = get_fetch_params(params)
-            fetch_incidents(client, {}, first_fetch_time, minimum_severity, alert_type, alert_status,  # type: ignore
-                            free_search_string, max_fetch, is_test=True)  # type: ignore
+            fetch_incidents(
+                client,
+                {},
+                first_fetch_time,
+                minimum_severity,
+                alert_type,
+                alert_status,  # type: ignore
+                free_search_string,
+                max_fetch,
+                is_test=True,
+            )  # type: ignore
         else:
             client._get_token(force_new=True)
         return "ok"
@@ -372,7 +394,7 @@ def fetch_incidents(
     alert_status: list[str],
     free_search_string: str,
     max_results: Optional[int],
-    is_test: bool = False
+    is_test: bool = False,
 ):
     """
     This function will execute each interval (default is 1 minute).
@@ -418,7 +440,7 @@ def fetch_incidents(
     # get a list of severities from the minimum specified and upward
     # for example if min_severity is Medium requested_severities will be ['Medium', 'High']
     severities_in_order = ["Low", "Medium", "High"]
-    requested_severities = severities_in_order[severities_in_order.index(minimum_severity):]
+    requested_severities = severities_in_order[severities_in_order.index(minimum_severity) :]  # noqa: E203
     incidents = []
 
     # when the previous fetch returned more than max_results alerts, the same query is made again and max_results alerts
@@ -427,7 +449,10 @@ def fetch_incidents(
     page_from = max_results * incomplete_fetches or None
     if free_search_string:
         data = client.free_string_search_alerts(
-            f"{free_search_string} timeFrame:{time_frame}", order_by="time", max_results=max_results, page_from=page_from
+            f"{free_search_string} timeFrame:{time_frame}",  # noqa: E231
+            order_by="time",
+            max_results=max_results,
+            page_from=page_from,
         )
     else:
         data = client.search_alerts(
