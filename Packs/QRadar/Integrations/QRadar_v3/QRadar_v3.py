@@ -34,6 +34,8 @@ MAX_RETRIES_CONTEXT = 5  # max number of retries to update the context
 MAX_SEARCHES_QUEUE = 10  # maximum number of concurrent searches in mirroring
 
 SAMPLE_SIZE = 2  # number of samples to store in integration context
+MAX_SAMPLE_SIZE_MB = 3  # maximum size in MB for incidents to be stored as samples
+MAX_SAMPLE_SIZE_BYTES = MAX_SAMPLE_SIZE_MB * 1024 * 1024  # convert MB to bytes
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 
@@ -2172,6 +2174,44 @@ def test_module_command(client: Client, params: dict) -> str:
     return message
 
 
+def calculate_incident_size(incident: dict) -> int:
+    """
+    Calculate the approximate size of an incident in bytes for context storage.
+    
+    Args:
+        incident (dict): The incident dictionary
+        
+    Returns:
+        int: Size in bytes
+    """
+    try:
+        return len(json.dumps(incident, default=str).encode('utf-8'))
+    except Exception as e:
+        print_debug_msg(f"Error calculating incident size: {e}")
+        # Return a conservative estimate if calculation fails
+        return len(str(incident).encode('utf-8'))
+
+
+def is_incident_size_acceptable(incident: dict) -> bool:
+    """
+    Check if an incident is small enough to be stored as a sample in the integration context.
+    
+    Args:
+        incident (dict): The incident dictionary
+        
+    Returns:
+        bool: True if incident size is acceptable, False otherwise
+    """
+    size_bytes = calculate_incident_size(incident)
+    if size_bytes > MAX_SAMPLE_SIZE_BYTES:
+        print_debug_msg(
+            f"Incident {incident.get('name', 'Unknown')} size ({size_bytes / (1024*1024):.2f} MB) "
+            f"exceeds maximum sample size ({MAX_SAMPLE_SIZE_MB} MB). Skipping from samples."
+        )
+        return False
+    return True
+
+
 def fetch_incidents_command() -> List[dict]:
     """
     Fetch incidents implemented, for mapping purposes only.
@@ -2651,7 +2691,13 @@ def perform_long_running_loop(
     context_data, ctx_version = get_integration_context_with_version()
 
     if incidents and new_highest_id:
-        incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else context_data.get("samples", [])
+        # Filter incidents that are small enough to store as samples
+        filtered_incidents = [incident for incident in incidents if is_incident_size_acceptable(incident)]
+        incident_batch_for_sample = filtered_incidents[:SAMPLE_SIZE] if filtered_incidents else context_data.get("samples", [])
+        
+        if len(filtered_incidents) < len(incidents):
+            skipped_count = len(incidents) - len(filtered_incidents)
+            print_debug_msg(f"Skipped {skipped_count} incident(s) from samples due to size constraints.")
         # Actually create the incidents in XSOAR
         demisto.createIncidents(incidents, {LAST_FETCH_KEY: str(new_highest_id)})
         partial_changes = {}
