@@ -11,8 +11,8 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-VENDOR = "ironscales_test"
-PRODUCT = "ironscales_test"
+VENDOR = "ironscales"
+PRODUCT = "ironscales"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 1000
 DEFAULT_LIMIT = 10
