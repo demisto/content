@@ -193,13 +193,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: Check if Asimily Insight Integration is enabled.
-  value:
-    simple: ${ConfiguredModules}
-  required: false
-  description: ""
-  playbookInputQuery:
+inputs: []
 inputSections:
 - inputs:
   - Check if Asimily Insight Integration is enabled.
