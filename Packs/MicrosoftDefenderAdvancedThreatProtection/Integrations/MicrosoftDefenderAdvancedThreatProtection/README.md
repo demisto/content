@@ -229,12 +229,12 @@ After you successfully execute a command, a DBot message appears in the War Room
 30. microsoft-atp-get-user-alerts (Deprecated)
 31. microsoft-atp-get-user-machines
 32. microsoft-atp-add-remove-machine-tag
-33. microsoft-atp-indicator-list (deprecated)
-34. microsoft-atp-indicator-get-by-id (deprecated)
-35. microsoft-atp-indicator-create-network (deprecated)
-36. microsoft-atp-indicator-create-file (deprecated)
-37. microsoft-atp-indicator-update (deprecated)
-38. microsoft-atp-indicator-delete (deprecated)
+33. microsoft-atp-indicator-list (Deprecated)
+34. microsoft-atp-indicator-get-by-id (Deprecated)
+35. microsoft-atp-indicator-create-network (Deprecated)
+36. microsoft-atp-indicator-create-file (Deprecated)
+37. microsoft-atp-indicator-update (Deprecated)
+38. microsoft-atp-indicator-delete (Deprecated)
 39. microsoft-atp-sc-indicator-list
 40. microsoft-atp-sc-indicator-get-by-id
 41. microsoft-atp-sc-indicator-create
