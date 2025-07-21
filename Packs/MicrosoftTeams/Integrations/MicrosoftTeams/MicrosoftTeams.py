@@ -828,7 +828,7 @@ def get_bot_access_token() -> str:
     integration_context: dict = get_integration_context()
     access_token: str = integration_context.get("bot_access_token", "")
     valid_until: int = integration_context.get("bot_valid_until", 0)
-    bot_type : str = integration_context.get("bot_type", "multi-tenant")
+    bot_type: str = integration_context.get("bot_type", "multi-tenant")
     if access_token and valid_until and epoch_seconds() < valid_until:
         return access_token
 
@@ -854,7 +854,7 @@ def get_bot_access_token() -> str:
         response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
 
     if not response.ok:
-        if "bot_type" in integration_context: # Clear cached bot type on authentication error to avoid issues
+        if "bot_type" in integration_context:  # Clear cached bot type on authentication error to avoid issues
             integration_context.pop("bot_type")
             set_integration_context(integration_context)
 
@@ -2680,7 +2680,6 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
             demisto.info(f"The bot was added to team {team_name}")
         else:
             demisto.info(f"A user was added to team {team_name}")
-
 
     team_members: list = get_team_members(service_url, team_id)
 

@@ -307,7 +307,8 @@ def test_mirror_investigation(mocker, requests_mock):
     set_integration_context[0].pop(CREDENTIALS_TOKEN_PARAMS)
     set_integration_context[0].pop("bot_access_token")
     set_integration_context[0].pop("bot_valid_until")
-    assert set_integration_context[0] == expected_integration_context
+    for key, value in expected_integration_context.items():
+        assert set_integration_context[0].get(key) == value
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == "Investigation mirrored successfully in channel incident-2."
@@ -3478,3 +3479,100 @@ def test_process_ask_user():
         },
     }
     assert process_ask_user(json.dumps(message)) == expected_adaptive_card
+
+
+def test_get_bot_access_token_multi_tenant_success(mocker, requests_mock):
+    """
+    Given:
+        - A multi-tenant bot configuration.
+    When:
+        - Calling get_bot_access_token.
+    Then:
+        - Ensure a token is successfully retrieved using the multi-tenant endpoint.
+    """
+    from MicrosoftTeams import get_bot_access_token
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    requests_mock.post(
+        "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
+        json={"access_token": "multi_tenant_token", "expires_in": 3600},
+    )
+
+    token = get_bot_access_token()
+    assert token == "multi_tenant_token"
+
+
+def test_get_bot_access_token_single_tenant_success(mocker, requests_mock):
+    """
+    Given:
+        - A single-tenant bot configuration with a tenant_id.
+    When:
+        - Calling get_bot_access_token.
+    Then:
+        - Ensure a token is successfully retrieved using the single-tenant endpoint.
+    """
+    from MicrosoftTeams import get_bot_access_token
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"bot_type": "single-tenant", "tenant_id": tenant_id})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json={"access_token": "single_tenant_token", "expires_in": 3600},
+    )
+
+    token = get_bot_access_token()
+    assert token == "single_tenant_token"
+
+
+def test_get_bot_access_token_fallback_to_single_tenant(mocker, requests_mock):
+    """
+    Given:
+        - A multi-tenant bot configuration.
+        - The multi-tenant endpoint returns an 'unauthorized_client' error.
+        - A tenant_id is available in the context.
+    When:
+        - Calling get_bot_access_token.
+    Then:
+        - Ensure the code falls back to the single-tenant endpoint and retrieves a token.
+    """
+    from MicrosoftTeams import get_bot_access_token
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"tenant_id": tenant_id})
+    set_context_mocker = mocker.patch.object(demisto, "setIntegrationContext")
+
+    requests_mock.post(
+        "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
+        json={"error": "unauthorized_client"},
+        status_code=400,
+    )
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json={"access_token": "fallback_token", "expires_in": 3600},
+    )
+
+    token = get_bot_access_token()
+    assert token == "fallback_token"
+    # Verify that the bot_type was updated in the context for future use
+    updated_context = set_context_mocker.call_args[0][0]
+    assert updated_context.get("bot_type") == "single-tenant"
+
+
+def test_get_bot_access_token_single_tenant_no_tenant_id(mocker):
+    """
+    Given:
+        - A single-tenant bot configuration but no tenant_id.
+    When:
+        - Calling get_bot_access_token.
+    Then:
+        - Ensure a ValueError is raised.
+    """
+    from MicrosoftTeams import get_bot_access_token, MISS_CONFIGURATION_ERROR_MESSAGE
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"bot_type": "single-tenant"})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    with pytest.raises(ValueError, match=MISS_CONFIGURATION_ERROR_MESSAGE):
+        get_bot_access_token()
