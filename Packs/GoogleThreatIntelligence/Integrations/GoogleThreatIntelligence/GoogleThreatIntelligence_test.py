@@ -1465,8 +1465,14 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                     "name": "Name 1",
                     "description": "Description 1",
                     "last_modification_date": 1718719985,
-                    "targeted_regions": ["UK", "FR"],
-                    "targeted_industries": ["Industry 1", "Industry 2"],
+                    "targeted_regions_hierarchy": [
+                        {"country_iso2": "UK"},
+                        {"country_iso2": "FR"},
+                    ],
+                    "targeted_industries_tree": [
+                        {"industry_group": "Industry 1"},
+                        {"industry_group": "Industry 2"},
+                    ],
                 },
             },
             {
@@ -1475,7 +1481,9 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                     "name": "Name 2",
                     "description": "Description 2",
                     "last_modification_date": 1718720000,
-                    "targeted_regions": ["FR"],
+                    "targeted_regions_hierarchy": [
+                        {"country_iso2": "FR"},
+                    ],
                     "targeted_industries": [],
                 },
             },
