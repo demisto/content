@@ -173,7 +173,7 @@ class Client(BaseClient):
         :param status: The status of the incidents to pull.
         :param next_page: For pagination purposes. If provided, params should be None.
         """
-        url_suffix = next_page or "/incident/api/incidents/delta"
+        url_suffix = next_page or "incident/api/v2/incidents/delta"
         state = state if state != "All" else None
 
         params = (
@@ -183,7 +183,7 @@ class Client(BaseClient):
                 "to": to_time,
                 "app_ids": app_ids,
                 "state": state,
-                "severity": severity,
+                "severities": severity,
                 "status": status,
             }
             if not next_page
