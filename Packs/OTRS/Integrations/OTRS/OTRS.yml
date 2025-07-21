@@ -91,6 +91,7 @@ configuration:
   type: 0
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as an article from OTRS.
@@ -100,6 +101,7 @@ configuration:
   type: 0
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from OTRS to Cortex XSOAR), Outgoing (from Cortex XSOAR to OTRS), or Incoming and Outgoing (from/to Cortex XSOAR and OTRS).'
@@ -114,6 +116,7 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 description: Service management suite that comprises ticketing, workflow automation, and notification.
@@ -473,7 +476,7 @@ script:
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body.
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.2072193
+  dockerimage: demisto/pyotrs:1.0.0.3545032
   isfetch: true
   runonce: false
   script: '-'

@@ -24,6 +24,7 @@ REQUIRED_PERMISSIONS = (
     "RoleManagement.ReadWrite.Directory",
     "Policy.ReadWrite.ConditionalAccess",
     "Policy.Read.All",
+    "Application.Read.All",
 )
 
 

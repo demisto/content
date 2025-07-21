@@ -22,13 +22,14 @@ This command queries IP information using RDAP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | An IPv4 address to query, e.g., 1.1.1.1. | Required | 
+| ip | An IPv4 address to query, e.g., 1.1.1.1. | Required |
 
 #### Example Command
 
 `!ip ip=8.8.8.8`
 
 #### Context Output
+
 |Path|Type|Description|
 |---|---|---|
 |IP.Address|String|The IP address.|
@@ -56,12 +57,11 @@ This command queries domain information using RDAP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | A domain address to query, e.g., example.com. | Required | 
+| domain | A domain address to query, e.g., example.com. | Required |
 
 #### Example Command
 
 `!domain domain=example.com`
-
 
 #### Context Output
 

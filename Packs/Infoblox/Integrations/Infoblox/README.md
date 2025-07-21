@@ -11,7 +11,7 @@ The API supports only HTTP Basic Authentication. Every user must have permission
 2. Search for Infoblox.
 3. Click **Add instance** to create and configure a new integration instance.
     * **Name**: a textual name for the integration instance.
-    * **Server URL (e.g.,, https://example.net)**
+    * **Server URL (e.g. https://example.net)**
     * **User Name**
     * **Password**
     * **Trust any certificate (not secure)**
@@ -25,7 +25,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 1. [Get IP info: infoblox-get-ip](#infoblox-get-ip).
 2. [Searches IP related objects by a given IP: infoblox-search-related-objects-by-ip](#infoblox-search-related-objects-by-ip).
-3. [Lists all response policy rules that belong to the.g.,ven response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
+3. [Lists all response policy rules that belong to the given response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
 4. [List all response policy zones: infoblox-list-response-policy-zones](#infoblox-list-response-policy-zones).
 5. [Creates a response policy zone: infoblox-create-response-policy-zone](#infoblox-create-response-policy-zone).
 6. [Creates a response policy rule: infoblox-create-rpz-rule](#infoblox-create-rpz-rule).
@@ -61,12 +61,12 @@ Get IP information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip  | The IP address for which to retrieve information, e.g.,, "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments. | Optional |
-| network  | The network that the IP belongs in FQDN/CIDR format, e.g.,, "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments. | Optional |
-| from_ip  | The beginning of the IP range, e.g.,, "192.168.1.0". Must be used in conjunction with `to_ip`. | Optional |
-| to_ip  | The end of the IP range, e.g.,, "192.168.1.254". Must be used in conjunction with `from_ip`. | Optional |
+| ip  | The IP address for which to retrieve information, e.g. "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments. | Optional |
+| network  | The network that the IP belongs in FQDN/CIDR format, e.g. "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments. | Optional |
+| from_ip  | The beginning of the IP range, e.g. "192.168.1.0". Must be used in conjunction with `to_ip`. | Optional |
+| to_ip  | The end of the IP range, e.g. "192.168.1.254". Must be used in conjunction with `from_ip`. | Optional |
 | status  | The status of the IP device. Used in conjunction with the `network` or `ip` argument. Possible values are `ACTIVE`, `UNUSED` and `USED`. | Optional |
-| extended_attrs  | Comma-separated key/value formatted filter for extended attributes, e.g.,, "Site=New York,OtherProp=MyValue". | Optional |
+| extended_attrs  | Comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional |
 | max_results  | The maximum results to return. Maximum is 1000. Default is 50. | Optional |
 
 ##### Context Output
@@ -174,7 +174,7 @@ Searches IP related objects by a given IP.
 
 * * *
 
-Lists all response policy rules that belong to the.g.,ven response policy zone.
+Lists all response policy rules that belong to the given response policy zone.
 
 ##### Base Command
 
@@ -913,7 +913,7 @@ Creates a substitute rule of a SRV record.
 | port | The port of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
 | priority | The priority of the substitute rule for the SRV Record. Can be 0 to 65535 (inclusive). | Required |
 | target | The target of the substitute rule of the SRV record in FQDN format. This value can be in unicode format. | Required |
-| we.g.,t | The we.g.,t of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
+| weight | The weight of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
 
 ##### Context Output
 
@@ -929,7 +929,7 @@ Creates a substitute rule of a SRV record.
 
 ##### Command Example
 
-`!infoblox-create-srv-substitute-record-rule name="nightly-test-srv-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-srv-sub" port="22" priority="10" target="infoblow.com" we.g.,t="10"`
+`!infoblox-create-srv-substitute-record-rule name="nightly-test-srv-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-srv-sub" port="22" priority="10" target="infoblow.com" weight="10"`
 
 ##### Context Example
 
@@ -945,7 +945,7 @@ Creates a substitute rule of a SRV record.
         "Target": "infoblow.com",
         "Type": "record:rpz:srv",
         "View": "default",
-        "We.g.,t": 10,
+        "Weight": 10,
         "Zone": "infoblow.com"
     }
 }
@@ -955,7 +955,7 @@ Creates a substitute rule of a SRV record.
 
 ### Infoblox Integration - Response Policy Zone rule: nightly-test-srv-sub.infoblow.com has been created
 
-| **Comment** | **Disable** | **Name** | **Port** | **Priority** | **Reference ID** | **Target** | **Type** | **View** | **We.g.,t** | **Zone** |
+| **Comment** | **Disable** | **Name** | **Port** | **Priority** | **Reference ID** | **Target** | **Type** | **View** | **Weight** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-srv-sub | false | nightly-test-srv-sub.infoblow.com | 22  | 10  | record:rpz:srv/ZG5zLmJpbmRfc3J2JC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cvbmlnaHRseS10ZXN0LXNydi1zdWIvMTAvMTAvMjIvaW5mb2Jsb3cuY29t:nightly-test-srv-sub.infoblow.com/default | infoblow.com | record:rpz:srv | default | 10  | infoblow.com |
 
@@ -1486,10 +1486,10 @@ Get all host records.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_name | The hostname to retrieve records for, e.g., localhost.test. | Optional |
-| extattrs | Comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional |
+| host_name | The hostname to retrieve records for, e.g. localhost.test. | Optional |
+| extattrs | Comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional |
 | max_results | The maximum number of records to return. Default is 50, maximum is 1000. | Optional |
-| additional_return_fields | Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional |
+| additional_return_fields | Comma-separated list of additional fields to return for each host, e.g. extattrs,aliases. Default is extattrs. | Optional |
 
 #### Context Output
 
@@ -1646,10 +1646,10 @@ List network information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pattern | Filter networks by pattern, e.g., '.0/24' for netmask, '192.168' for subnet. | Optional |
-| extattrs | comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional |
+| pattern | Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet. | Optional |
+| extattrs | comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional |
 | max_results | The maximum number of records to return. Maximum is 1000. Default is 50. | Optional |
-| additional_return_fields | Comma separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional |
+| additional_return_fields | Comma separated list of additional fields to return for each host, e.g. extattrs,aliases. Default is extattrs. | Optional |
 
 #### Context Output
 

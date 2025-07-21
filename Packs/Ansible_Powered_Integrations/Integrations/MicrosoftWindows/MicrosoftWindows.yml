@@ -34,7 +34,7 @@ script:
         A toggle that controls if the fact modules are executed in parallel or serially and in order. This can guarantee the merge order of module facts at the expense of performance.
         By default it will be true if more than one fact module is used.
       name: parallel
-    description: Gathers facts about remote hosts
+    description: Gathers facts about remote hosts.
     name: win-gather-facts
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -87,14 +87,14 @@ script:
       - InheritOnly
       - None
       - NoPropagateInherit
-    description: Set file/directory/registry permissions for a system user or group
+    description: Set file/directory/registry permissions for a system user or group.
     name: win-acl
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: Path to be used for changing inheritance
+    - description: Path to be used for changing inheritance.
       name: path
       required: true
     - auto: PREDEFINED
@@ -109,7 +109,7 @@ script:
         For P(state) = `absent`, indicates if the inherited ACE's should be copied from the parent directory. This is necessary (in combination with removal) for a simple ACL instead of using multiple ACE deny entries.
         For P(state) = `present`, indicates if the inherited ACE's should be deduplicated compared to the parent directory. This removes complexity of the ACL structure.
       name: reorganize
-    description: Change ACL inheritance
+    description: Change ACL inheritance.
     name: win-acl-inheritance
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -136,7 +136,7 @@ script:
       - none
       - success
       required: true
-    description: Used to make changes to the system wide Audit Policy
+    description: Used to make changes to the system wide Audit Policy.
     name: win-audit-policy-system
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -200,7 +200,7 @@ script:
       predefined:
       - absent
       - present
-    description: Adds an audit rule to files, folders, or registry keys
+    description: Adds an audit rule to files, folders, or registry keys.
     name: win-audit-rule
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -239,7 +239,7 @@ script:
         `My`: The X.509 certificate store for personal certificates
         `Root`: The X.509 certificate store for trusted root certificate authorities (CAs)
         `TrustedPeople`: The X.509 certificate store for directly trusted people and resources
-        `TrustedPublisher`: The X.509 certificate store for directly trusted publishers
+        `TrustedPublisher`: The X.509 certificate store for directly trusted publishers.
       name: store_name
       predefined:
       - AddressBook
@@ -295,7 +295,7 @@ script:
       - der
       - pem
       - pkcs12
-    description: Manages the certificate store
+    description: Manages the certificate store.
     name: win-certificate-store
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -424,7 +424,7 @@ script:
         Provide as a string (e.g. `'6.1'`), otherwise it is considered to be a floating-point number and depending on the locale could become `6,1`, which will cause a failure.
         If `name` is set to `chocolatey` and Chocolatey is not installed on the host, this will be the version of Chocolatey that is installed. You can also set the `chocolateyVersion` environment var.
       name: version
-    description: Manage packages using chocolatey
+    description: Manage packages using chocolatey.
     name: win-chocolatey
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -450,18 +450,18 @@ script:
         Used when `state=present` that contains the value to set for the config setting.
         Cannot be null or an empty string, use `state=absent` to unset a config value instead.
       name: value
-    description: Manages Chocolatey config settings
+    description: Manages Chocolatey config settings.
     name: win-chocolatey-config
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    description: Create a facts collection for Chocolatey
+    description: Create a facts collection for Chocolatey.
     name: win-chocolatey-facts
     outputs:
     - contextPath: MicrosoftWindows.ansible_facts.ansible_chocolatey
-      description: Detailed information about the Chocolatey installation
+      description: Detailed information about the Chocolatey installation.
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
@@ -481,7 +481,7 @@ script:
       predefined:
       - disabled
       - enabled
-    description: Manages Chocolatey features
+    description: Manages Chocolatey features.
     name: win-chocolatey-feature
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -550,7 +550,7 @@ script:
       predefined:
       - always
       - on_create
-    description: Manages Chocolatey sources
+    description: Manages Chocolatey sources.
     name: win-chocolatey-source
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -600,7 +600,7 @@ script:
         If path is a file and dest ends with "\", the file is copied to the folder with the same filename.
         Required unless using `content`.
       name: src
-    description: Copies files to remote locations on windows hosts
+    description: Copies files to remote locations on windows hosts.
     name: win-copy
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -689,7 +689,7 @@ script:
         When `type=domain_password`, this should be in the form of a Netlogon (DOMAIN\Username) or a UPN (username@DOMAIN).
         If using a certificate thumbprint, the certificate must exist in the `CurrentUser\My` certificate store for the executing user.
       name: username
-    description: Manages Windows Credentials in the Credential Manager
+    description: Manages Windows Credentials in the Credential Manager.
     name: win-credential
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -717,14 +717,14 @@ script:
     - defaultValue: "False"
       description: Run the operation on each volume in parallel in the background.
       name: parallel
-    description: Consolidate fragmented files on local volumes
+    description: Consolidate fragmented files on local volumes.
     name: win-defrag
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    description: Show the attached disks and disk information of the target host
+    description: Show the attached disks and disk information of the target host.
     name: win-disk-facts
     outputs:
     - contextPath: MicrosoftWindows.ansible_facts.ansible_disks
@@ -734,7 +734,7 @@ script:
       isArray: true
       name: host
       required: true
-    - description: Path to an ISO, VHD, or VHDX image on the target Windows host (the file cannot reside on a network share)
+    - description: Path to an ISO, VHD, or VHDX image on the target Windows host (the file cannot reside on a network share).
       name: image_path
       required: true
     - auto: PREDEFINED
@@ -744,7 +744,7 @@ script:
       predefined:
       - absent
       - present
-    description: Manage ISO/VHD/VHDX mounts on Windows hosts
+    description: Manage ISO/VHD/VHDX mounts on Windows hosts.
     name: win-disk-image
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -759,7 +759,7 @@ script:
     - description: Single or ordered list of DNS server IPv4 addresses to configure for lookup. An empty list will configure the adapter to use the DHCP-assigned values on connections where DHCP is enabled, or disable DNS lookup on statically-configured connections.
       name: ipv4_addresses
       required: true
-    description: Configures DNS lookup on Windows hosts
+    description: Configures DNS lookup on Windows hosts.
     name: win-dns-client
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -806,7 +806,7 @@ script:
         Specifies a DNS server.
         You can specify an IP address or any value that resolves to an IP address, such as a fully qualified domain name (FQDN), host name, or NETBIOS name.
       name: computer_name
-    description: Manage Windows Server DNS records
+    description: Manage Windows Server DNS records.
     name: win-dns-record
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -862,7 +862,7 @@ script:
       - Win2012
       - Win2012R2
       - WinThreshold
-    description: Ensures the existence of a Windows domain
+    description: Ensures the existence of a Windows domain.
     name: win-domain
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -920,7 +920,7 @@ script:
       predefined:
       - absent
       - present
-    description: Manage computers in Active Directory
+    description: Manage computers in Active Directory.
     name: win-domain-computer
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -960,7 +960,7 @@ script:
         The path to a directory on a fixed disk of the Windows host where the Sysvol folder will be created.
         If not set then the default path is `%SYSTEMROOT%\SYSVOL`.
       name: sysvol_path
-    description: Manage domain controller/member server state for a Windows host
+    description: Manage domain controller/member server state for a Windows host.
     name: win-domain-controller
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1032,12 +1032,12 @@ script:
       defaultValue: present
       description: |-
         If `state=present` this module will ensure the group is created and is configured accordingly.
-        If `state=absent` this module will delete the group if it exists
+        If `state=absent` this module will delete the group if it exists.
       name: state
       predefined:
       - absent
       - present
-    description: Creates, modifies or removes domain groups
+    description: Creates, modifies or removes domain groups.
     name: win-domain-group
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1075,7 +1075,7 @@ script:
         Can be in the form of an FQDN or NetBIOS name.
         If not specified then the value is based on the domain of the computer running PowerShell.
       name: domain_server
-    description: Manage Windows domain group membership
+    description: Manage Windows domain group membership.
     name: win-domain-group-membership
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1103,7 +1103,7 @@ script:
       - workgroup
     - description: When `state` is `workgroup`, the name of the workgroup that the Windows host should be in.
       name: workgroup_name
-    description: Manage domain/workgroup membership for a Windows host
+    description: Manage domain/workgroup membership for a Windows host.
     name: win-domain-membership
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1138,7 +1138,7 @@ script:
       name: account_locked
       predefined:
       - "False"
-    - description: Description of the user
+    - description: Description of the user.
       name: description
     - description: |-
         Adds or removes the user from this list of groups, depending on the value of `groups_action`.
@@ -1233,14 +1233,14 @@ script:
         Can be in the form of an FQDN or NetBIOS name.
         If not specified then the value is based on the domain of the computer running PowerShell.
       name: domain_server
-    description: Manages Windows Active Directory user accounts
+    description: Manages Windows Active Directory user accounts.
     name: win-domain-user
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    description: Runs ngen to recompile DLLs after .NET  updates
+    description: Runs ngen to recompile DLLs after .NET  updates.
     name: win-dotnet-ngen
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1269,7 +1269,7 @@ script:
         Since Ansible 2.8, Ansible will now validate the input fields against the DSC resource definition automatically. Older versions will silently ignore invalid fields.
       name: free_form
       required: true
-    description: Invokes a PowerShell DSC configuration
+    description: Invokes a PowerShell DSC configuration.
     name: win-dsc
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1305,7 +1305,7 @@ script:
       - process
       - user
       required: true
-    description: Modify environment variables on windows hosts
+    description: Modify environment variables on windows hosts.
     name: win-environment
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1358,7 +1358,7 @@ script:
         The minimum number of days event entries must remain in the log.
         This option is only used when `overflow_action` is `OverwriteOlder`.
       name: retention_days
-    description: Manage Windows event logs
+    description: Manage Windows event logs.
     name: win-eventlog
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1394,7 +1394,7 @@ script:
         Binary data associated with the log entry.
         Value must be a comma-separated array of 8-bit unsigned integers (0 to 255).
       name: raw_data
-    description: Write entries to Windows event logs
+    description: Write entries to Windows event logs.
     name: win-eventlog-entry
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1427,7 +1427,7 @@ script:
         Not supported in Windows 2008 R2 and will be ignored.
         Can either be `{driveletter}:\sources\sxs` or `\\{IP}\share\sources\sxs`.
       name: source
-    description: Installs and uninstalls Windows Features on Windows Server
+    description: Installs and uninstalls Windows Features on Windows Server.
     name: win-feature
     outputs:
     - contextPath: MicrosoftWindows.feature_result.display_name
@@ -1469,7 +1469,7 @@ script:
       - directory
       - file
       - touch
-    description: Creates, touches or removes files or directories
+    description: Creates, touches or removes files or directories.
     name: win-file
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1481,7 +1481,7 @@ script:
         Always provide absolute path.
       name: path
       required: true
-    description: Get DLL or EXE file build version
+    description: Get DLL or EXE file build version.
     name: win-file-version
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1558,7 +1558,7 @@ script:
     - defaultValue: "False"
       description: Will set patterns to run as a regex check if set to `yes`.
       name: use_regex
-    description: Return a list of files based on specific criteria
+    description: Return a list of files based on specific criteria.
     name: win-find
     outputs:
     - contextPath: MicrosoftWindows.files.attributes
@@ -1632,7 +1632,7 @@ script:
       predefined:
       - disabled
       - enabled
-    description: Enable or disable the Windows Firewall
+    description: Enable or disable the Windows Firewall.
     name: win-firewall
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1687,13 +1687,13 @@ script:
         The local port this rule applies to.
         Set to `any` to apply to all local ports.
         Defaults to `any` when creating a new rule.
-        Must have `protocol` set
+        Must have `protocol` set.
       name: localport
     - description: |-
         The remote port this rule applies to.
         Set to `any` to apply to all remote ports.
         Defaults to `any` when creating a new rule.
-        Must have `protocol` set
+        Must have `protocol` set.
       name: remoteport
     - description: |-
         The program this rule applies to.
@@ -1715,7 +1715,7 @@ script:
         Defaults to `domain,private,public` when creating a new rule.
       isArray: true
       name: profiles
-    description: Windows firewall automation
+    description: Windows firewall automation.
     name: win-firewall-rule
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1757,7 +1757,7 @@ script:
       name: full
     - description: Specify if formatting should be forced for volumes that are not created from new partitions or if the source and target file system are different.
       name: force
-    description: Formats an existing volume or a new volume on an existing partition on Windows
+    description: Formats an existing volume or a new volume on an existing partition on Windows.
     name: win-format
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1876,7 +1876,7 @@ script:
         The module will only have access to the user's credentials if using `become` with a password, you are connecting with SSH using a password, or connecting with WinRM using `CredSSP` or `Kerberos with delegation`.
         If not using `become` or a different auth method to the ones stated above, there will be no default credentials available and no proxy authentication will occur.
       name: proxy_use_default_credential
-    description: Downloads file from HTTP, HTTPS, or FTP to node
+    description: Downloads file from HTTP, HTTPS, or FTP to node.
     name: win-get-url
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1895,7 +1895,7 @@ script:
       predefined:
       - absent
       - present
-    description: Add and remove local groups
+    description: Add and remove local groups.
     name: win-group
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1925,7 +1925,7 @@ script:
       - absent
       - present
       - pure
-    description: Manage Windows local group membership
+    description: Manage Windows local group membership.
     name: win-group-membership
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -1935,7 +1935,7 @@ script:
     - description: The hostname to set for the computer.
       name: name
       required: true
-    description: Manages local Windows computer name
+    description: Manages local Windows computer name.
     name: win-hostname
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2012,7 +2012,7 @@ script:
         The path to the downloaded hotfix .msu file.
         This MUST be set if `state=present` and MUST be a .msu hotfix file.
       name: source
-    description: Install and uninstalls Windows hotfixes
+    description: Install and uninstalls Windows hotfixes.
     name: win-hotfix
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2044,7 +2044,7 @@ script:
       name: source
       predefined:
       - ie
-    description: Manages proxy settings for WinHTTP
+    description: Manages proxy settings for WinHTTP.
     name: win-http-proxy
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2072,7 +2072,7 @@ script:
         The physical path to the folder in which the new virtual directory is created.
         The specified folder must already exist.
       name: physical_path
-    description: Configures a virtual directory in IIS
+    description: Configures a virtual directory in IIS.
     name: win-iis-virtualdirectory
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2098,7 +2098,7 @@ script:
       name: physical_path
     - description: The application pool in which the new site executes.
       name: application_pool
-    description: Configures IIS web applications
+    description: Configures IIS web applications.
     name: win-iis-webapplication
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2134,7 +2134,7 @@ script:
       - restarted
       - started
       - stopped
-    description: Configure IIS Web Application Pools
+    description: Configure IIS Web Application Pools.
     name: win-iis-webapppool
     outputs:
     - contextPath: MicrosoftWindows.info.attributes
@@ -2192,7 +2192,7 @@ script:
         Set to c(0) to disable SNI.
         Set to c(1) to enable SNI.
       name: ssl_flags
-    description: Configures a IIS Web site binding
+    description: Configures a IIS Web site binding.
     name: win-iis-webbinding
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2207,7 +2207,7 @@ script:
         Note that this value cannot be changed after the website has been created.
       name: site_id
     - auto: PREDEFINED
-      description: State of the web site
+      description: State of the web site.
       name: state
       predefined:
       - absent
@@ -2228,9 +2228,9 @@ script:
       name: hostname
     - description: Enables HTTPS binding on the site..
       name: ssl
-    - description: Custom site Parameters from string where properties are separated by a pipe and property name/values by colon Ex. "foo:1|bar:2"
+    - description: Custom site Parameters from string where properties are separated by a pipe and property name/values by colon Ex. "foo:1|bar:2".
       name: parameters
-    description: Configures a IIS Web site
+    description: Configures a IIS Web site.
     name: win-iis-website
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2269,7 +2269,7 @@ script:
         Valid protocols are `http`, `https`, `ftp`, and `socks`.
         Omit, set to null or an empty string to remove the proxy settings.
       name: proxy
-    description: Manages proxy settings for WinINet and Internet Explorer
+    description: Manages proxy settings for WinINet and Internet Explorer.
     name: win-inet-proxy
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2342,7 +2342,7 @@ script:
       predefined:
       - unix
       - windows
-    description: Ensure a particular line is in a file, or replace an existing line using a back-referenced regular expression
+    description: Ensure a particular line is in a file, or replace an existing line using a back-referenced regular expression.
     name: win-lineinfile
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2381,7 +2381,7 @@ script:
         This is required if the mapped drive requires authentication with custom credentials and become, or CredSSP cannot be used.
         If become or CredSSP is used, any credentials saved with `win_credential` will automatically be used instead.
       name: username
-    description: Map network drives for users
+    description: Map network drives for users.
     name: win-mapped-drive
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2402,7 +2402,7 @@ script:
         The text of the message to be displayed.
         The message must be less than 256 characters.
       name: msg
-    description: Sends a message to logged in users on Windows hosts
+    description: Sends a message to logged in users on Windows hosts.
     name: win-msg
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2455,7 +2455,7 @@ script:
       name: description
     - description: The display name to set for the service.
       name: display_name
-    - description: The working directory to run the service executable from (defaults to the directory containing the application binary)
+    - description: The working directory to run the service executable from (defaults to the directory containing the application binary).
       name: working_directory
     - description: Path to receive output.
       name: stdout_file
@@ -2499,7 +2499,7 @@ script:
       - delayed
       - disabled
       - manual
-    description: Install a service using NSSM
+    description: Install a service using NSSM.
     name: win-nssm
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2527,7 +2527,7 @@ script:
         Specify a source to install the feature from.
         Can either be `{driveletter}:\sources\sxs` or `\\{IP}\share\sources\sxs`.
       name: source
-    description: Manage optional Windows features
+    description: Manage optional Windows features.
     name: win-optional-feature
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2543,7 +2543,7 @@ script:
     - defaultValue: "False"
       description: Indicates if the owner should be changed recursively.
       name: recurse
-    description: Set owner
+    description: Set owner.
     name: win-owner
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2616,7 +2616,7 @@ script:
         When omitted, a temporary log file is used for MSI packages.
         This is only valid for MSI files, use `arguments` for other package types.
       name: log_path
-    description: Installs/uninstalls an installable package
+    description: Installs/uninstalls an installable package.
     name: win-package
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2651,7 +2651,7 @@ script:
       - absent
       - present
       - query
-    description: Query or change pagefile configuration
+    description: Query or change pagefile configuration.
     name: win-pagefile
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2714,7 +2714,7 @@ script:
       - microsoft_reserved
       - basic_data
       - microsoft_recovery
-    description: Creates, changes and removes partitions on Windows Server
+    description: Creates, changes and removes partitions on Windows Server.
     name: win-partition
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2747,7 +2747,7 @@ script:
       predefined:
       - machine
       - user
-    description: Manage Windows path environment variables
+    description: Manage Windows path environment variables.
     name: win-path
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2769,7 +2769,7 @@ script:
       name: test_parameters
     - description: Minimum version of the pester module that has to be available on the remote host.
       name: version
-    description: Run Pester tests on Windows hosts
+    description: Run Pester tests on Windows hosts.
     name: win-pester
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2781,7 +2781,7 @@ script:
         Alternate data to return instead of 'pong'.
         If this parameter is set to `crash`, the module will cause an exception.
       name: data
-    description: A windows version of the classic ping module
+    description: A windows version of the classic ping module.
     name: win-ping
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2794,14 +2794,14 @@ script:
         Commonly there will be options for `balanced` and `high performance`.
       name: name
       required: true
-    description: Changes the power plan of a Windows system
+    description: Changes the power plan of a Windows system.
     name: win-power-plan
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    description: Provides Windows product and license information
+    description: Provides Windows product and license information.
     name: win-product-facts
     outputs:
     - contextPath: MicrosoftWindows.ansible_facts.ansible_os_license_channel
@@ -2885,14 +2885,14 @@ script:
       - high
       - low
       - realtime
-    - description: The connection timeout in seconds
+    - description: The connection timeout in seconds.
       name: timeout
     - defaultValue: "True"
       description: |-
         Wait for the application to terminate.
         Only use for non-interactive applications.
       name: wait
-    description: Runs commands (remotely) as another (privileged) user
+    description: Runs commands (remotely) as another (privileged) user.
     name: win-psexec
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2937,7 +2937,7 @@ script:
         URL of the custom repository to register.
         This option is deprecated and will be removed in Ansible 2.12. Use the `win_psrepository` module instead.
       name: url
-    description: Adds or removes a Windows PowerShell module
+    description: Adds or removes a Windows PowerShell module.
     name: win-psmodule
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -2992,7 +2992,7 @@ script:
       - enabled
     - description: Specify a custom install prefix to a Rabbit.
       name: prefix
-    description: Manage RabbitMQ plugins
+    description: Manage RabbitMQ plugins.
     name: win-rabbitmq-plugin
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3070,7 +3070,7 @@ script:
       name: redirect_serial
     - description: Allow Plug and Play devices redirection.
       name: redirect_pnp
-    description: Manage Connection Authorization Policies (CAP) on a Remote Desktop Gateway server
+    description: Manage Connection Authorization Policies (CAP) on a Remote Desktop Gateway server.
     name: win-rds-cap
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3121,7 +3121,7 @@ script:
         The computer group name that is associated with this resource authorization policy (RAP).
         This is required when `computer_group_type` is `rdg_group` or `ad_network_resource_group`.
       name: computer_group
-    description: Manage Resource Authorization Policies (RAP) on a Remote Desktop Gateway server
+    description: Manage Resource Authorization Policies (RAP) on a Remote Desktop Gateway server.
     name: win-rds-rap
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3148,7 +3148,7 @@ script:
       - none
     - description: If enabled, only clients that support logon messages and administrator messages can connect.
       name: enable_only_messaging_capable_clients
-    description: Manage main settings of a Remote Desktop Gateway server
+    description: Manage main settings of a Remote Desktop Gateway server.
     name: win-rds-settings
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3183,7 +3183,7 @@ script:
     - defaultValue: Reboot initiated by Ansible
       description: Message to display to users.
       name: msg
-    description: Reboot a windows machine
+    description: Reboot a windows machine.
     name: win-reboot
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3197,7 +3197,7 @@ script:
         The registry property name to get information for, the return json will not include the sub_keys and properties entries for the `key` specified.
         Set to an empty string to target the registry key's `(Default`) property value.
       name: name
-    description: Get information about Windows registry keys
+    description: Get information about Windows registry keys.
     name: win-reg-stat
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3252,7 +3252,7 @@ script:
         This can be used to load the default user profile registry hive or any other hive saved as a file.
         Using this function requires the user to have the `SeRestorePrivilege` and `SeBackupPrivilege` privileges enabled.
       name: hive
-    description: Add, change, or remove registry keys and values
+    description: Add, change, or remove registry keys and values.
     name: win-regedit
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3274,19 +3274,19 @@ script:
     - defaultValue: "False"
       description: This will copy the current format and location values to new user profiles and the welcome screen. This will only run if `location`, `format` or `unicode_language` has resulted in a change. If this process runs then it will always result in a change.
       name: copy_settings
-    description: Set the region and format settings
+    description: Set the region and format settings.
     name: win-region
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: The full path including file name to the registry file on the remote machine to be merged
+    - description: The full path including file name to the registry file on the remote machine to be merged.
       name: path
       required: true
     - description: The parent key to use when comparing the contents of the registry to the contents of the file.  Needs to be in HKLM or HKCU part of registry. Use a PS-Drive style path for example HKLM:\SOFTWARE not HKEY_LOCAL_MACHINE\SOFTWARE If not supplied, or the registry key is not found, no comparison will be made, and the module will report changed.
       name: compare_key
-    description: Merges the contents of a registry file into the Windows registry
+    description: Merges the contents of a registry file into the Windows registry.
     name: win-regmerge
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3314,7 +3314,7 @@ script:
         Directly supply Robocopy flags.
         If set, `purge` and `recurse` will be ignored.
       name: flags
-    description: Synchronizes the contents of two directories using Robocopy
+    description: Synchronizes the contents of two directories using Robocopy.
     name: win-robocopy
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3340,7 +3340,7 @@ script:
       predefined:
       - absent
       - present
-    description: Add or remove a static route
+    description: Add or remove a static route.
     name: win-route
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3375,7 +3375,7 @@ script:
         Full path to a `.wav` file containing a sound to play after the text has been spoken.
         Useful on conference calls to alert other speakers that ansible has finished speaking.
       name: end_sound_path
-    description: Text to speech module for Windows to speak messages and optionally play sounds
+    description: Text to speech module for Windows to speak messages and optionally play sounds.
     name: win-say
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3540,7 +3540,7 @@ script:
       name: stop_if_going_on_batteries
     - description: Whether the task will wake the computer when it is time to run the task.
       name: wake_to_run
-    description: Manage scheduled tasks
+    description: Manage scheduled tasks.
     name: win-scheduled-task
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3554,7 +3554,7 @@ script:
         The name of the scheduled task to get information for.
         If `name` is set and exists, will return information on the task itself.
       name: name
-    description: Get information about Windows Scheduled Tasks
+    description: Get information about Windows Scheduled Tasks.
     name: win-scheduled-task-stat
     outputs:
     - contextPath: MicrosoftWindows.principal.display_name
@@ -3606,7 +3606,7 @@ script:
       description: Whether the task can terminated by using TerminateProcess.
       type: boolean
     - contextPath: MicrosoftWindows.settings.compatibility
-      description: The compatibility level of the task
+      description: The compatibility level of the task.
       type: number
     - contextPath: MicrosoftWindows.settings.delete_expired_task_after
       description: The amount of time the Task Scheduler will wait before deleting the task after it expires.
@@ -3703,7 +3703,7 @@ script:
         If the key takes in a boolean value then 0 = False and 1 = True.
       name: value
       required: true
-    description: Change local security policy settings
+    description: Change local security policy settings.
     name: win-security-policy
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3757,7 +3757,7 @@ script:
       description: |-
         Set the startup type for the service.
         A newly created service will default to `auto`.
-        `delayed` added in Ansible 2.3
+        `delayed` added in Ansible 2.3.
       name: start_mode
       predefined:
       - auto
@@ -3788,7 +3788,7 @@ script:
         A newly created service will default to `LocalSystem`.
         If using a custom user account, it must have the `SeServiceLogonRight` granted to be able to start up. You can use the `win_user_right` module to grant this user right for you.
       name: username
-    description: Manage and query Windows services
+    description: Manage and query Windows services.
     name: win-service
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3835,7 +3835,7 @@ script:
     - defaultValue: "False"
       description: Sets whether to encrypt the traffic to the share or not.
       name: encrypt
-    description: Manage Windows shares
+    description: Manage Windows shares.
     name: win-share
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3891,7 +3891,7 @@ script:
     - defaultValue: "False"
       description: When `src` is an executable, this can control whether the shortcut will be opened as an administrator or not.
       name: run_as_admin
-    description: Manage shortcuts on Windows
+    description: Manage shortcuts on Windows.
     name: win-shortcut
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3909,13 +3909,13 @@ script:
       description: |-
         `add` will add new SNMP community strings and/or SNMP managers
         `set` will replace SNMP community strings and/or SNMP managers. An empty list for either `community_strings` or `permitted_managers` will result in the respective lists being removed entirely.
-        `remove` will remove SNMP community strings and/or SNMP managers
+        `remove` will remove SNMP community strings and/or SNMP managers.
       name: action
       predefined:
       - add
       - set
       - remove
-    description: Configures the Windows SNMP service
+    description: Configures the Windows SNMP service.
     name: win-snmp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -3932,7 +3932,7 @@ script:
         Use `get_checksum=yes` with `checksum_algorithm=md5` to return an md5 hash under the `checksum` return value.
       name: get_md5
     - defaultValue: "True"
-      description: Whether to return a checksum of the file (default sha1)
+      description: Whether to return a checksum of the file (default sha1).
       name: get_checksum
     - auto: PREDEFINED
       defaultValue: sha1
@@ -3951,7 +3951,7 @@ script:
         Whether to follow symlinks or junction points.
         In the case of `path` pointing to another link, then that will be followed until no more links are found.
       name: follow
-    description: Get information about Windows files
+    description: Get information about Windows files.
     name: win-stat
     outputs:
     - contextPath: MicrosoftWindows.stat.attributes
@@ -4047,7 +4047,7 @@ script:
       name: prefix
     - description: Suffix of file/directory name created by module.
       name: suffix
-    description: Creates temporary files and directories
+    description: Creates temporary files and directories.
     name: win-tempfile
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4111,7 +4111,7 @@ script:
         It defaults to `utf-8`, but any encoding supported by python can be used.
         The source template file must always be encoded using `utf-8`, for homogeneity.
       name: output_encoding
-    description: Template a file out to a remote server
+    description: Template a file out to a remote server.
     name: win-template
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4120,10 +4120,10 @@ script:
       required: true
     - description: |-
         Timezone to set to.
-        Example: Central Standard Time
+        Example: Central Standard Time.
       name: timezone
       required: true
-    description: Sets Windows machine timezone
+    description: Sets Windows machine timezone.
     name: win-timezone
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4150,7 +4150,7 @@ script:
     - defaultValue: Notification HH:mm
       description: The notification title, which appears in the pop up..
       name: title
-    description: Sends Toast windows notification to logged in users on Windows 10 or later hosts
+    description: Sends Toast windows notification to logged in users on Windows 10 or later hosts.
     name: win-toast
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4173,7 +4173,7 @@ script:
       name: recurse
     - description: If this file or directory exists the specified src will not be extracted.
       name: creates
-    description: Unzips compressed files and archives on the Windows node
+    description: Unzips compressed files and archives on the Windows node.
     name: win-unzip
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4219,7 +4219,7 @@ script:
       defaultValue: installed
       description: |-
         Controls whether found updates are downloaded or installed or listed
-        This module also supports Ansible check mode, which has the same effect as setting state=searched
+        This module also supports Ansible check mode, which has the same effect as setting state=searched.
       name: state
       predefined:
       - installed
@@ -4240,7 +4240,7 @@ script:
         Set this to `yes` when using this module with async on Server 2008, 2008 R2, or Windows 7, or on Server 2008 that is not authenticated with basic or credssp.
         Can also be set to `yes` on newer hosts where become does not work due to further privilege restrictions from the OS defaults.
       name: use_scheduled_task
-    description: Download and install Windows updates
+    description: Download and install Windows updates.
     name: win-updates
     outputs:
     - contextPath: MicrosoftWindows.updates.title
@@ -4374,7 +4374,7 @@ script:
         The module will only have access to the user's credentials if using `become` with a password, you are connecting with SSH using a password, or connecting with WinRM using `CredSSP` or `Kerberos with delegation`.
         If not using `become` or a different auth method to the ones stated above, there will be no default credentials available and no proxy authentication will occur.
       name: proxy_use_default_credential
-    description: Interacts with webservices
+    description: Interacts with webservices.
     name: win-uri
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4444,8 +4444,10 @@ script:
       - absent
       - present
       - query
-    description: Manages local Windows user accounts
+    description: Manages local Windows user accounts.
     name: win-user
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
@@ -4512,7 +4514,7 @@ script:
       - add
       - remove
       - set
-    description: Manage Windows User Rights
+    description: Manage Windows User Rights.
     name: win-user-right
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4558,7 +4560,7 @@ script:
     - defaultValue: "300"
       description: The maximum number of seconds to wait for.
       name: timeout
-    description: Waits for a condition before continuing
+    description: Waits for a condition before continuing.
     name: win-wait-for
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4631,7 +4633,7 @@ script:
     - defaultValue: "7"
       description: UDP port to use for magic Wake-on-LAN packet.
       name: port
-    description: Send a magic Wake-on-LAN (WoL) broadcast packet
+    description: Send a magic Wake-on-LAN (WoL) broadcast packet.
     name: win-wakeonlan
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -4641,14 +4643,14 @@ script:
     - description: Name of the package to be installed.
       name: name
       required: true
-    description: Installs packages using Web Platform Installer command-line
+    description: Installs packages using Web Platform Installer command-line.
     name: win-webpicmd
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    description: Get information about the current user and process
+    description: Get information about the current user and process.
     name: win-whoami
     outputs:
     - contextPath: MicrosoftWindows.label.domain_name
@@ -4716,9 +4718,9 @@ script:
     - description: Xpath to select the node or nodes to operate on.
       name: xpath
       required: true
-    description: Manages XML file content on Windows hosts
+    description: Manages XML file content on Windows hosts.
     name: win-xml
-  dockerimage: demisto/ansible-runner:1.0.0.21453
+  dockerimage: demisto/ansible-runner:1.0.0.3456168
   script: ''
   subtype: python3
   type: python

@@ -10,16 +10,31 @@ from CommonServerPython import *
 logging.getLogger("transformers").setLevel(logging.ERROR)
 
 FASTTEXT_MODEL_TYPE = "FASTTEXT_MODEL_TYPE"
-TORCH_TYPE = "torch"
 UNKNOWN_MODEL_TYPE = "UNKNOWN_MODEL_TYPE"
+TORCH_TYPE = "torch_phishing"
+FASTTEXT_TYPE = "fasttext_phishing"
 
 
 def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
 
-def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> tuple[dict, str]:
-    def load_from_models(model_name: str) -> None | tuple[dict, str]:
+def update_model_in_server(model_data, model_type, model_name):
+    res = demisto.executeCommand(
+        "createMLModel",
+        {
+            "modelData": model_data,
+            "modelName": model_name,
+            "modelType": model_type,
+        },
+    )
+    if is_error(res):
+        raise DemistoException(f"Unable to update model: {res}")
+    demisto.debug(f"Updated model {model_name!r}: {res=}")
+
+
+def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> tuple[str, str]:
+    def load_from_models(model_name: str) -> None | tuple[str, str]:
         res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})
         if is_error(res_model):
             demisto.debug(get_error(res_model))
@@ -120,10 +135,17 @@ def predict_phishing_words(
     set_incidents_fields=False,
 ):
     model_data, model_type = get_model_data(model_name, model_store_type, is_return_error)
-    if model_type.strip() == "" or model_type.strip() == "Phishing":
-        model_type = FASTTEXT_MODEL_TYPE
-    if model_type not in [FASTTEXT_MODEL_TYPE, TORCH_TYPE, UNKNOWN_MODEL_TYPE]:
-        model_type = UNKNOWN_MODEL_TYPE
+
+    if model_type in ("Phishing", "torch"):
+        model_data, model_type = demisto_ml.renew_model(model_data.encode(), model_type)
+        update_model_in_server(model_data, model_type, model_name)
+
+    model_type = {
+        "": FASTTEXT_MODEL_TYPE,
+        FASTTEXT_TYPE: FASTTEXT_MODEL_TYPE,
+        TORCH_TYPE: TORCH_TYPE,
+        UNKNOWN_MODEL_TYPE: UNKNOWN_MODEL_TYPE,
+    }.get(model_type.strip(), UNKNOWN_MODEL_TYPE)
 
     phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
 
@@ -219,8 +241,8 @@ def predict_single_incident_full_output(
     explain_result_hr = {}
     explain_result_hr["TextTokensHighlighted"] = highlighted_text_markdown
     explain_result_hr["Label"] = predicted_label
-    explain_result_hr["Probability"] = "%.2f" % predicted_prob  # noqa: UP031
-    explain_result_hr["Confidence"] = "%.2f" % predicted_prob  # noqa: UP031
+    explain_result_hr["Probability"] = f"{predicted_prob:.2f}"
+    explain_result_hr["Confidence"] = f"{predicted_prob:.2f}"
     explain_result_hr["PositiveWords"] = ", ".join([w.lower() for w in positive_words])
     explain_result_hr["NegativeWords"] = ", ".join([w.lower() for w in negative_words])
     incident_context = demisto.incidents()[0]
@@ -257,11 +279,7 @@ def find_words_contain_tokens(positive_tokens, words_to_token_maps):
 
 
 def try_get_incident_field(field):
-    value = ""
-    incident = demisto.incident()
-    if "CustomFields" in incident and incident["CustomFields"] is not None and field in incident["CustomFields"]:
-        value = incident["CustomFields"][field]
-    return value
+    return dict_safe_get(demisto.incident(), ["CustomFields", field]) or ""
 
 
 def main():
@@ -286,7 +304,6 @@ def main():
         demisto.args()["returnError"] == "true",
         demisto.args().get("setIncidentFields", "false") == "true",
     )
-
     return result
 
 

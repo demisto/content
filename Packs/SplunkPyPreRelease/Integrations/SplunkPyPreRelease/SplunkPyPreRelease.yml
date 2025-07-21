@@ -91,6 +91,7 @@ configuration:
   display: Incident Mirroring Direction
   hidden:
   - marketplacev2
+  - platform
   name: mirror_direction
   options:
   - None
@@ -104,6 +105,7 @@ configuration:
   display: Close Mirrored XSOAR Incident
   hidden:
   - marketplacev2
+  - platform
   name: close_incident
   type: 8
   required: false
@@ -112,6 +114,7 @@ configuration:
   display: Close Mirrored Splunk Notable Event
   hidden:
   - marketplacev2
+  - platform
   name: close_notable
   type: 8
   required: false
@@ -176,7 +179,7 @@ configuration:
   additionalinfo: Use this parameter to specify a list of comma separated fields, which together are a unique identifier for the events you with to fetch.
   required: false
 description: Runs queries on Splunk servers.
-display: SplunkPy Prerelease (Beta)
+display: SplunkPyPreRelease (Beta)
 name: SplunkPyPreRelease
 script:
   commands:
@@ -343,7 +346,7 @@ script:
     description: Configures the KV store fields.
     name: splunk-kv-store-collection-config
   - arguments:
-    - description: 'The data to add to the KV store collection, according to the collection JSON format, e.g., [{"name": "Splunk HQ", "id": 456, "address": { "street": "340 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "121212"}}, {"name": "Splunk HQ", "id": 123, "address": { "street": "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}]'
+    - description: 'The data to add to the KV store collection, according to the collection JSON format, e.g., [{"name": "Splunk HQ", "id": 456, "address": { "street": "340 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "121212"}}, {"name": "Splunk HQ", "id": 123, "address": { "street": "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}].'
       name: kv_store_data
       required: true
     - description: The name of the KV store collection.

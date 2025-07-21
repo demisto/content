@@ -1623,13 +1623,9 @@ def fetch_incidents(client: Client, last_run: dict, params: dict) -> tuple[dict,
 
     if results:
         next_run.pop("id", None)
+        next_run.pop("page_number", None)
         next_run["ids"] = ids
-        if len(results) < int(params.get("max_fetch")) or not next_run.get("updated_at"):  # type:ignore
-            next_run["updated_at"] = results[-1].get("attributes", {}).get("updated_at")
-            next_run["page_number"] = 1
-        else:
-            next_run["page_number"] = last_run.get("page_number", 1) + 1
-
+        next_run["updated_at"] = results[-1].get("attributes", {}).get("updated_at")
     return next_run, incidents
 
 

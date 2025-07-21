@@ -1,0 +1,144 @@
+sectionorder:
+- Connect
+- Collect
+category: Cloud Services
+commonfields:
+  id: GoogleGemini
+  version: -1
+configuration:
+- defaultvalue: https://generativelanguage.googleapis.com
+  display: Server URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- name: api_key
+  displaypassword: API Key
+  required: true
+  type: 9
+  section: Connect
+  hiddenusername: true
+  additionalinfo: "API Key to access the service REST API."
+- defaultvalue: gemini-2.5-flash-preview-05-20
+  additionalinfo: Please choose only one model, or select another from the list https://ai.google.dev/models.
+  display: Default Model
+  name: model
+  options:
+  # Stable models
+  - gemini-2.0-flash
+  - gemini-2.0-flash-lite
+  - gemini-1.5-flash
+  - gemini-1.5-flash-8b
+  - gemini-1.5-pro
+  # Preview models
+  - gemini-2.5-flash-preview-05-20
+  - gemini-2.5-pro-preview-06-05
+  - gemini-2.0-flash-preview-image-generation
+  # Embedding models
+  - text-embedding-004
+  - models/embedding-001
+  # Other specialized models
+  - models/aqa
+  required: true
+  section: Collect
+  type: 16
+- additionalinfo: The maximum number of tokens that can be generated for the response (1-10000). Defaults to 1024.
+  defaultvalue: '1024'
+  display: Max tokens
+  name: max_tokens
+  required: true
+  section: Collect
+  type: 0
+- additionalinfo: Controls the degree of randomness in token selection. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2.0) increase randomness and creativity.
+  advanced: true
+  display: Temperature
+  name: temperature
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Changes how the model selects tokens for output. Tokens are selected from most to least probable until their cumulative probability equals the topP value (0.0-1.0). Lower values for less random responses, higher values for more random responses.
+  advanced: true
+  display: Top P
+  name: top_p
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Consider only the top K most probable tokens when generating text. Affects the diversity of the generated content.
+  advanced: true
+  display: Top K
+  name: top_k
+  required: false
+  section: Collect
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+description: |-
+  Google Gemini LLM Integration for AI-powered analysis and chat capabilities.
+
+  This integration provides access to Google Gemini's large language models for:
+  - AI-powered chat conversations
+  - Text analysis and generation
+  - Natural language processing tasks
+
+  Supported models include Gemini 2.0 Flash, Gemini 1.5 Pro, and various preview models.
+display: Google Gemini
+name: GoogleGemini
+script:
+  commands:
+  - arguments:
+    - description: The prompt or question to send to the AI model.
+      name: prompt
+      required: true
+    - description: The Gemini model to use for this request. If not specified, uses the default model from configuration.
+      name: model
+      required: false
+    - description: |-
+        Optional conversation history in JSON format. Array of message objects with 'role' (user/model) and 'parts' containing text.
+        Example: [{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there!"}]}].
+      name: history
+      required: false
+    - defaultValue: false
+      description: If true, saves the complete conversation (including the current exchange) to context under GoogleGemini.Chat.History for reuse in subsequent calls.
+      name: save_conversation
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    description: Send a chat message to the Gemini AI model.
+    name: google-gemini-send-message
+    outputs:
+    - contextPath: GoogleGemini.Chat.Prompt
+      description: The original prompt sent to the model.
+      type: String
+    - contextPath: GoogleGemini.Chat.Response
+      description: The AI model's response.
+      type: String
+    - contextPath: GoogleGemini.Chat.Model
+      description: The model used for generation.
+      type: String
+    - contextPath: GoogleGemini.Chat.Temperature
+      description: The temperature setting used.
+      type: Number
+    - contextPath: GoogleGemini.Chat.History
+      description: Complete conversation history in Gemini format, updated when save_conversation=true. Can be used as input for the history argument in subsequent calls.
+      type: Unknown
+    - contextPath: GoogleGemini.Chat.ConversationId
+      description: A unique identifier, used to identify the chat session.
+      type: String
+  dockerimage: demisto/python3:3.12.8.3296088
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

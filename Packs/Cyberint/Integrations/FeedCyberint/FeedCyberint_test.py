@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import re
 from unittest import mock
 from unittest.mock import MagicMock, patch
@@ -510,7 +510,7 @@ def test_is_execution_time_exceeded_within_limit():
     """
     Test is_execution_time_exceeded when execution time is within the timeout limit.
     """
-    start_time = datetime.utcnow() - timedelta(seconds=5)  # Within timeout
+    start_time = datetime.now(UTC) - timedelta(seconds=5)  # Within timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time is within the limit but returned True."
 
@@ -519,7 +519,7 @@ def test_is_execution_time_exceeded_exceeded_limit():
     """
     Test is_execution_time_exceeded when execution time exceeds the timeout limit.
     """
-    start_time = datetime.utcnow() - timedelta(seconds=15)  # Exceeds timeout
+    start_time = datetime.now(UTC) - timedelta(seconds=15)  # Exceeds timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time exceeded the limit but returned False."
 
@@ -530,13 +530,20 @@ def test_is_execution_time_exceeded_mocked(mock_datetime):
     Test is_execution_time_exceeded with mocked datetime to simulate precise timing.
     """
     start_time = datetime(2024, 1, 1, 12, 0, 0)
-    mock_datetime.utcnow.return_value = datetime(2024, 1, 1, 12, 0, 15)  # 15 seconds later
+
+    # Mock datetime.now to return a datetime with 15 seconds difference
+    mock_now = MagicMock(return_value=datetime(2024, 1, 1, 12, 0, 15))
+    mock_datetime.now = mock_now
+
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time exceeded the limit but returned False."
+    mock_now.assert_called_with(UTC)
 
-    mock_datetime.utcnow.return_value = datetime(2024, 1, 1, 12, 0, 5)  # 5 seconds later
+    # Change the mock to return a datetime with only 5 seconds difference
+    mock_now.return_value = datetime(2024, 1, 1, 12, 0, 5)
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time is within the limit but returned False."
+    mock_now.assert_called_with(UTC)
 
 
 def test_get_yesterday_time():

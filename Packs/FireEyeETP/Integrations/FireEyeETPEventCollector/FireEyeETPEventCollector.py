@@ -11,7 +11,10 @@ urllib3.disable_warnings()
 
 VENDOR = "fireeye"
 PRODUCT = "etp"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+EVENTS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # for "_TIME" field in the events dataset
+ACTIVITY_LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%zZ"  # for "from" and "to" time filters in user activity log API
+
 LOG_LINE = f"{VENDOR}_{PRODUCT}:"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 1000
@@ -105,6 +108,11 @@ class Client(BaseClient):  # pragma: no cover
         time = {"from": from_LastModifiedOn}
         if to_LastModifiedOn:
             time["to"] = to_LastModifiedOn
+        else:
+            # API requires "to" time
+            demisto.debug(f"{LOG_LINE} empty to_LastModifiedOn. Setting to now.")
+            utc_now = datetime.now(timezone.utc)
+            time["to"] = datetime.strftime(utc_now, ACTIVITY_LOG_DATE_FORMAT)
 
         req_body = assign_params(
             size=size,
@@ -283,7 +291,7 @@ class EventCollector:
         demisto.debug(f"Converting {start_time=} to string")
         # formatting to iso z format without microseconds due to api lack of support,
         # api response should be already in this format.
-        iso_start_time = f"{datetime.strftime(start_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+        iso_start_time = datetime.strftime(start_time.astimezone(timezone.utc), ACTIVITY_LOG_DATE_FORMAT)
 
         while results_left and ((not iso_end_time) or iso_end_time >= iso_start_time):
             demisto.debug(f"{LOG_LINE} getting user activity: {results_left=}, {iso_start_time=}, {iso_end_time=}")
@@ -314,7 +322,7 @@ class EventCollector:
                     # Getting last item's modification date, Assuming Asc order.
                     # We have to format as the response are not have to be in invalid format
                     end_time = parse_special_iso_format(dedup_data[-1]["attributes"]["time"])
-                    iso_end_time = f"{datetime.strftime(end_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+                    iso_end_time = datetime.strftime(end_time.astimezone(timezone.utc), ACTIVITY_LOG_DATE_FORMAT)
 
                 else:
                     demisto.debug("Avoiding infinite loop due to multiple alerts in the same time blocking pagination.")
@@ -569,7 +577,7 @@ def format_activity_log(events: list[dict]):
         # Removing Z letter and adding ":" to get valid iso format
         valid_event_time = f"{event_time[:-3]}:{event_time[-3:-1]}"
         create_time = datetime.fromisoformat(valid_event_time)
-        event_data["_TIME"] = create_time.strftime(DATE_FORMAT) if create_time else None
+        event_data["_TIME"] = create_time.strftime(EVENTS_DATE_FORMAT) if create_time else None
         event_data["event_type"] = "activity"
 
 

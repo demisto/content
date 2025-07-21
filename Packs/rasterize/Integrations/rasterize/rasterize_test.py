@@ -34,6 +34,8 @@ def util_load_json(path):
 class MockPychromeEventHandler:
     is_mailto = False
     is_private_network_url = False
+    document_url = ""
+    path = ""
 
 
 class MockTab:
@@ -892,7 +894,7 @@ def test_remove_leading_zeros_from_ip_addresses(test_input: str, expected: str):
     assert remove_leading_zeros_from_ip_addresses(test_input) == expected
 
 
-def test_handle_request_paused(mocker):
+def test_handle_request_paused(mocker: MockerFixture):
     """
     Given:
         - cloudflare.com as BLOCKED_URLS parameter.
@@ -909,6 +911,7 @@ def test_handle_request_paused(mocker):
     mock_fetch.disable = MagicMock()
     mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
     mock_tab.Fetch = mock_fetch
+    mock_tab.id = "mock_tab_id"
     tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
 
     tab_event_handler.handle_request_paused(**kwargs)

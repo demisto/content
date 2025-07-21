@@ -430,9 +430,14 @@ def main() -> None:
     tlp_color = params.get("tlp_color") or "CLEAR"
     interval = validate_interval(arg_to_number(params.get("feedFetchInterval")) or 1440)
 
+    auth_key = demisto.params().get("credentials", {}).get("password")
+
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(base_url=base_url)
+        if not auth_key:
+            raise ValueError("Missing required parameter Auth Key. Please set this parameter in the instance configuration.")
+
+        client = Client(base_url=base_url, headers={"Auth-Key": auth_key})
 
         if command == "test-module":
             result = client.test_module()

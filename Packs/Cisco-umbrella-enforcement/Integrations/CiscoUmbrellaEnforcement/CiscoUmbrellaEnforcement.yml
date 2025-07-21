@@ -63,6 +63,8 @@ script:
       name: source
     description: Posts a malware event to the API for processing and optionally adding to a customer's domain lists.
     name: umbrella-domain-event-add
+    compliantpolicies:
+    - Domain Blockage
   - arguments:
     - description: Number of page to return. Default is "1".
       name: page
@@ -88,9 +90,11 @@ script:
       name: name
     description: Delete domain.
     name: umbrella-domain-delete
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: true
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

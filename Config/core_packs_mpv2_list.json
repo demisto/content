@@ -1,5 +1,6 @@
 {
   "core_packs_list": [
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonPlaybooks",
@@ -26,6 +27,7 @@
     "CortexResponseAndRemediation"
   ],
   "update_core_packs_list": [
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonPlaybooks",

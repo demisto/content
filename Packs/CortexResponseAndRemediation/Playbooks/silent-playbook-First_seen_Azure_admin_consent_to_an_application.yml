@@ -29,8 +29,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 421,
-          "y": 1166
+          "x": 422,
+          "y": 956
         }
       }
     note: false
@@ -55,7 +55,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "95"
+      - "139"
     scriptarguments:
       alert_ids:
         simple: ${alert.id}
@@ -67,8 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 665,
-          "y": 1300
+          "x": 666,
+          "y": 1090
         }
       }
     note: false
@@ -869,8 +869,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 72,
-          "y": 1300
+          "x": 73,
+          "y": 1090
         }
       }
     note: false
@@ -942,25 +942,27 @@ tasks:
         simple: AppID
       value:
         complex:
-          root: Core.OriginalAlert.event.raw_log.additionalDetails
+          root: Core.OriginalAlert.event.raw_log.properties.additionalDetails
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Core.OriginalAlert.event.raw_log.additionalDetails.key
+                  simple: Core.OriginalAlert.event.raw_log.properties.additionalDetails.key
                 iscontext: true
               right:
                 value:
                   simple: AppId
               ignorecase: true
           accessor: value
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 665,
-          "y": 1419
+          "x": 1062,
+          "y": 1372
         }
       }
     note: false
@@ -2825,6 +2827,105 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: 683c67f8-3263-4c2d-a922-9f01a0079e93
+    type: condition
+    task:
+      id: 683c67f8-3263-4c2d-a922-9f01a0079e93
+      version: -1
+      name: Check AppId location in alert context
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      additional details:
+      - "140"
+      properties:
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: properties
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.raw_log.properties.additionalDetails.value
+            iscontext: true
+    - label: additional details
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.raw_log.additionalDetails.value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 666,
+          "y": 1212
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "140":
+    id: "140"
+    taskid: e1fc6e46-3805-4cdf-8540-3fabc76c307b
+    type: regular
+    task:
+      id: e1fc6e46-3805-4cdf-8540-3fabc76c307b
+      version: -1
+      name: Extract AppId
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      key:
+        simple: AppID
+      value:
+        complex:
+          root: Core.OriginalAlert.event.raw_log.additionalDetails
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.OriginalAlert.event.raw_log.additionalDetails.key
+                iscontext: true
+              right:
+                value:
+                  simple: AppId
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 666,
+          "y": 1372
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2849,10 +2950,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3874,
+        "height": 4084,
         "width": 2486,
         "x": -244,
-        "y": 1166
+        "y": 956
       }
     }
   }

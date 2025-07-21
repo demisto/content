@@ -847,7 +847,7 @@ def format_http_transaction_list(client):
 def main():
     params = demisto.params()
 
-    api_key = params.get("apikey") or (params.get("creds_apikey") or {}).get("password", "")
+    api_key = (params.get("creds_apikey") or {}).get("password", "") or params.get("apikey")
     # to safeguard the visibility of the scan,
     # if the customer did not choose a visibility, we will set it to private by default.
     scan_visibility = params.get("scan_visibility", "private")

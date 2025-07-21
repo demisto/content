@@ -1,5 +1,6 @@
 {
   "core_packs_list": [
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonDashboards",
@@ -29,6 +30,7 @@
     "rasterize"
   ],
   "update_core_packs_list": [
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonDashboards",

@@ -1,4 +1,5 @@
 import pytest
+from pytest_mock import MockerFixture
 from FeedAzure import AZUREJSON_URL, Client, fetch_indicators_command
 
 
@@ -105,7 +106,10 @@ EXTRACT_METADATA_PACK = [
 ]
 
 
-@pytest.mark.parametrize("regions_list, services_list, values_group_section, expected_result", EXTRACT_METADATA_PACK)
+@pytest.mark.parametrize(
+    "regions_list, services_list, values_group_section, expected_result",
+    EXTRACT_METADATA_PACK,
+)
 def test_extract_metadata(regions_list, services_list, values_group_section, expected_result):
     client = Client(regions_list, services_list)
     assert client.extract_metadata_of_indicators_group(values_group_section) == expected_result
@@ -218,7 +222,10 @@ EXTRACT_INDICATORS_PACK = [
 ]
 
 
-@pytest.mark.parametrize("regions_list, services_list, values_group_section, expected_result", EXTRACT_INDICATORS_PACK)
+@pytest.mark.parametrize(
+    "regions_list, services_list, values_group_section, expected_result",
+    EXTRACT_INDICATORS_PACK,
+)
 def test_extract_indicators(regions_list, services_list, values_group_section, expected_result):
     client = Client(regions_list, services_list)
     assert client.extract_indicators_from_values_dict(values_group_section) == expected_result
@@ -226,18 +233,34 @@ def test_extract_indicators(regions_list, services_list, values_group_section, e
 
 indicator_objects = [
     (
-        [{"value": 1}, {"value": 1, "some_key": 2, "another_key": 3}, {"value": 2, "some_key": 2}],
+        [
+            {"value": 1},
+            {"value": 1, "some_key": 2, "another_key": 3},
+            {"value": 2, "some_key": 2},
+        ],
         [{"value": 1, "some_key": 2, "another_key": 3}, {"value": 2, "some_key": 2}],
     ),
     (
-        [{"value": 1, "another_key": 3}, {"value": 1, "some_key": 2}, {"value": 2, "some_key": 2}],
+        [
+            {"value": 1, "another_key": 3},
+            {"value": 1, "some_key": 2},
+            {"value": 2, "some_key": 2},
+        ],
         [{"value": 1, "another_key": 3, "some_key": 2}, {"value": 2, "some_key": 2}],
     ),
     (
-        [{"value": 2}, {"value": 1, "some_key": 2}, {"value": 2, "some_key": 2}, {"value": 1}],
+        [
+            {"value": 2},
+            {"value": 1, "some_key": 2},
+            {"value": 2, "some_key": 2},
+            {"value": 1},
+        ],
         [{"value": 2, "some_key": 2}, {"value": 1, "some_key": 2}],
     ),
-    ([{"value": 1, "some_key": 2}, {"value": 2, "some_key": 2}], [{"value": 1, "some_key": 2}, {"value": 2, "some_key": 2}]),
+    (
+        [{"value": 1, "some_key": 2}, {"value": 2, "some_key": 2}],
+        [{"value": 1, "some_key": 2}, {"value": 2, "some_key": 2}],
+    ),
 ]
 
 
@@ -347,6 +370,49 @@ def test_fetch_indicators_command(requests_mock, enrichment_excluded):
     requests_mock.get(url, json=mock_json)
     client = Client(regions_list, services_list)
     indicators, _ = fetch_indicators_command(
-        client, feedTags=["test"], tlp_color="test_color", enrichment_excluded=enrichment_excluded
+        client,
+        feedTags=["test"],
+        tlp_color="test_color",
+        enrichment_excluded=enrichment_excluded,
     )
     assert indicators == expected
+
+
+def test_download_link_regex(mocker):
+    """
+    Given:
+        - A mock response from the endpoint.
+    When:
+        - call the get_azure_download_link method.
+    Then:
+        - Ensure the link is valid.
+    """
+    client = Client(["All"], ["All"])
+    with open("./test_data/response_mock_test_regex.txt") as f:
+        response = f.read()
+    mocker.patch("CommonServerPython.BaseClient._http_request", return_value=response)
+    assert (
+        client.get_azure_download_link() == "https://download.microsoft.com/download"
+        "/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/"
+        "ServiceTags_Public_20200504.json"
+    )
+
+
+def test_get_azure_download_link_from_cache(mocker: MockerFixture):
+    """
+    Given:
+        - The request for the Azure HTML page returns an error.
+    When:
+        - The get_azure_download_link method is called.
+    Then:
+        - Ensure the link is loaded from the integration context.
+    """
+    mocker.patch("FeedAzure.load_azure_download_link", return_value="cached_link")
+
+    class MockerFixture:
+        def _http_request(*args, **kwargs):
+            raise Exception
+
+    res = Client.get_azure_download_link(MockerFixture)
+
+    assert res == "cached_link"

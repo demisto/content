@@ -23,7 +23,7 @@ In order to use the collector, use the [XDRC (XDR Collector)](#xdrc-xdr-collecto
 
 ### XDRC (XDR Collector)
 
-To create or configure the Filebeat collector, use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2) and [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Add-an-XDR-Collector-Profile-for-Windows).
+To create or configure the Filebeat collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/XDR-Collectors) and [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Add-an-XDR-Collector-Profile-for-Windows).
 
 You can configure the vendor and product by replacing [vendor]\_[product]\_raw with *microsoft_dhcp_raw*.
 

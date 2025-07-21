@@ -1,0 +1,24 @@
+[MODEL: dataset = netmotion_vpn_raw]
+  alter event_type = arrayindex(regextract(message,"(.*?):") , 0),
+        address = arrayindex(regextract(message,"(?:address|ipv4)\s+\[?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})") ,0),
+        imp_handle = arrayindex(regextract(message,"(?:Indicating session|IMP handle)\:?\s?\[?([^,\]\s]*)\]?") ,0),
+        how = arrayindex(regextract(message,"how\s+(.*),\s+reason") ,0),
+        reason = arrayindex(regextract(message,"reason (.*)\.?") ,0),
+        pid = arrayindex(regextract(message,"Pid \[?([^,\]]*)\]?") ,0),
+        device = arrayindex(regextract(message,"device\s+[\"\[]?([^\s\"\]]+)") ,0),
+        user = arrayindex(regextract(message,"user\:?\s?\[?\"?([^,\]\"]*)\"?\]?") ,0),
+        bind_id = arrayindex(regextract(message,"(?:BindId)\:?\s?\(?([^,\)\s]*)") ,0)
+
+| alter xdm.event.type = event_type,
+        xdm.source.ipv4 = arrayindex(regextract(address,"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),0),
+        xdm.network.session_id = imp_handle,
+        xdm.session_context_id = bind_id,
+        xdm.source.host.device_id = pid,
+        xdm.source.host.hostname = device,
+        xdm.observer.name = host -> name,
+        xdm.source.user.username = user,
+        xdm.observer.version = agent -> version,
+        xdm.observer.unique_identifier = agent -> id,
+        xdm.event.outcome_reason = reason,
+        xdm.event.outcome = how,
+        xdm.event.log_level = log ->level;

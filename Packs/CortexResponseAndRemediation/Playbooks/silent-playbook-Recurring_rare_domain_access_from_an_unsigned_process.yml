@@ -400,7 +400,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+      - "36"
     scriptarguments:
       agent_id:
         simple: ${alert.agentid}
@@ -467,7 +467,7 @@ tasks:
       {
         "position": {
           "x": 316,
-          "y": 1748
+          "y": 1511
         }
       }
     note: false
@@ -495,7 +495,7 @@ tasks:
       {
         "position": {
           "x": 316,
-          "y": 1891
+          "y": 1666
         }
       }
     note: false
@@ -734,144 +734,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 2d14ffaa-3e85-4203-ae76-12f9107e26e0
-    type: regular
-    task:
-      id: 2d14ffaa-3e85-4203-ae76-12f9107e26e0
-      version: -1
-      name: Add Suspicious Domain Monitoring
-      description: Send HTTP POST request.
-      script: '|||core-api-post'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      body:
-        simple: |-
-          {
-            "request_data": "indicator,type,severity,expiration_date\n${Core.OriginalAlert.[0].event.domain},DOMAIN_NAME,MEDIUM,${iocExpiration}","validate":"true"
-          }
-      uri:
-        simple: /public_api/v1/indicators/insert_csv
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 316,
-          "y": 1608
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: 366fc279-69dc-40aa-b530-933f291c6b0a
-    type: regular
-    task:
-      id: 366fc279-69dc-40aa-b530-933f291c6b0a
-      version: -1
-      name: Calculate IOC monitoring expiration
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      append:
-        simple: "false"
-      key:
-        simple: iocExpiration
-      value:
-        complex:
-          root: TimeNow
-          transformers:
-          - operator: ModifyDateTime
-            args:
-              variation:
-                value:
-                  simple: in 2 weeks
-          - operator: toUnix
-          - operator: multiply
-            args:
-              by:
-                value:
-                  simple: "1000"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 316,
-          "y": 1470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 86cd7d40-65d9-4ece-8899-c8f03621e78b
-    type: regular
-    task:
-      id: 86cd7d40-65d9-4ece-8899-c8f03621e78b
-      version: -1
-      name: Get Current Time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      dateFormat:
-        simple: ISO
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 316,
-          "y": 1325
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 221ecafa-0a11-42a9-965b-36baca901e0f
+    taskid: e38d0532-815e-4955-841e-4e79f3ab5d2a
     type: regular
     task:
-      id: 221ecafa-0a11-42a9-965b-36baca901e0f
+      id: e38d0532-815e-4955-841e-4e79f3ab5d2a
       version: -1
       name: Get Actor Hash WF Category
       description: Returns a verdict for a hash.
@@ -902,6 +770,47 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerror: true
+  "36":
+    id: "36"
+    taskid: c6acf807-fd1e-4b28-aab9-2c5a4c7d90b2
+    type: regular
+    task:
+      id: c6acf807-fd1e-4b28-aab9-2c5a4c7d90b2
+      version: -1
+      name: Add Suspicious Domain Monitoring
+      description: Upload the IOC rules to XSIAM. When the ioc_object is defined, disregard any other provided arguments, as the ioc_object takes precedence. Validate the indicator parameters when ioc_object is used. If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format. Adding a rule with the same indicator, but with different parameters, will update the existing rule.
+      script: '|||core-add-indicator-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expiration_date:
+        simple: 14 days
+      indicator:
+        simple: ${Core.OriginalAlert.[0].event.domain}
+      severity:
+        simple: MEDIUM
+      type:
+        simple: DOMAIN_NAME
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 316,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -912,7 +821,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2181,
+        "height": 1956,
         "width": 1945.5,
         "x": -129,
         "y": -230

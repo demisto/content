@@ -1,0 +1,557 @@
+category: Utilities
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: WizDefend
+  version: -1
+defaultmapperin: WizDefend Mapper
+configuration:
+- name: incidentType
+  display: Incident type
+  defaultvalue: WizDefend Detection
+  type: 13
+  required: false
+  section: Collect
+- name: credentials
+  display: Service Account ID
+  type: 9
+  required: true
+  section: Connect
+- name: auth_endpoint
+  display: Authentication Endpoint
+  type: 0
+  required: true
+  section: Connect
+  defaultvalue: https://auth.app.wiz.io/oauth/token
+- name: api_endpoint
+  display: API Endpoint
+  required: true
+  type: 0
+  section: Connect
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  defaultvalue: 10
+  type: 19
+  required: false
+  section: Collect
+  advanced: true
+- name: first_fetch
+  display: First fetch timestamp (maximum 2 days)
+  additionalinfo: 'Specifies how far back to retrieve detections during the first fetch. Format: <number> <time unit>, e.g., "12 hours", "1 day". Maximum allowed is 2 days.'
+  type: 0
+  required: false
+  defaultvalue: 12 hours
+  section: Collect
+- name: max_fetch
+  defaultvalue: '1000'
+  display: Max Detections to Fetch
+  type: 0
+  required: false
+  additionalinfo: 'Maximum number of detections to fetch per run. Note that XSOAR fetch process has a 5-minute timeout, so fetching large numbers of detections may cause timeouts. Recommended range is 10-1000.'
+  section: Collect
+- name: severity
+  additionalinfo: 'The system will fetch detections of the selected severity level and all higher severity levels.'
+  display: Detection severities to fetch.
+  options:
+  - Critical
+  - High
+  - Medium
+  - Low
+  defaultvalue: High,Critical
+  type: 16
+  required: true
+  section: Collect
+- name: type
+  display: Type of detections to fetch.
+  additionalinfo: 'Select the type of detections to fetch from Wiz. "GENERATED THREAT" fetches detections that resulted in actual threats being identified. "DID NOT GENERATE THREAT" fetches detections that matched rules but did not result in threats. Leave as "None" to fetch all detection types.'
+  options:
+  - None
+  - GENERATED THREAT
+  - DID NOT GENERATE THREAT
+  defaultvalue: GENERATED THREAT
+  type: 15
+  required: false
+  section: Collect
+- name: cloud_account_or_cloud_organization
+  display: Detection cloud account or cloud organization to fetch.
+  type: 0
+  required: false
+  section: Collect
+- name: platform
+  display: Detection platforms to fetch.
+  options:
+  - AWS
+  - GCP
+  - Azure
+  - OCI
+  - Alibaba
+  - vSphere
+  - OpenStack
+  - AKS
+  - EKS
+  - GKE
+  - Kubernetes
+  - OpenShift
+  - OKE
+  - Linode
+  - AzureDevOps
+  - GitHub
+  - GitLab
+  - Bitbucket
+  - Terraform
+  - OpenAI
+  - Snowflake
+  - MongoDBAtlas
+  - Databricks
+  - Okta
+  - Cloudflare
+  - Microsoft365
+  - Wiz
+  - ACK
+  - SelfHosted
+  - LKE
+  type: 16
+  section: Collect
+- name: origin
+  display: Cloud event origin to fetch.
+  options:
+  - WIZ_SENSOR
+  - WIZ_ADMISSION_CONTROLLER
+  - WIZ_FILE_INTEGRITY_MONITORING
+  - AWS_GUARD_DUTY
+  - AWS_CLOUDTRAIL
+  - AZURE_DEFENDER_FOR_CLOUD
+  - AZURE_ACTIVITY_LOGS
+  - GCP_SECURITY_COMMAND_CENTER
+  - GCP_AUDIT_LOGS
+  - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
+  - AZURE_ACTIVE_DIRECTORY
+  - GOOGLE_WORKSPACE_AUDIT_LOGS
+  - WIN_SENTINEL_ONE
+  - WIZ_CODE_ANALYZER
+  - WIN_SALT
+  - WIN_NONAME
+  - WIN_CROWD_STRIKE
+  - WIN_TRACEABLE
+  - WIZ_CLI
+  - WIZ_IDE_EXTENSION
+  - WIZ_THREAT_DETECTION
+  - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
+  - WIZ_CUSTOM_INTEGRATION
+  - WIN_AKAMAI_GUARDICORE
+  - OKTA_SYSTEM_LOGS
+  - WIN_SNOWFLAKE
+  - WIN_FALCO
+  - OCI_AUDIT_LOGS
+  - WIZ_VCS_FETCHER
+  - AWS_VPC_FLOW_LOGS
+  - GITHUB_AUDIT_LOGS
+  - WIN_FIRE_TAIL
+  - AZURE_STORAGE_ACCOUNT
+  - AZURE_KEY_VAULT
+  - AWS_RESOLVER_QUERY_LOGS
+  - AWS_S3_DATA_EVENTS
+  - GCP_STORAGE_DATA_ACCESS_LOGS
+  - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
+  - WIZ_BROWSER_EXTENSION
+  - WIN_SALT_SECURITY
+  type: 16
+  required: false
+  section: Collect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+description: Agentless cloud security platform for detecting and addressing cloud issues, detections, and threats.
+display: WizDefend
+name: WizDefend
+script:
+  commands:
+  - name: wiz-defend-get-detections
+    description: Retrieve Wiz security detections based on specified filters.
+    arguments:
+    - name: creation_minutes_back
+      description: Time window in minutes to retrieve detections (range 10-600).
+      defaultValue: 10
+      required: false
+    - name: type
+      description: Type of detections to fetch.
+      predefined:
+      - GENERATED THREAT
+      - DID NOT GENERATE THREAT
+      defaultValue: GENERATED THREAT
+      auto: PREDEFINED
+    - name: issue_id
+      description: The internal Wiz Issue ID of the Detections.
+      required: false
+    - name: cloud_account_or_cloud_organization
+      description: Detection cloud account or cloud organization to fetch.
+      required: false
+    - name: origin
+      description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
+      predefined:
+      - WIZ_SENSOR
+      - WIZ_ADMISSION_CONTROLLER
+      - WIZ_FILE_INTEGRITY_MONITORING
+      - AWS_GUARD_DUTY
+      - AWS_CLOUDTRAIL
+      - AZURE_DEFENDER_FOR_CLOUD
+      - AZURE_ACTIVITY_LOGS
+      - GCP_SECURITY_COMMAND_CENTER
+      - GCP_AUDIT_LOGS
+      - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
+      - AZURE_ACTIVE_DIRECTORY
+      - GOOGLE_WORKSPACE_AUDIT_LOGS
+      - WIN_SENTINEL_ONE
+      - WIZ_CODE_ANALYZER
+      - WIN_SALT
+      - WIN_NONAME
+      - WIN_CROWD_STRIKE
+      - WIN_TRACEABLE
+      - WIZ_CLI
+      - WIZ_IDE_EXTENSION
+      - WIZ_THREAT_DETECTION
+      - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
+      - WIZ_CUSTOM_INTEGRATION
+      - WIN_AKAMAI_GUARDICORE
+      - OKTA_SYSTEM_LOGS
+      - WIN_SNOWFLAKE
+      - WIN_FALCO
+      - OCI_AUDIT_LOGS
+      - WIZ_VCS_FETCHER
+      - AWS_VPC_FLOW_LOGS
+      - GITHUB_AUDIT_LOGS
+      - WIN_FIRE_TAIL
+      - AZURE_STORAGE_ACCOUNT
+      - AZURE_KEY_VAULT
+      - AWS_RESOLVER_QUERY_LOGS
+      - AWS_S3_DATA_EVENTS
+      - GCP_STORAGE_DATA_ACCESS_LOGS
+      - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
+      - WIZ_BROWSER_EXTENSION
+      - WIN_SALT_SECURITY
+      auto: PREDEFINED
+    - name: platform
+      description: Get Detections for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
+      predefined:
+      - AWS
+      - GCP
+      - Azure
+      - OCI
+      - Alibaba
+      - vSphere
+      - OpenStack
+      - AKS
+      - EKS
+      - GKE
+      - Kubernetes
+      - OpenShift
+      - OKE
+      - Linode
+      - AzureDevOps
+      - GitHub
+      - GitLab
+      - Bitbucket
+      - Terraform
+      - OpenAI
+      - Snowflake
+      - MongoDBAtlas
+      - Databricks
+      - Okta
+      - Cloudflare
+      - Microsoft365
+      - Wiz
+      - ACK
+      - SelfHosted
+      - LKE
+      auto: PREDEFINED
+      isArray: true
+    - name: resource_id
+      description: Filter detections by specific resource ID.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFORMATIONAL
+      description: Get Detections of a specific severity and above.
+    - name: rule_match_id
+      description: Filter detections by rule match ID (requires valid UUID format).
+      required: false
+    - name: rule_match_name
+      description: Filter detections by matching rule name.
+      required: false
+    - name: project
+      description: Filter Detections by project.
+      required: false
+    outputs:
+    - contextPath: Wiz.Manager.Detections.entitySnapshot
+      description: All resource details.
+      type: String
+    - contextPath: Wiz.Manager.Detections.createdAt
+      description: Detection created at.
+      type: String
+    - contextPath: Wiz.Manager.Detections.id
+      description: Wiz Detection ID.
+      type: String
+    - contextPath: Wiz.Manager.Detections.url
+      description: Wiz Detection URL.
+      type: String
+    - contextPath: Wiz.Manager.Detections.severity
+      description: Wiz Detection severity.
+      type: String
+    - contextPath: Wiz.Manager.Detections.status
+      description: Wiz Detection status.
+      type: String
+  - name: wiz-defend-get-detection
+    description: Retrieve detailed information about a specific Wiz detection by ID.
+    arguments:
+    - description: Wiz internal detection ID to retrieve.
+      name: detection_id
+      isArray: true
+      required: false
+    outputs:
+    - contextPath: Wiz.Manager.Detection.id
+      description: Detection ID in Wiz.
+      type: String
+    - contextPath: Wiz.Manager.Detection.severity
+      description: Detection severity.
+      type: String
+    - contextPath: Wiz.Manager.Detection.description
+      description: Detection description.
+      type: String
+    - contextPath: Wiz.Manager.Detection.createdAt
+      description: Detection creation time.
+      type: Date
+    - contextPath: Wiz.Manager.Detection.resources
+      description: Related resources.
+      type: String
+    - contextPath: Wiz.Manager.Detection.url
+      description: URL to the Wiz Detection in the Wiz console.
+      type: String
+  - name: wiz-defend-get-threat
+    description: Retrieve detailed information about a specific Wiz threat by issue ID.
+    arguments:
+    - description: Wiz internal issue ID to retrieve.
+      name: issue_id
+      isArray: true
+      required: false
+    outputs:
+    - contextPath: Wiz.Manager.Threat.id
+      description: Threat ID in Wiz.
+      type: String
+    - contextPath: Wiz.Manager.Threat.severity
+      description: Threat severity.
+      type: String
+    - contextPath: Wiz.Manager.Threat.description
+      description: Threat description.
+      type: String
+    - contextPath: Wiz.Manager.Threat.createdAt
+      description: Threat creation time.
+      type: Date
+    - contextPath: Wiz.Manager.Threat.resources
+      description: Related resources.
+      type: String
+    - contextPath: Wiz.Manager.Threat.url
+      description: URL to the Wiz Threat in the Wiz console.
+      type: String
+  - name: wiz-defend-get-threats
+    description: Retrieve Wiz threats based on specified filtering criteria.
+    arguments:
+    - name: creation_days_back
+      description: Number of days back to get threats  (range 1-30).
+      defaultValue: 5
+      required: false
+    - name: resource_id
+      description: Filter threats by Wiz resource ID.
+      required: false
+    - name: platform
+      description: Get Threats for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
+      predefined:
+      - AWS
+      - GCP
+      - Azure
+      - OCI
+      - Alibaba
+      - vSphere
+      - OpenStack
+      - AKS
+      - EKS
+      - GKE
+      - Kubernetes
+      - OpenShift
+      - OKE
+      - Linode
+      - AzureDevOps
+      - GitHub
+      - GitLab
+      - Bitbucket
+      - Terraform
+      - OpenAI
+      - Snowflake
+      - MongoDBAtlas
+      - Databricks
+      - Okta
+      - Cloudflare
+      - Microsoft365
+      - Wiz
+      - ACK
+      - SelfHosted
+      - LKE
+      auto: PREDEFINED
+      isArray: true
+    - name: cloud_account_or_cloud_organization
+      description: Threat cloud account or cloud organization to fetch.
+      required: false
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFORMATIONAL
+      description: Minimum threat severity to fetch.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - RESOLVED
+      - REJECTED
+      isArray: true
+      defaultValue: OPEN, IN_PROGRESS
+      description: Filter threats by status (e.g., OPEN, IN_PROGRESS).
+    - name: origin
+      description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
+      predefined:
+      - WIZ_SENSOR
+      - WIZ_ADMISSION_CONTROLLER
+      - WIZ_FILE_INTEGRITY_MONITORING
+      - AWS_GUARD_DUTY
+      - AWS_CLOUDTRAIL
+      - AZURE_DEFENDER_FOR_CLOUD
+      - AZURE_ACTIVITY_LOGS
+      - GCP_SECURITY_COMMAND_CENTER
+      - GCP_AUDIT_LOGS
+      - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
+      - AZURE_ACTIVE_DIRECTORY
+      - GOOGLE_WORKSPACE_AUDIT_LOGS
+      - WIN_SENTINEL_ONE
+      - WIZ_CODE_ANALYZER
+      - WIN_SALT
+      - WIN_NONAME
+      - WIN_CROWD_STRIKE
+      - WIN_TRACEABLE
+      - WIZ_CLI
+      - WIZ_IDE_EXTENSION
+      - WIZ_THREAT_DETECTION
+      - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
+      - WIZ_CUSTOM_INTEGRATION
+      - WIN_AKAMAI_GUARDICORE
+      - OKTA_SYSTEM_LOGS
+      - WIN_SNOWFLAKE
+      - WIN_FALCO
+      - OCI_AUDIT_LOGS
+      - WIZ_VCS_FETCHER
+      - AWS_VPC_FLOW_LOGS
+      - GITHUB_AUDIT_LOGS
+      - WIN_FIRE_TAIL
+      - AZURE_STORAGE_ACCOUNT
+      - AZURE_KEY_VAULT
+      - AWS_RESOLVER_QUERY_LOGS
+      - AWS_S3_DATA_EVENTS
+      - GCP_STORAGE_DATA_ACCESS_LOGS
+      - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
+      - WIZ_BROWSER_EXTENSION
+      - WIN_SALT_SECURITY
+      auto: PREDEFINED
+    - name: project
+      description: Filter Threats by project.
+      required: false
+    outputs:
+    - contextPath: Wiz.Manager.Threats.entitySnapshot
+      description: All resource details.
+      type: String
+    - contextPath: Wiz.Manager.Threats.createdAt
+      description: Threat created at.
+      type: String
+    - contextPath: Wiz.Manager.Threats.id
+      description: Wiz Threat ID.
+      type: String
+    - contextPath: Wiz.Manager.Threats.url
+      description: Wiz Threat URL.
+      type: String
+    - contextPath: Wiz.Manager.Threats.severity
+      description: Wiz Threat severity.
+      type: String
+    - contextPath: Wiz.Manager.Threats.status
+      description: Wiz Threat status.
+      type: String
+  - name: wiz-defend-reopen-threat
+    description: Reopen a Wiz Threat.
+    arguments:
+    - name: issue_id
+      description: threat issue id.
+      required: true
+    - name: reopen_note
+      description: reopen note.
+      required: false
+  - name: wiz-defend-resolve-threat
+    description: Resolve a Wiz Threat.
+    arguments:
+    - name: issue_id
+      required: true
+      description: threat issue id.
+    - name: resolution_reason
+      description: resolution reason.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - MALICIOUS_THREAT
+      - NOT_MALICIOUS_THREAT
+      - SECURITY_TEST_THREAT
+      - PLANNED_ACTION_THREAT
+      - INCONCLUSIVE_THREAT
+    - name: resolution_note
+      description: resolution note.
+      required: true
+  - name: wiz-defend-set-threat-in-progress
+    description: Set a Wiz Threat to in progress.
+    arguments:
+    - name: issue_id
+      description: threat issue id.
+      required: true
+  - name: wiz-defend-set-threat-comment
+    description: Set a comment on a Wiz Threat.
+    arguments:
+    - name: issue_id
+      description: threat issue id.
+      required: true
+    - name: note
+      description: note.
+      required: true
+  - name: wiz-defend-clear-threat-comments
+    description: Clear all the comments from a Wiz Threat.
+    arguments:
+    - name: issue_id
+      description: threat issue id.
+      required: true
+  dockerimage: demisto/python3:3.12.8.3296088
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 6.0.0

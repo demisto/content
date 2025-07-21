@@ -122,7 +122,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -147,6 +147,37 @@ tasks:
                       value:
                         simple: alert.cgosha256
                       iscontext: true
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cgosha256
+                      iscontext: true
+                    ignorecase: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.osparentsha256
+                      iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -834,6 +865,7 @@ tasks:
                       value:
                         simple: alert.cgosha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -1458,6 +1490,7 @@ tasks:
                   simple: '"'
           - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1493,6 +1526,7 @@ tasks:
       action_id:
         simple: ${Core.RetrievedFiles.action_id}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1528,6 +1562,7 @@ tasks:
       entryID:
         simple: ${File.EntryID}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1725,6 +1760,24 @@ tasks:
     conditions:
     - label: Malicious
       condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ScriptSHA256
+                      iscontext: true
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
       - - operator: isEqualNumber
           left:
             value:
@@ -2755,8 +2808,8 @@ tasks:
       id: e1b30cb3-e1fe-4ad0-8faa-40d2f52fec85
       version: -1
       name: Wildfire get verdict
-      description: Returns a verdict regarding multiple hashes, stored in a TXT file or given as a list.
-      script: '|||wildfire-get-verdicts'
+      description: Returns a verdict for a hash.
+      script: '|||wildfire-get-verdict'
       type: regular
       iscommand: true
       brand: ""
@@ -2764,7 +2817,7 @@ tasks:
       '#none#':
       - "143"
     scriptarguments:
-      hash_list:
+      hash:
         simple: ${ScriptSHA256}
     separatecontext: false
     continueonerrortype: ""
@@ -2778,7 +2831,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2853,8 +2906,8 @@ tasks:
       id: b4fcf3b2-81ca-4068-8e9a-396b2c3336f4
       version: -1
       name: Wildfire get verdict
-      description: Returns a verdict regarding multiple hashes, stored in a TXT file or given as a list.
-      script: '|||wildfire-get-verdicts'
+      description: Returns a verdict for a hash.
+      script: '|||wildfire-get-verdict'
       type: regular
       iscommand: true
       brand: ""
@@ -2862,7 +2915,7 @@ tasks:
       '#none#':
       - "145"
     scriptarguments:
-      hash_list:
+      hash:
         simple: ${ScriptSHA256}
     separatecontext: false
     continueonerrortype: ""

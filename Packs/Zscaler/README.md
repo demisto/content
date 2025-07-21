@@ -55,7 +55,7 @@ For additional details, see [About Cloud NSS Feeds](https://help.zscaler.com/zia
 
 ### Configure a VM-Based NSS Feed on Zscaler ZIA Admin Portal
 
-To configure the Zscaler Internet Access (ZIA) to send logs via the NSS feed output, refer to steps 1-3 in the following [XDR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Zscaler-Internet-Access) which relates to both **Web logs** and **FW logs**.
+To configure the Zscaler Internet Access (ZIA) to send logs via the NSS feed output, refer to steps 1-3 in the following [XDR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Zscaler-Internet-Access) which relates to both **Web logs** and **FW logs**.
 
 #### More information on configuring NSS feed outputs
 
@@ -71,7 +71,7 @@ To configure the Zscaler Internet Access (ZIA) to send logs via the NSS feed out
 
 ### Configure a Broker VM on Cortex XSIAM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.

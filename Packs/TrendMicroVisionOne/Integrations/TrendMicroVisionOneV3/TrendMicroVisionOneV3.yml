@@ -221,6 +221,8 @@ script:
     - contextPath: VisionOne.Endpoint_Connection.task_id
       description: 'Task ID generated after isolating endpoint(s).'
       type: string
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: 'List of object(s) containing `endpoint` (hostname) and `description` or `agent_guid` and `description`. e.g. [{"endpoint":"test-endpoint","description":"restore endpoint"}].'
       name: endpoint_identifiers
@@ -1430,7 +1432,7 @@ script:
       type: string
     description: Displays a list of Observed Attack Techniques events that match the specified criteria.
     name: trendmicro-visionone-get-observed-attack-techniques
-  dockerimage: demisto/pytmv1:0.9.1.117354
+  dockerimage: demisto/pytmv1:0.9.1.3547093
   isFetchSamples: true
   isfetch: true
   script: ''

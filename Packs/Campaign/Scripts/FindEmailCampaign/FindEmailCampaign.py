@@ -660,7 +660,9 @@ def horizontal_to_vertical_md_table(horizontal_md_table: str) -> str:
     """
     lines = horizontal_md_table.split("\n")
     headers_list = lines[1][1:-1].split("|")
-    content_list = lines[3][1:-1].split("|")
+    # To allow pipes in the values, verify that there is a space before or after the pipe, before splitting.
+    regex = rf"(?<=\s){re.escape('|')}|{re.escape('|')}(?=\s)"
+    content_list = re.split(regex, lines[3][1:-1])
 
     new_table = "\n| | |"
     new_table += "\n|---|---|"

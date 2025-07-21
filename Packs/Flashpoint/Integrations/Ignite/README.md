@@ -29,6 +29,11 @@ If you are upgrading from a Flashpoint integration, please refer to the [Migrati
     | Alert Origin | Filters the incoming alerts with the origin of the alert. | False |
     | Alert Sources | Filters the incoming alerts with the source of the alert. | False |
     | Fetch fresh compromised credentials alerts | Adds the 'is_fresh' flag to compromised credential queries so it only ingests username/password combinations if they haven't been seen before. | False |
+    | Fetch compromised credentials alerts having lowercase in password | Filters the incoming compromised credentials alerts with passwords having lowercase letters. | False |
+    | Fetch compromised credentials alerts having uppercase in password | Filters the incoming compromised credentials alerts with passwords having uppercase letters. | False |
+    | Fetch compromised credentials alerts having numbers in password | Filters the incoming compromised credentials alerts with passwords having numbers. | False |
+    | Fetch compromised credentials alerts having symbol in password | Filters the incoming compromised credentials alerts with passwords having symbols. | False |
+    | Fetch compromised credentials alerts having minimum length of password | Filters the incoming compromised credentials alerts with passwords has minimum length. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
     | Create relationships | Create relationships between indicators as part of enrichment. | False |
     | Trust any certificate (not secure) |  | False |
@@ -59,7 +64,12 @@ If you are upgrading from a Flashpoint integration, please refer to the [Migrati
 5. Enter the connection parameters (Server URL, API key).
 6. Under the Fetch Type, select "Compromised Credentials".
 7. Select "Fetch fresh compromised credentials alerts" so that it only ingests username/password combinations if they haven't been seen before.
-8. Update "First fetch time" and "Max Fetch Count" based on your requirements.
+8. Select "Fetch compromised credentials alerts having lowercase in password" so that it filters the incoming compromised credentials alerts with passwords having lowercase letters.
+9. Select "Fetch compromised credentials alerts having uppercase in password" so that it filters the incoming compromised credentials alerts with passwords having uppercase letters.
+10. Select "Fetch compromised credentials alerts having numbers in password" so that it filters the incoming compromised credentials alerts with passwords having numbers.
+11. Select "Fetch compromised credentials alerts having symbol in password" so that it filters the incoming compromised credentials alerts with passwords having symbols.
+12. Select "Fetch compromised credentials alerts having minimum length of password" so that it filters the incoming compromised credentials alerts with passwords has minimum length.
+13. Update "First fetch time" and "Max Fetch Count" based on your requirements.
 
 ## Troubleshooting
 
@@ -993,7 +1003,7 @@ Looks up the "Filename" type indicator details. The reputation of Filename is co
 ### ip
 
 ***
-Looks up details of an IP indicator. The reputation of the IP address is considered malicious if there's at least one IoC event in the Ignite database that matches the IP indicator. Alternatively, the IP address is considered suspicious if it matches any one of the community's peer IP addresses.
+Looks up the "IP" type indicator details. The reputation of the IP address is decided from the indicator score if it is found in the Ignite IOC database. Alternatively, the IP address is considered suspicious if it matches any one of the community's peer IP addresses.
 
 #### Base Command
 
@@ -1083,7 +1093,46 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
 | Ignite.IP.source_uri | String | Source URI of the document. |
 | Ignite.IP.title | String | Title of the document. |
 | Ignite.IP.title_id | String | ID of the title. |
-| Ignite.IP.type | String | Type of the document. |
+| Ignite.IP.type | String | Type of the indicator. |
+| Ignite.IP.value | string | The value of IP. |
+| Ignite.IP.href | string | The href of IP. |
+| Ignite.IP.entity_type | string | The entity type of IP. |
+| Ignite.IP.score.value | string | The score value of IP. |
+| Ignite.IP.score.last_scored_at | string | The last scored at of IP. |
+| Ignite.IP.score.raw_score | number | The raw score of IP. |
+| Ignite.IP.modified_at | string | The modified at of IP. |
+| Ignite.IP.created_at | string | The created at of IP. |
+| Ignite.IP.last_seen_at | string | The last seen at of IP. |
+| Ignite.IP.platform_urls.ignite | string | The ignite platform url of IP. |
+| Ignite.IP.apt_description | string | The apt description of IP. |
+| Ignite.IP.external_references.source_name | string | The source name of external reference. |
+| Ignite.IP.external_references.url | string | The url of external reference. |
+| Ignite.IP.hashes.md5 | string | The md5 hash of IP. |
+| Ignite.IP.hashes.sha1 | string | The sha1 hash of IP. |
+| Ignite.IP.hashes.sha256 | string | The sha256 hash of IP. |
+| Ignite.IP.malware_description | string | The malware description of IP. |
+| Ignite.IP.mitre_attack_ids.id | string | The mitre attack id of IP. |
+| Ignite.IP.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.IP.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.IP.relationships.iocs.id | string | The id of ioc. |
+| Ignite.IP.relationships.iocs.type | string | The type of ioc. |
+| Ignite.IP.relationships.iocs.value | string | The value of ioc. |
+| Ignite.IP.relationships.iocs.href | string | The href of ioc. |
+| Ignite.IP.sightings.source | string | The source of IP sighting. |
+| Ignite.IP.sightings.sighted_at | string | The sighted at of IP. |
+| Ignite.IP.sightings.tags | array | The tags of IP sighting. |
+| Ignite.IP.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.IP.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.IP.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.IP.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.IP.latest_sighting.source | string | The source of IP latest sighting. |
+| Ignite.IP.latest_sighting.sighted_at | string | The sighted at of IP latest sighting. |
+| Ignite.IP.latest_sighting.tags | array | The tags of IP latest sighting. |
+| Ignite.IP.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.IP.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.IP.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.IP.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.IP.total_sightings | integer | The total sightings of IP. |
 
 #### Command example
 
@@ -1108,47 +1157,100 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
         },
         "Relationships": [
             {
+                "Relationship": "related-to",
                 "EntityA": "0.0.0.1",
                 "EntityAType": "IP",
-                "EntityB": "T1071",
-                "EntityBType": "Attack Pattern",
-                "Relationship": "indicator-of"
+                "EntityB": "dummy_latest_sighting_related_ioc_value_1",
+                "EntityBType": "File"
+            },
+            {
+                "Relationship": "related-to",
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "dummy_related_ioc_value_1.com",
+                "EntityBType": "Domain"
             }
         ]
     },
     "Ignite": {
         "IP": {
-            "Event": [
+            "id": " dummy_id_123",
+            "type": "ipv4",
+            "value": "0.0.0.1",
+            "href": "https://dummy.href.com",
+            "entity_type": "indicator",
+            "score": {
+                "value": "malicious",
+                "last_scored_at": "2025-04-21T06:44:37.633000",
+                "raw_score": null
+            },
+            "modified_at": "2025-04-21T06:44:37.633000",
+            "created_at": "2025-04-14T15:28:26.371000",
+            "last_seen_at": "2025-04-21T06:34:55.617000",
+            "sort_date": "2025-04-21T06:34:55.617000",
+            "platform_urls": {
+                "ignite": "https://dummy.ignite.com"
+            },
+            "apt_description": "N/A",
+            "external_references": [],
+            "hashes": null,
+            "malware_description": "dummy_malware_description",
+            "mitre_attack_ids": [
                 {
-                    "Address": "0.0.0.1",
-                    "Category": "Network activity",
-                    "Comment": "",
-                    "EventDetails": {
-                        "RelatedEvent": [],
-                        "Tags": [
-                            "asn:as11878",
-                            "infrastructure:c2",
-                            "mitre:T1071",
-                            "source:masscan",
-                            "tool:cobaltstrike"
-                        ],
-                        "attack_ids": [
-                            "T1071"
-                        ],
-                        "event_uuid": "00000000-0000-0000-0000-000000000001",
-                        "fpid": "0000000000000000000001",
-                        "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
-                        "info": "Observation: CobaltStrikeVariant [2024-06-09 14:08:21]",
-                        "reports": [],
-                        "timestamp": "1717964206"
-                    },
-                    "Fpid": "0000000000000000000001",
-                    "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
-                    "Timestamp": "1717950039",
-                    "Type": "ip-dst",
-                    "Uuid": "00000000-0000-0000-0000-000000000001"
+                    "id": "dummy_attack_id_123",
+                    "name": "dummy_attack_name",
+                    "tactics": [
+                        "Discovery"
+                    ]
                 }
-            ]
+            ],
+            "relationships": {
+                "iocs": [
+                    {
+                        "id": "dummy_ioc_id_1",
+                        "type": "dummy_ioc_type_1",
+                        "value": "dummy_ioc_value_1",
+                        "href": "https://dummy.ioc.href.com/1"
+                    }
+                ]
+            },
+            "sightings": [
+                {
+                    "source": "dummy_source",
+                    "sighted_at": "2025-04-21T06:34:55.617000",
+                    "tags": [
+                        "dummy_tag_1",
+                        "dummy_tag_2",
+                        "dummy_tag_3"
+                    ],
+                    "related_iocs": [
+                        {
+                            "id": "dummy_related_ioc_id_1",
+                            "type": "domain",
+                            "value": "dummy_related_ioc_value_1.com",
+                            "href": "https://dummy.related_ioc.href.com/1"
+                        }
+                    ]
+                }
+            ],
+            "latest_sighting": {
+                "source": "dummy_latest_sighting_source",
+                "sighted_at": "2025-04-21T06:34:55.617000",
+                "tags": [
+                    "dummy_latest_sighting_tag_1",
+                    "dummy_latest_sighting_tag_2",
+                    "dummy_latest_sighting_tag_3"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy_latest_sighting_related_ioc_id_1",
+                        "type": "file",
+                        "value": "dummy_latest_sighting_related_ioc_value_1",
+                        "href": "https://dummy.latest_sighting.related_ioc.href.com/1"
+                    }
+                ]
+            },
+            "total_sightings": 11
         }
     }
 }
@@ -1160,18 +1262,16 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
 >
 >Reputation: Malicious
 >
->### Events in which this IOC observed
+>|ID|IP|Type|Malware Description|Tags|Related IOCs|Mitre Attack IDs|Created At|Modified At|Last Seen At|
+>|---|---|---|---|---|---|---|---|---|---|
+>|  dummy_id_123 | 0.0.0.1 | ipv4 | dummy_malware_description | dummy_latest_sighting_tag_1,<br>dummy_latest_sighting_tag_2,<br>dummy_latest_sighting_tag_3,<br>dummy_tag_1,<br>dummy_tag_2,<br>dummy_tag_3 | **-** _**type**_: file<br> _**value**_: dummy_latest_sighting_related_ioc_value_1<br>**-** _**type**_: domain<br> _**value**_: dummy_related_ioc_value_1.com | **-** _**id**_: dummy_attack_id_123<br> _**name**_: dummy_attack_name<br> **tactics**:<br>  _**values**_: Discovery | Apr 14, 2025  15:28 | Apr 21, 2025  06:44 | Apr 21, 2025  06:34 |
 >
->|Date Observed (UTC)|Name|Tags|
->|---|---|---
->| Jun 09, 2024  20:16 | Observation: CobaltStrikeVariant [2024-06-09 14:08:21] | asn:as11878, infrastructure:c2, mitre:T1071, source:masscan, tool:cobaltstrike |
->
->All events and details (ignite): [https:<span>//</span>app.flashpoint.io/cti/malware/iocs?query=%220.0.0.1%22&sort_date=All%20Time&types=ip-dst,ip-src,ip-dst|port](https:<span>//</span>app.flashpoint.io/cti/malware/iocs?query=%220.0.0.1%22&sort_date=All%20Time&types=ip-dst,ip-src,ip-dst|port)
+>Platform Link(ignite): [https://dummy.ignite.com](https://dummy.ignite.com)
 
 ### flashpoint-ignite-common-lookup
 
 ***
-Looks up any type of indicator.
+Looks up details for indicators of types: "URL", "Domain", "File Hash", and "IP". The reputation of the indicator is decided from the indicator score if it is found in the Ignite IOC database.
 
 #### Base Command
 
@@ -1192,45 +1292,751 @@ Looks up any type of indicator.
 | DBotScore.Score | number | The actual score. |
 | DBotScore.Type | string | The indicator type. |
 | DBotScore.Vendor | string | The vendor used to calculate the score. |
+| Ignite.File.id | string | The ID of file. |
+| Ignite.File.type | String | Type of the indicator. |
+| Ignite.File.value | string | The value of file. |
+| Ignite.File.href | string | The href of file. |
+| Ignite.File.entity_type | string | The entity type of file. |
+| Ignite.File.score.value | string | The score value of file. |
+| Ignite.File.score.last_scored_at | string | The last scored time of file. |
+| Ignite.File.score.raw_score | number | The raw score of file. |
+| Ignite.File.modified_at | string | Last time when file was modified. |
+| Ignite.File.created_at | string | The creation time of file. |
+| Ignite.File.last_seen_at | string | The last seen time of file. |
+| Ignite.File.sort_date | string | The sort date of file. |
+| Ignite.File.platform_urls.ignite | string | The ignite platform url of file. |
+| Ignite.File.apt_description | string | The apt description of file. |
+| Ignite.File.external_references.source_name | string | The source name of external reference. |
+| Ignite.File.external_references.url | string | The url of external reference. |
+| Ignite.File.hashes.md5 | string | The md5 hash of file. |
+| Ignite.File.hashes.sha1 | string | The sha1 hash of file. |
+| Ignite.File.hashes.sha256 | string | The sha256 hash of file. |
+| Ignite.File.malware_description | string | The malware description of file. |
+| Ignite.File.mitre_attack_ids.id | string | The mitre attack id of file. |
+| Ignite.File.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.File.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.File.relationships.iocs.id | string | The id of ioc. |
+| Ignite.File.relationships.iocs.type | string | The type of ioc. |
+| Ignite.File.relationships.iocs.value | string | The value of ioc. |
+| Ignite.File.relationships.iocs.href | string | The href of ioc. |
+| Ignite.File.sightings.source | string | The source of file sighting. |
+| Ignite.File.sightings.sighted_at | string | The sighted at time of file. |
+| Ignite.File.sightings.tags | array | The tags of file sighting. |
+| Ignite.File.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.File.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.File.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.File.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.File.latest_sighting.source | string | The source of file latest sighting. |
+| Ignite.File.latest_sighting.sighted_at | string | The sighted at time of latest sighting of file. |
+| Ignite.File.latest_sighting.tags | array | The tags of file latest sighting. |
+| Ignite.File.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.File.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.File.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.File.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.File.total_sightings | integer | The total sightings of file. |
+| File.Malicious.Description | string | The description of the malicious indicator. |
+| File.Malicious.Vendor | string | Vendor of the malicious file. |
+| File.MD5 | string | MD5 type file. |
+| File.SHA1 | string | SHA1 type file. |
+| File.SHA512 | string | SHA512 type file. |
+| File.Relationships.EntityA | string | The source of the relationship. |
+| File.Relationships.EntityB | string | The destination of the relationship. |
+| File.Relationships.Relationship | string | The name of the relationship. |
+| File.Relationships.EntityAType | string | The type of the source of the relationship. |
+| File.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| Ignite.Domain.id | string | The ID of domain. |
+| Ignite.Domain.type | String | Type of the indicator. |
+| Ignite.Domain.value | string | The value of domain. |
+| Ignite.Domain.href | string | The href of domain. |
+| Ignite.Domain.entity_type | string | The entity type of domain. |
+| Ignite.Domain.score.value | string | The score value of domain. |
+| Ignite.Domain.score.last_scored_at | string | The last scored time of domain. |
+| Ignite.Domain.score.raw_score | number | The raw score of domain. |
+| Ignite.Domain.modified_at | string | Last time when domain was modified. |
+| Ignite.Domain.created_at | string | The creation time of domain. |
+| Ignite.Domain.last_seen_at | string | The last seen time of domain. |
+| Ignite.Domain.sort_date | string | The sort date of domain. |
+| Ignite.Domain.platform_urls.ignite | string | The ignite platform url of domain. |
+| Ignite.Domain.apt_description | string | The apt description of domain. |
+| Ignite.Domain.external_references.source_name | string | The source name of external reference. |
+| Ignite.Domain.external_references.url | string | The url of external reference. |
+| Ignite.Domain.hashes.md5 | string | The md5 hash of domain. |
+| Ignite.Domain.hashes.sha1 | string | The sha1 hash of domain. |
+| Ignite.Domain.hashes.sha256 | string | The sha256 hash of domain. |
+| Ignite.Domain.malware_description | string | The malware description of domain. |
+| Ignite.Domain.mitre_attack_ids.id | string | The mitre attack id of domain. |
+| Ignite.Domain.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.Domain.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.Domain.relationships.iocs.id | string | The id of ioc. |
+| Ignite.Domain.relationships.iocs.type | string | The type of ioc. |
+| Ignite.Domain.relationships.iocs.value | string | The value of ioc. |
+| Ignite.Domain.relationships.iocs.href | string | The href of ioc. |
+| Ignite.Domain.sightings.source | string | The source of domain sighting. |
+| Ignite.Domain.sightings.sighted_at | string | The sighted at of domain. |
+| Ignite.Domain.sightings.tags | array | The tags of domain sighting. |
+| Ignite.Domain.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.Domain.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.Domain.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.Domain.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.Domain.latest_sighting.source | string | The source of domain latest sighting. |
+| Ignite.Domain.latest_sighting.sighted_at | string | The sighted at of domain latest sighting. |
+| Ignite.Domain.latest_sighting.tags | array | The tags of domain latest sighting. |
+| Ignite.Domain.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.Domain.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.Domain.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.Domain.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.Domain.total_sightings | integer | The total sightings of domain. |
+| Domain.Malicious.Description | string | The description of the malicious indicator. |
+| Domain.Malicious.Vendor | string | Vendor of the malicious indicator. |
+| Domain.Name | string | Name of the domain. |
+| Domain.Description | string | The description of the indicator. |
+| Domain.Relationships.EntityA | string | The source of the relationship. |
+| Domain.Relationships.EntityB | string | The destination of the relationship. |
+| Domain.Relationships.Relationship | string | The name of the relationship. |
+| Domain.Relationships.EntityAType | string | The type of the source of the relationship. |
+| Domain.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| URL.Malicious.Description | string | The description of the malicious indicator. |
+| URL.Malicious.Vendor | string | Vendor of the malicious URL. |
+| URL.Data | string | The URL. |
+| URL.Relationships.EntityA | string | The source of the relationship. |
+| URL.Relationships.EntityB | string | The destination of the relationship. |
+| URL.Relationships.Relationship | string | The name of the relationship. |
+| URL.Relationships.EntityAType | string | The type of the source of the relationship. |
+| URL.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| URL.Description | string | The description of the indicator. |
+| Ignite.URL.id | string | The ID of URL. |
+| Ignite.URL.type | String | Type of the indicator. |
+| Ignite.URL.value | string | The value of URL. |
+| Ignite.URL.href | string | The href of URL. |
+| Ignite.URL.entity_type | string | The entity type of URL. |
+| Ignite.URL.score.value | string | The score value of URL. |
+| Ignite.URL.score.last_scored_at | string | The last scored time of URL. |
+| Ignite.URL.score.raw_score | number | The raw score of URL. |
+| Ignite.URL.modified_at | string | Last time when URL was modified. |
+| Ignite.URL.created_at | string | The creation time of URL. |
+| Ignite.URL.last_seen_at | string | The last seen time of URL. |
+| Ignite.URL.sort_date | string | The sort date of URL. |
+| Ignite.URL.platform_urls.ignite | string | The ignite platform url of URL. |
+| Ignite.URL.apt_description | string | The apt description of URL. |
+| Ignite.URL.external_references.source_name | string | The source name of external reference. |
+| Ignite.URL.external_references.url | string | The url of external reference. |
+| Ignite.URL.hashes.md5 | string | The md5 hash of URL. |
+| Ignite.URL.hashes.sha1 | string | The sha1 hash of URL. |
+| Ignite.URL.hashes.sha256 | string | The sha256 hash of URL. |
+| Ignite.URL.malware_description | string | The malware description of URL. |
+| Ignite.URL.mitre_attack_ids.id | string | The mitre attack id of URL. |
+| Ignite.URL.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.URL.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.URL.relationships.iocs.id | string | The id of ioc. |
+| Ignite.URL.relationships.iocs.type | string | The type of ioc. |
+| Ignite.URL.relationships.iocs.value | string | The value of ioc. |
+| Ignite.URL.relationships.iocs.href | string | The href of ioc. |
+| Ignite.URL.sightings.source | string | The source of URL sighting. |
+| Ignite.URL.sightings.sighted_at | string | The sighted at time of URL. |
+| Ignite.URL.sightings.tags | array | The tags of URL sighting. |
+| Ignite.URL.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.URL.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.URL.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.URL.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.URL.latest_sighting.source | string | The source of URL latest sighting. |
+| Ignite.URL.latest_sighting.sighted_at | string | The sighted at time of latest sighting of URL. |
+| Ignite.URL.latest_sighting.tags | array | The tags of URL latest sighting. |
+| Ignite.URL.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.URL.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.URL.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.URL.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.URL.total_sightings | integer | The total sightings of URL. |
+| IP.Address | string | The IP address. |
+| IP.Malicious.Description | string | The description of the malicious indicator. |
+| IP.Malicious.Vendor | string | The vendor used to calculate the severity of the IP address. |
+| IP.Description | string | The description of the indicator. |
+| IP.Relationships.EntityA | string | The source of the relationship. |
+| IP.Relationships.EntityB | string | The destination of the relationship. |
+| IP.Relationships.Relationship | string | The name of the relationship. |
+| IP.Relationships.EntityAType | string | The type of the source of the relationship. |
+| IP.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| Ignite.IP.id | String | Unique identifier for the document. |
+| Ignite.IP.type | String | Type of the indicator. |
+| Ignite.IP.value | string | The value of IP. |
+| Ignite.IP.href | string | The href of IP. |
+| Ignite.IP.entity_type | string | The entity type of IP. |
+| Ignite.IP.score.value | string | The score value of IP. |
+| Ignite.IP.score.last_scored_at | string | The last scored time of IP. |
+| Ignite.IP.score.raw_score | number | The raw score of IP. |
+| Ignite.IP.modified_at | string | Last time when IP was modified. |
+| Ignite.IP.created_at | string | The creation time of IP. |
+| Ignite.IP.last_seen_at | string | The last seen time of IP. |
+| Ignite.IP.platform_urls.ignite | string | The ignite platform url of IP. |
+| Ignite.IP.apt_description | string | The apt description of IP. |
+| Ignite.IP.external_references.source_name | string | The source name of external reference. |
+| Ignite.IP.external_references.url | string | The url of external reference. |
+| Ignite.IP.hashes.md5 | string | The md5 hash of IP. |
+| Ignite.IP.hashes.sha1 | string | The sha1 hash of IP. |
+| Ignite.IP.hashes.sha256 | string | The sha256 hash of IP. |
+| Ignite.IP.malware_description | string | The malware description of IP. |
+| Ignite.IP.mitre_attack_ids.id | string | The mitre attack id of IP. |
+| Ignite.IP.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.IP.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.IP.relationships.iocs.id | string | The id of ioc. |
+| Ignite.IP.relationships.iocs.type | string | The type of ioc. |
+| Ignite.IP.relationships.iocs.value | string | The value of ioc. |
+| Ignite.IP.relationships.iocs.href | string | The href of ioc. |
+| Ignite.IP.sightings.source | string | The source of IP sighting. |
+| Ignite.IP.sightings.sighted_at | string | The sighted at time of IP. |
+| Ignite.IP.sightings.tags | array | The tags of IP sighting. |
+| Ignite.IP.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.IP.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.IP.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.IP.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.IP.latest_sighting.source | string | The source of IP latest sighting. |
+| Ignite.IP.latest_sighting.sighted_at | string | The sighted at time of latest sighting of IP. |
+| Ignite.IP.latest_sighting.tags | array | The tags of IP latest sighting. |
+| Ignite.IP.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.IP.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.IP.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.IP.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.IP.total_sightings | integer | The total sightings of IP. |
 
 #### Command example
 
-```!flashpoint-ignite-common-lookup indicator="dummy@dummy.com"```
+```!flashpoint-ignite-common-lookup indicator="00000000000000000000000000000001"```
 
 #### Context Example
 
 ```json
 {
+    "File": [
+        {
+            "Hashes": [
+                {
+                    "type": "MD5",
+                    "value": "00000000000000000000000000000001"
+                },
+                {
+                    "type": "SHA1",
+                    "value": "0000000000000000000000000000000000000001"
+                },
+                {
+                    "type": "SHA256",
+                    "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                }
+            ],
+            "MD5": "00000000000000000000000000000001",
+            "SHA1": "0000000000000000000000000000000000000001",
+            "SHA256": "0000000000000000000000000000000000000000000000000000000000000001",
+            "Malicious": {
+                "Vendor": "Ignite",
+                "Description": "Found in malicious indicators dataset"
+            },
+            "Relationships": [
+                {
+                    "Relationship": "related-to",
+                    "EntityA": "00000000000000000000000000000001",
+                    "EntityAType": "File",
+                    "EntityB": "00000000000000000000000000000002",
+                    "EntityBType": "File"
+                }
+            ]
+        }
+    ],
     "DBotScore": [
         {
-            "Indicator": "dummy@dummy.com",
-            "Reliability": "B - Usually reliable",
+            "Indicator": "00000000000000000000000000000001",
+            "Type": "file",
+            "Vendor": "Ignite",
             "Score": 3,
-            "Type": "email",
-            "Vendor": "Ignite"
+            "Reliability": "B - Usually reliable"
         }
-    ]
+    ],
+    "Ignite.File": {
+        "id": "dummy_id",
+        "type": "file",
+        "value": "00000000000000000000000000000001",
+        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
+        "entity_type": "indicator",
+        "score": {
+            "value": "malicious",
+            "last_scored_at": "2025-01-02T01:00:00.000001"
+        },
+        "modified_at": "2025-01-02T01:00:00.000001",
+        "created_at": "2025-01-01T01:00:00.000000",
+        "last_seen_at": "2025-01-02T01:00:00.000001",
+        "sort_date": "2025-01-02T01:00:00.000001",
+        "platform_urls": {
+            "ignite": "https://mock_dummy.com/cti/malware/iocs/dummy_id"
+        },
+        "apt_description": "N/A",
+        "hashes": {
+            "md5": "00000000000000000000000000000001",
+            "sha1": "0000000000000000000000000000000000000001",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+        },
+        "malware_description": "dummy description.",
+        "mitre_attack_ids": [
+            {
+                "id": "dummy_mitre_id",
+                "name": "dummy name",
+                "tactics": [
+                    "Defense Evasion"
+                ]
+            }
+        ],
+        "sightings": [
+            {
+                "source": "flashpoint_detection",
+                "sighted_at": "2025-01-02T01:00:00.000000",
+                "tags": [
+                    "malware:pony",
+                    "os:windows",
+                    "source:flashpoint_detection",
+                    "type:stealer"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy_id",
+                        "type": "file",
+                        "value": "00000000000000000000000000000001",
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                    }
+                ]
+            }
+        ],
+        "latest_sighting": {
+            "source": "flashpoint_detection",
+            "sighted_at": "2025-01-02T01:00:00.000000",
+            "tags": [
+                "malware:pony",
+                "os:windows",
+                "source:flashpoint_detection",
+                "type:stealer"
+            ],
+            "related_iocs": [
+                {
+                    "id": "dummy_id",
+                    "type": "file",
+                    "value": "00000000000000000000000000000002",
+                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                }
+            ]
+        },
+        "total_sightings": 1
+    }
 }
 ```
 
 #### Human Readable Output
 
->### Ignite reputation for dummy@dummy.com
+>### Ignite File reputation for  00000000000000000000000000000001
 >
 >Reputation: Malicious
 >
->### Events in which this IOC observed
 >
->|Date Observed (UTC)|Name|Tags|
->|---|---|---|
->| Feb 06, 2021  01:29 | Observation: reported BazarLoader iocs [2021-02-05 15:30:30] | event:observation, malware:bazar, source:osint, type:64bit, misp-galaxy:mitre-enterprise-attack-attack-pattern="Exfiltration Over Command and Control Channel - 00001" |
+>|ID|Type|Hashes|Malware Description|Tags|Related IOCs|Mitre Attack IDs|Created At|Modified At|Last Seen At|
+>|---|---|---|---|---|---|---|---|---|---|
+>| dummy_id | file | _**md5**_: 00000000000000000000000000000001<br>_**sha1**_: 0000000000000000000000000000000000000001<br>_**sha256**_: 0000000000000000000000000000000000000000000000000000000000000001 | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-** _**type**_: file<br> _**value**_: 00000000000000000000000000000002 | **-** _**id**_: dummy_mitre_id<br> _**name**_: dummy name<br> **tactics**:<br>  _**values**_: Defense Evasion | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
 >
->All events and details (ignite): [https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&query=%22dummy%40dummy.com%22](https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&query=%22dummy%40dummy.com%22)
+>Platform Link(ignite): [https://mock_dummy.com/cti/malware/iocs/dummy_id](https://mock_dummy.com/cti/malware/iocs/dummy_id)
+
+### flashpoint-ignite-indicator-get
+
+***
+Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" using their ID. The reputation of the indicator is decided from the indicator score if it is found in the Ignite IOC database.
+
+#### Base Command
+
+`flashpoint-ignite-indicator-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_id | ID of the indicator. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Reliability | string | The reliability of the vendor. |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| Ignite.File.id | string | The ID of file. |
+| Ignite.File.type | String | Type of the indicator. |
+| Ignite.File.value | string | The value of file. |
+| Ignite.File.href | string | The href of file. |
+| Ignite.File.entity_type | string | The entity type of file. |
+| Ignite.File.score.value | string | The score value of file. |
+| Ignite.File.score.last_scored_at | string | The last scored time of file. |
+| Ignite.File.score.raw_score | number | The raw score of file. |
+| Ignite.File.modified_at | string | Last time when file was modified. |
+| Ignite.File.created_at | string | The creation time of file. |
+| Ignite.File.last_seen_at | string | The last seen time of file. |
+| Ignite.File.sort_date | string | The sort date of file. |
+| Ignite.File.platform_urls.ignite | string | The ignite platform url of file. |
+| Ignite.File.apt_description | string | The apt description of file. |
+| Ignite.File.external_references.source_name | string | The source name of external reference. |
+| Ignite.File.external_references.url | string | The url of external reference. |
+| Ignite.File.hashes.md5 | string | The md5 hash of file. |
+| Ignite.File.hashes.sha1 | string | The sha1 hash of file. |
+| Ignite.File.hashes.sha256 | string | The sha256 hash of file. |
+| Ignite.File.malware_description | string | The malware description of file. |
+| Ignite.File.mitre_attack_ids.id | string | The mitre attack id of file. |
+| Ignite.File.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.File.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.File.relationships.iocs.id | string | The id of ioc. |
+| Ignite.File.relationships.iocs.type | string | The type of ioc. |
+| Ignite.File.relationships.iocs.value | string | The value of ioc. |
+| Ignite.File.relationships.iocs.href | string | The href of ioc. |
+| Ignite.File.sightings.source | string | The source of file sighting. |
+| Ignite.File.sightings.sighted_at | string | The sighted at time of file. |
+| Ignite.File.sightings.tags | array | The tags of file sighting. |
+| Ignite.File.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.File.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.File.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.File.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.File.latest_sighting.source | string | The source of file latest sighting. |
+| Ignite.File.latest_sighting.sighted_at | string | The sighted at time of latest sighting of file. |
+| Ignite.File.latest_sighting.tags | array | The tags of file latest sighting. |
+| Ignite.File.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.File.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.File.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.File.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.File.total_sightings | integer | The total sightings of file. |
+| File.Malicious.Description | string | The description of the malicious indicator. |
+| File.Malicious.Vendor | string | Vendor of the malicious file. |
+| File.MD5 | string | MD5 type file. |
+| File.SHA1 | string | SHA1 type file. |
+| File.SHA512 | string | SHA512 type file. |
+| File.Relationships.EntityA | string | The source of the relationship. |
+| File.Relationships.EntityB | string | The destination of the relationship. |
+| File.Relationships.Relationship | string | The name of the relationship. |
+| File.Relationships.EntityAType | string | The type of the source of the relationship. |
+| File.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| Ignite.File.historical_tags | string | The tags of File. |
+| Ignite.File.reports.html | string | Platform url to access the report of the indicator. |
+| Ignite.File.reports.json | string | API url of the report of the indicator. |
+| Ignite.Domain.id | string | The ID of domain. |
+| Ignite.Domain.type | String | Type of the indicator. |
+| Ignite.Domain.value | string | The value of domain. |
+| Ignite.Domain.href | string | The href of domain. |
+| Ignite.Domain.entity_type | string | The entity type of domain. |
+| Ignite.Domain.score.value | string | The score value of domain. |
+| Ignite.Domain.score.last_scored_at | string | The last scored time of domain. |
+| Ignite.Domain.score.raw_score | number | The raw score of domain. |
+| Ignite.Domain.modified_at | string | Last time when domain was modified. |
+| Ignite.Domain.created_at | string | The creation time of domain. |
+| Ignite.Domain.last_seen_at | string | The last seen time of domain. |
+| Ignite.Domain.sort_date | string | The sort date of domain. |
+| Ignite.Domain.platform_urls.ignite | string | The ignite platform url of domain. |
+| Ignite.Domain.apt_description | string | The apt description of domain. |
+| Ignite.Domain.external_references.source_name | string | The source name of external reference. |
+| Ignite.Domain.external_references.url | string | The url of external reference. |
+| Ignite.Domain.hashes.md5 | string | The md5 hash of domain. |
+| Ignite.Domain.hashes.sha1 | string | The sha1 hash of domain. |
+| Ignite.Domain.hashes.sha256 | string | The sha256 hash of domain. |
+| Ignite.Domain.malware_description | string | The malware description of domain. |
+| Ignite.Domain.mitre_attack_ids.id | string | The mitre attack id of domain. |
+| Ignite.Domain.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.Domain.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.Domain.relationships.iocs.id | string | The id of ioc. |
+| Ignite.Domain.relationships.iocs.type | string | The type of ioc. |
+| Ignite.Domain.relationships.iocs.value | string | The value of ioc. |
+| Ignite.Domain.relationships.iocs.href | string | The href of ioc. |
+| Ignite.Domain.sightings.source | string | The source of domain sighting. |
+| Ignite.Domain.sightings.sighted_at | string | The sighted at of domain. |
+| Ignite.Domain.sightings.tags | array | The tags of domain sighting. |
+| Ignite.Domain.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.Domain.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.Domain.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.Domain.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.Domain.latest_sighting.source | string | The source of domain latest sighting. |
+| Ignite.Domain.latest_sighting.sighted_at | string | The sighted at of domain latest sighting. |
+| Ignite.Domain.latest_sighting.tags | array | The tags of domain latest sighting. |
+| Ignite.Domain.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.Domain.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.Domain.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.Domain.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.Domain.total_sightings | integer | The total sightings of domain. |
+| Domain.Malicious.Description | string | The description of the malicious indicator. |
+| Domain.Malicious.Vendor | string | Vendor of the malicious indicator. |
+| Domain.Name | string | Name of the domain. |
+| Domain.Description | string | The description of the indicator. |
+| Domain.Relationships.EntityA | string | The source of the relationship. |
+| Domain.Relationships.EntityB | string | The destination of the relationship. |
+| Domain.Relationships.Relationship | string | The name of the relationship. |
+| Domain.Relationships.EntityAType | string | The type of the source of the relationship. |
+| Domain.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| Ignite.Domain.historical_tags | string | The tags of Domain. |
+| Ignite.Domain.reports.html | string | Platform url to access the report of the indicator. |
+| Ignite.Domain.reports.json | string | API url of the report of the indicator. |
+| URL.Malicious.Description | string | The description of the malicious indicator. |
+| URL.Malicious.Vendor | string | Vendor of the malicious URL. |
+| URL.Data | string | The URL. |
+| URL.Relationships.EntityA | string | The source of the relationship. |
+| URL.Relationships.EntityB | string | The destination of the relationship. |
+| URL.Relationships.Relationship | string | The name of the relationship. |
+| URL.Relationships.EntityAType | string | The type of the source of the relationship. |
+| URL.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| URL.Description | string | The description of the indicator. |
+| Ignite.URL.id | string | The ID of URL. |
+| Ignite.URL.type | String | Type of the indicator. |
+| Ignite.URL.value | string | The value of URL. |
+| Ignite.URL.href | string | The href of URL. |
+| Ignite.URL.entity_type | string | The entity type of URL. |
+| Ignite.URL.score.value | string | The score value of URL. |
+| Ignite.URL.score.last_scored_at | string | The last scored time of URL. |
+| Ignite.URL.score.raw_score | number | The raw score of URL. |
+| Ignite.URL.modified_at | string | Last time when URL was modified. |
+| Ignite.URL.created_at | string | The creation time of URL. |
+| Ignite.URL.last_seen_at | string | The last seen time of URL. |
+| Ignite.URL.sort_date | string | The sort date of URL. |
+| Ignite.URL.platform_urls.ignite | string | The ignite platform url of URL. |
+| Ignite.URL.apt_description | string | The apt description of URL. |
+| Ignite.URL.external_references.source_name | string | The source name of external reference. |
+| Ignite.URL.external_references.url | string | The url of external reference. |
+| Ignite.URL.hashes.md5 | string | The md5 hash of URL. |
+| Ignite.URL.hashes.sha1 | string | The sha1 hash of URL. |
+| Ignite.URL.hashes.sha256 | string | The sha256 hash of URL. |
+| Ignite.URL.malware_description | string | The malware description of URL. |
+| Ignite.URL.mitre_attack_ids.id | string | The mitre attack id of URL. |
+| Ignite.URL.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.URL.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.URL.relationships.iocs.id | string | The id of ioc. |
+| Ignite.URL.relationships.iocs.type | string | The type of ioc. |
+| Ignite.URL.relationships.iocs.value | string | The value of ioc. |
+| Ignite.URL.relationships.iocs.href | string | The href of ioc. |
+| Ignite.URL.sightings.source | string | The source of URL sighting. |
+| Ignite.URL.sightings.sighted_at | string | The sighted at time of URL. |
+| Ignite.URL.sightings.tags | array | The tags of URL sighting. |
+| Ignite.URL.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.URL.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.URL.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.URL.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.URL.latest_sighting.source | string | The source of URL latest sighting. |
+| Ignite.URL.latest_sighting.sighted_at | string | The sighted at time of latest sighting of URL. |
+| Ignite.URL.latest_sighting.tags | array | The tags of URL latest sighting. |
+| Ignite.URL.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.URL.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.URL.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.URL.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.URL.total_sightings | integer | The total sightings of URL. |
+| Ignite.URL.historical_tags | string | The tags of URL. |
+| Ignite.URL.reports.html | string | Platform url to access the report of the indicator. |
+| Ignite.URL.reports.json | string | API url of the report of the indicator. |
+| IP.Address | string | The IP address. |
+| IP.Malicious.Description | string | The description of the malicious indicator. |
+| IP.Malicious.Vendor | string | The vendor used to calculate the severity of the IP address. |
+| IP.Description | string | The description of the indicator. |
+| IP.Relationships.EntityA | string | The source of the relationship. |
+| IP.Relationships.EntityB | string | The destination of the relationship. |
+| IP.Relationships.Relationship | string | The name of the relationship. |
+| IP.Relationships.EntityAType | string | The type of the source of the relationship. |
+| IP.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| Ignite.IP.id | String | Unique identifier for the document. |
+| Ignite.IP.type | String | Type of the indicator. |
+| Ignite.IP.value | string | The value of IP. |
+| Ignite.IP.href | string | The href of IP. |
+| Ignite.IP.entity_type | string | The entity type of IP. |
+| Ignite.IP.score.value | string | The score value of IP. |
+| Ignite.IP.score.last_scored_at | string | The last scored time of IP. |
+| Ignite.IP.score.raw_score | number | The raw score of IP. |
+| Ignite.IP.modified_at | string | Last time when IP was modified. |
+| Ignite.IP.created_at | string | The creation time of IP. |
+| Ignite.IP.last_seen_at | string | The last seen time of IP. |
+| Ignite.IP.platform_urls.ignite | string | The ignite platform url of IP. |
+| Ignite.IP.apt_description | string | The apt description of IP. |
+| Ignite.IP.external_references.source_name | string | The source name of external reference. |
+| Ignite.IP.external_references.url | string | The url of external reference. |
+| Ignite.IP.hashes.md5 | string | The md5 hash of IP. |
+| Ignite.IP.hashes.sha1 | string | The sha1 hash of IP. |
+| Ignite.IP.hashes.sha256 | string | The sha256 hash of IP. |
+| Ignite.IP.malware_description | string | The malware description of IP. |
+| Ignite.IP.mitre_attack_ids.id | string | The mitre attack id of IP. |
+| Ignite.IP.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.IP.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.IP.relationships.iocs.id | string | The id of ioc. |
+| Ignite.IP.relationships.iocs.type | string | The type of ioc. |
+| Ignite.IP.relationships.iocs.value | string | The value of ioc. |
+| Ignite.IP.relationships.iocs.href | string | The href of ioc. |
+| Ignite.IP.sightings.source | string | The source of IP sighting. |
+| Ignite.IP.sightings.sighted_at | string | The sighted at time of IP. |
+| Ignite.IP.sightings.tags | array | The tags of IP sighting. |
+| Ignite.IP.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.IP.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.IP.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.IP.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.IP.latest_sighting.source | string | The source of IP latest sighting. |
+| Ignite.IP.latest_sighting.sighted_at | string | The sighted at time of latest sighting of IP. |
+| Ignite.IP.latest_sighting.tags | array | The tags of IP latest sighting. |
+| Ignite.IP.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.IP.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.IP.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.IP.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.IP.total_sightings | integer | The total sightings of IP. |
+| Ignite.IP.historical_tags | string | The tags of IP. |
+| Ignite.IP.reports.html | string | Platform url to access the report of the indicator. |
+| Ignite.IP.reports.json | string | API url of the report of the indicator. |
+
+#### Command example
+
+```!flashpoint-ignite-indicator-get indicator_id=dummy_id```
+
+#### Context Example
+
+```json
+{
+    "File": [
+        {
+            "Hashes": [
+                {
+                    "type": "MD5",
+                    "value": "00000000000000000000000000000001"
+                },
+                {
+                    "type": "SHA1",
+                    "value": "0000000000000000000000000000000000000001"
+                },
+                {
+                    "type": "SHA256",
+                    "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                }
+            ],
+            "MD5": "00000000000000000000000000000001",
+            "SHA1": "0000000000000000000000000000000000000001",
+            "SHA256": "0000000000000000000000000000000000000000000000000000000000000001",
+            "Malicious": {
+                "Vendor": "Ignite",
+                "Description": "Found in malicious indicators dataset"
+            },
+            "Relationships": [
+                {
+                    "Relationship": "related-to",
+                    "EntityA": "dummy_id",
+                    "EntityAType": "File",
+                    "EntityB": "00000000000000000000000000000002",
+                    "EntityBType": "File"
+                }
+            ]
+        }
+    ],
+    "DBotScore": [
+        {
+            "Indicator": "00000000000000000000000000000001",
+            "Type": "file",
+            "Vendor": "Ignite",
+            "Score": 3,
+            "Reliability": "B - Usually reliable"
+        }
+    ],
+    "Ignite.File": {
+        "id": "dummy_id",
+        "type": "file",
+        "value": "00000000000000000000000000000001",
+        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
+        "entity_type": "indicator",
+        "score": {
+            "value": "malicious",
+            "last_scored_at": "2025-01-02T01:00:00.000001"
+        },
+        "modified_at": "2025-01-02T01:00:00.000001",
+        "created_at": "2025-01-01T01:00:00.000000",
+        "last_seen_at": "2025-01-02T01:00:00.000001",
+        "sort_date": "2025-01-02T01:00:00.000001",
+        "platform_urls": {
+            "ignite": "https://mock_dummy.com/cti/malware/iocs/dummy_id"
+        },
+        "apt_description": "N/A",
+        "hashes": {
+            "md5": "00000000000000000000000000000001",
+            "sha1": "0000000000000000000000000000000000000001",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+        },
+        "malware_description": "dummy description.",
+        "mitre_attack_ids": [
+            {
+                "id": "dummy_mitre_id",
+                "name": "dummy name",
+                "tactics": [
+                    "Defense Evasion"
+                ]
+            }
+        ],
+        "sightings": [
+            {
+                "source": "flashpoint_detection",
+                "sighted_at": "2025-01-02T01:00:00.000000",
+                "tags": [
+                    "malware:pony",
+                    "os:windows",
+                    "source:flashpoint_detection",
+                    "type:stealer"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy_id",
+                        "type": "file",
+                        "value": "00000000000000000000000000000002",
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                    }
+                ]
+            },
+            {
+                "source": "flashpoint_detection",
+                "sighted_at": "2025-01-02T01:00:00.000000",
+                "tags": [
+                    "malware:pony",
+                    "os:windows",
+                    "source:flashpoint_detection",
+                    "type:stealer"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy_id",
+                        "type": "file",
+                        "value": "00000000000000000000000000000001",
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                    }
+                ]
+            }
+        ],
+        "historical_tags": [
+            "malware:pony",
+            "os:windows",
+            "source:flashpoint_detection",
+            "type:stealer"
+        ],
+        "reports": [
+            {
+                "html": "https://mock_dummy.com/cti/intelligence/report/report_1",
+                "json": "https://mock_dummy.com/finished-intelligence/v1/reports/report_1"
+            },
+            {
+                "html": "https://mock_dummy.com/cti/intelligence/report/report_2",
+                "json": "https://mock_dummy.com/finished-intelligence/v1/reports/report_2"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Ignite File reputation for  00000000000000000000000000000001
+>
+>Reputation: Malicious
+>
+>
+>|ID|Type|Hashes|Malware Description|Tags|Related IOCs|Hashes|Mitre Attack IDs|Reports|Created At|Modified At|Last Seen At|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| dummy_id | file | _**md5**_: 00000000000000000000000000000001<br>_**sha1**_: 0000000000000000000000000000000000000001<br>_**sha256**_: 0000000000000000000000000000000000000000000000000000000000000001 | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-** _**type**_: file<br> _**value**_: 00000000000000000000000000000002 | **-** _**id**_: dummy_mitre_id<br> _**name**_: dummy name<br> **tactics**:<br>  _**values**_: Defense Evasion | **-** _**html**_: https://mock_dummy.com/cti/intelligence/report/report_1<br> _**json**_: https://mock_dummy.com/finished-intelligence/v1/reports/report_1<br>**-** _**html**_: https://mock_dummy.com/cti/intelligence/report/report_2<br> _**json**_: https://mock_dummy.com/finished-intelligence/v1/reports/report_2 | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
+>
+>Platform Link(ignite): [https://mock_dummy.com/cti/malware/iocs/dummy_id](https://mock_dummy.com/cti/malware/iocs/dummy_id)
 
 ### url
 
 ***
-Looks up the "URL" type indicator details. The reputation of the URL is considered malicious if there's at least one IoC event in the Ignite database matching the URL indicator.
+Looks up the "URL" type indicator details. The reputation of the URL is decided from the indicator score if it is found in the Ignite IOC database.
 
 #### Base Command
 
@@ -1269,6 +2075,48 @@ Looks up the "URL" type indicator details. The reputation of the URL is consider
 | URL.Relationships.EntityAType | string | The type of the source of the relationship. |
 | URL.Relationships.EntityBType | string | The type of the destination of the relationship. |
 | URL.Description | string | The description of the indicator. |
+| Ignite.URL.id | string | The ID of URL. |
+| Ignite.URL.type | string | Type of the indicator. |
+| Ignite.URL.value | string | The value of URL. |
+| Ignite.URL.href | string | The href of URL. |
+| Ignite.URL.entity_type | string | The entity type of URL. |
+| Ignite.URL.score.value | string | The score value of URL. |
+| Ignite.URL.score.last_scored_at | string | The last scored time of URL. |
+| Ignite.URL.score.raw_score | number | The raw score of URL. |
+| Ignite.URL.modified_at | string | Last time when URL was modified. |
+| Ignite.URL.created_at | string | The creation time of URL. |
+| Ignite.URL.last_seen_at | string | The last seen time of URL. |
+| Ignite.URL.sort_date | string | The sort date of URL. |
+| Ignite.URL.platform_urls.ignite | string | The ignite platform url of URL. |
+| Ignite.URL.apt_description | string | The apt description of URL. |
+| Ignite.URL.external_references.source_name | string | The source name of external reference. |
+| Ignite.URL.external_references.url | string | The url of external reference. |
+| Ignite.URL.hashes.md5 | string | The md5 hash of URL. |
+| Ignite.URL.hashes.sha1 | string | The sha1 hash of URL. |
+| Ignite.URL.hashes.sha256 | string | The sha256 hash of URL. |
+| Ignite.URL.malware_description | string | The malware description of URL. |
+| Ignite.URL.mitre_attack_ids.id | string | The mitre attack id of URL. |
+| Ignite.URL.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.URL.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.URL.relationships.iocs.id | string | The id of ioc. |
+| Ignite.URL.relationships.iocs.type | string | The type of ioc. |
+| Ignite.URL.relationships.iocs.value | string | The value of ioc. |
+| Ignite.URL.relationships.iocs.href | string | The href of ioc. |
+| Ignite.URL.sightings.source | string | The source of URL sighting. |
+| Ignite.URL.sightings.sighted_at | string | The sighted at time of URL. |
+| Ignite.URL.sightings.tags | array | The tags of URL sighting. |
+| Ignite.URL.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.URL.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.URL.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.URL.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.URL.latest_sighting.source | string | The source of URL latest sighting. |
+| Ignite.URL.latest_sighting.sighted_at | string | The sighted at time of latest sighting of URL. |
+| Ignite.URL.latest_sighting.tags | array | The tags of URL latest sighting. |
+| Ignite.URL.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.URL.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.URL.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.URL.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.URL.total_sightings | integer | The total sightings of URL. |
 
 #### Command Example
 
@@ -1283,24 +2131,20 @@ Looks up the "URL" type indicator details. The reputation of the URL is consider
     "URL": [
         {
             "Data": "http://dummy.com",
-            "Malicious": {
-                "Vendor": "Ignite",
-                "Description": "Found in malicious indicators dataset"
-            },
             "Relationships": [
                 {
-                    "Relationship": "indicator-of",
+                    "Relationship": "related-to",
                     "EntityA": "http://dummy.com",
                     "EntityAType": "URL",
-                    "EntityB": "T1016",
-                    "EntityBType": "Attack Pattern"
+                    "EntityB": "http://dummyurl.com",
+                    "EntityBType": "URL"
                 },
                 {
-                    "Relationship": "indicator-of",
+                    "Relationship": "related-to",
                     "EntityA": "http://dummy.com",
                     "EntityAType": "URL",
-                    "EntityB": "T1027",
-                    "EntityBType": "Attack Pattern"
+                    "EntityB": "0.0.0.1",
+                    "EntityBType": "IP"
                 }
             ]
         }
@@ -1308,60 +2152,86 @@ Looks up the "URL" type indicator details. The reputation of the URL is consider
     "DBotScore": [
         {
             "Indicator": "http://dummy.com",
+            "Reliability": "B - Usually reliable",
             "Type": "url",
             "Vendor": "Ignite",
-            "Score": 3
+            "Score": 2
         }
     ],
-    "Ignite.URL.Event": [
-        {
-            "Fpid": "sample_fpid",
-            "EventDetails": {
-                "RelatedEvent": [],
-                "Tags": [
-                    "sample_tags"
+    "Ignite.URL": {
+        "id": " dummy-id-123",
+        "type": "url",
+        "value": "http://dummy.com",
+        "href": "https://dummy-api.com/dummy-endpoint",
+        "entity_type": "indicator",
+        "score": {
+            "value": "suspicious",
+            "last_scored_at": "2025-04-01T00:00:00"
+        },
+        "modified_at": "2025-04-01T00:00:00",
+        "created_at": "2025-04-01T00:00:00",
+        "last_seen_at": "2025-04-01T00:00:00",
+        "sort_date": "2025-04-01T00:00:00",
+        "platform_urls": {
+            "ignite": "https://dummy-platform.com/dummy-url"
+        },
+        "apt_description": "Dummy APT description",
+        "malware_description": "Dummy malware description",
+        "sightings": [
+            {
+                "source": "dummy-source",
+                "sighted_at": "2025-04-01T00:00:00",
+                "tags": [
+                    "dummy-tag-1",
+                    "dummy-tag-2"
                 ],
-                "attack_ids": [
-                    "T1016",
-                    "T1027"
-                ],
-                "event_uuid": "sample_uuid",
-                "fpid": "sample_fpid",
-                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/sample_fpid",
-                "info": "Sample info",
-                "reports": [],
-                "timestamp": "1000000001"
-            },
-            "Category": "Network activity",
-            "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/sample_fpid",
-            "Timestamp": "1000000001",
-            "Type": "url",
-            "Uuid": "sample_uuid",
-            "Comment": "",
-            "Url": "http://dummy.com"
-        }
-    ]
+                "related_iocs": [
+                    {
+                        "id": "dummy-id-1",
+                        "type": "ipv4",
+                        "value": "0.0.0.1",
+                        "href": "https://dummy-api.com/dummy-endpoint-1"
+                    }
+                ]
+            }
+        ],
+        "latest_sighting": {
+            "source": "dummy-source",
+            "sighted_at": "2025-04-01T00:00:00",
+            "tags": [
+                "dummy_latest_sighting_tag_1",
+                "dummy_latest_sighting_tag_2"
+            ],
+            "related_iocs": [
+                {
+                    "id": "dummy-id-1",
+                    "type": "url",
+                    "value": "http://dummyurl.com",
+                    "href": "https://dummy-api.com/dummy-endpoint-2"
+                }
+            ]
+        },
+        "total_sightings": 1
+    }
 }
 ```
 
 #### Human Readable Output
 
->##### Ignite URL reputation for http://dummy.com
+>### Ignite URL reputation for http://dummy.com
 >
->Reputation: Malicious
+>Reputation: Suspicious
 >
->##### Events in which this IOC observed
+>|ID|URL|Malware Description|Tags|Related IOCs|Created At|Modified At|Last Seen At|
+>|---|---|---|---|---|---|---|---|
+>|  dummy-id-123 | http://dummy.com | Dummy malware description | dummy_latest_sighting_tag_1,<br>dummy_latest_sighting_tag_2,<br>dummy-tag-1,<br>dummy-tag-2 | **-** _**type**_: url<br> _**value**_: http://dummyurl.com<br>**-** _**type**_: ipv4<br> _**value**_: 0.0.0.1 | Apr 01, 2025  00:00 | Apr 01, 2025  00:00 | Apr 01, 2025  00:00 |
 >
->| Date Observed (UTC) |Name|Tags|
->|---------------------|---|---|
->| Jan 01, 2001  12:00 | Sample info | sample_tags |
->
->All events and details (ignite): [https://mock_dummy.com/cti/malware/iocs?sort_date=All%20Time&types=url&query=%22http%3A//dummy.com%22](https://mock_dummy.com/cti/malware/iocs?sort_date=All%20Time&types=url&query=%22http%3A//dummy.com%22)
+>Platform Link(ignite): [https://dummy-platform.com/dummy-url](https://dummy-platform.com/dummy-url)
 
 ### domain
 
 ***
-Looks up the "Domain" type indicator details. The reputation of Domain is considered malicious if there's at least one IoC event in the Ignite database matching the Domain indicator.
+Looks up the "Domain" type indicator details. The reputation of the domain is decided from the indicator score if it is found in the Ignite IOC database.
 
 #### Base Command
 
@@ -1391,6 +2261,48 @@ Looks up the "Domain" type indicator details. The reputation of Domain is consid
 | Ignite.Domain.Event.Type | string | The indicator type. |
 | Ignite.Domain.Event.Uuid | string | The UUID of the indicator. |
 | Ignite.Domain.Event.Comment | string | The comment that was provided when the indicator was observed. |
+| Ignite.Domain.id | string | The ID of domain. |
+| Ignite.Domain.type | string | Type of the indicator. |
+| Ignite.Domain.value | string | The value of domain. |
+| Ignite.Domain.href | string | The href of domain. |
+| Ignite.Domain.entity_type | string | The entity type of domain. |
+| Ignite.Domain.score.value | string | The score value of domain. |
+| Ignite.Domain.score.last_scored_at | string | The last scored time of domain. |
+| Ignite.Domain.score.raw_score | number | The raw score of domain. |
+| Ignite.Domain.modified_at | string | Last time when domain was modified. |
+| Ignite.Domain.created_at | string | The creation time of domain. |
+| Ignite.Domain.last_seen_at | string | The last seen time of domain. |
+| Ignite.Domain.sort_date | string | The sort date of domain. |
+| Ignite.Domain.platform_urls.ignite | string | The ignite platform url of domain. |
+| Ignite.Domain.apt_description | string | The apt description of domain. |
+| Ignite.Domain.external_references.source_name | string | The source name of external reference. |
+| Ignite.Domain.external_references.url | string | The url of external reference. |
+| Ignite.Domain.hashes.md5 | string | The md5 hash of domain. |
+| Ignite.Domain.hashes.sha1 | string | The sha1 hash of domain. |
+| Ignite.Domain.hashes.sha256 | string | The sha256 hash of domain. |
+| Ignite.Domain.malware_description | string | The malware description of domain. |
+| Ignite.Domain.mitre_attack_ids.id | string | The mitre attack id of domain. |
+| Ignite.Domain.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.Domain.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.Domain.relationships.iocs.id | string | The id of ioc. |
+| Ignite.Domain.relationships.iocs.type | string | The type of ioc. |
+| Ignite.Domain.relationships.iocs.value | string | The value of ioc. |
+| Ignite.Domain.relationships.iocs.href | string | The href of ioc. |
+| Ignite.Domain.sightings.source | string | The source of domain sighting. |
+| Ignite.Domain.sightings.sighted_at | string | The sighted at of domain. |
+| Ignite.Domain.sightings.tags | array | The tags of domain sighting. |
+| Ignite.Domain.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.Domain.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.Domain.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.Domain.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.Domain.latest_sighting.source | string | The source of domain latest sighting. |
+| Ignite.Domain.latest_sighting.sighted_at | string | The sighted at of domain latest sighting. |
+| Ignite.Domain.latest_sighting.tags | array | The tags of domain latest sighting. |
+| Ignite.Domain.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.Domain.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.Domain.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.Domain.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.Domain.total_sightings | integer | The total sightings of domain. |
 | Domain.Malicious.Description | string | The description of the malicious indicator. |
 | Domain.Malicious.Vendor | string | Vendor of the malicious indicator. |
 | Domain.Name | string | Name of the domain. |
@@ -1403,77 +2315,116 @@ Looks up the "Domain" type indicator details. The reputation of Domain is consid
 
 #### Command example
 
-```!domain domain="dummy.com"```
+```!domain domain="dummy_domain.com"```
 
 #### Context Example
 
 ```json
 {
-    "DBotScore": {
-        "Indicator": "dummy.com",
-        "Reliability": "B - Usually reliable",
-        "Score": 3,
-        "Type": "domain",
-        "Vendor": "Ignite"
-    },
-    "Domain": {
-        "Malicious": {
-            "Description": "Found in malicious indicators dataset",
-            "Vendor": "Ignite"
-        },
-        "Name": "dummy.com"
-    },
-    "Ignite": {
-        "Domain": {
-            "Event": {
-                "Category": "Network activity",
-                "Comment": "",
-                "Domain": "dummy.com",
-                "EventDetails": {
-                    "RelatedEvent": [],
-                    "Tags": [
-                        "actor:APT",
-                        "actor:Lazarus",
-                        "event:observation",
-                        "source:osint"
-                    ],
-                    "attack_ids": [],
-                    "event_uuid": "00000000-0000-0000-0000-000000000001",
-                    "fpid": "0000000000000000000001",
-                    "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
-                    "info": "Observation: APT Lazarus Reported IOCs [2021-07-28 21:10:34]",
-                    "reports": [],
-                    "timestamp": "1627527286"
-                },
-                "Fpid": "0000000000000000000001",
-                "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
-                "Timestamp": "1569436997",
-                "Type": "domain",
-                "Uuid": "00000000-0000-0000-0000-000000000001"
-            }
+    "DBotScore": [
+        {
+            "Indicator": "dummy.com",
+            "Type": "domain",
+            "Vendor": "Ignite",
+            "Score": 3,
+            "Reliability": "B - Usually reliable"
         }
+    ],
+    "Domain": [
+        {
+            "Name": "dummy.com",
+            "Malicious": {
+                "Vendor": "Ignite",
+                "Description": "Found in malicious indicators dataset"
+            },
+            "Relationships": [
+                {
+                    "Relationship": "related-to",
+                    "EntityA": "dummy.com",
+                    "EntityAType": "IP",
+                    "EntityB": "dummy_value",
+                    "EntityBType": "File"
+                }
+            ]
+        }
+    ],
+    "Ignite.Domain": {
+        "apt_description": "N/A",
+        "created_at": "2025-01-01T01:00:00.000000",
+        "entity_type": "indicator",
+        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
+        "id": "dummy_id",
+        "last_seen_at": "2025-04-22T11:17:37.981000",
+        "latest_sighting": {
+            "related_iocs": [
+                {
+                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id_2",
+                    "id": "dummy_id_2",
+                    "type": "file",
+                    "value": "dummy_value"
+                }
+            ],
+            "sighted_at": "2025-01-01T01:00:00.000000",
+            "source": "flashpoint_extraction",
+            "tags": [
+                "extracted_config:true",
+                "malware:xworm",
+                "source:flashpoint_extraction"
+            ]
+        },
+        "malware_description": "<p>This is dummy description.</p>",
+        "modified_at": "2025-01-02T01:00:00.000000",
+        "platform_urls": {
+            "ignite": "https://mock_dummy.com/cti/malware/iocs/dummy_id"
+        },
+        "score": {
+            "last_scored_at": "2025-04-22T11:23:21.569000",
+            "value": "malicious"
+        },
+        "sightings": [
+            {
+                "related_iocs": [
+                    {
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id_3",
+                        "id": "dummy_id_3",
+                        "type": "file",
+                        "value": "dummy_value"
+                    }
+                ],
+                "sighted_at": "2025-04-22T11:17:37.981000",
+                "source": "flashpoint_extraction",
+                "tags": [
+                    "extracted_config:true",
+                    "malware:xworm",
+                    "source:flashpoint_extraction"
+                ]
+            }
+        ],
+        "sort_date": "2025-01-01T01:00:00.000000",
+        "total_sightings": 1,
+        "type": "domain",
+        "value": "dummy_domain.com"
     }
 }
 ```
 
 #### Human Readable Output
 
->### Ignite Domain reputation for dummy.com
+>### Ignite Domain reputation for dummy_domain.com
 >
 >Reputation: Malicious
 >
->### Events in which this IOC observed
 >
->|Date Observed (UTC)|Name|Tags|
->|---|---|---|
->| Sep 25, 2019  19:51 | Observation: APT Lazarus Reported IOCs [2021-07-28 21:10:34] | actor:APT, actor:Lazarus, event:observation, source:osint |
+>|ID|Domain|Malware Description|Tags|Related IOCs|Created At|Modified At|Last Seen At|
+>|---|---|---|---|---|---|---|---|
+>| dummy_id | dummy_domain.com | This is dummy description. | extracted_config:true,<br>malware:xworm,<br>source:flashpoint_extraction | **-** _**type**_: file<br> _**value**_: dummy_value | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
 >
->All events and details (ignite): [https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&types=domain&query=%22dummy.com%22](https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&types=domain&query=%22dummy.com%22)
+>Platform Link(ignite): [https://mock_dummy.com/cti/malware/iocs/dummy_id](https://mock_dummy.com/cti/malware/iocs/dummy_id)
 
 ### file
 
 ***
-Looks up the "File" type indicator details. The reputation of File hash is considered malicious if there's at least one IoC event in the Ignite database matching the File hash indicator.
+Looks up the "File" type indicator details. The reputation of the file is decided from the indicator score if it is found in the Ignite IOC database.
 
 #### Base Command
 
@@ -1507,6 +2458,48 @@ Looks up the "File" type indicator details. The reputation of File hash is consi
 | Ignite.File.Event.Type | string | The indicator type. |
 | Ignite.File.Event.Uuid | string | The UUID of the indicator. |
 | Ignite.File.Event.Comment | string | The comment that was provided when the indicator was observed. |
+| Ignite.File.id | string | The ID of file. |
+| Ignite.File.type | string | Type of the indicator. |
+| Ignite.File.value | string | The value of file. |
+| Ignite.File.href | string | The href of file. |
+| Ignite.File.entity_type | string | The entity type of file. |
+| Ignite.File.score.value | string | The score value of file. |
+| Ignite.File.score.last_scored_at | string | The last scored time of file. |
+| Ignite.File.score.raw_score | number | The raw score of file. |
+| Ignite.File.modified_at | string | Last time when file was modified. |
+| Ignite.File.created_at | string | The creation time of file. |
+| Ignite.File.last_seen_at | string | The last seen time of file. |
+| Ignite.File.sort_date | string | The sort date of file. |
+| Ignite.File.platform_urls.ignite | string | The ignite platform url of file. |
+| Ignite.File.apt_description | string | The apt description of file. |
+| Ignite.File.external_references.source_name | string | The source name of external reference. |
+| Ignite.File.external_references.url | string | The url of external reference. |
+| Ignite.File.hashes.md5 | string | The md5 hash of file. |
+| Ignite.File.hashes.sha1 | string | The sha1 hash of file. |
+| Ignite.File.hashes.sha256 | string | The sha256 hash of file. |
+| Ignite.File.malware_description | string | The malware description of file. |
+| Ignite.File.mitre_attack_ids.id | string | The mitre attack id of file. |
+| Ignite.File.mitre_attack_ids.name | string | The name of mitre attack id. |
+| Ignite.File.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. |
+| Ignite.File.relationships.iocs.id | string | The id of ioc. |
+| Ignite.File.relationships.iocs.type | string | The type of ioc. |
+| Ignite.File.relationships.iocs.value | string | The value of ioc. |
+| Ignite.File.relationships.iocs.href | string | The href of ioc. |
+| Ignite.File.sightings.source | string | The source of file sighting. |
+| Ignite.File.sightings.sighted_at | string | The sighted at time of file. |
+| Ignite.File.sightings.tags | array | The tags of file sighting. |
+| Ignite.File.sightings.related_iocs.id | string | The ID of related IOC. |
+| Ignite.File.sightings.related_iocs.type | string | The type of related IOC. |
+| Ignite.File.sightings.related_iocs.value | string | The value of related IOC. |
+| Ignite.File.sightings.related_iocs.href | string | The href of related IOC. |
+| Ignite.File.latest_sighting.source | string | The source of file latest sighting. |
+| Ignite.File.latest_sighting.sighted_at | string | The sighted at time of latest sighting of file. |
+| Ignite.File.latest_sighting.tags | array | The tags of file latest sighting. |
+| Ignite.File.latest_sighting.related_iocs.id | string | The ID of related IOC. |
+| Ignite.File.latest_sighting.related_iocs.type | string | The type of related IOC. |
+| Ignite.File.latest_sighting.related_iocs.value | string | The value of related IOC. |
+| Ignite.File.latest_sighting.related_iocs.href | string | The href of related IOC. |
+| Ignite.File.total_sightings | integer | The total sightings of file. |
 | File.Malicious.Description | string | The description of the malicious indicator. |
 | File.Malicious.Vendor | string | Vendor of the malicious file. |
 | File.MD5 | string | MD5 type file. |
@@ -1536,27 +2529,30 @@ Looks up the "File" type indicator details. The reputation of File hash is consi
                 {
                     "type": "MD5",
                     "value": "00000000000000000000000000000001"
+                },
+                {
+                    "type": "SHA1",
+                    "value": "0000000000000000000000000000000000000001"
+                },
+                {
+                    "type": "SHA256",
+                    "value": "0000000000000000000000000000000000000000000000000000000000000001"
                 }
             ],
             "MD5": "00000000000000000000000000000001",
+            "SHA1": "0000000000000000000000000000000000000001",
+            "SHA256": "0000000000000000000000000000000000000000000000000000000000000001",
             "Malicious": {
                 "Vendor": "Ignite",
                 "Description": "Found in malicious indicators dataset"
             },
             "Relationships": [
                 {
-                    "Relationship": "indicator-of",
+                    "Relationship": "related-to",
                     "EntityA": "00000000000000000000000000000001",
-                    "EntityAType": "file",
-                    "EntityB": "T1010",
-                    "EntityBType": "Attack Pattern"
-                },
-                {
-                    "Relationship": "indicator-of",
-                    "EntityA": "00000000000000000000000000000001",
-                    "EntityAType": "file",
-                    "EntityB": "T1027",
-                    "EntityBType": "Attack Pattern"
+                    "EntityAType": "File",
+                    "EntityB": "00000000000000000000000000000002",
+                    "EntityBType": "File"
                 }
             ]
         }
@@ -1566,53 +2562,98 @@ Looks up the "File" type indicator details. The reputation of File hash is consi
             "Indicator": "00000000000000000000000000000001",
             "Type": "file",
             "Vendor": "Ignite",
-            "Score": 3
+            "Score": 3,
+            "Reliability": "B - Usually reliable"
         }
     ],
-    "Ignite.File.Event": [
-        {
-            "MD5": "00000000000000000000000000000001",
-            "EventDetails": {
-                "RelatedEvent": [],
-                "Tags": [
-                    "sample_tags"
+    "Ignite.File": {
+        "id": "dummy_id",
+        "type": "file",
+        "value": "00000000000000000000000000000001",
+        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
+        "entity_type": "indicator",
+        "score": {
+            "value": "malicious",
+            "last_scored_at": "2025-01-02T01:00:00.000001"
+        },
+        "modified_at": "2025-01-02T01:00:00.000001",
+        "created_at": "2025-01-01T01:00:00.000000",
+        "last_seen_at": "2025-01-02T01:00:00.000001",
+        "sort_date": "2025-01-02T01:00:00.000001",
+        "platform_urls": {
+            "ignite": "https://mock_dummy.com/cti/malware/iocs/dummy_id"
+        },
+        "apt_description": "N/A",
+        "hashes": {
+            "md5": "00000000000000000000000000000001",
+            "sha1": "0000000000000000000000000000000000000001",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+        },
+        "malware_description": "dummy description.",
+        "mitre_attack_ids": [
+            {
+                "id": "dummy_mitre_id",
+                "name": "dummy name",
+                "tactics": [
+                    "Defense Evasion"
+                ]
+            }
+        ],
+        "sightings": [
+            {
+                "source": "flashpoint_detection",
+                "sighted_at": "2025-01-02T01:00:00.000000",
+                "tags": [
+                    "malware:pony",
+                    "os:windows",
+                    "source:flashpoint_detection",
+                    "type:stealer"
                 ],
-                "attack_ids": [
-                    "T1010",
-                    "T1027"
-                ],
-                "event_uuid": "sample_uuid",
-                "fpid": "sample_fpid",
-                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/sample_fpid",
-                "info": "Observation: test_info [\"00000000000000000000000000000001\"]",
-                "reports": [],
-                "timestamp": "0000000001"
-            },
-            "Category": "sample category",
-            "Fpid": "sample_fpid",
-            "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/sample_fpid",
-            "Timestamp": "0000000001",
-            "Type": "md5",
-            "Uuid": "sample_uuid",
-            "Comment": ""
-        }
-    ]
+                "related_iocs": [
+                    {
+                        "id": "dummy_id",
+                        "type": "file",
+                        "value": "00000000000000000000000000000001",
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                    }
+                ]
+            }
+        ],
+        "latest_sighting": {
+            "source": "flashpoint_detection",
+            "sighted_at": "2025-01-02T01:00:00.000000",
+            "tags": [
+                "malware:pony",
+                "os:windows",
+                "source:flashpoint_detection",
+                "type:stealer"
+            ],
+            "related_iocs": [
+                {
+                    "id": "dummy_id",
+                    "type": "file",
+                    "value": "00000000000000000000000000000001",
+                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                }
+            ]
+        },
+        "total_sightings": 1
+    }
 }
 ```
 
 #### Human Readable Output
 
->##### Ignite File reputation for 00000000000000000000000000000001
+>### Ignite File reputation for 00000000000000000000000000000001
 >
 >Reputation: Malicious
 >
->##### Events in which this IOC observed
 >
->|Date Observed (UTC)|Name|Tags|
->|---|---|---|
->| Jan 01, 1970  00:00 | Observation: test_info ["00000000000000000000000000000001"] | sample_tags |
+>|ID|Hash Type|Hashes|Malware Description|Tags|Related IOCs|Mitre Attack IDs|Created At|Modified At|Last Seen At|
+>|---|---|---|---|---|---|---|---|---|---|
+>| dummy_id | md5 | _**md5**_: 00000000000000000000000000000001<br>_**sha1**_: 0000000000000000000000000000000000000001<br>_**sha256**_: 0000000000000000000000000000000000000000000000000000000000000001 | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-** _**type**_: file<br> _**value**_: 00000000000000000000000000000002 | **-** _**id**_: dummy_mitre_id<br> _**name**_: dummy name<br> **tactics**:<br>  _**values**_: Defense Evasion | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
 >
->All events and details (ignite): [https://mock_dummy.com/cti/malware/iocs?sort_date=All%20time&types=md5,sha1,sha256,sha512,ssdeep&query=%2200000000000000000000000000000001%22](https://mock_dummy.com/cti/malware/iocs?sort_date=All%20time&types=md5,sha1,sha256,sha512,ssdeep&query=%2200000000000000000000000000000001%22)
+>Platform Link(ignite): [https://mock_dummy.com/cti/malware/iocs/dummy_id](https://mock_dummy.com/cti/malware/iocs/dummy_id)
 
 ## Migration Guide
 
@@ -1627,10 +2668,8 @@ Some of the previous integration's commands have been migrated to new commands. 
 | --- | --- |
 | ip | ip |
 | domain | domain |
-| filename | filename |
 | url | url |
 | file | file |
-| email | email |
 | flashpoint-search-intelligence-reports | flashpoint-ignite-intelligence-report-search |
 | flashpoint-get-single-intelligence-report | flashpoint-ignite-intelligence-report-get |
 | flashpoint-get-related-reports | flashpoint-ignite-intelligence-related-report-list |
@@ -1652,3 +2691,5 @@ Some of the previous integration's commands have been deprecated from the Flashp
 |flashpoint-get-forum-post-details|
 |flashpoint-search-forum-sites|
 |flashpoint-search-forum-posts|
+|filename|
+|email|

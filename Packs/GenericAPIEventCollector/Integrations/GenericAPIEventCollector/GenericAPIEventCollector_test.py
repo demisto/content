@@ -2,6 +2,7 @@ from datetime import datetime
 from unittest.mock import patch
 
 import pytest
+
 from CommonServerPython import DemistoException
 from GenericAPIEventCollector import (
     PaginationLogic,
@@ -19,6 +20,9 @@ from GenericAPIEventCollector import (
     recursive_replace,
     setup_search_events,
     timestamp_format_to_datetime,
+    is_milliseconds,
+    is_microseconds,
+    convert_epoch_to_timestamp,
 )
 
 
@@ -368,3 +372,94 @@ def test_generate_headers_no_auth(mock_generate_authentication_headers):
     mock_generate_authentication_headers.return_value = {}
     headers = generate_headers(params)
     assert headers == {"Custom-Header": "CustomValue"}
+
+
+@pytest.mark.parametrize(
+    "input_str,expected",
+    [
+        ("12345678901", True),  # 11 chars - should be detected as milliseconds
+        ("1234567890", False),  # 10 chars - should not be detected as milliseconds
+        ("", False),  # Empty string
+    ],
+)
+def test_is_milliseconds(input_str, expected):
+    """Tests the is_milliseconds function with various inputs."""
+    result = is_milliseconds(input_str)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "input_str,expected",
+    [
+        ("1234567890123456", True),  # 16 chars - should be detected as microseconds
+        ("123456789012345", False),  # 15 chars - should not be detected as microseconds
+        ("", False),  # Empty string
+        ("12345678901234567", True),  # Longer than 16 chars
+    ],
+)
+def test_is_microseconds(input_str, expected):
+    """Tests the is_microseconds function with various inputs."""
+    result = is_microseconds(input_str)
+    assert result == expected
+
+
+@patch("GenericAPIEventCollector.demisto.debug")
+def test_convert_epoch_to_timestamp_seconds(mock_debug):
+    """Test converting epoch in seconds to timestamp."""
+    # Unix timestamp for 2022-01-01 00:00:00 UTC
+    epoch_seconds = "1640995200"
+    expected_datetime = datetime.fromtimestamp(float(epoch_seconds))
+
+    result = convert_epoch_to_timestamp(epoch_seconds)
+
+    assert result == expected_datetime
+    # For seconds, debug should not be called
+    mock_debug.assert_not_called()
+
+
+@patch("GenericAPIEventCollector.demisto.debug")
+def test_convert_epoch_to_timestamp_milliseconds(mock_debug):
+    """Test converting epoch in milliseconds to timestamp."""
+    # '1640995200000' is 2022-01-01 00:00:00 UTC in milliseconds
+    epoch_milliseconds = "1640995200000"
+    expected_datetime = datetime.fromtimestamp(float(epoch_milliseconds) / 1000)
+
+    result = convert_epoch_to_timestamp(epoch_milliseconds)
+
+    assert result == expected_datetime
+    # For milliseconds, debug should be called with the appropriate message
+    mock_debug.assert_called_once_with(f"converting {epoch_milliseconds} epoch milliseconds to timestamp")
+
+
+@patch("GenericAPIEventCollector.demisto.debug")
+def test_convert_epoch_to_timestamp_microseconds(mock_debug):
+    """Test converting epoch in microseconds to timestamp."""
+    # '1640995200000000' is 2022-01-01 00:00:00 UTC in microseconds
+    epoch_microseconds = "1640995200000000"
+    expected_datetime = datetime.fromtimestamp(float(epoch_microseconds) / 1_000_000)
+
+    result = convert_epoch_to_timestamp(epoch_microseconds)
+
+    assert result == expected_datetime
+    # For microseconds, debug should be called with the appropriate message
+    mock_debug.assert_called_once_with(f"converting {epoch_microseconds} epoch microseconds to timestamp")
+
+
+@patch("GenericAPIEventCollector.demisto.debug")
+def test_convert_epoch_to_timestamp_boundary_conditions(mock_debug):
+    """Test boundary conditions for epoch conversion."""
+    # Test with exactly 10 chars (milliseconds' threshold)
+    epoch_10_chars = "12345678901"  # 10 digits - should be treated as milliseconds
+    result_10 = convert_epoch_to_timestamp(epoch_10_chars)
+    expected_10 = datetime.fromtimestamp(float(epoch_10_chars) / 1_000)
+
+    assert result_10 == expected_10
+    # Reset the mock to check the next call
+    mock_debug.reset_mock()
+
+    # Test with exactly 16 chars (microseconds' threshold)
+    epoch_16_chars = "1234567890123456"  # 16 digits - should be treated as microseconds
+    result_16 = convert_epoch_to_timestamp(epoch_16_chars)
+    expected_16 = datetime.fromtimestamp(float(epoch_16_chars) / 1_000_000)
+
+    assert result_16 == expected_16

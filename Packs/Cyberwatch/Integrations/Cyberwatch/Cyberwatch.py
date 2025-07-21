@@ -1,5 +1,7 @@
 from collections.abc import Callable
 from datetime import datetime, timedelta
+from dateutil.parser import parse as parse_iso
+import json
 from typing import Any
 
 import demistomock as demisto
@@ -10,6 +12,9 @@ from CommonServerUserPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+FETCH_LIMIT_MAX = 10000
+CURSOR_DELIM = "###"
 
 
 class Client(BaseClient):
@@ -609,7 +614,194 @@ def iso8601_to_human(iso8601_str, default_value=""):
     return default_value
 
 
-""" FUNCTIONS """
+def to_utc(dt_str: str) -> datetime:
+    """
+    Converts an ISO 8601 or Z date string to a UTC **aware** datetime.
+    If the string has no timezone, UTC is assumed.
+    """
+    dt = parse_iso(dt_str)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    else:
+        dt = dt.astimezone(timezone.utc)
+    return dt
+
+
+def _as_list(value):
+    """Allows accepting either a single value or a JSON list."""
+    if value is None:
+        return None
+    return value if isinstance(value, list) else [value]
+
+
+def cve_passes_filters(cve: dict, filt: dict) -> bool:
+    """
+    Returns True if the CVE satisfies all the provided filters.
+    Args:
+        cve (dict): A dictionary representing the CVE details. Expected keys include:
+            - "active" (bool): Indicates if the CVE is active.
+            - "ignored" (bool): Indicates if the CVE is ignored.
+            - "prioritized" (bool): Indicates if the CVE is prioritized.
+            - "cve_code" (str): The CVE identifier.
+            - "score" (float): The score of the CVE.
+            - "epss" (float): The EPSS score of the CVE.
+        filt (dict): A dictionary of filters to apply. Supported keys include:
+            - "active" (bool): Filter by active status (default is True).
+            - "ignored" (bool): Filter by ignored status (default is False).
+            - "prioritized" (bool): Filter by prioritized status.
+            - "cve_code" (str or list): Filter by specific CVE code(s).
+            - "min_cvss" (float): Minimum CVSS score to include.
+            - "min_epss" (float): Minimum EPSS score to include.
+    Returns:
+        bool: True if the CVE matches all the specified filters, False otherwise.
+    """
+    if filt.get("active", True) is False and cve.get("active", True) is False:
+        return False
+    if filt.get("active") is True and not cve.get("active", True):
+        return False
+
+    if filt.get("ignored", False) is False and cve.get("ignored", False):
+        return False
+    if filt.get("ignored") is True and not cve.get("ignored", False):
+        return False
+
+    if "prioritized" in filt and cve.get("prioritized") != filt["prioritized"]:
+        return False
+
+    if (codes := _as_list(filt.get("cve_code"))) and cve["cve_code"] not in codes:
+        return False
+
+    # Scores numériques
+    cvss = cve.get("score") or 0
+    epss = cve.get("epss") or 0
+
+    if (min_cvss := filt.get("min_cvss")) is not None and cvss < float(min_cvss):
+        return False
+
+    return not ((min_epss := filt.get("min_epss")) is not None and epss < float(min_epss))
+
+
+def _initial_last_run(first_fetch: str) -> dict[str, Any]:
+    """Return a fresh last-run dict when none is stored yet."""
+    start_ms, _ = parse_date_range(first_fetch, to_timestamp=True)
+    return {
+        "last_success": int(start_ms / 1000),
+        "cycle_start": int(datetime.now(timezone.utc).timestamp()),
+        "server_id": None,
+        "cve_id": None,
+    }
+
+
+def fetch_incidents(client: Client, params: dict[str, Any]) -> None:
+    """
+    Incremental incident fetch with a resumable cursor.
+
+    The last-run object is stored directly as a dict:
+        {
+            "last_success": int,        # lower bound (inclusive)
+            "cycle_start": int,         # upper bound (exclusive)
+            "server_id": int | None,    # bookmark within assets
+            "cve_id": str | None        # bookmark within CVEs
+        }
+    """
+    first_fetch = params.get("first_fetch", "3 days")
+    max_fetch = min(int(params.get("max_fetch", 200)), FETCH_LIMIT_MAX)
+
+    asset_filters = json.loads(params.get("asset_filters", "{}") or "{}")
+    cve_filters = json.loads(params.get("cve_filters", "{}") or '{"ignored": false}')
+
+    # 1. Load / initialise cursor
+    last_run: dict[str, Any] = demisto.getLastRun() or {}
+    if not last_run:
+        last_run = _initial_last_run(first_fetch)
+
+    last_success_ts: int = last_run["last_success"]
+    cycle_start_ts: int = last_run["cycle_start"] or int(datetime.now(timezone.utc).timestamp())
+    resume_server_id: int | None = last_run.get("server_id")
+    resume_cve_id: str | None = last_run.get("cve_id")
+
+    # 2. Main fetch loop
+    incidents: list[dict[str, Any]] = []
+    hit_limit = False
+    last_asset_id: int | None = None
+    last_cve_code: str | None = None
+
+    assets = client.get_assets(asset_filters)
+    for asset in assets:
+        # Fast-forward to the bookmarked asset (if any)
+        if resume_server_id is not None and asset["id"] != resume_server_id:
+            continue
+
+        full_asset = client.get_one_asset({"id": asset["id"]})
+
+        skipping_cves = resume_server_id == asset["id"] and resume_cve_id is not None
+        for cve in full_asset.get("cve_announcements", []):
+            if skipping_cves:
+                if cve["cve_code"] == resume_cve_id:
+                    skipping_cves = False
+                continue
+
+            detected_ts = int(to_utc(cve.get("detected_at")).timestamp())
+
+            if detected_ts <= last_success_ts or detected_ts > cycle_start_ts:
+                continue
+            if not cve_passes_filters(cve, cve_filters):
+                continue
+
+            incidents.append(
+                {
+                    "name": f"{cve['cve_code']} on {asset['hostname']}",
+                    "occurred": datetime.utcfromtimestamp(detected_ts).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "rawJSON": json.dumps(
+                        {
+                            "cve": cve["cve_code"],
+                            "score": cve["score"],
+                            "environmental_score": cve.get("environmental_score"),
+                            "epss": cve.get("epss"),
+                            "ignored": cve.get("ignored", False),
+                            "active": cve.get("active", True),
+                            "detected_at": cve.get("detected_at"),
+                            "prioritized": cve.get("prioritized", False),
+                            "server_id": asset["id"],
+                        }
+                    ),
+                }
+            )
+
+            last_asset_id = asset["id"]
+            last_cve_code = cve["cve_code"]
+
+            if len(incidents) >= max_fetch:
+                hit_limit = True
+                break
+
+        # After the first asset is processed, clear resume markers
+        resume_server_id = None
+        resume_cve_id = None
+
+        if hit_limit:
+            break
+
+    # 3. Persist new cursor
+    if hit_limit:
+        # Still mid-cycle: keep last_success as-is, bookmark position.
+        new_last_run = {
+            "last_success": last_success_ts,
+            "cycle_start": cycle_start_ts,
+            "server_id": last_asset_id,
+            "cve_id": last_cve_code,
+        }
+    else:
+        # Finished the cycle: advance last_success and clear bookmarks.
+        new_last_run = {
+            "last_success": cycle_start_ts,
+            "cycle_start": None,
+            "server_id": None,
+            "cve_id": None,
+        }
+
+    demisto.incidents(incidents)
+    demisto.setLastRun(new_last_run)
 
 
 def list_cves_command(client: Client, args: Dict[str, Any]):
@@ -1032,6 +1224,8 @@ def main():  # pragma: no cover
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
+        elif command == "fetch-incidents":
+            fetch_incidents(client, params)
         else:
             return_results(command_dict[command](client, args))
     except Exception as e:
