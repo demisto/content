@@ -8,30 +8,29 @@ Get informed and accurate insight on full-fidelity NetFlow data. Incorporating f
 
 Data normalization capabilities:
 
-* Rules for parsing and modeling of network logs that are ingested via Broker VM on Cortex XSIAM.
+* Rules for parsing and modeling network logs that are ingested via Broker VM into Cortex XSIAM.
 * The ingested Riverbed Flow Gateway logs can be queried in XQL Search using the *`riverbed_flow_gateways_raw`* dataset.
 
-### Supported Timestamp Format
+### Supported timestamp format
 
 * The syslog is in **RFC 5424 format**, and the parsing rule supports UTC timezone. For example: *`1985-04-12T23:20:50.52Z`*.
 
 ***
 
-## Data Collection
+## Data collection
 
 ### Riverbed Flow Gateways side
 
-To send syslog data from Riverbed to a remote server follow the instructions below:
+To send syslog data from Riverbed to a remote server:
 
-1. At the realm level, select **Logging** tab.
-2. Under Remote Logging, click **On**.
+1. At the realm level, select the **Logging** tab.
+2. Under **Remote Logging**, click **On**.
 3. Click **Add Remote Log Server**.
-4. Select the protocol used to transfer the log to the syslog server: TCP, UDP, or TLS (Transport Layer Security version 2.12). The default setting is UDP.
-
-    * When you select TLS as the transport method, you must copy a certificate for the remote log server in the remote log server certificate field.
+4. Select the protocol to transfer the log to the syslog server: UDP (default), TCP, or TLS (Transport Layer Security version 2.12).
+    * If you select TLS as the transport method, you must copy a certificate for the remote log server into the remote log server certificate field.
 5. Click **Enable**.
 6. Specify the remote syslog server’s **IPv4 address** or **hostname**. The remote server must be running the standard syslogd utility.
-7. Specify the syslog server **port number** on which to send syslog messages
+7. Enter the syslog server **port number** for sending syslog messages.
 8. Select the minimum severity level for the log messages to control the amount of messages logged. By default, SteelConnect logs all syslog messages with a priority level of Info and above.
 9. Click **Submit**.
 
@@ -41,9 +40,9 @@ For more information, see [here](https://support.riverbed.com/bin/support/static
 
 #### Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
+To create or configure the Broker VM, see [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
 
-Follow the below steps to configure the Broker VM to receive Riverbed Flow Gateways logs.
+To configure the Broker VM to receive Riverbed Flow Gateways logs:
 
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
