@@ -2780,7 +2780,7 @@ def test_expand_permissions_list(permissions, expected_out):
         (
             AUTHORIZATION_CODE_FLOW,
             "microsoft-teams-message-send-to-chat",
-            {Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL, Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT},
+            {Perms.CHAT_READBASIC, Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL, Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT},
         ),
     ],
 )
