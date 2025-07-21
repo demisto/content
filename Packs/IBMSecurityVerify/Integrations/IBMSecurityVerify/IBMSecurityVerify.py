@@ -276,7 +276,7 @@ def main() -> None:  # pragma: no cover
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"last_run after the fetch {last_run}")
             demisto.setLastRun(next_run)
-
+ 
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
