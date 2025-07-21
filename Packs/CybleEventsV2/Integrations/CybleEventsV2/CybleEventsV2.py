@@ -712,7 +712,7 @@ def test_response(client, method, base_url, token):
     """
     try:
         # The test mocks this specific endpoint
-        url_suffix = "/apollo/api/v1/y/services"
+        url_suffix = "/y/tpi/cortex/alerts"
         headers = {"Authorization": f"Bearer {token}"}
 
         response = client._http_request(method=method, url_suffix=url_suffix, headers=headers)
