@@ -193,6 +193,7 @@ Fetch anomaly alerts from Asimily Insight. You can add argument filters.
 | AsimilyInsight.Anomaly.asimilyanomalymitretechnique | string | Asimily Anomaly Mitre Technique |
 | AsimilyInsight.Anomaly.asimilyanomalycategory | string | Asimily Anomaly Category |
 | AsimilyInsight.Anomaly.asimilyanomalydescription | string | Asimily Anomaly Description |
+| AsimilyInsight.Anomaly.asimilyanomalycustomeranomalyid | string | Asimily Anomaly Customer Anomaly ID. Unique anomaly type identifier assigned by Asimily for a specific customer. This ID can be used in future operations such as invoking anomaly fix actions. |
 | AsimilyInsight.Anomaly.asimilydeviceid | number | Asimily Device ID |
 | AsimilyInsight.Anomaly.asimilydevicemacaddress | string | Asimily Device MAC Address |
 | AsimilyInsight.Anomaly.asimilydeviceipv4address | string | Asimily Device IPV4 Address |

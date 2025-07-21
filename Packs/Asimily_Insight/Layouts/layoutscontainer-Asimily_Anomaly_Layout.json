@@ -625,7 +625,17 @@
                 "index": 21,
                 "sectionItemType": "field",
                 "startCol": 0
-              }
+              },
+							{
+								"endCol": 2,
+								"fieldId": "asimilyanomalycustomeranomalyid",
+								"height": 26,
+								"id": "5ad67c32-b04f-44ab-8d75-5256caa31e1d",
+								"index": 22,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+
             ],
             "maxH": null,
             "maxW": 1,
@@ -738,7 +748,11 @@
           {
             "fieldId": "incident_asimilyanomalyfixby",
             "isVisible": true
-          }
+          },
+					{
+						"fieldId": "incident_asimilyanomalycustomeranomalyid",
+						"isVisible": true
+					}
         ],
         "isVisible": true,
         "name": "Asimily Anomaly Fields",
@@ -945,7 +959,12 @@
           {
             "fieldId": "incident_asimilyanomalyfixby",
             "isVisible": true
-          }
+          },
+					{
+						"fieldId": "incident_asimilyanomalycustomeranomalyid",
+						"isVisible": true
+					}
+
         ],
         "isVisible": true,
         "name": "Asimily Anomaly Fields",

@@ -19,7 +19,7 @@ Specifically, this pack includes:
 
 - **Two Custom Incident Types**: Pre-configured incident types to categorize and manage incoming security anomalies and CVEs from Asimily Insight.
 
-- **Custom Incident Fields**: 37 custom incident fields designed to store the rich asset, anomaly, and CVE data retrieved from Asimily Insight, ensuring all relevant information is captured for investigation.
+- **Custom Incident Fields**: 38 custom incident fields designed to store the rich asset, anomaly, and CVE data retrieved from Asimily Insight, ensuring all relevant information is captured for investigation.
 
 - **Custom Incident Layouts**: Two custom layouts for the new incident types, including a dedicated section to display the fetched asset, anomaly, and CVE information, making it readily accessible for analysts.
 

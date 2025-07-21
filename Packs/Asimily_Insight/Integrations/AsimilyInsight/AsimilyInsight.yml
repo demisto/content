@@ -347,6 +347,9 @@ script:
     - contextPath: AsimilyInsight.Anomaly.asimilyanomalydescription
       description: Asimily Anomaly Description.
       type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalycustomeranomalyid
+      description: Asimily Anomaly Customer Anomaly ID. Unique anomaly type identifier assigned by Asimily for a specific customer. This ID can be used in future operations such as invoking anomaly fix actions.
+      type: string
     - contextPath: AsimilyInsight.Anomaly.asimilydeviceid
       description: Asimily Device ID.
       type: number

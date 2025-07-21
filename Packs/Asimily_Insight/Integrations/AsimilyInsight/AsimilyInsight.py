@@ -116,6 +116,7 @@ ASIMILY_ANOMALY_CONTEXT_OUTPUT_KEY_ORDER = [
     "asimilyanomalymitretechnique",
     "asimilyanomalycategory",
     "asimilyanomalydescription",
+    "asimilyanomalycustomeranomalyid",
     "asimilydeviceid",
     "asimilydevicemacaddress",
     "asimilydeviceipv4address",
@@ -764,6 +765,7 @@ def populate_asset_anomalies_asimily_anomaly_fields(incident, anomaly_obj):
     anomaly_fields["asimilyanomalymitretactic"] = anomaly_obj.get("mitreTactic")
     anomaly_fields["asimilyanomalymitretechnique"] = anomaly_obj.get("mitreTechnique")
     anomaly_fields["asimilyanomalycategory"] = anomaly_obj.get("anomalyCategory")
+    anomaly_fields["asimilyanomalycustomeranomalyid"] = anomaly_obj.get("customerAnomalyId")
     if incident.get("customFields") is None:
         incident["customFields"] = anomaly_fields
     else:
