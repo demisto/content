@@ -1588,7 +1588,7 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                 filter_query += "%28collection_type%3Amalware-family%20OR%20collection_type%3Asoftware-tookit%29"
             else:
                 filter_query += f"collection_type%3A{collection_type}"
-            args = f'filter={filter_query}&exclude_attributes=aggregations'
+            args = f"filter={filter_query}&exclude_attributes=aggregations"
             requests_mock.get(
                 f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections?{args}",
                 json=data_json,
