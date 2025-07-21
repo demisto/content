@@ -1,9 +1,8 @@
 {
-    "name": "Cortex Vulnerability Management",
+    "name": "Cortex Exposure Management",
     "description": "Content for working with Cortex Exposure Management (CEM).",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
-    "hidden": true,
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -31,10 +30,6 @@
             "mandatory": false,
             "display_name": "ServiceNow"
         },
-        "CortexAttackSurfaceManagement": {
-            "mandatory": true,
-            "display_name": "Cortex Attack Surface Management"
-        },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
@@ -42,16 +37,24 @@
         "FiltersAndTransformers": {
             "mandatory": true,
             "display_name": "Filters And Transformers"
+        },
+        "AWS-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "AWS Enrichment and Remediation"
         }
     },
     "marketplaces": [
-        "marketplacev2"
+        "platform"
     ],
     "displayedImages": [
         "Core",
         "ServiceNow"
     ],
     "itemPrefix": [
-        "VM"
+        "EM"
+    ],
+    "supportedModules": [
+        "asm",
+        "exposure_management"
     ]
 }
