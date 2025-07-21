@@ -1,0 +1,33 @@
+name: CODEOWNERS File Validation
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  code_owner_file_validation:
+    runs-on: ubuntu-latest
+    if:  github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' && startsWith(github.head_ref, 'contrib/') == false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v9
+      - name: Install python dependencies
+        run: |
+          poetry install --with github-actions
+      - name: code_owner_file_validation
+        id: code_owner_file_validation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          echo "code_owner_file_validation"
+          cd .github/github_workflow_scripts
+          poetry run python codeowners_file_validation.py
