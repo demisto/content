@@ -33,11 +33,11 @@ def demisto_get(obj: Any, path: Any) -> Any:
         node = []
         itr = iter(path)
         for c in itr:
-            if c == r"\\":
+            if c == "\\":
                 try:
                     node.append(next(itr))
                 except StopIteration:
-                    node.append(r"\\")
+                    node.append("\\")
             elif c == ".":
                 nodes.append("".join(node))
                 node = []
