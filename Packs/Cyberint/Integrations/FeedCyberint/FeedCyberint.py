@@ -3,6 +3,7 @@ import json
 import math
 from json import JSONDecodeError
 from typing import Any
+from datetime import UTC
 
 import demistomock as demisto
 import urllib3
@@ -36,7 +37,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.6",
+            "X-Integration-Version": "1.1.9",
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
@@ -970,7 +971,7 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     Returns:
         bool: true, if execution passed timeout settings, false otherwise.
     """
-    end_time = datetime.utcnow()
+    end_time = datetime.now(UTC)
     secs_from_beginning = (end_time - start_time).seconds
     demisto.debug(f"Execution duration is {secs_from_beginning} secs so far")
 
