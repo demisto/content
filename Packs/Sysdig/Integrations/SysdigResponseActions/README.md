@@ -12,8 +12,11 @@ This is the default integration for this content pack when configured by the Dat
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 | Classifier | False |
-| Incident type (if classifier doesn't exist) | False |
 | Mapper (incoming) | False |
+| Fetch incidents |  |
+| Incident type |  |
+| The maximum number of incidents per fetch |  |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
 
 ## Commands
 
@@ -23,7 +26,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### execute-response-action
 
 ***
-Execute response actions through the Sysdig API
+Execute response actions through the Sysdig API.
 
 #### Base Command
 
@@ -37,14 +40,14 @@ Execute response actions through the Sysdig API
 | callerId | The caller ID, it must be unique every time. | Required |
 | container_id | The container ID to apply the action. Example "container.id": "123456789123". | Optional |
 | path_absolute | The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action. | Optional |
-| host_id | The host ID. Example "laksjdf1923u90snca893". | Optional |
+| host_id | The host ID. Example "gke-host-1234". | Optional |
 | process_id | The process ID. Example "1234". Required for the `KILL_PROCESS` action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| execute_response_action.Output | Dict | Output of the response-actions API |
+| execute_response_action.Output | Dict | Output of the response-actions API. |
 
 ### create-system-capture
 
@@ -72,7 +75,7 @@ Command to trigger a system capture, it will record all system calls at the host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| create_system_capture.Output | Dict | Output of the system capture created |
+| create_system_capture.Output | Dict | Output of the system capture created. |
 
 ### get-capture-file
 
@@ -93,12 +96,12 @@ Command to get a system capture based on the capture ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| get_capture_file.Output | Dict | Output of the system capture downloaded |
+| get_capture_file.Output | Dict | Output of the system capture downloaded. |
 
 ### get-action-execution
 
 ***
-Get the status and information of a triggered action execution
+Get the status and information of a triggered action execution.
 
 #### Base Command
 
@@ -114,4 +117,4 @@ Get the status and information of a triggered action execution
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| get_action_execution.Output | Dict | Output of the action execution info |
+| get_action_execution.Output | Dict | Output of the action execution info. |

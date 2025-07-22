@@ -1,8 +1,8 @@
 {
-    "name": "Sysdig Response Actions",
-    "description": "This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture",
+    "name": "Sysdig",
+    "description": "Integrates with Sysdig to provide incident enrichment and response capabilities to threat events.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Sysdig",
     "url": "https://sysdig.com/support/",
     "email": "support@sysdig.com",
