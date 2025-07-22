@@ -160,8 +160,8 @@ class Client(BaseClient):
                 results.extend(current_results)
                 demisto.info(f"info-log: fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
 
-                if (datetime.now() - start_time).total_seconds() >= MAX_PAGINATION_DURATION_SECONDS and next:
-                    demisto.info(
+                if next and (datetime.now() - start_time).total_seconds() >= MAX_PAGINATION_DURATION_SECONDS:
+                    demisto.debug(
                         f"info-log: Reached pagination time limit of {MAX_PAGINATION_DURATION_SECONDS}s, "
                         f"breaking early with {next=} to avoid timeout. Pagination will resume in the next fetch cycle."
                     )
