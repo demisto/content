@@ -1,4 +1,5 @@
-from Packs.CommonScripts.Scripts.SearchIndicatorAgentix.SearchIndicatorAgentix import prepare_query
+from Packs.CommonScripts.Scripts.SearchIndicatorAgentix.SearchIndicatorAgentix import prepare_query, search_indicators
+import demistomock as demisto
 
 
 def test_prepare_list_query():
@@ -13,10 +14,8 @@ def test_prepare_list_query():
         "verdict": ["Benign", "Malicious"],  # Possible verdicts
         "type": ["Domain", "IP", "URL"],  # Indicator
     }
-    res = (
-        """(value:"example.com" OR value:"example.org") AND (expirationStatus:"active") AND\
+    res = """(value:"example.com" OR value:"example.org") AND (expirationStatus:"active") AND\
  (verdict:"Benign" OR verdict:"Malicious") AND (type:"Domain" OR type:"IP" OR type:"URL")"""
-    )
     generated_query = prepare_query(args)
     assert res == generated_query
 
@@ -52,9 +51,37 @@ def test_prepare_query_edge_cases():
         "type": ["Email", "IP"],  # Mixed types
         "anotherField": ["value1"],  # Single custom field
     }
-    res = (
-        """(value:"test with spaces" OR value:"test@email.com" OR value:"192.168.1.1") AND \
+    res = """(value:"test with spaces" OR value:"test@email.com" OR value:"192.168.1.1") AND \
 (expirationStatus:"expired") AND (type:"Email" OR type:"IP") AND (anotherField:"value1")"""
-    )
     generated_query = prepare_query(args)
     assert res == generated_query
+
+
+def test_search_indicators_basic_functionality(mocker):
+    """
+    Given: Basic arguments with value, type, and size for searching indicators
+    When: search_indicators is called with these arguments
+    Then: Returns markdown output and filtered indicators with proper verdict mapping
+    """
+    args = {"value": "example.com", "type": "Domain", "size": 50}
+
+    mock_indicators = [
+        {
+            "id": "1",
+            "indicator_type": "Domain",
+            "value": "example.com",
+            "score": 2,
+            "expirationStatus": "active",
+            "investigationIDs": ["inv1"],
+            "expiration": "2024-12-31",
+            "lastSeen": "2024-01-01",
+        }
+    ]
+
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": mock_indicators}])
+    markdown, filtered_indicators = search_indicators(args)
+
+    assert "Indicators Found" in markdown
+    assert len(filtered_indicators) == 1
+    assert filtered_indicators[0]["id"] == "1"
+    assert filtered_indicators[0]["verdict"] == "Suspicious"

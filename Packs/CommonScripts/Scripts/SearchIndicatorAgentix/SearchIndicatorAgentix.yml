@@ -44,10 +44,11 @@ outputs:
   description: The human readable score/verdict of the Indicator.
 - contextPath: foundIndicators.investigationIDs
   description: The investigations related to the indicator.
-- contextPath: foundIndicators.expiration
+- contextPath: foundIndicators.expirationStatus
   description: The expiration status of the indicator.
 - contextPath: foundIndicators.lastSeen
   description: The timestamp of the last time the indicator was sensitive.
+
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
