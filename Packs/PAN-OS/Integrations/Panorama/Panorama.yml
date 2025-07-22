@@ -5439,7 +5439,7 @@ script:
       defaultValue: security
       description: The rulebase from which to delete the rule.
       name: rulebase
-      required: true
+      required: false
       predefined:
       - security
       - application-override
