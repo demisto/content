@@ -10726,7 +10726,13 @@ class ConfigurationHygieneFix(ResultData):
 
 @logger
 def panorama_disable_or_delete_rule_command(
-    topology: Topology, operation: str, rulename: str, rulebase: str = "security", pre_post: str = "", target: str = "", vsys: str = ""
+    topology: Topology,
+    operation: str,
+    rulename: str,
+    rulebase: str = "security",
+    pre_post: str = "",
+    target: str = "",
+    vsys: str = "",
 ):
     """
     Disable or Delete a policy rule from the specified rulebase.
