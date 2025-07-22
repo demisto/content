@@ -901,7 +901,7 @@ def resend_first_contact(
             service_mail,
             final_email_cc,
             final_email_bcc,
-            html_b+ody,
+            html_body,
             body_type,
             entry_id_list,
             reply_code,
