@@ -1180,6 +1180,7 @@ Uploads a file to the specified ticket.
 ```!servicenow-upload-file id="{TicketID}" ticket_type="incident" file_id="123@456"```
 
 #### Context Example
+
 ```json
 {
     "ServiceNow": {
@@ -1205,7 +1206,8 @@ Uploads a file to the specified ticket.
 
 #### Human Readable Output
 
->### File uploaded successfully to ticket {TICKET ID}.
+>### File uploaded successfully to ticket {TICKET ID}
+>
 >|Download link|Filename|System ID|
 >|---|---|---|
 >| https:<span>//</span>{ServerURL}/api/now/attachment/{SystemID}/file | test.txt | {SystemID} |
