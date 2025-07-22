@@ -75,11 +75,10 @@ def test_article_list_command_with_empty_response():
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.article_list = lambda article_id, odata, limit: mock_response
 
-    args = {"article_id": "nonexistent"}
+    args = {}
     result = article_list_command(client, args)
 
-    assert result.outputs == []
-    assert result.outputs_prefix == "MSGDefenderThreatIntel.Article"
+    assert "No articles were found" in result.readable_output
 
 
 def test_article_indicators_list_command_with_article_id():
@@ -146,11 +145,10 @@ def test_article_indicators_list_command_with_empty_response():
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
 
-    args = {"article_id": "empty_article"}
+    args = {"article_id": "blabla"}
     result = article_indicators_list_command(client, args)
 
-    assert result.outputs == mock_response
-    assert result.outputs_prefix == "MSGDefenderThreatIntel.ArticleIndicator"
+    assert "No article indicators were found" in result.readable_output
 
 
 def test_article_indicators_list_command_with_missing_artifact():
@@ -265,12 +263,10 @@ def test_profile_list_command_with_empty_response():
     client = Client(app_id="test_app_id", verify=False, proxy=False)
     client.profile_list = lambda intel_profile_id, odata, limit: mock_response
 
-    args = {"intel_profile_id": "nonexistent"}
+    args = {}
     result = profile_list_command(client, args)
 
-    assert result.outputs == []
-    assert result.outputs_prefix == "MSGDefenderThreatIntel.Profile"
-    assert result.outputs_key_field == "id"
+    assert "No profiles were found" in result.readable_output
 
 
 def test_profile_indicators_list_command_with_intel_profile_id():
@@ -338,8 +334,7 @@ def test_profile_indicators_list_command_with_empty_response():
     args = {"intel_profile_id": "empty_profile"}
     result = profile_indicators_list_command(client, args)
 
-    assert result.outputs == mock_response
-    assert result.outputs_prefix == "MSGDefenderThreatIntel.ProfileIndicator"
+    assert "No profile indicators were found" in result.readable_output
 
 
 @pytest.mark.parametrize(
@@ -463,28 +458,6 @@ def test_host_whois_command_with_whois_record_id():
     assert result.outputs_key_field == "id"
 
 
-def test_host_whois_command_with_empty_response():
-    """
-    Test host_whois_command with empty response.
-
-    Given: A client is configured and returns empty response
-    When: The host_whois_command is called
-    Then: The command handles empty response gracefully
-    """
-    from MicrosoftDefenderThreatIntelligence import Client, host_whois_command
-
-    mock_response = {}
-
-    client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.host_whois = lambda host_id, whois_record_id, odata: mock_response
-
-    args = {"host_id": "nonexistent"}
-    result = host_whois_command(client, args)
-
-    assert result.outputs == mock_response
-    assert result.outputs_prefix == "MSGDefenderThreatIntel.Whois"
-
-
 @pytest.mark.parametrize(
     "args",
     [
@@ -598,9 +571,7 @@ def test_host_whois_history_command_with_empty_response():
     args = {"host_id": "nonexistent"}
     result = host_whois_history_command(client, args)
 
-    assert result.outputs == mock_response
-    assert result.outputs_prefix == "MSGDefenderThreatIntel.WhoisHistory"
-    assert result.outputs_key_field == "id"
+    assert "No WHOIS history records found." in result.readable_output
 
 
 @pytest.mark.parametrize(

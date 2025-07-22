@@ -71,6 +71,9 @@ class Client:
     def article_list(self, article_id: str, odata: str, limit: int) -> list:
         """
         Retrieve threat intelligence articles from Microsoft Defender.
+        Docs:
+        https://learn.microsoft.com/en-us/graph/api/security-threatintelligence-list-articles?view=graph-rest-1.0&tabs=http
+        https://learn.microsoft.com/en-us/graph/api/security-article-get?view=graph-rest-1.0&tabs=http
 
         Args:
             article_id (str): Specific article ID to retrieve. If empty, retrieves all articles.
@@ -93,16 +96,19 @@ class Client:
             )
             return response.get("value", [])
 
-        response = self.ms_client.http_request(
-            method="GET",
-            url_suffix=f"v1.0/security/threatIntelligence/articles/{article_id}{odata_query}",
-        )
-
-        return [response]
+        return [
+            self.ms_client.http_request(
+                method="GET",
+                url_suffix=f"v1.0/security/threatIntelligence/articles/{article_id}{odata_query}",
+            )
+        ]
 
     def article_indicator_list(self, article_id: str, article_indicator_id: str, odata: str, limit: int) -> list:
         """
         Retrieve threat intelligence indicators from Microsoft Defender.
+        Docs:
+        https://learn.microsoft.com/en-us/graph/api/security-articleindicator-get?view=graph-rest-1.0&tabs=http
+        https://learn.microsoft.com/en-us/graph/api/security-article-list-indicators?view=graph-rest-1.0&tabs=http
 
         Args:
             article_id (str): The ID of the article to retrieve indicators from.
@@ -119,12 +125,12 @@ class Client:
             odata_query += odata
 
         if not article_id:
-            response = self.ms_client.http_request(
-                method="GET",
-                url_suffix=f"v1.0/security/threatIntelligence/articleIndicators/{article_indicator_id}{odata_query}",
-            )
-
-            return [response]
+            return [
+                self.ms_client.http_request(
+                    method="GET",
+                    url_suffix=f"v1.0/security/threatIntelligence/articleIndicators/{article_indicator_id}{odata_query}",
+                )
+            ]
 
         response = self.ms_client.http_request(
             method="GET",
@@ -135,6 +141,9 @@ class Client:
     def profile_list(self, intel_profile_id: str, odata: str, limit: int) -> list:
         """
         Retrieve threat intelligence profiles from Microsoft Defender.
+        Docs:
+        https://learn.microsoft.com/en-us/graph/api/security-threatintelligence-list-intelprofiles?view=graph-rest-1.0&tabs=http
+        https://learn.microsoft.com/en-us/graph/api/security-intelligenceprofile-get?view=graph-rest-1.0&tabs=http
 
         Args:
             intel_profile_id (str): The ID of the specific intelligence profile to retrieve.
@@ -145,8 +154,10 @@ class Client:
             list: List of intelligence profile objects from the 'value' field of the response.
         """
         odata_query = f"?$top={limit}&"
+
         if odata:
             odata_query += odata
+
         if not intel_profile_id:
             response = self.ms_client.http_request(
                 method="GET",
@@ -154,16 +165,19 @@ class Client:
             )
             return response.get("value", [])
 
-        response = self.ms_client.http_request(
-            method="GET",
-            url_suffix=f"v1.0/security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}",
-        )
-
-        return [response]
+        return [
+            self.ms_client.http_request(
+                method="GET",
+                url_suffix=f"v1.0/security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}",
+            )
+        ]
 
     def profile_indicators_list(self, intel_profile_id: str, intel_profile_indicator_id: str, odata: str, limit: int) -> list:
         """
         Retrieve intelligence profile indicators.
+        Docs:
+        https://learn.microsoft.com/en-us/graph/api/security-intelligenceprofileindicator-get?view=graph-rest-1.0&tabs=http
+        https://learn.microsoft.com/en-us/graph/api/security-intelligenceprofile-list-indicators?view=graph-rest-1.0&tabs=http
 
         Args:
             intel_profile_id (str): The ID of the intelligence profile.
@@ -186,15 +200,17 @@ class Client:
             )
             return response.get("value", [])
 
-        response = self.ms_client.http_request(
-            method="GET",
-            url_suffix=f"v1.0/security/threatIntelligence/intelligenceProfileIndicators/{intel_profile_indicator_id}{odata_query}",
-        )
-        return [response]
+        return [
+            self.ms_client.http_request(
+                method="GET",
+                url_suffix=f"v1.0/security/threatIntelligence/intelligenceProfileIndicators/{intel_profile_indicator_id}{odata_query}",
+            )
+        ]
 
     def host(self, host_id: str, odata: str) -> dict:
         """
         Retrieve host information by host ID.
+        Docs: https://learn.microsoft.com/en-us/graph/api/security-host-get?view=graph-rest-1.0&tabs=http
 
         Args:
             host_id (str): The ID of the host to retrieve information for.
@@ -213,6 +229,7 @@ class Client:
     def host_whois(self, host_id: str, whois_record_id: str, odata: str) -> dict:
         """
         Retrieve WHOIS record information for a host or specific WHOIS record.
+        Docs: https://learn.microsoft.com/en-us/graph/api/security-whoisrecord-get?view=graph-rest-1.0&tabs=http
 
         Args:
             host_id (str): The ID of the host to retrieve WHOIS information for.
@@ -240,6 +257,9 @@ class Client:
     ) -> list:
         """
         Retrieves WHOIS history records for a host or specific WHOIS record.
+        Docs:
+        https://learn.microsoft.com/en-us/graph/api/security-whoisrecord-list-history?view=graph-rest-1.0&tabs=http
+        https://learn.microsoft.com/en-us/graph/api/security-whoishistoryrecord-get?view=graph-rest-1.0
 
         Args:
             host_id (str): The ID of the host to get WHOIS history for.
@@ -260,23 +280,27 @@ class Client:
         odata_query += f"{odata}"
 
         if host_id:
-            return self.ms_client.http_request(
+            response = self.ms_client.http_request(
                 method="GET",
                 url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}/whois/history{odata_query}",
             )
 
+            return response.get("value", [])
+
         elif whois_record_id:
-            return self.ms_client.http_request(
+            response = self.ms_client.http_request(
                 method="GET",
                 url_suffix=f"v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}/history{odata_query}",
             )
 
-        response = self.ms_client.http_request(
-            method="GET",
-            url_suffix=f"v1.0/security/threatIntelligence/whoisHistoryRecord/{whois_history_record_id}{odata_query}",
-        )
+            return response.get("value", [])
 
-        return [response]
+        return [
+            self.ms_client.http_request(
+                method="GET",
+                url_suffix=f"v1.0/security/threatIntelligence/whoisHistoryRecord/{whois_history_record_id}{odata_query}",
+            )
+        ]
 
 
 """ HELPER FUNCTIONS """
@@ -366,6 +390,10 @@ def article_list_command(client: Client, args: dict[str, Any]) -> CommandResults
     limit = args.get("limit", 50)
 
     response = client.article_list(article_id, odata, limit)
+
+    if len(response) == 0:
+        return CommandResults(readable_output="No articles were found.")
+
     display_data = [{"Article Id": article.get("id"), "Title": article.get("title")} for article in response]
     return CommandResults(
         "MSGDefenderThreatIntel.Article",
@@ -400,6 +428,10 @@ def article_indicators_list_command(client: Client, args: dict[str, Any]) -> Com
     limit = args.get("limit", 50)
     ensure_only_one_argument_provided(article_id=article_id, article_indicator_id=article_indicator_id)
     response = client.article_indicator_list(article_id, article_indicator_id, odata, limit)
+
+    if len(response) == 0:
+        return CommandResults(readable_output="No article indicators were found.")
+
     display_data = [{"ID": indicator.get("id"), "Artifact Id": indicator.get("artifact", {}).get("id")} for indicator in response]
 
     return CommandResults(
@@ -433,6 +465,9 @@ def profile_list_command(client: Client, args: dict[str, Any]) -> CommandResults
     limit = args.get("limit", 50)
 
     response = client.profile_list(intel_profile_id, odata, limit)
+
+    if len(response) == 0:
+        return CommandResults(readable_output="No profiles were found.")
 
     display_data = [{"Profile ID": profile.get("id"), "Title": profile.get("title")} for profile in response]
 
@@ -470,6 +505,10 @@ def profile_indicators_list_command(client: Client, args: dict[str, Any]) -> Com
     limit = args.get("limit", 50)
     ensure_only_one_argument_provided(intel_profile_id=intel_profile_id, intel_profile_indicator_id=intel_profile_indicator_id)
     response = client.profile_indicators_list(intel_profile_id, intel_profile_indicator_id, odata, limit)
+
+    if len(response) == 0:
+        return CommandResults(readable_output="No profile indicators were found.")
+
     display_data = [
         {"ID": profileIndicator.get("id"), "Artifact Id": profileIndicator.get("artifact", {}).get("id")}
         for profileIndicator in response
@@ -585,6 +624,10 @@ def host_whois_history_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
     response = client.host_whois_history(host_id, whois_record_id, whois_history_record_id, odata, limit)
+
+    if len(response) == 0:
+        return CommandResults(readable_output="No WHOIS history records found.")
+
     display_data = [
         {
             "Id": whois_record.get("id"),

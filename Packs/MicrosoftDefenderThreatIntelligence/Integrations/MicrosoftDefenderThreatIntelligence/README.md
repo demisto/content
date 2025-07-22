@@ -194,7 +194,7 @@ Get the specified whoisRecord resource.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | hostname or IP address. | Optional |
-| whois_record_id | The unique identifier of a specific whois record. | Optional |
+| whois_record_id | The unique identifier of a specific WHOIS record. | Optional |
 | odata | Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top. | Optional |
 | limit | Number of records in the list. | Optional |
 
@@ -220,7 +220,7 @@ Get the history for a whoisRecord, as represented by a collection of whoisHistor
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | hostname or IP address. | Optional |
-| whois_record_id | The unique identifier of the whois record whose history you want to retrieve. | Optional |
+| whois_record_id | The unique identifier of the WHOIS record whose history you want to retrieve. | Optional |
 | whois_history_record_id | The unique identifier of a specific WHOIS history record. | Optional |
 | odata | Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top. | Optional |
 | limit | Number of records in the list. | Optional |

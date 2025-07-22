@@ -9,7 +9,7 @@ commonfields:
 configuration:
 - section: Connect
   defaultvalue: 7f55ea8c-2e5c-4a52-aafa-d0bfc632b242
-  display: Application ID (Client ID for Client credentials mode)
+  display: Application ID (Client ID for Client Credentials mode)
   name: app_id
   type: 0
   required: false
@@ -22,7 +22,7 @@ configuration:
   displaypassword: Client Secret (required for Client Credentials mode)
   name: credentials
   type: 9
-  additionalinfo: Client Secret. Required for Client Credentials mode)
+  additionalinfo: Client Secret (required for Client Credentials mode)
   hiddenusername: true
   required: false
 - section: Connect
@@ -88,11 +88,11 @@ display: Microsoft Defender Threat Intelligence
 name: MicrosoftDefenderThreatIntelligence
 script:
   commands:
-  - description: Run this command to start the authorization process and follow the instructions in the command results.
+  - description: Starts the authorization process. Follow the instructions in the command results.
     name: msg-defender-threat-intel-auth-start
-  - description: Run this command to complete the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command.
+  - description: Completes the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command.
     name: msg-defender-threat-intel-auth-complete
-  - description: Run this command if for some reason you need to rerun the authentication process.
+  - description: Reruns the authentication process.
     name: msg-defender-threat-intel-auth-reset
   - description: Tests connectivity to Microsoft.
     name: msg-defender-threat-intel-auth-test
@@ -114,9 +114,9 @@ script:
       description: The title of the Microsoft Defender Threat Intelligence article.
       type: String
   - arguments:
-    - description: "The unique identifier of the article to retrieve indicators from.\nYou can choose only one of the following arguments: article_id or article_indicator_id."
+    - description: "The unique identifier of the article to retrieve indicators from.\nChoose one of the following arguments: article_id or article_indicator_id."
       name: article_id
-    - description: "The unique identifier of a specific indicator within the article.\nYou can choose only one of the following arguments: article_id or article_indicator_id."
+    - description: "The unique identifier of a specific indicator within the article.\nChoose one of the following arguments: article_id or article_indicator_id."
       name: article_indicator_id
     - defaultValue: '50'
       description: Number of indicators in the list.
@@ -151,10 +151,10 @@ script:
       description: The title or name of the threat actor profile.
       type: String
   - arguments:
-    - description: "The unique identifier of the intelligence profile.\nYou can choose only one of the following arguments: intel_profile_id or intel_profile_indicator_id."
+    - description: "The unique identifier of the intelligence profile.\nChoose one of the following arguments: intel_profile_id or intel_profile_indicator_id."
       name: intel_profile_id
     - default: false
-      description: "The unique identifier of a specific indicator related to an intelligence profile.\nYou can choose only one of the following arguments: intel_profile_id or intel_profile_indicator_id."
+      description: "The unique identifier of a specific indicator related to an intelligence profile.\nChoose one of the following arguments: intel_profile_id or intel_profile_indicator_id."
       name: intel_profile_indicator_id
     - defaultValue: '50'
       description: Number of incidents in the list.
@@ -189,9 +189,9 @@ script:
       type: String
 
   - arguments:
-    - description: 'hostname or IP address.\nYou can choose only one of the following arguments: host_id or whois_record_id.'
+    - description: 'Hostname or IP address.\nChoose one of the following arguments: host_id or whois_record_id.'
       name: host_id
-    - description: "The unique identifier of a specific whois record.\nYou can choose only one of the following arguments: host_id or whois_record_id."
+    - description: "The unique identifier of a specific whois record.\nChoose one of the following arguments: host_id or whois_record_id."
       name: whois_record_id
     - description: "Use odata query to customize the response."
       name: odata
@@ -211,11 +211,11 @@ script:
       type: String
 
   - arguments:
-    - description: "Hostname or IP address.\nYou can choose only one of the following arguments: host_id, whois_record_id or whois_history_record_id."
+    - description: "Hostname or IP address.\nChoose one of the following arguments: host_id, whois_record_id or whois_history_record_id."
       name: host_id
-    - description: "The unique identifier of the whois record whose history you want to retrieve.\nYou can choose only one of the following arguments: host_id, whois_record_id or whois_history_record_id."
+    - description: "The unique identifier of the whois record whose history you want to retrieve.\nChoose one of the following arguments: host_id, whois_record_id or whois_history_record_id."
       name: whois_record_id
-    - description: "The unique identifier of a specific WHOIS history record.\nYou can choose only one of the following arguments: host_id, whois_record_id or whois_history_record_id."
+    - description: "The unique identifier of a specific WHOIS history record.\nChoose one of the following arguments: host_id, whois_record_id or whois_history_record_id."
       name: whois_history_record_id
     - description: 'Use "odata" query to customize the response.'
       name: odata
@@ -242,5 +242,6 @@ fromversion: 6.1.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
