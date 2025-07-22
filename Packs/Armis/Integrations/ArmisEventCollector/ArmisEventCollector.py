@@ -13,6 +13,7 @@ EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
 MAX_PAGINATION_DURATION_SECONDS = 240
 
+
 class EVENT_TYPE:
     """
     This class defines an Event used to dynamically store different types of events data.
@@ -205,9 +206,7 @@ class Client(BaseClient):
             raise DemistoException("Could not generate access token.")
 
 
-""" TEST MODULE """demisto.info(
-+                        f"info-log: Reached pagination time limit of {MAX_PAGINATION_DURATION_SECONDS}s, breaking early with {next=}."
-+                    )
+""" TEST MODULE """
 
 
 def test_module(client: Client) -> str:
