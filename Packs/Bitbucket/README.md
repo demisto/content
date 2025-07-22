@@ -39,8 +39,8 @@ Coverage levels reflect the number and frequency of events that are logged.
 
 **Full**: Logs all the events available in Base and Advanced, plus additional events for a comprehensive audit.
 
-You can find the log file in the ***<home directory>/log/audit*** directory. 
-On clustered Bitbucket Data Center deployments, each application node will have its own log in the local ***<home directory>/log/audit*** directory.
+You can find the log file in the ***/your home directory/log/audit*** directory. 
+On clustered Bitbucket Data Center deployments, each application node will have its own log in the local ***/your home directory/log/audit*** directory.
 
 For more inofrmation use the following guide [here](https://confluence.atlassian.com/bitbucketserver/view-and-configure-the-audit-log-776640417.html).
 
