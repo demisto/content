@@ -935,6 +935,7 @@ class Client:
 
     def send_mail(
         self,
+        body_type,
         emailto,
         emailfrom,
         send_as,
@@ -971,15 +972,22 @@ class Client:
         elif body and not any([entry_ids, file_names, attach_cid, manualAttachObj, htmlBody]):
             # if there is only body and no attachments to the mail , we would like to send it without attaching every part
             message = MIMEText(body, "plain", "utf-8")  # type: ignore
-        elif htmlBody and body and any([entry_ids, file_names, attach_cid, manualAttachObj]):
-            # if all these exist - htmlBody, body and one of the attachment's items, the message object will be:
-            # a MimeMultipart object of type 'mixed' which contains
-            # a MIMEMultipart object of type `alternative` which contains
-            # the 2 MIMEText objects for each body part and the relevant Mime<type> object for the attachments.
-            message = MIMEMultipart("mixed")  # type: ignore
-            alt = MIMEMultipart("alternative")
-            message.attach(alt)
-            attach_body_to = alt
+        elif htmlBody and body:
+            if any([entry_ids, file_names, attach_cid, manualAttachObj]):
+                # if all these exist - htmlBody, body and one of the attachment's items, the message object will be:
+                # a MimeMultipart object of type 'mixed' which contains
+                # a MIMEMultipart object of type `alternative` which contains
+                # the 2 MIMEText objects for each body part and the relevant Mime<type> object for the attachments.
+                message = MIMEMultipart("mixed")  # type: ignore
+                alt = MIMEMultipart("alternative")
+                message.attach(alt)
+                attach_body_to = alt
+            else:
+                # in case both bodies exists, the api wll use html
+                if body_type == "text":
+                    message = MIMEText(body, "plain", "utf-8")  # type: ignore
+                else:
+                    message = MIMEText(htmlBody, "html")  # type: ignore
         else:
             message = MIMEMultipart()  # type: ignore
 
@@ -1117,6 +1125,7 @@ def mail_command(client: Client, args: dict, email_from, send_as, subject_prefix
     rendering_body = html_body if body_type == "html" else body
 
     result = client.send_mail(
+        body_type,
         email_to,
         email_from,
         send_as,
