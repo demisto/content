@@ -962,7 +962,7 @@ def test_send_new_mail_request(test_args, expected_result, mocker):
                 [],
                 "code",
                 "service@example.com",
-                ""
+                "",
             ),
         ),
         (
@@ -984,7 +984,7 @@ def test_send_new_mail_request(test_args, expected_result, mocker):
                 [],
                 "code",
                 "service@example.com",
-                ""
+                "",
             ),
         ),
         (
@@ -1006,20 +1006,17 @@ def test_send_new_mail_request(test_args, expected_result, mocker):
                 [],
                 "code",
                 "service@example.com",
-                ""
+                "",
             ),
         ),
-    ]
+    ],
 )
 def test_send_new_mail_request_body_fields(brand, body_type, expected_body_key, test_args, mocker):
-    import SendEmailReply
     from SendEmailReply import send_new_mail_request
 
-    mocker.patch.object(demisto,'getModules', return_value={
-        "service@example.com": {"brand": brand}
-    })
+    mocker.patch.object(demisto, "getModules", return_value={"service@example.com": {"brand": brand}})
     mocker.patch.object(demisto, "executeCommand", return_value="Success")
-    mocker.patch('SendEmailReply.create_thread_context')
+    mocker.patch("SendEmailReply.create_thread_context")
 
     result = send_new_mail_request(*test_args)
     mail_content = demisto.executeCommand.call_args.args[1]

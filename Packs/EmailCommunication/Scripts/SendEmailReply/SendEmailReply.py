@@ -214,10 +214,7 @@ def get_body_fields(brand: str, body_type: str, reply_body: str, reply_html_body
             return {"body": reply_body}
         else:
             return {"htmlBody": reply_html_body}
-    return {
-        "body": reply_body,
-        "htmlBody": reply_html_body
-    }
+    return {"body": reply_body, "htmlBody": reply_html_body}
 
 
 def execute_reply_mail(
@@ -270,7 +267,7 @@ def execute_reply_mail(
         "bodyType": body_type,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
-        **get_body_fields(brand, body_type, reply_body, reply_html_body)
+        **get_body_fields(brand, body_type, reply_body, reply_html_body),
     }
 
     if mail_sender_instance:
@@ -515,7 +512,7 @@ def send_new_mail_request(
         "bodyType": body_type,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
-        **get_body_fields(brand, body_type, email_body, email_html_body)
+        **get_body_fields(brand, body_type, email_body, email_html_body),
     }
 
     # If a mail sender instance has been set, set the "using" parameter with it. Otherwise, do not set "using"
