@@ -1,4 +1,4 @@
-Search for Indicators and returns the id, indicator_type, value, expiration status, lastSeen timestamp, related investigations and score/verdict.
+This script searches indicators by specified fields.
 
 ## Script Data
 
