@@ -17,7 +17,7 @@ args:
     - 'Cortex XDR - IR'
     - 'Cortex Core - IR'
     - 'FireEyeHX v2'
-    - 'Generic Command'
+    - 'Generic Command'.
   name: brands
   isArray: true
 - description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
