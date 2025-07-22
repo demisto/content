@@ -1207,7 +1207,7 @@ def insert_to_updated_context(
     if should_update_last_fetch:
         # Last fetch is updated with the samples that were fetched
         new_context_data.update(
-            {LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)), "samples": context_data.get("samples", [])}
+            {LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)), "samples": context_data.get("samples", [])[:SAMPLE_SIZE]}
         )
 
     if should_update_last_mirror:
@@ -2218,10 +2218,12 @@ def fetch_incidents_command() -> List[dict]:
     Returns list of samples saved by long running execution.
 
     Returns:
-        (List[Dict]): List of incidents samples.
+        (List[Dict]): List of incidents samples, limited to SAMPLE_SIZE.
     """
     ctx = get_integration_context()
-    return ctx.get("samples", [])
+    samples = ctx.get("samples", [])
+    # Enforce the sample size limit to prevent returning too many incidents
+    return samples[:SAMPLE_SIZE]
 
 
 def create_search_with_retry(
@@ -2693,7 +2695,7 @@ def perform_long_running_loop(
     if incidents and new_highest_id:
         # Filter incidents that are small enough to store as samples
         filtered_incidents = [incident for incident in incidents if is_incident_size_acceptable(incident)]
-        incident_batch_for_sample = filtered_incidents[:SAMPLE_SIZE] if filtered_incidents else context_data.get("samples", [])
+        incident_batch_for_sample = filtered_incidents[:SAMPLE_SIZE] if filtered_incidents else context_data.get("samples", [])[:SAMPLE_SIZE]
         
         if len(filtered_incidents) < len(incidents):
             skipped_count = len(incidents) - len(filtered_incidents)
@@ -2738,7 +2740,7 @@ def recover_from_last_run(ctx: dict | None = None, version: Any = None):
             f"ID from context: {last_highest_id_context}"
         )
 
-        partial_changes = {LAST_FETCH_KEY: last_highest_id_last_run, "samples": ctx.get("samples", [])}
+        partial_changes = {LAST_FETCH_KEY: last_highest_id_last_run, "samples": ctx.get("samples", [])[:SAMPLE_SIZE]}
 
         safely_update_context_data_partial(partial_changes)
 
