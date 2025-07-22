@@ -187,7 +187,7 @@ tasks:
           transformers:
           - operator: toLowerCase
       unused_only:
-        simple: "true"
+        simple: "false"
     separatecontext: false
     skipunavailable: false
     task:
