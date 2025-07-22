@@ -766,7 +766,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '`www.walla.co.il`'
+              simple: 'www.walla.co.il`'
     continueonerrortype: ""
     view: |-
       {
