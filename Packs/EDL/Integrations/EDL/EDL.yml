@@ -450,3 +450,14 @@ tests:
 - Test_EDL
 - EDL Performance Test
 fromversion: 5.5.0
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false
