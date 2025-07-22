@@ -2,6 +2,7 @@ args:
 - description: 'A single value or comma separated list of values to search.'
   name: value
   required: false
+  isArray: true
 - description: 'The expiration status of the indicator.'
   name: expirationStatus
   required: false
@@ -11,18 +12,16 @@ args:
 - description: 'The type of the indicator to search can be a single value or a comma separated list of values.'
   name: type
   required: false
+  isArray: true
 - description: 'The investigation that is linked to the indicator can be a single value or a comma separated list of values.'
   name: investigationIDs
   required: false
+  isArray: true
 - defaultValue: "25"
   description: The number of indicators to return, defaults to a max of 25.
   name: size
 comment: |-
-  Searches Cortex XSOAR Indicators.
-
-  Search for XSOAR Indicators and returns the id, indicator_type, value, expiration status, lastSeen timestamp, related investigations and score/verdict.
-
-  You can add additional fields from the indicators using the add_field_to_context argument.
+  This script searches indicators by specified fields.
 commonfields:
   id: SearchIndicatorAgentix
   version: -1
@@ -59,3 +58,7 @@ type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+  - platform
+supportedModules:
+  - agentix

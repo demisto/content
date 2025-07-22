@@ -26,13 +26,13 @@ def prepare_query(args: dict) -> str:
 
         values_as_list = argToList(values)
         if len(values_as_list) > 1:
-            query = " OR ".join(f"{key}:{str(v).strip()}" for v in values_as_list)
+            query = ' OR '.join(f'{key}:"{str(v).strip()}"' for v in values_as_list)
         else:
-            query = f"{key}:{str(values_as_list[0]).strip()}"
+            query = f'{key}:"{str(values_as_list[0]).strip()}"'
 
         query_sections.append(query)
 
-    return " AND ".join(f"({qs})" for qs in query_sections) if query_sections else ""
+    return ' AND '.join(f"({qs})" for qs in query_sections) if query_sections else ""
 
 
 def search_indicators(args):

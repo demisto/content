@@ -14,8 +14,8 @@ def test_prepare_list_query():
         "type": ["Domain", "IP", "URL"],  # Indicator
     }
     res = (
-        "(value:example.com OR value:example.org) AND (expirationStatus:active) AND "
-        "(verdict:Benign OR verdict:Malicious) AND (type:Domain OR type:IP OR type:URL)"
+        """(value:"example.com" OR value:"example.org") AND (expirationStatus:"active") AND\
+ (verdict:"Benign" OR verdict:"Malicious") AND (type:"Domain" OR type:"IP" OR type:"URL")"""
     )
     generated_query = prepare_query(args)
     assert res == generated_query
@@ -34,7 +34,7 @@ def test_prepare_query_with_empty_values():
         "type": [],  # Empty list
         "score": ["5", "10"],  # Additional field with multiple values
     }
-    res = "(value:example.com) AND (verdict:Benign) AND (score:5 OR score:10)"
+    res = '(value:"example.com") AND (verdict:"Benign") AND (score:"5" OR score:"10")'
     generated_query = prepare_query(args)
     assert res == generated_query
 
@@ -53,8 +53,8 @@ def test_prepare_query_edge_cases():
         "anotherField": ["value1"],  # Single custom field
     }
     res = (
-        "(value:test with spaces OR value:test@email.com OR value:192.168.1.1) AND "
-        "(expirationStatus:expired) AND (type:Email OR type:IP) AND (anotherField:value1)"
+        """(value:"test with spaces" OR value:"test@email.com" OR value:"192.168.1.1") AND \
+(expirationStatus:"expired") AND (type:"Email" OR type:"IP") AND (anotherField:"value1")"""
     )
     generated_query = prepare_query(args)
     assert res == generated_query
