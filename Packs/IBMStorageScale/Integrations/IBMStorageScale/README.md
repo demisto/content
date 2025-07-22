@@ -80,17 +80,8 @@ This allows the integration to overlap network requests, significantly reducing 
 
 You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook. After running a command, a DBot message appears in the War Room with the command results.
 
-#### 1. test-module
 
-Tests the API connectivity to the IBM Storage Scale server. This command validates the server URL, credentials, and permissions.
-
-```
-!test-module instance="IBM Storage Scale_instance_1"
-```
-
-There is no context output for this command. If successful, it will return `'ok'`.
-
-#### 2. ibm-storage-scale-get-events
+#### 1. ibm-storage-scale-get-events
 
 Gets a limited number of the most recent audit log events for interactive investigation.
 

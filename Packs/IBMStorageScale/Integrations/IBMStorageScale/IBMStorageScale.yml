@@ -1,22 +1,25 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: IBM Storage Scale
   version: -1
 name: IBM Storage Scale
 display: IBM Storage Scale
-category: Data Storage
 description: |
   Collects Command Line Interface (CLI) audit log records from IBM Storage Scale.
 detaileddescription: ''
 configuration:
 - name: server_url
   display: Server URL
-  help: The base URL of the IBM Storage Scale API server (e.g., https://192.168.1.100:443).
+  additionalinfo: The base URL of the IBM Storage Scale API server (e.g., https://192.168.1.100:443).
   type: 0
   required: true
   section: Connect
 - name: credentials
   display: Credentials
-  help: Username and password for API access. The user should have the ProtocolAdmin role.
+  additionalinfo: Username and password for API access. The user should have the ProtocolAdmin role.
   type: 9
   required: true
   section: Connect
@@ -27,7 +30,7 @@ configuration:
   section: Collect
 - name: max_fetch
   display: Maximum number of events per fetch
-  help: The maximum number of events to pull in a single fetch-events cycle.
+  additionalinfo: The maximum number of events to pull in a single fetch-events cycle.
   defaultvalue: '10000'
   type: 0
   required: false
@@ -50,7 +53,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/fastapi:0.115.12.3243695
-  isfetch: true
   isfetchevents: true
   commands:
   - name: ibm-storage-scale-get-events
