@@ -79,32 +79,6 @@ def apply_filters(incidents: List, args: Dict):
     return filtered_incidents
 
 
-def summarize_incidents(args: dict, incidents: List[dict], platform: str):
-    summarized_fields = [
-        "id",
-        "name",
-        "type",
-        "severity",
-        "status",
-        "owner",
-        "created",
-        "closed",
-    ]
-    if platform == "x2" or platform == "unified_platform":
-        summarized_fields.append("alertLink")
-    else:
-        summarized_fields.append("incidentLink")
-    if args.get("add_fields_to_summarize_context"):
-        summarized_fields += args.get("add_fields_to_summarize_context", "").split(",")
-        summarized_fields = [x.strip() for x in summarized_fields]  # clear out whitespace
-    summarized_incidents = []
-    for incident in incidents:
-        summarized_incident = {
-            field: incident.get(field, incident["CustomFields"].get(field, "n/a")) for field in summarized_fields
-        }
-        summarized_incidents.append(summarized_incident)
-    return summarized_incidents
-
 
 def add_incidents_link(data: List, platform: str):
     # For XSIAM or Platform links
@@ -137,12 +111,11 @@ def transform_to_alert_data(incidents: List):
 
 def search_incidents(args: Dict):  # pragma: no cover
     hr_prefix = ""
-    is_summarized_version = argToBoolean(args.get("summarizedversion", False))
     platform = get_demisto_version().get("platform", "xsoar")
     if not is_valid_args(args):
         return None
 
-    if fromdate := arg_to_datetime(args.get("fromdate", "30 days ago" if is_summarized_version else None)):
+    if fromdate := arg_to_datetime(args.get("fromdate", None)):
         from_date = fromdate.isoformat()
         args["fromdate"] = from_date
 
@@ -219,10 +192,6 @@ def search_incidents(args: Dict):  # pragma: no cover
     all_found_incidents = all_found_incidents[:limit]
 
     additional_headers: List[str] = []
-    if is_summarized_version:
-        all_found_incidents = summarize_incidents(args, all_found_incidents, platform)
-        if args.get("add_fields_to_summarize_context"):
-            additional_headers = args.get("add_fields_to_summarize_context", "").split(",")
 
     headers: List[str]
     if platform == "x2" or platform == "unified_platform":
@@ -274,8 +243,6 @@ def main():  # pragma: no cover
             readable_output=readable_output,
             outputs=outputs,
             raw_response=raw_response,
-            # in summarized version, ignore auto extract
-            ignore_auto_extract=is_summarized_version,
         )
         return_results(results)
     except DemistoException as error:
