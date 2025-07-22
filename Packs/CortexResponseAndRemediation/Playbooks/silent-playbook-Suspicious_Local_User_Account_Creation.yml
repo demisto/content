@@ -34,10 +34,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f62f662d-e8f5-4fec-8224-67b7d2f2fa93
+    taskid: e81e6c9b-318a-44f0-8ac0-61506641c4be
     type: start
     task:
-      id: f62f662d-e8f5-4fec-8224-67b7d2f2fa93
+      id: e81e6c9b-318a-44f0-8ac0-61506641c4be
       version: -1
       name: ""
       iscommand: false
@@ -64,10 +64,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 2c5df0e1-83d1-4db9-960d-86176d054ac5
+    taskid: acbd2f29-52a9-48d1-81e4-e23c2cedb2a9
     type: regular
     task:
-      id: 2c5df0e1-83d1-4db9-960d-86176d054ac5
+      id: acbd2f29-52a9-48d1-81e4-e23c2cedb2a9
       version: -1
       name: Get event information
       description: Retrieves extra information about the alert, such as the SID of the created user.
@@ -101,10 +101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 46b0938c-8ea2-4547-8cc1-2c279a65ec2e
+    taskid: 88b7dd78-37a7-4953-83c6-bbe29e467cb5
     type: title
     task:
-      id: 46b0938c-8ea2-4547-8cc1-2c279a65ec2e
+      id: 88b7dd78-37a7-4953-83c6-bbe29e467cb5
       version: -1
       name: Triage
       type: title
@@ -132,10 +132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: bd21cdbc-9100-44c2-afe4-bfdd8e961b91
+    taskid: 8c75c670-2c40-4784-8071-95e866bce1e1
     type: title
     task:
-      id: bd21cdbc-9100-44c2-afe4-bfdd8e961b91
+      id: 8c75c670-2c40-4784-8071-95e866bce1e1
       version: -1
       name: Investigation
       type: title
@@ -167,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 7d0c89e1-a8a0-440b-8fa6-ba710a481f06
+    taskid: 6ff2db27-c0e8-490c-8325-2ac719c84783
     type: regular
     task:
-      id: 7d0c89e1-a8a0-440b-8fa6-ba710a481f06
+      id: 6ff2db27-c0e8-490c-8325-2ac719c84783
       version: -1
       name: Get host risk level
       description: Gets the risk level of the host on which the user was created.
@@ -202,10 +202,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 9214af15-0536-4ae7-a994-51315f1e6157
+    taskid: 041f6c30-c183-47a3-8cfb-c13b1694f783
     type: regular
     task:
-      id: 9214af15-0536-4ae7-a994-51315f1e6157
+      id: 041f6c30-c183-47a3-8cfb-c13b1694f783
       version: -1
       name: Search suspicious user activity alerts
       description: Searches for known related alerts in the same case.
@@ -256,10 +256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4d87791f-0873-466f-b7bb-13faedb9552a
+    taskid: 35502b85-dcf2-4586-813c-65ed36de7bb2
     type: regular
     task:
-      id: 4d87791f-0873-466f-b7bb-13faedb9552a
+      id: 35502b85-dcf2-4586-813c-65ed36de7bb2
       version: -1
       name: Retrieve local user password status
       description: Runs a Powershell code snipper on the endpoint where the user was created, in order to retrieve the PASSWORDEXPIRES attribute of the local user.
@@ -311,10 +311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 63e42b5a-c69e-4ea1-a5ec-d38dc7183a62
+    taskid: 0e8a2866-b958-4a00-8de1-de445b576154
     type: title
     task:
-      id: 63e42b5a-c69e-4ea1-a5ec-d38dc7183a62
+      id: 0e8a2866-b958-4a00-8de1-de445b576154
       version: -1
       name: Host Risk
       type: title
@@ -342,10 +342,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 4f980f2c-94d1-473a-a176-4da9dbb69727
+    taskid: fb9d21c9-a982-43f4-85aa-cb2c71018bf8
     type: title
     task:
-      id: 4f980f2c-94d1-473a-a176-4da9dbb69727
+      id: fb9d21c9-a982-43f4-85aa-cb2c71018bf8
       version: -1
       name: Related Alerts
       type: title
@@ -373,10 +373,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 36d68c2c-c7a2-4748-868f-932c99f62112
+    taskid: 8fe57217-d147-4f36-89f9-be99db85dcdd
     type: regular
     task:
-      id: 36d68c2c-c7a2-4748-868f-932c99f62112
+      id: 8fe57217-d147-4f36-89f9-be99db85dcdd
       version: -1
       name: Get execution results
       description: Gets the execution results for the Powershell code that was run.
@@ -408,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 27148781-f091-4b5d-9fd7-368ff5eadcd8
+    taskid: 92d1867d-59ca-4ef8-8069-cc273ea1a622
     type: regular
     task:
-      id: 27148781-f091-4b5d-9fd7-368ff5eadcd8
+      id: 92d1867d-59ca-4ef8-8069-cc273ea1a622
       version: -1
       name: Save password expiry to evidence
       description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
@@ -443,6 +443,12 @@ tasks:
               dt:
                 value:
                   simple: '.=val.includes("Never") || val.includes("%%1794") ? "True" : "False"'
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "False"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -461,10 +467,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 2381c619-178e-404c-8fd5-2b0ff2e7fdd6
+    taskid: ecb9c9a9-40dc-47c7-8a9d-9a8c9bb2814e
     type: title
     task:
-      id: 2381c619-178e-404c-8fd5-2b0ff2e7fdd6
+      id: ecb9c9a9-40dc-47c7-8a9d-9a8c9bb2814e
       version: -1
       name: Behavior Checks
       type: title
@@ -492,10 +498,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: ab482efa-fcd5-48f1-a5d7-872654ee8b2e
+    taskid: 4f0e652b-d3cb-4ed2-88ad-3224a0f37b9c
     type: condition
     task:
-      id: ab482efa-fcd5-48f1-a5d7-872654ee8b2e
+      id: 4f0e652b-d3cb-4ed2-88ad-3224a0f37b9c
       version: -1
       name: Check XQL Query Engine availability
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
@@ -529,10 +535,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 09b95fc5-a540-4056-a0a2-63fb16357fcf
+    taskid: 3ad53f79-9993-455d-84a2-5e4652337046
     type: regular
     task:
-      id: 09b95fc5-a540-4056-a0a2-63fb16357fcf
+      id: 3ad53f79-9993-455d-84a2-5e4652337046
       version: -1
       name: Command line analysis
       description: |-
@@ -585,10 +591,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 118e29c6-0b4b-4a80-b2cd-d85e26509f0f
+    taskid: 504444d0-23fc-4a5c-8394-e7dd83176688
     type: regular
     task:
-      id: 118e29c6-0b4b-4a80-b2cd-d85e26509f0f
+      id: 504444d0-23fc-4a5c-8394-e7dd83176688
       version: -1
       name: Search created user group memberships
       description: |-
@@ -650,10 +656,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: bc2e289e-0cc8-42bc-968d-c2625d0050a7
+    taskid: ccf7e47f-6263-4833-80e4-075001dd96ad
     type: regular
     task:
-      id: bc2e289e-0cc8-42bc-968d-c2625d0050a7
+      id: ccf7e47f-6263-4833-80e4-075001dd96ad
       version: -1
       name: Search created user processes
       description: |-
@@ -706,10 +712,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: bcc3a330-244b-4034-b267-ca61ea7f0e14
+    taskid: 7fc51c06-3e68-41c8-81b2-932375b6c4d8
     type: regular
     task:
-      id: bcc3a330-244b-4034-b267-ca61ea7f0e14
+      id: 7fc51c06-3e68-41c8-81b2-932375b6c4d8
       version: -1
       name: Save found privileged groups
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -763,10 +769,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 1ca5ab03-8c84-485b-801c-74f3d2d7b38e
+    taskid: a9dde28a-f631-4ff4-8b90-b1fa76b25df4
     type: regular
     task:
-      id: 1ca5ab03-8c84-485b-801c-74f3d2d7b38e
+      id: a9dde28a-f631-4ff4-8b90-b1fa76b25df4
       version: -1
       name: Save related alerts to evidence
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -800,10 +806,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: c327b4dc-87be-4629-b8fb-d9053b488c89
+    taskid: fca79bba-06a8-4dfe-8f6e-1d37d9803213
     type: title
     task:
-      id: c327b4dc-87be-4629-b8fb-d9053b488c89
+      id: fca79bba-06a8-4dfe-8f6e-1d37d9803213
       version: -1
       name: Created User Attributes
       type: title
@@ -831,10 +837,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: f7e4bfc9-1265-415d-abb1-ac6d729376d7
+    taskid: 47c7776f-c9e1-429e-a08d-37027fd4dce4
     type: regular
     task:
-      id: f7e4bfc9-1265-415d-abb1-ac6d729376d7
+      id: 47c7776f-c9e1-429e-a08d-37027fd4dce4
       version: -1
       name: Save host risk to evidence
       description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
@@ -853,12 +859,17 @@ tasks:
           root: Core.RiskyHost
           accessor: risk_level
           transformers:
-          - operator: FirstArrayElement
           - operator: DT
             args:
               dt:
                 value:
-                  simple: '.=val === "LOW" ? "True" : "False"'
+                  simple: '.=val === "HIGH" ? "True" : "False"'
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "False"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -877,10 +888,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 9f39265e-dbda-40f3-be1b-b7b9cf8cd6e7
+    taskid: 1c347b6c-7319-4227-8d80-e6cd1e0a2855
     type: condition
     task:
-      id: 9f39265e-dbda-40f3-be1b-b7b9cf8cd6e7
+      id: 1c347b6c-7319-4227-8d80-e6cd1e0a2855
       version: -1
       name: Analyze evidence
       description: Analyzes the evidence to reach a verdict or the alert.
@@ -928,10 +939,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 510f4f7f-69ca-44de-b4de-24775e7277ff
+    taskid: 6d8453cf-58cd-4830-8d9d-43d4c351118d
     type: regular
     task:
-      id: 510f4f7f-69ca-44de-b4de-24775e7277ff
+      id: 6d8453cf-58cd-4830-8d9d-43d4c351118d
       version: -1
       name: Save privileged group to evidence
       description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
@@ -965,10 +976,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 14370b3d-69fc-44b7-ac6e-6fbc0e026c4f
+    taskid: 409d47f7-c6c5-4156-84bd-a8ee36aa7cb6
     type: regular
     task:
-      id: 14370b3d-69fc-44b7-ac6e-6fbc0e026c4f
+      id: 409d47f7-c6c5-4156-84bd-a8ee36aa7cb6
       version: -1
       name: Save suspicious commandlines list
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -1013,10 +1024,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: b91a28fd-342a-46fc-8e58-220ea95c61d0
+    taskid: a56f92e8-d35b-406d-8b46-02beacfbd4c0
     type: regular
     task:
-      id: b91a28fd-342a-46fc-8e58-220ea95c61d0
+      id: a56f92e8-d35b-406d-8b46-02beacfbd4c0
       version: -1
       name: Save post login count to evidence
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -1052,10 +1063,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: fff0a8cf-c419-44c5-af23-4dd73c60e6b1
+    taskid: c48ad76a-bbf1-4a5b-8e37-347bcfa88253
     type: regular
     task:
-      id: fff0a8cf-c419-44c5-af23-4dd73c60e6b1
+      id: c48ad76a-bbf1-4a5b-8e37-347bcfa88253
       version: -1
       name: Retrieve start time
       description: Set a value in context under the key you entered.
@@ -1097,10 +1108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 1d67bf4c-b7e8-489b-840d-da595de4b192
+    taskid: 606e7f53-f228-4a69-8df5-866241e1cf18
     type: regular
     task:
-      id: 1d67bf4c-b7e8-489b-840d-da595de4b192
+      id: 606e7f53-f228-4a69-8df5-866241e1cf18
       version: -1
       name: Retrieve end time
       description: Set a value in context under the key you entered.
@@ -1143,10 +1154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 76ad3515-4931-4b31-bb3b-4d4d1d9bf8ce
+    taskid: a11d7a0f-9ad3-4472-82d3-ab48c337227e
     type: regular
     task:
-      id: 76ad3515-4931-4b31-bb3b-4d4d1d9bf8ce
+      id: a11d7a0f-9ad3-4472-82d3-ab48c337227e
       version: -1
       name: Save close reason - true positive
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -1182,10 +1193,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 40fa80a5-652e-45fe-90f4-e225de10248a
+    taskid: 48995ab6-aa6e-458b-8943-7829f8a3cfdd
     type: title
     task:
-      id: 40fa80a5-652e-45fe-90f4-e225de10248a
+      id: 48995ab6-aa6e-458b-8943-7829f8a3cfdd
       version: -1
       name: Remediation
       type: title
@@ -1213,10 +1224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 6d40c3d4-1c76-4723-842d-ce1ee7d4ea78
+    taskid: 652c02ba-ef65-4c2d-8bfc-d74b5786f45f
     type: regular
     task:
-      id: 6d40c3d4-1c76-4723-842d-ce1ee7d4ea78
+      id: 652c02ba-ef65-4c2d-8bfc-d74b5786f45f
       version: -1
       name: Close Investigation
       description: Close the current alert.
@@ -1247,10 +1258,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 06f2d241-5aa0-4aa4-bebe-444dd2f27b4f
+    taskid: 849b04b4-54b7-422d-80f8-5915546f13b9
     type: condition
     task:
-      id: 06f2d241-5aa0-4aa4-bebe-444dd2f27b4f
+      id: 849b04b4-54b7-422d-80f8-5915546f13b9
       version: -1
       name: Analyst review - disable suspicious user?
       description: |-
@@ -1293,11 +1304,9 @@ tasks:
 
         ### Suspicious command line executions
         Created user: `${.=val.SuspiciousCommandlinesList || "N/A"}`
-
         CMD findings: `${CommandLineAnalysis.findings}`
 
         Creator user: `${.=val.CreatorSuspiciousCommandlinesList || "N/A"}`
-        
         CMD findings: `${CreatorCommandLineAnalysis.findings}
       type: condition
       iscommand: false
@@ -1352,10 +1361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: f1ca7797-cc29-4871-9c30-f1337130efc1
+    taskid: 8940c279-192e-4b96-89f4-b473efd965d2
     type: regular
     task:
-      id: f1ca7797-cc29-4871-9c30-f1337130efc1
+      id: 8940c279-192e-4b96-89f4-b473efd965d2
       version: -1
       name: Disable local user
       description: Runs Powershell code on the affected host to disable the local user on the machine.
@@ -1408,10 +1417,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 54fc9cb5-8624-4744-9ae9-40962a871f6d
+    taskid: c9d4dc13-fd92-49b0-8321-7dc11f10109b
     type: title
     task:
-      id: 54fc9cb5-8624-4744-9ae9-40962a871f6d
+      id: c9d4dc13-fd92-49b0-8321-7dc11f10109b
       version: -1
       name: Inconclusive
       type: title
@@ -1436,10 +1445,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 1b8608b6-30a7-4b7d-8779-fe14d65befb2
+    taskid: 3cc0f3de-19ca-46ab-86eb-2dd951113c95
     type: title
     task:
-      id: 1b8608b6-30a7-4b7d-8779-fe14d65befb2
+      id: 3cc0f3de-19ca-46ab-86eb-2dd951113c95
       version: -1
       name: User Risk
       type: title
@@ -1467,10 +1476,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 420df2e1-1dc7-4020-be1f-93afed027308
+    taskid: 0214b6ed-d0d7-4d91-8704-d6af8bf6e1ee
     type: regular
     task:
-      id: 420df2e1-1dc7-4020-be1f-93afed027308
+      id: 0214b6ed-d0d7-4d91-8704-d6af8bf6e1ee
       version: -1
       name: Get creator user info & risk level
       description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
@@ -1512,10 +1521,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 5114b746-a120-42b6-a466-c79725478175
+    taskid: 24463b46-7ad2-44ec-83a6-6652790f2038
     type: regular
     task:
-      id: 5114b746-a120-42b6-a466-c79725478175
+      id: 24463b46-7ad2-44ec-83a6-6652790f2038
       version: -1
       name: Save creator user risk to evidence
       description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
@@ -1557,6 +1566,12 @@ tasks:
               dt:
                 value:
                   simple: '.=val === "HIGH" ? "True" : "False"'
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "False"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1575,10 +1590,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: c21e4720-a342-4d5a-98e5-dfb6c50ec3d4
+    taskid: 1fd20b89-1a2a-498f-843b-4febe158e5a8
     type: title
     task:
-      id: c21e4720-a342-4d5a-98e5-dfb6c50ec3d4
+      id: 1fd20b89-1a2a-498f-843b-4febe158e5a8
       version: -1
       name: 'Created User '
       type: title
@@ -1607,10 +1622,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 830439b5-16cc-43ad-afb1-bc8e71de9172
+    taskid: 5140a36b-3291-49cb-8f9c-03f0507d8841
     type: title
     task:
-      id: 830439b5-16cc-43ad-afb1-bc8e71de9172
+      id: 5140a36b-3291-49cb-8f9c-03f0507d8841
       version: -1
       name: Creator User
       type: title
@@ -1639,10 +1654,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 00f15e65-22fd-458e-aba4-34eecf33fdbd
+    taskid: 6584bf50-bac1-440b-820c-e93f3dce0af6
     type: regular
     task:
-      id: 00f15e65-22fd-458e-aba4-34eecf33fdbd
+      id: 6584bf50-bac1-440b-820c-e93f3dce0af6
       version: -1
       name: Search creator user processes
       description: |-
@@ -1695,10 +1710,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 9489efff-f498-4a32-a4c7-a42f874dc61f
+    taskid: 36bd9515-5613-4a64-8d4b-ff0d7de8b278
     type: condition
     task:
-      id: 9489efff-f498-4a32-a4c7-a42f874dc61f
+      id: 36bd9515-5613-4a64-8d4b-ff0d7de8b278
       version: -1
       name: Check process command line results
       description: Check if any results were retrivied.
@@ -1749,10 +1764,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 66def0e5-ddf8-4457-8334-0d33b4d1afd3
+    taskid: f41985d0-e673-41d5-8a9d-dbbc5346f4ad
     type: regular
     task:
-      id: 66def0e5-ddf8-4457-8334-0d33b4d1afd3
+      id: f41985d0-e673-41d5-8a9d-dbbc5346f4ad
       version: -1
       name: Command line analysis
       description: |-
@@ -1809,10 +1824,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 8c4c6e5e-539e-44c5-8586-34697d4b076d
+    taskid: bc09d3bd-4fef-492a-8b88-855ac3cd370f
     type: condition
     task:
-      id: 8c4c6e5e-539e-44c5-8586-34697d4b076d
+      id: bc09d3bd-4fef-492a-8b88-855ac3cd370f
       version: -1
       name: Check process command line results
       description: Check if any results were retrivied.
@@ -1863,10 +1878,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: b828409f-a20d-454d-ab28-6af3adfb2d1e
+    taskid: 0a7dd1d4-f80d-4f30-853b-e10984dbfe6a
     type: regular
     task:
-      id: b828409f-a20d-454d-ab28-6af3adfb2d1e
+      id: 0a7dd1d4-f80d-4f30-853b-e10984dbfe6a
       version: -1
       name: Save suspicious commandlines list
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -1911,10 +1926,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: d13c2472-ddbf-4761-9893-7b6a4d634e38
+    taskid: 9d6fd1a3-665f-470e-882d-d036d2a9e972
     type: regular
     task:
-      id: d13c2472-ddbf-4761-9893-7b6a4d634e38
+      id: 9d6fd1a3-665f-470e-882d-d036d2a9e972
       version: -1
       name: Save post login count to evidence
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -1950,10 +1965,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 0b69f7e7-d2f0-4a4e-8205-359d6c857366
+    taskid: 0a125e80-1f1d-4ba0-8bfa-4a68323aa70d
     type: regular
     task:
-      id: 0b69f7e7-d2f0-4a4e-8205-359d6c857366
+      id: 0a125e80-1f1d-4ba0-8bfa-4a68323aa70d
       version: -1
       name: Search user creation history
       description: |-
@@ -1995,10 +2010,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 58d9144d-3306-4e17-8640-8455b6a10f7b
+    taskid: c4a1eef3-d655-431c-874c-c5352319d317
     type: regular
     task:
-      id: 58d9144d-3306-4e17-8640-8455b6a10f7b
+      id: c4a1eef3-d655-431c-874c-c5352319d317
       version: -1
       name: Query start time - 3 months ago
       description: Set a value in context under the key you entered.
@@ -2040,10 +2055,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 75aa5508-cc37-4a17-a0db-1e605f604882
+    taskid: 73a9fadf-dbac-412d-8239-a601918985bb
     type: regular
     task:
-      id: 75aa5508-cc37-4a17-a0db-1e605f604882
+      id: 73a9fadf-dbac-412d-8239-a601918985bb
       version: -1
       name: Save past creations count
       description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
@@ -2088,10 +2103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: f3c6fe2d-cd09-4935-80bb-f0626194e6ef
+    taskid: b6369b75-af3f-40bb-8bc8-86eb7b3d3385
     type: title
     task:
-      id: f3c6fe2d-cd09-4935-80bb-f0626194e6ef
+      id: b6369b75-af3f-40bb-8bc8-86eb7b3d3385
       version: -1
       name: Creator User Remediation
       type: title
@@ -2119,10 +2134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 4e06f579-a56a-447f-838c-7f5a98db85f3
+    taskid: 7e1080e0-0c29-45bb-8b34-73d4bc9bc125
     type: regular
     task:
-      id: 4e06f579-a56a-447f-838c-7f5a98db85f3
+      id: 7e1080e0-0c29-45bb-8b34-73d4bc9bc125
       version: -1
       name: Disable creator locally
       description: Runs Powershell code on the affected host to disable the local user on the machine.
@@ -2175,10 +2190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 6f25ad56-e505-4eac-bf1c-8c65e25f931c
+    taskid: ed49a894-45a8-4571-8d11-008c7dbcd124
     type: regular
     task:
-      id: 6f25ad56-e505-4eac-bf1c-8c65e25f931c
+      id: ed49a894-45a8-4571-8d11-008c7dbcd124
       version: -1
       name: Undetermined user type - manual
       description: |-
@@ -2211,10 +2226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: f2957793-4404-4fe5-88a9-53aaec06ba97
+    taskid: 3c0b772a-4af3-4427-8a9d-92a49ea8adde
     type: condition
     task:
-      id: f2957793-4404-4fe5-88a9-53aaec06ba97
+      id: 3c0b772a-4af3-4427-8a9d-92a49ea8adde
       version: -1
       name: Check user type
       description: Checks if the user is a local or domain user.
@@ -2290,10 +2305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 518820a9-a66b-4ced-9ad7-7c68c1d3ca16
+    taskid: dd1bf520-abe8-46b8-8473-5c789cb3079d
     type: regular
     task:
-      id: 518820a9-a66b-4ced-9ad7-7c68c1d3ca16
+      id: dd1bf520-abe8-46b8-8473-5c789cb3079d
       version: -1
       name: Disable creator in Active Directory
       description: Disables an Active Directory user account.
