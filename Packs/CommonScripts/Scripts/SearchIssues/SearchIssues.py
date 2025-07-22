@@ -238,7 +238,7 @@ def main():  # pragma: no cover
             for output in outputs:
                 output["searchResultsLabel"] = search_results_label
         results = CommandResults(
-            outputs_prefix="foundIncidents",
+            outputs_prefix="foundIssues",
             outputs_key_field="id",
             readable_output=readable_output,
             outputs=outputs,
