@@ -10,16 +10,16 @@ args:
   isArray: true
 - description: |-
     A comma-seperated list of brands you wish to run the command for. If not provided, the command will run for all available integrations. Example: 'Active Directory Query v2,FireEyeHX v2'.
+    Supported brands are:
+    - 'Active Directory Query v2'
+    - 'McAfee ePO v2'
+    - 'CrowdstrikeFalcon'
+    - 'Cortex XDR - IR'
+    - 'Cortex Core - IR'
+    - 'FireEyeHX v2'
+    - 'Generic Command'.
   name: brands
-  auto: PREDEFINED
-  predefined:
-  - 'Active Directory Query v2'
-  - 'McAfee ePO v2'
-  - 'CrowdstrikeFalcon'
-  - 'Cortex XDR - IR'
-  - 'Cortex Core - IR'
-  - 'FireEyeHX v2'
-  - 'Generic Command'
+  isArray: true
 - description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
   name: verbose
   auto: PREDEFINED
