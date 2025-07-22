@@ -1906,6 +1906,22 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
+<#
+.SYNOPSIS
+    Generates a short SHA-256 hash of the input string.
+
+.DESCRIPTION
+    Computes a SHA-256 hash for the input string and returns the first N characters.
+
+.PARAMETER inputString
+    The input string to hash.
+
+.PARAMETER length
+    The number of characters to return from the hash. Default is 12.
+
+.EXAMPLE
+    GetShortHash "example" 8
+#>
 function GetShortHash($inputString, $length = 12) {
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($inputString)
     $sha256 = [System.Security.Cryptography.SHA256]::Create()
@@ -1914,6 +1930,26 @@ function GetShortHash($inputString, $length = 12) {
     return $hashString.Substring(0, $length)
 }
 
+<#
+.SYNOPSIS
+Generate a search name based on internetMessageId and exchange locations, with optional override.
+
+.DESCRIPTION
+Creates a unique search name by cleaning the internetMessageId and appending a short hash of exchange locations unless the overrideName is provided or locations include "All".
+
+.PARAMETER internetMessageId
+The Internet Message ID string to base the search name on.
+
+.PARAMETER exchangeLocation
+An array of exchange locations used to create a hash suffix.
+
+.PARAMETER overrideName
+Optional. If provided, this name will be returned directly without modification.
+
+.EXAMPLE
+MakeSearchName "<1234@example.com>", @("user@example.com", "archive@example.com")
+
+#>
 function MakeSearchName([string]$internetMessageId, [string[]]$exchangeLocation, [string]$overrideName = $null) {
     if ($overrideName) { return $overrideName }
     $baseName = $internetMessageId -replace '[<>]', ''
@@ -1924,6 +1960,38 @@ function MakeSearchName([string]$internetMessageId, [string[]]$exchangeLocation,
     return $baseName
 }
 
+<#
+.SYNOPSIS
+Handles the search status and performs actions based on its state.
+
+.DESCRIPTION
+Checks the search status ($search.Status) and takes appropriate actions:
+- Starts the search if not started.
+- Returns status if the search is starting.
+- If completed, checks for results and manages purge actions.
+- Handles different statuses of the purge action.
+
+.PARAMETER client
+The client object performing search and purge operations.
+
+.PARAMETER search_name
+The name of the search.
+
+.PARAMETER search
+The current search object.
+
+.PARAMETER entry_context
+The context data to update.
+
+.PARAMETER polling_args
+Arguments for polling operations.
+
+.PARAMETER polling_first_run
+Flag indicating if this is the first polling run.
+
+.EXAMPLE
+HandleSearchStatus $client $search_name $search $entry_context $polling_args $true
+#>
 function HandleSearchStatus([object]$client, [string]$search_name, [object]$search, [hashtable]$entry_context, [hashtable]$polling_args, [bool]$polling_first_run) {
     switch ($search.Status) {
         "NotStarted" {
@@ -1971,6 +2039,24 @@ function HandleSearchStatus([object]$client, [string]$search_name, [object]$sear
     }
 }
 
+<#
+.SYNOPSIS
+Performs an email search and delete operation by internetMessageId.
+
+.DESCRIPTION
+Creates a new search or uses an existing one based on internetMessageId and exchange location, starts the search, and manages the search status.
+If `force` is true, creates a new unique search even if one exists.
+Uses `HandleSearchStatus` to handle the search state.
+
+.PARAMETER client
+Client object to perform search operations.
+
+.PARAMETER kwargs
+Command arguments including internetMessageId, exchange_location, force, and more.
+
+.EXAMPLE
+SearchAndDeleteEmailCommand $client @{ internet_message_id = "<1234@example.com>"; exchange_location = @("Research Department"); force = $true }
+#>
 function SearchAndDeleteEmailCommand($client, [hashtable]$kwargs) {
     $demisto.debug("Received kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
     $description = "Search And Delete Email"
@@ -2001,8 +2087,12 @@ function SearchAndDeleteEmailCommand($client, [hashtable]$kwargs) {
             $polling_args.search_name = $search_name
             $demisto.debug("Force is true - creating new search with name: $search_name")
             $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), $null)
-            $client.StartSearch($search_name)
-            return "$script:INTEGRATION_NAME - Forced search created & started.", $entry_context, $search, $polling_args
+            if ($search) {
+                $client.StartSearch($search_name)
+                return "$script:INTEGRATION_NAME - Forced search created & started.", $entry_context, $search, $polling_args
+            } else {
+                throw "Failed to create forced search with name: $search_name"
+                }
         }
     }
     $search = $client.GetSearch($search_name)
@@ -2056,7 +2146,6 @@ function Main {
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )
-        
 
         # Executing command
         switch ($command) {

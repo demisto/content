@@ -1500,6 +1500,8 @@ There is no context output for this command.
 
 ***
 Deletes an email for all recipients.
+On first run, creates and starts a search. (If it already exists – returns its status).
+Next runs poll until the deletion is complete.
 
 #### Base Command
 
