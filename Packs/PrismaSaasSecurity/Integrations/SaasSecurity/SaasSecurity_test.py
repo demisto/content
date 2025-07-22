@@ -152,6 +152,15 @@ def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker, last_run
 
 @freeze_time("2021-08-24 18:04:00")
 def test_fetch_incidents_input(mocker, client):
+    """
+    Test the inputs to the fetch incidents flow, and verify that they are of the correct format.
+        Given:
+            - Fetch params
+        When:
+            - Fetching incidents
+        Then:
+            - The input params are being sent in the correct format.
+    """
     from SaasSecurity import fetch_incidents
 
     first_fetch_time = "1 day"
@@ -165,6 +174,34 @@ def test_fetch_incidents_input(mocker, client):
     http_request = mocker.patch.object(client, "http_request", return_value=get_incidents)
 
     fetch_incidents(client, first_fetch_time, fetch_limit, "", fetch_severity, "", "")
+    http_request.assert_called_with("GET", url_suffix="incident/api/v2/incidents/delta", params=expected_params)
+
+
+@freeze_time("2021-08-24 18:04:00")
+def test_get_incidents_input(mocker, client):
+    """
+    Test the inputs to the get_incidents_command, and verify that they are being sent in the correct format.
+        Given:
+            - The command arguments.
+        When:
+            - Running the command saas-security-incidents-get.
+        Then:
+            - The input params are being sent in the correct format.
+    """
+    from SaasSecurity import get_incidents_command
+
+    limit = 1
+    severity_old_format = ["4", "5"]
+    get_incidents = util_load_json("test_data/get-incidents.json")
+    args = {
+        "limit": limit,
+        "severity": severity_old_format
+    }
+    expected_params = {"limit": 10, "severities": "4.0,5.0", "state": "open"}
+
+    http_request = mocker.patch.object(client, "http_request", return_value=get_incidents)
+
+    get_incidents_command(client, args)
     http_request.assert_called_with("GET", url_suffix="incident/api/v2/incidents/delta", params=expected_params)
 
 
