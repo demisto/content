@@ -104,6 +104,7 @@ class Client(BaseClient):
                 self._headers["Authorization"] = self.get_access_token(force_new=True)
                 return self._http_request(**request_args)
 
+            demisto.debug(f"debug-log: Error occurred while fetching events: {e}")
             raise  # Some other unknown / unexpected error
 
     def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = "time") -> list[dict]:
