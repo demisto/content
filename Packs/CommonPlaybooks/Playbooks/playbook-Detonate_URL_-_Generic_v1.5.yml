@@ -1007,6 +1007,7 @@ tasks:
     type: playbook
     task:
       id: adea056d-65aa-49f2-8e38-29a06b05bd03
+      description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It automates the analysis of potentially malicious URLs on Android OS.
       version: -1
       name: ANYRUN Detonate Url Android
       playbookName: ANYRUN Detonate Url Android
