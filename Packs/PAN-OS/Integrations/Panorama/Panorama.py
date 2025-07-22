@@ -10726,7 +10726,7 @@ class ConfigurationHygieneFix(ResultData):
 
 @logger
 def panorama_disable_or_delete_rule_command(
-    topology: Topology, operation: str, rulename: str, rulebase: str = "", pre_post: str = "", target: str = "", vsys: str = ""
+    topology: Topology, operation: str, rulename: str, rulebase: str = "security", pre_post: str = "", target: str = "", vsys: str = ""
 ):
     """
     Disable or Delete a policy rule from the specified rulebase.
@@ -10734,7 +10734,7 @@ def panorama_disable_or_delete_rule_command(
     :param topology: The network topology containing firewall and Panorama objects
     :param operation: The operation to perform ('delete' or 'disable')
     :param rulename: Name of the rule to delete or disable
-    :param rulebase: Type of rulebase containing the rule
+    :param rulebase: Type of rulebase containing the rule.  Default is "security".
     :param pre_post: Whether the rule is in pre or post rulebase
     :param target: Target firewall device
     :param vsys: Virtual system identifier
