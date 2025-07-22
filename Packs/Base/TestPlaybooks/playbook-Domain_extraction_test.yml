@@ -759,7 +759,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: notContainsGeneral
           left:
             value:
               simple: ${Domain.Name}
