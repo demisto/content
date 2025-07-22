@@ -3,7 +3,7 @@ import uuid
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
-from datetime import datetime, UTC
+# from datetime import datetime, UTC
 from freezegun import freeze_time
 
 
@@ -318,6 +318,75 @@ def test_send_mail_with_reference(gmail_client: Client, mocker):
         references=["test", "test1"],
         inReplyTo="test test",
     )
+
+
+import pytest
+from CommonServerPython import *
+
+@pytest.mark.parametrize(
+    "body_type, body, htmlBody, expected_body, expected_html",
+    [
+        (
+            "text",
+            "This is the plain text body.",
+            "<html><body><b>This is the HTML body.</b></body></html>",
+            "This is the plain text body.",
+            "",
+        ),
+        (
+            "html",
+            "This is the plain text body.",
+            "<html><body><b>This is the HTML body.</b></body></html>",
+            "",
+            "<html><body><b>This is the HTML body.</b></body></html>",
+        ),
+    ],
+    ids=["text body preferred", "html body preferred"]
+)
+def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, htmlBody, expected_body, expected_html):
+    """
+    Given:
+        - Both `body` and `htmlBody` provided
+        - No attachments
+
+    When:
+        - `body_type` is either "text" or "html"
+
+    Then:
+        - Only the appropriate body is included in the context
+    """
+    command_args = {
+        "body_type": body_type,
+        "to": "recipient@example.com",
+        "from": "sender@example.com",
+        "subject": "Test Email",
+        "body": body,
+        "htmlBody": htmlBody,
+        "entryIDs": "",
+        "cc": "",
+        "bcc": "",
+        "replyTo": "",
+        "attachCIDs": "",
+        "fileNames": "",
+        "manualAttachObj": "",
+        "transientFile": "",
+        "transientFileContent": "",
+        "transientFileCID": "",
+        "additionalHeader": "",
+        "templateParams": "{}"
+    }
+
+    mocker.patch.object(gmail_client, "send_email_request", return_value={"id": "111", "threadId": "111", "labelIds": ["SENT"]})
+    mocker.patch.object(demisto, "args", return_value=command_args)
+
+    send_email_entry = send_mail_command(client=gmail_client)
+    context_output = send_email_entry["EntryContext"]
+    ec_key = "Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)"
+    assert ec_key in context_output
+    context = context_output[ec_key][0]
+
+    assert context.get("Body") == expected_body
+    assert context.get("BodyHTML") == expected_html
 
 
 def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
