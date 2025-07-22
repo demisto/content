@@ -65,9 +65,8 @@ class Client(BaseClient):
         self._headers["Content-Type"] = "application/x-www-form-urlencoded"
         return self._http_request(method="POST", url_suffix="/search/terms", data=query_args)
 
-    def scan(self, files: List[str]) -> List[dict[str, Any]]:
-        self._headers["Content-Type"] = "application/x-www-form-urlencoded"
-        return self._http_request(method="POST", url_suffix="/search/hashes", data={"hashes[]": files})
+    def scan(self, file: str) -> dict[str, Any]:
+        return self._http_request(method="GET", url_suffix=f"/report/{file}/summary")
 
     def analysis_overview(self, sha256hash: str) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"/overview/{sha256hash}")
@@ -398,7 +397,9 @@ def crowdstrike_search_command(client: Client, args: dict[str, Any]) -> List[Com
 @polling_function("cs-falcon-sandbox-scan")
 def crowdstrike_scan_command(args: dict[str, Any], client: Client):
     hashes = args["file"].split(",")
-    scan_response = client.scan(hashes)
+    scan_response = []
+    for hash in hashes:
+        scan_response.append(client.scan(hash))
 
     def file_with_bwc_fields(res) -> CommandResults:
         return CommandResults(
