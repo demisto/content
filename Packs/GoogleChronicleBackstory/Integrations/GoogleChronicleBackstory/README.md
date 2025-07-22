@@ -5701,11 +5701,11 @@ Appends lines into an existing reference list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleChronicleBackstory.ReferenceList.name | String | Unique name of the list. |
-| GoogleChronicleBackstory.ReferenceList.description | String | Description of the list. |
-| GoogleChronicleBackstory.ReferenceList.lines | String | List of line items. |
-| GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. |
-| GoogleChronicleBackstory.ReferenceList.contentType | String | Content type of the reference list. |
+| GoogleChronicleBackstory.ReferenceList.name | String | The unique name of the list. |
+| GoogleChronicleBackstory.ReferenceList.description | String | The description of the list. |
+| GoogleChronicleBackstory.ReferenceList.lines | String | The list of line items. |
+| GoogleChronicleBackstory.ReferenceList.createTime | Date | The time when the list was created. |
+| GoogleChronicleBackstory.ReferenceList.contentType | String | The content type of the reference list. |
 
 #### Command Example
 
@@ -5762,11 +5762,11 @@ Removes lines from an existing reference list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleChronicleBackstory.ReferenceList.name | String | Unique name of the list. |
-| GoogleChronicleBackstory.ReferenceList.description | String | Description of the list. |
-| GoogleChronicleBackstory.ReferenceList.lines | String | List of line items. |
-| GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. |
-| GoogleChronicleBackstory.ReferenceList.contentType | String | Content type of the reference list. |
+| GoogleChronicleBackstory.ReferenceList.name | String | The unique name of the list. |
+| GoogleChronicleBackstory.ReferenceList.description | String | The description of the list. |
+| GoogleChronicleBackstory.ReferenceList.lines | String | The list of line items. |
+| GoogleChronicleBackstory.ReferenceList.createTime | Date | The time when the list was created. |
+| GoogleChronicleBackstory.ReferenceList.contentType | String | The content type of the reference list. |
 
 #### Command Example
 

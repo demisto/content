@@ -3380,8 +3380,7 @@ script:
       - PLAIN_TEXT
       - CIDR
       - REGEX
-    - default: false
-      defaultValue: 'False'
+    - defaultValue: 'False'
       description: Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n).
       name: use_delimiter_for_file
       required: false
@@ -3500,8 +3499,7 @@ script:
       - PLAIN_TEXT
       - CIDR
       - REGEX
-    - default: false
-      defaultValue: 'False'
+    - defaultValue: 'False'
       description: Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n).
       name: use_delimiter_for_file
       required: false
@@ -7956,6 +7954,7 @@ script:
 
         Note: Use "gcb-get-reference-list" to retrieve the content of the list.
       name: lines
+      isArray: true
       required: false
     - description: |- 
         Provide a unique file id consisting of lines to append.
@@ -7968,8 +7967,7 @@ script:
         Delimiter by which the content of the list is separated.
         Eg:  " , " , " : ", " ; ".
       name: delimiter
-    - default: false
-      defaultValue: 'False'
+    - defaultValue: 'False'
       description: Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n).
       name: use_delimiter_for_file
       required: false
@@ -7977,8 +7975,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - default: false
-      defaultValue: 'False'
+    - defaultValue: 'False'
       description: A flag to determine whether to apply deduplication logic over new lines.
       name: append_unique
       required: false
@@ -7990,19 +7987,19 @@ script:
     name: gcb-reference-list-append-content
     outputs:
     - contextPath: GoogleChronicleBackstory.ReferenceList.name
-      description: Unique name of the list.
+      description: The unique name of the list.
       type: String
     - contextPath: GoogleChronicleBackstory.ReferenceList.description
-      description: Description of the list.
+      description: The description of the list.
       type: String
     - contextPath: GoogleChronicleBackstory.ReferenceList.lines
-      description: List of line items.
+      description: The list of line items.
       type: String
     - contextPath: GoogleChronicleBackstory.ReferenceList.createTime
-      description: Time when the list was created.
+      description: The time when the list was created.
       type: Date
     - contextPath: GoogleChronicleBackstory.ReferenceList.contentType
-      description: Content type of the reference list.
+      description: The content type of the reference list.
       type: String
   - arguments:
     - description: Provide a unique name of the list to remove content.
@@ -8014,6 +8011,7 @@ script:
 
         Note: Use "gcb-get-reference-list" to retrieve the content of the list.
       name: lines
+      isArray: true
       required: false
     - description: |- 
         Provide a unique file id consisting of lines to remove.
@@ -8026,8 +8024,7 @@ script:
         Delimiter by which the content of the list is separated.
         Eg:  " , " , " : ", " ; ".
       name: delimiter
-    - default: false
-      defaultValue: 'False'
+    - defaultValue: 'False'
       description: Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n).
       name: use_delimiter_for_file
       required: false
@@ -8039,19 +8036,19 @@ script:
     name: gcb-reference-list-remove-content
     outputs:
     - contextPath: GoogleChronicleBackstory.ReferenceList.name
-      description: Unique name of the list.
+      description: The unique name of the list.
       type: String
     - contextPath: GoogleChronicleBackstory.ReferenceList.description
-      description: Description of the list.
+      description: The description of the list.
       type: String
     - contextPath: GoogleChronicleBackstory.ReferenceList.lines
-      description: List of line items.
+      description: The list of line items.
       type: String
     - contextPath: GoogleChronicleBackstory.ReferenceList.createTime
-      description: Time when the list was created.
+      description: The time when the list was created.
       type: Date
     - contextPath: GoogleChronicleBackstory.ReferenceList.contentType
-      description: Content type of the reference list.
+      description: The content type of the reference list.
       type: String
   dockerimage: demisto/googleapi-python3:1.0.0.4114363
   isfetch: true
