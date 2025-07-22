@@ -1091,6 +1091,7 @@ def test_send_mail_sender_display_name(mocker, display_name):
     mocked_get_service().users().messages().list().execute.return_value = {"id": "mock_id"}
     mock_b64encode = mocker.patch("base64.urlsafe_b64encode")
     send_mail(
+        "html",
         [],
         "sender@example.com",
         "",
