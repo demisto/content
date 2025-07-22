@@ -251,12 +251,18 @@ def execute_reply_mail(
         "subject": subject_with_id,
         "cc": email_cc,
         "bcc": email_bcc,
-        "htmlBody": reply_html_body,
-        "body": reply_body,
+        # "htmlBody": reply_html_body,
+        # "body": reply_body,
         "bodyType": body_type,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
     }
+    # In case both bodies are sent, the command will use the html body
+    if body_type == "text":
+        mail_content["body"] = reply_body
+    elif body_type == "html":
+        mail_content["htmlBody"] = reply_html_body
+
     if mail_sender_instance:
         mail_content["using"] = mail_sender_instance
 
@@ -494,12 +500,18 @@ def send_new_mail_request(
         "subject": subject_with_id,
         "cc": email_cc,
         "bcc": email_bcc,
-        "htmlBody": email_html_body,
+        # "htmlBody": email_html_body,
         "bodyType": body_type,
-        "body": email_body,
+        # "body": email_body,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
     }
+    # In case both bodies are sent, the command will use the html body
+    if body_type == "text":
+        mail_content["body"] = email_body
+    elif body_type == "html":
+        mail_content["htmlBody"] = email_html_body
+
     # If a mail sender instance has been set, set the "using" parameter with it. Otherwise, do not set "using"
     if mail_sender_instance:
         mail_content["using"] = mail_sender_instance
