@@ -1326,7 +1326,7 @@ outputs:
   description: Link to the device details page in ExtraHop.
   type: string
 - contextPath: Endpoint.IPAddress
-  description: The endpoint IP address.
+  description: The endpoint IP address or list of IP addresses.
 - contextPath: Endpoint.ID
   description: The endpoint ID.
 - contextPath: Endpoint.Status
