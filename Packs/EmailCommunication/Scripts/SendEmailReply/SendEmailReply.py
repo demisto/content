@@ -251,25 +251,26 @@ def execute_reply_mail(
         "subject": subject_with_id,
         "cc": email_cc,
         "bcc": email_bcc,
-        # "htmlBody": reply_html_body,
-        # "body": reply_body,
         "bodyType": body_type,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
     }
-    # In case both bodies are sent, the command will use the html body
-    if body_type == "text":
-        mail_content["body"] = reply_body
-    elif body_type == "html":
-        mail_content["htmlBody"] = reply_html_body
+
+    instances = demisto.getModules()
+    brand = instances.get(mail_sender_instance, {}).get("brand")
+    if brand == "Gmail Single User":
+        # In case both bodies are sent, the command will use the html body
+        if body_type == "text":
+            mail_content["body"] = reply_body
+        elif body_type == "html":
+            mail_content["htmlBody"] = reply_html_body
 
     if mail_sender_instance:
         mail_content["using"] = mail_sender_instance
 
         # If using Gmail Single User,
         # add references header to mail_content to properly group replies into conversations in user's inbox.
-        instances = demisto.getModules()
-        if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
+        if brand == "Gmail Single User":
             mail_content["references"] = email_latest_message
     demisto.debug(f"Sending email with the following subject: {subject_with_id}, and content: {mail_content}")
     is_succeed, email_reply = execute_command("reply-mail", mail_content, extract_contents=False, fail_on_error=False)
@@ -500,17 +501,18 @@ def send_new_mail_request(
         "subject": subject_with_id,
         "cc": email_cc,
         "bcc": email_bcc,
-        # "htmlBody": email_html_body,
         "bodyType": body_type,
-        # "body": email_body,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
     }
-    # In case both bodies are sent, the command will use the html body
-    if body_type == "text":
-        mail_content["body"] = email_body
-    elif body_type == "html":
-        mail_content["htmlBody"] = email_html_body
+    instances = demisto.getModules()
+    brand = instances.get(mail_sender_instance, {}).get("brand")
+    if brand == "Gmail Single User":
+        # In case both bodies are sent, the command will use the html body
+        if body_type == "text":
+            mail_content["body"] = email_body
+        elif body_type == "html":
+            mail_content["htmlBody"] = email_html_body
 
     # If a mail sender instance has been set, set the "using" parameter with it. Otherwise, do not set "using"
     if mail_sender_instance:
