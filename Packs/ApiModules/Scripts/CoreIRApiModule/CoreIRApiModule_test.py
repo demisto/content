@@ -255,7 +255,7 @@ def test_endpoint_command(requests_mock):
             {
                 "ID": "1111",
                 "Hostname": "ip-3.3.3.3",
-                "IPAddress": "3.3.3.3",
+                "IPAddress": ["3.3.3.3"],
                 "OS": "Linux",
                 "Vendor": "CoreApiModule",
                 "Status": "Online",
