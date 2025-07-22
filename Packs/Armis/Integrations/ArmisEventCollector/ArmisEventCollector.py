@@ -129,9 +129,7 @@ class Client(BaseClient):
                 request_args["headers"] |= {"Authorization": str(token)}
                 return self._http_request(**request_args)
 
-            else:
-                # Some other unknown / unexpected error
-                raise
+            raise  # Some other unknown / unexpected error
 
     @staticmethod
     def is_token_expired(integration_context: dict) -> bool:
