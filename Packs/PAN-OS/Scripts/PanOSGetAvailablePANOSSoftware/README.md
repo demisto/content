@@ -32,7 +32,7 @@ This script is used in the following playbooks and scripts.
 | --- | --- |
 | device_filter_string | The string by which to filter the results to only show specific hostnames or serial numbers. |
 | target | The target number of the firewall. Used only on a Panorama instance. |
-| panos_instance_name | The Instance Name of the PAN-OS Integration to use. Specify only one Instance. |
+| panos_instance_name | The instance name of the PAN-OS Integration to use. Specify only one instance. |
 | newer_images_only | Whether to return only images newer than currently installed. |
 
 ## Outputs
@@ -46,7 +46,7 @@ This script is used in the following playbooks and scripts.
 | PANOS.SoftwareVersions.Summary.filename | The software version filename. | String |
 | PANOS.SoftwareVersions.Summary.size | The size of the software in MB. | String |
 | PANOS.SoftwareVersions.Summary.size_kb | The size of the software in KB. | String |
-| PANOS.SoftwareVersions.Summary.release_notes | The link to version release notes on PAN knowledge base. | String |
+| PANOS.SoftwareVersions.Summary.release_notes | The link to version release notes in the Palo Alto Networks knowledge base. | String |
 | PANOS.SoftwareVersions.Summary.downloaded | True if the software version is present on the system. | Boolean |
 | PANOS.SoftwareVersions.Summary.current | True if this is the currently installed software on the system. | Boolean |
 | PANOS.SoftwareVersions.Summary.latest | True if this is the most recently released software for this platform. | Boolean |

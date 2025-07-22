@@ -2616,7 +2616,7 @@ Deletes a policy rule.
 | Panorama.AuthRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
 | Panorama.AppOverride.Name | string | The rule name. |
 | Panorama.AppOverride.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
-| Panorama.CleanedUpRules.Category | string | The category of rule cleaned up \(Local or Panorama\). |
+| Panorama.CleanedUpRules.Category | string | The category of the rule that was cleaned up \(Local or Panorama\). |
 | Panorama.CleanedUpRules.AppliedAction | string | The applied cleanup action \(Disabled or Deleted\). |
 | Panorama.CleanedUpRules.DeviceGroup | string | The device group where the rule was cleaned up from \(Panorama instances\). |
 | Panorama.CleanedUpRules.PrePost | string | The location where the rule was cleaned up from \(Panorama instances\). |
@@ -10209,7 +10209,7 @@ Disables a policy rule.
 | Panorama.AuthRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
 | Panorama.AppOverride.Name | string | The rule name. |
 | Panorama.AppOverride.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
-| Panorama.CleanedUpRules.Category | string | The category of rule cleaned up \(Local or Panorama\). |
+| Panorama.CleanedUpRules.Category | string | The category of rule that was cleaned up \(Local or Panorama\). |
 | Panorama.CleanedUpRules.AppliedAction | string | The applied cleanup action \(Disabled or Deleted\). |
 | Panorama.CleanedUpRules.DeviceGroup | string | The device group where the rule was cleaned up from \(Panorama instances\). |
 | Panorama.CleanedUpRules.PrePost | string | The location where the rule was cleaned up from \(Panorama instances\). |
@@ -10244,7 +10244,7 @@ Gets rule hit counts from the firewall.  When connected to Panorama this command
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PANOS.RuleHitCount.first_hit_timestamp | Date | Timestamp when the rule was first hit. |
-| PANOS.RuleHitCount.from_dg_name | String | Name of the Device Group the rule is inherited from. |
+| PANOS.RuleHitCount.from_dg_name | String | Name of the device group the rule is inherited from. |
 | PANOS.RuleHitCount.hit_count | Number | Number of hits for the rule. |
 | PANOS.RuleHitCount.hostid | String | Serial number of the firewall the entry was fetched from. |
 | PANOS.RuleHitCount.instanceName | String | Name of the PAN-OS Integration Instance used to fetch the entry. |
@@ -10257,5 +10257,5 @@ Gets rule hit counts from the firewall.  When connected to Panorama this command
 | PANOS.RuleHitCount.position | String | Indicates the position of the rule pushed from Panorama \(pre_rulebase or post_rulebase\). |
 | PANOS.RuleHitCount.rule_creation_timestamp | Date | Timestamp when the rule was created. |
 | PANOS.RuleHitCount.rule_modification_timestamp | Date | Timestamp when the rule was most recently modified. |
-| PANOS.RuleHitCount.rulebase | String | The rulebase of the rule \(security, nat, etc\). |
+| PANOS.RuleHitCount.rulebase | String | The rulebase of the rule \(such as security, nat, and so on\). |
 | PANOS.RuleHitCount.vsys | String | The name of the firewall VSYS. |

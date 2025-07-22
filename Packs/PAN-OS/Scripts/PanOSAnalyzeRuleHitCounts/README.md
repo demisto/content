@@ -22,7 +22,7 @@ There are no inputs for this script.
 | --- | --- | --- |
 | PANOS.UnusedRules.TotalLocalRulesAnalyzed | The total number of local rules analyzed. | Number |
 | PANOS.UnusedRules.TotalPanoramaRulesAnalyzed | The total number of rules pushed from Panorama analyzed. | Number |
-| PANOS.UnusedRules.UsedPanoramaRules.from_dg_name | Name of the Device Group the rule is inherited from. | String |
+| PANOS.UnusedRules.UsedPanoramaRules.from_dg_name | Name of the device group the rule is inherited from. | String |
 | PANOS.UnusedRules.UsedPanoramaRules.hostids_with_hits | Host IDs of firewalls where this rule has hits. | String |
 | PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_hits | Hostnames of firewalls where this rule has hits. | String |
 | PANOS.UnusedRules.UsedPanoramaRules.hostids_with_zero_hits | Host IDs of firewalls where this rule has zero hits. | Unknown |

@@ -4,7 +4,7 @@ args:
   type: unknown
 - description: The target number of the firewall. Used only on a Panorama instance.
   name: target
-- description: The Instance Name of the PAN-OS Integration to use. Specify only one Instance.
+- description: The Instance Name of the PAN-OS Integration to use. Specify only one instance.
   name: panos_instance_name
 - auto: PREDEFINED
   defaultValue: "yes"
@@ -41,7 +41,7 @@ outputs:
   description: The size of the software in KB.
   type: String
 - contextPath: PANOS.SoftwareVersions.Summary.release_notes
-  description: The link to version release notes on PAN knowledge base.
+  description: The link to version release notes in the PAN knowledge base.
   type: String
 - contextPath: PANOS.SoftwareVersions.Summary.downloaded
   description: True if the software version is present on the system.

@@ -1,7 +1,7 @@
 args:
-- description: The serial number of the device to get disk space info from.  Required on Panorama instances.
+- description: The serial number of the device to get disk space info from. Required on Panorama instances.
   name: target
-- description: The Instance Name of the PAN-OS Integration to use. Specify only one Instance.
+- description: The instance name of the PAN-OS Integration to use. Specify only one instance.
   name: panos_instance_name
 - auto: PREDEFINED
   description: The units to represent disk space.
@@ -12,7 +12,7 @@ args:
   - G
   - M
   - K
-comment: This script fetches disk space info from the target device and returns all information or a subset as specified in command arguments.
+comment: Fetches disk space info from the target device and returns all information or a subset as specified in command arguments.
 commonfields:
   id: 'PAN-OS-GetDeviceDiskSpace'
   version: -1

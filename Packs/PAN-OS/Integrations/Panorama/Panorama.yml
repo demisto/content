@@ -5490,13 +5490,13 @@ script:
       description: The device group for the rule (Panorama instances).
       type: string
     - contextPath: Panorama.CleanedUpRules.Category
-      description: The category of rule cleaned up (Local or Panorama).
+      description: The category of rule that was cleaned up (Local or Panorama).
       type: string
     - contextPath: Panorama.CleanedUpRules.AppliedAction
       description: The applied cleanup action (Disabled or Deleted).
       type: string
     - contextPath: Panorama.CleanedUpRules.DeviceGroup
-      description: The device group where the rule was cleaned up from (Panorama instances).
+      description: The device group that the rule was cleaned up from (Panorama instances).
       type: string
     - contextPath: Panorama.CleanedUpRules.PrePost
       description: The location where the rule was cleaned up from (Panorama instances).
@@ -5505,7 +5505,7 @@ script:
       description: The name of the rule.
       type: string
     - contextPath: Panorama.CleanedUpRules.Rulebase
-      description: The rulebase where the rule was cleaned up from (e.g. 'security', 'nat').
+      description: The rulebase where the rule was cleaned up from (for example, 'security', 'nat').
       type: string
     - contextPath: Panorama.CleanedUpRules.Target
       description: The target firewall serial number, if provided.
@@ -10467,7 +10467,7 @@ script:
       - security
       - tunnel-inspect
     - defaultValue: all
-      description: The firewall VSYS name to check.  Returns results for all VSYS if left blank.
+      description: The firewall VSYS name to check.  Returns results for all VSYSs if left blank.
       name: vsys
     - defaultValue: all
       description: Comma-separated list of rule names to check.  Returns results for all rules if left blank.
@@ -10489,7 +10489,7 @@ script:
       description: Timestamp when the rule was first hit.
       type: Date
     - contextPath: PANOS.RuleHitCount.from_dg_name
-      description: Name of the Device Group the rule is inherited from.
+      description: Name of the device group the rule is inherited from.
       type: String
     - contextPath: PANOS.RuleHitCount.hit_count
       description: Number of hits for the rule.
@@ -10501,7 +10501,7 @@ script:
       description: Name of the PAN-OS Integration Instance used to fetch the entry.
       type: String
     - contextPath: PANOS.RuleHitCount.instanceType
-      description: The type of the PAN-OS Integration Instance running the command (panorama or firewall).
+      description: The type of the PAN-OS Integration Instance running the command (Panorama or firewall).
       type: String
     - contextPath: PANOS.RuleHitCount.is_from_panorama
       description: Indicates if the rule was pushed from Panorama (true) or is local to the firewall (false).
@@ -10513,7 +10513,7 @@ script:
       description: Timestamp when hit count data was last reset.
       type: Date
     - contextPath: PANOS.RuleHitCount.latest
-      description: Value of the "latest" property returned by the API.
+      description: Value of the `latest` property returned by the API.
       type: String
     - contextPath: PANOS.RuleHitCount.name
       description: Name of the rule.
@@ -10528,7 +10528,7 @@ script:
       description: Timestamp when the rule was most recently modified.
       type: Date
     - contextPath: PANOS.RuleHitCount.rulebase
-      description: The rulebase of the rule (security, nat, etc).
+      description: The rulebase of the rule (security, nat, and so on).
       type: String
     - contextPath: PANOS.RuleHitCount.vsys
       description: The name of the firewall VSYS.

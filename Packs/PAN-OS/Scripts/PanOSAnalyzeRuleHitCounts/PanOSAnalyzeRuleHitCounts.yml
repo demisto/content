@@ -9,10 +9,10 @@ outputs:
   description: The total number of local rules analyzed.
   type: Number
 - contextPath: PANOS.UnusedRules.TotalPanoramaRulesAnalyzed
-  description: The total number of rules pushed from Panorama analyzed.
+  description: The total number of analyzed rules pushed from Panorama.
   type: Number
 - contextPath: PANOS.UnusedRules.UsedPanoramaRules.from_dg_name
-  description: Name of the Device Group the rule is inherited from.
+  description: Name of the device group the rule is inherited from.
   type: String
 - contextPath: PANOS.UnusedRules.UsedPanoramaRules.hostids_with_hits
   description: Host IDs of firewalls where this rule has hits.
@@ -39,7 +39,7 @@ outputs:
   description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
   type: String
 - contextPath: PANOS.UnusedRules.UnusedLocalRules.activeHAPeer
-  description: If the firewall where this rule data comes from is in an HA pair, contains the hostid of the active device in the pair.
+  description: If the firewall where this rule data comes from is in an HA pair, contains the Host ID of the active device in the pair.
   type: Unknown
 - contextPath: PANOS.UnusedRules.UnusedLocalRules.hostid
   description: Host ID of the firewall where the rule is configured.
@@ -48,7 +48,7 @@ outputs:
   description: Hostname of the firewall where this rule is configured.
   type: String
 - contextPath: PANOS.UnusedRules.UnusedLocalRules.vsys
-  description: The virtual system (vsys) where the rule is configured.
+  description: The virtual system (VSYS) where the rule is configured.
   type: String
 - contextPath: PANOS.UnusedRules.UnusedLocalRules.instanceName
   description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.

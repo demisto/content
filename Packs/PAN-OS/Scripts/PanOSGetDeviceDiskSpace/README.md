@@ -31,7 +31,7 @@ This script is used in the following playbooks and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | target | The serial number of the device to get disk space info from. |
-| panos_instance_name | The Instance Name of the PAN-OS Integration to use. Specify only one Instance. |
+| panos_instance_name | The instance name of the PAN-OS Integration to use. Specify only one instance. |
 | disk_space_units |  |
 
 ## Outputs

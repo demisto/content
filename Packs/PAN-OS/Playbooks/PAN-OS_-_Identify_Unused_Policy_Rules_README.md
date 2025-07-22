@@ -1,9 +1,9 @@
 The playbook collects and analyzes Palo Alto Networks NGFW policy rule hitcount information and generates a summary of unused rules for potential clean-up.  Policy rules are classified into three categories:
 
-1. Unused Local Rules - Rules configured locally on Firewalls
-2. Unused Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have zero hits on all Firewalls.
-3. Used Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have hits on some Firewalls but not all.
-    i. These rules may be pushed to firewalls where they are not needed and  should be considered for clean-up.
+1. Unused Local Rules - Rules configured locally on firewalls.
+2. Unused Panorama Rules - Rules pushed to one or more firewalls from Panorama that have zero hits on all firewalls.
+3. Used Panorama Rules - Rules pushed to one or more firewalls from Panorama that have hits on some firewalls but not all.
+    i. These rules may be pushed to firewalls where they are not needed and should be considered for clean-up.
 
 For firewalls in HA pairs, rules are only considered unused if all members of the HA group have zero hits for it.
 
@@ -36,7 +36,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Rulebase | The Firewall rulebase to analyze. Must be one of the following:<br/>security, nat, decryption, application-override, authentication, dos, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect. | security | Required |
+| Rulebase | The firewall rulebase to analyze. Must be one of the following:<br/>security, nat, decryption, application-override, authentication, dos, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect. | security | Required |
 
 ## Playbook Outputs
 
@@ -45,12 +45,12 @@ This playbook does not use any sub-playbooks.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | PANOS.UnusedRules.TotalLocalRulesAnalyzed | The total number of local rules analyzed. | Number |
-| PANOS.UnusedRules.TotalPanoramaRulesAnalyzed | The total number of rules pushed from Panorama analyzed. | Number |
+| PANOS.UnusedRules.TotalPanoramaRulesAnalyzed | The total number of analyzed rules pushed from Panorama. | Number |
 | PANOS.UnusedRules.UnusedLocalRules | List of Unused Local Rules. | unknown |
-| PANOS.UnusedRules.UnusedLocalRules.activeHAPeer | If the firewall where this rule data comes from is in an HA pair, contains the hostid of the active device in the pair. | Unknown |
+| PANOS.UnusedRules.UnusedLocalRules.activeHAPeer | If the firewall where this rule data comes from is in an HA pair, contains the Host ID of the active device in the pair. | Unknown |
 | PANOS.UnusedRules.UnusedLocalRules.hostid | Host ID of the firewall where the rule is configured. | String |
 | PANOS.UnusedRules.UnusedLocalRules.hostname | Hostname of the firewall where this rule is configured. | String |
-| PANOS.UnusedRules.UnusedLocalRules.vsys | The virtual system \(vsys\) where the rule is configured. | String |
+| PANOS.UnusedRules.UnusedLocalRules.vsys | The virtual system \(VSYS\) where the rule is configured. | String |
 | PANOS.UnusedRules.UnusedLocalRules.instanceName | Name of the PAN-OS Integration Instance used to collect rule hitcount data. | String |
 | PANOS.UnusedRules.UnusedLocalRules.name | The name of the rule. | String |
 | PANOS.UnusedRules.UnusedLocalRules.position | The position of the rule within the Panorama device-group rulebase \(pre-rulebase or post-rulebase\). | String |

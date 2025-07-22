@@ -2,10 +2,10 @@ This playbook uses the PAN-OS integration to check NGFW device conditions that c
 
 1. Available disk space for the target version (base image + release image)
 2. Presence of any uncommitted configuration changes
-3. Whether device has an active Support license
+3. Whether device has an active support license
 4. Whether NTP is configured and synced
 5. Whether the latest App/Threat dynamic update is installed
-6. For devices in HA groups, check that devices in the group have:
+6. For devices in HA groups, if devices in the group have:
     1. App/Threat, AntiVirus, and GlobalProtect Client are at the same level and compatible for HA failover
     2. Running configuration synchronized among peers
 
