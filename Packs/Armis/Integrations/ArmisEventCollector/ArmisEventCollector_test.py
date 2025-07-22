@@ -24,7 +24,7 @@ class TestClientFunctions:
             pytest.param(False, "2023-01-01T00:00:00", 1, id="Take existing, expired"),
         ],
     )
-    def test_get_token(
+    def test_get_access_token(
         self,
         mocker: MockerFixture,
         force_new: bool,
@@ -36,7 +36,7 @@ class TestClientFunctions:
             - Integration context containing an access token and a token expiration date.
 
         When:
-            - Calling Client._get_token.
+            - Calling Client.get_access_token.
 
         Then:
             - Ensure an HTTP request is made and a new integration context is set only if force_new is True.
@@ -51,7 +51,7 @@ class TestClientFunctions:
         mock_set_integration_context = mocker.patch("ArmisEventCollector.set_integration_context")
         mock_http_request = mocker.patch.object(Client, "_http_request", return_value=access_token_api_response)
 
-        client._get_token(force_new)
+        client.get_access_token(force_new)
 
         assert mock_get_integration_context.call_count == 1  # always called
         assert mock_http_request.call_count == expected_request_context_set_calls
@@ -74,7 +74,6 @@ class TestClientFunctions:
             - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
             - Make sure the pagination logic performs as expected.
         """
-        access_token = "test_access_token"
         first_response = {
             "data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}], "total": "Many"}
         }
@@ -96,12 +95,10 @@ class TestClientFunctions:
                 "orderBy": "time",
                 "from": 1,
             },
-            "headers": {"Authorization": access_token, "Accept": "application/json"},
             "timeout": 180,
-            "resp_type": "json",
             "raise_on_status": True,
         }
-        mocker.patch.object(Client, "_get_token", return_value=access_token)
+        mocker.patch.object(Client, "get_access_token", return_value="test_access_token")
         mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=[first_response, second_response])
         assert dummy_client.fetch_by_aql_query("example_query", 2, (datetime.now() - timedelta(minutes=1))) == (
             expected_result,
@@ -127,7 +124,6 @@ class TestClientFunctions:
             - Make sure the 'from' aql parameter request is sent with the given from argument.
             - Make sure the pagination logic performs as expected.
         """
-        access_token = "test_access_token"
         first_response = {
             "data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}], "total": "Many"}
         }
@@ -149,13 +145,11 @@ class TestClientFunctions:
                 "orderBy": "time",
                 "from": 1,
             },
-            "headers": {"Authorization": access_token, "Accept": "application/json"},
             "timeout": 180,
-            "resp_type": "json",
             "raise_on_status": True,
         }
         from_arg = arg_to_datetime("2023-01-01T01:00:01")
-        mocker.patch.object(Client, "_get_token", return_value=access_token)
+        mocker.patch.object(Client, "get_access_token", return_value="test_access_token")
         mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=[first_response, second_response])
         assert dummy_client.fetch_by_aql_query("example_query", 3, from_arg) == (expected_result, 0)
 
@@ -679,7 +673,7 @@ class TestFetchFlow:
             ],
         )
         mocker.patch.dict(EVENT_TYPES, {"Events": EVENT_TYPE("unique_id", "events_query", "events", "time", "events")})
-        mock_get_token = mocker.patch.object(Client, "_get_token", return_value="new_access_token")
+        mock_get_access_token = mocker.patch.object(Client, "get_access_token", return_value="new_access_token")
         if fetch_start_time:
             last_run = {
                 "events_last_fetch_ids": ["3"],
@@ -691,9 +685,9 @@ class TestFetchFlow:
                 last_run,
             )
             # First call tries to get token from integration context
-            assert mock_get_token.call_args_list[0].kwargs == {}
+            assert mock_get_access_token.call_args_list[0].kwargs == {}
             # Second call (after HTTP 401 error) forces the generation of a new token
-            assert mock_get_token.call_args_list[1].kwargs == {"force_new": True}
+            assert mock_get_access_token.call_args_list[1].kwargs == {"force_new": True}
 
     def test_fetch_alert_flow(self, mocker, dummy_client):
         """
@@ -732,7 +726,8 @@ class TestFetchFlow:
             }
         }
         fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
-        mocker.patch.object(Client, "http_request", side_effect=[alerts_response, activities_response, devices_response])
+        mocker.patch.object(Client, "get_access_token", return_value="test_access_token")
+        mocker.patch.object(Client, "_http_request", side_effect=[alerts_response, activities_response, devices_response])
         mocker.patch.dict(EVENT_TYPES, {"Alerts": EVENT_TYPE("unique_id", "events_query", "alerts", "time", "alerts")})
         expected_result = alerts_response["data"]["results"][0]
         expected_result["activitiesData"] = activities_response["data"]["results"]

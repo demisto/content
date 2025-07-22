@@ -70,113 +70,9 @@ class Client(BaseClient):
     """Client class to interact with Armis API - this Client implements API calls"""
 
     def __init__(self, api_key: str, base_url: str, verify: bool, proxy: bool):
-        super().__init__(base_url, verify=verify, proxy=proxy)
         self._api_key = api_key
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._headers = {"Accept": "application/json"}
-
-    def http_request(
-        self,
-        method: str,
-        url_suffix: str,
-        resp_type: str = "json",
-        timeout: int = API_TIMEOUT,
-        headers: dict | None = None,
-        json_data: dict | None = None,
-        params: dict | None = None,
-        data: dict | None = None,
-    ) -> Any:
-        """Makes HTTP requests. Forces the generation of a new access token using the API key if an HTTP 401 (Unauthorized)
-        error is returned on the first attempt.
-
-        Args:
-            method (str): HTTP method to use. Defaults to "GET".
-            url_suffix (str): URL suffix to append to base_url. Defaults to None.
-            resp_type (str): Response type. Defaults to "json".
-            timeout (int): Maximum time (in seconds) to establish a connection to the API server. Default to 180.
-            headers (dict): Headers to include in the request. Defaults to None.
-            json_data (dict): JSON data to include in the request body. Defaults to None.
-            params (dict): Parameters to include in the request. Defaults to None.
-            data (dict): Data to include in the request body. Defaults to None.
-        Returns:
-            Any: Response from the request.
-        """
-        headers = headers or {}
-        request_args = assign_params(
-            method=method,
-            url_suffix=url_suffix,
-            timeout=timeout,
-            params=params,
-            data=data,
-            json_data=json_data,
-            headers=headers,
-            resp_type=resp_type,
-            raise_on_status=True,
-            # Only ignore None values
-            values_to_ignore=(None,),
-        )
-
-        try:
-            demisto.debug(f"debug-log: making new {method} request to '{url_suffix}' endpoint.")
-            token = self._get_token()
-            request_args["headers"] |= {"Authorization": str(token)}
-            return self._http_request(**request_args)
-        except DemistoException as e:
-            error_status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
-
-            if error_status_code == HTTPStatus.UNAUTHORIZED:
-                demisto.debug("debug-log: generating a new token after getting unauthorized error.")
-                token = self._get_token(force_new=True)
-                request_args["headers"] |= {"Authorization": str(token)}
-                return self._http_request(**request_args)
-
-            raise  # Some other unknown / unexpected error
-
-    @staticmethod
-    def is_token_expired(integration_context: dict) -> bool:
-        """Checks if the token is in the integration context and then compares the expiration time to the current time.
-
-        Args:
-            integration_context (dict): The integration context cache of the instance.
-
-        Returns:
-            bool: True if the token is expired, False otherwise.
-        """
-        demisto.debug("debug-log: checking if token is expired.")
-        token_expiration = integration_context.get("token_expiration", None)
-        if not token_expiration:
-            demisto.debug("debug-log: no token expiration time in integration context. Assuming token is expired.")
-            return True
-
-        expire_time = dateparser.parse(token_expiration).replace(tzinfo=datetime.now().tzinfo)  # type: ignore
-        current_time = datetime.now() - timedelta(seconds=30)
-        demisto.debug(f"debug-log: comparing current time: {current_time} with token expiration time: {expire_time}.")
-        return expire_time < current_time
-
-    def _get_token(self, force_new: bool = False):
-        """Returns an existing access token if a valid one is available and creates one if not.
-
-        Args:
-            force_new (bool): Create a new access token even if an existing one is available.
-
-        Returns:
-            str: A valid Access Token to authorize requests
-        """
-        integration_context = get_integration_context()
-        token = integration_context.get("token")
-        if token and not force_new and not self.is_token_expired(integration_context):
-            demisto.debug("debug-log: got valid token from integration context.")
-            return token
-
-        demisto.debug("debug-log: creating a new access token.")
-        response = self._http_request("POST", "/access_token/", data={"secret_key": self._api_key})
-        token = response.get("data", {}).get("access_token")
-        expiration = response.get("data", {}).get("expiration_utc")
-        expiration_date = dateparser.parse(expiration)
-        assert expiration_date is not None, f"failed parsing {expiration}"
-
-        demisto.debug(f"debug-log: setting new token to integration context with expiration time: {expiration_date}.")
-        set_integration_context({"token": token, "token_expiration": str(expiration_date)})
-        return token
 
     def perform_fetch(self, params: dict):
         """Performs a filtered search based on an AQL query.
@@ -187,13 +83,28 @@ class Client(BaseClient):
         Returns:
             Any: Response from the request.
         """
-        return self.http_request(
-            url_suffix="/search/",
-            method="GET",
-            params=params,
-            headers=self._headers,
-            timeout=API_TIMEOUT,
-        )
+        request_args = {
+            "method": "GET",
+            "url_suffix": "/search/",
+            "params": params,
+            "timeout": API_TIMEOUT,
+            "raise_on_status": True,
+        }
+
+        try:
+            demisto.debug("debug-log: making new GET request to perform fetch.")
+            self._headers["Authorization"] = self.get_access_token()
+            return self._http_request(**request_args)
+
+        except DemistoException as e:
+            error_status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
+
+            if error_status_code == HTTPStatus.UNAUTHORIZED:
+                demisto.debug("debug-log: generating a new token after getting unauthorized error.")
+                self._headers["Authorization"] = self.get_access_token(force_new=True)
+                return self._http_request(**request_args)
+
+            raise  # Some other unknown / unexpected error
 
     def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = "time") -> list[dict]:
         """Fetches events using AQL query.
@@ -257,6 +168,53 @@ class Client(BaseClient):
             demisto.info(f"info-log: caught an exception during pagination:\n{str(e)}")  # noqa: E231
 
         return results, next
+
+    @staticmethod
+    def is_token_expired(integration_context: dict) -> bool:
+        """Checks if the token is in the integration context and then compares the expiration time to the current time.
+
+        Args:
+            integration_context (dict): The integration context cache of the instance.
+
+        Returns:
+            bool: True if the token is expired, False otherwise.
+        """
+        demisto.debug("debug-log: checking if token is expired.")
+        token_expiration = integration_context.get("token_expiration", None)
+        if not token_expiration:
+            demisto.debug("debug-log: no token expiration time in integration context. Assuming token is expired.")
+            return True
+
+        expire_time = dateparser.parse(token_expiration).replace(tzinfo=datetime.now().tzinfo)  # type: ignore
+        current_time = datetime.now() - timedelta(seconds=30)
+        demisto.debug(f"debug-log: comparing current time: {current_time} with token expiration time: {expire_time}.")
+        return expire_time < current_time
+
+    def get_access_token(self, force_new: bool = False) -> str:
+        """Returns an existing access token if a valid one is available and creates one if not.
+
+        Args:
+            force_new (bool): Create a new access token even if an existing one is available.
+
+        Returns:
+            str: A valid Access Token to authorize requests
+        """
+        integration_context = get_integration_context()
+        token = integration_context.get("token", "")
+        if token and not force_new and not self.is_token_expired(integration_context):
+            demisto.debug("debug-log: got valid token from integration context.")
+            return token
+
+        demisto.debug("debug-log: creating a new access token.")
+        response = self._http_request("POST", "/access_token/", data={"secret_key": self._api_key})
+        token = response.get("data", {}).get("access_token", "")
+        expiration = response.get("data", {}).get("expiration_utc")
+        expiration_date = dateparser.parse(expiration)
+        assert expiration_date is not None, f"failed parsing {expiration}"
+
+        demisto.debug(f"debug-log: setting new token to integration context with expiration time: {expiration_date}.")
+        set_integration_context({"token": token, "token_expiration": str(expiration_date)})
+        return token
 
 
 """ TEST MODULE """
