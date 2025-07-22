@@ -940,6 +940,101 @@ def test_send_new_mail_request(test_args, expected_result, mocker):
     assert result == "Success"
 
 
+@pytest.mark.parametrize(
+    "brand, body_type, expected_body_key, test_args",
+    [
+        (
+            "Gmail Single User",
+            "text",
+            "body",
+            (
+                1,
+                "Subject",
+                False,
+                "to@example.com",
+                "Plain text body",
+                "service@example.com",
+                "cc@example.com",
+                "bcc@example.com",
+                "<html>HTML body</html>",
+                "text",
+                ["1", "2"],
+                [],
+                "code",
+                "service@example.com",
+                ""
+            ),
+        ),
+        (
+            "Gmail Single User",
+            "html",
+            "htmlBody",
+            (
+                1,
+                "Subject",
+                False,
+                "to@example.com",
+                "Plain text body",
+                "service@example.com",
+                "cc@example.com",
+                "bcc@example.com",
+                "<html>HTML body</html>",
+                "html",
+                ["1", "2"],
+                [],
+                "code",
+                "service@example.com",
+                ""
+            ),
+        ),
+        (
+            "Other Brand",
+            "text",
+            None,
+            (
+                1,
+                "Subject",
+                False,
+                "to@example.com",
+                "Plain text body",
+                "service@example.com",
+                "cc@example.com",
+                "bcc@example.com",
+                "<html>HTML body</html>",
+                "text",
+                ["1", "2"],
+                [],
+                "code",
+                "service@example.com",
+                ""
+            ),
+        ),
+    ]
+)
+def test_send_new_mail_request_body_fields(brand, body_type, expected_body_key, test_args, mocker):
+    import SendEmailReply
+    from SendEmailReply import send_new_mail_request
+
+    mocker.patch.object(demisto,'getModules', return_value={
+        "service@example.com": {"brand": brand}
+    })
+    mocker.patch.object(demisto, "executeCommand", return_value="Success")
+    mocker.patch('SendEmailReply.create_thread_context')
+
+    result = send_new_mail_request(*test_args)
+    mail_content = demisto.executeCommand.call_args.args[1]
+
+    if brand == "Gmail Single User":
+        assert expected_body_key in mail_content
+        other_key = "body" if expected_body_key == "htmlBody" else "htmlBody"
+        assert other_key not in mail_content
+    else:
+        assert "body" in mail_content
+        assert "htmlBody" in mail_content
+
+    assert result == "Success"
+
+
 @pytest.mark.parametrize("scenario", ["required_fields_missing", "no_codes_present", "codes_present"])
 def test_multi_thread_new(scenario, mocker):
     """
