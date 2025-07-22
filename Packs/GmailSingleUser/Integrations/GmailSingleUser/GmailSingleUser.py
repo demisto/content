@@ -986,8 +986,10 @@ class Client:
                 # in case both bodies exists, the api wll use html
                 if body_type == "text":
                     message = MIMEText(body, "plain", "utf-8")  # type: ignore
+                    htmlBody = ""
                 else:
                     message = MIMEText(htmlBody, "html")  # type: ignore
+                    body = ""
         else:
             message = MIMEMultipart()  # type: ignore
 
