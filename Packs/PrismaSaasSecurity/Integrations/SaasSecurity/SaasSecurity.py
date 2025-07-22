@@ -336,9 +336,13 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     to_time = args.get("to")
     app_ids = ",".join(argToList(args.get("app_ids", [])))
     state = args.get("state", "open")
-    severity = ",".join(argToList(args.get("severity", [])))
+    severity_arr = argToList(args.get("severity", []))
     status = ",".join(STATUS_MAP.get(x) for x in argToList(args.get("status", [])))  # type: ignore[misc]
     next_page = args.get("next_page")
+
+    # validate that the severities are of type double
+    severity_arr_double = [f"{sev}.0" if ".0" not in sev else sev for sev in severity_arr]
+    severity = ",".join(severity_arr_double)
 
     raw_res = client.get_incidents(limit, from_time, to_time, app_ids, state, severity, status, next_page)
     incidents = raw_res.get("resources", [])
