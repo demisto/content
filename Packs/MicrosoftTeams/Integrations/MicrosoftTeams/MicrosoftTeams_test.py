@@ -3506,17 +3506,7 @@ def test_send_notification_with_raw_adaptive_card(mocker, requests_mock):
     }
     expected_request_attachment = {
         "contentType": "application/vnd.microsoft.card.adaptive",
-        "content": {
-            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-            "version": "1.0",
-            "type": "AdaptiveCard",
-            "msteams": {"width": "Full"},
-            "body": [{"type": "TextBlock", "text": "message", "wrap": True}],
-            "actions": [
-                {"type": "Action.Submit", "title": "Yes"},
-                {"type": "Action.Submit", "title": "No"},
-            ],
-        },
+        "content": adaptive_card,
     }
     requests_mock.post(f"{service_url}/v3/conversations", json={"id": "conversation-id"})
     mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
