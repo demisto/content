@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "description": "The Sysdig Agent ID",
     "cliName": "sysdigagentid",
-    "type": "shortText",
+    "type": "number",
     "closeForm": false,
     "editForm": true,
     "required": false,

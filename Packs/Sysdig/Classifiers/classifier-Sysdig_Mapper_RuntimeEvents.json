@@ -1,0 +1,160 @@
+{
+  "description": "Maps Sysdig Runtime Event fields for use in Integration Playbooks.",
+  "id": "Sysdig Mapper Runtime Event",
+	"mapping": {
+		"Sysdig Runtime Event": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Sysdig Agent Version": {
+					"complex": {
+						"filters": [],
+						"root": "labels",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "agent.version"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Sysdig Event ID": {
+					"complex": {
+						"filters": null,
+						"root": "id",
+						"transformers": null
+					}
+				},
+				"Command Line": {
+					"complex": {
+						"accessor": "fields.proc\\.cmdline",
+						"filters": null,
+						"root": "content",
+						"transformers": null
+					}
+				},
+				"PID": {
+					"complex": {
+						"accessor": "fields.proc\\.pid",
+						"filters": null,
+						"root": "content",
+						"transformers": null
+					}
+				},
+				"Process Name": {
+					"complex": {
+						"filters": [],
+						"root": "labels",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "process.name"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"Sysdig Rule Name": {
+					"complex": {
+						"accessor": "ruleName",
+						"filters": null,
+						"root": "content",
+						"transformers": null
+					}
+				},
+				"Tags": {
+					"complex": {
+						"accessor": "ruleTags",
+						"filters": null,
+						"root": "content",
+						"transformers": null
+					}
+				},
+				"Sysdig Policy": {
+					"complex": {
+						"filters": null,
+						"root": "name",
+						"transformers": null
+					}
+				},
+				"Sysdig Container ID": {
+						"complex": {
+								"filters": [],
+								"root": "containerId",
+								"transformers": []
+						}
+				},
+				"Source Hostname": {
+					"complex": {
+						"filters": [],
+						"root": "labels",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"simple": "host.hostName"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					}
+				},
+				"MAC Address": {
+						"complex": {
+								"filters": [],
+								"root": "machineId",
+								"transformers": []
+						}
+				},
+				"Sysdig Agent ID": {
+						"complex": {
+								"filters": [],
+								"root": "agentId",
+								"transformers": []
+						}
+				},
+				"Sysdig Customer ID": {
+						"complex": {
+								"filters": [],
+								"root": "customerId",
+								"transformers": []
+						}
+				},
+				"Sysdig Severity": {
+						"complex": {
+								"filters": [],
+								"root": "severity",
+								"transformers": []
+						}
+				},
+				"Sysdig Category": {
+						"complex": {
+								"filters": [],
+								"root": "category",
+								"transformers": []
+						}
+				}
+			}
+		}
+	},
+	"name": "Sysdig Mapper Runtime Event",
+	"type": "mapping-incoming",
+	"version": -1,
+  "fromVersion": "6.0.0"
+}
