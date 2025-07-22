@@ -3,7 +3,7 @@ import uuid
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
-# from datetime import datetime, UTC
+from datetime import datetime, UTC
 from freezegun import freeze_time
 
 
