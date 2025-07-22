@@ -243,7 +243,7 @@ tasks:
       key:
         simple: invalid_domains
       value:
-        simple: "\"test.notexist\", \n\"test[.com\",\n\"bad_domain.com\",\n\"`www.walla.co.il`\""
+        simple: "\"test.notexist\", \n\"test[.com\",\n\"bad_domain.com\",\n\"www.walla.co.il`\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -748,7 +748,7 @@ tasks:
     task:
       id: dd18176b-6915-4661-808b-748d3cf3483f
       version: -1
-      name: non extraction - `www.walla.co.il`
+      name: non extraction - www.walla.co.il`
       type: condition
       iscommand: false
       brand: ""
@@ -766,7 +766,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'www.walla.co.il`'
+              simple: www.walla.co.il`
     continueonerrortype: ""
     view: |-
       {
