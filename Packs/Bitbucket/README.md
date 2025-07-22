@@ -13,6 +13,7 @@ Atlassian Bitbucket is a Git-based source code management platform that enables 
 ## Configuration on Server Side
 
 ### Setting the database retention period
+
 You can decide to retain the data in the database for a maximum of 99 years, however, setting long retention periods can increase the size of your DB and affect performance.
 
 To set the retention period:
@@ -33,13 +34,13 @@ Coverage levels reflect the number and frequency of events that are logged.
 
 **Off**: Turns off logging events from this coverage area.
 
-**Base**: Logs low-frequency and some of the high-frequency core events from selected coverage areas. 
+**Base**: Logs low-frequency and some of the high-frequency core events from selected coverage areas.
 
 **Advanced**: Logs everything in Base, plus additional events where available.
 
 **Full**: Logs all the events available in Base and Advanced, plus additional events for a comprehensive audit.
 
-You can find the log file in the ***/your home directory/log/audit*** directory. 
+You can find the log file in the ***/your home directory/log/audit*** directory.
 On clustered Bitbucket Data Center deployments, each application node will have its own log in the local ***/your home directory/log/audit*** directory.
 
 For more inofrmation use the following guide [here](https://confluence.atlassian.com/bitbucketserver/view-and-configure-the-audit-log-776640417.html).
