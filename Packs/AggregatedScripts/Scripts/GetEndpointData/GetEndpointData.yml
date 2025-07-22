@@ -9,7 +9,7 @@ args:
   name: endpoint_hostname
   isArray: true
 - description: |-
-    Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Active Directory Query v2'.
+    A comma-seperated list of brands you wish to run the command for. If not provided, the command will run for all available integrations. Example: 'Active Directory Query v2,FireEyeHX v2'.
   name: brands
   auto: PREDEFINED
   predefined:
