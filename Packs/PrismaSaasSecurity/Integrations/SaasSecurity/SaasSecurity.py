@@ -517,7 +517,9 @@ def fetch_incidents(
         last_fetch = dateparser.parse(first_fetch_time, settings={"TIMEZONE": "UTC"})
         last_fetch = last_fetch.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + "Z"  # format ex: 2021-08-23T09:26:25.872Z
 
-    demisto.debug(f"Calling get_incidents with {fetch_limit=}, {last_fetch=}, {fetch_state=}, {fetch_severity_str=}, {fetch_status=}")
+    demisto.debug(
+        f"Calling get_incidents with {fetch_limit=}, {last_fetch=}, {fetch_state=}, {fetch_severity_str=}, {fetch_status=}"
+    )
     current_fetch = last_fetch
     results = client.get_incidents(
         limit=fetch_limit,

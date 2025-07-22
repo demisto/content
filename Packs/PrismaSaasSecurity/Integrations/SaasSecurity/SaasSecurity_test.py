@@ -135,7 +135,7 @@ def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker, last_run
     incidents_for_fetch = util_load_json("test_data/fech_incident_data.json")
     mocker.patch.object(demisto, "command", return_value="fetch-incidents")
     mocker.patch.object(demisto, "getLastRun", return_value={"last_run_time": last_run})
-    requests_mock.get("http://base_url/incident/api/incidents/delta", json=get_incidents)
+    requests_mock.get("http://base_url/incident/api/v2/incidents/delta", json=get_incidents)
 
     main()
 
@@ -159,13 +159,13 @@ def test_fetch_incidents_input(mocker, client):
     fetch_severity = ["4.0", "5.0"]
     last_run = "2018-10-01T20:22:35.000Z"
     get_incidents = util_load_json("test_data/get-incidents.json")
-    expected_params = {"from": "2018-10-01T20:22:35.000Z", "limit": "1", "severity": "4.0,5.0"}
+    expected_params = {"from": "2018-10-01T20:22:35.000Z", "limit": "1", "severities": "4.0,5.0"}
 
     mocker.patch.object(demisto, "getLastRun", return_value={"last_run_time": last_run})
     http_request = mocker.patch.object(client, "http_request", return_value=get_incidents)
 
     fetch_incidents(client, first_fetch_time, fetch_limit, "", fetch_severity, "", "")
-    http_request.assert_called_with("GET", url_suffix="/incident/api/incidents/delta", params=expected_params)
+    http_request.assert_called_with("GET", url_suffix="incident/api/v2/incidents/delta", params=expected_params)
 
 
 def test_get_incidents_command(client, requests_mock):
@@ -181,9 +181,9 @@ def test_get_incidents_command(client, requests_mock):
     from SaasSecurity import get_incidents_command
 
     incidents = util_load_json("test_data/get-incidents.json")
-    req_mocker = requests_mock.get("http://base_url/incident/api/incidents/delta", json=incidents)
+    req_mocker = requests_mock.get("http://base_url/incident/api/v2/incidents/delta", json=incidents)
 
-    result = get_incidents_command(client, {"limit": "5", "state": "All", "severity": "Low,High", "status": "All"})
+    result = get_incidents_command(client, {"limit": "5", "state": "All", "severity": "1.0,4.0", "status": "All"})
 
     assert all(param not in req_mocker.last_request.query for param in ("status", "state"))
     assert len(result.outputs.get("SaasSecurity.Incident(val.incident_id && val.incident_id == obj.incident_id)")) == 8
@@ -385,7 +385,7 @@ def test_get_modified_remote_data_command(client, requests_mock):
     args = {"lastUpdate": "2020-11-18T13:16:52.005381+02:00"}
 
     incidents = util_load_json("test_data/get-incidents.json")
-    requests_mock.get("http://base_url/incident/api/incidents/delta", json=incidents)
+    requests_mock.get("http://base_url/incident/api/v2/incidents/delta", json=incidents)
 
     result = get_modified_remote_data_command(client, args)
 
