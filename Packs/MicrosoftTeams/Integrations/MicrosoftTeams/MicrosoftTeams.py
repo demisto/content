@@ -377,6 +377,9 @@ def reset_auth(error_codes: list = [], error_desc: str = "", graph_only: bool = 
     """
     Reset the cached API authorization data in the integration context.
     This function clears the current authorization data: current graph/bot tokens, token validity, refresh tokens and bot type
+    :param error_codes: Error codes to log when resetting after token expiration
+    :param error_desc: Error description to output when resetting after token expiration
+    :param graph_only: Boolean to determine if only graph tokens should be reset
     """
 
     integration_context: dict = get_integration_context()
