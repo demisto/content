@@ -8,7 +8,7 @@ DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
 
 
-class AlertSeverity(Enum):
+class IssueSeverity(Enum):
     UNKNOWN = 0
     INFO = 0.5
     LOW = 1
@@ -17,7 +17,7 @@ class AlertSeverity(Enum):
     CRITICAL = 4
 
 
-class AlertStatus(Enum):
+class IssueStatus(Enum):
     PENDING = 0
     ACTIVE = 1
     DONE = 2
@@ -39,7 +39,7 @@ class AlertStatus(Enum):
 
 
 
-query_filters = ['filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256' 'osparentsha256', 'cgosha256',
+query_filters = ['filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256', 'osparentsha256', 'cgosha256',
                  'domain', 'severity', 'details', 'name', 'categoryname', 'type', 'assetids', 'status' , 'sourcebrand' ]
 
 # notstatus:-status
@@ -72,7 +72,7 @@ def prepare_query(args: dict) -> str:
         if not values:
             continue
 
-        if key == "IssuesIDs":
+        if key == "IssuesIDs":  # todo why?
             key = "investigationIDs"
 
         values_as_list = argToList(values)
@@ -86,7 +86,7 @@ def prepare_query(args: dict) -> str:
     return " AND ".join(f"({qs})" for qs in query_sections) if query_sections else ""
 
 
-def check_if_found_incident(res: List):
+def check_if_found_issue(res: list):
     if res and isinstance(res, list) and isinstance(res[0].get("Contents"), dict):
         if "data" not in res[0]["Contents"]:
             raise DemistoException(res[0].get("Contents"))
@@ -94,50 +94,50 @@ def check_if_found_incident(res: List):
             return False
         return True
     else:
-        raise DemistoException(f"failed to get incidents from xsoar.\nGot: {res}")
+        raise DemistoException(f"failed to get issues from xsoar.\nGot: {res}")
 
 
-def apply_filters(incidents: List, args: Dict):
+def apply_filters(issues: list, args: dict):
     names_to_filter = set(argToList(args.get("name")))
     types_to_filter = set(argToList(args.get("type")))
 
-    filtered_incidents = []
-    for incident in incidents:
-        incident_id, incident_type = incident.get("id"), incident.get("type")
-        if names_to_filter and incident["name"] not in names_to_filter:
+    filtered_issues = []
+    for issue in issues:
+        issue_id, issue_type = issue.get("id"), issue.get("type")
+        if names_to_filter and issue["name"] not in names_to_filter:
             continue
-        demisto.debug(f"{incident_id=}, {incident_type=}")
-        if types_to_filter and incident["type"] not in types_to_filter:
+        demisto.debug(f"{issue_id=}, {issue_type=}")
+        if types_to_filter and issue["type"] not in types_to_filter:
             continue
-        filtered_incidents.append(incident)
+        filtered_issues.append(issue)
 
-    return filtered_incidents
+    return filtered_issues
 
 
 
-def add_incidents_link(data: List, platform: str):
+def add_issue_link(data: list):
         server_url = "https://" + demisto.getLicenseCustomField("Http_Connector.url")
-        for incident in data:
-            incident_link = urljoin(server_url, f'alerts?action:openAlertDetails={incident.get("id")}-investigation')
-            incident["alertLink"] = incident_link
+        for issue in data:
+            issue_link = urljoin(server_url, f'alerts?action:openAlertDetails={issue.get("id")}-investigation')
+            issue["issueLink"] = issue_link
 
 
-def transform_to_alert_data(incidents: List):
-    for incident in incidents:
-        incident["hostname"] = incident.get("CustomFields", {}).get("hostname")
-        incident["initiatedby"] = incident.get("CustomFields", {}).get("initiatedby")
-        incident["targetprocessname"] = incident.get("CustomFields", {}).get("targetprocessname")
-        incident["username"] = incident.get("CustomFields", {}).get("username")
-        incident["status"] = AlertStatus(incident.get("status")).name
-        incident["severity"] = AlertSeverity(incident.get("severity")).name
+def transform_to_issue_data(issues: List):
+    for issue in issues:
+        issue["hostname"] = issue.get("CustomFields", {}).get("hostname")
+        issue["initiatedby"] = issue.get("CustomFields", {}).get("initiatedby")
+        issue["targetprocessname"] = issue.get("CustomFields", {}).get("targetprocessname")
+        issue["username"] = issue.get("CustomFields", {}).get("username")
+        issue["status"] = IssueStatus(issue.get("status")).name
+        issue["severity"] = IssueSeverity(issue.get("severity")).name
 
-    return incidents
+    return issues
 
 
-def search_incidents(args: Dict):  # pragma: no cover
+def search_issues(args: Dict):  # pragma: no cover
     hr_prefix = ""
-    platform = get_demisto_version().get("platform", "xsoar")
 
+    args["query"] = prepare_query(args)
     if fromdate := arg_to_datetime(args.get("fromdate", None)):
         from_date = fromdate.isoformat()
         args["fromdate"] = from_date
@@ -146,12 +146,8 @@ def search_incidents(args: Dict):  # pragma: no cover
         to_date = todate.isoformat()
         args["todate"] = to_date
 
-    if args.get("trimevents"):
-        if platform == "xsoar" or platform == "xsoar_hosted":
-            raise ValueError("The trimevents argument is not supported in XSOAR.")
-
-        if args.get("trimevents") == "0":
-            args.pop("trimevents")
+    if args.get("trimevents"):  # todo
+        args.pop("trimevents")
 
     if includeinformational := argToBoolean(args.get("includeinformational", False)):
         if not (args.get("fromdate") and args.get("todate")):
@@ -161,7 +157,7 @@ def search_incidents(args: Dict):  # pragma: no cover
             args["fromdate"] = arg_to_datetime("5 hours ago").isoformat()  # type: ignore
             hr_prefix = (
                 f"fromdate: {fromdate} is more than 5 hours ago. We support "
-                f"querying informational incidents for up to the last 5 hours. The fromdate has been"
+                f"querying informational issues for up to the last 5 hours. The fromdate has been"
                 f" adjusted to 5 hours ago."
             )
         args["includeinformational"] = includeinformational
@@ -173,91 +169,65 @@ def search_incidents(args: Dict):  # pragma: no cover
     if args.get("id"):
         args["id"] = ",".join(argToList(args.get("id"), transform=str))
 
-    res: List = execute_command("getIncidents", args, extract_contents=False)
-    incident_found: bool = check_if_found_incident(res)
-    if not incident_found:
+    res: list = execute_command("getIssues", args, extract_contents=False)
+    issue_found: bool = check_if_found_issue(res)
+    if not issue_found:
         if hr_prefix:
             hr_prefix = f"{hr_prefix}\n"
-        if platform == "x2" or platform == "unified_platform":
-            return f"{hr_prefix}Alerts not found.", {}, {}
-        return f"{hr_prefix}Incidents not found.", {}, {}
+        return f"{hr_prefix}Issues not found.", {}, {}
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
-    all_found_incidents = res[0]["Contents"]["data"]
-    demisto.debug(f"Amount of incidents before filtering = {len(all_found_incidents)} with args {args} before pagination")
+    all_found_issues = res[0]["Contents"]["data"]
+    demisto.debug(f"Amount of issues before filtering = {len(all_found_issues)} with args {args} before pagination")
     page_size = args.get("size") or DEFAULT_PAGE_SIZE
-    more_pages = len(all_found_incidents) == page_size
-    all_found_incidents = add_incidents_link(apply_filters(all_found_incidents, args), platform)
-    demisto.debug(f"Amount of incidents after filtering = {len(all_found_incidents)} before pagination")
+    more_pages = len(all_found_issues) == page_size
+    all_found_issues = add_issue_link(apply_filters(all_found_issues, args))
+    demisto.debug(f"Amount of issues after filtering = {len(all_found_issues)} before pagination")
     page = STARTING_PAGE_NUMBER
 
-    if all_found_incidents and "todate" not in args:
+    if all_found_issues and "todate" not in args:
         # In case todate is not part of the argumetns we add it to avoid duplications
-        first_incident = all_found_incidents[0]
-        args["todate"] = first_incident.get("created")
-        demisto.info(f"Setting todate argument to be {first_incident.get('created')} to avoid duplications")
+        first_issue = all_found_issues[0]
+        args["todate"] = first_issue.get("created")
+        demisto.info(f"Setting todate argument to be {first_issue.get('created')} to avoid duplications")
 
-    while more_pages and len(all_found_incidents) < limit:
+    while more_pages and len(all_found_issues) < limit:
         args["page"] = page
-        current_page_found_incidents = execute_command("getIncidents", args).get("data") or []
+        current_page_found_issues = execute_command("getIssues", args).get("data") or []
 
-        # When current_page_found_incidents is None it means the requested page was empty
-        if not current_page_found_incidents:
+        # When current_page_found_issues is None it means the requested page was empty
+        if not current_page_found_issues:
             break
 
-        demisto.debug(f"before filtering {len(current_page_found_incidents)=} {args=} {page=}")
-        more_pages = len(current_page_found_incidents) == page_size
+        demisto.debug(f"before filtering {len(current_page_found_issues)=} {args=} {page=}")
+        more_pages = len(current_page_found_issues) == page_size
 
-        current_page_found_incidents = add_incidents_link(apply_filters(current_page_found_incidents, args), platform)
-        demisto.debug(f"after filtering = {len(current_page_found_incidents)=}")
-        all_found_incidents.extend(current_page_found_incidents)
+        current_page_found_issues = add_issue_link(apply_filters(current_page_found_issues, args))
+        demisto.debug(f"after filtering = {len(current_page_found_issues)=}")
+        all_found_issues.extend(current_page_found_issues)
         page += 1
 
-    all_found_incidents = all_found_incidents[:limit]
+    all_found_issues = all_found_issues[:limit]
 
     additional_headers: List[str] = []
 
     headers: List[str]
-    if platform == "x2" or platform == "unified_platform":
-        headers = [
-            "id",
-            "name",
-            "severity",
-            "details",
-            "hostname",
-            "initiatedby",
-            "status",
-            "owner",
-            "targetprocessname",
-            "username",
-            "alertLink",
-        ]
-
-        all_found_incidents = transform_to_alert_data(all_found_incidents)
-        md = tableToMarkdown(
-            name="Alerts found",
-            t=all_found_incidents,
-            headers=headers + additional_headers,
-            removeNull=True,
-            url_keys=["alertLink"],
-        )
-    else:
-        headers = ["id", "name", "severity", "status", "owner", "created", "closed", "incidentLink"]
-        md = tableToMarkdown(
-            name="Incidents found", t=all_found_incidents, headers=headers + additional_headers, url_keys=["incidentLink"]
-        )
+    headers = ["id", "name", "severity", "status", "owner", "created", "closed", "issueLink"]
+    all_found_issues = transform_to_issue_data(all_found_issues)
+    md = tableToMarkdown(
+        name="Issues found", t=all_found_issues, headers=headers + additional_headers, url_keys=["issueLink"]
+    )
 
     if hr_prefix:
         md = f"{hr_prefix}\n{md}"
-    demisto.debug(f"amount of all the incidents that were found {len(all_found_incidents)}")
+    demisto.debug(f"amount of all the issues that were found {len(all_found_issues)}")
 
-    return md, all_found_incidents, res
+    return md, all_found_issues, res
 
 
 def main():  # pragma: no cover
     args: Dict = demisto.args()
-    prepare_query()
     try:
-        readable_output, outputs, raw_response = search_incidents(args)
+        readable_output, outputs, raw_response = search_issues(args)
         if search_results_label := args.get("searchresultslabel"):
             for output in outputs:
                 output["searchResultsLabel"] = search_results_label

@@ -1,18 +1,18 @@
 args:
 - default: true
-  description: A comma-separated list of incident IDs by which to filter the results.
+  description: A comma-separated list of issue IDs by which to filter the results.
   isArray: true
   name: id
-- description: A comma-separated list of incident names by which to filter the results.
+- description: A comma-separated list of issue names by which to filter the results.
   isArray: true
   name: name
-- description: 'A comma-separated list of incident statuses by which to filter the results. For example: assigned.'
+- description: 'A comma-separated list of issue statuses by which to filter the results. For example: assigned.'
   isArray: true
   name: status
-- description: 'A comma-separated list of incident statuses to exclude from the results.  For example: assigned.'
+- description: 'A comma-separated list of issue statuses to exclude from the results.  For example: assigned.'
   isArray: true
   name: notstatus
-- description: A comma-separated list of incident close reasons by which to filter the results.
+- description: A comma-separated list of issue close reasons by which to filter the results.
   isArray: true
   name: reason
 - description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
@@ -30,12 +30,12 @@ args:
 - description: Filter by Severity.
   isArray: true
   name: level
-- description: Filter by incident owners.
+- description: Filter by issue owners.
   isArray: true
   name: owner
-- description: Filter by incident details.
+- description: Filter by issue details.
   name: details
-- description: Filter by incident type.
+- description: Filter by issue type.
   isArray: true
   name: type
 - description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
@@ -48,17 +48,17 @@ args:
     Note that the count is from the head of the list, regardless of event time or other properties.
   name: trimevents
   hidden: true
-- description: Number of incidents per page (per fetch).
+- description: Number of issues per page (per fetch).
   name: size
   deprecated: true
-- description: The maximum number of incidents to be returned.
+- description: The maximum number of issues to be returned.
   name: limit
   defaultValue: '100'
 - description: Sort in format of field.asc,field.desc,...
   name: sort
-- description: If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.
+- description: If provided, the value of this argument will be set under the searchResultsLabel context key for each issue found.
   name: searchresultslabel
-- description: When the value is set to 'True', informational severity alerts will return as part of the results. The ‘fromdate’ and ‘todate’ arguments must be provided to use this argument. The maximum value currently supported for the 'fromdate' argument to retrieve informational incidents is 5 hours. If a value greater than this is provided, it will be adjusted to 5 hours ago. To retrieve only informational incidents, use the `query` argument and include this limitation within the query. Default is false.
+- description: When the value is set to 'True', informational severity alerts will return as part of the results. The ‘fromdate’ and ‘todate’ arguments must be provided to use this argument. The maximum value currently supported for the 'fromdate' argument to retrieve informational issues is 5 hours. If a value greater than this is provided, it will be adjusted to 5 hours ago. To retrieve only informational issues, use the `query` argument and include this limitation within the query. Default is false.
   name: includeinformational
   auto: PREDEFINED
   predefined:
@@ -70,7 +70,7 @@ args:
 - description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed).
   name: add_fields_to_summarize_context
 comment: |-
-  Searches Demisto incidents. A summarized version of this scrips is available with the summarizedversion argument.
+  Searches Demisto issues. A summarized version of this scrips is available with the summarizedversion argument.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
@@ -79,54 +79,54 @@ comment: |-
   - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
   https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 comment:marketplacev2: |-
-  Searches Demisto incidents. A summarized version of this scrips is available with the summarizedversion argument.
+  Searches Demisto issues. A summarized version of this scrips is available with the summarizedversion argument.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
   https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Permission-Management
 commonfields:
-  id: SearchIncidentsV2
+  id: SearchIssues
   version: -1
 enabled: true
-name: SearchIncidentsV2
+name: SearchIssues
 outputs:
-- contextPath: foundIncidents.id
-  description: A list of incident IDs returned from the query.
+- contextPath: foundIssues.id
+  description: A list of issue IDs returned from the query.
   type: Unknown
-- contextPath: foundIncidents.name
-  description: A list of incident names returned from the query.
+- contextPath: foundIssues.name
+  description: A list of issue names returned from the query.
   type: Unknown
-- contextPath: foundIncidents.severity
-  description: A list of incident severities returned from the query.
+- contextPath: foundIssues.severity
+  description: A list of issue severities returned from the query.
   type: Unknown
-- contextPath: foundIncidents.status
-  description: A list of incident statuses returned from the query.
+- contextPath: foundIssues.status
+  description: A list of issue statuses returned from the query.
   type: Unknown
-- contextPath: foundIncidents.owner
-  description: A list of incident owners returned from the query.
+- contextPath: foundIssues.owner
+  description: A list of issue owners returned from the query.
   type: Unknown
-- contextPath: foundIncidents.created
-  description: A list of the incident create date returned from the query.
+- contextPath: foundIssues.created
+  description: A list of the issue create date returned from the query.
   type: Unknown
-- contextPath: foundIncidents.closed
-  description: A list of incident close dates returned from the query.
+- contextPath: foundIssues.closed
+  description: A list of issue close dates returned from the query.
   type: Unknown
-- contextPath: foundIncidents.labels
-  description: An array of labels per incident returned from the query.
+- contextPath: foundIssues.labels
+  description: An array of labels per issue returned from the query.
   type: Unknown
-- contextPath: foundIncidents.details
-  description: Details of the incidents returned from the query.
+- contextPath: foundIssues.details
+  description: Details of the issues returned from the query.
   type: Unknown
-- contextPath: foundIncidents.dueDate
-  description: A list of incident due dates returned from the query.
+- contextPath: foundIssues.dueDate
+  description: A list of issue due dates returned from the query.
   type: Unknown
-- contextPath: foundIncidents.phase
-  description: A list of incident phases returned from the query.
+- contextPath: foundIssues.phase
+  description: A list of issue phases returned from the query.
   type: Unknown
-- contextPath: foundIncidents.incidentLink
-  description: A list with links to the incidents returned from the query.
+- contextPath: foundIssues.issueLink
+  description: A list with links to the issues returned from the query.
   type: Unknown
-- contextPath: foundIncidents.searchResultsLabel
+- contextPath: foundIssues.searchResultsLabel
   description: The value provided in the searchresultslabel argument.
   type: String
 script: '-'
