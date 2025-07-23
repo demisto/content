@@ -35,24 +35,29 @@ class IssueStatus(Enum):
     """
 
 
+query_filters = [
+    "filesha256",
+    "initiatorsha256",
+    "filemacrosha256",
+    "targetprocesssha256",
+    "osparentsha256",
+    "cgosha256",
+    "domain",
+    "severity",
+    "details",
+    "name",
+    "categoryname",
+    "type",
+    "assetids",
+    "status",
+    "sourcebrand",
+]
+
+SHA256_FIELDS = ["filesha256", "initiatorsha256", "filemacrosha256", "targetprocesssha256", "osparentsha256", "cgosha256"]
 
 
+FIELD_TO_MACHINE_NAME = {"category": "categoryname", "description": "details", "detectionmethod": "sourcebrand"}
 
-
-query_filters = ['filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256', 'osparentsha256', 'cgosha256',
-                 'domain', 'severity', 'details', 'name', 'categoryname', 'type', 'assetids', 'status', 'sourcebrand' ]
-
-SHA256_FIELDS =  [
-        'filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256', 'osparentsha256', 'cgosha256'
-    ]
-
-KEYS_TO_EXCLUDE_FROM_QUERY = {"page", "size", "limit", "fromdate", "todate", "fromclosedate", "toclosedate", "fromduedate", "toduedate", "level", "owner", "sort", "searchresultslabel", "includeinformational", "add_fields_to_summarize_context", "summarizedversion"}
-
-FIELD_TO_MACHINE_NAME = {
-    "category": "categoryname",
-    "description": "details",
-    "detectionmethod": "sourcebrand"
-}
 
 def prepare_query(args: dict) -> str:
     """
@@ -72,11 +77,11 @@ def prepare_query(args: dict) -> str:
     if "sha256" in args and args["sha256"]:
         sha256_values = argToList(args["sha256"])
         for sha in sha256_values:
-            or_group = " OR ".join(f"{field}:\"{sha.strip()}\"" for field in SHA256_FIELDS)
+            or_group = " OR ".join(f'{field}:"{sha.strip()}"' for field in SHA256_FIELDS)
             query_sections.append(f"({or_group})")
 
     for key, values in args.items():
-        if key in KEYS_TO_EXCLUDE_FROM_QUERY or key == "sha256":
+        if key == "sha256":
             continue
         if not values:
             continue
@@ -87,9 +92,9 @@ def prepare_query(args: dict) -> str:
         # Use contains/wildcard for name/details
         if machine_key in ["name", "details"]:
             if len(values_as_list) > 1:
-                query = " OR ".join(f'{machine_key}:*{str(v).strip()}*' for v in values_as_list)
+                query = " OR ".join(f"{machine_key}:*{str(v).strip()}*" for v in values_as_list)
             else:
-                query = f'{machine_key}:*{str(values_as_list[0]).strip()}*'
+                query = f"{machine_key}:*{str(values_as_list[0]).strip()}*"
 
         # notstatus -> -status
         elif machine_key == "notstatus":
@@ -135,13 +140,12 @@ def apply_filters(issues: list, args: dict):
     return filtered_issues
 
 
-
 def add_issue_link(data: list):
-        server_url = "https://" + demisto.getLicenseCustomField("Http_Connector.url")
-        for issue in data:
-            issue_link = urljoin(server_url, f'issues?action:openAlertDetails={issue.get("id")}-investigation')
-            issue["issueLink"] = issue_link
-        return data
+    server_url = "https://" + demisto.getLicenseCustomField("Http_Connector.url")
+    for issue in data:
+        issue_link = urljoin(server_url, f'issues?action:openAlertDetails={issue.get("id")}-investigation')
+        issue["issueLink"] = issue_link
+    return data
 
 
 def transform_to_issue_data(issues: List):
@@ -235,9 +239,7 @@ def search_issues(args: Dict):  # pragma: no cover
     headers: List[str]
     headers = ["id", "name", "severity", "status", "owner", "created", "closed", "issueLink"]
     all_found_issues = transform_to_issue_data(all_found_issues)
-    md = tableToMarkdown(
-        name="Issues found", t=all_found_issues, headers=headers + additional_headers, url_keys=["issueLink"]
-    )
+    md = tableToMarkdown(name="Issues found", t=all_found_issues, headers=headers + additional_headers, url_keys=["issueLink"])
 
     if hr_prefix:
         md = f"{hr_prefix}\n{md}"

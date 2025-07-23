@@ -1,8 +1,4 @@
 args:
-- default: true
-  description: A comma-separated list of issue IDs by which to filter the results.
-  isArray: true
-  name: id
 - description: A comma-separated list of issue names by which to filter the results.
   isArray: true
   name: name
@@ -12,29 +8,13 @@ args:
 - description: 'A comma-separated list of issue statuses to exclude from the results.  For example: assigned.'
   isArray: true
   name: notstatus
-- description: A comma-separated list of issue close reasons by which to filter the results.
-  isArray: true
-  name: reason
 - description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
   name: fromdate
 - description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
   name: todate
-- description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: fromclosedate
-- description: Filter by to close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: toclosedate
-- description: Filter by from due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: fromduedate
-- description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: toduedate
-- description: Filter by issue owners.
+- description: Filter by issue assignee.
   isArray: true
-  name: owner
-- description: Filter by issue details.
-  name: details
-- description: Filter by issue type.
-  isArray: true
-  name: type
+  name: assignee
 - description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
   name: query
 - description: Filter by the page number.
@@ -63,10 +43,7 @@ args:
   - "true"
   defaultValue: "false"
   hidden: true
-  hidden:marketplacev2: false
-- description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed).
-  name: add_fields_to_summarize_context
-# TODO do we need to note that these fields for the query?
+  hidden:marketplacev2: false # todo
 - description: Filter by domain.
   isArray: true
   name: domain
@@ -161,3 +138,7 @@ dockerimage: demisto/python3:3.12.8.3720084
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
