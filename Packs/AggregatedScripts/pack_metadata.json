@@ -26,8 +26,12 @@
         },
         "MicrosoftGraphIdentityandAccess.": {
             "mandatory": false,
-            "display_name": "Microsoft Graph Identity and Access"
-        }
+            "display_name": "Azure Active Directory Identity And Access"
+        },
+         "MicrosoftGraphApplications.": {
+            "mandatory": false,
+            "display_name": "Azure Active Directory Applications"
+        },.
     },
     "marketplaces": [
         "xsoar",
