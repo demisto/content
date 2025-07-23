@@ -10575,6 +10575,7 @@ class HygieneRemediation:
         :param issues: List of log forwarding issues due to no enhanced application logging.
         """
         result = []
+
         for issue in issues:
             for device, container in topology.get_all_object_containers(issue.hostid, container_name=issue.container_name):
                 log_forwarding_profiles: List[LogForwardingProfile] = LogForwardingProfile.refreshall(container)
