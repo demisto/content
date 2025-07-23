@@ -1382,10 +1382,6 @@ def main():
                     outputs_prefix="CybleEvents.Alerts",
                     raw_response=lst_alerts,
                     outputs=lst_alerts,
-                    readable_output="Fetched alerts successfully.",
-                    outputs_prefix="CybleEvents.Alerts",
-                    raw_response=lst_alerts,
-                    outputs=lst_alerts,
                 )
             )
 
