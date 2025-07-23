@@ -154,11 +154,11 @@ class TextExtractHtmlParser(HTMLParser):
             if stripped:
                 self._texts.append(re.sub(r"\s+", " ", stripped))
 
-    def handle_entityref(self, name):  # pragma: no cover
+    def handle_entityref(self, name):
         if not self._ignore and name in name2codepoint:
             self._texts.append(chr(name2codepoint[name]))
 
-    def handle_charref(self, name):  # pragma: no cover
+    def handle_charref(self, name):
         if not self._ignore:
             if name.startswith("x"):
                 c = chr(int(name[1:], 16))
@@ -166,7 +166,7 @@ class TextExtractHtmlParser(HTMLParser):
                 c = chr(int(name))
             self._texts.append(c)
 
-    def get_text(self):  # pragma: no cover
+    def get_text(self):
         return "".join(self._texts)
 
 
