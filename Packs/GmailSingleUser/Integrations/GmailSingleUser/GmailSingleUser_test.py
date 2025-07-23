@@ -297,6 +297,7 @@ def test_send_mail_with_reference(gmail_client: Client, mocker):
     """
     mocker.patch.object(gmail_client, "send_email_request", return_value=True)
     assert gmail_client.send_mail(
+        body_type=None,
         emailto=None,
         emailfrom=None,
         send_as=None,
@@ -384,7 +385,7 @@ def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, html
     context_output = send_email_entry["EntryContext"]
     ec_key = "Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)"
     assert ec_key in context_output
-    context = context_output[ec_key][0]
+    context = context_output
     print(context)
     assert context.get("Body") == expected_body
     assert context.get("BodyHTML") == expected_html
@@ -424,7 +425,7 @@ def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
         subject="hello-world",
         body="body",
         htmlBody="<>",
-        entry_ids=["test"],
+        entry_ids=[],
         replyTo=None,
         file_names=[],
         attach_cid=[],
