@@ -14,7 +14,6 @@ args:
 - name: value
   required: true
   description: The value to perform the transformation on.
-  isArray: true
 - name: dt
   required: true
   description: DT expression.

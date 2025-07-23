@@ -650,7 +650,7 @@ outputs:
   description: The endpoint's operation system.
   type: string
 - contextPath: Endpoint.IPAddress
-  description: The endpoint's IP address.
+  description: The endpoint's IP address or list of IP addresses.
   type: string
 - contextPath: Endpoint.ID
   description: The endpoint's ID.
