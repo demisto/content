@@ -1,10 +1,13 @@
+import asyncio
 import json
+import random
 import sys
-from collections import deque
+from collections import defaultdict, deque
 from copy import copy
 from json import JSONDecodeError
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
+from time import sleep
 from traceback import format_exc
 
 import demistomock as demisto  # noqa: F401
@@ -21,6 +24,16 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name="Authorization")
+EXAMPLE_6_COUNTER = 1
+EXAMPLE_7_STR = ""
+STEP_1_DICT = defaultdict(int)
+STEP_2_DICT = defaultdict(int)
+STEP_3_DICT = defaultdict(dict)
+FINISH_LIST = []
+lock_example_6 = asyncio.Lock()
+lock_1 = asyncio.Lock()
+lock_2 = asyncio.Lock()
+lock_3 = asyncio.Lock()
 
 
 async def parse_incidents(request: Request) -> list[dict]:
@@ -124,6 +137,302 @@ async def handle_post(
 
     return return_incidents
 
+
+@app.get('/example_5')
+async def handle_get_request_example_5(query):
+    """
+        for example 5.
+    """
+    answer = "Your query doesn't match any of my templates.. I'll just mention that Arad is a naknik..."
+    if query == "Arad is a?":
+        answer = "naknik!"
+    elif query == "Who's a naknik?":
+        answer = "Arad!"
+    return Response(status_code=status.HTTP_200_OK, content=answer, media_type="application/json")
+
+
+@app.get('/example_6')
+async def handle_get_request_example_6():
+    """
+        for example 6.
+    """
+    global EXAMPLE_6_COUNTER
+    global lock_example_6
+    async with lock_example_6:
+        val = EXAMPLE_6_COUNTER
+        EXAMPLE_6_COUNTER += 1
+    await asyncio.sleep(2)
+    async with lock_example_6:
+        EXAMPLE_6_COUNTER -= 1
+    return Response(status_code=status.HTTP_200_OK, content=str(val), media_type="application/json")
+
+
+@app.post('/example_7')
+async def handle_post_request_example_7(request: Request):
+    """
+        for example 7.
+    """
+    try:
+        request_data = await request.json() # Renamed from 'request' to avoid shadowing
+        demisto.debug(f"WH: Got request; {request_data}")
+
+        # Remove or comment out this line if 'event' is not present in your client's payload
+        # event_type = request_data['event'] # <--- THIS IS LIKELY THE CULPRIT
+
+        payload = request_data['payload']
+        phrase_to_save = payload["phrase"]
+
+        global EXAMPLE_7_STR
+        EXAMPLE_7_STR = phrase_to_save
+        await asyncio.sleep(5) # Shorter sleep
+        return Response(status_code=status.HTTP_200_OK, content=f'Finished post request to Example 7 endpoint.') # Return 200 OK
+    except Exception as e:
+        await handle_listen_error(f'An error occurred while handling a response: {e}')
+        # Ensure you return an error response to the client
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=f'Server error: {e}')
+
+
+@app.get('/example_7')
+async def handle_get_request_example_7():
+    """
+        for example 7.
+    """
+    await asyncio.sleep(0.1) # Shorter sleep
+    global EXAMPLE_7_STR
+    return Response(status_code=status.HTTP_200_OK, content=f"was that your phrase? {EXAMPLE_7_STR}", media_type="application/json")
+
+
+async def handle_listen_error(error: str):
+    """
+    Logs an error and updates the module health accordingly.
+    Args:
+        error: The error string.
+    """
+    demisto.error(error)
+    demisto.updateModuleHealth(error)
+
+
+@app.post('/step_1')
+async def handle_post_request_step_1(request: Request):
+    """handle any response that came from Zoom app"""
+    try:
+        request_data = await request.json() # Renamed from 'request' to avoid shadowing
+        demisto.debug(f"WH: Got request; {request_data}")
+
+        # Remove or comment out this line if 'event' is not present in your client's payload
+        # event_type = request_data['event'] # <--- THIS IS LIKELY THE CULPRIT
+
+        payload = request_data['payload']
+        name = payload["name"]
+
+        global STEP_1_DICT
+        global lock_1
+        async with lock_1:
+            STEP_1_DICT[name] = STEP_1_DICT.get(name, 0) + 1
+        await asyncio.sleep(3) # Shorter sleep
+        async with lock_1:
+            STEP_1_DICT[name] -= 1
+        return Response(status_code=status.HTTP_200_OK, content=f'{name=} processed successfully.') # Return 200 OK
+    except Exception as e:
+        await handle_listen_error(f'An error occurred while handling a response: {e}')
+        # Ensure you return an error response to the client
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=f'Server error: {e}')
+
+
+@app.get('/step_1')
+async def handle_get_request_step_1(name=""):
+    """
+        for step 1.
+    """
+    global STEP_1_DICT
+    global lock_1
+    await asyncio.sleep(0.5) # Shorter sleep
+    async with lock_1:
+        if STEP_1_DICT[name] == 3:
+            response = "You passed the first step! you know how to get instructions for the second step."
+        else:
+            response = f"Currently got only {STEP_1_DICT[name]} subscriptions under {name=}"
+    if not name:
+        response = "Make sure to add your name to the params."
+    return Response(status_code=status.HTTP_200_OK, content=str(response), media_type="application/json")
+
+
+@app.post('/step_2')
+async def handle_post_request_step_2(request: Request):
+    """handle any response that came from Zoom app"""
+    try:
+        request_data = await request.json() # Renamed from 'request' to avoid shadowing
+        demisto.debug(f"WH: Got request; {request_data}")
+
+        payload = request_data['payload']
+        name = payload["name"]
+
+        global STEP_2_DICT
+        global lock_2
+        async with lock_2:
+            STEP_2_DICT[name] = STEP_2_DICT.get(name, 0) + 1
+        await asyncio.sleep(3) # Shorter sleep
+        async with lock_2:
+            STEP_2_DICT[name] -= 1
+        return Response(status_code=status.HTTP_200_OK, content='Finished call to step_2 endpoint.') # Return 200 OK
+    except Exception as e:
+        await handle_listen_error(f'An error occurred while handling a response: {e}')
+        # Ensure you return an error response to the client
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=f'Server error: {e}')
+
+
+@app.get('/step_2_completion_attempt')
+async def handle_get_request_step_2_completion_attempt(name=""):
+    """
+        for step 1.
+    """
+    global STEP_2_DICT
+    global lock_2
+    async with lock_2:
+        if not STEP_2_DICT[name]:
+            response = 'You have to make the call in the time window that is 2 seconds after the first call and before 5 seconds the first call.'
+        elif STEP_2_DICT[name] == 1:
+            response = "Congrats! your made it to the right time window! now go get get your instructions for the third step."
+        else:
+            response = "Make sure there's exactly one call to step_2 endpoint at a time."
+    return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
+
+
+@app.post('/step_3')
+async def handle_get_request_step_3(request: Request):
+    """
+        for step 3.
+    """
+    try:
+        request_data = await request.json() # Renamed from 'request' to avoid shadowing
+        demisto.debug(f"WH: Got request; {request_data}")
+        payload = request_data['payload']
+        name = payload["name"]
+        global STEP_3_DICT
+        global lock_3
+        async with lock_3:
+            STEP_3_DICT[name]["counter"] = STEP_3_DICT[name].get("counter", 0) + 1
+            update_pass = STEP_3_DICT[name]["counter"] == 1
+            if update_pass:
+                password = random.randint(0,1000)
+                STEP_3_DICT[name]["password"] = password
+        await asyncio.sleep(5)
+        async with lock_3:
+            STEP_3_DICT[name]["counter"] -= 1
+            if update_pass:
+                del STEP_3_DICT[name]["password"]
+        response = 'Time is over, password is restarted.'
+        return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
+    except Exception as e:
+        await handle_listen_error(f'An error occurred while handling a response: {e}')
+        # Ensure you return an error response to the client
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=f'Server error: {e}')
+
+
+@app.get('/step_3/get_pass')
+async def handle_get_request_step_3_get_pass(name=""):
+    """
+        for step 3.
+    """
+    global STEP_3_DICT
+    global lock_3
+    password = ""
+    await asyncio.sleep(0.5)
+    async with lock_3:
+        password = STEP_3_DICT[name].get("password", "")
+    if password:
+        response = f'Your password is: "{password}". Make sure to send it to the "step_3/enter_password" endpoints before it expire.'
+    else:
+        response = "There's no password saved for you. Make sure you managed to complete the whole flow within 3 seconds."
+    return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
+
+
+@app.get('/step_3/enter_password')
+async def handle_get_request_step_3_enter_password(name="", password=""):
+    """
+        for step 3.
+    """
+    global STEP_3_DICT
+    global lock_3
+    global FINISH_LIST
+    async with lock_3:
+        counter = STEP_3_DICT[name].get("counter", 0)
+        expected_password = str(STEP_3_DICT[name].get("password", ""))
+    if counter != 1:
+        response = f"your current call count is {counter}, it must be 1."
+    elif password == expected_password:
+        response = f'password is correct! your exercise is over! to get your place, send your name to the "finish_line/get_place" endpoint.'
+        FINISH_LIST.append(name)
+    elif password != expected_password:
+        response = f"{password=} doesn't match the {expected_password=}."
+    return Response(status_code=status.HTTP_200_OK, content=str(response), media_type="application/json")
+
+
+@app.get('/finish_line/get_place')
+async def handle_get_request_finish_line_get_place(name=""):
+    global FINISH_LIST
+    if name in FINISH_LIST:
+        index = FINISH_LIST.index(name)
+        if index == 0:
+            suffix = "st"
+        elif index == 1:
+            suffix = "nd"
+        elif index == 2:
+            suffix = "rd"
+        else:
+            suffix = "th"
+        response = f"Congratulations! you're the {index + 1}{suffix} developer to finish the exercise. To get the full list of developers who finished the exercise, send a get request to the 'finish_line/list_results' endpoint."
+    else:
+        response = f'Your name "{name}" does not appear in the finishers list.'
+    return Response(status_code=status.HTTP_200_OK, content=str(response), media_type="application/json")
+
+
+@app.get('/finish_line/list_results')
+async def handle_get_request_finish_line_list_results():
+    global FINISH_LIST
+    response = f"There has been a total of {len(FINISH_LIST)} developers who finished all steps:"
+    for i, name in enumerate(FINISH_LIST):
+        if i == 0:
+            suffix = "st"
+        elif i == 1:
+            suffix = "nd"
+        elif i == 2:
+            suffix = "rd"
+        else:
+            suffix = "th"
+        response = f"{response}\n{name} Finished in {i+1}{suffix} place."
+    return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
+
+@app.get('/instructions')
+async def handle_get_request_instructions(hint=False, step_number=0):
+    answer = ""
+    if not step_number:
+        answer = """Welcome to the asyncio workshop exercise!
+During the exercise We'll practice what we learned in the workshop and have some fun with asyncio.
+Here are some general instructions:
+    1. There are 3 steps
+    2. The initial instructions for each step are contained in this endpoint, use the following params to move along the instructions:
+        - hint (str) - flag whether you need a hint for this step or not, can be true or false.
+        - step_number (int) - the step number of the exercise you need instructions for.
+    3. Make sure to print the response you get for further instructions and completion messages.
+    4. Remember, arad=naknik.
+    5. Have fun!"""
+    elif step_number == "1":
+        answer = "Post your name 3 times to the step_1 endpoint, then send your name to the step_1 endpoint via get request."
+        if hint == "true":
+            answer = "Your name is being kept for only 3 seconds while the request takes 3 seconds. Think about a way to send multiple requests simultaneously."
+    elif step_number == "2":
+        answer = "Post your name 3 times to the step_2 endpoint, then send your name to the step_2_completion_attempt endpoint via get request."
+        if hint == "true":
+            answer = """Go to sleep."""
+    elif step_number == "3":
+        answer = "Post your name to the step_3 once endpoint, then send your name to the step_3/get_pass endpoint to obtain the password and post it to the step_3/enter_password endpoint."
+        if hint == "true":
+            answer = """You may want to print the response from get_pass to find out how to extract the password."""
+    # step two: send to two different endpoints.
+    # step three: obtain password and send it to another endpoint - this will add your name to the winners list
+    # Create winners endpoint
+    return Response(status_code=status.HTTP_200_OK, content=answer, media_type="application/json")
 
 def setup_credentials():
     if credentials_param := demisto.params().get("credentials"):
