@@ -943,6 +943,22 @@ class TestGetModifiedRemoteDataCommandCore:
             pytest.skip("Cannot inspect function source")
 
 
+def test_update_single_alert(mock_client, mock_url, mock_token):
+    args = {"ids": "id1", "status": "UNDER_REVIEW", "severity": "HIGH"}
+
+    with patch("CybleEventsV2.get_alert_by_id") as mock_get_alert:
+        mock_get_alert.return_value = {"id": "id1", "service": "mock_service"}
+
+        result = update_alert_data_command(mock_client, mock_url, mock_token, args)
+
+        assert isinstance(result, CommandResults)
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["id"] == "id1"
+        assert result.outputs[0]["status"] == "UNDER_REVIEW"
+        assert result.outputs[0]["user_severity"] == "HIGH"
+        mock_client.update_alert.assert_called_once()
+
+
 class TestGetAlertById:
     """Improved unit tests for get_alert_by_id function"""
 
