@@ -27,9 +27,6 @@ args:
   name: fromduedate
 - description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
   name: toduedate
-- description: Filter by Severity.
-  isArray: true
-  name: level
 - description: Filter by issue owners.
   isArray: true
   name: owner
@@ -69,6 +66,31 @@ args:
   hidden:marketplacev2: false
 - description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed).
   name: add_fields_to_summarize_context
+# TODO do we need to note that these fields for the query?
+- description: Filter by domain.
+  isArray: true
+  name: domain
+- description: Filter by severity.
+  isArray: true
+  name: severity
+- description: Filter by description.
+  isArray: true
+  name: description
+- description: Filter by name.
+  isArray: true
+  name: name
+- description: Filter by category.
+  isArray: true
+  name: category
+- description: Filter by type.
+  isArray: true
+  name: type
+- description: Filter by assetids.
+  isArray: true
+  name: assetids
+- description: Filter by detectionmethod.
+  isArray: true
+  name: detectionmethod
 comment: |-
   Searches Demisto issues. A summarized version of this scrips is available with the summarizedversion argument.
 

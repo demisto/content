@@ -40,23 +40,26 @@ class IssueStatus(Enum):
 
 
 query_filters = ['filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256', 'osparentsha256', 'cgosha256',
-                 'domain', 'severity', 'details', 'name', 'categoryname', 'type', 'assetids', 'status' , 'sourcebrand' ]
+                 'domain', 'severity', 'details', 'name', 'categoryname', 'type', 'assetids', 'status', 'sourcebrand' ]
 
-# notstatus:-status
-# category: (categoryname) type need to understand.
-# details: description.
-# detection method = sourcebrand.
+SHA256_FIELDS =  [
+        'filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256', 'osparentsha256', 'cgosha256'
+    ]
+
+KEYS_TO_EXCLUDE_FROM_QUERY = {"page", "size", "limit", "fromdate", "todate", "fromclosedate", "toclosedate", "fromduedate", "toduedate", "level", "owner", "sort", "searchresultslabel", "includeinformational", "add_fields_to_summarize_context", "summarizedversion"}
+
+FIELD_TO_MACHINE_NAME = {
+    "category": "categoryname",
+    "description": "details",
+    "detectionmethod": "sourcebrand"
+}
 
 def prepare_query(args: dict) -> str:
     """
     Prepares a query for list-based searches with safe handling.
-    
-    name and description should be with contains operator.
-    
+    name and details should be with contains operator.
     not status should be -status.
     all the shas will be entered all the time to all of the types with OR's.
-    
-    
     Args:
         key (str): Field/attribute to search
         value (str/list): Value or list of values to match
@@ -64,23 +67,41 @@ def prepare_query(args: dict) -> str:
         str: Formatted query string
     """
     query_sections = []
-    for key, values in args.items():
-        query = ""
-        if key in KEYS_TO_EXCLUDE_FROM_QUERY:
-            continue
 
+    # Special handling for sha256
+    if "sha256" in args and args["sha256"]:
+        sha256_values = argToList(args["sha256"])
+        for sha in sha256_values:
+            or_group = " OR ".join(f"{field}:\"{sha.strip()}\"" for field in SHA256_FIELDS)
+            query_sections.append(f"({or_group})")
+
+    for key, values in args.items():
+        if key in KEYS_TO_EXCLUDE_FROM_QUERY or key == "sha256":
+            continue
         if not values:
             continue
 
-        if key == "IssuesIDs":  # todo why?
-            key = "investigationIDs"
-
+        # Map field names to machine/query names
+        machine_key = FIELD_TO_MACHINE_NAME.get(key.lower(), key)
         values_as_list = argToList(values)
-        if len(values_as_list) > 1:
-            query = " OR ".join(f'{key}:"{str(v).strip()}"' for v in values_as_list)
-        else:
-            query = f'{key}:"{str(values_as_list[0]).strip()}"'
+        # Use contains/wildcard for name/details
+        if machine_key in ["name", "details"]:
+            if len(values_as_list) > 1:
+                query = " OR ".join(f'{machine_key}:*{str(v).strip()}*' for v in values_as_list)
+            else:
+                query = f'{machine_key}:*{str(values_as_list[0]).strip()}*'
 
+        # notstatus -> -status
+        elif machine_key == "notstatus":
+            if len(values_as_list) > 1:
+                query = " AND ".join(f'-status:"{str(v).strip()}"' for v in values_as_list)
+            else:
+                query = f'-status:"{str(values_as_list[0]).strip()}"'
+        else:
+            if len(values_as_list) > 1:
+                query = " OR ".join(f'{machine_key}:"{str(v).strip()}"' for v in values_as_list)
+            else:
+                query = f'{machine_key}:"{str(values_as_list[0]).strip()}"'
         query_sections.append(query)
 
     return " AND ".join(f"({qs})" for qs in query_sections) if query_sections else ""
@@ -118,8 +139,9 @@ def apply_filters(issues: list, args: dict):
 def add_issue_link(data: list):
         server_url = "https://" + demisto.getLicenseCustomField("Http_Connector.url")
         for issue in data:
-            issue_link = urljoin(server_url, f'alerts?action:openAlertDetails={issue.get("id")}-investigation')
+            issue_link = urljoin(server_url, f'issues?action:openAlertDetails={issue.get("id")}-investigation')
             issue["issueLink"] = issue_link
+        return data
 
 
 def transform_to_issue_data(issues: List):
@@ -185,7 +207,7 @@ def search_issues(args: Dict):  # pragma: no cover
     page = STARTING_PAGE_NUMBER
 
     if all_found_issues and "todate" not in args:
-        # In case todate is not part of the argumetns we add it to avoid duplications
+        # In case todate is not part of the arguments we add it to avoid duplications
         first_issue = all_found_issues[0]
         args["todate"] = first_issue.get("created")
         demisto.info(f"Setting todate argument to be {first_issue.get('created')} to avoid duplications")
