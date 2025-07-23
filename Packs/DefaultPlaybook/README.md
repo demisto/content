@@ -7,6 +7,7 @@ The Default layout is a good match for any incident type, as it dynamically disp
 The layout also features remediation buttons as well as a collection of utilities any analyst would love to have at hand.
 
 ##### What does this pack do?
+
 - Extracts and enriches indicators in an incident using one or more integrations.
 - Deduplicates by linking and closing similar incidents.
 - Retrieves related files from endpoints using hash / file path.
@@ -18,7 +19,6 @@ The layout also features remediation buttons as well as a collection of utilitie
 - Gives the analyst an overview of incident data and additional data collected during the incident.
 - Gives the analyst the ability to remediate the incident through the incident layout.
 - Provides a "swiss army knife" of important tools every analyst needs.
-
 
 The playbook found in this pack provides a great out-of-the-box solution, yet it can be customized should you want to add additional logic to the default behavior.
 

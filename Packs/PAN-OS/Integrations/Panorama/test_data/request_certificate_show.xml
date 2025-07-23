@@ -1,0 +1,13 @@
+<response status="success"><result><entry name="test-cert">
+<common-name>testcert.example.com</common-name><subject>CN = testcert.example.com</subject><issuer>CN = testcert.example.com</issuer><subject-hash>aaaaaaaa</subject-hash><issuer-hash>11111111</issuer-hash><ca>yes</ca><not-valid-before>May  9 19:24:08 2025 GMT</not-valid-before><not-valid-after>May  9 19:24:08 2026 GMT</not-valid-after><expiry>1750143600</expiry>
+
+</entry>
+<entry name="FW-Cert-for-panorama">
+<common-name>Test cert on firewall for panorama</common-name><subject>CN = Test cert on firewall for panorama</subject><issuer>CN = Test cert on firewall for panorama</issuer><subject-hash>99999999</subject-hash><issuer-hash>7777777</issuer-hash><ca>yes</ca><not-valid-before>Jun  6 23:20:20 2025 GMT</not-valid-before><not-valid-after>Jun  6 23:20:20 2026 GMT</not-valid-after><expiry>1750143600</expiry>
+
+</entry>
+<entry name="FW-Client-Cert">
+<common-name>Test client cert on firewall</common-name><subject>CN = Test client cert on firewall</subject><issuer>CN = Test cert on firewall for panorama</issuer><subject-hash>11111111</subject-hash><issuer-hash>55555555</issuer-hash><ca>no</ca><not-valid-before>Jun  6 23:23:21 2025 GMT</not-valid-before><not-valid-after>Jun  6 23:23:21 2026 GMT</not-valid-after><expiry>1750143600</expiry>
+
+</entry>
+</result></response>

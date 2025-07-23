@@ -1036,3 +1036,79 @@ def test_get_built_in_query_results_polling_command(mocker):
     )
     assert res.call_args.args[1]["tenants"] == ["tenantID", "tenantID"]
     assert res.call_args.args[1]["time_frame"] == "7 days"
+
+
+def test_add_playbook_metadata_complete_data(mocker):
+    """
+    Given:
+    - Complete data with all context fields available
+
+    When:
+    - Calling add_playbook_metadata function
+
+    Then:
+    - Ensure the playbook metadata is correctly added to the request data
+    """
+    # Mock demisto context
+    mock_context = util_load_json("test_data/ctx_output.json")
+    mocker.patch.object(demisto, "callingContext", mock_context)
+    mocker.patch.object(demisto, "debug")
+
+    # Test data
+    data = {"request_data": {}}
+    command = "test-command"
+
+    # Call function
+    CoreXQLApiModule.add_playbook_metadata(data, command)
+
+    # Assert
+    expected_metadata = {
+        "playbook_name": "test_output",
+        "playbook_id": "ed682ef1-dbbe-44a8-86d5-b0fda02f7afb",
+        "task_name": "query",
+        "task_id": "1",
+        "integration_name": "XQL Query Engine",
+        "command_name": "test-command",
+    }
+    assert data["request_data"]["playbook_metadata"] == expected_metadata
+    demisto.debug.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "callingContext",
+    [
+        (None),
+        ({"context": {"ParentEntry": None}}),
+        ({"context": {"ParentEntry": {"entryTask": None}}}),
+        ({"context": {"Incidents": None}}),
+    ],
+)
+def test_add_playbook_metadata_missing_context(mocker, callingContext):
+    """
+    Given:
+    - context is None or sub keys are None
+
+    When:
+    - Calling add_playbook_metadata function
+
+    Then:
+    - Ensure the playbook metadata has default values for missing fields and knows how to handle None.
+    """
+    mocker.patch.object(demisto, "callingContext", callingContext)
+    mocker.patch.object(demisto, "debug")
+
+    data = {"request_data": {}}
+    command = "test-command"
+
+    CoreXQLApiModule.add_playbook_metadata(data, command)
+
+    expected_metadata = {
+        "command_name": "test-command",
+        "integration_name": "",
+        "playbook_id": "",
+        "playbook_name": "",
+        "task_id": "",
+        "task_name": "",
+    }
+    assert data["request_data"]["playbook_metadata"] == expected_metadata
+    demisto.debug.assert_called_once()

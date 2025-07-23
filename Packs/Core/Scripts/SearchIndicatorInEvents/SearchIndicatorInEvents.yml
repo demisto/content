@@ -43,6 +43,5 @@ tests:
   - No tests (auto formatted)
 polling: true
 marketplaces:
-  - xsoar
   - marketplacev2
   - platform

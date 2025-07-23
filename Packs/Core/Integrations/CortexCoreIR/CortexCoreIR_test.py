@@ -2,8 +2,16 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-from CommonServerPython import CommandResults
-from CortexCoreIR import core_execute_command_reformat_args
+from CommonServerPython import *
+from CortexCoreIR import (
+    core_execute_command_reformat_args,
+    core_add_indicator_rule_command,
+    core_block_ip_command,
+    polling_block_ip_status,
+    Client,
+    core_get_contributing_event_command,
+)
+from freezegun import freeze_time
 
 Core_URL = "https://api.xdrurl.com"
 STATUS_AMOUNT = 6
@@ -365,6 +373,7 @@ def test_get_distribution_url_command_without_download_not_supported_type():
     client.get_distribution_url.assert_called_once_with("12345", "sh")
     assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
 
+
 # tests for core_execute_command_command
 
 
@@ -378,6 +387,7 @@ def test_reformat_args_missing_command_raises():
         - Should raise a DemistoException.
     """
     from CommonServerPython import DemistoException
+
     args = {}
     with pytest.raises(DemistoException, match="'command' is a required argument."):
         core_execute_command_reformat_args(args)
@@ -392,10 +402,7 @@ def test_reformat_args_is_raw_command_true():
     Then:
         - Verify that commands_list has only one element.
     """
-    args = {
-        "command": "dir, hostname",
-        "is_raw_command": True
-    }
+    args = {"command": "dir, hostname", "is_raw_command": True}
     reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ["dir, hostname"]
@@ -403,7 +410,7 @@ def test_reformat_args_is_raw_command_true():
     assert reformatted_args["script_uid"] == "a6f7683c8e217d85bd3c398f0d3fb6bf"
 
 
-@pytest.mark.parametrize("separator", [',', '/', '|'])
+@pytest.mark.parametrize("separator", [",", "/", "|"])
 def test_reformat_args_separators(separator):
     """
     Given:
@@ -413,11 +420,7 @@ def test_reformat_args_separators(separator):
     Then:
         - Verify that commands_list split by the chosen separator.
     """
-    args = {
-        "command": f"dir{separator}hostname",
-        "is_raw_command": False,
-        "command_separator": separator
-    }
+    args = {"command": f"dir{separator}hostname", "is_raw_command": False, "command_separator": separator}
     reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ["dir", "hostname"]
@@ -432,11 +435,7 @@ def test_reformat_args_powershell_command_formatting():
     Then:
         - Verify command at commands_list reformated from 'command' to 'powershell -Command "command"'.
     """
-    args = {
-        "command": "Get-Process",
-        "command_type": "powershell",
-        "is_raw_command": True
-    }
+    args = {"command": "Get-Process", "command_type": "powershell", "is_raw_command": True}
     reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ['powershell -Command "Get-Process"']
@@ -453,7 +452,8 @@ def test_reformat_output():
         Instead of a list with element for each commmand, we'll have an element for each endpoint.
     """
     from CortexCoreIR import core_execute_command_reformat_outputs
-    mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
+
+    mock_res = CommandResults(outputs_prefix="val", outputs=load_test_data("./test_data/execute_command_response.json"))
     reformatted_outputs = core_execute_command_reformat_outputs([mock_res])
     excepted_output = [
         {
@@ -462,27 +462,26 @@ def test_reformat_output():
             "endpoint_status": "STATUS_010_CONNECTED",
             "domain": "domain.name",
             "endpoint_id": "dummy_id",
-            "executed_command":
-                [
-                    {
-                        "command": "echo",
-                        "failed_files": 0,
-                        "retention_date": None,
-                        "retrieved_files": 0,
-                        "standard_output": "output",
-                        "command_output": [],
-                        "execution_status": "COMPLETED_SUCCESSFULLY",
-                    },
-                    {
-                        "command": "echo hello",
-                        "failed_files": 0,
-                        "retention_date": None,
-                        "retrieved_files": 0,
-                        "standard_output": "outputs",
-                        "command_output": ["hello"],
-                        "execution_status": "COMPLETED_SUCCESSFULLY",
-                    }
-            ]
+            "executed_command": [
+                {
+                    "command": "echo",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "output",
+                    "command_output": [],
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                },
+                {
+                    "command": "echo hello",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "outputs",
+                    "command_output": ["hello"],
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                },
+            ],
         },
         {
             "endpoint_name": "name2",
@@ -490,8 +489,7 @@ def test_reformat_output():
             "endpoint_status": "STATUS_010_CONNECTED",
             "domain": "",
             "endpoint_id": "dummy_id2",
-            "executed_command":
-            [
+            "executed_command": [
                 {
                     "command": "echo",
                     "failed_files": 0,
@@ -509,9 +507,9 @@ def test_reformat_output():
                     "standard_output": "output",
                     "command_output": ["hello"],
                     "execution_status": "COMPLETED_SUCCESSFULLY",
-                }
-            ]
-        }
+                },
+            ],
+        },
     ]
     assert reformatted_outputs == excepted_output
 
@@ -527,7 +525,8 @@ def test_reformat_readable():
         Instead of a row for each endpoint, we'll have a row for each command.
     """
     from CortexCoreIR import core_execute_command_reformat_readable_output
-    mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
+
+    mock_res = CommandResults(outputs_prefix="val", outputs=load_test_data("./test_data/execute_command_response.json"))
     reformatted_readable_output = core_execute_command_reformat_readable_output([mock_res])
     excepted_output = """### Script Execution Results for Action ID: 1
 |Endpoint Id|Command|Command Output|Endpoint Ip Address|Endpoint Name|Endpoint Status|
@@ -538,3 +537,720 @@ def test_reformat_readable():
 | dummy_id2 | echo hello | hello | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
 """
     assert reformatted_readable_output == excepted_output
+
+
+@freeze_time("2024-01-01T12:00:00Z")
+def test_parse_expiration_date():
+    """
+    Given:
+        - an expiration to representing a date be parsed.
+    When:
+        - Calling `parse_expiration_date`.
+    Then:
+        - Verify that parsed date comes back as expected.
+    """
+    from CortexCoreIR import parse_expiration_date
+
+    def get_epoch_millis(dt: datetime) -> int:
+        """Convert datetime to epoch milliseconds."""
+        return int(dt.timestamp() * 1000)
+
+    fixed_now = datetime(2024, 1, 1, 12, 0, 0)
+    fixed_now_epoch_milli = get_epoch_millis(fixed_now)
+
+    # Case 1: Epoch time in the past
+    epoch_past = fixed_now_epoch_milli - 100000
+    result = parse_expiration_date(str(epoch_past))
+    assert result == epoch_past
+
+    # Case 2: Epoch time in the future
+    epoch_future = fixed_now_epoch_milli + 100000
+    result = parse_expiration_date(str(epoch_future))
+    assert result == epoch_future
+
+    # Case 3: Relative time: "3 days"
+    result = parse_expiration_date("3 days")
+    expected = get_epoch_millis(fixed_now + timedelta(days=3))
+    assert result == expected  # Tolerance of a few seconds
+
+    # Case 4: ISO time in the past
+    iso_past = "2023-12-31T12:00:00"
+    iso_past_epoch = get_epoch_millis(datetime(2023, 12, 31, 12, 0, 0))
+    result = parse_expiration_date(iso_past)
+    assert result == iso_past_epoch
+
+    # Case 5: ISO time in the future
+    iso_future = "2024-01-03T12:00:00"
+    iso_future_epoch = get_epoch_millis(datetime(2024, 1, 3, 12, 0, 0))
+    result = parse_expiration_date(iso_future)
+    assert result == iso_future_epoch
+
+    # Case 6: "Never"
+    result = parse_expiration_date("Never")
+    assert result == "Never"
+
+    # Case 7: "Broken Never"
+    result = parse_expiration_date("never")
+    assert result == "Never"
+
+    # Case 8: "Broken String"
+    result = parse_expiration_date("brokenstring")
+    assert result == "brokenstring"
+
+    # Case 9: None
+    result = parse_expiration_date(None)
+    assert result is None
+
+
+def test_prepare_ioc_to_output():
+    """
+    Given:
+        - an ioc params that had been sent to XSIAM create IOC API.
+    When:
+        - Calling `prepare_ioc_to_output`.
+    Then:
+        - Verify that parsed data come back as dictionary to be sent to XSIAM Context.
+    """
+
+    from CortexCoreIR import prepare_ioc_to_output
+
+    # Case 1: input_format is JSON → return as-is
+    json_input = {"indicator": "1.2.3.4", "type": "IP", "severity": "HIGH"}
+    assert prepare_ioc_to_output(json_input, "JSON") == json_input
+
+    # Case 2: input_format is CSV → single vendor, return as dict
+    csv_input_single_vendor = (
+        "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class\n"
+        "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,VirusTotal,A,GOOD,Malware"
+    )
+    expected_output_single = {
+        "indicator": "1.2.3.4",
+        "type": "IP",
+        "severity": "HIGH",
+        "expiration_date": 1794894791000,
+        "comment": "test",
+        "reputation": "SUSPICIOUS",
+        "reliability": "D",
+        "class": "Malware",
+        "vendors": [{"vendor_name": "VirusTotal", "reliability": "A", "reputation": "GOOD"}],
+    }
+    assert prepare_ioc_to_output(csv_input_single_vendor, "CSV") == expected_output_single
+
+    # Case 3: input_format is CSV → multiple vendors, only last one taken
+    csv_input_multi_vendor = (
+        "indicator,type,severity,expiration_date,comment,reputation,reliability,"
+        "vendor.name,vendor.reliability,vendor.reputation,"
+        "vendor.name,vendor.reliability,vendor.reputation,class\n"
+        "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,"
+        "VirusTotalV3,A,GOOD,"
+        "VirusTotalV5,B,SUSPICIOUS,Malware"
+    )
+    expected_output_multi = {
+        "indicator": "1.2.3.4",
+        "type": "IP",
+        "severity": "HIGH",
+        "expiration_date": 1794894791000,
+        "comment": "test",
+        "reputation": "SUSPICIOUS",
+        "reliability": "D",
+        "class": "Malware",
+        "vendors": [{"vendor_name": "VirusTotalV5", "reliability": "B", "reputation": "SUSPICIOUS"}],
+    }
+    assert prepare_ioc_to_output(csv_input_multi_vendor, "CSV") == expected_output_multi
+
+
+def get_mock_client():
+    return Client(
+        base_url="https://example.com", proxy=False, verify=False, headers={"Authorization": "Bearer dummy"}, timeout=10
+    )
+
+
+class TestCoreAddIndicator:
+    def test_core_add_indicator_rule_json(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+            - Verify that the API call was sent with the correct params.
+        """
+
+        client = get_mock_client()
+        mock_post = mocker.patch.object(
+            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
+
+        args = {
+            "indicator": "1.2.3.4",
+            "type": "IP",
+            "severity": "HIGH",
+            "expiration_date": "3 days",
+            "comment": "test comment",
+            "reputation": "SUSPICIOUS",
+            "reliability": "A",
+            "class": "Malware",
+            "vendor_name": "VirusTotal",
+            "vendor_reliability": "A",
+            "vendor_reputation": "GOOD",
+            "input_format": "JSON",
+        }
+
+        result = core_add_indicator_rule_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert "1.2.3.4" in result.readable_output
+        assert result.outputs["indicator"] == "1.2.3.4"
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        assert kwargs["suffix"] == "indicators/insert_jsons"
+
+    def test_core_add_indicator_rule_success_minimal_args(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command - the minimal required arguments.
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+        """
+        client = get_mock_client()
+        mocker.patch.object(
+            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
+
+        args = {"indicator": "example.com", "type": "DOMAIN_NAME", "severity": "LOW"}
+
+        result = core_add_indicator_rule_command(client, args)
+        assert isinstance(result, CommandResults)
+        assert "example.com" in result.readable_output
+
+    def test_core_add_indicator_rule_csv(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+            - IOC object argument
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+            - Verify that the API call was sent with the correct params.
+        """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(
+            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
+
+        csv_payload = (
+            "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation"
+            ",class\\n"
+            "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,VirusTotal,A,GOOD,Malware"
+        )
+
+        args = {
+            "ioc_object": csv_payload,
+            "input_format": "CSV",
+            "indicator": "ignored",
+            "type": "ignored",
+            "severity": "ignored",
+        }
+
+        result = core_add_indicator_rule_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["indicator"] == "1.2.3.4"
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        assert kwargs["suffix"] == "indicators/insert_csv"
+
+    def test_core_add_indicator_rule_ioc_object_precedence(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+            - IOC object argument
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+            - Verify that the API call was sent with the correct params.
+        """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(
+            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
+
+        args = {
+            "ioc_object": '{"indicator": "5.5.5.5", "type": "IP", "severity": "LOW"}',
+            "input_format": "JSON",
+            "indicator": "should_not_use_this",
+            "type": "should_not_use_this",
+            "severity": "should_not_use_this",
+        }
+
+        result = core_add_indicator_rule_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["indicator"] == "5.5.5.5"
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        assert kwargs["suffix"] == "indicators/insert_jsons"
+
+    def test_core_add_indicator_rule_invalid_ioc_object_raises_error(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+            - IOC object argument malformed
+        When:
+            - Calling `core_add_indicator_rule`.
+        Then:
+            - Verify an error has been raised and that the error message is correct.
+        """
+        client = get_mock_client()
+        args = {"ioc_object": "not a json or csv string"}
+        with pytest.raises(
+            DemistoException,
+            match="Core Add Indicator Rule Command: The IOC object provided isn't in a valid JSON format.",
+        ):
+            core_add_indicator_rule_command(client, args)
+
+    def test_core_add_indicator_rule_failure_response(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+        When:
+            - Calling `core_add_indicator_rule`.
+            - Receiving bad response.
+        Then:
+            - Verify an error has been raised and that the error message is correct.
+        """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(
+            client,
+            "create_indicator_rule_request",
+            return_value={
+                "reply": {
+                    "success": False,
+                    "validation_errors": [{"indicator": "dummy", "error": "error1"}, {"indicator": "dummy", "error": "error2"}],
+                }
+            },
+        )
+
+        args = {"indicator": "dummy", "type": "IP", "severity": "HIGH"}
+
+        with pytest.raises(DemistoException) as exc_info:
+            core_add_indicator_rule_command(client, args)
+
+        assert "Core Add Indicator Rule Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
+        mock_post.assert_called_once()
+
+
+class TestClientBlockIP:
+    @pytest.fixture
+    def client(self):
+        return Client(base_url="", headers={})
+
+    def test_block_ip_request_disconnected(self, mocker, client):
+        """
+        Given:
+            - client.block_ip_request called with all args.
+        When:
+            - No endpoint exists with that id.
+        Then:
+            - group_id of the actions are None
+        """
+        mocker.patch.object(client, "get_endpoints", return_value=[])
+
+        ips = ["1.1.1.1", "2.2.2.2"]
+        results = client.block_ip_request("endpoint_id", ips, 300)
+
+        assert results == [
+            {"ip_address": "1.1.1.1", "group_id": None, "endpoint_id": "endpoint_id"},
+            {"ip_address": "2.2.2.2", "group_id": None, "endpoint_id": "endpoint_id"},
+        ]
+
+    def test_block_ip_request_success(self, mocker, client):
+        """
+        Given:
+            - client.block_ip_request called with all args.
+        When:
+            - Endpoint exists and running.
+        Then:
+            - the appropriate list returned.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(client, "_http_request", return_value={"reply": {"group_action_id": "gid-123"}})
+
+        results = client.block_ip_request("endpoint_id", ["3.3.3.3", "4.4.4.4"], 123)
+        assert results == [
+            {"ip_address": "3.3.3.3", "group_id": "gid-123", "endpoint_id": "endpoint_id"},
+            {"ip_address": "4.4.4.4", "group_id": "gid-123", "endpoint_id": "endpoint_id"},
+        ]
+
+    def test_fetch_block_status_disconnected(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Endpoint disconnected.
+        Then:
+            - The status returned is Failure with Endpoint Disconnected message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value=[])
+
+        status, msg = client.fetch_block_status("gid123", "endpoint_id")
+
+        assert status == "Failure"
+        assert msg == "Endpoint Disconnected"
+
+    def test_fetch_block_status_group_id_none(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - group_id is none.
+        Then:
+            - The status returned is Failure with Endpoint Disconnected message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value=[])
+
+        status, msg = client.fetch_block_status(None, "endpoint_id")
+
+        assert status == "Failure"
+        assert msg == "Endpoint Disconnected"
+
+    def test_fetch_block_status_failed_with_errorText(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Action failed due to internal error and returned FAILED.
+        Then:
+            - The status returned is Failure with the returned message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(
+            client,
+            "action_status_get",
+            return_value={"data": {"endpoint_id": "FAILED"}, "errorReasons": {"endpoint_id": {"errorText": "Error Message"}}},
+        )
+
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+
+        assert status == "Failure"
+        assert msg == "Error Message"
+
+    def test_fetch_block_status_failed_without_errorText(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Action failed due to internal error and returned FAILED.
+            - No message in errorText.
+        Then:
+            - The status returned is Failure with the "Unknown error" message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(
+            client, "action_status_get", return_value={"data": {"endpoint_id": "FAILED"}, "errorReasons": {"endpoint_id": {}}}
+        )
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+        assert status == "Failure"
+        assert msg == "Unknown error"
+
+    def test_fetch_block_status_success(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Action Success.
+        Then:
+            - The status returned is Success without message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(client, "action_status_get", return_value={"data": {"endpoint_id": "COMPLETED_SUCCESSFULLY"}})
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+        assert status == "Success"
+        assert msg == ""
+
+    def test_fetch_block_status_unknown(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Action in progress.
+        Then:
+            - The status returned is IN_PROGRESS without message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(client, "action_status_get", return_value={"data": {"endpoint_id": "IN_PROGRESS"}})
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+        assert status == "IN_PROGRESS"
+        assert msg == ""
+
+    def test_fetch_block_error_code_message(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - ip address already blocked and server return error code -197
+        Then:
+            - The status returned is Failure with the right message.
+        """
+        from CortexCoreIR import ERROR_CODE_MAP
+
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value={
+                "reply": {
+                    "data": {"endpoint_id": "FAILED"},
+                    "errorReasons": {
+                        "endpoint_id": {
+                            "errorData": '{"reportIds":["11"],"errorText":"Failed blocking IP address with error code -197\\n"}'
+                        }
+                    },
+                }
+            },
+        )
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+        assert status == "Failure"
+        assert msg == ERROR_CODE_MAP[-197]
+
+
+class DummyClient:
+    """
+    Test-double for the Integration Client.
+    Initialized with:
+      - status_map: dict mapping (group_id, endpoint_id) to (status, message)
+      - block_map: dict mapping endpoint_id to list of action dicts
+    fetch_block_status and block_ip_request delegate to those maps.
+    """
+
+    def __init__(self, status_map=None, block_map=None):
+        self.status_map = status_map or {}
+        self.block_map = block_map or {}
+
+    def fetch_block_status(self, group_id, endpoint_id):
+        return self.status_map.get((group_id, endpoint_id), ("Unknown", ""))
+
+    def block_ip_request(self, endpoint_id, ip_list, duration):
+        return self.block_map.get(endpoint_id, [])
+
+
+class TestBlockIp:
+    def test_polling_all_success(self):
+        """
+        Given:
+            - A blocked_list with one action (gid1 on endpoint_id1).
+        When:
+            - polling_block_ip_status returns Success for that action.
+        Then:
+            - polling stops and outputs include the success reason.
+        """
+        args = {"blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        client = DummyClient(status_map={("gid1", "endpoint1"): ("Success", "")})
+
+        pollRequest: PollResult = polling_block_ip_status(args, client)
+
+        assert pollRequest.continue_to_poll is False
+        assert isinstance(pollRequest.response, CommandResults)
+        assert pollRequest.response.outputs == [{"ip_address": "1.1.1.1", "endpoint_id": "endpoint1", "reason": "Success"}]
+        assert pollRequest.args_for_next_run == args
+
+    def test_polling_failure(self):
+        """
+        Given:
+            - A blocked_list with one action (gid1 on endpoint1).
+        When:
+            - polling_block_ip_status returns Failure with a message.
+        Then:
+            - polling stops and outputs include the failure reason and message.
+        """
+        args = {"blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        client = DummyClient(status_map={("gid1", "endpoint1"): ("Failure", "Network unreachable")})
+
+        pollRequest = polling_block_ip_status(args, client)
+
+        assert pollRequest.continue_to_poll is False
+        assert pollRequest.response.outputs == [
+            {
+                "ip_address": "1.1.1.1",
+                "endpoint_id": "endpoint1",
+                "reason": "Failure: Network unreachable",
+            }
+        ]
+        assert pollRequest.args_for_next_run == args
+
+    def test_polling_continue(self):
+        """
+        Given:
+            - A blocked_list with one action.
+        When:
+            - polling_block_ip_status returns a non-terminal status.
+        Then:
+            - polling continues with partial results.
+        """
+        args = {"blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        client = DummyClient(status_map={("gid1", "endpoint1"): ("PENDING", "Still working")})
+
+        pollRequest = polling_block_ip_status(args, client)
+
+        assert pollRequest.continue_to_poll is True
+        assert pollRequest.response is None
+        assert isinstance(pollRequest.partial_result, CommandResults)
+        assert pollRequest.args_for_next_run == args
+
+    def test_polling_empty_queue(self):
+        """
+        Given:
+            - An empty blocked_list.
+        When:
+            - polling_block_ip_status is invoked.
+        Then:
+            - polling stops immediately with empty outputs.
+        """
+        args = {"blocked_list": []}
+        client = DummyClient()
+
+        pollRequest = polling_block_ip_status(args, client)
+
+        assert pollRequest.continue_to_poll is False
+        assert isinstance(pollRequest.response, CommandResults)
+        assert pollRequest.response.outputs == []
+        assert pollRequest.args_for_next_run == args
+
+    def test_core_block_ip_initial_call(self, mocker):
+        """
+        Given:
+            - The command_block_ip function is being called first time.
+            - block_ip_request will work for endpoint1 ip 1.1.1.1.
+        When:
+            - core_block_ip_command is called.
+        Then:
+            - client.block_ip_request is invoked exactly once.
+            - results are passed to polling_block_ip_status.
+        """
+        calls = {}
+
+        fake_poll_result = PollResult(response="Polling", continue_to_poll=False, args_for_next_run=None, partial_result=None)
+
+        def fake_poll(args, client):
+            calls["args"] = args
+            return fake_poll_result
+
+        mocker.patch("CortexCoreIR.polling_block_ip_status", side_effect=fake_poll)
+
+        block_map = {"endpoint1": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        client = DummyClient(block_map=block_map)
+        spy = mocker.spy(client, "block_ip_request")
+
+        args = {
+            "addresses": ["1.1.1.1"],
+            "endpoint_list": "endpoint1",
+            "duration": "123",
+        }
+
+        result = core_block_ip_command(args, client)
+
+        assert result == "Polling"
+
+        # polling_block_ip_status should see the merged blocked_list + original args
+        expected_args = {"blocked_list": block_map["endpoint1"], **args}
+        assert calls["args"] == expected_args
+
+        spy.assert_called_once_with("endpoint1", ["1.1.1.1"], 123)
+
+    def test_core_block_ip_subsequent_call(self, mocker):
+        """
+        Given:
+            - The command_block_ip function is being called second time after the blocking requests.
+        When:
+            - core_block_ip_command was called adn the block requests worked and returned group id.
+        Then:
+            - client.block_ip_request is not being called.
+            - The args are not being changed.
+        """
+        calls = {}
+
+        fake_poll_result = PollResult(response="Polling", continue_to_poll=False, args_for_next_run=None, partial_result=None)
+
+        def fake_poll(a, c):
+            calls["args"] = a
+            return fake_poll_result
+
+        mocker.patch("CortexCoreIR.polling_block_ip_status", side_effect=fake_poll)
+
+        client = DummyClient()
+        spy = mocker.spy(client, "block_ip_request")
+        args = {
+            "blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}],
+        }
+
+        result = core_block_ip_command(args, client)
+
+        assert result == "Polling"
+        # we get exactly the same args dict back
+        assert calls["args"] == args
+        assert spy.call_count == 0
+
+
+def test_core_get_contributing_event(mocker):
+    """
+    Given:
+        - A mock Client and alert ID
+    When:
+        - Calling `core-get-contributing-event`.
+    Then:
+        - Verify that results were correctly parsed.
+    """
+    client = get_mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={
+            "reply": {
+                "events": [
+                    {
+                        "Logon_Type": "1",
+                        "User_Name": "example",
+                        "Domain": "domain",
+                        "Source_IP": "1.1.1.1",
+                        "Process_Name": "C:\\Windows\\System32\\example.exe",
+                        "Host_Name": "WIN10X64",
+                        "Raw_Message": "An account was successfully logged on.",
+                        "_time": 1652982800000,
+                        "aaaaaa": "111111",
+                        "bbbbbb": 1652982800000,
+                        "cccccc": "222222",
+                        "dddddd": 2,
+                        "eeeeee": 1,
+                        "insert_timestamp": 1652982800001,
+                        "_vendor": "PANW",
+                        "_product": "XDR agent",
+                    }
+                ]
+            }
+        },
+    )
+
+    args = {
+        "alert_ids": "1",
+    }
+
+    result = core_get_contributing_event_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Contributing events" in result.readable_output
+    assert result.outputs[0]["alertID"] == "1"

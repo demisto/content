@@ -2,7 +2,9 @@ PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant da
 This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
 a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
 b) Copy the automation and change the `default timeout` parameter to match your needs.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +14,7 @@ b) Copy the automation and change the `default timeout` parameter to match your 
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -28,6 +31,7 @@ b) Copy the automation and change the `default timeout` parameter to match your 
 | extract_ips | Output to context the source and destination IPs in the PCAP file. Can be "True" or "False". The default is "False". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

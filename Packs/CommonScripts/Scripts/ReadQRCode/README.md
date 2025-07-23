@@ -60,8 +60,7 @@ This script uses the following python libraries to decode:
 ### Human Readable Output
 
 >### QR Code Read
-
+>
 >|Text|
 >|---|
 >| <https://xsoar.pan.dev/> |
-

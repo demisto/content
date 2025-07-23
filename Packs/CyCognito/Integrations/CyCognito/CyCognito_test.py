@@ -24,15 +24,15 @@ DUMMY_ISSUE_INSTANCE_ID = "127.0.0.1-test"
 DUMMY_ORG_NAME = "Acme Interior Design"
 DUMMY_TIMESTAMP = "2020-07-25T16:57:01.565Z"
 
+BASE_URL = BASE_URL.format("")
+
 
 @pytest.fixture
 def mock_client():
     """Mock a client object with required data to mock."""
     from CyCognito import CyCognitoClient
 
-    headers = {"Authorization": "dummy_key"}
-
-    client = CyCognitoClient(base_url=BASE_URL, verify=False, headers=headers, proxy=False, ok_codes=(404, 200))
+    client = CyCognitoClient(params={"api_key": "dummy_key"}, verify=False, proxy=False)
     return client
 
 
@@ -806,7 +806,7 @@ def test_list_asset_command_with_empty_response(requests_mock, mock_client):
     assert actual.outputs_key_field == "id"
     assert actual.raw_response == []
     assert actual.outputs == []
-    assert actual.readable_output == "### Asset List:\n Assets Type: Iprange\n**No entries.**\n"
+    assert actual.readable_output == "### Asset List: \n Assets Type: Iprange\n**No entries.**\n"
 
 
 @pytest.mark.parametrize(
@@ -1031,3 +1031,49 @@ def test_get_remote_data_command(requests_mock, mock_client):
     requests_mock.get(f"{BASE_URL}/issues/issue/127.0.0.1-test", json=mock_response["raw_response"], status_code=200)
 
     assert get_remote_data_command(mock_client, args).mirrored_object == mock_response["raw_response"]
+
+
+def test_test_module_when_region_param_is_selected(requests_mock):
+    """
+    Test case scenario for successful execution of test_module when region param is selected.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `test_module` function
+    Then:
+       - Returns an ok message
+    """
+    from CyCognito import test_module, CyCognitoClient, BASE_URL
+
+    params = {"api_key": "dummy_key", "region": "US"}
+    BASE_URL = BASE_URL.format("us-")
+
+    mock_client = CyCognitoClient(params=params, verify=False, proxy=False)
+
+    requests_mock.post(f"{BASE_URL}/issues", json=[], status_code=200)
+
+    assert test_module(mock_client) == "ok"
+
+
+def test_test_module_when_other_region_param_is_selected(requests_mock):
+    """
+    Test case scenario for successful execution of test_module when other_region param is selected.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `test_module` function
+    Then:
+       - Returns an ok message
+    """
+    from CyCognito import test_module, CyCognitoClient, BASE_URL
+
+    params = {"api_key": "dummy_key", "region": "Other", "other_region": "europe"}
+    BASE_URL = BASE_URL.format("europe-")
+
+    mock_client = CyCognitoClient(params=params, verify=False, proxy=False)
+
+    requests_mock.post(f"{BASE_URL}/issues", json=[], status_code=200)
+
+    assert test_module(mock_client) == "ok"

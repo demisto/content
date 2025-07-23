@@ -1,4 +1,7 @@
 category: Endpoint
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Carbon Black Enterprise EDR
   version: -1
@@ -70,6 +73,7 @@ configuration:
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
+  section: Collect
   type: 19
 description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter).
 display: Carbon Black Enterprise EDR
@@ -1477,7 +1481,7 @@ script:
       description: Threat ID.
     - contextPath: CarbonBlackEEDR.Threat.Tags
       description: Threat tags.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: ''

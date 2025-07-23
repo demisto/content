@@ -1,6 +1,7 @@
 Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The output (at TransformIndicatorToMSDefenderIOC.JsonOutput) is a json representation of the indicators in MSDE format. This json can be the input for the *microsoft-atp-indicator-batch-update* command.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,16 +11,18 @@ Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The outp
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The indicators query. | Required |
 | action | The action that will be taken if the indicator will be discovered in the organization. | Required |
-| limit | The maximum number of indicators to fetch. | Optional | 
-| offset | The results offset page. Only change when the number of the results exceed the limit. | Optional | 
+| limit | The maximum number of indicators to fetch. | Optional |
+| offset | The results offset page. Only change when the number of the results exceed the limit. | Optional |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -45,9 +48,10 @@ Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The outp
 | TransformIndicatorToMSDefenderIOC.Indicators.rbacGroupIds | RBAC device group ID's where the indicator is exposed and active. Empty list in case it exposed to all devices. | Unknown |
 | TransformIndicatorToMSDefenderIOC.Indicators.generateAlert | True if alert generation is required, False if this indicator should not generate an alert. | String |
 
-
 ## More info
+
 ---
+
 1. Please read about MSDE Indicator resource type [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/ti-indicator?view=o365-worldwide).
 2. Please read about limitations for creating and updating batch of indicators [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide#limitations).
-3. Please read about the required permissions for creating and updating batch of indicators [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide#permissions). 
+3. Please read about the required permissions for creating and updating batch of indicators [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide#permissions).

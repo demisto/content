@@ -1,9 +1,11 @@
 QRadar aggregates and parses logs that come in from various data sources. The QRadar admin creates rules for detecting suspicious traffic, suspicious IDs, etc., and runs searches to obtain additional data about these offences.
 
 ## What does this pack do?
-The integration in this pack automatically fetches the offences from QRadar along with all the additional data about the offenses. The data from QRadar is populated into XSOAR incident fields providing the XSOAR analyst with all the information about the incident just by performing a fetch. 
+
+The integration in this pack automatically fetches the offences from QRadar along with all the additional data about the offenses. The data from QRadar is populated into XSOAR incident fields providing the XSOAR analyst with all the information about the incident just by performing a fetch.
 
 Using the commands in the integration, you can leverage what the QRadar API has to offer, such as:
+
 - Editing objects
 - Getting object lists
 - Adding notes

@@ -1,6 +1,7 @@
 Shows the Rubrik Polaris CDM Cluster Connection State.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Shows the Rubrik Polaris CDM Cluster Connection State.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

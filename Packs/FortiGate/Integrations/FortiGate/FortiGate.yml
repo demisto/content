@@ -2239,6 +2239,8 @@ script:
     - name: expiry
       description: Time until the ban expires in seconds. `0` for indefinite ban.
       defaultValue: '0'
+    compliantpolicies:
+    - IP Blockage
   - name: fortigate-unban-ip
     description: Unban IPs. Banned IPs are IP addresses that have been quarantined for a variety of reasons, such as administrative decisions or due to security alerts from services like intrusion prevention systems (IPS), antivirus (AV), and denial-of-service (DoS) mitigations.
     arguments:
@@ -2249,7 +2251,7 @@ script:
       description: Comma-separated list of IPs to unban. Both IPv4 and IPv6 addresses are supported. IPs can be retrieved with the command `fortigate-list-banned-ips`.
       required: true
       isArray: true
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

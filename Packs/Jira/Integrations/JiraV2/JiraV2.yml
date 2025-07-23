@@ -613,4 +613,8 @@ script:
 tests:
 - Jira-v2-Test
 defaultmapperin: classifier-mapper-incoming-JiraV2
+supportedModules:
+- X3
+- X5
+- agentix
 fromversion: 5.0.0

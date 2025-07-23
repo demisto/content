@@ -668,6 +668,8 @@ def urlscan_search_only(client: Client, url: str, command_results: list, executi
 def urlscan_search(client, search_type, query, size=None):
     if search_type == "advanced":
         r, _, _ = http_request(client, "GET", "search/?q=" + query)
+    elif search_type == "raw":
+        r, _, _ = http_request(client, "GET", f"search/?{query}")
     else:
         url_suffix = "search/?q=" + search_type + ':"' + query + '"' + (f"&size={size}" if size else "")
         r, _, _ = http_request(client, "GET", url_suffix)
@@ -699,118 +701,127 @@ def urlscan_search_command(client):
                 search_type = "hash"
             else:
                 search_type = "page.url"
+    if search_type == "raw":
+        r = urlscan_search(client, search_type, raw_query)
+        results = CommandResults(
+            outputs_prefix="URLScan.Search.Results",
+            raw_response=r,
+            outputs=r["results"],
+            readable_output=f'{r["total"]} results found for {raw_query}',
+        )
+        return_results(results)
+    else:
+        # Making the query string safe for Elastic Search
+        query = quote(raw_query, safe="")
 
-    # Making the query string safe for Elastic Search
-    query = quote(raw_query, safe="")
+        r = urlscan_search(client, search_type, query)
 
-    r = urlscan_search(client, search_type, query)
+        if r["total"] == 0:
+            demisto.results(f"No results found for {raw_query}")
+            return
+        if r["total"] > 0:
+            demisto.results("{} results found for {}".format(r["total"], raw_query))
 
-    if r["total"] == 0:
-        demisto.results(f"No results found for {raw_query}")
-        return
-    if r["total"] > 0:
-        demisto.results("{} results found for {}".format(r["total"], raw_query))
+        # Opening empty string for url comparison
+        last_url = ""
+        hr_md = []
+        cont_array = []
+        ip_array = []
+        dom_array = []
+        url_array = []
 
-    # Opening empty string for url comparison
-    last_url = ""
-    hr_md = []
-    cont_array = []
-    ip_array = []
-    dom_array = []
-    url_array = []
+        for res in r["results"][:LIMIT]:
+            ec = makehash()
+            cont = makehash()
+            url_cont = makehash()
+            ip_cont = makehash()
+            dom_cont = makehash()
+            file_context = makehash()
+            res_dict = res
+            res_tasks = res_dict["task"]
+            res_page = res_dict["page"]
 
-    for res in r["results"][:LIMIT]:
-        ec = makehash()
-        cont = makehash()
-        url_cont = makehash()
-        ip_cont = makehash()
-        dom_cont = makehash()
-        file_context = makehash()
-        res_dict = res
-        res_tasks = res_dict["task"]
-        res_page = res_dict["page"]
+            if last_url == res_tasks["url"]:
+                continue
 
-        if last_url == res_tasks["url"]:
-            continue
+            human_readable = makehash()
 
-        human_readable = makehash()
+            if "url" in res_tasks:
+                url = res_tasks["url"]
+                human_readable["URL"] = url
+                cont["URL"] = url
+                url_cont["Data"] = url
+            if "domain" in res_page:
+                domain = res_page["domain"]
+                human_readable["Domain"] = domain
+                cont["Domain"] = domain
+                dom_cont["Name"] = domain
+            if "asn" in res_page:
+                asn = res_page["asn"]
+                cont["ASN"] = asn
+                ip_cont["ASN"] = asn
+                human_readable["ASN"] = asn
+            if "ip" in res_page:
+                ip = res_page["ip"]
+                cont["IP"] = ip
+                ip_cont["Address"] = ip
+                human_readable["IP"] = ip
+            if "_id" in res_dict:
+                scanID = res_dict["_id"]
+                cont["ScanID"] = scanID
+                human_readable["Scan ID"] = scanID
+            if "time" in res_tasks:
+                scanDate = res_tasks["time"]
+                cont["ScanDate"] = scanDate
+                human_readable["Scan Date"] = scanDate
+            if "files" in res_dict:
+                HUMAN_READBALE_HEADERS = ["URL", "Domain", "IP", "ASN", "Scan ID", "Scan Date", "File"]
+                files = res_dict["files"][0]
+                sha256 = files.get("sha256")
+                filename = files.get("filename")
+                filesize = files.get("filesize")
+                filetype = files.get("mimeType")
+                url = res_tasks["url"]
+                if sha256:
+                    human_readable["File"]["Hash"] = sha256
+                    cont["Hash"] = sha256
+                    file_context["SHA256"] = sha256
+                if filename:
+                    human_readable["File"]["Name"] = filename
+                    cont["FileName"] = filename
+                    file_context["File"]["Name"] = filename
+                if filesize:
+                    human_readable["File"]["Size"] = filesize
+                    cont["FileSize"] = filesize
+                    file_context["Size"] = filesize
+                if filetype:
+                    human_readable["File"]["Type"] = filetype
+                    cont["FileType"] = filetype
+                    file_context["File"]["Type"] = filetype
+                file_context["File"]["Hostname"] = url
 
-        if "url" in res_tasks:
-            url = res_tasks["url"]
-            human_readable["URL"] = url
-            cont["URL"] = url
-            url_cont["Data"] = url
-        if "domain" in res_page:
-            domain = res_page["domain"]
-            human_readable["Domain"] = domain
-            cont["Domain"] = domain
-            dom_cont["Name"] = domain
-        if "asn" in res_page:
-            asn = res_page["asn"]
-            cont["ASN"] = asn
-            ip_cont["ASN"] = asn
-            human_readable["ASN"] = asn
-        if "ip" in res_page:
-            ip = res_page["ip"]
-            cont["IP"] = ip
-            ip_cont["Address"] = ip
-            human_readable["IP"] = ip
-        if "_id" in res_dict:
-            scanID = res_dict["_id"]
-            cont["ScanID"] = scanID
-            human_readable["Scan ID"] = scanID
-        if "time" in res_tasks:
-            scanDate = res_tasks["time"]
-            cont["ScanDate"] = scanDate
-            human_readable["Scan Date"] = scanDate
-        if "files" in res_dict:
-            HUMAN_READBALE_HEADERS = ["URL", "Domain", "IP", "ASN", "Scan ID", "Scan Date", "File"]
-            files = res_dict["files"][0]
-            sha256 = files.get("sha256")
-            filename = files.get("filename")
-            filesize = files.get("filesize")
-            filetype = files.get("mimeType")
-            url = res_tasks["url"]
-            if sha256:
-                human_readable["File"]["Hash"] = sha256
-                cont["Hash"] = sha256
-                file_context["SHA256"] = sha256
-            if filename:
-                human_readable["File"]["Name"] = filename
-                cont["FileName"] = filename
-                file_context["File"]["Name"] = filename
-            if filesize:
-                human_readable["File"]["Size"] = filesize
-                cont["FileSize"] = filesize
-                file_context["Size"] = filesize
-            if filetype:
-                human_readable["File"]["Type"] = filetype
-                cont["FileType"] = filetype
-                file_context["File"]["Type"] = filetype
-            file_context["File"]["Hostname"] = url
+            ec[outputPaths["file"]] = file_context
+            hr_md.append(human_readable)
+            cont_array.append(cont)
+            ip_array.append(ip_cont)
+            url_array.append(url_cont)
+            dom_array.append(dom_cont)
 
-        ec[outputPaths["file"]] = file_context
-        hr_md.append(human_readable)
-        cont_array.append(cont)
-        ip_array.append(ip_cont)
-        url_array.append(url_cont)
-        dom_array.append(dom_cont)
+            # Storing last url in memory for comparison on next loop
+            last_url = url
 
-        # Storing last url in memory for comparison on next loop
-        last_url = url
-
-    ec = {"URLScan(val.URL && val.URL == obj.URL)": cont_array, "URL": url_array, "IP": ip_array, "Domain": dom_array}
-    demisto.results(
-        {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["markdown"],
-            "Contents": r,
-            "HumanReadable": tableToMarkdown(
-                f"URLScan.io query results for {raw_query}", hr_md, HUMAN_READBALE_HEADERS, removeNull=True
-            ),
-            "EntryContext": ec,
-        }
-    )
+        ec = {"URLScan(val.URL && val.URL == obj.URL)": cont_array, "URL": url_array, "IP": ip_array, "Domain": dom_array}
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["markdown"],
+                "Contents": r,
+                "HumanReadable": tableToMarkdown(
+                    f"URLScan.io query results for {raw_query}", hr_md, HUMAN_READBALE_HEADERS, removeNull=True
+                ),
+                "EntryContext": ec,
+            }
+        )
 
 
 def format_http_transaction_list(client):
@@ -847,7 +858,7 @@ def format_http_transaction_list(client):
 def main():
     params = demisto.params()
 
-    api_key = params.get("apikey") or (params.get("creds_apikey") or {}).get("password", "")
+    api_key = (params.get("creds_apikey") or {}).get("password", "") or params.get("apikey")
     # to safeguard the visibility of the scan,
     # if the customer did not choose a visibility, we will set it to private by default.
     scan_visibility = params.get("scan_visibility", "private")

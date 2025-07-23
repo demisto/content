@@ -13,7 +13,7 @@
         "playbookID": "ID of the playbook that is being tested.",
         "runnable_on_docker_only": "Determines whether the test is runnable on docker only. A boolean.",
         "scripts": "Scripts that the test uses. Can hold a list.",
-        "timeout": "Test specific timeout, in order to use a different timeout then default testTimeout. A number.",
+        "timeout": "Test specific timeout in seconds, in order to use a different timeout then default testTimeout. A number.",
         "toversion": "Server version to test up to it. Set it only when a real limit exists, otherwise use the 'marketplaces' field.",
         "marketplaces": "Marketplaces that the test should run on. Available options are: xsoar (which runs on xsoar_on_prem and xsoar_saas), xsoar_on_prem, xsoar_saas, marketplacev2 and xpanse. Can hold a list. Default value is xsoar and marketplacev2."
     },
@@ -147,7 +147,12 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File",
+            "timeout": 1200
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "CrowdStrike Falcon Basic Test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -163,7 +168,8 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
+            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation",
+            "memory_threshold": 150
         },
         {
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
@@ -901,10 +907,12 @@
         },
         {
             "playbookID": "Create Phishing Classifier V2 ML Test",
-            "timeout": 60000,
             "fromversion": "6.1.0",
             "instance_names": "ml_dummy_prod",
-            "integrations": "AzureWAF"
+            "scripts": [
+                "FindDuplicateEmailIncidents"
+            ],
+            "timeout": 1000
         },
         {
             "integrations": "ZeroFox",
@@ -957,7 +965,7 @@
             "playbookID": "Test XDR Playbook quarantine file command",
             "fromversion": "4.1.0",
             "timeout": 2500,
-            "memory_threshold": 200
+            "memory_threshold": 250
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -1959,7 +1967,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 5000
+            "timeout": 6000
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -2376,7 +2384,12 @@
         },
         {
             "integrations": "PrismaCloud v2",
-            "playbookID": "Prisma Cloud V2 Test"
+            "playbookID": "Prisma Cloud V2 Test",
+            "memory_threshold": 250
+        },
+         {
+            "integrations": "PrismaCloud v2",
+            "playbookID": "Prisma Cloud V2 Basic Test"
         },
         {
             "integrations": "Symantec Messaging Gateway",
@@ -4035,8 +4048,11 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
-            "fromversion": "5.5.0",
-            "timeout": 1000
+            "fromversion": "6.10.0",
+            "scripts": [
+                "FindDuplicateEmailIncidents"
+            ],
+            "has_api": false
         },
         {
             "integrations": "HPEArubaClearPass",
@@ -4151,8 +4167,7 @@
             "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
             "timeout": 60000,
             "fromversion": "6.1.0",
-            "instance_names": "ml_dummy_prod",
-            "integrations": "AzureWAF"
+            "instance_names": "ml_dummy_prod"
         },
         {
             "integrations": [
@@ -4821,6 +4836,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
             "fromversion": "6.1.0",
+            "memory_threshold": 100,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4838,7 +4854,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 250,
+            "memory_threshold": 300,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5117,7 +5133,7 @@
         {
             "playbookID": "playbook-SearchIncidentsV2InsideGenericPollng-Test",
             "fromversion": "5.0.0",
-            "timeout": 300
+            "timeout": 350
         },
         {
             "playbookID": "IsRFC1918-Test",
@@ -5235,7 +5251,7 @@
             "integrations": "Cortex XDR - XQL Query Engine",
             "playbookID": "Cortex XDR - XQL Query - Test",
             "fromversion": "6.2.0",
-            "memory_threshold": 90,
+            "memory_threshold": 250,
             "timeout": 500
         },
         {
@@ -5799,7 +5815,8 @@
         },
         {
             "integrations": "Palo Alto Networks AIOps",
-            "playbookID": "PaloAltoNetworksAIOps-Test"
+            "playbookID": "PaloAltoNetworksAIOps-Test",
+            "memory_threshold": 250
         },
         {
             "integrations": "MattermostV2",
@@ -6043,9 +6060,8 @@
         "PAN-OS-panorama-topology-test-pb": "The creds were expired CIAC-13553",
         "OpenPhish Test Playbook": "API issue CIAC-13583",
         "SaasSecurity-Test": "blocked by SCA-8028",
-        "Mail-Listener Test Playbook": " invalid creds CRTX-171878"
-
-
+        "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
+        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
@@ -6246,6 +6262,64 @@
         "PaloAltoNetworksAIOps",
         "Jira",
         "Campaign"
+    ],
+    "selected_nightly_tpb": [
+        "JiraV3 Test",
+        "PaloAltoNetworksAIOps-Test",
+        "PaloAltoNetworks_IoT-Test",
+        "SaasSecurity-Test",
+        "CortexXpanse_Test",
+        "PaloAltoNetworks_PrismaCloudCompute-Test",
+        "Azure SecurityCenter - Test",
+        "Cortex Data Lake Test",
+        "Palo Alto Networks - Malware Remediation Test",
+        "Office365_Feed_Test",
+        "Mail-Listener Test Playbook",
+        "Test-Shodan_v2",
+        "CrowdStrike Falcon Intel v2 - Test",
+        "Test_URLhaus",
+        "FeedMitreAttackv2_test",
+        "CrowdStrike_FalconX_Test",
+        "Test_SlackV3_NonCaching",
+        "MISP V3 Test",
+        "Alienvault_OTX_v2 - Test",
+        "IPInfo_v2Test",
+        "CreateCertificate-Test",
+        "Get EWS Folder Test",
+        "palo_alto_panorama_test_pb",
+        "EWS search-mailbox test",
+        "EWS V2 Send Mail Test",
+        "Send Email To Recipients",
+        "EWS V2 Send Mail Test 2",
+        "EWS V2 Send Mail Test 3",
+        "Mail Sender (New) Test",
+        "TestImageOCR",
+        "MicrosoftGraphMail-Test_dev_no_oproxy",
+        "MicrosoftGraphMail-Test_dev",
+        "MicrosoftGraphMail-Test_prod",
+        "Microsoft Defender Advanced Threat Protection - Test dev",
+        "Microsoft Defender Advanced Threat Protection - Test prod",
+        "Microsoft Defender Advanced Threat Protection - Test self deployed",
+        "Microsoft Defender - ATP - Indicators SC Test",
+        "Whois A new layout implemented with python-whois service",
+        "Detonate URL - WildFire-v2 - Test",
+        "CrowdStrike Falcon Basic Test",
+        "TestDemistoRestAPI",
+        "Cortex XDR - IOC - Test without fetch",
+        "Active Directory - automatic pagination check",
+        "QRadar_v3-test",
+        "Prisma Cloud V2 Basic Test",
+        "playbook-checkEmailAuthenticity-test",
+        "FormatURL-Test",
+        "Test CommonServer",
+        "PowerShellCommon-Test",
+        "SplunkPy-Test-V2_requests_handler",
+        "Autofocus Query Samples, Sessions and Tags Test Playbook",
+        "Endpoint Enrichment - Generic v2.1 - Test",
+        "servicenow_test_v2",
+        "Rasterize Test",
+        "AbuseIPDB Test",
+        "AbuseIPDB PopulateIndicators Test"
     ],
     "parallel_integrations": [
         "AWS - ACM",

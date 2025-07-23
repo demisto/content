@@ -1,6 +1,7 @@
 Check if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Check if a docker image is available for performing docker pull. Script simulate
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Check if a docker image is available for performing docker pull. Script simulate
 | trust_any_certificate | Trust any certificate \(not secure\) |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
