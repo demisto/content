@@ -1,0 +1,216 @@
+commonfields:
+  id: domain-enrichment
+  version: -1
+args:
+- name: domain
+  description: 'A comma-separated list of domains to enrich.'
+  required: true
+  isArray: true
+- name: brands
+  description: |-
+    Integrations brands to use for running external enrichment. If not provided, the command will run for all available integrations that implement the domain reputation command.
+    For multiple values, provide a comma-separated list of integration IDs. For example: "VirusTotal (API v3),WildFire-v2,Cortex Core - IR". Specifying enrichment_brands will force enable external_enrichment.
+  isArray: true
+- name: verbose
+  description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+- name: external_enrichment
+  description: Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in the Threat Intelligence Module (TIM) will be retrieved.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+- name: additional_fields
+  description: Whether to return unmapped (secondary) fields to the context output under the "domainEnrichment.AdditionalFields" path.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+comment: This script gathers domain reputation data from multiple integrations and returns a "domainEnrichment" object with consolidated information to the context output.
+name: domain-enrichment
+outputs:
+  - contextPath: DBotScore.Indicator
+    description: The value of the domain indicator.
+    type: String
+  - contextPath: DBotScore.Score
+    description: The risk score associated with the domain.
+    type: Number
+  - contextPath: DBotScore.Reliability
+    description: The reliability level of the score, for example, "C - Fairly Reliable".
+    type: String
+  - contextPath: DBotScore.Type
+    description: The type of the indicator.
+    type: String
+  - contextPath: DBotScore.Vendor
+    description: The vendor (source brand) that provided the score.
+    type: String
+  - contextPath: domainEnrichment.Brand
+    description: The enrichment vendor (source brand).
+    type: String
+  - contextPath: domainEnrichment.Score
+    description: The risk score associated with the domain.
+    type: Number
+  - contextPath: domainEnrichment.Name
+    description: The name of the domain including its extension.
+    type: String
+  - contextPath: domainEnrichment.EntryID
+    description: The identifier used to locate the domain in the Incident War Room.
+    type: String
+  - contextPath: domainEnrichment.Size
+    description: The domain size measured in bytes.
+    type: Number
+  - contextPath: domainEnrichment.MD5
+    description: The MD5 hash of the domain.
+    type: String
+  - contextPath: domainEnrichment.SHA1
+    description: The SHA1 hash of the domain.
+    type: String
+  - contextPath: domainEnrichment.SHA256
+    description: The SHA256 hash of the domain.
+    type: String
+  - contextPath: domainEnrichment.SHA512
+    description: The SHA512 hash of the domain.
+    type: String
+  - contextPath: domainEnrichment.SSDeep
+    description: The ssdeep hash of the domain, used to track versions or alterations.
+    type: String
+  - contextPath: domainEnrichment.Extension
+    description: The domain extension, indicating the type of domain format, for example, 'exe'.
+    type: String
+  - contextPath: domainEnrichment.Type
+    description: The domain type determined by libmagic.
+    type: String
+  - contextPath: domainEnrichment.Hostname
+    description: The hostname of the device where the domain was found.
+    type: String
+  - contextPath: domainEnrichment.Path
+    description: The directory path where the domain is located.
+    type: String
+  - contextPath: domainEnrichment.Company
+    description: The name of the company that released a binary.
+    type: String
+  - contextPath: domainEnrichment.ProductName
+    description: The product title to which the domain belongs.
+    type: String
+  - contextPath: domainEnrichment.DigitalSignature.Publisher
+    description: The entity that issued the digital signature of the domain.
+    type: String
+  - contextPath: domainEnrichment.Actor
+    description: The threat actor associated with the domain, if applicable.
+    type: String
+  - contextPath: domainEnrichment.Tags
+    description: Tags assigned to the domain for categorization or identification.
+    type: Array
+  - contextPath: domainEnrichment.FeedRelatedIndicators.value
+    description: Shows other indicators associated with the domain.
+    type: String
+  - contextPath: domainEnrichment.FeedRelatedIndicators.type
+    description: Identifies the types of associated indicators.
+    type: String
+  - contextPath: domainEnrichment.FeedRelatedIndicators.description
+    description: Describes the associated indicators providing context or relevance.
+    type: String
+  - contextPath: domainEnrichment.MalwareFamily
+    description: Names the malware family associated with the domain, if known.
+    type: String
+  - contextPath: domainEnrichment.Signature.Authentihash
+    description: The Authentihash, a cryptographic hash, used for verifying the domain's authenticity.
+    type: String
+  - contextPath: domainEnrichment.Signature.Description
+    description: Describes the domain signature data relevant to identification.
+    type: String
+  - contextPath: domainEnrichment.Signature.domainVersion
+    description: Indicates the version number of the domain.
+    type: String
+  - contextPath: domainEnrichment.Signature.InternalName
+    description: The internal name of the domain as designated by the creators.
+    type: String
+  - contextPath: domainEnrichment.Signature.OriginalName
+    description: The original name of the domain before any changes or renames.
+    type: String
+  - contextPath: domainEnrichment.Malicious.Vendor
+    description: Specifies the vendor that identified the domain as malicious.
+    type: String
+  - contextPath: domainEnrichment.Malicious.Description
+    description: Provides details on why the domain was deemed malicious.
+    type: String
+  - contextPath: domainEnrichment.Relationships.EntityA
+    description: The initiating entity in a relationship involving the domain.
+    type: String
+  - contextPath: domainEnrichment.Relationships.EntityB
+    description: The recipient or target entity in a relationship involving the domain.
+    type: String
+  - contextPath: domainEnrichment.Relationships.Relationship
+    description: Defines the type or nature of the relationship between entities.
+    type: String
+  - contextPath: domainEnrichment.Relationships.EntityAType
+    description: The type or classification of the initiating entity.
+    type: String
+  - contextPath: domainEnrichment.Relationships.EntityBType
+    description: The type or classification of the recipient entity.
+    type: String
+  - contextPath: domainEnrichment.Campaign
+    description: The identified campaign associated with the domain, if applicable.
+    type: String
+  - contextPath: domainEnrichment.TrafficLightProtocol
+    description: Specifies the TLP color designation suitable for handling the domain.
+    type: String
+  - contextPath: domainEnrichment.CommunityNotes.note
+    description: Community-contributed notes regarding observations or findings related to the domain.
+    type: String
+  - contextPath: domainEnrichment.CommunityNotes.timestamp
+    description: The timestamp when the community note was added.
+    type: Date
+  - contextPath: domainEnrichment.Publications.source
+    description: Identifies the publishing source of an article relating to the domain.
+    type: String
+  - contextPath: domainEnrichment.Publications.title
+    description: The title of the publication discussing aspects of the domain.
+    type: String
+  - contextPath: domainEnrichment.Publications.link
+    description: Provides a hyperlink to the full article or publication for detailed information.
+    type: String
+  - contextPath: domainEnrichment.Publications.timestamp
+    description: The publication date and time of the related article.
+    type: Date
+  - contextPath: domainEnrichment.Behavior.details
+    description: Detailed technical information describing the domain's behavior.
+    type: String
+  - contextPath: domainEnrichment.Behavior.title
+    description: A brief description of the behavior exhibited by the domain.
+    type: String
+  - contextPath: domainEnrichment.Imphash
+    description: The import hash (imphash) of the domain, specific to the imports used within an executable.
+    type: String
+  - contextPath: domainEnrichment.Quarantined
+    description: Indicates whether the domain has been quarantined to prevent potential harm.
+    type: Bool
+  - contextPath: domainEnrichment.Organization
+    description: The organization to which the domain is attributed.
+    type: String
+  - contextPath: domainEnrichment.AssociateddomainNames
+    description: The names of other domains associated with this domain.
+    type: Array
+  - contextPath: domainEnrichment.GlobalPrevalence
+    description: The global prevalence of the domain hash.
+    type: Number
+  - contextPath: domainEnrichment.LocalPrevalence
+    description: The local prevalence of the domain hash.
+    type: Number
+  - contextPath: domainEnrichment.AdditionalFields
+    description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
+    type: Object
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
