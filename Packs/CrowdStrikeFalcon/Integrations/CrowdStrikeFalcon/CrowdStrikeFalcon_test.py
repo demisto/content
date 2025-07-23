@@ -1895,6 +1895,25 @@ class TestFetchFunctionsTimestampFormatting:
         except Exception as e:
             pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
 
+    def test_fetch_endpoint_detections__is_detection_occurred_before_fetch_time(self, mocker):
+        from CrowdStrikeFalcon import fetch_endpoint_detections
+
+        mocked_res = [
+            {"created_timestamp": "1969-12-31T23:59:59.999999999Z", "composite_id": "123"},
+            {"created_timestamp": "1970-01-01T01:01:00.000000001Z", "composite_id": "123"},
+        ]
+        mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
+        mocker.patch(
+            "CrowdStrikeFalcon.get_detections_entities",
+            return_value={"resources": mocked_res},
+        )
+
+        start_fetch_time = "1970-01-01T01:01:00.000000000Z"
+
+        results = fetch_endpoint_detections({}, start_fetch_time, False)
+        assert len(results) == 1
+        assert results[0]["occurred"] == mocked_res[1]["created_timestamp"]
+
     @pytest.mark.parametrize(
         "product_type, detection_name_prefix",
         [
@@ -7860,3 +7879,19 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
 
     # Verify that fetch_events refers to the correctly indexes for each type by last_run object.
     assert last_run_identifiers_result == last_run_identifiers
+
+
+def test_is_detection_occurred_before_fetch_time():
+    from CrowdStrikeFalcon import is_detection_occurred_before_fetch_time
+
+    detection = {
+        "created_timestamp": "2020-05-17T17:30:38Z"
+    }
+    start_fetch_time = "2020-05-17T17:30:38Z"
+    assert is_detection_occurred_before_fetch_time(detection, start_fetch_time)
+
+    detection = {
+        "created_timestamp": "2020-05-17T17:30:38Z"
+    }
+    start_fetch_time = "2020-05-17T17:30:38Z"
+    assert not is_detection_occurred_before_fetch_time(detection, start_fetch_time)
