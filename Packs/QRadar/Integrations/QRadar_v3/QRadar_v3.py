@@ -2178,18 +2178,33 @@ def calculate_incident_size(incident: dict) -> int:
     """
     Calculate the approximate size of an incident in bytes for context storage.
 
+    This function uses a multi-step process with granular error handling:
+    1. It first attempts to create a string using JSON serialization, which is precise.
+    2. If JSON serialization fails (e.g., due to non-serializable types), it
+       falls back to using the basic `str()` representation.
+    3. It then attempts to encode the resulting string to UTF-8 to get the byte size.
+    4. If encoding fails (a rare case), it performs the encoding again but
+       replaces any problematic characters to guarantee a result.
+
     Args:
-        incident (dict): The incident dictionary
+        incident (dict): The incident dictionary.
 
     Returns:
-        int: Size in bytes
+        int: The calculated or estimated size of the incident in bytes.
     """
     try:
-        return len(json.dumps(incident, default=str).encode("utf-8"))
-    except Exception as e:
-        print_debug_msg(f"Error calculating incident size: {e}")
-        # Return a conservative estimate if calculation fails
-        return len(str(incident).encode("utf-8"))
+        string_to_encode = json.dumps(incident, default=str)
+    except TypeError as e:
+        print_debug_msg(f"Could not serialize incident to JSON: {e}. Using fallback string representation.")
+        string_to_encode = str(incident)
+
+    try:
+        encoded_bytes = string_to_encode.encode("utf-8")
+        return len(encoded_bytes)
+    except UnicodeEncodeError as e:
+        print_debug_msg(f"Could not encode string to UTF-8: {e}. Forcing encoding by replacing errors.")
+        encoded_bytes_safe = string_to_encode.encode("utf-8", errors="replace")
+        return len(encoded_bytes_safe)
 
 
 def is_incident_size_acceptable(incident: dict) -> bool:
