@@ -45,7 +45,7 @@ configuration:
   type: 8
   required: false
 - section: Collect
-  display: Incidents Fetch Interval
+  display: Incidents Fetch Interval in minutes
   name: incidentFetchInterval
   defaultvalue: "10"
   type: 19

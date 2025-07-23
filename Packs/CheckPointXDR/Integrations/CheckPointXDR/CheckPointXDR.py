@@ -37,17 +37,29 @@ class Client(BaseClient):
         self._login()
         headers = {"Authorization": f"Bearer {self.token}"}
         demisto.debug(f"Fetching XDR incidents with start timestamp: {startTS} and max fetch: {max_fetch}")
-        try:
-            res = self._http_request('GET', url_suffix=f"/app/xdr/api/xdr/v1/incidents?limit={max_fetch}&offset=0&from={startTS}",
-                                     headers=headers, resp_type='response')
-        except Exception as e:
-            demisto.error(f"Failed to fetch XDR incidents: {str(e)}")
-            raise DemistoException(f"Failed to fetch XDR incidents: {str(e)}")
 
-        incidents = res.json().get("data")
-        demisto.debug(f"Fetched {len(incidents)} XDR Incidents.")
+        all_incidents = []
+        offset = 0
+        has_more = True
 
-        return incidents
+        while has_more:
+            try:
+                url = f"/app/xdr/api/xdr/v1/incidents?limit={max_fetch}&offset={offset}&from={startTS}"
+                res = self._http_request('GET', url_suffix=url, headers=headers, resp_type='response')
+                incidents = res.json().get("data", {}).get("incidents", [])
+
+                demisto.debug(f"Fetched {len(incidents)} XDR incidents at offset {offset}.")
+                all_incidents.extend(incidents)
+
+                has_more = len(incidents) == max_fetch
+                offset += max_fetch
+
+            except Exception as e:
+                demisto.error(f"Failed to fetch XDR incidents: {str(e)}")
+                raise DemistoException(f"Failed to fetch XDR incidents: {str(e)}")
+
+        demisto.debug(f"Total incidents fetched: {len(all_incidents)}")
+        return all_incidents
 
     def update_incident(self, status: int, close_reason: str = "", incident_id: str = "") -> dict:
         """
@@ -153,22 +165,12 @@ def get_instances_id():
     integration_context = demisto.getIntegrationContext()
     instances_id = integration_context.get("instances_id", "")
 
-    if not instances_id:
-        demisto.debug(f"No instances_id found for brand {SCRIPT_BRAND}, searching...")
-        integration_search_res = demisto.internalHttpRequest("POST", "/settings/integration/search", '{"size":1000}')
-        body = integration_search_res.get("body", "{}")
-        instances = json.loads(body).get("instances", [])
-        instances_id = next((instance['id'] for instance in instances if instance['brand'] == SCRIPT_BRAND), "")
-        integration_context["instances_id"] = instances_id
-        demisto.setIntegrationContext(integration_context)
-        demisto.debug(f"Found {SCRIPT_BRAND} instances_id: {instances_id}")
-
     return instances_id
 
 
-def parse_incidents(xdr_incidents: dict[str, Any], mirroring_fields: dict, startTS: int, max_fetch: int):
+def parse_incidents(xdr_incidents: List, mirroring_fields: dict, startTS: int, max_fetch: int):
     incidents: list[dict[str, Any]] = []
-    for incident in xdr_incidents.get("incidents", []):
+    for incident in xdr_incidents:
         incident.update(mirroring_fields)
 
         # Constructing the XSOAR incident
