@@ -388,6 +388,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
