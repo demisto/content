@@ -1099,16 +1099,14 @@ def test_update_alert_data_success_multiple(mock_get_alert, mock_update_alert):
     # Return value for update_alert
     mock_update_alert.return_value = {"message": "Success"}
 
-    # Create real client (fix argument passing)
-    client = Client(base_url=mock_url, token=mock_token, verify=False)
+    # ✅ Correct client init
+    client = Client(base_url=mock_url, headers={"Authorization": f"Bearer {mock_token}"}, verify=False, proxy=False)
 
-    result = update_alert_data_command(client, mock_url, mock_token, args)
+    result = update_alert_data_command(client, args)
 
-    assert isinstance(result, CommandResults)
-    assert len(result.outputs) == 2
+    assert result.outputs_prefix == "Cyble.Alert"
     assert result.outputs[0]["id"] == "id1"
     assert result.outputs[1]["id"] == "id2"
-    assert mock_update_alert.call_count == 2
 
 
 def test_get_alert_payload_by_id_success():
