@@ -405,7 +405,7 @@ def reset_auth(error_codes: list = [], error_desc: str = "", graph_only: bool = 
 
 def reset_auth_command():
     """
-    A wrapper function for the reset_auth() which resets the Graph API authorization in the integration context.
+    A wrapper function for the reset_auth() which resets the cached API authorization in the integration context.
     """
     reset_auth()
     return_results(CommandResults(readable_output="Authorization was reset successfully."))
