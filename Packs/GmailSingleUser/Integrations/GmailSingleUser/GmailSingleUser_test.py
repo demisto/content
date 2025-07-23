@@ -3,7 +3,7 @@ import uuid
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from freezegun import freeze_time
 
 
@@ -348,6 +348,7 @@ def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, html
         - Ensure the correct MIMEText constructor is called based on body_type
     """
     import GmailSingleUser
+
     command_args = {
         "body_type": body_type,
         "to": "recipient@example.com",
@@ -375,6 +376,7 @@ def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, html
 
     send_mail_command(gmail_client)
     mocker_obj.assert_called_once()
+
 
 def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
     """
@@ -613,7 +615,7 @@ def test_get_incidents_command(mocker):
 @pytest.mark.parametrize(
     "test_input, expected_output",
     [
-        (("2023-01-01T12:00:00Z", "date"), datetime(2023, 1, 1, 12, 0, tzinfo=timezone.utc)),
+        (("2023-01-01T12:00:00Z", "date"), datetime(2023, 1, 1, 12, 0, tzinfo=UTC)),
         ((datetime(2023, 1, 1, 12, 0), "date"), datetime(2023, 1, 1, 12, 0)),
         ((datetime(2023, 1, 1, 12, 0), "str"), "2023-01-01T12:00:00Z"),
         (("2023-01-01T12:00:00Z", "str"), "2023-01-01T12:00:00Z"),
