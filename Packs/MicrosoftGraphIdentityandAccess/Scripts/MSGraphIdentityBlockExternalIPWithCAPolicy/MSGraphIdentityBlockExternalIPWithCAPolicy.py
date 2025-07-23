@@ -161,8 +161,10 @@ def update_existing_named_location(
         return f"IP {new_ip_cidr.split('/')[0]} was successfully added to the existing named location '{named_location_name}'."
     else:
         demisto.debug(f"IP {new_ip_cidr} already exists in named location '{named_location_name}'. No update needed.")
-        return (f"IP {new_ip_cidr.split('/')[0]} is already covered by the named location '{named_location_name}'. No action "
-                f"was needed.")
+        return (
+            f"IP {new_ip_cidr.split('/')[0]} is already covered by the named location '{named_location_name}'. No action "
+            f"was needed."
+        )
 
 
 def create_new_named_ip_location(named_location_name: str, ip: str) -> str:

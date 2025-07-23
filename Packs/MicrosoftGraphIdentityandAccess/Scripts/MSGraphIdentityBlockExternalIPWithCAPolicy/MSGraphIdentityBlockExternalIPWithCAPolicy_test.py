@@ -94,7 +94,9 @@ def test_execute_command_error(mocker):
 
 
 def test_get_named_ip_location_found(mocker):
-    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy._execute_command_and_handle_error", return_value={"value": [{"id": "x"}]})
+    mocker.patch(
+        "MSGraphIdentityBlockExternalIPWithCAPolicy._execute_command_and_handle_error", return_value={"value": [{"id": "x"}]}
+    )
     loc = get_named_ip_location("test")
     assert loc["id"] == "x"
 
@@ -140,20 +142,19 @@ def test_block_ip_main_new_location(mocker):
     mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.create_new_named_ip_location", return_value="id")
     create_policy = mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.create_conditional_access_policy")
     msg = block_external_ip_with_ca_policy_main_logic("8.8.8.8", "loc", "policy")
-    assert ("A new named location 'loc' was created for IP 8.8.8.8 and a new Conditional Access policy 'policy' was created to"
-            " block access from this IP.") in msg
+    assert (
+        "A new named location 'loc' was created for IP 8.8.8.8 and a new Conditional Access policy 'policy' was created to"
+        " block access from this IP."
+    ) in msg
     create_policy.assert_called_once()
 
 
 def test_block_ip_main_existing_location(mocker):
-    mocker.patch(
-        "MSGraphIdentityBlockExternalIPWithCAPolicy.get_named_ip_location",
-        return_value={"id": "x", "ipRanges": []}
-    )
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.get_named_ip_location", return_value={"id": "x", "ipRanges": []})
     expected_update_message = "IP 8.8.4.4 was successfully added to the existing named location 'loc'."
     update = mocker.patch(
         "MSGraphIdentityBlockExternalIPWithCAPolicy.update_existing_named_location",
-        return_value=expected_update_message  # The expected message for this scenario
+        return_value=expected_update_message,  # The expected message for this scenario
     )
     msg = block_external_ip_with_ca_policy_main_logic("8.8.4.4", "loc", "policy")
     assert msg == expected_update_message

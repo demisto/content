@@ -23,6 +23,10 @@
         "Core": {
             "mandatory": false,
             "display_name": "Core - Investigation and Response"
+        },
+        "MicrosoftGraphIdentityandAccess.": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Identity and Access"
         }
     },
     "marketplaces": [

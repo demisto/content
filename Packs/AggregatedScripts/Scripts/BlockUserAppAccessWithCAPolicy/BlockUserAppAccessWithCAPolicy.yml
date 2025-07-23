@@ -27,5 +27,7 @@ dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0
+dependson:
+  must: ['|||msgraph-identity-ca-policies-list', '|||msgraph-apps-service-principal-list']
 tests:
 - No tests (auto formatted)
