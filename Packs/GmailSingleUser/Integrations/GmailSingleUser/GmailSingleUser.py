@@ -171,7 +171,7 @@ class TextExtractHtmlParser(HTMLParser):
 
 
 class Client:
-    def html_to_text(self, html):  # pragma: no cover
+    def html_to_text(self, html):
         parser = TextExtractHtmlParser()
         try:
             parser.feed(html)
@@ -180,7 +180,7 @@ class Client:
             pass
         return parser.get_text()
 
-    def get_http_client_with_proxy(self):  # pragma: no cover
+    def get_http_client_with_proxy(self):
         https_proxy = PROXIES.get("https")
         proxy_info = None
         if https_proxy:
@@ -875,7 +875,7 @@ class Client:
                 entry_number += 1
         return attachments
 
-    def attachment_handler(self, message, attachments):
+    def attachment_handler(self, message, attachments):  # pragma: no cover
         """
         Adds the attachments to the email message
         """
