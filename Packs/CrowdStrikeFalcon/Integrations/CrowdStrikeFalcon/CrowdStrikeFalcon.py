@@ -3081,7 +3081,6 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
                 )
                 continue
 
-
             detection["incident_type"] = incident_type
             demisto.debug(
                 f"CrowdStrikeFalconMsg: Detection {detection_id} "

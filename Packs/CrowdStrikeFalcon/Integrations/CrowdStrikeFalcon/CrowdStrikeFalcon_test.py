@@ -7884,14 +7884,10 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
 def test_is_detection_occurred_before_fetch_time():
     from CrowdStrikeFalcon import is_detection_occurred_before_fetch_time
 
-    detection = {
-        "created_timestamp": "2020-05-17T17:30:38Z"
-    }
+    detection = {"created_timestamp": "2020-05-17T17:30:38Z"}
     start_fetch_time = "2020-05-17T17:30:38Z"
     assert is_detection_occurred_before_fetch_time(detection, start_fetch_time)
 
-    detection = {
-        "created_timestamp": "2020-05-17T17:30:38Z"
-    }
+    detection = {"created_timestamp": "2020-05-17T17:30:38Z"}
     start_fetch_time = "2020-05-17T17:30:38Z"
     assert not is_detection_occurred_before_fetch_time(detection, start_fetch_time)
