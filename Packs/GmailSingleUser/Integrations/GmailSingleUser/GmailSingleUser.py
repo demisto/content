@@ -126,39 +126,39 @@ class MemoryCache(Cache):
         MemoryCache._CACHE[url] = content
 
 
-class TextExtractHtmlParser(HTMLParser):  # pragma: no cover
+class TextExtractHtmlParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self) 
         self._texts: list = []
         self._ignore = False
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag, attrs):  # pragma: no cover
         if tag in ("p", "br") and not self._ignore:
             self._texts.append("\n")
         elif tag in ("script", "style"):
             self._ignore = True
 
-    def handle_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag, attrs):  # pragma: no cover
         if tag in ("br", "tr") and not self._ignore:
             self._texts.append("\n")
 
-    def handle_endtag(self, tag):
+    def handle_endtag(self, tag):  # pragma: no cover
         if tag in ("p", "tr"):
             self._texts.append("\n")
         elif tag in ("script", "style"):
             self._ignore = False
 
-    def handle_data(self, data):
+    def handle_data(self, data):  # pragma: no cover
         if data and not self._ignore:
             stripped = data.strip()
             if stripped:
                 self._texts.append(re.sub(r"\s+", " ", stripped))
 
-    def handle_entityref(self, name):
+    def handle_entityref(self, name):  # pragma: no cover
         if not self._ignore and name in name2codepoint:
             self._texts.append(chr(name2codepoint[name]))
 
-    def handle_charref(self, name):
+    def handle_charref(self, name):  # pragma: no cover
         if not self._ignore:
             if name.startswith("x"):
                 c = chr(int(name[1:], 16))
@@ -166,7 +166,7 @@ class TextExtractHtmlParser(HTMLParser):  # pragma: no cover
                 c = chr(int(name))
             self._texts.append(c)
 
-    def get_text(self):
+    def get_text(self):  # pragma: no cover
         return "".join(self._texts)
 
 
