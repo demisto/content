@@ -4,7 +4,7 @@ import asyncio
 
 
 async def send_post_request_async(endpoint):
-    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_2/"
+    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_hayun_workshop/"
     headers = {
         'Authorization': 'Basic YTph',
         'Content-Type': 'application/json' # Important: ensure this header is set
@@ -36,7 +36,7 @@ async def send_post_request_async(endpoint):
 
 
 async def send_get_request_async(endpoint):
-    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_2/"
+    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_hayun_workshop/"
     headers = {
     'Authorization': 'Basic YTph',
     }

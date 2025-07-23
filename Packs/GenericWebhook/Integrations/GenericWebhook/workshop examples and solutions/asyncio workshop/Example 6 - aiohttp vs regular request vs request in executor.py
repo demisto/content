@@ -6,7 +6,7 @@ import requests
 
 
 async def send_request_async(endpoint):
-    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_2/"
+    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_hayun_workshop/"
     headers = {
     'Authorization': 'Basic YTph',
     }
@@ -23,7 +23,7 @@ async def send_request_async(endpoint):
 
 
 async def send_request_sync(endpoint):
-    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_2/"
+    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_hayun_workshop/"
     headers = {
         'Authorization': 'Basic YTph',
     }
@@ -44,7 +44,7 @@ async def send_request_sync(endpoint):
         
 async def send_request_in_executor(endpoint):
     loop = asyncio.get_event_loop()
-    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_instance_2/"
+    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_hayun_workshop/"
     headers = {
         'Authorization': 'Basic YTph',
     }
