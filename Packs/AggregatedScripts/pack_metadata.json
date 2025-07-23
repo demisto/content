@@ -24,14 +24,14 @@
             "mandatory": false,
             "display_name": "Core - Investigation and Response"
         },
-        "MicrosoftGraphIdentityandAccess.": {
+        "MicrosoftGraphIdentityandAccess": {
             "mandatory": false,
             "display_name": "Azure Active Directory Identity And Access"
         },
-         "MicrosoftGraphApplications.": {
+         "MicrosoftGraphApplications": {
             "mandatory": false,
             "display_name": "Azure Active Directory Applications"
-        },.
+        }
     },
     "marketplaces": [
         "xsoar",
