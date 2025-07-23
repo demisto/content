@@ -126,7 +126,7 @@ class MemoryCache(Cache):
         MemoryCache._CACHE[url] = content
 
 
-class TextExtractHtmlParser(HTMLParser): # pragma: no cover
+class TextExtractHtmlParser(HTMLParser):  # pragma: no cover
     def __init__(self):
         HTMLParser.__init__(self) 
         self._texts: list = []
