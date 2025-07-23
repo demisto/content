@@ -1102,11 +1102,9 @@ def test_update_alert_data_success_multiple(mock_get_alert, mock_update_alert):
     # Create Client instance
     client = Client(base_url=mock_url, headers={"Authorization": f"Bearer {mock_token}"}, verify=False, proxy=False)
 
-    # Pass token explicitly as required
-    result = update_alert_data_command(client, mock_token, args)
+    result = update_alert_data_command(client, mock_url, mock_token, args)
 
-    # Assertions
-    assert result.outputs_prefix == "Cyble.Alert"
+    assert result.outputs_prefix == "CybleEvents.AlertUpdate"
     assert result.outputs[0]["id"] == "id1"
     assert result.outputs[1]["id"] == "id2"
 
