@@ -1,5 +1,5 @@
 args:
-- description: 'A single value or comma separated list of values to search.'
+- description: 'A comma-separated list of indicator values to filter the search results (e.g., "1.1.1.1,8.8.8.8").'
   name: value
   required: false
   isArray: true
@@ -13,7 +13,7 @@ args:
   name: type
   required: false
   isArray: true
-- description: 'The investigation that is linked to the indicator can be a single value or a comma separated list of values.'
+- description: 'The investigationIDs that are linked to the indicator can be a single value or a comma separated list of values.'
   name: investigationIDs
   required: false
   isArray: true
