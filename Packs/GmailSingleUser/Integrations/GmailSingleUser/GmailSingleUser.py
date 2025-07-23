@@ -132,23 +132,23 @@ class TextExtractHtmlParser(HTMLParser):
         self._texts: list = []
         self._ignore = False
 
-    def handle_starttag(self, tag, attrs):  # pragma: no cover
+    def handle_starttag(self, tag, attrs):
         if tag in ("p", "br") and not self._ignore:
             self._texts.append("\n")
         elif tag in ("script", "style"):
             self._ignore = True
 
-    def handle_startendtag(self, tag, attrs):  # pragma: no cover
+    def handle_startendtag(self, tag, attrs):
         if tag in ("br", "tr") and not self._ignore:
             self._texts.append("\n")
 
-    def handle_endtag(self, tag):  # pragma: no cover
+    def handle_endtag(self, tag):
         if tag in ("p", "tr"):
             self._texts.append("\n")
         elif tag in ("script", "style"):
             self._ignore = False
 
-    def handle_data(self, data):  # pragma: no cover
+    def handle_data(self, data):
         if data and not self._ignore:
             stripped = data.strip()
             if stripped:
@@ -171,7 +171,7 @@ class TextExtractHtmlParser(HTMLParser):
 
 
 class Client:
-    def html_to_text(self, html):
+    def html_to_text(self, html):  # pragma: no cover
         parser = TextExtractHtmlParser()
         try:
             parser.feed(html)
@@ -180,7 +180,7 @@ class Client:
             pass
         return parser.get_text()
 
-    def get_http_client_with_proxy(self):
+    def get_http_client_with_proxy(self):  # pragma: no cover
         https_proxy = PROXIES.get("https")
         proxy_info = None
         if https_proxy:
