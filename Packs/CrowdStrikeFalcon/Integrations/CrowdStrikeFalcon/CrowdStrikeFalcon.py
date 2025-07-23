@@ -439,7 +439,7 @@ def is_detection_occurred_before_fetch_time(detection: dict, start_fetch_time: s
     create_date = datetime.fromisoformat(created_time.replace("Z", "+00:00"))
     start_date = datetime.fromisoformat(start_fetch_time.replace("Z", "+00:00"))
     detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
-            
+
     if create_date < start_date:
         demisto.debug(
             f"CrowdStrikeFalconMsg: Detection {detection_id} created at {detection.get('created_timestamp')} "
