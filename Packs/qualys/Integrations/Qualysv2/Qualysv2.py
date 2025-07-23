@@ -795,7 +795,9 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     },
     "qualys-host-list-detection": {
         # show detection score `QDS` and score contributing factors `QDS_FACTORS`
-        "api_route": API_SUFFIX + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1",
+        "api_route": API_SUFFIX
+        + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1&\
+            host_metadata=all&show_cloud_tags=1",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -1771,7 +1773,7 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="GET",
-                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list"),
+                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"),
                 resp_type="text",
                 params=params,
                 timeout=timeout,
