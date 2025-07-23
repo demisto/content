@@ -21,10 +21,10 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-MAX_ALERTS = 50
+MAX_ALERTS = 500
 LIMIT_EVENT_ITEMS = 200
 MAX_RETRIES = 3
-MAX_THREADS = 5
+MAX_THREADS = 1
 MIN_MINUTES_TO_FETCH = 10
 DEFAULT_REQUEST_TIMEOUT = 600
 DEFAULT_TAKE_LIMIT = 5
@@ -104,7 +104,7 @@ def get_alert_payload(service, input_params: dict[str, Any], is_update=False):
 
         return {
             "filters": {
-                "service": service if isinstance(service, list) else [service],
+                "service": [service] ,
                 timestamp_field: {  # Use dynamic field based on `is_update`
                     "gte": ensure_aware(datetime.fromisoformat(input_params["gte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
                     "lte": ensure_aware(datetime.fromisoformat(input_params["lte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
@@ -308,8 +308,8 @@ class Client(BaseClient):
 
         if not url or not alerts_api_key:
             raise ValueError("Missing required URL or API key in input_params.")
-
         try:
+            demisto.debug(f"[get_data] final payload is: {payload_json}")
             response = self.make_request(url, alerts_api_key, "POST", payload_json)
             demisto.debug(f"[get_data] Response status code: {response.status_code}")
 
@@ -361,7 +361,7 @@ class Client(BaseClient):
         including the API key, base URL, skip, take, and time range
         :return: The latest created time of the data inserted
         """
-        latest_created_time = datetime.utcnow()
+        latest_created_time = datetime.utcnow().astimezone(pytz.UTC)
         input_params.update({"skip": 0, "take": int(input_params["limit"])})
         all_incidents = []
 
@@ -428,27 +428,28 @@ class Client(BaseClient):
         demisto.debug(f"[insert_data_in_cortex] Completed. Total incidents pushed: {len(all_incidents)}")
         return all_incidents, latest_created_time
 
-    def get_data_with_retry(self, service, input_params, is_update=False):
+
+
+    def  get_data_with_retry(self, service, input_params, is_update=False):
         """
-        Recursively splits time ranges and fetches data, inserting it into Cortex.
+        Splits time range into 1-day chunks and fetches data, inserting it into Cortex.
         Returns a tuple of (alerts, latest_created_time).
         """
+
         gte = parse_date(input_params["gte"])
         lte = parse_date(input_params["lte"])
-        demisto.debug(f"[get_data_with_retry] Time range: gte={gte}, lte={lte}")
+        demisto.debug(f"[get_data_with_retry] Full time range: gte={gte}, lte={lte}")
 
-        que = [[gte, lte]]
         latest_created_time = None
         all_alerts = []
 
-        while que:
-            current_gte, current_lte = que.pop(0)
-            demisto.debug(f"[get_data_with_retry] Processing time range: {current_gte} to {current_lte}")
+        current_start = gte
+        while current_start<=lte:
+            current_end = min(current_start + timedelta(days=1), lte)
 
-            current_params = input_params.copy()
-            current_params["gte"] = current_gte.isoformat()
-            current_params["lte"] = current_lte.isoformat()
+            demisto.debug(f"[get_data_with_retry] Processing 1-day chunk: {current_start} to {current_end}")
 
+            current_params = {**input_params, "gte": current_start.isoformat(), "lte": current_end.isoformat()}
             response = self.get_data(service, current_params, is_update=is_update)
 
             if "data" in response:
@@ -461,17 +462,10 @@ class Client(BaseClient):
                     latest_created_time = curr_time
                 else:
                     latest_created_time = max(latest_created_time, curr_time)
-
-            elif time_diff_in_mins(current_gte, current_lte) >= MIN_MINUTES_TO_FETCH:
-                mid_datetime = current_gte + (current_lte - current_gte) / 2
-                que.extend([[current_gte, mid_datetime], [mid_datetime + timedelta(microseconds=1), current_lte]])
-                demisto.debug(
-                    "[get_data_with_retry] Splitting time range further: "
-                    f"{current_gte} to {mid_datetime}, "
-                    f"{mid_datetime + timedelta(microseconds=1)} to {current_lte}"
-                )
             else:
-                demisto.debug(f"[get_data_with_retry] Unable to fetch data for time range: {current_gte} to {current_lte}")
+                demisto.debug(f"[get_data_with_retry] No data returned for chunk: {current_start} to {current_end}")
+
+            current_start = current_end + timedelta(microseconds=1)
 
         if latest_created_time is None:
             latest_created_time = datetime.utcnow()
@@ -481,6 +475,7 @@ class Client(BaseClient):
             f"[get_data_with_retry] Finished. Total alerts: {len(all_alerts)}, latest_created_time: {latest_created_time}"
         )
         return all_alerts, latest_created_time + timedelta(microseconds=1)
+
 
     def get_ids_with_retry(self, service, input_params, is_update=False):
         """
@@ -758,7 +753,7 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
     try:
         for chunk in chunkedServices:
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = [executor.submit(client.get_data_with_retry, service, input_params, is_update) for service in chunk]
+                futures = [executor.submit(client.get_data_with_retry, service, input_params, is_update) for  service in chunk]
             for future in concurrent.futures.as_completed(futures):
                 try:
                     alerts, fetched_time = future.result()
@@ -886,6 +881,10 @@ def get_fetch_severities(incident_severity):
         fetch_severities = ["LOW", "MEDIUM", "HIGH"]
     return fetch_severities
 
+def get_gte_limit(curr_gte: str) -> str:
+    server_gte = datetime.utcnow() - timedelta(days=7)
+    return max(curr_gte, server_gte.astimezone(pytz.UTC).isoformat())
+
 
 def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity, skip=True):
     """
@@ -903,15 +902,15 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
 
     initial_interval = demisto.params().get("first_fetch_timestamp", 1)
     if "event_pull_start_date" not in last_run:
-        event_pull_start_date = datetime.utcnow() - timedelta(days=int(initial_interval))
-        input_params["gte"] = event_pull_start_date.astimezone().isoformat()
+        event_pull_start_date = datetime.utcnow().astimezone(pytz.UTC) - timedelta(days=int(initial_interval))
+        input_params["gte"] = get_gte_limit(event_pull_start_date.isoformat())
         demisto.debug(f"[cyble_events] event_pull_start_date not in last_run, setting to: {event_pull_start_date.isoformat()}")
 
     else:
-        input_params["gte"] = last_run["event_pull_start_date"]
+        input_params["gte"] = get_gte_limit(last_run["event_pull_start_date"])
         demisto.debug(f"[cyble_events] event_pull_start_date found in last_run: {input_params['gte']}")
 
-    input_params["lte"] = datetime.utcnow().astimezone().isoformat()
+    input_params["lte"] = datetime.utcnow().astimezone(pytz.UTC).isoformat()
 
     fetch_services = get_fetch_service_list(client, incident_collections, url, token)
 
@@ -919,6 +918,8 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
 
     fetch_severities = get_fetch_severities(incident_severity)
     demisto.debug(f"[cyble_events] Retrieved fetch_severities: {fetch_severities}")
+
+    demisto.debug(f"[cyble_events] gte: {input_params['gte']}, lte: {input_params['lte']}")
 
     input_params.update(
         {
