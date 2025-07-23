@@ -765,6 +765,7 @@ def search_quarantine():
     limit_quarantine_occurred_time = argToBoolean(args.get("limit_quarantine_occurred_time", "True"))
     quarantine_limit = arg_to_number(args.get("quarantine_limit", 120))
     fetch_delta = arg_to_number(args.get("fetch_delta", 6))
+    check_exact_reception_time = argToBoolean(args.get("check_exact_reception_time", True))
 
     request_params = {
         "created_after": datetime.strftime(arg_time - get_time_delta("1 hour"), TIME_FORMAT),  # for safety
@@ -800,7 +801,7 @@ def search_quarantine():
                     found["mid"] = True
                     demisto.debug("PTR: Found the email, adding the alert")
                     emailTRAPtimestamp = int(message_delivery_time / 1000)
-                    if emailTAPtime == emailTRAPtimestamp:
+                    if emailTAPtime == emailTRAPtimestamp or not check_exact_reception_time:
                         demisto.debug(f'PTR: Adding the alert with id {alert.get("id")}')
                         found["email"] = True
                         lstAlert.append(
