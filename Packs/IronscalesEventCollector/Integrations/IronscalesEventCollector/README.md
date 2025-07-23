@@ -21,6 +21,11 @@ company.all
 partner.company.view
 company.view
 
+## Collect All Incidents
+
+Checking this box will fetch all incidents, not just the open ones.
+Note: Currently, events of type ATO and MTS are not supported.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.

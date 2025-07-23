@@ -282,7 +282,7 @@ def all_incidents_trimmer(
             events.extend(incident_to_events(incident))  # incident_to_events returns a list of events!
         except Exception as e:
             demisto.debug(f"Error in getting incident id {i} details, error: {e}")
-            # todo - need to print message to the customer
+            # Note: The IronScales endpoint does not support retrieving details for events of type ATO and MTS.
             continue
 
         last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids, client)  # type: ignore # we use the original
