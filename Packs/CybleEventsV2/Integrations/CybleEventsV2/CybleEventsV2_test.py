@@ -1090,20 +1090,22 @@ def test_update_alert_data_success_multiple(mock_get_alert, mock_update_alert):
     mock_url = "https://example.com"
     mock_token = "dummy-token"
 
-    # Return values for get_alert_by_id
+    # Mock return values for get_alert_by_id
     mock_get_alert.side_effect = [
         {"id": "id1", "service": "mock_service"},
         {"id": "id2", "service": "mock_service"},
     ]
 
-    # Return value for update_alert
+    # Mock return value for update_alert
     mock_update_alert.return_value = {"message": "Success"}
 
-    # ✅ Correct client init
+    # Create Client instance
     client = Client(base_url=mock_url, headers={"Authorization": f"Bearer {mock_token}"}, verify=False, proxy=False)
 
-    result = update_alert_data_command(client, args)
+    # Pass token explicitly as required
+    result = update_alert_data_command(client, mock_token, args)
 
+    # Assertions
     assert result.outputs_prefix == "Cyble.Alert"
     assert result.outputs[0]["id"] == "id1"
     assert result.outputs[1]["id"] == "id2"
