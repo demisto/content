@@ -1593,6 +1593,7 @@ There is no context output for this command.
 >|---|
 >| test_host |
 >
+
 ### prisma-sase-cie-user-get
 
 ***
@@ -1621,3 +1622,4 @@ Get the CIE user.
 | PrismaSase.CIE.User.manager | String | The manager. |
 | PrismaSase.CIE.User.name | String | The name. |
 | PrismaSase.CIE.User.unique_identifier | String | The unique identifier. |
+
