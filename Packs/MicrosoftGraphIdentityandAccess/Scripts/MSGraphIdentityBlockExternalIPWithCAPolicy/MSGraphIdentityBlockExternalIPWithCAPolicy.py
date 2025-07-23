@@ -66,7 +66,11 @@ def get_azure_command_error_details(res: dict[str, Any]) -> str:
                     return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
             except json.JSONDecodeError:
                 pass
-        return raw_contents
+        if isinstance(raw_contents, dict) and "error" in raw_contents:
+            error = raw_contents["error"]
+            return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
+
+        return str(raw_contents or res.get("ReadableContents", "Unknown error"))
     except Exception as ex:
         demisto.debug(f"Exception during error details extraction: {ex}")
         return f"Error extracting error message: {str(ex)}"
@@ -157,7 +161,8 @@ def update_existing_named_location(
         return f"IP {new_ip_cidr.split('/')[0]} was successfully added to the existing named location '{named_location_name}'."
     else:
         demisto.debug(f"IP {new_ip_cidr} already exists in named location '{named_location_name}'. No update needed.")
-        return f"IP {new_ip_cidr.split('/')[0]} is already covered by the named location '{named_location_name}'. No action was needed."
+        return (f"IP {new_ip_cidr.split('/')[0]} is already covered by the named location '{named_location_name}'. No action "
+                f"was needed.")
 
 
 def create_new_named_ip_location(named_location_name: str, ip: str) -> str:
@@ -277,7 +282,7 @@ def main():
         return_results(
             CommandResults(
                 readable_output=result_message,
-                outputs_prefix="BlockExternalIPWithCAPolicy",
+                outputs_prefix="MSGraphIdentityBlockExternalIPWithCAPolicy",
                 outputs={"IP": ip, "Status": "Blocked", "NamedLocation": named_location_name},
             )
         )

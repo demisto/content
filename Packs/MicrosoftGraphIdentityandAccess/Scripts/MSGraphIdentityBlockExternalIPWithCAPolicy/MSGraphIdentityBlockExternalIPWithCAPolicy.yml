@@ -1,7 +1,7 @@
 commonfields:
-  id: BlockExternalIPWithCAPolicy
+  id: MSGraphIdentityBlockExternalIPWithCAPolicy
   version: -1
-name: BlockExternalIPWithCAPolicy
+name: MSGraphIdentityBlockExternalIPWithCAPolicy
 script: ''
 type: python
 tags:

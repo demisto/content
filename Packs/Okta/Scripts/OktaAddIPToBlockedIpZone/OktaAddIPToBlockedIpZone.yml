@@ -1,7 +1,7 @@
 commonfields:
-  id: AddIPToOktaBlockedZone
+  id: OktaAddIPToBlockedIpZone
   version: -1
-name: AddIPToOktaBlockedZone
+name: OktaAddIPToBlockedIpZone
 script: ''
 type: python
 tags:

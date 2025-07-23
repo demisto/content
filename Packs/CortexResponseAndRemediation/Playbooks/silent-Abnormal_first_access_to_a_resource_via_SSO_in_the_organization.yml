@@ -2179,7 +2179,7 @@ tasks:
       version: -1
       name: Block IP with conditional access
       description: Blocks an external IP via Azure Conditional Access using named IP location and policy JSON.
-      scriptName: BlockExternalIPWithCAPolicy
+      scriptName: MSGraphIdentityBlockExternalIPWithCAPolicy
       type: regular
       iscommand: false
       brand: ""
@@ -2218,7 +2218,7 @@ tasks:
       version: -1
       name: Block IP with conditional access
       description: Blocks an external IP via Azure Conditional Access using named IP location and policy JSON.
-      scriptName: BlockExternalIPWithCAPolicy
+      scriptName: MSGraphIdentityBlockExternalIPWithCAPolicy
       type: regular
       iscommand: false
       brand: ""
@@ -2253,7 +2253,7 @@ tasks:
       version: -1
       name: Add IP to BlockedIpZone
       description: Checks if an IP is already covered by CIDR/range in Okta BlockedIpZone. If not, it adds it.
-      scriptName: AddIPToOktaBlockedZone
+      scriptName: OktaAddIPToBlockedIpZone
       type: regular
       iscommand: false
       brand: ""
@@ -4823,7 +4823,7 @@ tasks:
       version: -1
       name: Add IP to BlockedIpZone
       description: Checks if an IP is already covered by CIDR/range in Okta BlockedIpZone. If not, it adds it.
-      scriptName: AddIPToOktaBlockedZone
+      scriptName: OktaAddIPToBlockedIpZone
       type: regular
       iscommand: false
       brand: ""
