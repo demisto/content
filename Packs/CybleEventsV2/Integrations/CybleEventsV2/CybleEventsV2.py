@@ -104,7 +104,7 @@ def get_alert_payload(service, input_params: dict[str, Any], is_update=False):
 
         return {
             "filters": {
-                "service": [service] ,
+                "service": [service],
                 timestamp_field: {  # Use dynamic field based on `is_update`
                     "gte": ensure_aware(datetime.fromisoformat(input_params["gte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
                     "lte": ensure_aware(datetime.fromisoformat(input_params["lte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
@@ -428,9 +428,7 @@ class Client(BaseClient):
         demisto.debug(f"[insert_data_in_cortex] Completed. Total incidents pushed: {len(all_incidents)}")
         return all_incidents, latest_created_time
 
-
-
-    def  get_data_with_retry(self, service, input_params, is_update=False):
+    def get_data_with_retry(self, service, input_params, is_update=False):
         """
         Splits time range into 1-day chunks and fetches data, inserting it into Cortex.
         Returns a tuple of (alerts, latest_created_time).
@@ -444,7 +442,7 @@ class Client(BaseClient):
         all_alerts = []
 
         current_start = gte
-        while current_start<=lte:
+        while current_start <= lte:
             current_end = min(current_start + timedelta(days=1), lte)
 
             demisto.debug(f"[get_data_with_retry] Processing 1-day chunk: {current_start} to {current_end}")
@@ -475,7 +473,6 @@ class Client(BaseClient):
             f"[get_data_with_retry] Finished. Total alerts: {len(all_alerts)}, latest_created_time: {latest_created_time}"
         )
         return all_alerts, latest_created_time + timedelta(microseconds=1)
-
 
     def get_ids_with_retry(self, service, input_params, is_update=False):
         """
@@ -753,7 +750,7 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
     try:
         for chunk in chunkedServices:
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = [executor.submit(client.get_data_with_retry, service, input_params, is_update) for  service in chunk]
+                futures = [executor.submit(client.get_data_with_retry, service, input_params, is_update) for service in chunk]
             for future in concurrent.futures.as_completed(futures):
                 try:
                     alerts, fetched_time = future.result()
@@ -880,6 +877,7 @@ def get_fetch_severities(incident_severity):
     else:
         fetch_severities = ["LOW", "MEDIUM", "HIGH"]
     return fetch_severities
+
 
 def get_gte_limit(curr_gte: str) -> str:
     server_gte = datetime.utcnow() - timedelta(days=7)
