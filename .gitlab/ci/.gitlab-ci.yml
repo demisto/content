@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: ys-source-vs-shipped-check
+  CURRENT_BRANCH_NAME: ys-ship-code-bug-fix
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: ys-source-vs-shipped-check
+    ref: ys-ship-code-bug-fix
     project: "${CI_PROJECT_NAMESPACE}/infra"
