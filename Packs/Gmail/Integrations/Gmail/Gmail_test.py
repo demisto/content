@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from datetime import UTC
+from datetime import timezone
 
 import demistomock as demisto
 import pytest
@@ -640,7 +640,7 @@ def test_no_date_mail():
 
     from Gmail import get_email_context
 
-    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=UTC)
+    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=timezone.utc)
     context_gmail, _, _, occurred, is_valid = get_email_context(input_data.email_without_date, "some_mail")
     # check that the x-received date was usd
     assert occurred.timestamp() == expected_date.timestamp()
@@ -768,15 +768,15 @@ def test_last_run_after_fetch_incidents(mocker):
 
 
 EMAIL_NO_INTERNALDATE = input_data.email_without_date
-EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=UTC)
+EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=timezone.utc)
 EMAIL_INTERNALDATE_EARLY = input_data.email_with_early_internalDate
-EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=UTC)
+EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=timezone.utc)
 EMAIL_HEADER_EARLY = input_data.email_with_internalDate_header_early
-EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=UTC)
+EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=timezone.utc)
 EMAIL_NO_HEADER = input_data.email_no_header
-EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=UTC)
+EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=timezone.utc)
 EMAIL_NO_DATE = input_data.email_no_date
-EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=UTC)
+EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=timezone.utc)
 
 
 @pytest.mark.parametrize(
@@ -876,7 +876,7 @@ def test_parse_date_isoformat_server():
     from Gmail import parse_date_isoformat_server
 
     date = parse_date_isoformat_server("2017-10-24T14:13:20Z")
-    assert date == datetime.datetime(2017, 10, 24, 14, 13, 20, tzinfo=UTC)
+    assert date == datetime.datetime(2017, 10, 24, 14, 13, 20, tzinfo=timezone.utc)
     assert str(date) == "2017-10-24 14:13:20+00:00"
 
 
@@ -1072,6 +1072,81 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
     monkeypatch.setattr("Gmail.LEGACY_NAME", True)
     result = parse_mail_parts(part)
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "body_type, body, htmlBody, expected_call_args",
+    [
+        (
+            "text",
+            "This is the plain text body.",
+            "<html><body><b>This is the HTML body.</b></body></html>",
+            ("This is the plain text body.", "plain", "utf-8"),
+        ),
+        (
+            "html",
+            "This is the plain text body.",
+            "<html><body><b>This is the HTML body.</b></body></html>",
+            ("<html><body><b>This is the HTML body.</b></body></html>", "html"),
+        ),
+    ],
+)
+def test_send_mail_correct_body_used(mocker, body_type, body, htmlBody, expected_call_args):
+    """
+    Given:
+        - Both `body` and `htmlBody` are provided
+    When:
+        - `body_type` is either "text" or "html"
+    Then:
+        - Ensure the correct MIMEText constructor is called based on body_type
+    """
+    import Gmail
+    from Gmail import MIMEText, send_mail
+
+
+    mock_mime_text = mocker.patch.object(Gmail, "MIMEText", return_value=MIMEText(*expected_call_args))
+
+    mock_execute = mocker.Mock(return_value={"id": "mocked-message-id"})
+
+    mock_send_obj = mocker.Mock()
+    mock_send_obj.execute = mock_execute
+
+    mock_send = mocker.Mock()
+    mock_send.send.return_value = mock_send_obj
+
+    mock_messages = mocker.Mock()
+    mock_messages.return_value = mock_send
+
+    mock_users = mocker.Mock()
+    mock_users.return_value.messages = mock_messages
+
+    mock_service = mocker.Mock()
+    mock_service.users = mock_users
+
+    mocker.patch.object(Gmail, "get_service", return_value=mock_service)
+
+    send_mail(body_type=body_type,
+    emailto="test",
+    emailfrom="testing",
+    subject="subject",
+    body=body,
+    entry_ids=None,
+    cc="",
+    bcc="",
+    htmlBody=htmlBody,
+    replyTo=None,
+    file_names=None,
+    attach_cid=None,
+    transientFile=None,
+    transientFileContent=None,
+    transientFileCID=None,
+    manualAttachObj=None,
+    additional_headers=None,
+    templateParams=None,
+    sender_display_name="test",
+              )
+
+    mock_mime_text.assert_called_once()
 
 
 @pytest.mark.parametrize("display_name", [("Sender Name"), (None)])

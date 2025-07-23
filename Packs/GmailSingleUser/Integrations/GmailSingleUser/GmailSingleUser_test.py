@@ -3,7 +3,7 @@ import uuid
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from freezegun import freeze_time
 
 
@@ -374,8 +374,27 @@ def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, html
     mocker.patch.object(demisto, "args", return_value=command_args)
     mocker_obj = mocker.patch.object(GmailSingleUser, "MIMEText", return_value=MIMEText(*expected_call_args))
 
-    send_mail_command(gmail_client)
-    mocker_obj.assert_called_once()
+    gmail_client.send_mail(body_type=body_type,
+    emailto="test",
+    emailfrom="testing",
+    send_as=None,
+    subject="subject",
+    body=body,
+    entry_ids=None,
+    cc="",
+    bcc="",
+    htmlBody=htmlBody,
+    replyTo=None,
+    file_names=None,
+    attach_cid=None,
+    transientFile=None,
+    transientFileContent=None,
+    transientFileCID=None,
+    manualAttachObj=None,
+    additional_headers=None,
+    templateParams=None
+    )
+    mocker_obj.assert_called_once_with(*expected_call_args)
 
 
 def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
@@ -615,7 +634,7 @@ def test_get_incidents_command(mocker):
 @pytest.mark.parametrize(
     "test_input, expected_output",
     [
-        (("2023-01-01T12:00:00Z", "date"), datetime(2023, 1, 1, 12, 0, tzinfo=UTC)),
+        (("2023-01-01T12:00:00Z", "date"), datetime(2023, 1, 1, 12, 0, tzinfo=timezone.utc)),
         ((datetime(2023, 1, 1, 12, 0), "date"), datetime(2023, 1, 1, 12, 0)),
         ((datetime(2023, 1, 1, 12, 0), "str"), "2023-01-01T12:00:00Z"),
         (("2023-01-01T12:00:00Z", "str"), "2023-01-01T12:00:00Z"),
