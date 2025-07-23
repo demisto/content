@@ -46,6 +46,9 @@ Creating the Demisto Bot using Microsoft Azure Portal:
 2. In the Bot Handle field, type **Demisto Bot**.
 3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
 4. For Type of App, select **Single Tenant**.
+    - **Note ⚠️:** The **Multi Tenant** App type was deprecated by Microsoft.
+    Existing apps remain functional and do no require any changes.
+    It is possible to change existing apps to Single Tenant in the Azure portal's bot configuration, though this is not required.
 5. For Creation type, select **Create new Microsoft App ID** for Creation Type if you don't already have an app registration, otherwise, select **Use existing app registration**, and fill in you App ID.
     - **Note ⚠️:** if you choose **Use existing app registration**, make sure to delete the previous created bot with the same app id, remove it from the team it was added to as well.
 6. Click **Review + Create**, and wait for the validation to pass.

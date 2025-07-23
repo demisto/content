@@ -865,21 +865,25 @@ def get_bot_access_token() -> str:
     }
 
     if bot_type == "multi-tenant":
+        demisto.debug("Attempting authentication to the multi-tenant bot framework url")
         url: str = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
         response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
         if response.json().get("error", "") == "unauthorized_client":
             # Could not find bot-id in the common directory for multi-tenant bots, assume it is a single-tenant bot
+            demisto.debug("Failed to authenticate, falling back to single-tenant bot type")
             bot_type = "single-tenant"
 
     if bot_type == "single-tenant":
         tenant_id = integration_context.get("tenant_id")
         if not tenant_id:
             raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
+        demisto.debug(f"Attempting authentication to the {tenant_id} tenant specific bot framework url")
         url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
         response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
 
     if not response.ok:
         if "bot_type" in integration_context:  # Clear cached bot type on authentication error to avoid issues
+            demisto.debug("Authentication failed, resetting cached bot type")
             integration_context.pop("bot_type")
             set_integration_context(integration_context)
 
