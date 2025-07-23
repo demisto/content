@@ -130,3 +130,31 @@ Fetch incident event group
 | **Path**               | **Type** | **Description** |
 |------------------------| --- | --- |
 | CybleEvents.AlertGroup | String | Fetch all the alert groups |
+
+### update-alert-data
+
+***
+Update the status and/or severity of one or more alerts by ID.
+
+#### Base Command
+`update-alert-data`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                      | **Required** |
+|-------------------|------------------------------------------------------------------------------------------------------|--------------|
+| ids               | The alert ID(s) to update. Comma-separated if multiple.                                              | Required     |
+| status            | The new status to assign to the alert(s). Provide a single value or one per alert, comma-separated. | Optional     |
+| severity          | The new severity to assign to the alert(s). Provide a single value or one per alert, comma-separated.| Optional     |
+
+#### Context Output
+
+| **Path**                          | **Type** | **Description**                |
+|----------------------------------|----------|--------------------------------|
+| CybleEvents.AlertUpdate.id       | String   | The alert ID that was updated. |
+| CybleEvents.AlertUpdate.status   | String   | The updated status.            |
+| CybleEvents.AlertUpdate.user_severity | String | The updated user severity.     |
+
+#### Command Example
+```shell
+!update-alert-data ids="id1,id2" status="UNDER_REVIEW,RESOLVED" severity="HIGH,LOW"

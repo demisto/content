@@ -101,17 +101,17 @@ script:
         - name: ids
           description: |
             Comma-separated list of alert IDs to update.
-            Example: b9c5573d-4c3e-54c1-b340-7d9d7244350e,8a8e2bfc-2c39-5cd2-ae1f-8a8dc6f67b94
+            Example: b9c5573d-4c3e-54c1-b340-7d9d7244350e,8a8e2bfc-2c39-5cd2-ae1f-8a8dc6f67b94 .
           required: true
         - name: status
           description: |
             Comma-separated list of statuses. Must be one value (applied to all alerts) or exactly match the number of IDs.
-            Example: INFORMATIONAL or REVIEWED,RESOLVED
+            Example: INFORMATIONAL or REVIEWED,RESOLVED .
           required: false
         - name: severity
           description: |
             Comma-separated list of user severity levels. Must be one value or exactly match the number of IDs.
-            Example: HIGH or LOW,MEDIUM
+            Example: HIGH or LOW,MEDIUM.
           required: false
       outputs:
         - contextPath: CybleEvents.AlertUpdate.id
