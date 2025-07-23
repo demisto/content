@@ -23,11 +23,67 @@ class AlertStatus(Enum):
     DONE = 2
     ARCHIVE = 3
 
+    """
+    1. Go over the script and check that all parts are relevant only for agentix (issues).
+    2. Edit the .yml file to get the arguments and see if need to map them to the clinames for the query.
+    3. check regarding the startdate end fromdate how to use.
+    4. Check pagination.
+    5. Sha256 expose only one argument and build the query with or's between all sha256 values.
+    6. description and name with contain operator
+    7. Think of argument names and if they will need mapping to cli name.
+    
+    """
 
-query_filters = ['filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256' 'osparentsha256', 'cgosha256', 'domain', 'severity', 'details', 'name', 'categoryname', 'type', 'assetids', 'status' , 'sourcebrand' ]
+
+
+
+
+
+query_filters = ['filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256' 'osparentsha256', 'cgosha256',
+                 'domain', 'severity', 'details', 'name', 'categoryname', 'type', 'assetids', 'status' , 'sourcebrand' ]
+
 # notstatus:-status
-# category: type need to understand.
-# details: description
+# category: (categoryname) type need to understand.
+# details: description.
+# detection method = sourcebrand.
+
+def prepare_query(args: dict) -> str:
+    """
+    Prepares a query for list-based searches with safe handling.
+    
+    name and description should be with contains operator.
+    
+    not status should be -status.
+    all the shas will be entered all the time to all of the types with OR's.
+    
+    
+    Args:
+        key (str): Field/attribute to search
+        value (str/list): Value or list of values to match
+    Returns:
+        str: Formatted query string
+    """
+    query_sections = []
+    for key, values in args.items():
+        query = ""
+        if key in KEYS_TO_EXCLUDE_FROM_QUERY:
+            continue
+
+        if not values:
+            continue
+
+        if key == "IssuesIDs":
+            key = "investigationIDs"
+
+        values_as_list = argToList(values)
+        if len(values_as_list) > 1:
+            query = " OR ".join(f'{key}:"{str(v).strip()}"' for v in values_as_list)
+        else:
+            query = f'{key}:"{str(values_as_list[0]).strip()}"'
+
+        query_sections.append(query)
+
+    return " AND ".join(f"({qs})" for qs in query_sections) if query_sections else ""
 
 
 def check_if_found_incident(res: List):
