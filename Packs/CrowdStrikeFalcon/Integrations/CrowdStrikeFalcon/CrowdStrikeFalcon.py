@@ -438,10 +438,11 @@ def is_detection_occurred_before_fetch_time(detection: dict, start_fetch_time: s
     created_time = detection.get("created_timestamp", "")
     create_date = datetime.fromisoformat(created_time.replace("Z", "+00:00"))
     start_date = datetime.fromisoformat(start_fetch_time.replace("Z", "+00:00"))
-
+    detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
+            
     if create_date < start_date:
         demisto.debug(
-            f"CrowdStrikeFalconMsg: Detection {detection.get('detection_id')} created at {detection.get('created_timestamp')} "
+            f"CrowdStrikeFalconMsg: Detection {detection_id} created at {detection.get('created_timestamp')} "
             f"was created before the fetch start date: {start_fetch_time}"
         )
         return True
@@ -3113,7 +3114,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
         date_format=DETECTION_DATE_FORMAT,
         new_offset=detections_offset,
     )
-    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
+    demisto.debug(f"CrowdStrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
 
     return detections, current_fetch_info_detections
 
