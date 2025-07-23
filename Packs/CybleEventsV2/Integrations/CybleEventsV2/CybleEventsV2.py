@@ -714,7 +714,8 @@ def main():  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     hide_cvv_expiry = params.get("hide_data", False)
-    demisto.debug(f"Command being called is {params}")
+    command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
     mirror = params.get("mirror", False)
     incident_collections = params.get("incident_collections", [])
     incident_severity = params.get("incident_severity", [])
@@ -723,15 +724,15 @@ def main():  # pragma: no cover
         client = Client(base_url=params.get("base_url"), verify=verify_certificate, proxy=proxy)
         args = demisto.args()
 
-        if demisto.command() == "test-module":
+        if command == "test-module":
             # request was successful
             return_results(test_response(client, "GET", base_url, token))
 
-        elif demisto.command() == "fetch-incidents":
+        elif command == "fetch-incidents":
             # This is the call made when cyble-fetch-events command.
             last_run = demisto.getLastRun()
 
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            url = base_url + str(ROUTES[COMMAND[command]])
             data, next_run = cyble_events(
                 client, "POST", token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity, False
             )
@@ -739,44 +740,44 @@ def main():  # pragma: no cover
             demisto.setLastRun(next_run)
             demisto.incidents(data)
 
-        elif demisto.command() == "update-remote-system":
+        elif command == "update-remote-system":
             # Updates changes in incidents to remote system
             if mirror:
-                url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+                url = base_url + str(ROUTES[COMMAND[command]])
                 return_results(update_remote_system(client, "PUT", token, args, url))
 
             return
 
-        elif demisto.command() == "get-mapping-fields":
+        elif command == "get-mapping-fields":
             # Fetches mapping fields for outgoing mapper
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            url = base_url + str(ROUTES[COMMAND[command]])
 
             return_results(get_mapping_fields(client, token, url))
 
-        elif demisto.command() == "cyble-vision-subscribed-services":
+        elif command == "cyble-vision-subscribed-services":
             # This is the call made when subscribed-services command.
             return_results(fetch_subscribed_services_alert(client, "GET", base_url, token))
 
-        elif demisto.command() == "cyble-vision-fetch-alert-groups":
+        elif command == "cyble-vision-fetch-alert-groups":
             # Fetch alert group.
 
             validate_input(args, False)
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            url = base_url + str(ROUTES[COMMAND[command]])
             return_results(cyble_alert_group(client, "POST", token, url, args))
 
-        elif demisto.command() == "cyble-vision-fetch-iocs":
+        elif command == "cyble-vision-fetch-iocs":
             # This is the call made when cyble-vision-v2-fetch-iocs command.
 
             validate_input(args, True)
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            url = base_url + str(ROUTES[COMMAND[command]])
             command_results = cyble_fetch_iocs(client, "GET", token, args, url)
 
             return_results(command_results)
 
-        elif demisto.command() == "cyble-vision-fetch-alerts":
+        elif command == "cyble-vision-fetch-alerts":
             # This is the call made when cyble-vision-v2-fetch-alerts command.
 
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            url = base_url + str(ROUTES[COMMAND[command]])
             lst_alerts, next_run = cyble_events(
                 client, "POST", token, url, args, {}, hide_cvv_expiry, incident_collections, incident_severity, True
             )
@@ -789,10 +790,10 @@ def main():  # pragma: no cover
                 )
             )
         else:
-            raise NotImplementedError(f"{demisto.command()} command is not implemented.")
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
+        return_error(f"Failed to execute {command} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
