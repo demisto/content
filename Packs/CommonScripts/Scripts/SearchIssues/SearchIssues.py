@@ -60,20 +60,10 @@ def apply_filters(incidents: List, args: Dict):
 
 
 def add_incidents_link(data: List, platform: str):
-    # For XSIAM or Platform links
-    if platform == "x2" or platform == "unified_platform":
         server_url = "https://" + demisto.getLicenseCustomField("Http_Connector.url")
         for incident in data:
             incident_link = urljoin(server_url, f'alerts?action:openAlertDetails={incident.get("id")}-investigation')
             incident["alertLink"] = incident_link
-    # For XSOAR links
-    else:
-        server_url = demisto.demistoUrls().get("server")
-        prefix = "" if is_demisto_version_ge("8.4.0") else "#"
-        for incident in data:
-            incident_link = urljoin(server_url, f'{prefix}/Details/{incident.get("id")}')
-            incident["incidentLink"] = incident_link
-    return data
 
 
 def transform_to_alert_data(incidents: List):
