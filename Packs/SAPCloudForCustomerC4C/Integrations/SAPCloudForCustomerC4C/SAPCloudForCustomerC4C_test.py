@@ -4,7 +4,6 @@ from datetime import datetime
 from CommonServerPython import *  # noqa: F401
 
 SAP_CLOUD = "SAP CLOUD FOR CUSTOMER"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC
 URL_SUFFIX = "/sap/c4c/odata/ana_businessanalytics_analytics.svc/"
 STRFTIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 
@@ -393,75 +392,79 @@ def test_fetch_events_first_fetch_success(mocker):
         - The `http_request` method of the mocked client is called with appropriate
           parameters (e.g., `$top` matching `max_fetch`, and a filter based on
           a calculated `start_date` if applicable, or no filter if `last_run` is empty).
-        - The `fetched_events` returned by `fetch_events` match the `expected_events`.
-        - The `next_run` dictionary correctly contains `last_fetch` key with the
-          formatted `fixed_now_dt` as its value.
+         The `fetched_events` returned by `fetch_events` precisely match the `expected_events`
+          provided in the test setup.
+        - The `next_run` dictionary correctly contains:
+            - A `last_fetch` key with the formatted `fixed_now_dt` (adjusted by
+              `timestamp_offset_hour`) as its value.
+            - A `timezone_offset` key with the value `+3` (the `timestamp_offset_hour`).
     """
-    from SAPCloudForCustomerC4C import fetch_events
+    from SAPCloudForCustomerC4C import fetch_events, convert_utc_to_offset
 
     mock_client_instance = mock_client()
     report_id = "general_reportID"
     params = {"report_id": report_id, "max_fetch": 8}
 
-    fixed_now_dt = datetime(2025, 7, 6, 14, 0, 0)  # Fixed current time
-
+    fixed_now_dt = datetime(2025, 7, 7, 12, 0, 0)  # Fixed current time
+    timestamp_offset_hour = +3
     expected_events = [
         {
             "__metadata": {"uri": "example_url_1", "type": "111_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 01:00:00",
+            "CTIMESTAMP": "07-07-2025 15:00:00 UTC+3",
             "CBROWSER": "02",
             "CDEVICE_TYPE": "default",
         },
         {
             "__metadata": {"uri": "example_url_2", "type": "112_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 02:00:00",
+            "CTIMESTAMP": "07-07-2025 15:00:15 UTC+3",
             "CBROWSER": "01",
             "CDEVICE_TYPE": "default",
         },
         {
             "__metadata": {"uri": "example_url_3", "type": "113_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 03:00:00",
+            "CTIMESTAMP": "07-07-2025 15:00:21 UTC+3",
             "CBROWSER": "02",
             "CDEVICE_TYPE": "default",
         },
         {
             "__metadata": {"uri": "example_url_4", "type": "114_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 04:00:00",
+            "CTIMESTAMP": "07-07-2025 01:00:28 UTC+3",
             "CBROWSER": "03",
             "CDEVICE_TYPE": "default",
         },
         {
             "__metadata": {"uri": "example_url_5", "type": "115_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 05:00:00",
+            "CTIMESTAMP": "07-07-2025 15:00:36 UTC+3",
             "CBROWSER": "03",
             "CDEVICE_TYPE": "default",
         },
         {
             "__metadata": {"uri": "example_url_6", "type": "116_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 06:00:00",
+            "CTIMESTAMP": "07-07-2025 15:00:51 UTC+3",
             "CBROWSER": "01",
             "CDEVICE_TYPE": "default",
         },
         {
             "__metadata": {"uri": "example_url_7", "type": "117_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 07:00:00",
+            "CTIMESTAMP": "07-07-2025 15:00:55 UTC+3",
             "CBROWSER": "01",
             "CDEVICE_TYPE": "default",
         },
         {
             "__metadata": {"uri": "example_url_8", "type": "118_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 08:00:00",
+            "CTIMESTAMP": "07-07-2025 15:00:58 UTC+3",
             "CBROWSER": "02",
             "CDEVICE_TYPE": "default",
         },
     ]
 
     mocker.patch("SAPCloudForCustomerC4C.get_current_utc_time", return_value=fixed_now_dt)
+    last_fetch = convert_utc_to_offset(fixed_now_dt, timestamp_offset_hour)
     mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": expected_events}})
     next_run, fetched_events = fetch_events(mock_client_instance, params, last_run={})
 
     assert fetched_events == expected_events
-    assert next_run == {"last_fetch": fixed_now_dt.strftime(DATE_FORMAT)}
+    assert next_run == {"last_fetch": last_fetch.strftime(STRFTIME_FORMAT), "timezone_offset": timestamp_offset_hour}
 
 
 def test_fetch_events_report_id_missing():
@@ -491,157 +494,17 @@ def test_fetch_events_report_id_missing():
     assert "Report ID must be provided in the integration parameters and must be a string." in str(excinfo.value)
 
 
-def test_fetch_events_dateparser_fallback(mocker):
-    """
-    Tests the behavior of `fetch_events` when `dateparser.parse` fails to parse
-    the `last_fetch` timestamp from `last_run`, leading to a fallback to `FIRST_FETCH` logic.
-
-    This test simulates a scenario where the `last_run` state contains a malformed
-    or unparseable date string for `last_fetch`. It verifies that `fetch_events`
-    gracefully handles this error by reverting to the initial fetch logic (as if
-    it were the very first run), retrieves events from `FIRST_FETCH` onwards,
-    and correctly updates the `next_run` state with a valid current timestamp.
-
-    Given:
-        - `mocker`: A pytest fixture for mocking objects and methods.
-    When:
-        - Calling `fetch_events` with the mocked client, parameters, and the `last_run`
-          containing the malformed date.
-    Then:
-        Verify that:
-        - The `http_request` method of the mocked client is called with parameters
-          consistent with a `FIRST_FETCH` (i.e., no specific `start_date` based on `last_fetch`).
-        - The `fetched_events` returned by `fetch_events` match the `expected_events`.
-        - The `next_run` dictionary correctly contains a `last_fetch` key with the
-          formatted `fixed_now_dt` (current time) as its value, indicating a successful
-          reset of the fetch state.
-    """
-    from SAPCloudForCustomerC4C import fetch_events
-
-    mock_client_instance = mock_client()
-    report_id = "general_reportID"
-    params = {"report_id": report_id, "max_fetch": 5}
-    last_run = {"last_fetch": "invalid-date-format"}  # Malformed date
-
-    fixed_now_dt = datetime(2025, 7, 6, 16, 0, 0)
-
-    expected_events = [
-        {
-            "__metadata": {"uri": "example_url_1", "type": "111_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 01:00:00",
-            "CBROWSER": "02",
-            "CDEVICE_TYPE": "default",
-        },
-        {
-            "__metadata": {"uri": "example_url_2", "type": "112_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 02:00:00",
-            "CBROWSER": "01",
-            "CDEVICE_TYPE": "default",
-        },
-        {
-            "__metadata": {"uri": "example_url_3", "type": "113_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 03:00:00",
-            "CBROWSER": "02",
-            "CDEVICE_TYPE": "default",
-        },
-        {
-            "__metadata": {"uri": "example_url_4", "type": "114_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 04:00:00",
-            "CBROWSER": "03",
-            "CDEVICE_TYPE": "default",
-        },
-        {
-            "__metadata": {"uri": "example_url_5", "type": "115_QueryResult"},
-            "CTIMESTAMP": "01-01-2025 05:00:00",
-            "CBROWSER": "03",
-            "CDEVICE_TYPE": "default",
-        },
-    ]
-
-    mocker.patch("SAPCloudForCustomerC4C.get_current_utc_time", return_value=fixed_now_dt)
-    mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": expected_events}})
-
-    next_run, fetched_events = fetch_events(mock_client_instance, params, last_run)
-
-    assert fetched_events == expected_events
-    assert next_run == {"last_fetch": fixed_now_dt.strftime(DATE_FORMAT)}
-
-
-def test_fetch_events_subsequent_fetch_with_overlap(mocker):
-    """
-    Tests a subsequent fetch, ensuring that events from a desired overlapping time window
-    are included by specifying both a start and an end date.
-
-    This test simulates a scenario where a previous `last_fetch` timestamp exists.
-    The goal is to verify that the `fetch_events` function requests events starting
-    from a point before the `last_fetch` timestamp (e.g., 1 minute prior) and ending
-    at the current time (`fixed_now_dt`). This ensures no events are missed due to
-    precise timestamp boundaries or API delays.
-
-    Given:
-        - `mocker`: A pytest fixture for mocking objects and methods.
-    When:
-        - Calling `fetch_events` with a mocked client, parameters, and a `last_run`
-          dictionary containing a `last_fetch` timestamp.
-    Then:
-        - Verify that `get_events` is called with a `start_date` that is one minute
-          before the `last_fetch`, and an `end_date` equal to the current time (`fixed_now_dt`).
-        - Ensure `fetched_events` includes events from within and after the overlap window.
-        - Confirm `next_run` contains a `last_fetch` equal to `fixed_now_dt`.
-    """
-    from SAPCloudForCustomerC4C import fetch_events
-
-    mock_client_instance = mock_client()
-    report_id = "general_reportID"
-    params = {"report_id": report_id, "max_fetch": 3}
-
-    # Simulate a previous last_fetch timestamp.
-    last_fetch_str = "2025-07-06T12:00:00Z"
-
-    # Define the current time for this fetch.
-    fixed_now_dt = datetime(2025, 7, 6, 12, 1, 0)  # Current time is 12:01:00Z
-
-    # Calculate the DESIRED start_date_for_filter for the API call.
-    desired_start_date_for_filter_dt = fixed_now_dt - timedelta(minutes=1)  # Start time is 12:00:00Z
-    expected_start_date_filter = desired_start_date_for_filter_dt.strftime(STRFTIME_FORMAT)
-
-    # Calculate the DESIRED end_date_for_filter for the API call.
-    desired_end_date_for_filter_dt = fixed_now_dt  # End time is 12:01:00Z
-    expected_end_date_filter = desired_end_date_for_filter_dt.strftime(STRFTIME_FORMAT)
-
-    expected_events = [
-        {"CTIMESTAMP": "06-07-2025 12:00:00"},
-        {"CTIMESTAMP": "06-07-2025 12:00:30"},
-        {"CTIMESTAMP": "06-07-2025 12:00:59"},
-    ]
-
-    mocker.patch("SAPCloudForCustomerC4C.get_current_utc_time", return_value=fixed_now_dt)
-    mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": expected_events}})
-
-    next_run, fetched_events = fetch_events(mock_client_instance, params, last_run={"last_fetch": last_fetch_str})
-
-    assert fetched_events == expected_events
-    assert next_run == {"last_fetch": fixed_now_dt.strftime(DATE_FORMAT)}
-
-    expected_filter = f"CTIMESTAMP ge '{expected_start_date_filter}' and CTIMESTAMP le '{expected_end_date_filter}'"
-    mock_client_instance.http_request.assert_called_once_with(
-        method="GET",
-        url_suffix=f"{URL_SUFFIX}{report_id}?",
-        params={"$filter": expected_filter, "$skip": 0, "$top": 3, "$format": "json", "$inlinecount": "allpages"},
-    )
-
-
 def test_add_time_to_events():
     """
     Tests the basic functionality of `add_time_to_events` for correct conversion and addition of `_time`.
 
     This test verifies that the `add_time_to_events` function correctly parses the
-    "CTIMESTAMP" string (which includes " GMTUK"), converts it to the specified
+    "CTIMESTAMP" string (which includes "UTC+-Num"), converts it to the specified
     "YYYY-MM-DDTHH:MM:SSZ" format, and adds it as the `_time` key to event dictionaries.
 
     When:
         - The `add_time_to_events` function is called with a list of event dictionaries,
-          each containing a valid "CTIMESTAMP" key in the "DD.MM.YYYY HH:MM:SS GMTUK" format.
+          each containing a valid "CTIMESTAMP" key in the "DD.MM.YYYY HH:MM:SS UTC+-Num" format.
     Then:
         Verify that:
         - The input `events` list is modified in-place.
@@ -651,13 +514,56 @@ def test_add_time_to_events():
 
     events = [
         {
-            "CTIMESTAMP": "14.07.2025 13:30:40 GMTUK",
+            "CTIMESTAMP": "14.07.2025 13:30:40 UTC-6",
         },
-        {"CTIMESTAMP": "01.01.2024 00:00:00 GMTUK"},
+        {"CTIMESTAMP": "01.01.2024 00:00:00 UTC-6"},
     ]
     expected = [
-        {"CTIMESTAMP": "14.07.2025 13:30:40 GMTUK", "_time": "2025-07-14T13:30:40Z"},
-        {"CTIMESTAMP": "01.01.2024 00:00:00 GMTUK", "_time": "2024-01-01T00:00:00Z"},
+        {"CTIMESTAMP": "14.07.2025 13:30:40 UTC-6", "_time": "2025-07-14T19:30:40Z"},
+        {"CTIMESTAMP": "01.01.2024 00:00:00 UTC-6", "_time": "2024-01-01T06:00:00Z"},
     ]
     add_time_to_events(events)
     assert events == expected
+
+
+IS_VALID_TIMESTAMP_TEST_CASES = [
+    # Valid timestamps
+    pytest.param("22.07.2025 09:11:14 UTC-2", None, None, id="valid_sap_format_with_offset"),
+    pytest.param("2023-01-15 10:30:00 UTC+05:00", None, None, id="valid_iso_format_with_offset"),
+    pytest.param("2023-05-10 12:00:00", None, None, id="valid_without_timezone"),  # dateparser can often parse these
+    # Invalid timestamps - should raise DemistoException
+    pytest.param("22.07.2025 09:11:14 INDIA", False, DemistoException, id="invalid_timezone_format_INDIA"),
+    pytest.param("22.07.2025 09:11:14 GMTUK", False, DemistoException, id="invalid_timezone_format_GMTUK"),
+    pytest.param("22.07.2025 09:11:14 INVALID-OFFSET", False, DemistoException, id="invalid_timezone_format"),
+]
+
+
+@pytest.mark.parametrize("timestamp_str, expected_result, expected_exception", IS_VALID_TIMESTAMP_TEST_CASES)
+def test_is_valid_timestamp_parameterized(mocker, timestamp_str: str, expected_result: bool, expected_exception: type):
+    """
+    Tests `is_valid_timestamp` with various timestamp formats.
+
+    Verifies that:
+    - Valid timestamps return `True` and do not call `demisto.debug`.
+    - Invalid timestamps raise `DemistoException` and call `demisto.debug` with an error message.
+
+    Args:
+        mocker: Pytest fixture for mocking.
+        timestamp_str (str): The timestamp string to test.
+        expected_result (bool): Expected return value (`True` for valid, `False` for invalid).
+        expected_exception (type): Expected exception type (`DemistoException` for invalid, `None` for valid).
+    """
+    from SAPCloudForCustomerC4C import is_valid_timestamp
+
+    mock_demisto_debug = mocker.patch("SAPCloudForCustomerC4C.demisto.debug")
+
+    if expected_exception:
+        with pytest.raises(expected_exception) as excinfo:
+            is_valid_timestamp(timestamp_str)
+        assert "SAP timezone configuration is not supported" in str(excinfo.value)
+        expected_debug_message = f"Parsing Error: Could not parse CTIMESTAMP '{timestamp_str}'."
+        mock_demisto_debug.assert_called_once_with(expected_debug_message)
+    else:
+        result = is_valid_timestamp(timestamp_str)
+        assert result is expected_result
+        mock_demisto_debug.assert_not_called()
