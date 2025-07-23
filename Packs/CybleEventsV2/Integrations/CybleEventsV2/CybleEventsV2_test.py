@@ -1060,37 +1060,49 @@ class TestGetAlertById:
                 assert result is None
 
 
-def test_update_single_alert(mock_client):
+
+@patch("CybleEventsV2.get_alert_by_id")
+def test_update_single_alert(mock_get_alert, mock_client):
     args = {"ids": "id1", "status": "UNDER_REVIEW", "severity": "HIGH"}
     mock_url = "https://dummy.cyble.io"
     mock_token = "dummy-token"
 
-    with patch("CybleEventsV2.get_alert_by_id") as mock_get_alert:
-        mock_get_alert.return_value = {"id": "id1", "service": "mock_service"}
+    mock_get_alert.return_value = {"id": "id1", "service": "mock_service"}
+    mock_client.update_alert.return_value = {"message": "Success"}
 
-        result = update_alert_data_command(mock_client, mock_url, mock_token, args)
+    result = update_alert_data_command(mock_client, mock_url, mock_token, args)
 
-        assert isinstance(result, CommandResults)
-        assert len(result.outputs) == 1
-        assert result.outputs[0]["id"] == "id1"
-        assert result.outputs[0]["status"] == "UNDER_REVIEW"
-        assert result.outputs[0]["user_severity"] == "HIGH"
-        mock_client.update_alert.assert_called_once()
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["id"] == "id1"
+    assert result.outputs[0]["status"] == "UNDER_REVIEW"
+    assert result.outputs[0]["user_severity"] == "HIGH"
+    mock_client.update_alert.assert_called_once()
 
 
-def test_update_alert_data_success_multiple(mock_client):
-    args = {"ids": "id1,id2", "status": "INFORMATIONAL,REMEDIATION_NOT_REQUIRED", "severity": "LOW,HIGH"}
+@patch("CybleEventsV2.get_alert_by_id")
+def test_update_alert_data_success_multiple(mock_get_alert, mock_client):
+    args = {
+        "ids": "id1,id2",
+        "status": "INFORMATIONAL,REMEDIATION_NOT_REQUIRED",
+        "severity": "LOW,HIGH"
+    }
     mock_url = "https://dummy.cyble.io"
     mock_token = "dummy-token"
 
-    with patch("CybleEventsV2.get_alert_by_id") as mock_get_alert:
-        mock_get_alert.side_effect = [{"id": "id1", "service": "mock_service"}, {"id": "id2", "service": "mock_service"}]
+    mock_get_alert.side_effect = [
+        {"id": "id1", "service": "mock_service"},
+        {"id": "id2", "service": "mock_service"},
+    ]
+    mock_client.update_alert.return_value = {"message": "Success"}
 
-        result = update_alert_data_command(mock_client, mock_url, mock_token, args)
+    result = update_alert_data_command(mock_client, mock_url, mock_token, args)
 
-        assert isinstance(result, CommandResults)
-        assert len(result.outputs) == 2
-        mock_client.update_alert.assert_called_once()
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "id1"
+    assert result.outputs[1]["id"] == "id2"
+    mock_client.update_alert.assert_called_once()
 
 
 def test_get_alert_payload_by_id_success():
