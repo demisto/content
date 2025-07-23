@@ -35,7 +35,7 @@ def get_intelligence(params: dict, args: dict) -> None:
     :param args: Demisto args
     """
     try:
-        if args["lookup_depth"]:
+        if args.get("lookup_depth"):
             args["lookup_depth"] = int(args["lookup_depth"])
     except ValueError:
         raise ValueError("The value of the lookup_depth parameter must be an integer-like")
