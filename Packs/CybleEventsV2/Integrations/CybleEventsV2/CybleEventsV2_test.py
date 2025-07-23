@@ -1103,8 +1103,8 @@ def test_update_alert_data_success_multiple(mock_get_alert, mock_update_alert):
     # Return value for update_alert
     mock_update_alert.return_value = {"message": "Success"}
 
-    # Create real client (update_alert is now patched)
-    client = Client(mock_url, mock_token, verify=False)
+    # Create real client (fix argument passing)
+    client = Client(base_url=mock_url, token=mock_token, verify=False)
 
     result = update_alert_data_command(client, mock_url, mock_token, args)
 
