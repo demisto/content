@@ -435,18 +435,11 @@ def is_detection_fetch_type_selected(selected_types: list):
 def is_detection_occurred_before_fetch_time(detection: dict, start_fetch_time: str) -> bool:
     # the following test is to filter out detections that are older than the start_fetch_time.
     # The CS Falcon API does not do that reliably
-    created_time = detection.get("created_timestamp", "")
+    created_time = detection["created_timestamp"]
     create_date = datetime.fromisoformat(created_time.replace("Z", "+00:00"))
     start_date = datetime.fromisoformat(start_fetch_time.replace("Z", "+00:00"))
-    detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
 
-    if create_date < start_date:
-        demisto.debug(
-            f"CrowdStrikeFalconMsg: Detection {detection_id} created at {detection.get('created_timestamp')} "
-            f"was created before the fetch start date: {start_fetch_time}"
-        )
-        return True
-    return False
+    return create_date < start_date
 
 
 def is_incident_fetch_type_selected(selected_types: list):
@@ -3078,12 +3071,17 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
 
     if raw_res is not None and "resources" in raw_res:
         full_detections = demisto.get(raw_res, "resources")
+        # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
         for detection in full_detections:
+            detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
             if is_detection_occurred_before_fetch_time(detection, start_fetch_time):
+                demisto.debug(
+                    f"CrowdStrikeFalconMsg: Detection {detection_id} created at {detection.get('created_timestamp')} "
+                    f"was created before the fetch start date: {start_fetch_time}"
+                )
                 continue
 
-            # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
-            detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
+
             detection["incident_type"] = incident_type
             demisto.debug(
                 f"CrowdStrikeFalconMsg: Detection {detection_id} "
