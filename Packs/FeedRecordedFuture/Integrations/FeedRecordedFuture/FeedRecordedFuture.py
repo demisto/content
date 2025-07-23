@@ -422,15 +422,15 @@ def calculate_recorded_future_criticality_label(risk_from_feed):
 
 def calculate_recorded_future_cve_criticality_label(risk_from_feed):
     risk_from_feed = int(risk_from_feed)
-    if risk_from_feed >= RF_CRITICALITY_LABELS["Very Critical"]:
+    if risk_from_feed >= RF_CVE_CRITICALITY_LABELS["Very Critical"]:
         return "Very Critical"
-    elif risk_from_feed >= RF_CRITICALITY_LABELS["Critical"]:
+    elif risk_from_feed >= RF_CVE_CRITICALITY_LABELS["Critical"]:
         return "Critical"
-    elif risk_from_feed >= RF_CRITICALITY_LABELS["High"]:
+    elif risk_from_feed >= RF_CVE_CRITICALITY_LABELS["High"]:
         return "High"
-    elif risk_from_feed >= RF_CRITICALITY_LABELS["Medium"]:
+    elif risk_from_feed >= RF_CVE_CRITICALITY_LABELS["Medium"]:
         return "Medium"
-    elif risk_from_feed >= RF_CRITICALITY_LABELS["Low"]:
+    elif risk_from_feed >= RF_CVE_CRITICALITY_LABELS["Low"]:
         return "Low"
     else:
         return "No current evidence of risk"
