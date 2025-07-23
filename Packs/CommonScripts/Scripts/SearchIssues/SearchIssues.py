@@ -24,7 +24,12 @@ class AlertStatus(Enum):
     ARCHIVE = 3
 
 
-query_filters = ['filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256' 'osparentsha256', 'cgosha256', 'domain', 'severity', 'details', 'name', 'categoryname', 'type'  ]
+query_filters = ['filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256' 'osparentsha256', 'cgosha256', 'domain', 'severity', 'details', 'name', 'categoryname', 'type', 'assetids', 'status' , 'sourcebrand' ]
+# notstatus:-status
+# category: type need to understand.
+# details: description
+
+
 def check_if_found_incident(res: List):
     if res and isinstance(res, list) and isinstance(res[0].get("Contents"), dict):
         if "data" not in res[0]["Contents"]:
@@ -34,33 +39,6 @@ def check_if_found_incident(res: List):
         return True
     else:
         raise DemistoException(f"failed to get incidents from xsoar.\nGot: {res}")
-
-
-def is_valid_args(args: Dict):
-    array_args: List[str] = ["id", "name", "status", "notstatus", "reason", "level", "owner", "type", "query"]
-    error_msg: List[str] = []
-    for _key, value in args.items():
-        if _key in array_args:
-            try:
-                if _key == "id":
-                    if not isinstance(value, int | str | list):
-                        error_msg.append(
-                            f"Error while parsing the incident id with the value: {value}. The given type: "
-                            f"{type(value)} is not a valid type for an ID. The supported id types are: int, list and str"
-                        )
-                    elif isinstance(value, str):
-                        _ = bytes(value, "utf-8").decode("unicode_escape")
-                elif _key == "query":
-                    _ = bytes(value.replace("\\", "\\\\"), "utf-8").decode("unicode_escape")
-                else:
-                    _ = bytes(value, "utf-8").decode("unicode_escape")
-            except UnicodeDecodeError as ex:
-                error_msg.append(f'Error while parsing the argument: "{_key}" \nError:\n- "{ex!s}"')
-
-    if len(error_msg) != 0:
-        raise DemistoException("\n".join(error_msg))
-
-    return True
 
 
 def apply_filters(incidents: List, args: Dict):
@@ -113,8 +91,6 @@ def transform_to_alert_data(incidents: List):
 def search_incidents(args: Dict):  # pragma: no cover
     hr_prefix = ""
     platform = get_demisto_version().get("platform", "xsoar")
-    if not is_valid_args(args):
-        return None
 
     if fromdate := arg_to_datetime(args.get("fromdate", None)):
         from_date = fromdate.isoformat()
