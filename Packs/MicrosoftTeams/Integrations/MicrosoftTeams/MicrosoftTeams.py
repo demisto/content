@@ -353,7 +353,7 @@ def error_parser(resp_err: requests.Response, api: str = "graph") -> str:
         if api == "graph":
             error_codes = response.get("error_codes", [""])
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
-                reset_auth(error_codes, response.get("error_description", ""))
+                reset_auth(error_codes, response.get("error_description", ""), graph_only=True)
 
             error = response.get("error", {})
             err_str = (
@@ -373,10 +373,10 @@ def error_parser(resp_err: requests.Response, api: str = "graph") -> str:
         return resp_err.text
 
 
-def reset_auth(error_codes: list = [], error_desc: str = ""):
+def reset_auth(error_codes: list = [], error_desc: str = "", graph_only: bool = False):
     """
-    Reset the Graph API authorization in the integration context.
-    This function clears the current authorization data: current_refresh_token, graph_access_token, graph_valid_until
+    Reset the cached API authorization data in the integration context.
+    This function clears the current authorization data: current graph/bot tokens, token validity, refresh tokens and bot type
     """
 
     integration_context: dict = get_integration_context()
@@ -385,9 +385,10 @@ def reset_auth(error_codes: list = [], error_desc: str = ""):
     integration_context.pop("graph_valid_until", "")
     integration_context[AUTHCODE_TOKEN_PARAMS] = "{}"
     integration_context[CREDENTIALS_TOKEN_PARAMS] = "{}"
-    integration_context.pop("bot_access_token", "")
-    integration_context.pop("bot_valid_until", "")
-    integration_context.pop("bot_type", "")
+    if not graph_only:
+        integration_context.pop("bot_access_token", "")
+        integration_context.pop("bot_valid_until", "")
+        integration_context.pop("bot_type", "")
     set_integration_context(integration_context)
 
     if error_codes or error_desc:
