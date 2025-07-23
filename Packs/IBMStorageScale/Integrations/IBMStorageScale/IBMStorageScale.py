@@ -1,5 +1,5 @@
 import asyncio
-from queue import Queue
+from asyncio import Queue
 from urllib.parse import urlparse
 
 import demistomock as demisto  # noqa: F401
@@ -56,7 +56,7 @@ class Client:
         """
         Orchestrates fetching events for manual commands, returning them for display.
         """
-        fetcher = _ConcurrentEventFetcher(self, limit)
+        fetcher = _ConcurrentEventFetcher(self, limit or DEFAULT_PAGE_SIZE)
         events, has_more = await fetcher.run()
         return events, has_more
 
@@ -67,7 +67,7 @@ class Client:
         demisto.info("Starting fetch-events cycle.")
         start_time = time.monotonic()
 
-        fetcher = _ConcurrentEventFetcher(self, max_events)
+        fetcher = _ConcurrentEventFetcher(self, max_events or DEFAULT_PAGE_SIZE)
         events, has_more = await fetcher.run()
 
         end_time = time.monotonic()

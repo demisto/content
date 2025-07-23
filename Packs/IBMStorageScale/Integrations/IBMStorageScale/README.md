@@ -80,7 +80,6 @@ This allows the integration to overlap network requests, significantly reducing 
 
 You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook. After running a command, a DBot message appears in the War Room with the command results.
 
-
 #### 1. ibm-storage-scale-get-events
 
 Gets a limited number of the most recent audit log events for interactive investigation.
