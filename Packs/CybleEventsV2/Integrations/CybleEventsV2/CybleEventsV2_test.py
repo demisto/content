@@ -1062,10 +1062,14 @@ class TestGetAlertById:
 
 
 @patch("CybleEventsV2.get_alert_by_id")
-def test_update_single_alert(mock_get_alert, mock_client):
+@patch("CybleEventsV2.Client")
+def test_update_single_alert(mock_client_class, mock_get_alert):
     args = {"ids": "id1", "status": "UNDER_REVIEW", "severity": "HIGH"}
     mock_url = "https://dummy.cyble.io"
     mock_token = "dummy-token"
+
+    mock_client = Mock()
+    mock_client_class.return_value = mock_client
 
     mock_get_alert.return_value = {"id": "id1", "service": "mock_service"}
     mock_client.update_alert.return_value = {"message": "Success"}
@@ -1079,9 +1083,9 @@ def test_update_single_alert(mock_get_alert, mock_client):
     assert result.outputs[0]["user_severity"] == "HIGH"
     mock_client.update_alert.assert_called_once()
 
-
+@patch("CybleEventsV2.Client.update_alert")
 @patch("CybleEventsV2.get_alert_by_id")
-def test_update_alert_data_success_multiple(mock_get_alert, mock_client):
+def test_update_alert_data_success_multiple(mock_get_alert, mock_update_alert):
     args = {
         "ids": "id1,id2",
         "status": "INFORMATIONAL,REMEDIATION_NOT_REQUIRED",
@@ -1090,19 +1094,25 @@ def test_update_alert_data_success_multiple(mock_get_alert, mock_client):
     mock_url = "https://dummy.cyble.io"
     mock_token = "dummy-token"
 
+    # Return values for get_alert_by_id
     mock_get_alert.side_effect = [
         {"id": "id1", "service": "mock_service"},
         {"id": "id2", "service": "mock_service"},
     ]
-    mock_client.update_alert.return_value = {"message": "Success"}
 
-    result = update_alert_data_command(mock_client, mock_url, mock_token, args)
+    # Return value for update_alert
+    mock_update_alert.return_value = {"message": "Success"}
+
+    # Create real client (update_alert is now patched)
+    client = Client(mock_url, mock_token, verify=False)
+
+    result = update_alert_data_command(client, mock_url, mock_token, args)
 
     assert isinstance(result, CommandResults)
     assert len(result.outputs) == 2
     assert result.outputs[0]["id"] == "id1"
     assert result.outputs[1]["id"] == "id2"
-    mock_client.update_alert.assert_called_once()
+    assert mock_update_alert.call_count == 2
 
 
 def test_get_alert_payload_by_id_success():
