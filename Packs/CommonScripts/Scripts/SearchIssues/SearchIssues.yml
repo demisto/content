@@ -24,15 +24,12 @@ args:
 - description: Filter by description.
   isArray: true
   name: description
-- description: Filter by name.
-  isArray: true
-  name: name
 - description: Filter by category.
   isArray: true
   name: category
-- description: Filter by assetids.
+- description: Filter by issueid.
   isArray: true
-  name: assetids
+  name: issueid
 - description: Filter by detectionmethod.
   isArray: true
   name: detectionmethod

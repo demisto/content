@@ -48,7 +48,7 @@ query_filters = [
     "name",
     "categoryname",
     "type",
-    "assetids",
+    "issueid",
     "status",
     "sourcebrand",
 ]
@@ -56,7 +56,7 @@ query_filters = [
 SHA256_FIELDS = ["filesha256", "initiatorsha256", "filemacrosha256", "targetprocesssha256", "osparentsha256", "cgosha256"]
 
 
-FIELD_TO_MACHINE_NAME = {"category": "categoryname", "description": "details", "detectionmethod": "sourcebrand"}
+FIELD_TO_MACHINE_NAME = {"category": "categoryname", "description": "details", "detectionmethod": "sourcebrand", "issueid": "id"}
 
 
 def prepare_query(args: dict) -> str:
