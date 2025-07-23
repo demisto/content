@@ -385,7 +385,7 @@ def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, html
     ec_key = "Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)"
     assert ec_key in context_output
     context = context_output[ec_key][0]
-
+    print(context)
     assert context.get("Body") == expected_body
     assert context.get("BodyHTML") == expected_html
 
@@ -415,7 +415,7 @@ def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
     mocker_obj = mocker.patch.object(GmailSingleUser, "MIMEMultipart", return_value=MIMEMultipart())
 
     gmail_single_user_client.send_mail(
-        body_type="html",
+        body_type="",
         emailto="test@gmail.com",
         emailfrom="test@gmail.com",
         send_as="test@gmail.com",
@@ -424,7 +424,7 @@ def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
         subject="hello-world",
         body="body",
         htmlBody="<>",
-        entry_ids=[],
+        entry_ids=["test"],
         replyTo=None,
         file_names=[],
         attach_cid=[],
