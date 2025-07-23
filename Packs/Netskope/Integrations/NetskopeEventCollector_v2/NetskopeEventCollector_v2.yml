@@ -75,7 +75,7 @@ script:
       defaultValue: 10000
     description: Returns events extracted from SaaS traffic and or logs.
     name: netskope-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/auth-utils:1.0.0.3639076
   runonce: false
   script: '-'
   subtype: python3
