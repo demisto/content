@@ -17,7 +17,7 @@ import re
 import string
 import sys
 from datetime import datetime, timedelta
-from distutils.util import strtobool
+from setuptools._distutils.util import strtobool
 from email.header import Header
 from email.mime.application import MIMEApplication
 from email.mime.audio import MIMEAudio
