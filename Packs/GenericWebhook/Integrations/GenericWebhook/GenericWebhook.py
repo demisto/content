@@ -246,10 +246,10 @@ async def handle_get_request_step_1(name=""):
     """
     global STEP_1_DICT
     global lock_1
-    await asyncio.sleep(1) # Shorter sleep
+    await asyncio.sleep(0.5) # Shorter sleep
     async with lock_1:
         if STEP_1_DICT[name] == 3:
-            response = "You passed the first step! you know how to get instructions for the second step, this time, add arad (str) field to your request params."
+            response = "You passed the first step! you know how to get instructions for the second step."
         else:
             response = f"Currently got only {STEP_1_DICT[name]} subscriptions under {name=}"
     if not name:
@@ -263,9 +263,6 @@ async def handle_post_request_step_2(request: Request):
     try:
         request_data = await request.json() # Renamed from 'request' to avoid shadowing
         demisto.debug(f"WH: Got request; {request_data}")
-
-        # Remove or comment out this line if 'event' is not present in your client's payload
-        # event_type = request_data['event'] # <--- THIS IS LIKELY THE CULPRIT
 
         payload = request_data['payload']
         name = payload["name"]
@@ -384,7 +381,7 @@ async def handle_get_request_finish_line_get_place(name=""):
             suffix = "rd"
         else:
             suffix = "th"
-        response = f"Congratulations! you're the {index + 1}{suffix} developer to finish the exercise."
+        response = f"Congratulations! you're the {index + 1}{suffix} developer to finish the exercise. To get the full list of developers who finished the exercise, send a get request to the 'finish_line/list_results' endpoint."
     else:
         response = f'Your name "{name}" does not appear in the finishers list.'
     return Response(status_code=status.HTTP_200_OK, content=str(response), media_type="application/json")
@@ -393,7 +390,7 @@ async def handle_get_request_finish_line_get_place(name=""):
 @app.get('/finish_line/list_results')
 async def handle_get_request_finish_line_list_results():
     global FINISH_LIST
-    response = f"There has been a total of {len(FINISH_LIST)} developers who finished all steps:\n"
+    response = f"There has been a total of {len(FINISH_LIST)} developers who finished all steps:"
     for i, name in enumerate(FINISH_LIST):
         if i == 0:
             suffix = "st"
@@ -403,11 +400,11 @@ async def handle_get_request_finish_line_list_results():
             suffix = "rd"
         else:
             suffix = "th"
-        response = f"{name} Finished in {i+1}{suffix} place."
+        response = f"{response}\n{name} Finished in {i+1}{suffix} place."
     return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
 
 @app.get('/instructions')
-async def handle_get_request_instructions(hint=False, arad="", step_number=0):
+async def handle_get_request_instructions(hint=False, step_number=0):
     answer = ""
     if not step_number:
         answer = """Welcome to the asyncio workshop exercise!
@@ -421,21 +418,17 @@ Here are some general instructions:
     4. Remember, arad=naknik.
     5. Have fun!"""
     elif step_number == "1":
-        answer = "Send your name 3 times to the step_1 endpoint."
+        answer = "Post your name 3 times to the step_1 endpoint, then send your name to the step_1 endpoint via get request."
         if hint == "true":
-            answer = "Your name is being kept for only 5 seconds. Think about a way to send multiple requests simultaneously."
+            answer = "Your name is being kept for only 3 seconds while the request takes 3 seconds. Think about a way to send multiple requests simultaneously."
     elif step_number == "2":
+        answer = "Post your name 3 times to the step_2 endpoint, then send your name to the step_2_completion_attempt endpoint via get request."
         if hint == "true":
-            answer = """If you're still trying to figure out how to get the instructions, send a param less request to this endpoint.
-            If you're trying to figure out how to solve it, go to sleep."""
-        elif arad == "naknik":
-            answer = "Nice! you figured the password.. To move on to the next step"
-        else:
-            answer = "wrong password."
+            answer = """Go to sleep."""
     elif step_number == "3":
-        answer = ""
+        answer = "Post your name to the step_3 once endpoint, then send your name to the step_3/get_pass endpoint to obtain the password and post it to the step_3/enter_password endpoint."
         if hint == "true":
-            answer = """You may want to use while loops."""
+            answer = """You may want to print the response from get_pass to find out how to extract the password."""
     # step two: send to two different endpoints.
     # step three: obtain password and send it to another endpoint - this will add your name to the winners list
     # Create winners endpoint
