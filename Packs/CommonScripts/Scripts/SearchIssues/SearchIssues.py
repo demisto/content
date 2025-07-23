@@ -24,6 +24,7 @@ class AlertStatus(Enum):
     ARCHIVE = 3
 
 
+query_filters = ['filesha256', 'initiatorsha256', 'filemacrosha256', 'targetprocesssha256' 'osparentsha256', 'cgosha256', 'domain', 'severity', 'details', 'name', 'categoryname', 'type'  ]
 def check_if_found_incident(res: List):
     if res and isinstance(res, list) and isinstance(res[0].get("Contents"), dict):
         if "data" not in res[0]["Contents"]:
@@ -232,6 +233,7 @@ def search_incidents(args: Dict):  # pragma: no cover
 
 def main():  # pragma: no cover
     args: Dict = demisto.args()
+    prepare_query()
     try:
         readable_output, outputs, raw_response = search_incidents(args)
         if search_results_label := args.get("searchresultslabel"):
