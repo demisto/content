@@ -405,8 +405,11 @@ class Client(BaseClient):
 
         return self._http_request(
             "GET",
-            f"{TYPE_TO_ENDPOINT[resource_type]}/{resource_id}/collections",
-            params={"filter": f"owner:Mandiant {collection_type_filter}"},
+            f"{TYPE_TO_ENDPOINT[resource_type]}/{resource_id}/associations",
+            params={
+                "filter": f"owner:Mandiant {collection_type_filter}",
+                "exclude_attributes": "aggregations",
+            },
             ok_codes=(404, 429, 200),
         )
 
@@ -2657,12 +2660,18 @@ def _get_curated_collections_command(client: Client, args: dict, collection_type
     collections = []
     for collection in data:
         attributes = collection.get("attributes", {})
+        targeted_regions = {
+            item.get("country_iso2") for item in attributes.get("targeted_regions_hierarchy", []) if item.get("country_iso2")
+        }
+        targeted_industries = {
+            item.get("industry_group") for item in attributes.get("targeted_industries_tree", []) if item.get("industry_group")
+        }
         collections.append(
             {
                 "name": attributes.get("name"),
                 "last_modification_date": epoch_to_timestamp(attributes.get("last_modification_date")),
-                "targeted_regions": ", ".join(attributes.get("targeted_regions", [])),
-                "targeted_industries": ", ".join(attributes.get("targeted_industries", [])),
+                "targeted_regions": ", ".join(targeted_regions),
+                "targeted_industries": ", ".join(targeted_industries),
                 "link": f'https://www.virustotal.com/gui/collection/{collection["id"]}',
             }
         )
