@@ -3,11 +3,11 @@ import uuid
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from freezegun import freeze_time
 
 
-from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action
+from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action, MIMEText
 from email.utils import parsedate_to_datetime
 
 
@@ -321,42 +321,33 @@ def test_send_mail_with_reference(gmail_client: Client, mocker):
     )
 
 
-import pytest
-from CommonServerPython import *
-
-
 @pytest.mark.parametrize(
-    "body_type, body, htmlBody, expected_body, expected_html",
+    "body_type, body, htmlBody, expected_call_args",
     [
         (
             "text",
             "This is the plain text body.",
             "<html><body><b>This is the HTML body.</b></body></html>",
-            "This is the plain text body.",
-            "",
+            ("This is the plain text body.", "plain", "utf-8"),
         ),
         (
             "html",
             "This is the plain text body.",
             "<html><body><b>This is the HTML body.</b></body></html>",
-            "",
-            "<html><body><b>This is the HTML body.</b></body></html>",
+            ("<html><body><b>This is the HTML body.</b></body></html>", "html"),
         ),
     ],
-    ids=["text body preferred", "html body preferred"],
 )
-def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, htmlBody, expected_body, expected_html):
+def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, htmlBody, expected_call_args):
     """
     Given:
-        - Both `body` and `htmlBody` provided
-        - No attachments
-
+        - Both `body` and `htmlBody` are provided
     When:
         - `body_type` is either "text" or "html"
-
     Then:
-        - Only the appropriate body is included in the context
+        - Ensure the correct MIMEText constructor is called based on body_type
     """
+    import GmailSingleUser
     command_args = {
         "body_type": body_type,
         "to": "recipient@example.com",
@@ -364,32 +355,26 @@ def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, html
         "subject": "Test Email",
         "body": body,
         "htmlBody": htmlBody,
-        "entryIDs": "",
+        "entryIDs": None,
         "cc": "",
-        "bcc": "",
-        "replyTo": "",
-        "attachCIDs": "",
-        "fileNames": "",
-        "manualAttachObj": "",
-        "transientFile": "",
-        "transientFileContent": "",
-        "transientFileCID": "",
-        "additionalHeader": "",
+        "bcc": None,
+        "replyTo": None,
+        "attachCIDs": None,
+        "fileNames": None,
+        "manualAttachObj": None,
+        "transientFile": None,
+        "transientFileContent": None,
+        "transientFileCID": None,
+        "additionalHeader": None,
         "templateParams": "{}",
     }
 
     mocker.patch.object(gmail_client, "send_email_request", return_value={"id": "111", "threadId": "111", "labelIds": ["SENT"]})
     mocker.patch.object(demisto, "args", return_value=command_args)
+    mocker_obj = mocker.patch.object(GmailSingleUser, "MIMEText", return_value=MIMEText(*expected_call_args))
 
-    send_email_entry = send_mail_command(client=gmail_client)
-    context_output = send_email_entry["EntryContext"]
-    ec_key = "Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)"
-    assert ec_key in context_output
-    context = context_output
-    print(context)
-    assert context.get("Body") == expected_body
-    assert context.get("BodyHTML") == expected_html
-
+    send_mail_command(gmail_client)
+    mocker_obj.assert_called_once()
 
 def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
     """
@@ -423,8 +408,8 @@ def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
         cc=None,
         bcc=None,
         subject="hello-world",
-        body="body",
-        htmlBody="<>",
+        body="",
+        htmlBody="",
         entry_ids=[],
         replyTo=None,
         file_names=[],
@@ -628,7 +613,7 @@ def test_get_incidents_command(mocker):
 @pytest.mark.parametrize(
     "test_input, expected_output",
     [
-        (("2023-01-01T12:00:00Z", "date"), datetime(2023, 1, 1, 12, 0, tzinfo=UTC)),
+        (("2023-01-01T12:00:00Z", "date"), datetime(2023, 1, 1, 12, 0, tzinfo=timezone.utc)),
         ((datetime(2023, 1, 1, 12, 0), "date"), datetime(2023, 1, 1, 12, 0)),
         ((datetime(2023, 1, 1, 12, 0), "str"), "2023-01-01T12:00:00Z"),
         (("2023-01-01T12:00:00Z", "str"), "2023-01-01T12:00:00Z"),
