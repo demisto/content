@@ -912,7 +912,6 @@
             "scripts": [
                 "FindDuplicateEmailIncidents"
             ],
-            "integrations": "Rasterize",
             "timeout": 1000
         },
         {
@@ -4053,7 +4052,6 @@
             "scripts": [
                 "FindDuplicateEmailIncidents"
             ],
-            "integrations": "Rasterize",
             "has_api": false
         },
         {

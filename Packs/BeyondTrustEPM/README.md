@@ -19,7 +19,7 @@ Data normalization capabilities:
 
 Sign in to your AWS account and create a dedicated Amazon S3 bucket, which collects the generic logs that you want to capture.
 
-For more information on creating an S3 bucket,  [see Ingest Generic Logs from Amazon S3.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) for further instructions on how to create a S3 bucket.
+For more information on creating an S3 bucket,  [see Ingest Generic Logs from Amazon S3.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3) for further instructions on how to create a S3 bucket.
 
 ### BeyondTrust EPM side
 
@@ -50,7 +50,7 @@ To connect Cortex XSIAM to the AWS S3 bucket, follow the below steps.
 
     | Parameter    | Value                                                                                                                                           |
     |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|
-    | `SQS URL`    | For more information, see  [Configure an Amazon Simple Queue Service (SQS).](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3). |
+    | `SQS URL`    | For more information, see  [Configure an Amazon Simple Queue Service (SQS).](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3). |
     | `Name`       | BeyondTrust EPM Logs.                 |
     | `AWS Client ID`     |                                                                                                                                   |
     | `AWS Client Secret`    |                                                                                                                                  |
@@ -60,6 +60,6 @@ To connect Cortex XSIAM to the AWS S3 bucket, follow the below steps.
     | `Product`    | Enter EPM.                                                                                                                                 |
     | `Compression`    | Select the desired compression.                                                                                                                                 |
 
-For more information, see this [Ingest Generic Logs from Amazon S3.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
+For more information, see this [Ingest Generic Logs from Amazon S3.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3).
 
 </~XSIAM>
