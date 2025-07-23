@@ -19,6 +19,8 @@ from GetUserData import (
     get_data,
     prisma_cloud_get_user,
     azure_get_risky_user,
+    iam_get_user,
+    gsuite_get_user
 )
 from pytest_mock import MockerFixture
 
@@ -1130,6 +1132,64 @@ class TestGetUserData:
         assert isinstance(result[1], dict)
         assert result[1] == expected_account
 
+    def test_iam_get_user(self, mocker: MockerFixture):
+        """
+        Given:
+            A Command object for iam_cloud_get_user.
+        When:
+            The function is called with the Command object.
+        Then:
+            It returns the expected tuple of readable outputs and user output.
+        """
+        command = Command("Okta IAM", "iam-get-user", {"user-profile": "user"})
+        mock_outputs = {"email": "user_email.com", "username": "name_user", "id": "user_id"}
+        expected_account = {"Email": "user_email.com", "Source": "Okta IAM", "Username": "name_user", "ID": "user_id"}
+
+        mocker.patch(
+            "GetUserData.run_execute_command",
+            return_value=([mock_outputs], "Human readable output", []),
+        )
+        mocker.patch("GetUserData.get_output_key", return_value="IAM.Vendor")
+        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
+        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
+
+        result = iam_get_user(command, additional_fields=True)
+
+        assert isinstance(result, tuple)
+        assert len(result) == 2
+        assert isinstance(result[0], list)
+        assert isinstance(result[1], dict)
+        assert result[1] == expected_account
+
+    def test_gsuite_get_user(self, mocker: MockerFixture):
+        """
+        Given:
+            A Command object for iam_cloud_get_user.
+        When:
+            The function is called with the Command object.
+        Then:
+            It returns the expected tuple of readable outputs and user output.
+        """
+        command = Command("GSuiteAdmin", "gsuite-user-get", {"user": "user"})
+        mock_outputs = {"primaryEmail": "user_email.com", "fullName": "name_user", "id": "user_id"}
+        expected_account = {"Email": "user_email.com", "Source": "GSuiteAdmin", "Username": "name_user", "ID": "user_id"}
+
+        mocker.patch(
+            "GetUserData.run_execute_command",
+            return_value=([mock_outputs], "Human readable output", []),
+        )
+        mocker.patch("GetUserData.get_output_key", return_value="GSuite.User")
+        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
+        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
+
+        result = gsuite_get_user(command, additional_fields=True)
+
+        assert isinstance(result, tuple)
+        assert len(result) == 2
+        assert isinstance(result[0], list)
+        assert isinstance(result[1], dict)
+        assert result[1] == expected_account
+
 
 def test_main_successful_execution(mocker: MockerFixture):
     """
@@ -1165,6 +1225,8 @@ def test_main_successful_execution(mocker: MockerFixture):
     mocker.patch("GetUserData.xdr_list_risky_users", return_value=([], {}))
     mocker.patch("GetUserData.azure_get_risky_user", return_value=([], {}))
     mocker.patch("GetUserData.prisma_cloud_get_user", return_value=([], {}))
+    mocker.patch("GetUserData.iam_get_user", return_value=([], {}))
+    mocker.patch("GetUserData.gsuite_get_user", return_value=([], {}))
     # Mock return_results
     mock_return_results = mocker.patch("GetUserData.return_results")
 

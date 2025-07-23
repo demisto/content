@@ -431,7 +431,7 @@ def iam_get_user(
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_user(
         source=command.brand,
-        email_address=outputs.get("email"),
+        email_address=outputs.pop("email", None),
         **outputs,
         additional_fields=additional_fields,
     )
@@ -450,7 +450,8 @@ def gsuite_get_user(
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_user(
         source=command.brand,
-        email_address=outputs.get("primaryEmail"),
+        email_address=outputs.pop("primaryEmail", None),
+        username=outputs.pop("fullName", None),
         **outputs,
         additional_fields=additional_fields,
     )

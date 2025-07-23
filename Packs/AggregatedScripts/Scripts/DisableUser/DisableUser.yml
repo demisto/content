@@ -8,12 +8,17 @@ args:
 - description: List of emails of the users to disable. At least one of "user_id", "user_name" or "user_email" is required.
   name: user_email
   isArray: true
-- description: List of brands (integrations) to disable users from.
+- description: List of brands to disable users from.
   isArray: true
   name: brands
-- description: List of instances to disable users from.
-  isArray: true
-  name: instances
+  auto: PREDEFINED
+  predefined:
+  - 'Active Directory Query v2'
+  - 'Microsoft Graph User'
+  - 'Okta v2'
+  - 'Okta IAM'
+  - 'AWS-ILM'
+  - 'GSuiteAdmin'
 - description: Whether to fetch a human-readable entry for each command or just the final result. If set to true, all commands will have human-readable entries. If set to false, only the final result will be human-readable.
   name: verbose
   auto: PREDEFINED
