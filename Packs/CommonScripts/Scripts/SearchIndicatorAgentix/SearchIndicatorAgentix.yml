@@ -13,8 +13,8 @@ args:
   name: type
   required: false
   isArray: true
-- description: 'The investigationIDs that are linked to the indicator can be a single value or a comma separated list of values.'
-  name: investigationIDs
+- description: 'The IssuesIDs that are linked to the indicator can be a single value or a comma separated list of values.'
+  name: IssuesIDs
   required: false
   isArray: true
 - defaultValue: "25"

@@ -19,7 +19,7 @@ This script searches indicators by specified fields.
 | value | A single value or comma separated list of values to search. |
 | expirationStatus | The expiration status of the indicator. |
 | type | The type of the indicator to search can be a single value or a comma separated list of values. |
-| investigationIDs | The investigation that is linked to the indicator can be a single value or a comma separated list of values. |
+| IssuesIDs | The issues that is linked to the indicator can be a single value or a comma separated list of values. |
 | size | The number of indicators to return, defaults to a max of 25. |
 
 ## Outputs

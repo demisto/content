@@ -24,6 +24,9 @@ def prepare_query(args: dict) -> str:
         if not values:
             continue
 
+        if key == "IssuesIDs":
+            key = "investigationIDs"
+
         values_as_list = argToList(values)
         if len(values_as_list) > 1:
             query = " OR ".join(f'{key}:"{str(v).strip()}"' for v in values_as_list)
