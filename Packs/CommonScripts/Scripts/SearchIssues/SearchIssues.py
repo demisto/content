@@ -120,24 +120,7 @@ def check_if_found_issue(res: list):
             return False
         return True
     else:
-        raise DemistoException(f"failed to get issues from xsoar.\nGot: {res}")
-
-
-def apply_filters(issues: list, args: dict):
-    names_to_filter = set(argToList(args.get("name")))
-    types_to_filter = set(argToList(args.get("type")))
-
-    filtered_issues = []
-    for issue in issues:
-        issue_id, issue_type = issue.get("id"), issue.get("type")
-        if names_to_filter and issue["name"] not in names_to_filter:
-            continue
-        demisto.debug(f"{issue_id=}, {issue_type=}")
-        if types_to_filter and issue["type"] not in types_to_filter:
-            continue
-        filtered_issues.append(issue)
-
-    return filtered_issues
+        raise DemistoException(f"failed to get issues.\nGot: {res}")
 
 
 def add_issue_link(data: list):
@@ -148,7 +131,7 @@ def add_issue_link(data: list):
     return data
 
 
-def transform_to_issue_data(issues: List):
+def transform_to_issue_data(issues: List): # todo verify customfields
     for issue in issues:
         issue["hostname"] = issue.get("CustomFields", {}).get("hostname")
         issue["initiatedby"] = issue.get("CustomFields", {}).get("initiatedby")
@@ -159,8 +142,7 @@ def transform_to_issue_data(issues: List):
 
     return issues
 
-
-def search_issues(args: Dict):  # pragma: no cover
+def search_issues(args: Dict):
     hr_prefix = ""
 
     args["query"] = prepare_query(args)
@@ -172,41 +154,24 @@ def search_issues(args: Dict):  # pragma: no cover
         to_date = todate.isoformat()
         args["todate"] = to_date
 
-    if args.get("trimevents"):  # todo
+    if args.get("trimevents") == "0":
         args.pop("trimevents")
 
-    if includeinformational := argToBoolean(args.get("includeinformational", False)):
-        if not (args.get("fromdate") and args.get("todate")):
-            raise ValueError("The includeinformational argument requires fromdate and todate arguments.")
-
-        if (datetime.utcnow() - fromdate).total_seconds() > 5 * 60 * 60:  # type: ignore
-            args["fromdate"] = arg_to_datetime("5 hours ago").isoformat()  # type: ignore
-            hr_prefix = (
-                f"fromdate: {fromdate} is more than 5 hours ago. We support "
-                f"querying informational issues for up to the last 5 hours. The fromdate has been"
-                f" adjusted to 5 hours ago."
-            )
-        args["includeinformational"] = includeinformational
-
-    else:
-        args.pop("includeinformational", None)
-
-    # handle list of ids
-    if args.get("id"):
-        args["id"] = ",".join(argToList(args.get("id"), transform=str))
-
     res: list = execute_command("getIssues", args, extract_contents=False)
+
     issue_found: bool = check_if_found_issue(res)
     if not issue_found:
         if hr_prefix:
             hr_prefix = f"{hr_prefix}\n"
         return f"{hr_prefix}Issues not found.", {}, {}
+
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     all_found_issues = res[0]["Contents"]["data"]
     demisto.debug(f"Amount of issues before filtering = {len(all_found_issues)} with args {args} before pagination")
+
     page_size = args.get("size") or DEFAULT_PAGE_SIZE
     more_pages = len(all_found_issues) == page_size
-    all_found_issues = add_issue_link(apply_filters(all_found_issues, args))
+    all_found_issues = add_issue_link(all_found_issues)
     demisto.debug(f"Amount of issues after filtering = {len(all_found_issues)} before pagination")
     page = STARTING_PAGE_NUMBER
 
@@ -227,7 +192,7 @@ def search_issues(args: Dict):  # pragma: no cover
         demisto.debug(f"before filtering {len(current_page_found_issues)=} {args=} {page=}")
         more_pages = len(current_page_found_issues) == page_size
 
-        current_page_found_issues = add_issue_link(apply_filters(current_page_found_issues, args))
+        current_page_found_issues = add_issue_link(current_page_found_issues, args)
         demisto.debug(f"after filtering = {len(current_page_found_issues)=}")
         all_found_issues.extend(current_page_found_issues)
         page += 1

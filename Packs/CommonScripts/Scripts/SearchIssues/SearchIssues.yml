@@ -15,35 +15,6 @@ args:
 - description: Filter by issue assignee.
   isArray: true
   name: assignee
-- description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
-  name: query
-- description: Filter by the page number.
-  name: page
-  deprecated: true
-- description: |-
-    The number of events to return from the alert JSON. The default is 0, which returns all events.
-    Note that the count is from the head of the list, regardless of event time or other properties.
-  name: trimevents
-  hidden: true
-- description: Number of issues per page (per fetch).
-  name: size
-  deprecated: true
-- description: The maximum number of issues to be returned.
-  name: limit
-  defaultValue: '100'
-- description: Sort in format of field.asc,field.desc,...
-  name: sort
-- description: If provided, the value of this argument will be set under the searchResultsLabel context key for each issue found.
-  name: searchresultslabel
-- description: When the value is set to 'True', informational severity alerts will return as part of the results. The ‘fromdate’ and ‘todate’ arguments must be provided to use this argument. The maximum value currently supported for the 'fromdate' argument to retrieve informational issues is 5 hours. If a value greater than this is provided, it will be adjusted to 5 hours ago. To retrieve only informational issues, use the `query` argument and include this limitation within the query. Default is false.
-  name: includeinformational
-  auto: PREDEFINED
-  predefined:
-  - "false"
-  - "true"
-  defaultValue: "false"
-  hidden: true
-  hidden:marketplacev2: false # todo
 - description: Filter by domain.
   isArray: true
   name: domain
@@ -59,15 +30,29 @@ args:
 - description: Filter by category.
   isArray: true
   name: category
-- description: Filter by type.
-  isArray: true
-  name: type
 - description: Filter by assetids.
   isArray: true
   name: assetids
 - description: Filter by detectionmethod.
   isArray: true
   name: detectionmethod
+- description: Filter by sha256.
+  isArray: true
+  name: sha256
+- description: Filter by the page number. # todo pagination
+  name: page
+  deprecated: true
+- description: |-
+    The number of events to return from the alert JSON. The default is 0, which returns all events.
+    Note that the count is from the head of the list, regardless of event time or other properties.
+  name: trimevents
+  hidden: true
+- description: Number of issues per page (per fetch).
+  name: size
+  deprecated: true
+- description: The maximum number of issues to be returned.
+  name: limit
+  defaultValue: '100'
 comment: |-
   Searches Demisto issues. A summarized version of this scrips is available with the summarizedversion argument.
 
