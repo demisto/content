@@ -970,19 +970,16 @@ script:
       predefined:
       - "true"
       - "false"
-      description: A boolean value to paginate the response data.  Required in order
-        to receive a next_page_token in the response.
+      description: Whether to paginate the response data.  Set to true to paginate and receive a token indicating the location of the next page.
     - name: next_page_token
-      description: A string value representing the next page when pagination is used
-        via use_page_token.
+      description: A string representing the next page location when pagination is used.
     outputs:
     - contextPath: ASM.ExternalWebsite
       description: A list of the websites results assets.
     - contextPath: ASM.ExternalWebsiteReply
-      description: Contextual information about the request including total count,
-        result count and next page token.
+      description: Contextual information about the request including total count, result count, and next page token.
     - contextPath: ASM.ExternalWebsiteReply.NextPageToken
-      description: The next page token for the request (to be used for pagination).
+      description: The next page token for the request (for pagination).
     description: Get external websites assets.
   - name: asm-reset-last-run
     arguments: []
