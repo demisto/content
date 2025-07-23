@@ -931,6 +931,8 @@ Notes:
 
 `User.Read.All` - *Delegated*
 
+`Chat.ReadBasic` - *Delegated*
+
 `Chat.Create` - *Delegated*
 
 `ChatMessage.Send` - *Delegated*

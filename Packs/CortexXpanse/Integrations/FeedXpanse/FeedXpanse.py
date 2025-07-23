@@ -245,12 +245,15 @@ def fetch_indicators(client: Client, limit: Optional[int] = None, asset_type: li
         List: raw response from API.
     """
     asset_list, asset_response = [], []
-    if "Domain" in asset_type:
-        asset_list.append("DOMAIN")
-    if "Certificate" in asset_type:
-        asset_list.append("CERTIFICATE")
-    if "IP" in asset_type:
-        asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
+    if asset_type == []:
+        asset_list = ["DOMAIN", "CERTIFICATE", "UNASSOCIATED_RESPONSIVE_IP"]
+    else:
+        if "Domain" in asset_type:
+            asset_list.append("DOMAIN")
+        if "Certificate" in asset_type:
+            asset_list.append("CERTIFICATE")
+        if "IP" in asset_type:
+            asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
     if limit:
         # Had to add 1 to the limit to get the right return.
         asset_response = client.list_asset_internet_exposure_request(
@@ -326,7 +329,7 @@ def main() -> None:  # pragma: no cover
     # Append default tags.
     feed_tags = list(set(argToList(params.get("feedTags", []))) | DEFAULT_FEED_TAGS)
     tlp_color = params.get("tlp_color", "")
-    indicator_types = params.get("indicatorTypes")
+    indicator_types = params.get("indicatorTypes", [])
     creds = params.get("credentials", {})
     api = creds.get("password", "")
     add_sensitive_log_strs(api)
