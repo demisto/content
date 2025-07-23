@@ -128,7 +128,7 @@ class MemoryCache(Cache):
 
 class TextExtractHtmlParser(HTMLParser):
     def __init__(self):
-        HTMLParser.__init__(self) 
+        HTMLParser.__init__(self)
         self._texts: list = []
         self._ignore = False
 
