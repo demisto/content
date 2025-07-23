@@ -1060,12 +1060,11 @@ class TestGetAlertById:
                 assert result is None
 
 
-
 @patch("CybleEventsV2.get_alert_by_id")
 @patch("CybleEventsV2.Client")
 def test_update_single_alert(mock_client_class, mock_get_alert):
     args = {"ids": "id1", "status": "UNDER_REVIEW", "severity": "HIGH"}
-    mock_url = "https://dummy.cyble.io"
+    mock_url = "https://example.com"
     mock_token = "dummy-token"
 
     mock_client = Mock()
@@ -1083,15 +1082,12 @@ def test_update_single_alert(mock_client_class, mock_get_alert):
     assert result.outputs[0]["user_severity"] == "HIGH"
     mock_client.update_alert.assert_called_once()
 
+
 @patch("CybleEventsV2.Client.update_alert")
 @patch("CybleEventsV2.get_alert_by_id")
 def test_update_alert_data_success_multiple(mock_get_alert, mock_update_alert):
-    args = {
-        "ids": "id1,id2",
-        "status": "INFORMATIONAL,REMEDIATION_NOT_REQUIRED",
-        "severity": "LOW,HIGH"
-    }
-    mock_url = "https://dummy.cyble.io"
+    args = {"ids": "id1,id2", "status": "INFORMATIONAL,REMEDIATION_NOT_REQUIRED", "severity": "LOW,HIGH"}
+    mock_url = "https://example.com"
     mock_token = "dummy-token"
 
     # Return values for get_alert_by_id
