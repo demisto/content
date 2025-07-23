@@ -2177,28 +2177,28 @@ def test_module_command(client: Client, params: dict) -> str:
 def calculate_incident_size(incident: dict) -> int:
     """
     Calculate the approximate size of an incident in bytes for context storage.
-    
+
     Args:
         incident (dict): The incident dictionary
-        
+
     Returns:
         int: Size in bytes
     """
     try:
-        return len(json.dumps(incident, default=str).encode('utf-8'))
+        return len(json.dumps(incident, default=str).encode("utf-8"))
     except Exception as e:
         print_debug_msg(f"Error calculating incident size: {e}")
         # Return a conservative estimate if calculation fails
-        return len(str(incident).encode('utf-8'))
+        return len(str(incident).encode("utf-8"))
 
 
 def is_incident_size_acceptable(incident: dict) -> bool:
     """
     Check if an incident is small enough to be stored as a sample in the integration context.
-    
+
     Args:
         incident (dict): The incident dictionary
-        
+
     Returns:
         bool: True if incident size is acceptable, False otherwise
     """
@@ -2695,8 +2695,10 @@ def perform_long_running_loop(
     if incidents and new_highest_id:
         # Filter incidents that are small enough to store as samples
         filtered_incidents = [incident for incident in incidents if is_incident_size_acceptable(incident)]
-        incident_batch_for_sample = filtered_incidents[:SAMPLE_SIZE] if filtered_incidents else context_data.get("samples", [])[:SAMPLE_SIZE]
-        
+        incident_batch_for_sample = (
+            filtered_incidents[:SAMPLE_SIZE] if filtered_incidents else context_data.get("samples", [])[:SAMPLE_SIZE]
+        )
+
         if len(filtered_incidents) < len(incidents):
             skipped_count = len(incidents) - len(filtered_incidents)
             print_debug_msg(f"Skipped {skipped_count} incident(s) from samples due to size constraints.")
