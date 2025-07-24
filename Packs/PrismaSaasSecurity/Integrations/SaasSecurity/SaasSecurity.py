@@ -106,14 +106,25 @@ class Client(BaseClient):
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         }
-        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
+        try:
+            return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
+        except Exception as e:
+            if '401' in str(e) and 'Unauthorized' in str(e):
+                demisto.debug(f"requesting a new token since {str(e)}")
+                token = self.get_access_token(True)
+                headers["Authorization"] = f"Bearer {token}"
+                return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
+            else:
+                raise e
 
-    def get_access_token(self):
+    def get_access_token(self, force_generate: bool = False):
         """
         Obtains access and refresh token from server.
         Access token is used and stored in the integration context until expiration time.
         After expiration, new refresh token and access token are obtained and stored in the
         integration context.
+
+        :param force_generate: Whether to generate a new token anyway, regardless of the TOKEN_LIFE_TIME.
 
         :return: Access token that will be added to authorization header.
         :rtype: str
@@ -123,10 +134,12 @@ class Client(BaseClient):
         access_token = integration_context.get("access_token")
         time_issued = integration_context.get("time_issued")
 
-        if access_token and get_passed_mins(now, time_issued) < TOKEN_LIFE_TIME:
+        if access_token and get_passed_mins(now, time_issued) < TOKEN_LIFE_TIME and not force_generate:
+            demisto.debug("retrieving the token from the context.")
             return access_token
 
         # there's no token or it is expired
+        demisto.debug(f"There's no token or it is expired, or {force_generate=}")
         access_token = self.get_token_request()
         integration_context = {"access_token": access_token, "time_issued": date_to_timestamp(now) / 1000}
         set_integration_context(integration_context)
@@ -173,7 +186,7 @@ class Client(BaseClient):
         :param status: The status of the incidents to pull.
         :param next_page: For pagination purposes. If provided, params should be None.
         """
-        url_suffix = next_page or "incident/api/v2/incidents/delta"
+        url_suffix = next_page or "incident/api/incidents/delta"
         state = state if state != "All" else None
 
         params = (
@@ -190,6 +203,7 @@ class Client(BaseClient):
             else {}
         )
         remove_nulls_from_dictionary(params)
+        demisto.debug(f"Calling {url_suffix=} with {params=}")
 
         return self.http_request("GET", url_suffix=url_suffix, params=params)
 
@@ -348,7 +362,7 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     incidents = raw_res.get("resources", [])
 
     # The API always returns the nextPage field with value in it even if there are no more incidents to retrieve.
-    next_page = raw_res.get("nextPath") if len(incidents) == limit else None
+    next_page = raw_res.get("nextPath", "").replace("severity", "severities") if len(incidents) == limit else None
     metadata = (
         "Run the following command to retrieve the next batch of incidents:\n"
         f"!saas-security-incidents-get next_page={next_page}"
@@ -745,7 +759,6 @@ def main() -> None:
     fetch_severity = params.get("severity")
     fetch_status = ",".join(STATUS_MAP.get(x) for x in argToList(params.get("status", [])))  # type: ignore[misc]
     fetch_app_ids = ",".join(argToList(params.get("app_ids", [])))
-    demisto.debug(f"In main, {fetch_severity=}")
 
     mirror_direction = MIRROR_DIRECTION.get(params.get("mirror_direction", "None"), None)
     instance = demisto.integrationInstance()
