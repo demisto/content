@@ -667,3 +667,664 @@ def test_ensure_only_one_argument_provided_valid_case():
 
     # Test case: One argument provided (valid case)
     ensure_only_one_argument_provided(arg1="value1")
+
+
+def test_host_whois_history_command_single_record_response():
+    """
+    Test host_whois_history_command with single record response.
+
+    Given: A client returns a single whois history record
+    When: The host_whois_history_command is called
+    Then: The command handles single record response correctly
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_whois_history_command
+
+    mock_response = [{"id": "single_record", "whoisServer": "single.server.com", "domainStatus": "active"}]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
+
+    args = {"whois_history_record_id": "single_record"}
+    result = host_whois_history_command(client, args)
+
+    assert result.outputs == mock_response
+    assert type(result.outputs) is list
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.WhoisHistory"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "single_record" in result.readable_output
+
+
+def test_host_whois_history_command_multiple_records_response():
+    """
+    Test host_whois_history_command with multiple records response.
+
+    Given: A client returns multiple whois history records
+    When: The host_whois_history_command is called
+    Then: The command handles multiple records response correctly
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_whois_history_command
+
+    mock_response = [
+        {"id": "first_record", "whoisServer": "first.server.com", "domainStatus": "active"},
+        {"id": "second_record", "whoisServer": "second.server.com", "domainStatus": "inactive"},
+        {"id": "third_record", "whoisServer": "third.server.com", "domainStatus": "pending"},
+    ]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
+
+    args = {"whois_history_record_id": "multiple_records"}
+    result = host_whois_history_command(client, args)
+
+    assert result.outputs == mock_response
+    assert type(result.outputs) is list
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.WhoisHistory"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 3
+    assert "first_record" in result.readable_output
+    assert "second_record" in result.readable_output
+    assert "third_record" in result.readable_output
+
+
+def test_host_whois_command_none_arguments():
+    """
+    Test host_whois_command with None arguments.
+
+    Given: A client is configured and None values are provided for arguments
+    When: The host_whois_command is called with None arguments
+    Then: The command raises ValueError for invalid arguments
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_whois_command
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+
+    args = {"host_id": None, "whois_record_id": None}
+    with pytest.raises(ValueError):
+        host_whois_command(client, args)
+
+
+def test_host_whois_command_response_with_missing_fields():
+    """
+    Test host_whois_command with response missing optional fields.
+
+    Given: A client returns response with missing whoisServer and domainStatus
+    When: The host_whois_command processes the response
+    Then: The command handles missing fields gracefully in display data
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_whois_command
+
+    mock_response = {"id": "partial123"}
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.host_whois = lambda host_id, whois_record_id, odata: mock_response
+
+    args = {"host_id": "host123"}
+    result = host_whois_command(client, args)
+
+    assert result.outputs == mock_response
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.Whois"
+    assert result.outputs_key_field == "id"
+    assert "partial123" in result.readable_output
+
+
+def test_host_whois_command_response_with_null_values():
+    """
+    Test host_whois_command with response containing null values.
+
+    Given: A client returns response with null values for fields
+    When: The host_whois_command processes the response
+    Then: The command handles null values properly and removes them from display
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_whois_command
+
+    mock_response = {"id": "null_test123", "whoisServer": None, "domainStatus": "active"}
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.host_whois = lambda host_id, whois_record_id, odata: mock_response
+
+    args = {"whois_record_id": "whois123"}
+    result = host_whois_command(client, args)
+
+    assert result.outputs == mock_response
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.Whois"
+    assert result.outputs_key_field == "id"
+    assert "null_test123" in result.readable_output
+    assert "active" in result.readable_output
+
+
+def test_host_whois_command_empty_string_arguments():
+    """
+    Test host_whois_command with empty string for all supported arguments.
+
+    Given: A client is configured and empty strings are provided for both arguments
+    When: The host_whois_command is called with empty string arguments
+    Then: The command raises ValueError for no valid arguments provided
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_whois_command
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+
+    args = {"host_id": "", "whois_record_id": ""}
+    with pytest.raises(ValueError):
+        host_whois_command(client, args)
+
+
+def test_host_command_with_complete_response():
+    """
+    Test host_command with complete response containing all fields.
+
+    Given: A client returns complete host information with all fields populated
+    When: The host_command processes the response
+    Then: The command displays all host details correctly
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_command
+
+    mock_response = {"id": "complete_host_123", "registrar": "Complete Registrar Inc", "registrant": "Complete Registrant Corp"}
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.host = lambda host_id, odata: mock_response
+
+    args = {"host_id": "complete_host_123"}
+    result = host_command(client, args)
+
+    assert result.outputs == mock_response
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.Host"
+    assert result.outputs_key_field == "id"
+    assert "complete_host_123" in result.readable_output
+    assert "Complete Registrar Inc" in result.readable_output
+    assert "Complete Registrant Corp" in result.readable_output
+
+
+def test_host_command_with_partial_response():
+    """
+    Test host_command with partial response missing some fields.
+
+    Given: A client returns partial host information with missing registrar field
+    When: The host_command processes the response
+    Then: The command handles missing fields gracefully
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_command
+
+    mock_response = {"id": "partial_host_456", "registrant": "Partial Registrant LLC"}
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.host = lambda host_id, odata: mock_response
+
+    args = {"host_id": "partial_host_456"}
+    result = host_command(client, args)
+
+    assert result.outputs == mock_response
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.Host"
+    assert result.outputs_key_field == "id"
+    assert "partial_host_456" in result.readable_output
+    assert "Partial Registrant LLC" in result.readable_output
+
+
+def test_host_command_with_null_values():
+    """
+    Test host_command with response containing null values.
+
+    Given: A client returns host information with null values for some fields
+    When: The host_command processes the response
+    Then: The command handles null values properly using removeNull=True
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_command
+
+    mock_response = {"id": "null_host_789", "registrar": None, "registrant": "Valid Registrant"}
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.host = lambda host_id, odata: mock_response
+
+    args = {"host_id": "null_host_789"}
+    result = host_command(client, args)
+
+    assert result.outputs == mock_response
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.Host"
+    assert result.outputs_key_field == "id"
+    assert "null_host_789" in result.readable_output
+    assert "Valid Registrant" in result.readable_output
+
+
+def test_profile_indicators_list_command_with_missing_artifact():
+    """
+    Test profile_indicators_list_command with indicators missing artifact data.
+
+    Given: A client returns indicators without artifact information
+    When: The profile_indicators_list_command processes the response
+    Then: The command handles missing artifact data gracefully
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, profile_indicators_list_command
+
+    mock_response = [
+        {
+            "id": "indicator_no_artifact",
+        },
+        {"id": "indicator_with_artifact", "artifact": {"id": "artifact123"}},
+        {"id": "indicator_empty_artifact", "artifact": {}},
+    ]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.profile_indicators_list = lambda intel_profile_id, intel_profile_indicator_id, odata, limit: mock_response
+
+    args = {"intel_profile_id": "mixed_profile"}
+    result = profile_indicators_list_command(client, args)
+
+    assert isinstance(result.outputs, list)
+    assert result.outputs == mock_response
+    assert len(result.outputs) == 3
+    assert "indicator_no_artifact" in result.readable_output
+    assert "indicator_with_artifact" in result.readable_output
+    assert "indicator_empty_artifact" in result.readable_output
+
+
+def test_profile_indicators_list_command_response_with_null_artifact():
+    """
+    Test profile_indicators_list_command with response containing null artifact.
+
+    Given: A client returns indicators with null artifact values
+    When: The profile_indicators_list_command processes the response
+    Then: The command handles null artifact values gracefully
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, profile_indicators_list_command
+
+    mock_response = [
+        {"id": "indicator_null_artifact", "artifact": None},
+        {"id": "indicator_valid_artifact", "artifact": {"id": "valid_artifact"}},
+    ]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.profile_indicators_list = lambda intel_profile_id, intel_profile_indicator_id, odata, limit: mock_response
+
+    args = {"intel_profile_id": "profile_with_nulls"}
+    result = profile_indicators_list_command(client, args)
+
+    assert type(result.outputs) is list
+    assert len(result.outputs) == 2
+    assert result.outputs == mock_response
+    assert "indicator_null_artifact" in result.readable_output
+    assert "indicator_valid_artifact" in result.readable_output
+
+
+def test_profile_indicators_list_command_no_arguments():
+    """
+    Test profile_indicators_list_command with no arguments provided.
+
+    Given: A client is initialized but no arguments are provided
+    When: The profile_indicators_list_command is called with empty args
+    Then: The command should raise an error due to missing required arguments
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, profile_indicators_list_command
+    import pytest
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+
+    args = {}
+
+    with pytest.raises(Exception):
+        profile_indicators_list_command(client, args)
+
+
+def test_profile_indicators_list_command_with_two_arguments():
+    """
+    Test profile_indicators_list_command with both intel_profile_id and intel_profile_indicator_id provided.
+
+    Given: A client is initialized with both profile ID and indicator ID provided
+    When: The profile_indicators_list_command is called with both arguments
+    Then: The command should raise an error due to ensure_only_one_argument_provided function
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, profile_indicators_list_command
+    import pytest
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+
+    args = {"intel_profile_id": "profile_123", "intel_profile_indicator_id": "indicator_456"}
+
+    with pytest.raises(Exception):
+        profile_indicators_list_command(client, args)
+
+
+def test_profile_list_command_with_missing_title():
+    """
+    Test profile_list_command with profiles missing title field.
+
+    Given: A client returns profiles without title information
+    When: The profile_list_command processes the response
+    Then: The command handles missing title data gracefully
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, profile_list_command
+
+    mock_response = [
+        {"id": "profile_no_title"},
+        {"id": "profile_with_title", "title": "Profile With Title"},
+        {"id": "profile_empty_title", "title": ""},
+    ]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.profile_list = lambda intel_profile_id, odata, limit: mock_response
+
+    args = {}
+    result = profile_list_command(client, args)
+
+    assert isinstance(result.outputs, list)
+    assert result.outputs == mock_response
+    assert len(result.outputs) == 3
+    assert "profile_no_title" in result.readable_output
+    assert "profile_with_title" in result.readable_output
+    assert "Profile With Title" in result.readable_output
+    assert "profile_empty_title" in result.readable_output
+
+
+def test_profile_list_command_with_null_title():
+    """
+    Test profile_list_command with profiles containing null title.
+
+    Given: A client returns profiles with null title values
+    When: The profile_list_command processes the response
+    Then: The command handles null title values gracefully using removeNull=True
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, profile_list_command
+
+    mock_response = [{"id": "profile_null_title", "title": None}, {"id": "profile_valid_title", "title": "Valid Title"}]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.profile_list = lambda intel_profile_id, odata, limit: mock_response
+
+    args = {}
+    result = profile_list_command(client, args)
+
+    assert type(result.outputs) is list
+    assert len(result.outputs) == 2
+    assert result.outputs == mock_response
+    assert "profile_null_title" in result.readable_output
+    assert "profile_valid_title" in result.readable_output
+    assert "Valid Title" in result.readable_output
+
+
+def test_profile_list_command_single_profile_response():
+    """
+    Test profile_list_command with single profile in response.
+
+    Given: A client returns exactly one profile
+    When: The profile_list_command is called
+    Then: The command handles single profile response correctly
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, profile_list_command
+
+    mock_response = [{"id": "single_profile_123", "title": "Single Test Profile"}]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.profile_list = lambda intel_profile_id, odata, limit: mock_response
+
+    args = {"intel_profile_id": "single_profile_123"}
+    result = profile_list_command(client, args)
+
+    assert result.outputs == mock_response
+    assert type(result.outputs) is list
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["id"] == "single_profile_123"
+    assert result.outputs[0]["title"] == "Single Test Profile"
+    assert "single_profile_123" in result.readable_output
+    assert "Single Test Profile" in result.readable_output
+
+
+def test_profile_list_command_multiple_profile_response():
+    """
+    Test profile_list_command with multiple profiles in response.
+
+    Given: A client returns multiple profiles
+    When: The profile_list_command is called
+    Then: The command handles multiple profile response correctly
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, profile_list_command
+
+    mock_response = [
+        {"id": "profile_123", "title": "First Test Profile"},
+        {"id": "profile_456", "title": "Second Test Profile"},
+        {"id": "profile_789", "title": "Third Test Profile"},
+    ]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.profile_list = lambda intel_profile_id, odata, limit: mock_response
+
+    args = {"intel_profile_id": ""}
+    result = profile_list_command(client, args)
+
+    assert result.outputs == mock_response
+    assert type(result.outputs) is list
+    assert len(result.outputs) == 3
+    assert result.outputs[0]["id"] == "profile_123"
+    assert result.outputs[0]["title"] == "First Test Profile"
+    assert result.outputs[1]["id"] == "profile_456"
+    assert result.outputs[1]["title"] == "Second Test Profile"
+    assert result.outputs[2]["id"] == "profile_789"
+    assert result.outputs[2]["title"] == "Third Test Profile"
+    assert "profile_123" in result.readable_output
+    assert "First Test Profile" in result.readable_output
+
+
+def test_article_indicators_list_command_with_none_arguments():
+    """
+    Test article_indicators_list_command with None values for arguments.
+
+    Given: A client is configured and None values are provided for arguments
+    When: The article_indicators_list_command is called with None arguments
+    Then: The command raises ValueError for invalid arguments
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, article_indicators_list_command
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+
+    args = {"article_id": None, "article_indicator_id": None}
+    with pytest.raises(Exception):
+        article_indicators_list_command(client, args)
+
+
+def test_article_indicators_list_command_with_empty_string_arguments():
+    """
+    Test article_indicators_list_command with empty string for both arguments.
+
+    Given: A client is configured and empty strings are provided for both arguments
+    When: The article_indicators_list_command is called with empty string arguments
+    Then: The command raises ValueError for no valid arguments provided
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, article_indicators_list_command
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+
+    args = {"article_id": "", "article_indicator_id": ""}
+    with pytest.raises(Exception):
+        article_indicators_list_command(client, args)
+
+
+@pytest.mark.parametrize(
+    "mock_response,expected_count,test_description",
+    [
+        (
+            [
+                {"id": "indicator_1", "type": "ip", "value": "192.168.1.1"},
+                {"id": "indicator_2", "type": "domain", "value": "example.com"},
+                {"id": "indicator_3", "type": "hash", "value": "abc123"},
+            ],
+            3,
+            "several indicators",
+        ),
+        ([{"id": "indicator_1", "type": "ip", "value": "192.168.1.1"}], 1, "one indicator"),
+    ],
+)
+def test_article_indicators_list_command_response(mock_response, expected_count, test_description):
+    """
+    Test article_indicators_list_command with different response scenarios.
+
+    Given: A client returns varying numbers of indicators
+    When: The article_indicators_list_command is called
+    Then: The command handles the response correctly
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, article_indicators_list_command
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
+
+    args = {"article_id": "test_article_123"}
+    result = article_indicators_list_command(client, args)
+
+    assert result.outputs == mock_response
+    assert type(result.outputs) is list
+    assert len(result.outputs) == expected_count
+
+
+def test_article_indicators_list_command_no_indicators():
+    """
+    Test article_indicators_list_command when no indicators are found.
+
+    Given: A client returns an empty list
+    When: The article_indicators_list_command is called
+    Then: The command returns a message indicating no indicators were found
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, article_indicators_list_command
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: []
+
+    args = {"article_id": "test_article_123"}
+    result = article_indicators_list_command(client, args)
+
+    assert result.readable_output == "No article indicators were found."
+
+
+def test_article_indicators_list_command_artifact_none():
+    """
+    Test article_indicators_list_command when artifact is None.
+
+    Given: A client returns indicators where artifact is None
+    When: The article_indicators_list_command is called
+    Then: The command handles None artifacts correctly without errors
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, article_indicators_list_command
+
+    mock_response = [
+        {"id": "indicator_1", "artifact": None},
+    ]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.article_indicator_list = lambda article_id, article_indicator_id, odata, limit: mock_response
+
+    args = {"article_id": "test_article_123"}
+    result = article_indicators_list_command(client, args)
+
+    assert result.outputs == mock_response
+    assert type(result.outputs) is list
+    assert len(result.outputs) == 1
+
+
+def test_article_list_command_with_missing_title():
+    """
+    Test article_list_command with articles missing title field.
+
+    Given: A client returns articles without title information
+    When: The article_list_command processes the response
+    Then: The command handles missing title data gracefully
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, article_list_command
+
+    mock_response = [
+        {"id": "article_no_title"},
+        {"id": "article_with_title", "title": "Has Title"},
+        {"id": "article_empty_title", "title": ""},
+    ]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.article_list = lambda article_id, odata, limit: mock_response
+
+    args = {}
+    result = article_list_command(client, args)
+
+    assert result.outputs == mock_response
+    assert len(result.outputs) == 3
+    assert "article_no_title" in result.readable_output
+    assert "Has Title" in result.readable_output
+
+
+def test_article_list_command_with_null_title():
+    """
+    Test article_list_command with articles containing null title.
+
+    Given: A client returns articles with null title values
+    When: The article_list_command processes the response
+    Then: The command handles null title values gracefully
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, article_list_command
+
+    mock_response = [{"id": "article_null_title", "title": None}, {"id": "article_valid_title", "title": "Valid Title"}]
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.article_list = lambda article_id, odata, limit: mock_response
+
+    args = {}
+    result = article_list_command(client, args)
+
+    assert result.outputs == mock_response
+    assert "article_null_title" in result.readable_output
+    assert "Valid Title" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "mock_response,expected_count,expected_in_output",
+    [
+        # Test with one article
+        ([{"id": "single_article", "title": "Single Article"}], 1, ["Single Article"]),
+        # Test with multiple articles
+        (
+            [
+                {"id": "article_1", "title": "First Article"},
+                {"id": "article_2", "title": "Second Article"},
+                {"id": "article_3", "title": "Third Article"},
+            ],
+            3,
+            ["First Article", "Second Article", "Third Article"],
+        ),
+    ],
+)
+def test_article_list_command_with_various_article_counts(mock_response, expected_count, expected_in_output):
+    """
+    Test article_list_command with different numbers of articles.
+
+    Given: A client returns different numbers of articles
+    When: The article_list_command processes the response
+    Then: The command handles the response correctly regardless of article count
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, article_list_command
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.article_list = lambda article_id, odata, limit: mock_response
+
+    args = {}
+    result = article_list_command(client, args)
+
+    assert result.outputs == mock_response
+    assert type(result.outputs) is list
+    assert len(result.outputs) == expected_count
+
+    for expected_text in expected_in_output:
+        assert expected_text in result.readable_output
+
+
+def test_article_list_command_no_articles_returned():
+    """
+    Test article_list_command when no articles are returned.
+
+    Given: A client returns an empty list of articles
+    When: The article_list_command processes the response
+    Then: The command handles empty response gracefully
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, article_list_command
+
+    mock_response = []
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.article_list = lambda article_id, odata, limit: mock_response
+
+    args = {}
+    result = article_list_command(client, args)
+
+    assert result.readable_output == "No articles were found."

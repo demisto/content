@@ -432,7 +432,13 @@ def article_indicators_list_command(client: Client, args: dict[str, Any]) -> Com
     if len(response) == 0:
         return CommandResults(readable_output="No article indicators were found.")
 
-    display_data = [{"ID": indicator.get("id"), "Artifact Id": indicator.get("artifact", {}).get("id")} for indicator in response]
+    display_data = [
+        {
+            "ID": indicator.get("id"),
+            "Artifact Id": indicator.get("artifact").get("id") if isinstance(indicator.get("artifact"), dict) else None,
+        }
+        for indicator in response
+    ]
 
     return CommandResults(
         "MSGDefenderThreatIntel.ArticleIndicator",
@@ -510,7 +516,12 @@ def profile_indicators_list_command(client: Client, args: dict[str, Any]) -> Com
         return CommandResults(readable_output="No profile indicators were found.")
 
     display_data = [
-        {"ID": profileIndicator.get("id"), "Artifact Id": profileIndicator.get("artifact", {}).get("id")}
+        {
+            "ID": profileIndicator.get("id"),
+            "Artifact Id": profileIndicator.get("artifact").get("id")
+            if isinstance(profileIndicator.get("artifact"), dict)
+            else None,
+        }
         for profileIndicator in response
     ]
 

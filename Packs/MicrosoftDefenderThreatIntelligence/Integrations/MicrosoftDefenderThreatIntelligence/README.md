@@ -58,6 +58,40 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### msg-defender-threat-intel-auth-test
+
+***
+Run this command to test if the authorization process is successful.
+
+#### Base Command
+
+`msg-defender-threat-intel-auth-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### msg-defender-threat-intel-auth-reset
+
+***
+Run this command to reset the authorization process.
+
+#### Base Command
+
+`msg-defender-threat-intel-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
 ### msg-defender-threat-intel-article-list
 
 ***
