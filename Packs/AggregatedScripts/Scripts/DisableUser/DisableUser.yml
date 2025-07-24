@@ -19,6 +19,7 @@ args:
   - 'Okta IAM'
   - 'AWS-ILM'
   - 'GSuiteAdmin'
+  defaultValue: "Active Directory Query v2,Microsoft Graph User,Okta v2,Okta IAM,AWS-ILM,GSuiteAdmin"
 - description: Whether to fetch a human-readable entry for each command or just the final result. If set to true, all commands will have human-readable entries. If set to false, only the final result will be human-readable.
   name: verbose
   auto: PREDEFINED

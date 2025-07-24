@@ -5,9 +5,6 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 from typing import Literal, TypedDict
 from collections.abc import Callable
 
-# TODO: add using/using-brand
-# TODO: use "verbose" arg
-# TODO: map user fields from get-user-data to disable-user input
 
 HUMAN_READABLES = []
 
@@ -23,7 +20,8 @@ class User(TypedDict):
     Username: str
     Email: str
     Status: str
-    Source: str
+    Brand: str
+    Instance: str
 
 
 def execute_command(cmd: str, args: dict) -> list[dict]:
@@ -32,25 +30,27 @@ def execute_command(cmd: str, args: dict) -> list[dict]:
     return [res for res in results if res.get("Type") in (1, 4)]  # filter out log files
 
 
-9
-
-
 def get_module_command_func(
     module: str,
-) -> Optional[Callable[[User], list[CmdFuncRes]]]:
-    return {
-        "Active Directory Query v2": run_active_directory_query_v2,
-        "Microsoft Graph User": run_microsoft_graph_user,
-        "Okta v2": run_okta_v2,
-        "Okta IAM": run_okta_iam,
-        "AWS-ILM": run_aws_ilm,
-        "GSuiteAdmin": run_gsuiteadmin,
-    }.get(module)
+) -> Callable[[User, str], list[CmdFuncRes]]:
+    try:
+        return {
+            "Active Directory Query v2": run_active_directory_query_v2,
+            "Microsoft Graph User": run_microsoft_graph_user,
+            "Okta v2": run_okta_v2,
+            "Okta IAM": run_okta_iam,
+            "AWS-ILM": run_aws_ilm,
+            "GSuiteAdmin": run_gsuiteadmin,
+        }[module]
+    except KeyError:
+        raise DemistoException(f"Unable to find module: {module!r}")
 
 
-def run_active_directory_query_v2(user: User) -> list[CmdFuncRes]:
+def run_active_directory_query_v2(user: User, using: str) -> list[CmdFuncRes]:
 
-    res_cmd = execute_command("ad-disable-account", {"username": user["Username"]})
+    res_cmd = execute_command(
+        "ad-disable-account", {"username": user["Username"], "using": using}
+    )
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
@@ -62,9 +62,9 @@ def run_active_directory_query_v2(user: User) -> list[CmdFuncRes]:
     return func_res
 
 
-def run_microsoft_graph_user(user: User) -> list[CmdFuncRes]:
+def run_microsoft_graph_user(user: User, using: str) -> list[CmdFuncRes]:
     res_cmd = execute_command(
-        "msgraph-user-account-disable", {"user": user["Username"]}
+        "msgraph-user-account-disable", {"user": user["Username"], "using": using}
     )
     func_res = []
     for res in res_cmd:
@@ -78,8 +78,10 @@ def run_microsoft_graph_user(user: User) -> list[CmdFuncRes]:
     return func_res
 
 
-def run_okta_v2(user: User) -> list[CmdFuncRes]:
-    res_cmd = execute_command("okta-suspend-user", {"username": user["Username"]})
+def run_okta_v2(user: User, using: str) -> list[CmdFuncRes]:
+    res_cmd = execute_command(
+        "okta-suspend-user", {"username": user["Username"], "using": using}
+    )
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
@@ -93,9 +95,10 @@ def run_okta_v2(user: User) -> list[CmdFuncRes]:
     return func_res
 
 
-def run_okta_iam(user: User) -> list[CmdFuncRes]:
+def run_okta_iam(user: User, using: str) -> list[CmdFuncRes]:
     res_cmd = execute_command(
-        "iam-disable-user", {"user-profile": f"{{\"email\":\"{user['Email']}\"}}"}
+        "iam-disable-user",
+        {"user-profile": f"{{\"email\":\"{user['Email']}\"}}", "using": using},
     )
     return [
         CmdFuncRes(
@@ -114,9 +117,10 @@ def run_okta_iam(user: User) -> list[CmdFuncRes]:
     ]
 
 
-def run_aws_ilm(user: User) -> list[CmdFuncRes]:
+def run_aws_ilm(user: User, using: str) -> list[CmdFuncRes]:
     res_cmd = execute_command(
-        "iam-disable-user", {"user-profile": f"{{\"email\":\"{user['Email']}\"}}"}
+        "iam-disable-user",
+        {"user-profile": f"{{\"email\":\"{user['Email']}\"}}", "using": using},
     )
     return [
         CmdFuncRes(
@@ -135,9 +139,10 @@ def run_aws_ilm(user: User) -> list[CmdFuncRes]:
     ]
 
 
-def run_gsuiteadmin(user: User) -> list[CmdFuncRes]:
+def run_gsuiteadmin(user: User, using: str) -> list[CmdFuncRes]:
     res_cmd = execute_command(
-        "gsuite-user-update", {"user_key": user["Email"], "suspended": "true"}
+        "gsuite-user-update",
+        {"user_key": user["Email"], "suspended": "true", "using": using},
     )
     return [
         CmdFuncRes(
@@ -160,32 +165,57 @@ def get_users(args: dict) -> list[User]:
     res = execute_command("get-user-data", args)
     if is_error(res):
         return_error(get_error(res))
-    return cast(list[User], res["Contents"])
+    HUMAN_READABLES.append(res[0]["HumanReadable"])
+    return cast(list[User], res[0]["Contents"]["UserData"])
+
+
+def disable_users(users: list[User]) -> list[dict]:
+    context = []
+    for user in users:
+        if user["Status"] == "found":
+            command_func = get_module_command_func(user["Brand"])
+            res_cmd = command_func(user, user["Instance"])
+            context += [
+                {
+                    "UserProfile": user,
+                    "Brand": user.pop("Brand"),
+                    "Instance": user.pop("Instance"),
+                }
+                | res
+                for res in res_cmd
+            ]
+    return context
 
 
 def main():
     try:
         args = demisto.args()
+
         validate_input(args)
         users = get_users(args)
-        context = []
-        for user in users:
-            if user["Status"] == "found":
-                command_func = get_module_command_func(user["Source"])
-                if command_func is None:
-                    continue
-                res = command_func(user)
-                context.append({"UserProfile": user, "Brand": user["Source"]} | res)
-        return_results(
-            CommandResults(
-                outputs_prefix="DisableUser",
-                outputs_key_field="UserProfile.Email",
-                outputs=context,
-                readable_output=tableToMarkdown("Disable User", context),
-            )
-        )
+        outputs = disable_users(users)
+
         if args.get("verbose"):
             return_results(HUMAN_READABLES)
+        # import sys; sys.exit()
+        if any(res["Disabled"] for res in outputs):
+            
+            return_results(
+                CommandResults(
+                    outputs_prefix="DisableUser",
+                    outputs_key_field="UserProfile.Email",
+                    outputs=outputs,
+                    readable_output=tableToMarkdown("Disable User", outputs),
+                )
+            )
+        else:
+            return_results(
+                CommandResults(
+                    entry_type=EntryType.ERROR,
+                    content_format=EntryFormat.MARKDOWN,
+                    readable_output=tableToMarkdown("Disable User Failed", outputs),
+                )
+            )
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute DisableUser. Error: {str(ex)}")
