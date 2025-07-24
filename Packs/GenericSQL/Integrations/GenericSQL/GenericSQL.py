@@ -192,17 +192,22 @@ class Client:
                 cached_engines = getattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {})
 
                 if cache_key in cached_engines:
+                    demisto.debug(f"gsql log - Cache key: {cache_key} in cached_engines {cached_engines}")
                     # engine is None, but cache_key in cached_engines, so the ttl must have passed.
                     # let's dispose the engine to make sure the connection is closed.
                     cached_engines[cache_key].dispose()
                     cached_engines.pop(cache_key)
 
+                demisto.debug(f"gsql log - DB URL: {db_url}")
+                demisto.debug(f"gsql log - SSL connection: {ssl_connection}")
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
                 cached_engines[cache_key] = engine  # Keep in cache to allow disposing later
 
         else:
             demisto.debug("Initializing engine with no pool (NullPool)")
+            demisto.debug(f"gsql log - DB URL: {db_url}")
+            demisto.debug(f"gsql log - SSL connection: {ssl_connection}")
             engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection, poolclass=sqlalchemy.pool.NullPool)
         return engine.connect()
 
