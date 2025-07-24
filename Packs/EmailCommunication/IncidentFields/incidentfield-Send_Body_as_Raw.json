@@ -1,6 +1,7 @@
 {
     "id": "incident_sendbodyasrawnomarkdown",
-    "version": 2,
+    "fromVersion": "6.0.0",
+    "version": -1,
     "cacheVersn": 0,
     "modified": "2025-07-24T08:58:31.874791246Z",
     "sizeInBytes": 0,
@@ -63,10 +64,4 @@
     "selectValuesMap": null,
     "ipVersion": "",
     "pretty_name": "Send Body as Raw (No Markdown)",
-    "XsiamIncidentFieldExtraData": {
-        "incidentsFilter": null,
-        "slaGoals": null,
-        "slaTimer": null,
-        "timerConditions": null
-    }
 }

@@ -717,7 +717,6 @@
 			}
 		]
 	},
-	"edit": null,
 	"fromServerVersion": "6.0.0",
 	"group": "incident",
 	"id": "Email Threads",
