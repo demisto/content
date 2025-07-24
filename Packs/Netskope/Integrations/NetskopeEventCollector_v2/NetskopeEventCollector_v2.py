@@ -119,7 +119,7 @@ def populate_parsing_rule_fields(event: dict, event_type: str):
     event["source_log_event"] = event_type
     try:
         event["_time"] = timestamp_to_datestring(event["timestamp"] * 1000, is_utc=True)
-    except TypeError:
+    except (TypeError, KeyError):
         # modeling rule will default on ingestion time if _time is missing
         pass
 
