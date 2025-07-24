@@ -2043,7 +2043,8 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
         ctx["samples"] = []
 
         partial_changes = {
-            # We do NOT set RESET_KEY, effectively removing it from context
+            # Explicitly remove RESET_KEY by setting it to None (will be handled by merge logic)
+            RESET_KEY: None,
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY],
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY],
             "samples": ctx["samples"],
