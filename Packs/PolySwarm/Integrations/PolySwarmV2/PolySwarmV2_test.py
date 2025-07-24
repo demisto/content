@@ -8,6 +8,7 @@ from PolySwarmV2 import PolyswarmConnector
 import pytest
 import vcr as libvcr
 
+pytest_plugins = 'vendored_pytest_vcr'
 
 TEST_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
