@@ -403,7 +403,7 @@ def reset_auth(error_codes: list = [], error_desc: str = "", graph_only: bool = 
             "parameter and then run !microsoft-teams-auth-test to re-authenticate"
         )
 
-    demisto.debug("Successfully reset the current_refresh_token, graph_access_token and graph_valid_until.")
+    demisto.debug("Successfully reset the cached API authorization data.")
 
 
 def reset_auth_command():
@@ -2705,6 +2705,7 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
 
     if tenant_id != integration_context.get("tenant_id"):
         # Update the tenant id in context immediately to avoid errors
+        demisto.debug(f"Saving tenant ID to context: {tenant_id=}")
         integration_context["tenant_id"] = tenant_id
         set_integration_context(integration_context)
 
