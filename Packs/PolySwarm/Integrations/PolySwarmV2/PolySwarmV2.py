@@ -65,12 +65,15 @@ class PolyswarmConnector:
         return True
 
     def get_score(self, polyscore) -> int:
-        if float(polyscore) < 0.2:
-            return Common.DBotScore.GOOD
-        elif 0.2 <= float(polyscore) < 0.7:
-            return Common.DBotScore.SUSPICIOUS
-        else:  # polyscore is >= 0.7
-            return Common.DBotScore.BAD
+        try:
+            if float(polyscore) < 0.2:
+                return Common.DBotScore.GOOD
+            elif 0.2 <= float(polyscore) < 0.7:
+                return Common.DBotScore.SUSPICIOUS
+            else:  # polyscore is >= 0.7
+                return Common.DBotScore.BAD
+        except TypeError:
+            return Common.DBotScore.NONE
 
     def return_hash_results(self, results: list, title: str, error_msg: str) -> object:
         # default values
