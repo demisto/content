@@ -1537,6 +1537,30 @@ def test_demisto_custom_markdown_syntax(input_md, expected_html, test_id):
     assert result == expected_html, f"Test failed for {test_id}"
 
 
+def test_format_body_raw_checkbox_false(mocker):
+    """
+    Given
+    - An incident with the checkbox 'Send Body as Raw (No Markdown)' checked
+    When
+    - The format_body function is called with a markdown-formatted body
+    Then
+    - Validate that the body is returned as-is, without any markdown conversion
+    """
+    from SendEmailReply import format_body
+    mock_incident = {
+        "CustomFields": {
+            "sendbodyasrawnomarkdown": True
+        }
+    }
+    mocker.patch("SendEmailReply.demisto.incident", return_value=mock_incident)
+
+    result = format_body("**bold**")
+    assert result == ("**bold**", "**bold**")
+
+    result = format_body("_using italic_")
+    assert result == ("_using italic_", "_using italic_")
+
+
 @freeze_time("2024-02-22 10:00:00 UTC")
 def test_get_unique_code_happy_path(mocker):
     # Arrange
