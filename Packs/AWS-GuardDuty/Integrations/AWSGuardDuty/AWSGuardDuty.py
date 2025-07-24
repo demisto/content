@@ -540,6 +540,7 @@ def fetch_incidents(
     """
 
     # Get the latest_created_time, latest_updated_time, last_incidents_ids, and last_next_token if exist
+    demisto.debug(f"AWSGuardDuty: call fetch with last run {last_run}")
     latest_created_time = last_run.get("latest_created_time")
     last_incidents_ids = last_run.get("last_incidents_ids", [])
     last_next_token = last_run.get("last_next_token", "")
@@ -568,14 +569,15 @@ def fetch_incidents(
         criterion_conditions["updatedAt"] = {"Gte": time_to_unix_epoch(latest_updated_time)}
     if last_incidents_ids:
         criterion_conditions["id"] = {"Neq": last_incidents_ids[:]}
+    demisto.debug(f"AWSGuardDuty: {criterion_conditions=}")
 
     demisto.info(f"Fetching Amazon GuardDuty findings for the {detector[0]} since: {latest_created_time!s}")
-
+    demisto.debug(f"Fetching Amazon GuardDuty findings for the {detector[0]} since: {latest_created_time!s}")
     incidents: list[dict] = []
     while True:
         left_to_fetch = fetch_limit - len(incidents)
         max_results = min(MAX_RESULTS_RESPONSE, left_to_fetch)
-
+        demisto.debug(f"AWSGuardDuty: fetching {left_to_fetch=} to {max_results=}")
         list_findings_res = client.list_findings(
             DetectorId=detector[0],
             FindingCriteria={"Criterion": criterion_conditions},
@@ -585,10 +587,11 @@ def fetch_incidents(
         )
         last_next_token = list_findings_res.get("NextToken", "")
         finding_ids = list_findings_res.get("FindingIds", [])
+
         get_findings_res = client.get_findings(
             DetectorId=detector[0], FindingIds=finding_ids, SortCriteria={"AttributeName": "createdAt", "OrderBy": "ASC"}
         )
-
+        demisto.debug(f"AWSGuardDuty: got findings for ids: {finding_ids}")
         for finding in get_findings_res["Findings"]:
             incident_created_time = dateparser.parse(finding.get("CreatedAt", ""))
             incident_updated_time = dateparser.parse(finding.get("UpdatedAt", ""))
@@ -597,11 +600,12 @@ def fetch_incidents(
             # Update the latest_updated_time
             if not latest_updated_time or (incident_updated_time and incident_updated_time > latest_updated_time):
                 latest_updated_time = incident_updated_time
+                demisto.debug(f"AWSGuardDuty: updating: {latest_updated_time=} for {incident_id=}")
 
             # Update last run (latest_created_time) and add incident if the incident is newer than last fetch
             if (incident_created_time and latest_created_time) and incident_created_time >= latest_created_time:
                 demisto.debug(
-                    f"Added Incident with ID {incident_id}, occured: {incident_created_time!s}, "
+                    f"AWSGuardDuty: Added Incident with ID {incident_id}, occured: {incident_created_time!s}, "
                     f"updated: {incident_updated_time!s}"
                 )
 
@@ -609,16 +613,17 @@ def fetch_incidents(
                 created_time_to_ids[latest_created_time].append(incident_id)
 
                 incident = parse_incident_from_finding(finding)
+                demisto.debug(f"AWSGuardDuty: appending: {incident_id=}")
                 incidents.append(incident)
 
         if incidents and is_archive:
             # Archive findings
-            demisto.debug(f"Archived {len(finding_ids)} findings.")
+            demisto.debug(f"AWSGuardDuty: Archived {len(finding_ids)} findings {finding_ids=}.")
             client.archive_findings(DetectorId=detector[0], FindingIds=finding_ids)
 
         # if there is no next_token, or we have reached the fetch_limit -> break
         if not last_next_token or fetch_limit - len(incidents) == 0:
-            demisto.debug("fetch_limit has been reached or there is no next token")
+            demisto.debug("AWSGuardDuty: fetch_limit has been reached or there is no next token")
             break
 
     next_run = {
@@ -628,8 +633,8 @@ def fetch_incidents(
         "last_next_token": last_next_token,
     }
 
-    demisto.debug(f"{next_run=}")
-    demisto.debug(f"fetched {len(incidents)} incidents")
+    demisto.debug(f"AWSGuardDuty: {next_run=}")
+    demisto.debug(f"AWSGuardDuty: fetched {len(incidents)} incidents")
     return next_run, incidents
 
 
@@ -758,10 +763,11 @@ def main():  # pragma: no cover
     is_archive = argToBoolean(params.get("is_archive", False))
     sts_endpoint_url = params.get("sts_endpoint_url") or None
     endpoint_url = params.get("endpoint_url") or None
-
+    demisto.debug(f"AWSGuardDuty: Command being called is {demisto.command()}")
     try:
+        demisto.debug(f"AWSGuardDuty: validate_params for {demisto.command()}")
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
-
+        demisto.debug(f"AWSGuardDuty: creating AWS client for {demisto.command()}")
         aws_client = AWSClient(
             aws_default_region,
             aws_role_arn,
@@ -776,8 +782,9 @@ def main():  # pragma: no cover
             sts_endpoint_url=sts_endpoint_url,
             endpoint_url=endpoint_url,
         )
+        demisto.debug(f"AWSGuardDuty: done creating AWS client for {demisto.command()}")
         args = demisto.args()
-
+        demisto.debug("AWSGuardDuty: creating AWS session")
         client: GuardDutyClient = aws_client.aws_session(
             service=SERVICE,
             region=args.get("region"),
@@ -785,7 +792,7 @@ def main():  # pragma: no cover
             role_session_name=args.get("roleSessionName"),
             role_session_duration=args.get("roleSessionDuration"),
         )
-
+        demisto.debug("AWSGuardDuty: done creating AWS session")
         # The command demisto.command() holds the command sent from the user.
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration test button.
