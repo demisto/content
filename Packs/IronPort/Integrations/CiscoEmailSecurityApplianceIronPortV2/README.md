@@ -2021,19 +2021,19 @@ Retrieve historical remediation actions taken on messages, such as message delet
             "message_details": [
                 {
                     "delivered_at": 1584574165,
-                    "from_email": "kr@mar-esa.com",
+                    "from_email": "test@test.com",
                     "mid": "3",
                     "mor_status": "Success",
                     "msg_read": "0",
-                    "recipient_email": "krs@onpremesa2019.com"
+                    "recipient_email": "test@test.com"
                 },
                 {
                     "delivered_at": 1584574165,
-                    "from_email": "kr@mar-esa.com",
+                    "from_email": "test@test.com",
                     "mid": "3",
                     "mor_status": "Success",
                     "msg_read": "0",
-                    "recipient_email": "krc@mar-esa.com"
+                    "recipient_email": "test@test.com"
                 }
             ]
         }
@@ -2046,8 +2046,8 @@ Retrieve historical remediation actions taken on messages, such as message delet
 >### Message Remediation Report Details Summary:
 >|Delivered _ At|Mid|From _ Email|Recipient _ Email|Mor _ Status|Msg _ Read|
 >|---|---|---|---|---|---|
->| 1584574165 | 3 | kr@mar-esa.com | krs@onpremesa2019.com | Success | 0 |
->| 1584574165 | 3 | kr@mar-esa.com | krc@mar-esa.com | Success | 0 |
+>| 1584574165 | 3 | test@test.com | test@test.com | Success | 0 |
+>| 1584574165 | 3 | test@test.com | test@test.com | Success | 0 |
 
 
 ### cisco-esa-url-list-update
@@ -2306,12 +2306,12 @@ Retrieve metadata about the SMTP connection and transmission behavior of specifi
         "MessageConnection": {
             "Message": [
                 {
-                    "description": "ICID 19213 sender_group: RELAYLIST sender_ip: 10.76.70.111, \n                 sbrs: not enabled",
+                    "description": "ICID 19213 sender_group: RELAYLIST sender_ip: 1.11.11.1, \n                 sbrs: not enabled",
                     "last_event": false,
                     "timestamp": "16 Nov 2018 11:01:08 (GMT)"
                 },
                 {
-                    "description": "Protocol SMTP interface Management  (IP 10.76.71.196) on \n                 incoming connection (ICID 19213) from sender IP 10.76.70.111. Reverse DNS\n                 host vm30bsd0199.com verified yes.",
+                    "description": "Protocol SMTP interface Management  (IP 10.76.71.196) on \n                 incoming connection (ICID 19213) from sender IP 1.11.11.1. Reverse DNS\n                 host vm30bsd0199.com verified yes.",
                     "last_event": false,
                     "timestamp": "16 Nov 2018 11:01:08 (GMT)"
                 }
@@ -2328,5 +2328,5 @@ Retrieve metadata about the SMTP connection and transmission behavior of specifi
 >### Message Connection Report Details Summary: Sender group: RELAYLIST
 >|Timestamp|Description|
 >|---|---|
->| 16 Nov 2018 11:01:08 (GMT) | ICID 19213 sender_group: RELAYLIST sender_ip: 10.76.70.111, <br/>                 sbrs: not enabled |
->| 16 Nov 2018 11:01:08 (GMT) | Protocol SMTP interface Management  (IP 10.76.71.196) on <br/>                 incoming connection (ICID 19213) from sender IP 10.76.70.111. Reverse DNS<br/>                 host vm30bsd0199.com verified yes. |
+>| 16 Nov 2018 11:01:08 (GMT) | ICID 19213 sender_group: RELAYLIST sender_ip: 1.11.11.1, <br/>                 sbrs: not enabled |
+>| 16 Nov 2018 11:01:08 (GMT) | Protocol SMTP interface Management  (IP 10.76.71.196) on <br/>                 incoming connection (ICID 19213) from sender IP 1.11.11.1. Reverse DNS<br/>                 host vm30bsd0199.com verified yes. |
