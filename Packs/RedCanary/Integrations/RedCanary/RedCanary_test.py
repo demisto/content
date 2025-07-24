@@ -1,6 +1,7 @@
 import demistomock as demisto
 import json
 import RedCanary
+from datetime import datetime, UTC
 
 last_run_dict = {"time": "2019-12-13T17:23:22Z", "last_event_ids": []}
 latest_time_of_occurrence_of_incidents1 = "2019-12-30T22:00:50Z"
@@ -411,3 +412,44 @@ def test_get_detection_command_includes_process_and_files(mocker):
     # Ensure they are not empty
     assert len(processes) > 0, "Expected at least one process in context, got empty list"
     assert len(files) > 0, "Expected at least one file in context, got empty list"
+
+
+with open("./TestData/detections.json") as f:
+    detections_data = json.load(f)
+
+
+def test_get_unacknowledged_detections(mocker):
+    """Unit test
+    Given
+    - a list of detections from the list_detections command
+    When
+    - getting unacknowledged detections
+    Then
+    - make sure only the unacknowledged detections are returned
+    """
+    # Test with only unacknowledged detections
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["unacknowledged_detection"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now(UTC)))
+    assert len(results) == 1
+    assert results[0]["id"] == "1"
+
+    # Test with only acknowledged detections
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["acknowledged_detection"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now(UTC)))
+    assert len(results) == 0
+
+    # Test with a mix of acknowledged and unacknowledged detections
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["mixed_detections"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now(UTC)))
+    assert len(results) == 1
+    assert results[0]["id"] == "1"
+
+    # Test with a mix of detections and is_fetch_acknowledged=True
+    mocker.patch.object(RedCanary, "list_detections", side_effect=[detections_data["mixed_detections"]["data"], []])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now(UTC), is_fetch_acknowledged=True))
+    assert len(results) == 2
+
+    # Test with no detections
+    mocker.patch.object(RedCanary, "list_detections", return_value=[])
+    results = list(RedCanary.get_unacknowledged_detections(t=datetime.now(UTC)))
+    assert len(results) == 0
