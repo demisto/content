@@ -150,13 +150,15 @@ Update the status and/or severity of one or more alerts by ID.
 
 #### Context Output
 
-| **Path**                          | **Type** | **Description**                |
-|----------------------------------|----------|--------------------------------|
-| CybleEvents.AlertUpdate.id       | String   | The alert ID that was updated. |
-| CybleEvents.AlertUpdate.status   | String   | The updated status.            |
-| CybleEvents.AlertUpdate.user_severity | String | The updated user severity.     |
+| **Path**                             | **Type** | **Description**                       |
+|-------------------------------------|----------|---------------------------------------|
+| CybleEvents.AlertUpdate.id          | String   | The alert ID that was updated.        |
+| CybleEvents.AlertUpdate.status      | String   | The updated status.                   |
+| CybleEvents.AlertUpdate.user_severity | String | The updated user severity.            |
+| CybleEvents.AlertUpdate.service     | String   | The service associated with the alert.|
 
 #### Command Example
 
-```shell
+```bash
 !update-alert-data ids="id1,id2" status="UNDER_REVIEW,RESOLVED" severity="HIGH,LOW"
+
