@@ -113,6 +113,7 @@ class _ConcurrentEventFetcher:
     async def _worker(self, name: str, async_client: httpx.AsyncClient):
         """Pulls a URL from the queue, fetches events, and queues the next URL."""
         while True:
+            url_suffix = None
             try:
                 url_suffix = await self.queue.get()
                 demisto.debug(f"[{name}] got task: {url_suffix}")
@@ -122,8 +123,7 @@ class _ConcurrentEventFetcher:
                     if len(self.collected_events) >= self.max_events:
                         demisto.debug(f"[{name}] stopping, max events limit reached before processing task.")
                         self.has_more_available = True
-                        self.queue.task_done()
-                        continue
+                        continue  # Don't call task_done here — skip fetch
 
                 response = await async_client.get(url_suffix)
                 response.raise_for_status()
@@ -138,7 +138,7 @@ class _ConcurrentEventFetcher:
                         self.collected_events.extend(events[:remaining_space])
                         demisto.debug(f"[{name}] total events collected: {len(self.collected_events)}")
 
-                # Crucially, the worker is now responsible for queueing the next task
+                # Queue next page if present
                 paging_info = data.get("paging", {})
                 next_full_url = paging_info.get("next")
                 if next_full_url:
@@ -151,7 +151,8 @@ class _ConcurrentEventFetcher:
             except Exception as e:
                 demisto.error(f"[{name}] failed to process page {url_suffix}: {e}")
             finally:
-                self.queue.task_done()
+                if url_suffix is not None:
+                    self.queue.task_done()
 
     async def run(self) -> tuple[list[dict[str, Any]], bool]:
         """Orchestrates the workers to fetch all events."""

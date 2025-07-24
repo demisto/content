@@ -88,3 +88,5 @@ script:
     - contextPath: IBMStorageScale.AuditLog.originator
       description: The origin of the command (e.g., GUI, CLI).
       type: String
+tests:
+- No tests (auto formatted)
