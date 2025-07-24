@@ -1,0 +1,126 @@
+args:
+- description: A comma-separated list of issue names by which to filter the results.
+  isArray: true
+  name: name
+- description: 'A comma-separated list of issue statuses by which to filter the results. For example: assigned.'
+  isArray: true
+  name: status
+- description: 'A comma-separated list of issue statuses to exclude from the results.  For example: assigned.'
+  isArray: true
+  name: notstatus
+- description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
+  name: fromdate
+- description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
+  name: todate
+- description: Filter by issue assignee.
+  isArray: true
+  name: assignee
+- description: Filter by domain.
+  isArray: true
+  name: domain
+- description: Filter by severity.
+  isArray: true
+  name: severity
+- description: Filter by description.
+  isArray: true
+  name: description
+- description: Filter by category.
+  isArray: true
+  name: category
+- description: Filter by issueid.
+  isArray: true
+  name: issueid
+- description: Filter by detectionmethod.
+  isArray: true
+  name: detectionmethod
+- description: Filter by sha256.
+  isArray: true
+  name: sha256
+- description: Filter by the page number. # todo pagination
+  name: page
+  deprecated: true
+- description: |-
+    The number of events to return from the alert JSON. The default is 0, which returns all events.
+    Note that the count is from the head of the list, regardless of event time or other properties.
+  name: trimevents
+  hidden: true
+- description: Number of issues per page (per fetch).
+  name: size
+  deprecated: true
+- description: The maximum number of issues to be returned.
+  name: limit
+  defaultValue: '100'
+comment: |-
+  Searches Demisto issues. A summarized version of this scrips is available with the summarizedversion argument.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+  - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+  - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+comment:marketplacev2: |-
+  Searches Demisto issues. A summarized version of this scrips is available with the summarizedversion argument.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Permission-Management
+commonfields:
+  id: SearchIssues
+  version: -1
+enabled: true
+name: SearchIssues
+outputs:
+- contextPath: foundIssues.id
+  description: A list of issue IDs returned from the query.
+  type: Unknown
+- contextPath: foundIssues.name
+  description: A list of issue names returned from the query.
+  type: Unknown
+- contextPath: foundIssues.severity
+  description: A list of issue severities returned from the query.
+  type: Unknown
+- contextPath: foundIssues.status
+  description: A list of issue statuses returned from the query.
+  type: Unknown
+- contextPath: foundIssues.owner
+  description: A list of issue owners returned from the query.
+  type: Unknown
+- contextPath: foundIssues.created
+  description: A list of the issue create date returned from the query.
+  type: Unknown
+- contextPath: foundIssues.closed
+  description: A list of issue close dates returned from the query.
+  type: Unknown
+- contextPath: foundIssues.labels
+  description: An array of labels per issue returned from the query.
+  type: Unknown
+- contextPath: foundIssues.details
+  description: Details of the issues returned from the query.
+  type: Unknown
+- contextPath: foundIssues.dueDate
+  description: A list of issue due dates returned from the query.
+  type: Unknown
+- contextPath: foundIssues.phase
+  description: A list of issue phases returned from the query.
+  type: Unknown
+- contextPath: foundIssues.issueLink
+  description: A list with links to the issues returned from the query.
+  type: Unknown
+- contextPath: foundIssues.searchResultsLabel
+  description: The value provided in the searchresultslabel argument.
+  type: String
+script: '-'
+subtype: python3
+tags:
+- Utility
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.8.3720084
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
