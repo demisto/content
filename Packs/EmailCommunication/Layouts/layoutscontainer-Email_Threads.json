@@ -1,7 +1,7 @@
 {
 	"definitionId": "",
 	"description": "",
-	"details": {
+	"detailsV2": {
 		"TypeName": "",
 		"tabs": [
 			{
@@ -715,7 +715,6 @@
 	},
 	"group": "incident",
 	"id": "Email Threads",
-	"locked": false,
 	"mobile": {
 		"sections": [
 			{
@@ -1023,6 +1022,5 @@
 	"name": "Email Threads",
     "fromVersion": "6.0.0",
 	"system": false,
-	"toServerVersion": "99.99.99",
 	"version": -1
 }

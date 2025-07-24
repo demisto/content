@@ -20,7 +20,6 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": null,
-    "autoCompleteTags": null,
     "validationRegex": "",
     "x2_fields": "",
     "useAsKpi": false,
@@ -43,6 +42,5 @@
     "sla": 0,
     "threshold": 72,
     "breachScript": "",
-    "aliasTo": "",
-    "selectValuesMap": null
+    "aliasTo": ""
 }
