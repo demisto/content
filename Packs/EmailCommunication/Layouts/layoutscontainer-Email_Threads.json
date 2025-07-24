@@ -720,7 +720,7 @@
 	"edit": null,
 	"fromServerVersion": "6.0.0",
 	"group": "incident",
-	"id": "3dc2838a-1c72-4e59-837e-85cf28598e9f",
+	"id": "Email Threads",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"isOverridable": false,
@@ -1031,6 +1031,7 @@
 		]
 	},
 	"name": "Email Threads",
+    "fromVersion": "6.0.0",
 	"packID": "",
 	"packName": "Email Communication",
 	"propagationLabels": [],

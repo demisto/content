@@ -1547,11 +1547,8 @@ def test_format_body_raw_checkbox_false(mocker):
     - Validate that the body is returned as-is, without any markdown conversion
     """
     from SendEmailReply import format_body
-    mock_incident = {
-        "CustomFields": {
-            "sendbodyasrawnomarkdown": True
-        }
-    }
+
+    mock_incident = {"CustomFields": {"sendbodyasrawnomarkdown": True}}
     mocker.patch("SendEmailReply.demisto.incident", return_value=mock_incident)
 
     result = format_body("**bold**")

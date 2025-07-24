@@ -37,6 +37,7 @@
     ],
     "itemPrefix": [
         "Email",
-        "Add"
+        "Add",
+        "Send"
     ]
 }
