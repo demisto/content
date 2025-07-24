@@ -29,7 +29,6 @@ demisto-sdk = "1.38.5" # Only affects GitHub Actions. To control the SDK version
 pytest = ">=7.1.2"
 requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
-pytest-vcr = ">=1.0.2"
 freezegun = ">=1.1.0"
 dateparser = ">=1.2.0"
 ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
