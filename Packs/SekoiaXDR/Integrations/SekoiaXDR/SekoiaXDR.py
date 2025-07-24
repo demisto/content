@@ -70,6 +70,7 @@ class Client(BaseClient):
         alerts_type: str | None,
         sort_by: str | None,
         offset: int | None = 0,
+        direction: str = "asc",
     ) -> dict[str, Any]:
         request_params: dict[str, Any] = {}
 
@@ -93,6 +94,8 @@ class Client(BaseClient):
         """ Sorting parameters"""
         if sort_by:
             request_params["sort"] = sort_by
+        if direction:
+            request_params["direction"] = direction
 
         return self._http_request(method="GET", url_suffix="/v1/sic/alerts", params=request_params)
 
@@ -448,7 +451,7 @@ def filter_dict_by_keys(input_dict: dict, keys_to_keep: list) -> dict:
     return {key: value for key, value in input_dict.items() if key in keys_to_keep}
 
 
-def fetch_alerts_with_pagination(
+def fetch_alerts_asc_mode(
     client: Client,
     alert_status: str | None,
     alert_urgency: str | None,
@@ -458,49 +461,22 @@ def fetch_alerts_with_pagination(
     alerts_updated_at: str | None,
     sort_by: str | None,
 ) -> List[Dict[str, Any]]:
-    """
-    Fetches alerts from the Sekoia XDR API with pagination support.
-    This function retrieves alerts in batches, allowing for efficient handling of large datasets.
-    Args:
-        client (Client): Sekoia XDR client to use.
-        alert_status (str): status of the alert to search for.
-        alert_urgency (str): alert urgency range to search for. Format: "MIN_urgency,MAX_urgency". i.e: 80,100.
-        alert_type (str): type of alerts to search for.
-        max_results (int): Maximum numbers of incidents per fetch.
-        alerts_created_at (str): The date range to search for alerts.
-    Returns:
-        dict: List of alerts retrieved from the API.
-    """
+    response = client.list_alerts(
+        alerts_created_at=alerts_created_at,
+        alerts_updated_at=alerts_updated_at,
+        alerts_status=alert_status,
+        alerts_urgency=alert_urgency,
+        alerts_type=alert_type,
+        alerts_limit=max_results,
+        sort_by=sort_by,
+        direction="asc",
+    )
 
-    final_alerts = []
-    offset = 0
-    total_alerts = 0
+    alerts: List[Dict[str, Any]] = response.get("items", [])
 
-    # Fetch alerts in a loop until all alerts are retrieved
-    # Using offset to paginate through the results
-    while True:
-        response = client.list_alerts(
-            alerts_created_at=alerts_created_at,
-            alerts_updated_at=alerts_updated_at,
-            alerts_status=alert_status,
-            alerts_urgency=alert_urgency,
-            alerts_type=alert_type,
-            alerts_limit=max_results,
-            sort_by=sort_by,
-            offset=offset,
-        )
+    demisto.debug(f"Fetched {len(alerts)} alerts in ascending direction.")
 
-        alerts: List[Dict[str, Any]] = response.get("items", [])
-        total_alerts = response.get("total", 0)
-
-        # Extend the final alerts list with the current batch of alerts
-        final_alerts.extend(alerts)
-        demisto.debug(f"Fetched {len(alerts)} alerts from offset {offset}.")
-        offset += len(alerts)
-        if offset >= total_alerts:
-            break
-
-    return final_alerts
+    return alerts
 
 
 def handle_alert_events_query(
@@ -666,7 +642,7 @@ def fetch_incidents(
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
 
-    alerts = fetch_alerts_with_pagination(
+    alerts = fetch_alerts_asc_mode(
         client,
         alert_status,
         alert_urgency,
@@ -967,7 +943,7 @@ def get_modified_remote_data_command(client: Client, args):
     converted_time = time_converter(formatted_last_update)
     last_update_time = f"{converted_time},now"
 
-    raw_alerts = fetch_alerts_with_pagination(client, None, None, None, 100, None, last_update_time, "updated_at")
+    raw_alerts = fetch_alerts_asc_mode(client, None, None, None, 100, None, last_update_time, "updated_at")
 
     # Append the modified alert ids to the list
     # We can have alerts in this list that are already in the cache
