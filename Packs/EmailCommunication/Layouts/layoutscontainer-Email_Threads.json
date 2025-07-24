@@ -1022,5 +1022,6 @@
 	"name": "Email Threads",
     "fromVersion": "6.0.0",
 	"system": false,
-	"version": -1
+	"version": -1,
+    "marketplaces": ["xsoar"]
 }
