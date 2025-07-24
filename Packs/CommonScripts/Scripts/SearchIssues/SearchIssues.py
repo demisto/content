@@ -136,7 +136,7 @@ def summarize_incidents(args: dict, incidents: List[dict], platform: str):
         "closed",
     ]
     if platform == "x2" or platform == "unified_platform":
-        summarized_fields.append("alertLink")
+        summarized_fields.append("issueLink")
     else:
         summarized_fields.append("issueLink")
     if args.get("add_fields_to_summarize_context"):
@@ -157,7 +157,7 @@ def add_incidents_link(data: List, platform: str):
         server_url = "https://" + demisto.getLicenseCustomField("Http_Connector.url")
         for incident in data:
             incident_link = urljoin(server_url, f'alerts?action:openAlertDetails={incident.get("id")}-investigation')
-            incident["alertLink"] = incident_link
+            incident["issueLink"] = incident_link
     # For XSOAR links
     else:
         server_url = demisto.demistoUrls().get("server")
@@ -288,7 +288,7 @@ def search_incidents(args: Dict):  # pragma: no cover
             "owner",
             "targetprocessname",
             "username",
-            "alertLink",
+            "issueLink",
         ]
 
         all_found_incidents = transform_to_alert_data(all_found_incidents)
@@ -297,7 +297,7 @@ def search_incidents(args: Dict):  # pragma: no cover
             t=all_found_incidents,
             headers=headers + additional_headers,
             removeNull=True,
-            url_keys=["alertLink"],
+            url_keys=["issueLink"],
         )
     else:
         headers = ["id", "name", "severity", "status", "owner", "created", "closed", "issueLink"]
