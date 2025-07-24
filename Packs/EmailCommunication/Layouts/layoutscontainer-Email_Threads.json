@@ -1,11 +1,7 @@
 {
-	"cacheVersn": 0,
-	"close": null,
 	"definitionId": "",
 	"description": "",
-	"detached": false,
-	"details": null,
-	"detailsV2": {
+	"details": {
 		"TypeName": "",
 		"tabs": [
 			{
@@ -717,13 +713,8 @@
 			}
 		]
 	},
-	"fromServerVersion": "6.0.0",
 	"group": "incident",
 	"id": "Email Threads",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"isOverridable": false,
-	"itemVersion": "2.0.42",
 	"locked": false,
 	"mobile": {
 		"sections": [
@@ -1031,11 +1022,6 @@
 	},
 	"name": "Email Threads",
     "fromVersion": "6.0.0",
-	"packID": "",
-	"packName": "Email Communication",
-	"propagationLabels": [],
-	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
 	"toServerVersion": "99.99.99",
 	"version": -1
