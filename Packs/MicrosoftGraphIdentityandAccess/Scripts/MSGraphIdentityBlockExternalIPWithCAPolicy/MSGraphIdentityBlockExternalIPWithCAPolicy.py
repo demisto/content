@@ -261,7 +261,7 @@ def block_external_ip_with_ca_policy_main_logic(ip: str, named_location_name: st
     else:
         named_location_id = create_new_named_ip_location(named_location_name, ip)
         # Wait for Azure to propagate the named location (recommended for CA policies)
-        time.sleep(30) # pylint: disable=sleep-exists
+        time.sleep(30)  # pylint: disable=sleep-exists
         create_conditional_access_policy(policy_name, named_location_id)
         result_message = (
             f"A new named location '{named_location_name}' was created for IP {ip} and "
