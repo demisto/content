@@ -975,7 +975,7 @@ def format_body(new_email_body):
     Returns: (str) HTML email body
     """
     use_raw_body = argToBoolean(demisto.incident().get("CustomFields").get("sendbodyasrawnomarkdown", False))
-    if use_raw_body:  # checking the checkbox will send the body as is and won't use markdown
+    if use_raw_body:  # it true, will send the body as is and won't use markdown
         return new_email_body, new_email_body
 
     # 1. Apply your direction tags first
