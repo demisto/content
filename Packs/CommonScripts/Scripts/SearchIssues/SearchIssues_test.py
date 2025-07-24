@@ -214,7 +214,7 @@ def test_summarize_incidents():
             "closed": "n/a",
             "created": "n/a",
             "id": "test",
-            "incidentLink": "n/a",
+            "issueLink": "n/a",
             "name": "n/a",
             "owner": "n/a",
             "severity": "n/a",
@@ -349,5 +349,12 @@ def test_todate_set_and_pagination(mocker):
 def test_from_issue_statuses_to_numeric_values():
     """Given statuses test the result."""
     assert from_issue_statuses_to_numeric_values("New,In Progress") == "0,1"
-    assert from_issue_statuses_to_numeric_values("resolved") == "2"
-    assert from_issue_statuses_to_numeric_values("In_progress, ResolveD") == "1,2"
+    assert from_issue_statuses_to_numeric_values("Resolved") == "2"
+    assert from_issue_statuses_to_numeric_values("In Progress, Resolved") == "1,2"
+
+
+def test_numeric_values_to_issue_statuses():
+    """Given numeric arg return the status of the issue."""
+    assert numeric_values_to_issue_statuses(0) == "New"
+    assert numeric_values_to_issue_statuses(1) == "In Progress"
+    assert numeric_values_to_issue_statuses(2) == "Resolved"

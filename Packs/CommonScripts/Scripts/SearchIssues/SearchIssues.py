@@ -17,16 +17,10 @@ class AlertSeverity(Enum):
     CRITICAL = 4
 
 
-class IssueStatus(Enum):
-    New = 0
-    InProgress = 1
-    Resolved = 2
-
-
 Issue_status_mapping = {
-    "new": "0",
-    "in_progress": "1",
-    "resolved": "2",
+    "New": "0",
+    "In Progress": "1",
+    "Resolved": "2",
 }
 
 
@@ -43,7 +37,6 @@ def from_issue_statuses_to_numeric_values(status_args: str) -> str:
     status_list = argToList(status_args)
     numeric_status_list = []
     for status_arg in status_list:
-        status_arg = status_arg.lower().replace(" ", "_")  # Normalize status string
         status_numeric_value = Issue_status_mapping.get(status_arg, "-1")
         if status_numeric_value == "-1":
             raise ValueError(
@@ -53,6 +46,27 @@ def from_issue_statuses_to_numeric_values(status_args: str) -> str:
         numeric_status_list.append(status_numeric_value)
 
     return ",".join(numeric_status_list)
+
+
+def numeric_values_to_issue_statuses(numeric_status_args: int) -> str:
+    """
+    Convert numeric status values back to issue status strings.
+
+    Args:
+        numeric_status_args (str): Comma-separated numeric status values
+
+    Returns:
+        List[str]: List of corresponding issue status strings
+    """
+    numeric_status_args_str = str(numeric_status_args)
+    reverse_mapping = {v: k for k, v in Issue_status_mapping.items()}
+
+    for numeric_status, value in reverse_mapping.items():
+        if numeric_status_args_str == numeric_status:
+            return value
+
+    raise ValueError(f"Invalid numeric status: returned from search {numeric_status_args}. \
+        Supported numeric statuses are: {list(reverse_mapping.keys())}")
 
 
 def check_if_found_incident(res: List):
@@ -124,7 +138,7 @@ def summarize_incidents(args: dict, incidents: List[dict], platform: str):
     if platform == "x2" or platform == "unified_platform":
         summarized_fields.append("alertLink")
     else:
-        summarized_fields.append("incidentLink")
+        summarized_fields.append("issueLink")
     if args.get("add_fields_to_summarize_context"):
         summarized_fields += args.get("add_fields_to_summarize_context", "").split(",")
         summarized_fields = [x.strip() for x in summarized_fields]  # clear out whitespace
@@ -150,7 +164,7 @@ def add_incidents_link(data: List, platform: str):
         prefix = "" if is_demisto_version_ge("8.4.0") else "#"
         for incident in data:
             incident_link = urljoin(server_url, f'{prefix}/Details/{incident.get("id")}')
-            incident["incidentLink"] = incident_link
+            incident["issueLink"] = incident_link
     return data
 
 
@@ -160,7 +174,7 @@ def transform_to_alert_data(incidents: List):
         incident["initiatedby"] = incident.get("CustomFields", {}).get("initiatedby")
         incident["targetprocessname"] = incident.get("CustomFields", {}).get("targetprocessname")
         incident["username"] = incident.get("CustomFields", {}).get("username")
-        incident["status"] = IssueStatus(incident.get("status")).name
+        incident["status"] = numeric_values_to_issue_statuses(incident.get("status"))
         incident["severity"] = AlertSeverity(incident.get("severity")).name
 
     return incidents
@@ -286,9 +300,9 @@ def search_incidents(args: Dict):  # pragma: no cover
             url_keys=["alertLink"],
         )
     else:
-        headers = ["id", "name", "severity", "status", "owner", "created", "closed", "incidentLink"]
+        headers = ["id", "name", "severity", "status", "owner", "created", "closed", "issueLink"]
         md = tableToMarkdown(
-            name="Incidents found", t=all_found_incidents, headers=headers + additional_headers, url_keys=["incidentLink"]
+            name="Incidents found", t=all_found_incidents, headers=headers + additional_headers, url_keys=["issueLink"]
         )
 
     if hr_prefix:
@@ -307,7 +321,7 @@ def main():  # pragma: no cover
             for output in outputs:
                 output["searchResultsLabel"] = search_results_label
         results = CommandResults(
-            outputs_prefix="SearchIssues",
+            outputs_prefix="foundIssues",
             outputs_key_field="id",
             readable_output=readable_output,
             outputs=outputs,

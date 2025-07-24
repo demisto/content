@@ -1,18 +1,18 @@
 args:
 - default: true
-  description: A comma-separated list of incident IDs by which to filter the results.
+  description: A comma-separated list of issues IDs by which to filter the results.
   isArray: true
   name: id
-- description: A comma-separated list of incident names by which to filter the results.
+- description: A comma-separated list of issues names by which to filter the results.
   isArray: true
   name: name
-- description: 'A comma-separated list of incident statuses to filter the results by. Options: new, in_progress, and resolved.'
+- description: 'A comma-separated list of issues statuses to filter the results by. Options:  New, In Progress, Resolved.'
   isArray: true
   name: status
-- description: 'A comma-separated list of incident statuses to exclude from the results. Options: new, in_progress, resolved.'
+- description: 'A comma-separated list of issues statuses to exclude from the results. Options: New, In Progress, Resolved.'
   isArray: true
   name: notstatus
-- description: A comma-separated list of incident close reasons by which to filter the results.
+- description: A comma-separated list of issues close reasons by which to filter the results.
   isArray: true
   name: reason
 - description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
@@ -30,12 +30,12 @@ args:
 - description: Filter by Severity.
   isArray: true
   name: level
-- description: Filter by incident owners.
+- description: Filter by issues owners.
   isArray: true
   name: owner
-- description: Filter by incident details.
+- description: Filter by issues details.
   name: details
-- description: Filter by incident type.
+- description: Filter by issues type.
   isArray: true
   name: type
 - description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
@@ -48,15 +48,15 @@ args:
     Note that the count is from the head of the list, regardless of event time or other properties.
   name: trimevents
   hidden: true
-- description: Number of incidents per page (per fetch).
+- description: Number of issuess per page (per fetch).
   name: size
   deprecated: true
-- description: The maximum number of incidents to be returned.
+- description: The maximum number of issuess to be returned.
   name: limit
   defaultValue: '100'
 - description: Sort in format of field.asc,field.desc,...
   name: sort
-- description: If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.
+- description: If provided, the value of this argument will be set under the searchResultsLabel context key for each issues found.
   name: searchresultslabel
 - description: If enabled runs a summarized version of this script. Disables auto-extract, sets fromDate to 30 days, and minimizes the context output. You can add sepcific fields to context using the add_fields_to_summarize_context argument. Default is false.
   name: summarizedversion
@@ -64,7 +64,7 @@ args:
   predefined:
   - "false"
   - "true"
-- description: When the value is set to 'True', informational severity alerts will return as part of the results. The ‘fromdate’ and ‘todate’ arguments must be provided to use this argument. The maximum value currently supported for the 'fromdate' argument to retrieve informational incidents is 5 hours. If a value greater than this is provided, it will be adjusted to 5 hours ago. To retrieve only informational incidents, use the `query` argument and include this limitation within the query. Default is false.
+- description: When the value is set to 'True', informational severity alerts will return as part of the results. The ‘fromdate’ and ‘todate’ arguments must be provided to use this argument. The maximum value currently supported for the 'fromdate' argument to retrieve informational issuess is 5 hours. If a value greater than this is provided, it will be adjusted to 5 hours ago. To retrieve only informational issuess, use the `query` argument and include this limitation within the query. Default is false.
   name: includeinformational
   auto: PREDEFINED
   predefined:
@@ -78,46 +78,46 @@ args:
 comment:
   Searches Cortex Issues.
 commonfields:
-  id: SearchIssues
+  id: SearchIssuesAgentix
   version: -1
 enabled: true
-name: SearchIssues
+name: SearchIssuesAgentix
 outputs:
 - contextPath: foundIssues.id
-  description: A list of incident IDs returned from the query.
+  description: A list of issues IDs returned from the query.
   type: Unknown
 - contextPath: foundIssues.name
-  description: A list of incident names returned from the query.
+  description: A list of issues names returned from the query.
   type: Unknown
 - contextPath: foundIssues.severity
-  description: A list of incident severities returned from the query.
+  description: A list of issues severities returned from the query.
   type: Unknown
 - contextPath: foundIssues.status
-  description: A list of incident statuses returned from the query.
+  description: A list of issues statuses returned from the query.
   type: Unknown
 - contextPath: foundIssues.owner
-  description: A list of incident owners returned from the query.
+  description: A list of issues owners returned from the query.
   type: Unknown
 - contextPath: foundIssues.created
-  description: A list of the incident create date returned from the query.
+  description: A list of the issues create date returned from the query.
   type: Unknown
 - contextPath: foundIssues.closed
-  description: A list of incident close dates returned from the query.
+  description: A list of issues close dates returned from the query.
   type: Unknown
 - contextPath: foundIssues.labels
-  description: An array of labels per incident returned from the query.
+  description: An array of labels per issues returned from the query.
   type: Unknown
 - contextPath: foundIssues.details
-  description: Details of the incidents returned from the query.
+  description: Details of the issuess returned from the query.
   type: Unknown
 - contextPath: foundIssues.dueDate
-  description: A list of incident due dates returned from the query.
+  description: A list of issues due dates returned from the query.
   type: Unknown
 - contextPath: foundIssues.phase
-  description: A list of incident phases returned from the query.
+  description: A list of issues phases returned from the query.
   type: Unknown
-- contextPath: foundIssues.incidentLink
-  description: A list with links to the incidents returned from the query.
+- contextPath: foundIssues.issueLink
+  description: A list with links to the issuess returned from the query.
   type: Unknown
 - contextPath: foundIssues.searchResultsLabel
   description: The value provided in the searchresultslabel argument.
