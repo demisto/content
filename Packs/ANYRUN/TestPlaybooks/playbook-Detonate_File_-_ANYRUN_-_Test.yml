@@ -1,6 +1,8 @@
 id: Detonate File - ANYRUN - Test
 version: -1
 name: Detonate File - ANYRUN - Test
+deprecated: true
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
