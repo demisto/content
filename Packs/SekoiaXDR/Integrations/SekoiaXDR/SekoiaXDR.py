@@ -94,8 +94,8 @@ class Client(BaseClient):
         """ Sorting parameters"""
         if sort_by:
             request_params["sort"] = sort_by
-        if direction:
-            request_params["direction"] = direction
+
+        request_params["direction"] = direction
 
         return self._http_request(method="GET", url_suffix="/v1/sic/alerts", params=request_params)
 

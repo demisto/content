@@ -144,6 +144,26 @@ def test_check_id_in_context_with_mirroring(context_cache_with_mirroring):
     )
 
 
+def test_fetch_alerts_asc_mode(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alerts.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
+
+    args = {
+        "client": client,
+        "alert_status": None,
+        "alert_urgency": None,
+        "alert_type": None,
+        "max_results": 100,
+        "alerts_created_at": None,
+        "alerts_updated_at": None,
+        "sort_by": None,
+    }
+
+    result = SekoiaXDR.fetch_alerts_asc_mode(**args)
+    assert len(result) == 2
+    assert result[0]["created_at"] < result[1]["created_at"]
+
+
 def test_handle_alert_events_query_finished_status(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_query_events.json")
     requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response)
