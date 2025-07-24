@@ -1,9 +1,9 @@
 import datetime
 import uuid
-from datetime import UTC
 
 import demistomock as demisto
 import pytest
+from datetime import UTC
 from freezegun import freeze_time
 from test_data import input_data
 
@@ -1074,6 +1074,81 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
     assert result == expected_result
 
 
+@pytest.mark.parametrize(
+    "body_type, body, htmlBody, expected_call_args",
+    [
+        (
+            "text",
+            "This is the plain text body.",
+            "<html><body><b>This is the HTML body.</b></body></html>",
+            ("This is the plain text body.", "plain", "utf-8"),
+        ),
+        (
+            "html",
+            "This is the plain text body.",
+            "<html><body><b>This is the HTML body.</b></body></html>",
+            ("<html><body><b>This is the HTML body.</b></body></html>", "html"),
+        ),
+    ],
+)
+def test_send_mail_correct_body_used(mocker, body_type, body, htmlBody, expected_call_args):
+    """
+    Given:
+        - Both `body` and `htmlBody` are provided
+    When:
+        - `body_type` is either "text" or "html"
+    Then:
+        - Ensure the correct MIMEText constructor is called based on body_type
+    """
+    import Gmail
+    from Gmail import MIMEText, send_mail
+
+    mock_mime_text = mocker.patch.object(Gmail, "MIMEText", return_value=MIMEText(*expected_call_args))
+
+    mock_execute = mocker.Mock(return_value={"id": "mocked-message-id"})
+
+    mock_send_obj = mocker.Mock()
+    mock_send_obj.execute = mock_execute
+
+    mock_send = mocker.Mock()
+    mock_send.send.return_value = mock_send_obj
+
+    mock_messages = mocker.Mock()
+    mock_messages.return_value = mock_send
+
+    mock_users = mocker.Mock()
+    mock_users.return_value.messages = mock_messages
+
+    mock_service = mocker.Mock()
+    mock_service.users = mock_users
+
+    mocker.patch.object(Gmail, "get_service", return_value=mock_service)
+
+    send_mail(
+        body_type=body_type,
+        emailto="test",
+        emailfrom="testing",
+        subject="subject",
+        body=body,
+        entry_ids=None,
+        cc="",
+        bcc="",
+        htmlBody=htmlBody,
+        replyTo=None,
+        file_names=None,
+        attach_cid=None,
+        transientFile=None,
+        transientFileContent=None,
+        transientFileCID=None,
+        manualAttachObj=None,
+        additional_headers=None,
+        templateParams=None,
+        sender_display_name="test",
+    )
+
+    mock_mime_text.assert_called_once()
+
+
 @pytest.mark.parametrize("display_name", [("Sender Name"), (None)])
 def test_send_mail_sender_display_name(mocker, display_name):
     """
@@ -1091,6 +1166,7 @@ def test_send_mail_sender_display_name(mocker, display_name):
     mocked_get_service().users().messages().list().execute.return_value = {"id": "mock_id"}
     mock_b64encode = mocker.patch("base64.urlsafe_b64encode")
     send_mail(
+        "html",
         [],
         "sender@example.com",
         "",

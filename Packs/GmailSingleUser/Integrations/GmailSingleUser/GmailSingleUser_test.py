@@ -7,7 +7,7 @@ from datetime import datetime, UTC
 from freezegun import freeze_time
 
 
-from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action
+from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action, MIMEText
 from email.utils import parsedate_to_datetime
 
 
@@ -297,6 +297,7 @@ def test_send_mail_with_reference(gmail_client: Client, mocker):
     """
     mocker.patch.object(gmail_client, "send_email_request", return_value=True)
     assert gmail_client.send_mail(
+        body_type=None,
         emailto=None,
         emailfrom=None,
         send_as=None,
@@ -318,6 +319,83 @@ def test_send_mail_with_reference(gmail_client: Client, mocker):
         references=["test", "test1"],
         inReplyTo="test test",
     )
+
+
+@pytest.mark.parametrize(
+    "body_type, body, htmlBody, expected_call_args",
+    [
+        (
+            "text",
+            "This is the plain text body.",
+            "<html><body><b>This is the HTML body.</b></body></html>",
+            ("This is the plain text body.", "plain", "utf-8"),
+        ),
+        (
+            "html",
+            "This is the plain text body.",
+            "<html><body><b>This is the HTML body.</b></body></html>",
+            ("<html><body><b>This is the HTML body.</b></body></html>", "html"),
+        ),
+    ],
+)
+def test_send_mail_correct_body_used(gmail_client, mocker, body_type, body, htmlBody, expected_call_args):
+    """
+    Given:
+        - Both `body` and `htmlBody` are provided
+    When:
+        - `body_type` is either "text" or "html"
+    Then:
+        - Ensure the correct MIMEText constructor is called based on body_type
+    """
+    import GmailSingleUser
+
+    command_args = {
+        "body_type": body_type,
+        "to": "recipient@example.com",
+        "from": "sender@example.com",
+        "subject": "Test Email",
+        "body": body,
+        "htmlBody": htmlBody,
+        "entryIDs": None,
+        "cc": "",
+        "bcc": None,
+        "replyTo": None,
+        "attachCIDs": None,
+        "fileNames": None,
+        "manualAttachObj": None,
+        "transientFile": None,
+        "transientFileContent": None,
+        "transientFileCID": None,
+        "additionalHeader": None,
+        "templateParams": "{}",
+    }
+
+    mocker.patch.object(gmail_client, "send_email_request", return_value={"id": "111", "threadId": "111", "labelIds": ["SENT"]})
+    mocker.patch.object(demisto, "args", return_value=command_args)
+    mocker_obj = mocker.patch.object(GmailSingleUser, "MIMEText", return_value=MIMEText(*expected_call_args))
+
+    gmail_client.send_mail(
+        body_type=body_type,
+        emailto="test",
+        emailfrom="testing",
+        send_as=None,
+        subject="subject",
+        body=body,
+        entry_ids=None,
+        cc="",
+        bcc="",
+        htmlBody=htmlBody,
+        replyTo=None,
+        file_names=None,
+        attach_cid=None,
+        transientFile=None,
+        transientFileContent=None,
+        transientFileCID=None,
+        manualAttachObj=None,
+        additional_headers=None,
+        templateParams=None,
+    )
+    mocker_obj.assert_called_once_with(*expected_call_args)
 
 
 def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
@@ -345,14 +423,15 @@ def test_send_mail_MIMEMultipart_constructor(mocker: MockerFixture):
     mocker_obj = mocker.patch.object(GmailSingleUser, "MIMEMultipart", return_value=MIMEMultipart())
 
     gmail_single_user_client.send_mail(
+        body_type="",
         emailto="test@gmail.com",
         emailfrom="test@gmail.com",
         send_as="test@gmail.com",
         cc=None,
         bcc=None,
         subject="hello-world",
-        body="body",
-        htmlBody="<>",
+        body="",
+        htmlBody="",
         entry_ids=[],
         replyTo=None,
         file_names=[],
@@ -536,10 +615,7 @@ def test_get_incidents_command(mocker):
     from GmailSingleUser import Client, get_incidents_command
 
     client = Client()
-    args = {
-        "after": "24 Mar 2025 08:17:02 -0700",
-        "before": "24 Mar 2025 08:18:02 -0700"
-    }
+    args = {"after": "24 Mar 2025 08:17:02 -0700", "before": "24 Mar 2025 08:18:02 -0700"}
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(
         client,
@@ -564,7 +640,7 @@ def test_get_incidents_command(mocker):
         ((datetime(2023, 1, 1, 12, 0), "str"), "2023-01-01T12:00:00Z"),
         (("2023-01-01T12:00:00Z", "str"), "2023-01-01T12:00:00Z"),
     ],
-    ids=["date_str_to_datetime", "date_datetime_pass", "datetime_to_iso_str", "iso_str_pass"]
+    ids=["date_str_to_datetime", "date_datetime_pass", "datetime_to_iso_str", "iso_str_pass"],
 )
 def test_parse_date(test_input, expected_output):
     """
@@ -576,6 +652,7 @@ def test_parse_date(test_input, expected_output):
         - Confirm that the output matches the expected datetime object or ISO formatted string.
     """
     from GmailSingleUser import Client, parse_date
+
     client = Client()
     result = parse_date(client, *test_input)
     assert result == expected_output, f"Expected {expected_output} but got {result}"
@@ -584,14 +661,17 @@ def test_parse_date(test_input, expected_output):
 @pytest.mark.parametrize(
     "input_args, expected",
     [
-        ({"before": "now", "after": "1 day ago"},
-         ('1672574400', '1672488000')),  # Unix timestamps for '2023-01-01 12:00:00', '2022-12-31 12:00:00'
-        ({"before": "2023-01-01 12:00:00", "after": "2022-12-31 12:00:00"},
-         ('1672574400', '1672488000')),  # Unix timestamps for the same fixed dates
-        ({},
-         ('1672574400', '1672488000')),  # Default case: 'now' and '1 day ago' will be the same as the first case
+        (
+            {"before": "now", "after": "1 day ago"},
+            ("1672574400", "1672488000"),
+        ),  # Unix timestamps for '2023-01-01 12:00:00', '2022-12-31 12:00:00'
+        (
+            {"before": "2023-01-01 12:00:00", "after": "2022-12-31 12:00:00"},
+            ("1672574400", "1672488000"),
+        ),  # Unix timestamps for the same fixed dates
+        ({}, ("1672574400", "1672488000")),  # Default case: 'now' and '1 day ago' will be the same as the first case
     ],
-    ids=["default_dates", "specific_dates", "no_params"]
+    ids=["default_dates", "specific_dates", "no_params"],
 )
 @freeze_time("2023-01-01 12:00:00 UTC")
 def test_get_unix_date(input_args, expected):
@@ -604,6 +684,7 @@ def test_get_unix_date(input_args, expected):
         - Validate that the conversions match expected Unix timestamps.
     """
     from GmailSingleUser import get_unix_date
+
     assert get_unix_date(input_args) == expected
 
 
@@ -628,6 +709,7 @@ def test_fetch_incidents_set_last_run_called_correctly(mocker):
     """  # noqa: E501
     from GmailSingleUser import fetch_incidents
     import GmailSingleUser
+
     gmail_single_user_client = Client()
     # Mock the chain of calls: service.users().messages().send().execute()
     mock_execute = mocker.Mock(return_value={"id": "mock_message_id"})
@@ -643,8 +725,8 @@ def test_fetch_incidents_set_last_run_called_correctly(mocker):
         nonlocal fetch_count
         if action == "list":
             if fetch_count == 0:
-                return {'messages': [{'id': '1'}, {'id': '3'}]}
-            return {'messages': [{'id': '1'}, {'id': '2'}, {'id': '3'}]}
+                return {"messages": [{"id": "1"}, {"id": "3"}]}
+            return {"messages": [{"id": "1"}, {"id": "2"}, {"id": "3"}]}
         elif action == "get":
             message_id = args.get("id")
             for item in util_load_json("test_data/lookback_emails.json"):
@@ -653,14 +735,14 @@ def test_fetch_incidents_set_last_run_called_correctly(mocker):
         return {}
 
     # Mocking external functions and globals
-    mocker.patch('GmailSingleUser.execute_gmail_action', side_effect=execute_gmail_action_side_effect)
-    mocker.patch('GmailSingleUser.demisto.getLastRun', return_value={"gmt_time": "2025-02-24T15:17:05Z"})
-    mock_set_last_run = mocker.patch('GmailSingleUser.demisto.setLastRun')
+    mocker.patch("GmailSingleUser.execute_gmail_action", side_effect=execute_gmail_action_side_effect)
+    mocker.patch("GmailSingleUser.demisto.getLastRun", return_value={"gmt_time": "2025-02-24T15:17:05Z"})
+    mock_set_last_run = mocker.patch("GmailSingleUser.demisto.setLastRun")
 
     fetch_incidents(gmail_single_user_client)
 
     last_args = mock_set_last_run.call_args[0][0]
-    assert len(last_args['lookback_msg']) == 2, "lookback_msg does not contain exactly three messages in the first fetch"
+    assert len(last_args["lookback_msg"]) == 2, "lookback_msg does not contain exactly three messages in the first fetch"
 
     fetch_count += 1
     fetch_incidents(gmail_single_user_client)
@@ -669,6 +751,6 @@ def test_fetch_incidents_set_last_run_called_correctly(mocker):
     last_args = mock_set_last_run.call_args[0][0]
 
     # Assert the lookback_msg contains the correct messages
-    assert 'lookback_msg' in last_args, "lookback_msg key is missing in the arguments sent to setLastRun"
-    assert len(last_args['lookback_msg']) == 3, "lookback_msg does not contain exactly three messages in the secund fetch"
-    assert [id for id, _ in last_args['lookback_msg']] == ["1", "2", "3"], "lookback_msg do"
+    assert "lookback_msg" in last_args, "lookback_msg key is missing in the arguments sent to setLastRun"
+    assert len(last_args["lookback_msg"]) == 3, "lookback_msg does not contain exactly three messages in the secund fetch"
+    assert [id for id, _ in last_args["lookback_msg"]] == ["1", "2", "3"], "lookback_msg do"
