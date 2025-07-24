@@ -1,0 +1,21 @@
+{
+    "name": "Cloudflare_new",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "krutarth92",
+    "url": "",
+    "email": "",
+    "created": "2025-07-24T09:06:16Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "krutarth92"
+    ]
+}
