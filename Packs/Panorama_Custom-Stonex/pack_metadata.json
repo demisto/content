@@ -1,0 +1,21 @@
+{
+    "name": "Panorama_custom-stonex",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "krutarth92",
+    "url": "",
+    "email": "",
+    "created": "2025-07-24T09:08:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "krutarth92"
+    ]
+}
