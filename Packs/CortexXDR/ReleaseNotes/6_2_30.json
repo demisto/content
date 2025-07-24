@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The following commands: **get_incident_extra_data**, **get_multiple_incidents_extra_data** now return a list instead of a single string in the fields **action_file_name** and **action_file_path**."
+    "breakingChangesNotes": "The endpoint command may now return a list of IP addresses under endpoint.IPAddress rather than a single entry which also affect the Cortex XDR Malware - Incident Enrichment playbook."
 }
