@@ -137,6 +137,7 @@ Fetch incident event group
 Update the status and/or severity of one or more alerts by ID.
 
 #### Base Command
+
 `update-alert-data`
 
 #### Input
@@ -156,5 +157,6 @@ Update the status and/or severity of one or more alerts by ID.
 | CybleEvents.AlertUpdate.user_severity | String | The updated user severity.     |
 
 #### Command Example
+
 ```shell
 !update-alert-data ids="id1,id2" status="UNDER_REVIEW,RESOLVED" severity="HIGH,LOW"
