@@ -1,0 +1,1106 @@
+<?xml version='1.0' encoding='utf-8'?>
+<response status="success">
+  <result>
+    <config version="11.1.0" urldb="paloaltonetworks" detail-version="11.1.6">
+      <mgt-config>
+        <devices>
+          <entry name="111111111111111" />
+        </devices>
+        <users>
+          <entry name="admin">
+            <phash>hash1</phash>
+            <permissions>
+              <role-based>
+                <superuser>yes</superuser>
+              </role-based>
+            </permissions>
+            <public-key>=publickeytest1=</public-key>
+          </entry>
+          <entry name="__openconfig">
+            <phash>hash2</phash>
+            <permissions>
+              <role-based>
+                <panorama-admin>yes</panorama-admin>
+              </role-based>
+            </permissions>
+          </entry>
+          <entry name="__vm_series">
+            <phash>hash3</phash>
+            <permissions>
+              <role-based>
+                <panorama-admin>yes</panorama-admin>
+              </role-based>
+            </permissions>
+          </entry>
+          <entry name="__cloudconnector">
+            <phash>hash4</phash>
+            <permissions>
+              <role-based>
+                <panorama-admin>yes</panorama-admin>
+              </role-based>
+            </permissions>
+          </entry>
+          <entry name="__cloud_services">
+            <phash>hash5</phash>
+            <permissions>
+              <role-based>
+                <panorama-admin>yes</panorama-admin>
+              </role-based>
+            </permissions>
+          </entry>
+        </users>
+        <password-complexity>
+          <enabled>yes</enabled>
+          <minimum-length>8</minimum-length>
+        </password-complexity>
+      </mgt-config>
+      <shared>
+        <profile-group>
+          <entry name="predefined-profiles">
+            <virus>
+              <member>default</member>
+            </virus>
+            <spyware>
+              <member>strict</member>
+            </spyware>
+            <vulnerability>
+              <member>default</member>
+            </vulnerability>
+            <wildfire-analysis>
+              <member>default</member>
+            </wildfire-analysis>
+          </entry>
+        </profile-group>
+        <tag>
+          <entry name="testing" />
+        </tag>
+        <address>
+          <entry name="Aneesha HQ IP">
+            <ip-netmask>2.2.2.2</ip-netmask>
+            <tag>
+              <member>testing</member>
+            </tag>
+            <description>HQ Test</description>
+          </entry>
+        </address>
+        <address-group>
+          <entry name="Test-DAG">
+            <static>
+              <member>Aneesha HQ IP</member>
+            </static>
+            <tag>
+              <member>testing</member>
+            </tag>
+          </entry>
+        </address-group>
+      </shared>
+      <devices>
+        <entry name="localhost.localdomain">
+          <deviceconfig>
+            <system>
+              <update-server>updates.paloaltonetworks.com</update-server>
+              <update-schedule>
+                <threats>
+                  <recurring>
+                    <weekly>
+                      <day-of-week>wednesday</day-of-week>
+                      <at>01:02</at>
+                      <action>download-only</action>
+                    </weekly>
+                  </recurring>
+                </threats>
+              </update-schedule>
+              <timezone>US/Pacific</timezone>
+              <service>
+                <disable-telnet>yes</disable-telnet>
+                <disable-http>yes</disable-http>
+              </service>
+              <device-telemetry>
+                <device-health-performance>yes</device-health-performance>
+                <product-usage>yes</product-usage>
+                <threat-prevention>yes</threat-prevention>
+                <region>Americas</region>
+              </device-telemetry>
+              <type>
+                <dhcp-client>
+                  <send-hostname>yes</send-hostname>
+                  <send-client-id>no</send-client-id>
+                  <accept-dhcp-hostname>no</accept-dhcp-hostname>
+                  <accept-dhcp-domain>no</accept-dhcp-domain>
+                </dhcp-client>
+              </type>
+              <hostname>Panorama</hostname>
+              <dns-setting>
+                <servers>
+                  <primary>1.1.1.1</primary>
+                </servers>
+              </dns-setting>
+              <ntp-servers>
+                <primary-ntp-server>
+                  <ntp-server-address>pool.ntp.org</ntp-server-address>
+                  <authentication-type>
+                    <none />
+                  </authentication-type>
+                </primary-ntp-server>
+              </ntp-servers>
+            </system>
+            <setting>
+              <management>
+                <storage-partition>
+                  <internal />
+                </storage-partition>
+                <hostname-type-in-syslog>FQDN</hostname-type-in-syslog>
+                <initcfg>
+                  <type>
+                    <dhcp-client>
+                      <send-hostname>yes</send-hostname>
+                      <send-client-id>no</send-client-id>
+                      <accept-dhcp-hostname>no</accept-dhcp-hostname>
+                      <accept-dhcp-domain>no</accept-dhcp-domain>
+                    </dhcp-client>
+                  </type>
+                  <public-key>=publickeytest2=</public-key>
+                </initcfg>
+                <idle-timeout>500</idle-timeout>
+                <secure-conn-server>
+                  <ssl-tls-service-profile>secure-communication-test</ssl-tls-service-profile>
+                  <certificate-profile>test-cert-profile</certificate-profile>
+                </secure-conn-server>
+              </management>
+            </setting>
+          </deviceconfig>
+          <device-group>
+            <entry name="AWS Lab FWs">
+              <devices>
+                <entry name="111111111111111" />
+              </devices>
+              <pre-rulebase>
+                <security>
+                  <rules>
+                    <entry name="Allow Internet Outbound" uuid="111-111-2222-66666">
+                      <target>
+                        <negate>no</negate>
+                      </target>
+                      <to>
+                        <member>test</member>
+                      </to>
+                      <from>
+                        <member>Trust</member>
+                      </from>
+                      <source>
+                        <member>any</member>
+                      </source>
+                      <destination>
+                        <member>any</member>
+                      </destination>
+                      <source-user>
+                        <member>any</member>
+                      </source-user>
+                      <category>
+                        <member>any</member>
+                      </category>
+                      <application>
+                        <member>any</member>
+                      </application>
+                      <service>
+                        <member>application-default</member>
+                      </service>
+                      <source-hip>
+                        <member>any</member>
+                      </source-hip>
+                      <destination-hip>
+                        <member>any</member>
+                      </destination-hip>
+                      <action>allow</action>
+                      <log-start>no</log-start>
+                      <log-end>yes</log-end>
+                    </entry>
+                    <entry name="Allow Traffic Test" uuid="55555555-nnnnnn-4444444">
+                      <target>
+                        <negate>no</negate>
+                      </target>
+                      <to>
+                        <member>Trust</member>
+                      </to>
+                      <from>
+                        <member>Untrust</member>
+                      </from>
+                      <source>
+                        <member>1.0.0.0/32</member>
+                      </source>
+                      <destination>
+                        <member>any</member>
+                      </destination>
+                      <source-user>
+                        <member>any</member>
+                      </source-user>
+                      <category>
+                        <member>any</member>
+                      </category>
+                      <application>
+                        <member>any</member>
+                      </application>
+                      <service>
+                        <member>application-default</member>
+                      </service>
+                      <source-hip>
+                        <member>any</member>
+                      </source-hip>
+                      <destination-hip>
+                        <member>any</member>
+                      </destination-hip>
+                      <action>allow</action>
+                      <log-start>no</log-start>
+                      <log-end>yes</log-end>
+                    </entry>
+                  </rules>
+                </security>
+                <nat>
+                  <rules>
+                    <entry name="TEST-OUT" uuid="888888-666666-999hbnbbb">
+                      <source-translation>
+                        <dynamic-ip-and-port>
+                          <interface-address>
+                            <interface>ethet1/1</interface>
+                          </interface-address>
+                        </dynamic-ip-and-port>
+                      </source-translation>
+                      <target>
+                        <negate>no</negate>
+                      </target>
+                      <to>
+                        <member>Untrust</member>
+                      </to>
+                      <from>
+                        <member>Trust</member>
+                      </from>
+                      <source>
+                        <member>any</member>
+                      </source>
+                      <destination>
+                        <member>any</member>
+                      </destination>
+                      <service>any</service>
+                    </entry>
+                    <entry name="TEST-IN" uuid="8888888-99999-111111">
+                      <source-translation>
+                        <dynamic-ip-and-port>
+                          <interface-address>
+                            <interface>net1/2</interface>
+                          </interface-address>
+                        </dynamic-ip-and-port>
+                      </source-translation>
+                      <target>
+                        <negate>no</negate>
+                      </target>
+                      <to>
+                        <member>ZoneTestt</member>
+                      </to>
+                      <from>
+                        <member>Untrust</member>
+                      </from>
+                      <source>
+                        <member>any</member>
+                      </source>
+                      <destination>
+                        <member>any</member>
+                      </destination>
+                      <service>any</service>
+                    </entry>
+                  </rules>
+                </nat>
+              </pre-rulebase>
+              <profiles>
+                <virus>
+                  <entry name="bad-av-profile">
+                    <decoder>
+                      <entry name="ftp">
+                        <action>default</action>
+                        <wildfire-action>allow</wildfire-action>
+                        <mlav-action>allow</mlav-action>
+                      </entry>
+                      <entry name="http">
+                        <action>default</action>
+                        <wildfire-action>allow</wildfire-action>
+                        <mlav-action>allow</mlav-action>
+                      </entry>
+                      <entry name="http2">
+                        <action>default</action>
+                        <wildfire-action>allow</wildfire-action>
+                        <mlav-action>allow</mlav-action>
+                      </entry>
+                      <entry name="imap">
+                        <action>default</action>
+                        <wildfire-action>allow</wildfire-action>
+                        <mlav-action>allow</mlav-action>
+                      </entry>
+                      <entry name="pop3">
+                        <action>default</action>
+                        <wildfire-action>allow</wildfire-action>
+                        <mlav-action>allow</mlav-action>
+                      </entry>
+                      <entry name="smb">
+                        <action>default</action>
+                        <wildfire-action>allow</wildfire-action>
+                        <mlav-action>allow</mlav-action>
+                      </entry>
+                      <entry name="smtp">
+                        <action>default</action>
+                        <wildfire-action>allow</wildfire-action>
+                        <mlav-action>allow</mlav-action>
+                      </entry>
+                    </decoder>
+                    <mlav-engine-filebased-enabled>
+                      <entry name="Windows Executables">
+                        <mlav-policy-action>disable</mlav-policy-action>
+                      </entry>
+                      <entry name="PowerShell Script 1">
+                        <mlav-policy-action>disable</mlav-policy-action>
+                      </entry>
+                      <entry name="PowerShell Script 2">
+                        <mlav-policy-action>disable</mlav-policy-action>
+                      </entry>
+                      <entry name="Executable Linked Format">
+                        <mlav-policy-action>disable</mlav-policy-action>
+                      </entry>
+                      <entry name="MSOffice">
+                        <mlav-policy-action>disable</mlav-policy-action>
+                      </entry>
+                      <entry name="Shell">
+                        <mlav-policy-action>disable</mlav-policy-action>
+                      </entry>
+                      <entry name="OOXML">
+                        <mlav-policy-action>disable</mlav-policy-action>
+                      </entry>
+                      <entry name="MachO">
+                        <mlav-policy-action>disable</mlav-policy-action>
+                      </entry>
+                    </mlav-engine-filebased-enabled>
+                  </entry>
+                </virus>
+                <spyware>
+                  <entry name="bad-antispyware-profile">
+                    <botnet-domains>
+                      <lists>
+                        <entry name="default-paloalto-dns">
+                          <action>
+                            <sinkhole />
+                          </action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                      </lists>
+                      <dns-security-categories>
+                        <entry name="pan-dns-sec-adtracking">
+                          <log-level>default</log-level>
+                          <action>default</action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                        <entry name="pan-dns-sec-cc">
+                          <log-level>default</log-level>
+                          <action>default</action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                        <entry name="pan-dns-sec-ddns">
+                          <log-level>default</log-level>
+                          <action>default</action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                        <entry name="pan-dns-sec-grayware">
+                          <log-level>default</log-level>
+                          <action>default</action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                        <entry name="pan-dns-sec-malware">
+                          <log-level>default</log-level>
+                          <action>default</action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                        <entry name="pan-dns-sec-parked">
+                          <log-level>default</log-level>
+                          <action>default</action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                        <entry name="pan-dns-sec-phishing">
+                          <log-level>default</log-level>
+                          <action>default</action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                        <entry name="pan-dns-sec-proxy">
+                          <log-level>default</log-level>
+                          <action>default</action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                        <entry name="pan-dns-sec-recent">
+                          <log-level>default</log-level>
+                          <action>default</action>
+                          <packet-capture>disable</packet-capture>
+                        </entry>
+                      </dns-security-categories>
+                      <sinkhole>
+                        <ipv4-address>pan-sinkhole-default-ip</ipv4-address>
+                        <ipv6-address>::1</ipv6-address>
+                      </sinkhole>
+                    </botnet-domains>
+                    <rules>
+                      <entry name="alert-all">
+                        <action>
+                          <alert />
+                        </action>
+                        <severity>
+                          <member>any</member>
+                        </severity>
+                        <threat-name>any</threat-name>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                    </rules>
+                    <mica-engine-spyware-enabled>
+                      <entry name="HTTP Command and Control detector">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                      <entry name="HTTP2 Command and Control detector">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                      <entry name="SSL Command and Control detector">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                      <entry name="Unknown-TCP Command and Control detector">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                      <entry name="Unknown-UDP Command and Control detector">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                    </mica-engine-spyware-enabled>
+                  </entry>
+                </spyware>
+                <vulnerability>
+                  <entry name="bad-vuln-profile">
+                    <rules>
+                      <entry name="alert-all">
+                        <action>
+                          <alert />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>any</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>any</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                    </rules>
+                    <mica-engine-vulnerability-enabled>
+                      <entry name="SQL Injection">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                      <entry name="Command Injection">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                    </mica-engine-vulnerability-enabled>
+                  </entry>
+                  <entry name="block-critical-only">
+                    <rules>
+                      <entry name="simple-client-critical">
+                        <action>
+                          <reset-both />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>critical</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>client</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-client-high">
+                        <action>
+                          <default />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>high</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>client</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-client-medium">
+                        <action>
+                          <default />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>medium</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>client</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-server-critical">
+                        <action>
+                          <reset-both />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>critical</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>server</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-server-high">
+                        <action>
+                          <default />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>high</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>server</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-server-medium">
+                        <action>
+                          <default />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>medium</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>server</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                    </rules>
+                    <mica-engine-vulnerability-enabled>
+                      <entry name="SQL Injection">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                      <entry name="Command Injection">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                    </mica-engine-vulnerability-enabled>
+                  </entry>
+                  <entry name="block-critical-alert-high">
+                    <rules>
+                      <entry name="simple-client-critical">
+                        <action>
+                          <reset-both />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>critical</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>client</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-client-high">
+                        <action>
+                          <alert />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>high</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>client</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-client-medium">
+                        <action>
+                          <default />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>medium</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>client</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-server-critical">
+                        <action>
+                          <reset-both />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>critical</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>server</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-server-high">
+                        <action>
+                          <alert />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>high</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>server</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                      <entry name="simple-server-medium">
+                        <action>
+                          <default />
+                        </action>
+                        <vendor-id>
+                          <member>any</member>
+                        </vendor-id>
+                        <severity>
+                          <member>medium</member>
+                        </severity>
+                        <cve>
+                          <member>any</member>
+                        </cve>
+                        <threat-name>any</threat-name>
+                        <host>server</host>
+                        <category>any</category>
+                        <packet-capture>disable</packet-capture>
+                      </entry>
+                    </rules>
+                    <mica-engine-vulnerability-enabled>
+                      <entry name="SQL Injection">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                      <entry name="Command Injection">
+                        <inline-policy-action>alert</inline-policy-action>
+                      </entry>
+                    </mica-engine-vulnerability-enabled>
+                  </entry>
+                </vulnerability>
+                <url-filtering>
+                  <entry name="bad-url-profile">
+                    <credential-enforcement>
+                      <mode>
+                        <disabled />
+                      </mode>
+                      <log-severity>medium</log-severity>
+                    </credential-enforcement>
+                  </entry>
+                </url-filtering>
+              </profiles>
+              <log-settings>
+                <profiles>
+                  <entry name="forward-all-to-panorama-pushed">
+                    <match-list>
+                      <entry name="traffic-enhanced-app-logging">
+                        <log-type>traffic</log-type>
+                        <filter>All Logs</filter>
+                        <send-to-panorama>yes</send-to-panorama>
+                        <quarantine>no</quarantine>
+                      </entry>
+                      <entry name="threat-enhanced-app-logging">
+                        <log-type>threat</log-type>
+                        <filter>All Logs</filter>
+                        <send-to-panorama>yes</send-to-panorama>
+                        <quarantine>no</quarantine>
+                      </entry>
+                      <entry name="wildfire-enhanced-app-logging">
+                        <log-type>wildfire</log-type>
+                        <filter>All Logs</filter>
+                        <send-to-panorama>yes</send-to-panorama>
+                        <quarantine>no</quarantine>
+                      </entry>
+                      <entry name="url-enhanced-app-logging">
+                        <log-type>url</log-type>
+                        <filter>All Logs</filter>
+                        <send-to-panorama>yes</send-to-panorama>
+                        <quarantine>no</quarantine>
+                      </entry>
+                      <entry name="data-enhanced-app-logging">
+                        <log-type>data</log-type>
+                        <filter>All Logs</filter>
+                        <send-to-panorama>yes</send-to-panorama>
+                        <quarantine>no</quarantine>
+                      </entry>
+                      <entry name="tunnel-enhanced-app-logging">
+                        <log-type>tunnel</log-type>
+                        <filter>All Logs</filter>
+                        <send-to-panorama>yes</send-to-panorama>
+                        <quarantine>no</quarantine>
+                      </entry>
+                      <entry name="auth-enhanced-app-logging">
+                        <log-type>auth</log-type>
+                        <filter>All Logs</filter>
+                        <send-to-panorama>yes</send-to-panorama>
+                        <quarantine>no</quarantine>
+                      </entry>
+                      <entry name="decryption-enhanced-app-logging">
+                        <log-type>decryption</log-type>
+                        <filter>All Logs</filter>
+                        <send-to-panorama>yes</send-to-panorama>
+                        <quarantine>no</quarantine>
+                      </entry>
+                    </match-list>
+                    <enhanced-application-logging>no</enhanced-application-logging>
+                  </entry>
+                </profiles>
+              </log-settings>
+            </entry>
+          </device-group>
+          <template-stack>
+            <entry name="AWS-Lab-FWs">
+              <user-group-source />
+              <settings>
+                <default-vsys>vsys1</default-vsys>
+              </settings>
+              <devices>
+                <entry name="111111111111111" />
+              </devices>
+              <config>
+                <devices>
+                  <entry name="localhost.localdomain">
+                    <deviceconfig>
+                      <system>
+                        <update-schedule>
+                          <threats>
+                            <recurring>
+                              <every-30-mins>
+                                <at>2</at>
+                                <action>download-and-install</action>
+                              </every-30-mins>
+                            </recurring>
+                          </threats>
+                          <anti-virus>
+                            <recurring>
+                              <hourly>
+                                <at>2</at>
+                                <action>download-and-install</action>
+                              </hourly>
+                            </recurring>
+                          </anti-virus>
+                          <wildfire>
+                            <recurring>
+                              <real-time />
+                            </recurring>
+                          </wildfire>
+                        </update-schedule>
+                      </system>
+                    </deviceconfig>
+                    <vsys>
+                      <entry name="vsys1">
+                        <certificate>
+                          <entry name="ACME Root CA">
+                            <subject-hash>33333333</subject-hash>
+                            <issuer-hash>aaaaaaaa</issuer-hash>
+                            <not-valid-before>May  9 16:35:16 2025 GMT</not-valid-before>
+                            <issuer>/CN=acme-root-ca.acme.com</issuer>
+                            <not-valid-after>May  9 16:35:16 2026 GMT</not-valid-after>
+                            <common-name>acme-root-ca.acme.com</common-name>
+                            <expiry-epoch>1778344516</expiry-epoch>
+                            <ca>yes</ca>
+                            <subject>/CN=acme-root-ca.acme.com</subject>
+                            <public-key>-----BEGIN CERTIFICATE-----
+TestCertificate1
+-----END CERTIFICATE-----
+</public-key>
+                            <algorithm>EC</algorithm>
+                            <private-key>privatetestkey1</private-key>
+                          </entry>
+                          <entry name="Decrypt Certificate">
+                            <subject-hash>ddddddd</subject-hash>
+                            <issuer-hash>66666666</issuer-hash>
+                            <not-valid-before>May  9 16:36:13 2025 GMT</not-valid-before>
+                            <issuer>/CN=acme-root-ca.acme.com</issuer>
+                            <not-valid-after>May  9 16:36:13 2026 GMT</not-valid-after>
+                            <common-name>decrypt.acme.com</common-name>
+                            <expiry-epoch>1778344573</expiry-epoch>
+                            <ca>no</ca>
+                            <subject>/CN=decrypt.acme.com</subject>
+                            <public-key>-----BEGIN CERTIFICATE-----
+TestCertificate2
+-----END CERTIFICATE-----
+</public-key>
+                            <algorithm>EC</algorithm>
+                            <private-key>privatetestkey2</private-key>
+                          </entry>
+                        </certificate>
+                        <zone>
+                          <entry name="panorama-pushed-zone">
+                            <network>
+                              <layer3 />
+                            </network>
+                          </entry>
+                        </zone>
+                      </entry>
+                    </vsys>
+                  </entry>
+                </devices>
+              </config>
+              <templates>
+                <member>1st level</member>
+                <member>2nd level</member>
+              </templates>
+            </entry>
+          </template-stack>
+          <template>
+            <entry name="1st level">
+              <settings>
+                <default-vsys>vsys1</default-vsys>
+              </settings>
+              <config>
+                <devices>
+                  <entry name="localhost.localdomain">
+                    <vsys>
+                      <entry name="vsys1">
+                        <zone>
+                          <entry name="1st-level-zone-no-logging">
+                            <network>
+                              <layer3 />
+                            </network>
+                          </entry>
+                        </zone>
+                      </entry>
+                    </vsys>
+                  </entry>
+                </devices>
+              </config>
+            </entry>
+            <entry name="2nd level">
+              <settings>
+                <default-vsys>vsys1</default-vsys>
+              </settings>
+              <config>
+                <devices>
+                  <entry name="localhost.localdomain">
+                    <vsys>
+                      <entry name="vsys1">
+                        <zone>
+                          <entry name="2nd-level-zone-with-logging">
+                            <network>
+                              <layer3 />
+                              <log-setting>IoT Security Default Profile</log-setting>
+                            </network>
+                          </entry>
+                        </zone>
+                      </entry>
+                    </vsys>
+                  </entry>
+                </devices>
+              </config>
+            </entry>
+          </template>
+        </entry>
+      </devices>
+      <readonly>
+        <devices>
+          <entry name="localhost.localdomain">
+            <device-group>
+              <entry name="AWS Lab FWs">
+                <id>11</id>
+              </entry>
+            </device-group>
+            <template-stack>
+              <entry name="AWS-Lab-FWs">
+                <id>12</id>
+                <config>
+                  <devices>
+                    <entry name="localhost.localdomain">
+                      <vsys>
+                        <entry name="vsys1">
+                          <zone>
+                            <entry name="panorama-pushed-zone">
+                              <id>13</id>
+                            </entry>
+                          </zone>
+                        </entry>
+                      </vsys>
+                    </entry>
+                  </devices>
+                </config>
+              </entry>
+            </template-stack>
+            <template>
+              <entry name="1st level">
+                <id>14</id>
+                <config>
+                  <devices>
+                    <entry name="localhost.localdomain">
+                      <vsys>
+                        <entry name="vsys1">
+                          <zone>
+                            <entry name="1st-level-zone-no-logging">
+                              <id>16</id>
+                            </entry>
+                          </zone>
+                        </entry>
+                      </vsys>
+                    </entry>
+                  </devices>
+                </config>
+              </entry>
+              <entry name="2nd level">
+                <id>15</id>
+                <config>
+                  <devices>
+                    <entry name="localhost.localdomain">
+                      <vsys>
+                        <entry name="vsys1">
+                          <zone>
+                            <entry name="2nd-level-zone-with-logging">
+                              <id>17</id>
+                            </entry>
+                          </zone>
+                        </entry>
+                      </vsys>
+                    </entry>
+                  </devices>
+                </config>
+              </entry>
+            </template>
+          </entry>
+        </devices>
+        <max-internal-id>18</max-internal-id>
+        <shared>
+          <address-group>
+            <entry name="Panorama-DAG">
+              <id>18</id>
+            </entry>
+          </address-group>
+        </shared>
+      </readonly>
+      <panorama>
+        <certificate>
+          <entry name="FW-Root-CA">
+            <subject-hash>9999999</subject-hash>
+            <issuer-hash>88888888</issuer-hash>
+            <not-valid-before>Jun  6 23:20:20 2025 GMT</not-valid-before>
+            <issuer>/CN=Test cert on firewall for panorama</issuer>
+            <not-valid-after>Jun  6 23:20:20 2026 GMT</not-valid-after>
+            <common-name>Test cert on firewall for panorama</common-name>
+            <expiry-epoch>1780788020</expiry-epoch>
+            <ca>yes</ca>
+            <subject>/CN=Test cert on firewall for panorama</subject>
+            <public-key>-----BEGIN CERTIFICATE-----
+testcert3
+-----END CERTIFICATE-----
+</public-key>
+            <algorithm>RSA</algorithm>
+            <private-key>privatetestkey3</private-key>
+          </entry>
+          <entry name="Panorama-client-cert">
+            <subject-hash>2222222</subject-hash>
+            <issuer-hash>66666666</issuer-hash>
+            <not-valid-before>Jun  6 23:30:57 2025 GMT</not-valid-before>
+            <issuer>/CN=Test cert on firewall for panorama</issuer>
+            <not-valid-after>Jun  6 23:30:57 2026 GMT</not-valid-after>
+            <common-name>Test panorama client cert</common-name>
+            <expiry-epoch>1780788657</expiry-epoch>
+            <ca>no</ca>
+            <subject>/CN=Test panorama client cert</subject>
+            <public-key>-----BEGIN CERTIFICATE-----
+testcert4
+-----END CERTIFICATE-----
+</public-key>
+            <algorithm>RSA</algorithm>
+            <private-key>privatetestkey4</private-key>
+          </entry>
+        </certificate>
+        <ssl-tls-service-profile>
+          <entry name="FW-Panorama-Communication">
+            <protocol-settings>
+              <min-version>tls1-2</min-version>
+              <max-version>tls1-3</max-version>
+              <keyxchg-algo-rsa>yes</keyxchg-algo-rsa>
+              <keyxchg-algo-dhe>yes</keyxchg-algo-dhe>
+              <keyxchg-algo-ecdhe>yes</keyxchg-algo-ecdhe>
+              <enc-algo-aes-128-cbc>yes</enc-algo-aes-128-cbc>
+              <enc-algo-aes-128-gcm>yes</enc-algo-aes-128-gcm>
+              <enc-algo-aes-chacha20-poly1305>yes</enc-algo-aes-chacha20-poly1305>
+              <enc-algo-aes-256-cbc>yes</enc-algo-aes-256-cbc>
+              <enc-algo-aes-256-gcm>yes</enc-algo-aes-256-gcm>
+              <auth-algo-sha1>yes</auth-algo-sha1>
+              <auth-algo-sha256>yes</auth-algo-sha256>
+              <auth-algo-sha384>yes</auth-algo-sha384>
+            </protocol-settings>
+            <certificate>Panorama-client-cert</certificate>
+          </entry>
+        </ssl-tls-service-profile>
+        <certificate-profile>
+          <entry name="FW-Panorama-comm-cert-profile">
+            <CA>
+              <entry name="FW-Root-CA" />
+            </CA>
+          </entry>
+        </certificate-profile>
+      </panorama>
+    </config>
+  </result>
+</response>

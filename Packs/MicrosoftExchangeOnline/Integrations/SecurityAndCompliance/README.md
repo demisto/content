@@ -1,8 +1,8 @@
 
 This integration enables you to manage and interact with Microsoft security and compliance content search. You can manage the security of all your organization's emails, SharePoint sites, OneDrives, etc., by searching for text strings or queries based on attributes of a malicious email. However, you can only perform actions (preview and delete) on emails.
-This integration was integrated and tested with [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search). 
+This integration was integrated and tested with [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search).
 
-**Important Note:** Microsoft Office 365 no longer supports Basic Authentication. This version of the Security and Compliance integration will not function correctly beginning January 1st, 2023. Please use O365 Security and Compliance v2 instead. 
+**Important Note:** Microsoft Office 365 no longer supports Basic Authentication. This version of the Security and Compliance integration will not function correctly beginning January 1st, 2023. Please use O365 Security and Compliance v2 instead.
 
 ## Use Cases
 
@@ -16,8 +16,6 @@ This integration was integrated and tested with [Security & Compliance Center](h
 * O365 - Security And Compliance - Search Action - Delete: Deletes emails located by the **O365 SecurityAndCompliance Search** sub-playbook.
 * O365 - Security And Compliance - Search Action - Preview: Provides a preview of the results of emails located by the **O365 SecurityAndCompliance Search** sub-playbook.
 
-
-
 ## Permissions in the Security & Compliance Center
 
 To access the Security & Compliance Center, the user account needs to be a global administrator or needs to be assigned the Role Management role (a role is assigned only to the Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
@@ -30,7 +28,7 @@ To access the Security & Compliance Center, the user account needs to be a globa
 
 2. Search for and select the **Data Investigator** role.
 
-3. Click **Edit role group**. 
+3. Click **Edit role group**.
 
    ![roles-edit-1](../../doc_files/security-and-compliance-edit-1.png)
 
@@ -41,9 +39,9 @@ To access the Security & Compliance Center, the user account needs to be a globa
    ![roles-edit-3](../../doc_files/security-and-compliance-edit-3.png)
 6. Choose which members to add from the displayed list and click **Add**.
 7. Click **Done**.
-   
 
 ### Enabling Client Side Basic Authentication
+
 Client side basic authentication is necessary for O365 - Security And Compliance and is necessary for Powershell remoting.
 
 Per [Microsoft's documentation](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?source=recommendations&view=exchange-ps), Security & Compliance PowerShell still requires Basic authentication in WinRM as described Prerequisites for the Exchange Online PowerShell module. REST API cmdlets that allow you to turn off Basic authentication in WinRM are not yet available for the Connect-IPPSSession cmdlet. For more information, see Updates for the EXO V3 module).
@@ -59,7 +57,7 @@ Please note: The use of Username and Password is not indicative of the use of ba
     ![cba-role-1](../../doc_files/cba-role-1.png)
 4. Add the "Enable Client Basic Auth" group to the policy
     ![cba-role-2](../../doc_files/cba-role-2.png)
-5. In the Instance Configuration, click the Test button. This will likely return an error with a correlation ID. 
+5. In the Instance Configuration, click the Test button. This will likely return an error with a correlation ID.
 6. Copy this ID and search for the correlation in the [Risky Sign-Ins portal found here](https://portal.azure.com/#view/Microsoft_AAD_IAM/RiskySignInsBlade).
 7. Since we generated this alert, we can confirm that the sign-in is safe. by clicking the option found below.
    ![cba-role-3](../../doc_files/cba-role-3.png)
@@ -67,14 +65,13 @@ Please note: The use of Username and Password is not indicative of the use of ba
 
 *Please Note:* Microsoft requires that this connection be made from a secure connection. Disabling certificate verification is not supported at this time.
 
-
 ### Additional Configuration/Debugging Options
+
 In the event that the above does not result in a successful connection to Security and Compliance, we recommend the following:
 
 1. Adding the IP address of the XSOAR server to the list of [Named Locations](https://portal.azure.com/#view/Microsoft_AAD_ConditionalAccess/NamedLocationsBlade).
 2. Configuring the IP address of the XSOAR server as an exemption for multi-factor authentication. [https://account.activedirectory.windowsazure.com/usermanagement/mfasettings.aspx?tenantid={YOUR-TENANT-ID}](https://account.activedirectory.windowsazure.com/usermanagement/mfasettings.aspx?tenantid=)
 3. Dismissing the user's risk level and state in the [Risky Users Portal](https://portal.azure.com/#view/Microsoft_AAD_IAM/RiskyUsersBlade)
-
 
 ## Configure SecurityAndCompliance on Cortex XSOAR
 
@@ -97,13 +94,13 @@ In the event that the above does not result in a successful connection to Securi
          2. Open playground -  War-room:
 
             1. Run the ***!o365-sc-auth-start*** command and follow the instructions. Expected output is:
-    
+
             > ## Security And Compliance - Authorize instructions
             >
             > 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
             > 2. Run the command ***!o365-sc-auth-complete*** command in the War Room.
-            
-            2. Test - OAuth2.0 authorization, Run the ***!o365-sc-auth-test*** command. 
+
+            2. Test - OAuth2.0 authorization, Run the ***!o365-sc-auth-test*** command.
 
    2. Basic authentication (Not recommended):
 
@@ -117,20 +114,20 @@ In the event that the above does not result in a successful connection to Securi
 
       2. Click **Test** to validate the URLs, token, and connection.
 
-   
-
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### o365-sc-auth-start
+
 ***
 OAuth2.0 - Start authorization.
-
 
 #### Base Command
 
 `o365-sc-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
@@ -140,23 +137,25 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-auth-start```
 
 #### Human Readable Output
 
 >## Security And Compliance - Authorize instructions
+>
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
 >2. Run the ***!o365-sc-auth-complete*** command in the War Room.
 
-
 ### o365-sc-auth-complete
+
 ***
 OAuth2.0 - Complete authorization.
-
 
 #### Base Command
 
 `o365-sc-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
@@ -166,22 +165,22 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-auth-complete```
 
 #### Human Readable Output
 
 >Your account **successfully** authorized!
 
-
-
 ### o365-sc-auth-test
+
 ***
 OAuth2.0 - Test authorization.
-
 
 #### Base Command
 
 `o365-sc-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -191,22 +190,22 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-auth-test```
 
 #### Human Readable Output
 
 >**Test ok!**
 
-
-
 ### o365-sc-new-search
+
 ***
 Create compliance search in the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-new-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -222,7 +221,6 @@ Create compliance search in the Security & Compliance Center.
 | public_folder_location | Comma-separated list of public folders to include, or you can use the value "All" to include all. | Optional |
 | share_point_location | Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites. | Optional |
 | share_point_location_exclusion | Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value. | Optional |
-
 
 #### Context Output
 
@@ -259,11 +257,12 @@ Create compliance search in the Security & Compliance Center.
 | O365.SecurityAndCompliance.ContentSearch.Search.Status | String | Security and compliance search status. |
 | O365.SecurityAndCompliance.ContentSearch.Search.TenantId | String | Security and compliance search Tenant ID. |
 
-
 #### Command Example
+
 ```!o365-sc-new-search search_name="example" exchange_location="user1@demistodev.onmicrosoft.com,user2@demistodev.onmicrosoft.com" allow_not_found_exchange_locations=true kql="Rodrigo"```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -316,21 +315,20 @@ Create compliance search in the Security & Compliance Center.
 #### Human Readable Output
 
 >### Security And Compliance - New search 'example' created
+>
 >| ContentMatchQuery | CreatedBy | Description | LastModifiedTime | Name
 >| --- | --- | --- | --- | ---
 >| Rodrigo | XSOAR-user | Short description | 11/29/2020 7:12:46 AM | example
-
-
 
 ### o365-sc-set-search
 
 ***
 Modifies non-running compliance searches in the Security & Compliance Center.
 
-
 #### Base Command
 
 `o365-sc-set-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -350,58 +348,54 @@ Modifies non-running compliance searches in the Security & Compliance Center.
 | remove_share_point_location | Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value. | Optional |
 | remove_share_point_location_exclusion | Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-set-search search_name="example" remove_exchange_location="test2@demistodev.onmicrosoft.com"```
 
 #### Human Readable Output
 
 >Security And Compliance - Search **example** modified!
 
-
-
 ### o365-sc-remove-search
 
 ***
 Remove compliance search by name from the Security & Compliance Center.
 
-
 #### Base Command
 
 `o365-sc-remove-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_name | The name of the compliance search. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-remove-search search_name="example"```
 
 #### Human Readable Output
 
 >Security And Compliance - Search **example** removed!
 
-
-
 ### o365-sc-list-search
 
 ***
 List compliance searches in the Security & Compliance Center.
 
-
 #### Base Command
 
 `o365-sc-list-search`
+
 #### Input
 
 There are no input arguments for this command.
@@ -441,11 +435,12 @@ There are no input arguments for this command.
 | O365.SecurityAndCompliance.ContentSearch.Search.Status | String | Security and compliance search status. |
 | O365.SecurityAndCompliance.ContentSearch.Search.TenantId | String | Security and compliance search Tenant ID. |
 
-
 #### Command Example
+
 ```!o365-sc-list-search```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -532,20 +527,21 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Security And Compliance - Search configurations
+>
 >| CreatedBy | Description | LastModifiedTime | Name | RunBy
 >| --- | --- | --- | --- | ---
 >| XSOAR-user1 | Short description | 8/22/2019 6:43:48 AM | example1 | XSOAR-user1
 >| XSOAR-user2 | Short description | 1/8/2020 12:44:30 AM | example2 | XSOAR-user2
 
-
 ### o365-sc-get-search
+
 ***
 Gets compliance search by name from the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-get-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -555,7 +551,6 @@ Gets compliance search by name from the Security & Compliance Center.
 | all_results | Whether to include mailboxes which have no results in results entry context. | Optional |
 | export | Whether to export search results as json file to war-room. | Optional |
 | statistics | Show search statistics. Default is "false". | Optional |
-
 
 #### Context Output
 
@@ -595,11 +590,12 @@ Gets compliance search by name from the Security & Compliance Center.
 | O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.ItemsCount | Number | The number of security and compliance search results in location. |
 | O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.Size | Number | The byte size of the security and compliance search results in location. |
 
-
 #### Command Example
+
 ```!o365-sc-get-search search_name="example"```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -655,31 +651,32 @@ Gets compliance search by name from the Security & Compliance Center.
 #### Human Readable Output
 
 >### Security And Compliance - 'example' search
+>
 >| CreatedBy | Description | LastModifiedTime | Name | RunBy | Status
 >| --- | --- | --- | --- | --- | ---
 >| XSOAR-user | Short description | 2020-11-29T07:20:43.283 | example | XSOAR-user | NotStarted
 
-
 ### o365-sc-start-search
+
 ***
 Starts stopped, completed, or not started compliance search in the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-start-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_name | The name of the compliance search. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-start-search search_name="example"```
 
 #### Human Readable Output
@@ -687,40 +684,41 @@ There is no context output for this command.
 >Security And Compliance - search **example** started !
 
 ### o365-sc-stop-search
+
 ***
 Stop running compliance search in the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-stop-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_name | The name of the compliance search. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-stop-search search_name="example"```
 
 #### Human Readable Output
 
 >Security And Compliance - search **example** stopped !
 
-
 ### o365-sc-new-search-action
+
 ***
 After you create a content search using the ***o365-sc-new-search*** command and run it using the ***o365-sc-start-search*** command, you assign a search action to the search using the ***o365-sc-new-search-action*** command.
-
 
 #### Base Command
 
 `o365-sc-new-search-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -728,7 +726,6 @@ After you create a content search using the ***o365-sc-new-search*** command and
 | search_name | The name of the compliance search. | Required |
 | action | Search action to perform. Possible values are: "Preview" and "Purge". Default is "Preview". | Optional |
 | purge_type | Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete". | Optional |
-
 
 #### Context Output
 
@@ -766,11 +763,12 @@ After you create a content search using the ***o365-sc-new-search*** command and
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Status | String | Security and compliance search action status. Either "Started" or "Completed". |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId | String | Security and compliance search action Tenant ID. |
 
-
 #### Command Example
+
 ```!o365-sc-new-search-action search_name="example" action="Preview"```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -821,31 +819,32 @@ After you create a content search using the ***o365-sc-new-search*** command and
 #### Human Readable Output
 
 >### Security And Compliance - search action 'example_Preview' created
+>
 >| Action | LastModifiedTime | Name | RunBy | SearchName | Status
 >| --- | --- | --- | --- | --- | ---
 >| Preview | 11/29/2020 7:23:50 AM | example\_Preview | XSOAR-user | example | Completed
 
-
 ### o365-sc-remove-search-action
+
 ***
 Removes compliance search action by search the action name from the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-remove-search-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_action_name | The name of the compliance search action. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-remove-search-action search_action_name="example_Preview"```
 
 #### Human Readable Output
@@ -853,13 +852,14 @@ There is no context output for this command.
 >Security And Compliance - search action **example_Preview** removed!
 
 ### o365-sc-list-search-action
+
 ***
 Lists compliance search actions from the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-list-search-action`
+
 #### Input
 
 There are no input arguments for this command.
@@ -900,11 +900,12 @@ There are no input arguments for this command.
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Status | String | Security and compliance search action status \(Started/Completed\). |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId | String | Security and compliance search action Tenant ID. |
 
-
 #### Command Example
+
 ```!o365-sc-list-search-action```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -945,7 +946,7 @@ There are no input arguments for this command.
                         "Status": "Completed",
                         "TenantId": "xxxxx"
                     },
-                  	{
+                   {
                         "Action": "Purge",
                         "AllowNotFoundExchangeLocationsEnabled": false,
                         "AzureBatchFrameworkEnabled": false,
@@ -989,21 +990,22 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Security And Compliance - search actions
+>
 >| Action | JobEndTime | LastModifiedTime | Name | RunBy | SearchName | Status
 >| --- | --- | --- | --- | --- | --- | ---
 >| Preview | 10/14/2020 1:47:00 PM | 10/14/2020 1:45:44 PM | example_Preview | XSOAR-user | example | Completed
 >| Purge | 11/25/2020 10:51:04 AM | 11/25/2020 10:50:37 AM | example\_Purge | XSOAR-user | example | Completed
 >
 
-
 ### o365-sc-get-search-action
+
 ***
 Gets compliance search action from the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-get-search-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1012,7 +1014,6 @@ Gets compliance search action from the Security & Compliance Center.
 | limit | The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument. | Optional |
 | export | Whether to export search results as json file to war-room. | Optional |
 | results | Whether to print the results in the War Room. Default is "false". | Optional |
-
 
 #### Context Output
 
@@ -1061,9 +1062,11 @@ Gets compliance search action from the Security & Compliance Center.
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId | String | Security and compliance search action Tenant ID. |
 
 #### Command Example
+
 ```!o365-sc-get-search-action search_action_name="example_Preview"```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -1133,19 +1136,21 @@ Gets compliance search action from the Security & Compliance Center.
 #### Human Readable Output
 
 >### Security And Compliance - search action 'example_Preview'
+>
 >| Action | JobEndTime | LastModifiedTime | Name | RunBy | SearchName | Status
 >| --- | --- | --- | --- | --- | --- | ---
 >| Preview | 11/29/2020 7:24:05 AM | 11/29/2020 7:23:50 AM | example\_Preview | XSOAR-user | example | Completed
 
-
 ## Tips for finding messages to remove
+
 * Keyword Query Language (KQL)
-    * If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query, e.g., `(subject:give me all ur money)`.
-    * If you know that exact date (or date range) of the message, include the Received property in the search query, e.g., `(received:6/13/2021..6/16/2021)`.
-    * If you know who sent the message, include the From property in the search query, e.g., `(from:user1@demistodev.onmicrosoft.com)`.
-    * For all the available search properties see: [Keyword queries and search conditions for eDiscovery.](https://docs.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions?view=o365-worldwide)
+  * If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query, e.g., `(subject:give me all ur money)`.
+  * If you know that exact date (or date range) of the message, include the Received property in the search query, e.g., `(received:6/13/2021..6/16/2021)`.
+  * If you know who sent the message, include the From property in the search query, e.g., `(from:user1@demistodev.onmicrosoft.com)`.
+  * For all the available search properties see: [Keyword queries and search conditions for eDiscovery.](https://docs.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions?view=o365-worldwide)
 * Preview the search results to verify that the search returned only the message (or messages) that you want to delete.
 * Use the search estimate statistics (displayed by using the `o365-sc-get-search` command) to get a count of the total number of emails.
+
 ## Known Limitations
 
 * Security and compliance integrations do not support Security and compliance on-premise.

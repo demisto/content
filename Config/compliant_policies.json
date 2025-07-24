@@ -29,7 +29,9 @@
                 "device_id",
                 "realname",
                 "email",
-                "base-dn"
+                "base-dn",
+                "target-folder-path",
+                "secondary_email_address"
             ]
         },
         {
@@ -47,7 +49,11 @@
                 "emailaddress",
                 "radiususername",
                 "userId",
-                "groups"
+                "groups",
+                "adguid",
+                "domainid",
+                "host",
+                "id"
             ]
         },
         {
@@ -59,7 +65,10 @@
                 "address_group",
                 "addresses",
                 "ip_address",
-                "host_address"
+                "host_address",
+                "value",
+                "items",
+                "vdom"
             ]
         },
         {
@@ -77,13 +86,25 @@
                 "hostName",
                 "site_id",
                 "assets",
-                "asset_group_ids"
+                "asset_group_ids",
+                "ids",
+                "id"
             ]
         },
         {
             "name": "Quarantine File",
             "category": "EndPoint",
-            "arguments": []
+            "arguments": [
+                "file_hash",
+                "indicator_title",
+                "indicator_value",
+                "rbac_group_names",
+                "endpoint_id_list",
+                "file_path",
+                "incident_id",
+                "indicator_id",
+                "machine_id"
+            ]
         },
         {
             "name": "Domain Blockage",
@@ -97,7 +118,11 @@
                 "destination_ids",
                 "ip_addresses",
                 "domain_names",
-                "url"
+                "url",
+                "value",
+                "account_ids",
+                "recipient",
+                "sender"
             ]
         }
     ]

@@ -194,6 +194,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         ],
         "microsoft-teams-message-send-to-chat": [
             Perms.USER_READ_ALL,
+            Perms.CHAT_READBASIC,
             Perms.CHAT_CREATE,
             Perms.CHATMESSAGE_SEND,
             Perms.APPCATALOG_READ_ALL,
@@ -785,7 +786,10 @@ def add_data_to_actions(card_json, data_value):
         # Check if this dictionary is an Action.Submit or Action.Execute
         if card_json.get("type") in ["Action.Submit", "Action.Execute"]:
             # Add the 'data' key with the provided value
-            card_json["data"] = data_value
+            if "data" in card_json:
+                card_json["data"].update(data_value)
+            else:
+                card_json["data"] = data_value
 
         # Only check nested elements within 'actions'
         if "actions" in card_json:
@@ -796,7 +800,30 @@ def add_data_to_actions(card_json, data_value):
             add_data_to_actions(card_json["card"], data_value)
 
 
-def process_adaptive_card(adaptive_card_obj: dict) -> dict:
+def handle_raw_adaptive_card(adaptive_card_obj: dict) -> dict:
+    """
+    Check if the adaptive card is already wrapped with the contentType and content keys, otherwise try to fix it.
+
+    :param adaptive_card_obj: The user supplied adaptive card
+    :return: Adaptive card with contentType and content keys
+    """
+    if (
+        "contentType" not in adaptive_card_obj
+        and "content" not in adaptive_card_obj
+        and adaptive_card_obj.get("type") == "AdaptiveCard"
+    ):
+        # This is a 'raw' adaptive card
+        wrapped_adaptive_card = {
+            "contentType": "application/vnd.microsoft.card.adaptive",
+            "content": adaptive_card_obj,
+        }
+        return wrapped_adaptive_card
+
+    # We are not completely sure this is a raw adaptive card so we will not modify it
+    return adaptive_card_obj
+
+
+def process_teams_ask_adaptive_card(adaptive_card_obj: dict) -> dict:
     """
     Processes adaptive cards coming from MicrosoftTeamsAsk. It will find all action elements
     of type Action.Submit or Action.Execute within adaptive_card_obj['adaptive_card'] and add entitlement,
@@ -805,7 +832,8 @@ def process_adaptive_card(adaptive_card_obj: dict) -> dict:
     :return: Adaptive card with entitlement.
     """
 
-    adaptive_card = adaptive_card_obj.get("adaptive_card", "")
+    adaptive_card = adaptive_card_obj.get("adaptive_card", {})
+    adaptive_card = handle_raw_adaptive_card(adaptive_card)
     data_obj: dict = {}
     data_obj["entitlement"] = str(adaptive_card_obj.get("entitlement", ""))
     data_obj["investigation_id"] = str(adaptive_card_obj.get("investigation_id", ""))
@@ -2355,15 +2383,18 @@ def send_message():
                 if entities:
                     conversation["body"]["mentions"] = entities
     else:  # Adaptive card
+        # This use case is relevant for TeamsAsk script when the entitlement is one of the keys under the adaptive_card
         entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
         if entitlement_match_ac:
-            adaptive_card_processed = process_adaptive_card(adaptive_card)
+            adaptive_card_processed = process_teams_ask_adaptive_card(adaptive_card)
             conversation = {"type": "message", "attachments": [adaptive_card_processed]}
+        else:
+            adaptive_card = handle_raw_adaptive_card(adaptive_card)
+            conversation = {"type": "message", "attachments": [adaptive_card]}
 
     service_url: str = integration_context.get("service_url", "")
     if not service_url:
         raise ValueError("Did not find service URL. Try messaging the bot on Microsoft Teams")
-
     res: dict = send_message_request(service_url, recipient, conversation, message_id, team_aad_id)
     results = CommandResults(
         outputs={"ID": res.get("id")},
@@ -3256,7 +3287,7 @@ def create_messaging_endpoint_command():
         messaging_endpoint = urljoin(urljoin(xsoar_url, "instance/execute"), instance_name)
 
     else:  # XSIAM or XSOAR SAAS
-        if is_xsiam():
+        if is_xsiam() or is_platform():
             # Replace the 'xdr' with 'crtx' in the hostname of XSIAM tenants
             # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
             xsoar_url = xsoar_url.replace("xdr", "crtx", 1)
