@@ -6,6 +6,7 @@ import copy
 import json
 from collections.abc import Callable
 from datetime import datetime
+from unittest.mock import patch
 
 import demistomock as demisto
 import pytest
@@ -2251,3 +2252,108 @@ def test_add_iso_entries_to_dict_placeholder_edge_case():
     dicts = [{"start_time": 9223372036854775807, "last_persisted_time": 1741790340000}]
     results = add_iso_entries_to_dict(dicts)
     assert results == [{"start_time": 9223372036854775807, "last_persisted_time": "2025-03-12T14:39:00+00:00"}]
+
+
+MAX_SAMPLE_SIZE_MB = 1
+MAX_SAMPLE_SIZE_BYTES = MAX_SAMPLE_SIZE_MB * 1024 * 1024
+
+
+@pytest.fixture(autouse=True)
+def patch_constants(monkeypatch):
+    monkeypatch.setattr("QRadar_v3.MAX_SAMPLE_SIZE_BYTES", MAX_SAMPLE_SIZE_BYTES)
+    monkeypatch.setattr("QRadar_v3.MAX_SAMPLE_SIZE_MB", MAX_SAMPLE_SIZE_MB)
+
+
+class NonSerializable:
+    def __str__(self):
+        return "NonSerializable"
+
+
+@pytest.mark.parametrize(
+    "incident,expected_min_size",
+    [
+        ({"name": "Test Incident", "details": "A" * 1024}, 1024),
+        ({"id": 123, "active": True}, 10),
+    ],
+)
+def test_calculate_incident_size_success_json_serialization(incident, expected_min_size):
+    """
+    Given a JSON-serializable incident dictionary
+    When calculate_incident_size is called
+    Then it should return a byte length >= expected_min_size and not raise any exception
+    """
+    size = QRadar_v3.calculate_incident_size(incident)
+    assert isinstance(size, int)
+    assert size >= expected_min_size
+
+
+def test_calculate_incident_size_fallback_to_str(monkeypatch):
+    """
+    Given an incident dictionary that includes a non-serializable object
+    When calculate_incident_size is called
+    Then it should fallback to str() and log a debug message
+    """
+    from QRadar_v3 import calculate_incident_size
+
+    incident = {"data": NonSerializable()}
+
+    def json_dumps_fail(*args, **kwargs):
+        raise TypeError("Object of type NonSerializable is not JSON serializable")
+
+    monkeypatch.setattr("QRadar_v3.json.dumps", json_dumps_fail)
+
+    with patch("QRadar_v3.demisto.debug") as mock_debug:
+        size = calculate_incident_size(incident)
+        assert isinstance(size, int)
+        assert size > 0
+
+        debug_calls = [call.args[0] for call in mock_debug.call_args_list]
+        assert any("Could not serialize incident to JSON" in msg for msg in debug_calls)
+
+
+def test_calculate_incident_size_encoding_fallback(monkeypatch):
+    """
+    Given an incident with characters that cause UTF-8 encoding failure
+    When calculate_incident_size is called
+    Then it should fallback to 'replace' encoding and log a debug message
+    """
+    from QRadar_v3 import calculate_incident_size
+
+    broken_string = "Test\x80Incident"
+    incident = {"details": broken_string}
+
+    class MockStr(str):
+        def encode(self, encoding="utf-8", errors=None):
+            if errors is None:
+                raise UnicodeEncodeError("utf-8", self, 0, 1, "invalid start byte")
+            return super().encode(encoding, errors)
+
+    with patch("QRadar_v3.json.dumps", return_value=MockStr(broken_string)), patch("QRadar_v3.demisto.debug") as mock_debug:
+        size = calculate_incident_size(incident)
+        assert isinstance(size, int)
+
+        debug_calls = [call.args[0] for call in mock_debug.call_args_list]
+        assert any("Could not encode string to UTF-8" in msg for msg in debug_calls)
+
+
+def test_is_incident_size_acceptable_true():
+    """
+    Given an incident smaller than the MAX_SAMPLE_SIZE_BYTES limit
+    When is_incident_size_acceptable is called
+    Then it should return True
+    """
+    small_incident = {"data": "A" * 512}
+    assert QRadar_v3.is_incident_size_acceptable(small_incident) is True
+
+
+def test_is_incident_size_acceptable_false():
+    """
+    Given an incident larger than the MAX_SAMPLE_SIZE_BYTES limit
+    When is_incident_size_acceptable is called
+    Then it should return False and a debug message should be logged
+    """
+    large_incident = {"data": "A" * (MAX_SAMPLE_SIZE_BYTES + 1)}
+    with patch("QRadar_v3.demisto.debug") as mock_debug:
+        result = QRadar_v3.is_incident_size_acceptable(large_incident)
+        assert result is False
+        assert any("exceeds maximum sample size" in call.args[0] for call in mock_debug.call_args_list)
