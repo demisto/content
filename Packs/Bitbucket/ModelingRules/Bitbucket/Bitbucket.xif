@@ -1,0 +1,31 @@
+[MODEL: dataset = "atlassian_bitbucket_raw"]
+alter
+    affected_objects_id = arraystring(arraymap(json_extract_array(_raw_log, "$.affectedObjects"), "@element" -> id), ", "),
+    affected_objects_name = arraystring(arraymap(json_extract_array(_raw_log, "$.affectedObjects"), "@element" -> name), ", "),
+    affected_objects_type = arraystring(arraymap(json_extract_array(_raw_log, "$.affectedObjects"), "@element" -> type), ", "),
+    changed_values_from = arraystring(arraymap(json_extract_array(_raw_log, "$.changedValues"), "@element" -> from), ", "),
+    changed_values_to = arraystring(arraymap(json_extract_array(_raw_log, "$.changedValues"), "@element" -> to), ", "),
+    extra_data = object_create("Area",_raw_log -> auditType.area,"Category", _raw_log -> auditType.category, "Level",_raw_log -> auditType.level,"Method",_raw_log -> method),
+    source_ip_address = _raw_log -> source,
+    intermediate_ip_address = parsed_fields -> Load_balancer_proxy_IP_address
+| alter
+    parsed_fields = object_merge(extra_data ,parsed_fields),
+    ipv4 = if(source_ip_address ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",source_ip_address ,null),
+    ipv6 = if(source_ip_address ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",source_ip_address ,null),
+    intermediate_ipv4 = if(intermediate_ip_address ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",intermediate_ip_address ,null),
+    intermediate_ipv6 = if(intermediate_ip_address ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",intermediate_ip_address ,null)
+| alter
+    xdm.target.resource.id = affected_objects_id,
+    xdm.target.resource.name = affected_objects_name,
+    xdm.target.resource.type = affected_objects_type,
+    xdm.event.type = _raw_log -> auditType.action,
+    xdm.source.user.identifier = _raw_log -> author.id,
+    xdm.source.user.username = _raw_log -> author.name,
+    xdm.target.resource_before.value = changed_values_from,
+    xdm.target.resource.value = changed_values_to,
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.intermediate.ipv4 = intermediate_ipv4,
+    xdm.intermediate.ipv6 = intermediate_ipv6,
+    xdm.observer.name = _raw_log -> system,
+    xdm.event.description = parsed_fields;
