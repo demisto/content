@@ -2,7 +2,7 @@ id: 'silent-SaaS File External Access'
 version: -1
 name: 'silent-SaaS File External Access'
 description: |-
-  ### This playbook addresses the following alerts:
+  ### This playbook addresses the following alert:
   - External user accessed a sensitive SaaS file via anonymous link.
 
   ### Playbook Stages:
@@ -24,7 +24,7 @@ description: |-
 
   #### Verdict:
   - If there are at least *2 pieces of LOW* evidence.
-  - **OR** if there are at least *1 piece of HIGH* evidence.
+  - **OR** if there is at least *1 piece of HIGH* evidence.
 
   #### Remediation:
   - *Immediately* delete anonymous links from the file.
@@ -121,7 +121,7 @@ tasks:
       id: 0799179e-8dc6-4dab-aac9-aa370b4f8848
       version: -1
       name: Get Extended Alert Data
-      description: Provides additional information about the alert, such as **users, IP address, anomalies, SaaS raw log** (extended context).
+      description: Provides additional information about the alert, such as **users, IP address, anomalies, and SaaS raw log** (extended context).
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
@@ -280,9 +280,7 @@ tasks:
       id: ce16b5ec-4b28-4b6a-b283-e3f460396a1c
       version: -1
       name: Set Actor User
-      description: |-
-        **Actor**: The user who **accessed** or **viewed** the file via the anonymous link.
-        In *SharePoint/OneDrive*, actor user is available rarely.
+      description: '**Actor**: The user who **accessed** or **viewed** the file via the anonymous link.'
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -336,7 +334,7 @@ tasks:
       id: 93411c32-e479-46eb-aef5-25b18fd4c86f
       version: -1
       name: Get File Owner User Details
-      description: Gathers more **owner** user details to determine owner's legitimacy.
+      description: Gathers more **owner** user details to determine the owner's legitimacy.
       script: '|||gsuite-user-get'
       type: regular
       iscommand: true
@@ -413,7 +411,7 @@ tasks:
       id: a8019d42-2c0e-4943-bc1d-69ffec15f687
       version: -1
       name: Get File Owner+Sharer Users Details
-      description: Gathers more **owner/sharer** user details to determine user's legitimacy.
+      description: Gathers more **owner/sharer** user details to determine the user's legitimacy.
       script: '|||msgraph-user-get'
       type: regular
       iscommand: true
@@ -562,7 +560,7 @@ tasks:
       id: aa508004-a077-4482-a8cd-ef3b5b3353d0
       version: -1
       name: Has the Actor IP returned?
-      description: In *Drive* alerts, actor IP address is available rarely.
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1597,7 +1595,7 @@ tasks:
       version: -1
       name: Check Evidence
       description: |-
-        - `True Positive ->`If there are at least *2 pieces of LOW* evidence, **OR** if there are at least *1 piece of HIGH* evidence.
+        - `True Positive ->`If there are at least *2 pieces of LOW* evidence, **OR** if there is at least *1 piece of HIGH* evidence.
         - `Else ->`Done with the alert open.
       type: condition
       iscommand: false
