@@ -1,18 +1,15 @@
-# Sysdig Response Actions
-
-This integration utilizes the Sysdig agent and the Sysdig Response Actions API to facilitate automated and manual remediation of security incidents. It enables security teams to take precise actions at the host or container level, such as terminating compromised containers, quarantining suspicious files, or capturing detailed system activity for forensic analysis. These capabilities are designed to enhance incident response workflows and improve overall security operations.
+The Sysdig Cortex XSOAR content pack features runtime security insights and automated response capabilities that integrate seamlessly with Cortex XSOAR analytics.
+Use this Content Pack to detect, investigate, and respond to security threats across your containerized and cloud-native environments.
 
 ## What does this pack do?
 
-This pack leverages the Sysdig Response Actions API to enable automated and manual responses to security incidents. Key features include:
+Provide integrations that will help you to:
 
-- **Container Management**: Terminate malicious containers to prevent further damage.
-- **File Quarantine**: Isolate suspicious files to mitigate potential threats.
-- **System Capture**: Perform detailed system captures for forensic analysis.
-- **Host-Level Actions**: Execute commands or scripts on hosts to remediate issues.
+- **Container Management**: Terminate malicious containers to prevent further damage and stop lateral movement.
+- **File Quarantine**: Isolate suspicious files to mitigate potential threats and preserve evidence for investigation.
+- **System Capture**: Perform detailed system captures for forensic analysis and root cause investigation.
+- **Real-time Response**: Leverage Sysdig's Response Actions API for immediate automated and manual incident response.
 
-These capabilities help streamline incident response and enhance security posture.
+These capabilities help streamline incident response workflows and enhance your overall security posture through precise, targeted actions at the host and container level.
 
 _For more information, visit [Sysdig](https://sysdig.com)_.
-
-[![Sysdig Overview](doc_files/Author_image.png)](https://sysdig.com)
