@@ -640,8 +640,8 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
-                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
-
+                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion, [string]$error_action = $null) {
+                        
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearch")
         # Import and Execute command
@@ -655,6 +655,10 @@ class SecurityAndComplianceClient {
             "PublicFolderLocation" = $public_folder_location
             "SharePointLocation" = $share_point_location
             "SharePointLocationExclusion" = $share_point_location_exclusion
+            # "ErrorAction" = $error_action
+        }
+        if ($error_action) {
+            $cmd_params.ErrorAction = $error_action
         }
         $response = New-ComplianceSearch @cmd_params
         # Close session to remote
@@ -835,33 +839,52 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]GetSearch([string]$search_name) {
+    [psobject]GetSearch(
+        [string]$search_name,
+        [string]$error_action = $null
+    ) {
         # Establish session to remote
         $this.CreateDelegatedSession("Get-ComplianceSearch")
-        # Import and Execute command
-        $response = Get-ComplianceSearch -Identity $search_name
-
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $search_name
+        }
+    
+        if ($error_action) {
+            $cmd_params["ErrorAction"] = $error_action
+        }
+    
+        # Execute command
+        $response = Get-ComplianceSearch @cmd_params
+    
         # Close session to remote
         $this.DisconnectSession()
-
+    
         return $response
-        <#
-            .DESCRIPTION
-            Get compliance search by name from the Security & Compliance Center.
+    <#
+        .DESCRIPTION
+        Get compliance search by name from the Security & Compliance Center.
 
-            .PARAMETER search_name
-            The name of the compliance search.
+        .PARAMETER search_name
+        The name of the compliance search.
 
-            .EXAMPLE
-            $client.GetSearch("new-search")
+        .PARAMETER error_action
+        Specifies what action to take if the command encounters an error.
 
-            .OUTPUTS
-            psobject - Raw response.
+        .EXAMPLE
+        $client.GetSearch("new-search")
 
-            .LINK
-            https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearch?view=exchange-ps
-        #>
-    }
+        .EXAMPLE
+        $client.GetSearch("new-search", "SilentlyContinue")
+
+        .OUTPUTS
+        psobject - Raw response.
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearch?view=exchange-ps
+    #>
+}
 
     StartSearch([string]$search_name) {
         # Establish session to remote
@@ -1037,29 +1060,43 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]GetSearchAction([string]$search_action_name) {
+    [psobject]GetSearchAction(
+        [string]$search_action_name,
+        [string]$error_action = $null
+    ) {
         # Establish session to remote
         $this.CreateDelegatedSession("Get-ComplianceSearchAction")
-
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $search_action_name
+        }
+    
+        if ($error_action) {
+            $cmd_params["ErrorAction"] = $error_action
+        }
+    
         # Execute command
-        $response = Get-ComplianceSearchAction -Identity $search_action_name
-
+        $response = Get-ComplianceSearchAction @cmd_params
+    
         # Close session to remote
         $this.DisconnectSession()
         return $response
         <#
             .DESCRIPTION
             Get compliance search action in the Security & Compliance Center.
-
+    
             .PARAMETER search_action_name
             The name of the compliance search action.
-
+            .PARAMETER error_action
+            Optional. PowerShell error action preference (e.g., "Stop").
+    
             .EXAMPLE
-            $client.GetSearchAction("search-name")
-
+            $client.GetSearchAction("search-name", "Stop")
+    
             .OUTPUTS
             psobject - Raw response.
-
+    
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearchaction?view=exchange-ps
         #>
@@ -1331,6 +1368,108 @@ class SecurityAndComplianceClient {
         #>
     }
 
+    [psobject]GetRecoverableItems(
+        [string[]]$identity,
+        [string]$subject_contains = $null
+    ) {
+        # Establish session to remote Exchange Online
+        $this.CreateDelegatedSession("Get-RecoverableItems")
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $identity
+        }
+    
+        if ($subject_contains) {
+            $cmd_params["SubjectContains"] = $subject_contains
+        }
+    
+        # Execute the command
+        $response = Get-RecoverableItems @cmd_params
+    
+        # Disconnect the session
+        $this.DisconnectSession()
+    
+        return $response
+    
+        <#
+        .SYNOPSIS
+        Retrieves recoverable (soft-deleted) items from mailbox(es).
+    
+        .DESCRIPTION
+        Retrieves recoverable items such as deleted emails from the Recoverable Items folder
+        of one or more specified mailboxes using the Get-RecoverableItems cmdlet.
+    
+        .PARAMETER identity
+        One or more mailbox identities to retrieve recoverable items from.
+    
+        .PARAMETER subject_contains
+        Optional. Filters results to include only items with subjects containing this string.
+    
+        .EXAMPLE
+        $client.GetRecoverableItems("user@example.com")
+        Retrieves all recoverable items for the specified mailbox.
+    
+        .EXAMPLE
+        $client.GetRecoverableItems(@("user1@example.com", "user2@example.com"), "invoice")
+        Retrieves recoverable items that contain "invoice" in the subject from two mailboxes.
+    
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-recoverableitems?view=exchange-ps
+        #>
+    }
+
+    [psobject]RestoreRecoverableItems(
+        [string[]]$identity,
+        [string]$subject_contains = $null
+    ) {
+        # Establish session to remote Exchange Online
+        $this.CreateDelegatedSession("Restore-RecoverableItems")
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $identity
+        }
+    
+        if ($subject_contains) {
+            $cmd_params["SubjectContains"] = $subject_contains
+        }
+    
+        # Execute the command
+        $response = Restore-RecoverableItems @cmd_params
+    
+        # Disconnect the session
+        $this.DisconnectSession()
+    
+        return $response
+    
+        <#
+        .SYNOPSIS
+        Restores recoverable (soft-deleted) items back to the mailbox.
+    
+        .DESCRIPTION
+        Uses the Restore-RecoverableItems cmdlet to restore soft-deleted messages
+        (from the Recoverable Items folder) to their original location in the mailbox.
+    
+        .PARAMETER identity
+        One or more mailbox identities to restore items to.
+    
+        .PARAMETER subject_contains
+        Optional. Restores only items whose subject contains this string.
+    
+        .EXAMPLE
+        $client.RestoreRecoverableItems("user@example.com")
+        Restores all recoverable items for the specified mailbox.
+    
+        .EXAMPLE
+        $client.RestoreRecoverableItems("user@example.com", "invoice")
+        Restores only recoverable items with "invoice" in the subject.
+    
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/restore-recoverableitems?view=exchange-ps
+        #>
+    }
+
 
     CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
         [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
@@ -1528,9 +1667,9 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if (!$kwargs.search_name -or $kwargs.search_name -eq "") {
         $kwargs.search_name = "XSOAR-$(New-Guid)"
     }
-    # Raw response
-    $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
-                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+    # Raw response 
+        $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
+                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion, $null)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
     $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($kwargs.search_name)' created"
@@ -1611,7 +1750,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $all_results = ConvertTo-Boolean $kwargs.all_results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearch($kwargs.search_name)
+    $raw_response = $client.GetSearch($kwargs.search_name, "")
     # Check if raw_response is null
     if ($null -eq $raw_response) {
         # Handle the scenerio if a search is not found:
@@ -1693,7 +1832,7 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
         $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
         return $human_readable, $entry_context, $raw_response
     }
-
+    
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($raw_response.Name)' created"
@@ -1723,7 +1862,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $results = ConvertTo-Boolean $kwargs.results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearchAction($kwargs.search_action_name)
+    $raw_response = $client.GetSearchAction($kwargs.search_action_name, $null)
     # Entry context
     $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
@@ -1889,6 +2028,143 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
+function Get-ShortHash($inputString, $length = 12) {
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($inputString)
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    $hashBytes = $sha256.ComputeHash($bytes)
+    $hashString = -join ($hashBytes | ForEach-Object { $_.ToString("x2") })
+    return $hashString.Substring(0, $length)
+}
+
+function SearchAndRecoveryEmailCommand {
+    param (
+        [SecurityAndComplianceClient]$client,
+        [hashtable]$kwargs
+    )
+
+    $Demisto.results("=== Starting RestoreEmailByInternetMessageId ===")
+    $Demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
+
+    $internet_message_id = $kwargs.internet_message_id
+    $exchange_location = ArgToList $kwargs.exchange_location
+    $force = ConvertTo-Boolean $kwargs.force
+
+    $baseName = $internet_message_id -replace '[<>]', ''
+    if ($kwargs.exchange_location -ne "All") {
+        $joined = $exchange_location -join ","
+        $search_name = $baseName + ":" + (Get-ShortHash $joined)
+    } else {
+        $search_name = $baseName
+    }
+    $Demisto.results("search_name: " + $search_name)
+    $search_action_name = "${search_name}_Preview"
+    $entry_context = @{}
+    $polling_args = $kwargs
+
+    $search = $client.GetSearch($search_name, "SilentlyContinue")
+    if (-not $search) {
+        $Demisto.results("Search not found. Creating new search: $search_name")
+        $kql = "internetMessageId:`"$internet_message_id`""
+        $description = "Restore email by internetMessageId"
+
+        $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), $null)
+        $client.StartSearch($search_name)
+        $Demisto.results("Search created and started: $search_name")
+
+        return "$script:INTEGRATION_NAME - New search created and started.", $entry_context, $search, $polling_args
+    }
+
+    $Demisto.results("Found existing search: $search_name with status $($search.Status)")
+
+    switch ($search.Status) {
+        "NotStarted" {
+            $Demisto.results("Search not started. Starting now.")
+            $client.StartSearch($search_name)
+            return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
+        }
+        "Starting" {
+            $Demisto.results("Search is running. Waiting for completion.")
+            return "$script:INTEGRATION_NAME - Search is in progress.", $entry_context, $search, $polling_args
+        }
+        "InProgress" {
+            $Demisto.results("Search is running. Waiting for completion.")
+            return "$script:INTEGRATION_NAME - Search is in progress.", $entry_context, $search, $polling_args
+        }
+        "Completed" {
+            if ($force) {
+                $Demisto.results("Force is true. Restarting search.")
+                $client.StartSearch($search_name)
+                $polling_args.force = $false
+                return "$script:INTEGRATION_NAME - Search restarted due to force=true.", $entry_context, $search, $polling_args
+            }
+
+            if ($search.Items -eq 0) {
+                return "$script:INTEGRATION_NAME - Search completed. No items to restore.", $entry_context, $search
+            }
+
+            $action = $client.GetSearchAction($search_action_name, "SilentlyContinue")
+            if (-not $action) {
+                $Demisto.results("No existing Preview action. Creating one.")
+                $action = $client.NewSearchAction(
+                    $search_name,
+                    "Preview",
+                    "SoftDelete",
+                    $null, $null, $null, $null, $null, $null, $null
+                )
+
+                if (-not $action) {
+                    return "$script:INTEGRATION_NAME - Failed to create Preview action.", $entry_context
+                }
+
+                return "$script:INTEGRATION_NAME - Created Preview action.", $entry_context, $action, $polling_args
+            }
+
+            $Demisto.results("Found search action: $search_action_name with status $($action.Status)")
+
+            switch ($action.Status) {
+                "Starting" {
+                    $Demisto.results("Preview action in starting.")
+                    return "$script:INTEGRATION_NAME - Preview in progress.", $entry_context, $action, $polling_args
+                }
+                "InProgress" {
+                    $Demisto.results("Preview action in progress.")
+                    return "$script:INTEGRATION_NAME - Preview in progress.", $entry_context, $action, $polling_args
+                }
+                "Completed" {
+                    $Demisto.results("Preview completed. Running restore operation.")
+                    $recipients = $action.ExchangeLocation
+                    $subject = ""
+                    if ($action.Results) {
+                    if ($action.Results -match "Subject: ([^;]+);") {
+                        $subject = $matches[1]
+                    }
+                    }
+                    $Demisto.results("Subject: $subject Recipients: $($recipients -join ',')")
+
+
+                    # Restore-RecoverableItems -Identity $recipients -SubjectContains $subject
+                    # RecoverableItems -Identity $recipients -SubjectContains $subject
+                    # $response = $client.RestoreRecoverableItems($recipients, $subject)
+                    $response = $client.GetRecoverableItems($recipients, $subject)
+                    $Demisto.results("GetRecoverableItems response:")
+                    $Demisto.results(($response | ConvertTo-Json -Depth 5))
+
+                    $Demisto.results("Restore completed.")
+                    return "$script:INTEGRATION_NAME - Restore completed successfully.", $entry_context
+                }
+                default {
+                    throw "Unhandled search action status: $($action.Status)"
+                }
+            }
+        }
+        default {
+            throw "Unhandled search status: $($search.Status)"
+        }
+    }
+}
+
+
+
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
@@ -2005,13 +2281,31 @@ function Main {
             "$script:COMMAND_PREFIX-case-hold-policy-set" {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
+            "$script:COMMAND_PREFIX-search-and-recovery-email-office-365-quick-action" {
+                ($human_readable, $entry_context, $raw_response, $polling_args) = SearchAndRecoveryEmailCommand $cs_client $command_arguments
+            }
+            
         }
 
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
 
         # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        # $Demisto.results("polling_args: " + (ConvertTo-Json $polling_args -Depth 3))
+        if ($polling_args) {
+            ReturnPollingOutputs `
+            -ReadableOutput $human_readable `
+            -Outputs $entry_context `
+            -RawResponse $raw_response `
+            -CommandName $command `
+            -PollingArgs $polling_args `
+            -RemoveSelfRefs $true `
+            -NextRun "30" `
+            -Timeout "120" | Out-Null
+        }
+        else {
+            ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        }
         if ($file_entry) {
             $Demisto.results($file_entry)
         }
@@ -2020,7 +2314,7 @@ function Main {
 Command: $command
 Arguments: $($command_arguments | ConvertTo-Json)
 Error: $($_.Exception.Message)")
-        if ($_.Exception.Message -like "*Unable to open a web page using xdg-open*" ) {
+if ($_.Exception.Message -like "*Unable to open a web page using xdg-open*" ) {
            Write-Host "It looks like the access token has expired. Please run the command !$script:COMMAND_PREFIX-auth-start, before running this command."
         } elseif ($command -ne "test-module") {
             ReturnError "Error:
