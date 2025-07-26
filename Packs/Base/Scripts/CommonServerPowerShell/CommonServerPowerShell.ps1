@@ -551,6 +551,71 @@ function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawRe
     $demisto.Results($entry) | Out-Null
     return $entry
 }
+
+<#
+.DESCRIPTION
+This function wraps the $demisto.results() for polling commands.
+It formats the polling result entry to support XSOAR's polling mechanism,
+including timeout, interval, and tracking of remaining items.
+.PARAMETER ReadableOutput
+Markdown string that will be presented in the warroom. Should be human-readable.
+.PARAMETER Outputs
+The outputs that will be returned to the playbook/investigation context (optional).
+.PARAMETER RawResponse
+If not provided, this will be set to the value of Outputs. 
+Usually represents the original raw response from the 3rd party service (optional).
+.PARAMETER CommandName
+The name of the polling command that should be called again for the next polling iteration.
+.PARAMETER PollingArgs
+Arguments that should be passed to the polling command on the next polling iteration.
+.PARAMETER RemoveSelfRefs
+If true, removes circular/self references from RawResponse and Outputs before JSON conversion.
+.OUTPUTS
+The polling entry object returned to the server
+#>
+function ReturnPollingOutputs(
+    [string]$ReadableOutput,
+    [object]$Outputs,
+    [object]$RawResponse,
+    [string]$CommandName,
+    [object]$PollingArgs,
+    [Parameter(Mandatory = $false)]
+    [bool]$RemoveSelfRefs = $true,
+    [Parameter(Mandatory = $false)]
+    [string]$NextRun = "30",
+    [Parameter(Mandatory = $false)]
+    [string]$Timeout = "600"
+) {
+    if ($RemoveSelfRefs) {
+        $RawResponse = Remove-SelfReferences $RawResponse
+        $Outputs = Remove-SelfReferences $Outputs
+    }
+
+    $entry = @{
+        Type           = [EntryTypes]::note;
+        ContentsFormat = [EntryFormats]::json.ToString();
+        HumanReadable  = $ReadableOutput;
+        Contents       = $RawResponse;
+        EntryContext   = $Outputs;
+        PollingCommand = $CommandName;
+        NextRun        = $NextRun;
+        PollingArgs     = $PollingArgs
+        Timeout        = $Timeout;
+        PollingItemsRemaining = 0;
+    }
+    # Return 'readable_output' only if needed
+    if ($ReadableOutput -and -not $outputs -and -not $RawResponse) {
+        $entry.Contents = $ReadableOutput
+        $entry.ContentsFormat = [EntryFormats]::text.ToString();
+    }
+    elseif ($Outputs -and -not $RawResponse) {
+        # if RawResponse was not provided but outputs were provided then set Contents as outputs
+        $entry.Contents = $Outputs
+    }
+    $demisto.Results($entry) | Out-Null
+    return $entry
+}
+
 <#
 .DESCRIPTION
 This function Gets a string and escape all special characters in it so that it can be in correct markdown format
