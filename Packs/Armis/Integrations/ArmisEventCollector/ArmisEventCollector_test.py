@@ -1,5 +1,7 @@
+import requests
 from ArmisEventCollector import Client, datetime, timedelta, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES, Any
 import pytest
+from pytest_mock import MockerFixture
 from freezegun import freeze_time
 
 
@@ -8,11 +10,53 @@ def dummy_client(mocker):
     """
     A dummy client fixture for testing.
     """
-    mocker.patch.object(Client, "is_valid_access_token", return_value=True)
-    return Client(base_url="test_base_url", api_key="test_api_key", access_token="test_access_token", verify=False, proxy=False)
+    mocker.patch.object(Client, "is_token_expired", return_value=False)
+    return Client(base_url="test_base_url", api_key="test_api_key", verify=False, proxy=False)
 
 
 class TestClientFunctions:
+    @freeze_time("2023-01-01T01:00:00")
+    @pytest.mark.parametrize(
+        "force_new, token_expiration, expected_request_context_set_calls",
+        [
+            pytest.param(True, "2023-01-01T04:00:00", 1, id="Force new"),
+            pytest.param(False, "2023-01-01T04:00:00", 0, id="Take existing, unexpired"),
+            pytest.param(False, "2023-01-01T00:00:00", 1, id="Take existing, expired"),
+        ],
+    )
+    def test_get_access_token(
+        self,
+        mocker: MockerFixture,
+        force_new: bool,
+        token_expiration: str,
+        expected_request_context_set_calls: int,
+    ):
+        """
+        Given:
+            - Integration context containing an access token and a token expiration date.
+
+        When:
+            - Calling Client.get_access_token.
+
+        Then:
+            - Ensure an HTTP request is made and a new integration context is set only if force_new is True.
+        """
+        client = Client(base_url="test_base_url", api_key="test_api_key", verify=False, proxy=False)
+        integration_context = {"token": "test_access_token", "token_expiration": token_expiration}
+        access_token_api_response = {"data": {"access_token": "test_access_token", "expiration_utc": "2023-01-01T09:00:00"}}
+
+        mock_get_integration_context = mocker.patch(
+            "ArmisEventCollector.get_integration_context", return_value=integration_context
+        )
+        mock_set_integration_context = mocker.patch("ArmisEventCollector.set_integration_context")
+        mock_http_request = mocker.patch.object(Client, "_http_request", return_value=access_token_api_response)
+
+        client.get_access_token(force_new)
+
+        assert mock_get_integration_context.call_count == 1  # always called
+        assert mock_http_request.call_count == expected_request_context_set_calls
+        assert mock_set_integration_context.call_count == expected_request_context_set_calls
+
     @freeze_time("2023-01-01T01:00:00")
     def test_initial_fetch_by_aql_query(self, mocker, dummy_client):
         """
@@ -51,10 +95,10 @@ class TestClientFunctions:
                 "orderBy": "time",
                 "from": 1,
             },
-            "headers": {"Authorization": "test_access_token", "Accept": "application/json"},
             "timeout": 180,
+            "raise_on_status": True,
         }
-
+        mocker.patch.object(Client, "get_access_token", return_value="test_access_token")
         mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=[first_response, second_response])
         assert dummy_client.fetch_by_aql_query("example_query", 2, (datetime.now() - timedelta(minutes=1))) == (
             expected_result,
@@ -101,11 +145,11 @@ class TestClientFunctions:
                 "orderBy": "time",
                 "from": 1,
             },
-            "headers": {"Authorization": "test_access_token", "Accept": "application/json"},
             "timeout": 180,
+            "raise_on_status": True,
         }
-
         from_arg = arg_to_datetime("2023-01-01T01:00:01")
+        mocker.patch.object(Client, "get_access_token", return_value="test_access_token")
         mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=[first_response, second_response])
         assert dummy_client.fetch_by_aql_query("example_query", 3, from_arg) == (expected_result, 0)
 
@@ -462,7 +506,6 @@ class TestFetchFlow:
             "events_last_fetch_ids": ["3"],
             "events_last_fetch_next_field": 4,
             "events_last_fetch_time": "2023-01-01T01:00:00",
-            "access_token": "test_access_token",
         },
         4,
     )
@@ -473,7 +516,6 @@ class TestFetchFlow:
         {
             "events_last_fetch_ids": ["1", "2", "3"],
             "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00",
-            "access_token": "test_access_token",
         },
         fetch_start_time,
         ["Events"],
@@ -483,7 +525,6 @@ class TestFetchFlow:
             "events_last_fetch_ids": ["7", "6"],
             "events_last_fetch_next_field": 8,
             "events_last_fetch_time": "2023-01-01T01:00:30",
-            "access_token": "test_access_token",
         },
         8,
     )
@@ -493,7 +534,6 @@ class TestFetchFlow:
         {
             "events_last_fetch_ids": ["1", "2", "3"],
             "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00",
-            "access_token": "test_access_token",
         },
         fetch_start_time,
         ["Events"],
@@ -508,7 +548,6 @@ class TestFetchFlow:
             "events_last_fetch_ids": ["7", "6"],
             "events_last_fetch_next_field": 8,
             "events_last_fetch_time": "2023-01-01T01:00:30",
-            "access_token": "test_access_token",
         },
         8,
     )
@@ -519,13 +558,12 @@ class TestFetchFlow:
         {
             "events_last_fetch_ids": ["1", "2", "3"],
             "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00",
-            "access_token": "test_access_token",
         },
         fetch_start_time,
         ["Events"],
         {},
         {},
-        {"events_last_fetch_next_field": 4, "events_last_fetch_time": "2023-01-01T01:00:30", "access_token": "test_access_token"},
+        {"events_last_fetch_next_field": 4, "events_last_fetch_time": "2023-01-01T01:00:30"},
         4,
     )
 
@@ -535,7 +573,6 @@ class TestFetchFlow:
         {
             "events_last_fetch_ids": ["1", "2", "3"],
             "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00",
-            "access_token": "test_access_token",
         },
         fetch_start_time,
         ["Events"],
@@ -545,7 +582,6 @@ class TestFetchFlow:
             "events_last_fetch_ids": ["1", "2", "3", "4", "5", "6"],
             "events_last_fetch_next_field": 7,
             "events_last_fetch_time": "2023-01-01T01:00:30",
-            "access_token": "test_access_token",
         },
         7,
     )
@@ -625,22 +661,33 @@ class TestFetchFlow:
             }
         }
         fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
+
+        unauthorized_res = requests.Response()
+        unauthorized_res.status_code = 401
         mocker.patch.object(
-            Client, "_http_request", side_effect=[DemistoException(message="Invalid access token"), events_with_different_time]
+            Client,
+            "_http_request",
+            side_effect=[
+                DemistoException(message="Invalid access token", res=unauthorized_res),  # Raises HTTP 401 the first time
+                events_with_different_time,  # Returns events the second time
+            ],
         )
         mocker.patch.dict(EVENT_TYPES, {"Events": EVENT_TYPE("unique_id", "events_query", "events", "time", "events")})
-        mocker.patch.object(Client, "update_access_token")
+        mock_get_access_token = mocker.patch.object(Client, "get_access_token", return_value="new_access_token")
         if fetch_start_time:
             last_run = {
                 "events_last_fetch_ids": ["3"],
                 "events_last_fetch_next_field": 4,
                 "events_last_fetch_time": "2023-01-01T01:00:00",
-                "access_token": "test_access_token",
             }
             assert fetch_events(dummy_client, 1000, 1000, {}, fetch_start_time, ["Events"], None) == (
                 {"events": events_with_different_time["data"]["results"]},
                 last_run,
             )
+            # First call tries to get token from integration context
+            assert mock_get_access_token.call_args_list[0].kwargs == {}
+            # Second call (after HTTP 401 error) forces the generation of a new token
+            assert mock_get_access_token.call_args_list[1].kwargs == {"force_new": True}
 
     def test_fetch_alert_flow(self, mocker, dummy_client):
         """
@@ -679,6 +726,7 @@ class TestFetchFlow:
             }
         }
         fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
+        mocker.patch.object(Client, "get_access_token", return_value="test_access_token")
         mocker.patch.object(Client, "_http_request", side_effect=[alerts_response, activities_response, devices_response])
         mocker.patch.dict(EVENT_TYPES, {"Alerts": EVENT_TYPE("unique_id", "events_query", "alerts", "time", "alerts")})
         expected_result = alerts_response["data"]["results"][0]
@@ -689,7 +737,6 @@ class TestFetchFlow:
                 "alerts_last_fetch_ids": [""],
                 "alerts_last_fetch_next_field": 2,
                 "alerts_last_fetch_time": "2023-01-01T01:00:00",
-                "access_token": "test_access_token",
             }
             assert fetch_events(dummy_client, 1, 1, {}, fetch_start_time, ["Alerts"], None) == (
                 {"alerts": [expected_result]},
