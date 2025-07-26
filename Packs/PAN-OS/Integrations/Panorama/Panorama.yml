@@ -1910,11 +1910,29 @@ script:
     deprecated: true
     name: panorama-delete-rule
     outputs:
-    - contextPath: Panorama.SecurityRule.Name
+    - contextPath: Panorama.CleanedUpRules.Category
+      description: The rule category.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.RuleName
       description: The rule name.
       type: string
-    - contextPath: Panorama.SecurityRule.DeviceGroup
-      description: The device group for the rule (Panorama instances).
+    - contextPath: Panorama.CleanedUpRules.Rulebase
+      description: The rule rulebase.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.PrePost
+      description: The rule prepost.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.DeviceGroup
+      description: The rule device group.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Target
+      description: The rule target.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Vsys
+      description: The rule vsys.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.AppliedAction
+      description: The rule applied action.
       type: string
   - arguments:
     - auto: PREDEFINED

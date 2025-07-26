@@ -10828,11 +10828,7 @@ def panorama_disable_or_delete_rule_command(
             "Target": target,
             "Vsys": vsys,
             "AppliedAction": applied_action,
-        },
-        f"Panorama.{Rulebase_to_ContextPrefix_Map.get(rulebase)}(val.Name == obj.Name)": {
-            "Name": rulename,
-            "DeviceGroup": DEVICE_GROUP,
-        },
+        }
     }
 
     result = CommandResults(
