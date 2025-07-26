@@ -4526,6 +4526,79 @@ def test_set_updated_object(updated_object, mirrored_data, mirroring_fields, out
     assert updated_object == output
 
 
+class TestFetchFunctionsTimestampFormatting:
+    """
+    Test class for verifying timestamp formatting in fetch functions before calling update_last_run_object.
+    All the tests verify that detection["occurred"] timestamps are converted to the correct
+    date format before being passed to the update_last_run_object function.
+    """
+
+    @pytest.fixture(autouse=True)
+    def setup_common_mocks(self, mocker):
+        """Setup common mocks used across all test methods."""
+        # CommonServerPython.update_last_run_object only formats detection["occurred"] field when offset iszero
+        mocker.patch("CrowdStrikeFalcon.calculate_new_offset", return_value=0)
+        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+
+    def test_fetch_endpoint_incidents__update_last_run_object(self, mocker):
+        from CrowdStrikeFalcon import fetch_endpoint_incidents
+
+        mocker.patch("CrowdStrikeFalcon.get_incidents_ids", return_value={"resources": ["123"]})
+
+        # Mock API response with microsecond precision timestamp that needs conversion
+        mocker.patch(
+            "CrowdStrikeFalcon.get_incidents_entities",
+            return_value={"resources": [{"start": "2024-02-13T09:24:00.841616429Z", "incident_id": "123"}]},
+        )
+
+        try:
+            # Execute the function, it should handle timestamp formatting internally before calling update_last_run_object
+            fetch_endpoint_incidents({}, None, False)
+        except Exception as e:
+            pytest.fail(f"Unexpected error during fetch_endpoint_incidents with non-zero offset: {str(e)}")
+
+    def test_fetch_endpoint_detections__update_last_run_object(self, mocker):
+        from CrowdStrikeFalcon import fetch_endpoint_detections
+
+        mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
+
+        # Mock API response with microsecond precision timestamp that needs conversion
+        mocker.patch(
+            "CrowdStrikeFalcon.get_detections_entities",
+            return_value={"resources": [{"created_timestamp": "2024-02-13T09:24:00.841616429Z", "composite_id": "123"}]},
+        )
+
+        try:
+            # Execute the function, it should handle timestamp formatting internally before calling update_last_run_object
+            fetch_endpoint_detections({}, None, False)
+        except Exception as e:
+            pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
+
+    @pytest.mark.parametrize(
+        "product_type, detection_name_prefix",
+        [("ods", "On-Demand Scans Detection"), ("ofp", "OFP Detection"), ("idp", "IDP Detection")],
+    )
+    def test_fetch_detections_by_product_type__update_last_run_object(self, mocker, product_type, detection_name_prefix):
+        from CrowdStrikeFalcon import fetch_detections_by_product_type
+
+        mocker.patch("CrowdStrikeFalcon.get_detections_ids", return_value={"resources": ["123"]})
+
+        # Mock API response with microsecond precision timestamp that needs conversion
+        mocker.patch(
+            "CrowdStrikeFalcon.get_detection_entities",
+            return_value={
+                "resources": [{"created_timestamp": "2024-02-13T09:24:00.841616429Z", "composite_id": "123", "name": "name123"}]
+            },
+        )
+
+        try:
+            # Execute the function, it should handle timestamp formatting internally before calling update_last_run_object
+            fetch_detections_by_product_type({}, 0, product_type, "", "", detection_name_prefix, "created_timestamp")
+
+        except Exception as e:
+            pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
+
+
 def test_get_modified_remote_data_command(mocker):
     """
     Given
