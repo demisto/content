@@ -693,6 +693,10 @@ ANOMALY_UPDATE_STATUS_MUTATION = """mutation AnomalyUpdateStatusMutation($input:
   resolveAnomaly(input: $input)
 }"""
 
+DEPLOYMENT_VERSION_QUERY = """query DeploymentVersionQuery {
+  deploymentVersion
+}"""
+
 
 class MyClient(PolarisClient):
     """Client class."""
@@ -2402,7 +2406,7 @@ def test_module(client: PolarisClient, params: Dict[str, Any]) -> str:
     """
     is_fetch = params.get("isFetch", DEFAULT_IS_FETCH)
 
-    client.list_policies()
+    client._query_raw(raw_query=DEPLOYMENT_VERSION_QUERY, operation_name="DeploymentVersionQuery", variables={}, timeout=60)
     if is_fetch:
         fetch_incidents(client, {}, params)
 

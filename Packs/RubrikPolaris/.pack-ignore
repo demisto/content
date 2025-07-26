@@ -26,7 +26,7 @@ ignore=BA124
 ignore=IF115,IF113
 
 [file:RubrikPolaris.yml]
-ignore=IN124
+ignore=IN124,DO106
 
 [known_words]
 Acct
