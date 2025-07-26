@@ -1500,8 +1500,9 @@ There is no context output for this command.
 
 ***
 Deletes an email for all recipients.
-On first run, creates and starts a search. (If it already exists – returns its status).
-Next runs poll until the deletion is complete.
+On first run, creates and starts a search (if it already exists – returns its status).
+Then runs polling until the deletion is complete.
+The force parameter allows creating a new search even if one already exists (default: false).
 
 #### Base Command
 
