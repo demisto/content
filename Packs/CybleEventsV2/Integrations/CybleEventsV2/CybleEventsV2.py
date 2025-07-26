@@ -1327,7 +1327,8 @@ def main():
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     hide_cvv_expiry = params.get("hide_data", False)
-    demisto.debug(f"Command being called is {params}")
+    command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
     mirror = params.get("mirror", False)
     incident_collections = params.get("incident_collections", [])
     incident_severity = params.get("incident_severity", [])
@@ -1336,14 +1337,14 @@ def main():
         client = Client(base_url=params.get("base_url"), verify=verify_certificate, proxy=proxy)
         args = demisto.args()
 
-        if demisto.command() == "test-module":
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+        if command == "test-module":
+            url = base_url + str(ROUTES[COMMAND[command]])
             return_results(test_response(client, "GET", url, token))
 
-        elif demisto.command() == "fetch-incidents":
+        elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
 
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            url = base_url + str(ROUTES[COMMAND[command]])
             data, next_run = cyble_events(
                 client, "POST", token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity, False
             )
@@ -1351,27 +1352,27 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(data)
 
-        elif demisto.command() == "update-remote-system":
+        elif command == "update-remote-system":
             if mirror:
-                url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+                url = base_url + str(ROUTES[COMMAND[command]])
                 return_results(update_remote_system(client, "PUT", token, args, url))
             return
 
-        elif demisto.command() == "get-mapping-fields":
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+        elif command == "get-mapping-fields":
+            url = base_url + str(ROUTES[COMMAND[command]])
             return_results(get_mapping_fields(client, token, url))
 
-        elif demisto.command() == "cyble-vision-subscribed-services":
+        elif command == "cyble-vision-subscribed-services":
             return_results(fetch_subscribed_services_alert(client, "GET", base_url, token))
 
-        elif demisto.command() == "cyble-vision-fetch-iocs":
+        elif command == "cyble-vision-fetch-iocs":
             validate_iocs_input(args)
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            url = base_url + str(ROUTES[COMMAND[command]])
             command_results = cyble_fetch_iocs(client, "GET", token, args, url)
             return_results(command_results)
 
-        elif demisto.command() == "cyble-vision-fetch-alerts":
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+        elif command == "cyble-vision-fetch-alerts":
+            url = base_url + str(ROUTES[COMMAND[command]])
             lst_alerts = cyble_events(
                 client, "POST", token, url, args, {}, hide_cvv_expiry, incident_collections, incident_severity, True
             )
@@ -1384,25 +1385,25 @@ def main():
                 )
             )
 
-        elif demisto.command() == "get-modified-remote-data":
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+        elif command == "get-modified-remote-data":
+            url = base_url + str(ROUTES[COMMAND[command]])
             return_results(
                 get_modified_remote_data_command(
                     client, url, token, args, hide_cvv_expiry, incident_collections, incident_severity
                 )
             )
 
-        elif demisto.command() == "get-remote-data":
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+        elif command == "get-remote-data":
+            url = base_url + str(ROUTES[COMMAND[command]])
             return_results(
                 get_remote_data_command(client, url, token, args, incident_collections, incident_severity, hide_cvv_expiry)
             )
 
         else:
-            raise NotImplementedError(f"{demisto.command()} command is not implemented.")
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(f"Failed to execute {command} command. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
