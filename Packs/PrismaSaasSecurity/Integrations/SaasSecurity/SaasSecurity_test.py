@@ -193,10 +193,7 @@ def test_get_incidents_input(mocker, client):
     limit = 1
     severity_old_format = ["4", "5"]
     get_incidents = util_load_json("test_data/get-incidents.json")
-    args = {
-        "limit": limit,
-        "severity": severity_old_format
-    }
+    args = {"limit": limit, "severity": severity_old_format}
     expected_params = {"limit": 10, "severities": "4.0,5.0", "state": "open"}
 
     http_request = mocker.patch.object(client, "http_request", return_value=get_incidents)
