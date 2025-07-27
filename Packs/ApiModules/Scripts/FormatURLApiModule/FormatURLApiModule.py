@@ -798,6 +798,7 @@ class URLFormatter:
         schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
+        url = url.replace("%2F", "/")
         lower_url = url.lower()
         if lower_url.startswith(("hxxp", "meow")):
             url = re.sub(schemas, "http", url, count=1)
