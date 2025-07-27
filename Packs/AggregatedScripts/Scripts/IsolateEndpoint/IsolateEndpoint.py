@@ -52,7 +52,7 @@ def initialize_commands() -> list:
             arg_mapping={'agentId': 'endpoint_id', 'hostName': 'endpoint_name'},  # command can use agentId or hostName
         ),
         Command(
-            brand='Microsoft Defender Advanced Threat Protection',
+            brand='Microsoft Defender Advanced Threat Protection',  # TODO Maybe Microsoft Defender ATP as in get endpoint data?
             name='microsoft-atp-isolate-machine',
             arg_mapping={'machine_id': 'endpoint_id'},
             hard_coded_args={'isolation_type': 'Full',
