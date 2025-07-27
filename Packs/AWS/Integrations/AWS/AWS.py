@@ -781,58 +781,75 @@ class EC2:
     @staticmethod
     def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Modify the specified attribute of an Amazon Machine Image (AMI).
-        """
+        Creates a new security group in the specified VPC or EC2-Classic.
 
-        return CommandResults(readable_output="Image attribute successfully modified")
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_name (str): Name of the security group
+                - description (str): Description of the security group
+                - vpc_id (str, optional): VPC ID where security group will be created
+                - tags (str, optional): Tags to assign to the security group
+
+        Returns:
+            CommandResults: Results of the operation with security group creation details
+        """
+        return CommandResults(readable_output="")
 
     @staticmethod
     def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Modify the specified attribute of an Amazon Machine Image (AMI).
-        """
+        Deletes a security group from the specified VPC or EC2-Classic.
 
-        return CommandResults(readable_output="Image attribute successfully modified")
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_id (str, optional): ID of the security group to delete
+                - group_name (str, optional): Name of the security group to delete
+                - vpc_id (str, optional): VPC ID where security group exists
+
+        Returns:
+            CommandResults: Results of the operation with deletion confirmation
+        """
+        return CommandResults(readable_output="")
 
     @staticmethod
     def describe_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Modify the specified attribute of an Amazon Machine Image (AMI).
-        """
+        Describes one or more security groups in your account.
 
-        return CommandResults(readable_output="Image attribute successfully modified")
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_ids (str, optional): Comma-separated list of security group IDs
+                - group_names (str, optional): Comma-separated list of security group names
+                - filters (str, optional): Custom filters to apply
+                - max_items (str, optional): Maximum number of items to return
 
-    @staticmethod
-    def authorize_security_group_ingress_rule_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        Returns:
+            CommandResults: Results containing security group details
         """
-        Modify the specified attribute of an Amazon Machine Image (AMI).
-        """
-
-        return CommandResults(readable_output="Image attribute successfully modified")
-
-    @staticmethod
-    def authorize_security_group_egress_rule_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Modify the specified attribute of an Amazon Machine Image (AMI).
-        """
-
-        return CommandResults(readable_output="Image attribute successfully modified")
+        return CommandResults(readable_output="")
 
     @staticmethod
-    def revoke_security_group_ingress_rule_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Modify the specified attribute of an Amazon Machine Image (AMI).
-        """
+        Adds one or more egress rules to a security group for use with a VPC.
 
-        return CommandResults(readable_output="Image attribute successfully modified")
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_id (str): ID of the security group
+                - ip_protocol (str): IP protocol for the rule
+                - from_port (str, optional): Start of port range
+                - to_port (str, optional): End of port range
+                - cidr_ip (str, optional): IPv4 CIDR range
+                - ip_permissions (str, optional): Complete IP permissions JSON
 
-    @staticmethod
-    def revoke_security_group_egress_rule_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        Returns:
+            CommandResults: Results of the operation with authorization details
         """
-        Modify the specified attribute of an Amazon Machine Image (AMI).
-        """
-
-        return CommandResults(readable_output="Image attribute successfully modified")
+        return CommandResults(readable_output="")
 
 
 class EKS:
@@ -1208,6 +1225,10 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
+    "aws-ec2-security-group-create": EC2.create_security_group_command,
+    "aws-ec2-security-group-delete": EC2.delete_security_group_command,
+    "aws-ec2-security-group-describe": EC2.describe_security_group_command,
+    "aws-ec2-security-group-egress-authorize": EC2.authorize_security_group_egress_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
@@ -1218,16 +1239,15 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
 }
 
 REQUIRED_ACTIONS: list[str] = [
-    "iam:PassRole",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
     "kms:GenerateDataKey",
-    "rds:AddTagsToResource",
-    "rds:CreateTenantDatabase",
     "secretsmanager:CreateSecret",
     "secretsmanager:RotateSecret",
     "secretsmanager:TagResource",
+    "rds:AddTagsToResource",
+    "rds:CreateTenantDatabase",
     "rds:ModifyDBCluster",
     "rds:ModifyDBClusterSnapshotAttribute",
     "rds:ModifyDBInstance",
@@ -1236,20 +1256,21 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketLogging",
     "s3:PutBucketVersioning",
     "s3:PutBucketPolicy",
+    "s3:PutBucketPublicAccessBlock",
     "ec2:RevokeSecurityGroupEgress",
     "ec2:ModifyImageAttribute",
     "ec2:ModifyInstanceAttribute",
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
+    "ec2:ModifyInstanceMetadataOptions",
     "eks:UpdateClusterConfig",
+    "iam:PassRole",
     "iam:DeleteLoginProfile",
     "iam:PutUserPolicy",
     "iam:RemoveRoleFromInstanceProfile",
     "iam:UpdateAccessKey",
     "iam:GetAccountPasswordPolicy",
     "iam:UpdateAccountPasswordPolicy",
-    "s3:PutBucketPublicAccessBlock",
-    "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
 ]
 
