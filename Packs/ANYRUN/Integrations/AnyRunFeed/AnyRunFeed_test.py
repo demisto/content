@@ -1,5 +1,5 @@
 import pytest
-from AnyRunFeeds import extract_indicator_data, convert_indicators
+from AnyRunFeed import extract_indicator_data, convert_indicators
 
 
 @pytest.fixture(scope="module")
