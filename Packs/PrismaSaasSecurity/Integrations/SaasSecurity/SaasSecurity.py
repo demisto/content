@@ -109,6 +109,7 @@ class Client(BaseClient):
         try:
             return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
         except Exception as e:
+            demisto.debug(str(e))
             if "401" in str(e) and "Unauthorized" in str(e):
                 demisto.debug(f"requesting a new token since {str(e)}")
                 token = self.get_access_token(True)

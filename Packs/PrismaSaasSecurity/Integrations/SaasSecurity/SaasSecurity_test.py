@@ -1,9 +1,11 @@
 import json
 from datetime import datetime
 
+from requests import Response
+
 import demistomock as demisto
 import pytest
-from CommonServerPython import DemistoException, EntryFormat, EntryType
+from CommonServerPython import DemistoException, EntryFormat, EntryType, BaseClient
 from freezegun import freeze_time
 from SaasSecurity import LIMIT_DEFAULT, LIMIT_MAX, LIMIT_MIN, Client, validate_limit
 
@@ -58,15 +60,16 @@ def test_get_passed_mins():
 
 
 @pytest.mark.parametrize(
-    "integration_context, expected_token",
+    "integration_context, expected_token, force_generate",
     [
-        ({"access_token": "valid_access_token", "time_issued": 1629827440.0}, "valid_access_token"),
-        ({"access_token": "expired_access_token", "time_issued": 1629901436.0}, "new_access_token"),
-        ({}, "new_access_token"),
+        ({"access_token": "valid_access_token", "time_issued": 1629827440.0}, "valid_access_token", False),
+        ({"access_token": "expired_access_token", "time_issued": 1629901436.0}, "new_access_token", False),
+        ({}, "new_access_token", False),
+        ({"access_token": "valid_access_token", "time_issued": 1629827440.0}, "new_access_token", True),
     ],
 )
 @freeze_time("2020-08-24 18:04:21.446809")
-def test_get_access_token(mocker, integration_context, expected_token):
+def test_get_access_token(mocker, integration_context, expected_token, force_generate):
     """
     Configures mocker instance and patches the client's _http_request to generate access token.
 
@@ -74,11 +77,12 @@ def test_get_access_token(mocker, integration_context, expected_token):
     1. There is a valid access token in the integration context.
     2. The access token saved in the integration context is no longer valid.
     3. There is no access token in the integration context.
+    4. There is a valid access token in the integration context, but the argument force_generate was given.
     """
     client = Client(base_url="http://base_url", verify=False, client_id="client_id", client_secret="client_secret", proxy=False)
     mocker.patch.object(demisto, "getIntegrationContext", return_value=integration_context)
     mocker.patch.object(client, "_http_request", return_value={"access_token": "new_access_token"})
-    access_token = client.get_access_token()
+    access_token = client.get_access_token(force_generate)
     assert access_token == expected_token
 
 
@@ -200,6 +204,38 @@ def test_get_incidents_input(mocker, client):
 
     get_incidents_command(client, args)
     http_request.assert_called_with("GET", url_suffix="incident/api/incidents/delta", params=expected_params)
+
+
+@freeze_time("2021-08-24 18:04:00")
+def test_get_incident_command_401(mocker, client):
+    """ Check that in a case of 401 error, a second call to get a forced access token is made.
+        Given:
+            - The command arguments.
+        When:
+            - Running the command saas-security-incidents-get.
+        Then:
+            - The function for generating an access token is called once.
+    """
+    from SaasSecurity import get_incidents_command
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    limit = 1
+    severity_old_format = ["4", "5"]
+    get_incidents = util_load_json("test_data/get-incidents.json")
+    args = {"limit": limit, "severity": severity_old_format}
+    res_401 = Response()
+    res_401.status_code = 401
+    res_401.reason = "Unauthorized"
+
+    http_request = mocker.patch.object(BaseClient, "_http_request", side_effect=[DemistoException("Error in API call [401] - Unauthorized", res=MockException(401)), get_incidents])
+
+    get_incidents_command(client, args)
+
+    assert http_request.call_count == 2
+
 
 
 def test_get_incidents_command(client, requests_mock):
