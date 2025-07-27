@@ -357,27 +357,6 @@ def test_main_success_add_ip(mocker):
     OktaAddIPToBlockedIpZone.return_error.assert_not_called()
 
 
-def test_main_missing_ip_arg(mocker):
-    """
-    Given: Missing 'ip' argument.
-    When: Calling main.
-    Then: Should call return_error and exit.
-    """
-    mocker.patch.object(OktaAddIPToBlockedIpZone.demisto, "args", return_value={})
-    mock_return_error = mocker.patch("OktaAddIPToBlockedIpZone.return_error")
-    # Mock subsequent functions to ensure they are not called
-    mocker.patch("OktaAddIPToBlockedIpZone.ipaddress.ip_address")
-    mocker.patch("OktaAddIPToBlockedIpZone.is_private_ip")
-    mocker.patch("OktaAddIPToBlockedIpZone.get_blocked_ip_zone_info")
-    mocker.patch("OktaAddIPToBlockedIpZone.update_blocked_ip_zone")
-
-    OktaAddIPToBlockedIpZone.main()
-    mock_return_error.assert_called_once_with("Missing required argument: ip")
-    OktaAddIPToBlockedIpZone.is_private_ip.assert_not_called()
-    OktaAddIPToBlockedIpZone.get_blocked_ip_zone_info.assert_not_called()
-    OktaAddIPToBlockedIpZone.ipaddress.ip_address.assert_not_called()
-
-
 def test_main_private_ip_arg(mocker):
     """
     Given: A private IPv4 address.
@@ -431,7 +410,7 @@ def test_main_get_blocked_ip_zone_info_failure(mocker):
     """
     Given: get_blocked_ip_zone_info raises an exception.
     When: Calling main.
-    Then: Should call return_error.
+    Then: Should call return_error with both the error message and the exception object.
     """
     mocker.patch.object(OktaAddIPToBlockedIpZone.demisto, "args", return_value={"ip": "9.9.9.9"})
     mock_ipv4_address = mocker.MagicMock(spec=ipaddress.IPv4Address)
@@ -439,18 +418,22 @@ def test_main_get_blocked_ip_zone_info_failure(mocker):
     mocker.patch("OktaAddIPToBlockedIpZone.ipaddress.ip_address", return_value=mock_ipv4_address)
     mocker.patch("OktaAddIPToBlockedIpZone.is_private_ip", return_value=False)
 
-    mocker.patch("OktaAddIPToBlockedIpZone.get_blocked_ip_zone_info", side_effect=DemistoException("Zone lookup failed"))
+    # Define the exception instance separately
+    test_exception = DemistoException("Zone lookup failed")
+    mocker.patch("OktaAddIPToBlockedIpZone.get_blocked_ip_zone_info", side_effect=test_exception)
     mock_return_error = mocker.patch("OktaAddIPToBlockedIpZone.return_error")
 
     OktaAddIPToBlockedIpZone.main()
-    mock_return_error.assert_called_once_with("Error blocking IP in Okta zone: Zone lookup failed")
+
+    # The assertion now checks for both the message string and the exception instance
+    mock_return_error.assert_called_once_with("Error blocking IP in Okta zone: Zone lookup failed", test_exception)
 
 
 def test_main_update_blocked_ip_zone_failure(mocker):
     """
     Given: update_blocked_ip_zone raises an exception.
     When: Calling main.
-    Then: Should call return_error.
+    Then: Should call return_error with both the error message and the exception object.
     """
     mocker.patch.object(OktaAddIPToBlockedIpZone.demisto, "args", return_value={"ip": "9.9.9.9"})
     mock_ipv4_address = mocker.MagicMock(spec=ipaddress.IPv4Address)
@@ -459,8 +442,13 @@ def test_main_update_blocked_ip_zone_failure(mocker):
     mocker.patch("OktaAddIPToBlockedIpZone.is_private_ip", return_value=False)
 
     mocker.patch("OktaAddIPToBlockedIpZone.get_blocked_ip_zone_info", return_value={"zone_id": "zone123", "zone_gateways": []})
-    mocker.patch("OktaAddIPToBlockedIpZone.update_blocked_ip_zone", side_effect=DemistoException("Zone update failed"))
+
+    # Define the exception instance to be raised
+    test_exception = DemistoException("Zone update failed")
+    mocker.patch("OktaAddIPToBlockedIpZone.update_blocked_ip_zone", side_effect=test_exception)
     mock_return_error = mocker.patch("OktaAddIPToBlockedIpZone.return_error")
 
     OktaAddIPToBlockedIpZone.main()
-    mock_return_error.assert_called_once_with("Error blocking IP in Okta zone: Zone update failed")
+
+    # Assert that the return_error function was called with both arguments
+    mock_return_error.assert_called_once_with("Error blocking IP in Okta zone: Zone update failed", test_exception)

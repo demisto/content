@@ -91,18 +91,41 @@ def ip_in_range(ip: str, ip_range: str) -> bool:
         return False
 
 
+def _format_error_message(error_dict: dict[str, Any]) -> str:
+    """
+    Formats a dictionary containing an 'error' key into a readable error string.
+
+    This helper function centralizes the logic for extracting and formatting
+    the error code and message from a command's result. It gracefully handles
+    cases where the 'error', 'code', or 'message' keys might be missing
+    by providing default values.
+
+    Args:
+        error_dict (dict[str, Any]): The dictionary containing the error details.
+                                     It is expected to have a top-level 'error' key.
+
+    Returns:
+        str: A formatted string in the format "<code>: <message>".
+    """
+    error = error_dict.get("error", {})
+    return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
+
+
 def _get_command_error_details(res: dict[str, Any]) -> str:
     """
     Extracts a readable error message from a command result.
 
-    This function handles specific formatting of errors returned by certain commands,
-    attempting to parse JSON-structured error information if present.
+    This function abstracts the process of parsing different error message formats
+    returned by commands, such as JSON strings, dictionary objects, or
+    plain text. It uses the _format_error_message helper to centralize
+    the final formatting of detailed error messages.
 
     Args:
         res (dict[str, Any]): The raw result object from a command, typically res[0] from executeCommand.
 
     Returns:
-        str: A human-readable string containing the error code and message, or the raw error string.
+        str: A human-readable string containing the error code and message, or a
+             generic error string if parsing fails.
     """
     raw_contents = res.get("Contents")
     try:
@@ -111,20 +134,20 @@ def _get_command_error_details(res: dict[str, Any]) -> str:
                 try:
                     json_start_index = raw_contents.index("{", raw_contents.index("Error in API call"))
                     err = json.loads(raw_contents[json_start_index:])
-                    return f"{err.get('error', {}).get('code', '')}: {err.get('error', {}).get('message', '')}"
+                    if isinstance(err, dict) and "error" in err:
+                        return _format_error_message(err)
                 except (json.JSONDecodeError, ValueError):
                     demisto.debug(f"Failed to parse detailed JSON from API error string: {raw_contents}")
                     return f"Unparsed API error: {raw_contents}"
             try:
                 parsed_contents = json.loads(raw_contents)
                 if isinstance(parsed_contents, dict) and "error" in parsed_contents:
-                    error = parsed_contents["error"]
-                    return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
+                    return _format_error_message(parsed_contents)
             except json.JSONDecodeError:
                 pass
         elif isinstance(raw_contents, dict) and "error" in raw_contents:
-            error = raw_contents["error"]
-            return f"{error.get('code', 'Error')}: {error.get('message', 'No message')}"
+            return _format_error_message(raw_contents)
+
         return str(raw_contents or res.get("ReadableContents", "Unknown error"))
     except Exception as ex:
         demisto.debug(f"Exception during error details extraction in _get_command_error_details: {ex}")
@@ -257,10 +280,6 @@ def main():
     """
     try:
         ip = demisto.args().get("ip")
-        if not ip:
-            return_error("Missing required argument: ip")
-            return
-
         # Added a check to ensure the input IP is IPv4 before proceeding
         try:
             if ipaddress.ip_address(ip).version != 4:
@@ -281,7 +300,7 @@ def main():
         update_blocked_ip_zone(zone_id, zone_gateways, ip)
 
     except Exception as e:
-        return_error(f"Error blocking IP in Okta zone: {str(e)}")
+        return_error(f"Error blocking IP in Okta zone: {str(e)}", e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
