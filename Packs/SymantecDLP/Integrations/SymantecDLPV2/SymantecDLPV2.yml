@@ -72,6 +72,7 @@ configuration:
   name: incidents_time_zone
   type: 0
   required: false
+  additionalinfo: Used to define the time zone for all incident timestamps.
 description: Symantec Data Loss Prevention version 15.7 enables you to discover, monitor and protect your sensitive corporate information.
 display: Symantec Data Loss Prevention v2
 name: Symantec Data Loss Prevention v2
