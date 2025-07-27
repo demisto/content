@@ -36,7 +36,8 @@ configuration:
   name: longRunning
   type: 8
   required: false
-- defaultvalue: DetectionSummaryEvent
+- additionalinfo: The DetectionSummaryEvent event type will be deprecated as of September 30th, 2025. Make sure to adjust the event type to fetch.
+  defaultvalue: DetectionSummaryEvent
   display: Event type to fetch
   name: event_type
   options:
@@ -46,6 +47,7 @@ configuration:
   - UserActivityAuditEvent
   - Event_ExternalApiEvent
   - RemoteResponseSessionEndEvent
+  - EppDetectionSummaryEvent
   type: 16
   required: false
 - defaultvalue: '0'
