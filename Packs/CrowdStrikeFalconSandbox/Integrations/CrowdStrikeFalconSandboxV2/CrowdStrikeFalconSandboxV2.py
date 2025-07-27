@@ -399,7 +399,9 @@ def crowdstrike_scan_command(args: dict[str, Any], client: Client):
     hashes = args["file"].split(",")
     scan_response = []
     for hash in hashes:
-        scan_response.append(client.scan(hash))
+        report = client.scan(hash)
+        if report:
+            scan_response.append(report)
 
     def file_with_bwc_fields(res) -> CommandResults:
         return CommandResults(

@@ -172,10 +172,11 @@ def test_results_in_progress_polling_true_with_file(mocker, requests_mock):
     args = {"file": "abcd", "environmentID": 300, "polling": True, "file-type": filetype}
     raw_response_data = "RawDataOfFileResult"
     key = get_api_id(args)
+    file = args["file"]
     assert key == "abcd:300"
 
     requests_mock.get(BASE_URL + f"/report/{key}/report/{filetype}", status_code=200, text=raw_response_data)
-    requests_mock.post(BASE_URL + "/search/hashes", json=hash_response_json)
+    requests_mock.get(BASE_URL + f"/report/{file}/summary", json=hash_response_json)
 
     response = crowdstrike_result_command(args, client)
 
@@ -229,9 +230,10 @@ def test_crowdstrike_scan_command_polling_true(mocker, requests_mock):
       - Get a 404 result
     """
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
-    requests_mock.post(BASE_URL + "/search/hashes", json=[])
-    response = crowdstrike_scan_command({"file": "filehash", "polling": True}, client)
-    assert response.scheduled_command._args["file"] == "filehash"
+    file_hash = "filehash"
+    requests_mock.get(BASE_URL + f"/report/{file_hash}/summary", json={"message":"Failed to get summary. Possibly requested sample does not exist."})
+    response = crowdstrike_scan_command({"file": file_hash, "polling": True}, client)
+    assert response.scheduled_command._args["file"] == file_hash
     assert response.scheduled_command._args["hide_polling_output"]
 
 
