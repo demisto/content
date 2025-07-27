@@ -7,7 +7,7 @@ from anyrun import RunTimeException
 VERSION = "PA-XSOAR:2.0.0"
 
 
-def test_module(params: dict) -> str:   # pragma: no cover
+def test_module(params: dict) -> str:  # pragma: no cover
     """Performs ANY.RUN API call to verify integration is operational"""
     try:
         with LookupConnector(get_authentication(params)) as connector:
@@ -27,7 +27,7 @@ def get_authentication(params: dict) -> str:
     return f"API-KEY {params.get('credentials', {}).get('password')}"
 
 
-def get_intelligence(params: dict, args: dict) -> None: # pragma: no cover
+def get_intelligence(params: dict, args: dict) -> None:  # pragma: no cover
     """
     Initialize TI Lookup search
 
@@ -53,7 +53,7 @@ def get_intelligence(params: dict, args: dict) -> None: # pragma: no cover
     return_results(command_results)
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     """Main Execution block"""
     params = demisto.params()
     args = demisto.args()

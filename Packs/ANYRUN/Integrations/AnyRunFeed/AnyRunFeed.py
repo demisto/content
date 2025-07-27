@@ -11,7 +11,7 @@ DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 VERSION = "PA-XSOAR:2.0.0"
 
 
-def test_module(params: dict) -> str:   # pragma: no cover
+def test_module(params: dict) -> str:  # pragma: no cover
     """Performs ANY.RUN API call to verify integration is operational"""
     try:
         with FeedsConnector(params.get("credentials", {}).get("password")) as connector:
@@ -35,7 +35,7 @@ def extract_indicator_data(indicator: dict) -> tuple[str, str]:
     return indicator_type, indicator_value
 
 
-def get_timestamp(params: dict) -> str: # pragma: no cover
+def get_timestamp(params: dict) -> str:  # pragma: no cover
     """
     Extracts actual fetch timestamp
 
@@ -47,7 +47,7 @@ def get_timestamp(params: dict) -> str: # pragma: no cover
     return params.get("modified_after", "")
 
 
-def update_timestamp(new_timestamp: datetime | None) -> None:   # pragma: no cover
+def update_timestamp(new_timestamp: datetime | None) -> None:  # pragma: no cover
     """
     Updates fetch timestamp if exists
 
@@ -93,7 +93,7 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
     return converted_indicators
 
 
-def fetch_indicators_command(params: dict) -> None: # pragma: no cover
+def fetch_indicators_command(params: dict) -> None:  # pragma: no cover
     """
     Initializes the update of indicators
 
@@ -111,7 +111,7 @@ def fetch_indicators_command(params: dict) -> None: # pragma: no cover
         update_timestamp(connector._taxii_delta_timestamp)
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     """Main Execution block"""
     params = demisto.params()
     handle_proxy()
