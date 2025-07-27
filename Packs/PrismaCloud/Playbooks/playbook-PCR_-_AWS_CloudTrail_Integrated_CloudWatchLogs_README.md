@@ -43,9 +43,3 @@ There are no inputs for this playbook.
 
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
-
----
-
-![Prisma Cloud Remediation - AWS CloudTrail Is Not Integrated With CloudWatch Logs](../doc_files/Prisma_Cloud_Remediation_-_AWS_CloudTrail_Is_Not_Integrated_With_CloudWatch_Logs.png)

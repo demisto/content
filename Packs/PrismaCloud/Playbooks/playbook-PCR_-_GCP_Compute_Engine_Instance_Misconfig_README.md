@@ -39,9 +39,3 @@ This playbook does not use any scripts.
 
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
-
----
-
-![Prisma Cloud Remediation - GCP Compute Engine Instance Misconfiguration](../doc_files/Prisma_Cloud_Remediation_-_GCP_Compute_Engine_Instance_Misconfiguration.png)

@@ -147,3 +147,6 @@ ignore=RM116
 
 [file:playbook-PCR_-_GCP_Compute_Engine_Instance_Misconfig.yml]
 ignore=RM116
+
+[file:playbook-PCR_-_Azure_Network_Misconfig_v2.yml]
+ignore=RM116

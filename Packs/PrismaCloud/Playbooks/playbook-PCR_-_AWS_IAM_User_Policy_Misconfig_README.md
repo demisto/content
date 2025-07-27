@@ -37,9 +37,3 @@ This playbook does not use any integrations.
 
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
-
----
-
-![Prisma Cloud Remediation - AWS IAM User Policy Misconfiguration](../doc_files/Prisma_Cloud_Remediation_-_AWS_IAM_User_Policy_Misconfiguration.png)
