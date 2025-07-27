@@ -1895,6 +1895,16 @@ class TestFetchFunctionsTimestampFormatting:
             pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
 
     def test_fetch_endpoint_detections__is_detection_occurred_before_fetch_time(self, mocker):
+        """
+        Tests that detection["created_timestamp"] timestamps are filtered out if they are not after the start_fetch_time.
+        Given:
+            start_fetch_time is "2025-07-25T01:01:00.000000000Z"
+            Two detections with created_timestamps, one is before the start_fetch_time and the other is not.
+        When:
+            Fetching endpoint detections
+        Then:
+            Only the detection that occurred after the start_fetch_time is returned.
+        """
         from CrowdStrikeFalcon import fetch_endpoint_detections
 
         mocked_res = [
@@ -7881,12 +7891,21 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
 
 
 def test_is_detection_occurred_before_fetch_time():
+    """
+    Given:
+        - A detection with a created timestamp.
+        - A start time for fetching.
+    When:
+        - Running is_detection_occurred_before_fetch_time.
+    Then:
+        - Validate that the function returns True if the detection was before the start time, False otherwise.
+    """
     from CrowdStrikeFalcon import is_detection_occurred_before_fetch_time
 
     detection = {"created_timestamp": "2020-05-16T17:30:38Z"}
     start_fetch_time = "2020-05-17T17:30:38Z"
-    assert is_detection_occurred_before_fetch_time(detection, start_fetch_time)
+    assert is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
 
     detection = {"created_timestamp": "2020-05-17T17:30:38Z"}
     start_fetch_time = "2020-05-17T17:30:38Z"
-    assert not is_detection_occurred_before_fetch_time(detection, start_fetch_time)
+    assert not is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
