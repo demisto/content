@@ -114,9 +114,9 @@ def test_filter_out_files_by_status():
     ]
 
     expected_output = [
-        "http://example.com/file1",
-        "http://example.com/file2",
-        "http://example.com/file5",
+        {"status": "added", "filename": "http://example.com/file1"},
+        {"status": "modified", "filename": "http://example.com/file2"},
+        {"status": "added", "filename": "http://example.com/file5"},
     ]
     actual_output = filter_out_files_by_status(commits_files)
     assert actual_output == expected_output, f"Expected {expected_output}, but got {actual_output}"

@@ -47,3 +47,10 @@ Gets indicators from the feed within a specified date range and up to a maximum 
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+- HTTP 404 Error: `No common ancestor between {commit} and {branch}`
+  - Typically occurs when a "force push" or a "commit squash" overwrites previously pushed commits on the configured branch.
+  - **Resolution**: To resolve this issue, reset indicator fetching for the affected integration instance.
+  - **Prevention**: To avoid this error, refrain from force pushing or squashing commits on the branch configured for the integration instance.
