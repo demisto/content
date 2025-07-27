@@ -129,7 +129,7 @@ def create_user(
         "Email": email_address,
         "RiskLevel": risk_level,
         "Brand": source,
-        "Instance": instance
+        "Instance": instance,
     }
     if additional_fields:
         user["AdditionalFields"] = kwargs  # type: ignore
@@ -318,7 +318,7 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
         for k, v in outputs.items():
             if isinstance(v, list) and len(v) == 1:
                 outputs[k] = v[0]
-        user_outputs.append( 
+        user_outputs.append(
             create_user(
                 source=command.brand,
                 instance=output["ModuleName"],
@@ -341,7 +341,8 @@ def okta_get_user(command: Command, additional_fields=False) -> tuple[list[Comma
     for output in entry_context:
         output_key = get_output_key("Account", output)
         outputs = get_outputs(output_key, output)
-        user_outputs.append(create_user(
+        user_outputs.append(
+            create_user(
                 source=command.brand,
                 instance=output["ModuleName"],
                 id=outputs.pop("ID", None),
@@ -426,20 +427,24 @@ def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[Co
     return readable_outputs_list, user_outputs
 
 
-def msgraph_user_get_manager(command: Command, additional_fields: bool) -> dict[str, Any]:
+def msgraph_user_get_manager(command: Command, additional_fields: bool) -> list[dict[str, Any]]:  # TODO
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("MSGraphUserManager", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-    manager_output = {
-        "manager_display_name": outputs.get("Manager", {}).get("DisplayName"),
-        "manager_email": outputs.get("Manager", {}).get("Mail"),
-    }
+    manager_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("MSGraphUserManager", output)
+        outputs = get_outputs(output_key, output)
+        manager_outputs.append(
+            {
+                "manager_display_name": outputs.get("Manager", {}).get("DisplayName"),
+                "manager_email": outputs.get("Manager", {}).get("Mail"),
+            }
+        )
 
-    return manager_output
+    return manager_outputs
 
 
 def iam_get_user(
@@ -450,16 +455,20 @@ def iam_get_user(
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("IAM.Vendor", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-    account_output = create_user(
-        source=command.brand,
-        instance=entry_context[0]["ModuleName"],
-        email_address=outputs.pop("email", None),
-        **outputs,
-        additional_fields=additional_fields,
-    )
-    return readable_outputs_list, account_output
+    account_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("IAM.Vendor", output)
+        outputs = get_outputs(output_key, output)
+        account_outputs.append(
+            create_user(
+                source=command.brand,
+                instance=output["ModuleName"],
+                email_address=outputs.pop("email", None),
+                **outputs,
+                additional_fields=additional_fields,
+            )
+        )
+    return readable_outputs_list, account_outputs
 
 
 def gsuite_get_user(
@@ -470,17 +479,21 @@ def gsuite_get_user(
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("GSuite.User", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-    account_output = create_user(
-        source=command.brand,
-        instance=entry_context[0]["ModuleName"],
-        email_address=outputs.pop("primaryEmail", None),
-        username=outputs.pop("fullName", None),
-        **outputs,
-        additional_fields=additional_fields,
-    )
-    return readable_outputs_list, account_output
+    account_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("GSuite.User", output)
+        outputs = get_outputs(output_key, output)
+        account_outputs.append(
+            create_user(
+                source=command.brand,
+                instance=output["ModuleName"],
+                email_address=outputs.pop("primaryEmail", None),
+                username=outputs.pop("fullName", None),
+                **outputs,
+                additional_fields=additional_fields,
+            )
+        )
+    return readable_outputs_list, account_outputs
 
 
 def xdr_list_risky_users(
@@ -493,20 +506,24 @@ def xdr_list_risky_users(
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key(f"{outputs_key_field}.RiskyUser", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
+    account_outputs = []
+    for output in entry_context:
+        output_key = get_output_key(f"{outputs_key_field}.RiskyUser", output)
+        outputs = get_outputs(output_key, output)
 
-    account_output = create_user(
-        source=command.brand,
-        instance=entry_context[0]["ModuleName"],
-        id=outputs.get("id"),
-        risk_level=outputs.pop("risk_level", None),
-        username=outputs.pop("id", None),
-        **outputs,
-        additional_fields=additional_fields,
-    )
+        account_outputs.append(
+            create_user(
+                source=command.brand,
+                instance=output["ModuleName"],
+                id=outputs.get("id"),
+                risk_level=outputs.pop("risk_level", None),
+                username=outputs.pop("id", None),
+                **outputs,
+                additional_fields=additional_fields,
+            )
+        )
 
-    return readable_outputs_list, account_output
+    return readable_outputs_list, account_outputs
 
 
 def xdr_get_risky_user(
@@ -531,22 +548,25 @@ def azure_get_risky_user(
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    
-    
-    output_key = get_output_key("AzureRiskyUsers.RiskyUser", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
 
-    account_output = create_user(
-        source=command.brand,
-        instance=entry_context[0]["ModuleName"],
-        id=outputs.get("id"),
-        risk_level=outputs.pop("riskLevel", None),
-        username=outputs.pop("id", None),
-        **outputs,
-        additional_fields=additional_fields,
-    )
+    account_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("AzureRiskyUsers.RiskyUser", output)
+        outputs = get_outputs(output_key, output)
 
-    return readable_outputs_list, account_output
+        account_outputs.append(
+            create_user(
+                source=command.brand,
+                instance=output["ModuleName"],
+                id=outputs.get("id"),
+                risk_level=outputs.pop("riskLevel", None),
+                username=outputs.pop("id", None),
+                **outputs,
+                additional_fields=additional_fields,
+            )
+        )
+
+    return readable_outputs_list, account_outputs
 
 
 def get_command_results(
@@ -559,7 +579,7 @@ def get_command_results(
 
 def get_data(
     modules: Modules, brand_name: str, command_name: str, arg_name: str, arg_value: str, cmd: Callable, additional_fields: bool
-):
+) -> tuple[list[str], list[dict]]:
     get_user_command = Command(
         brand=brand_name,
         name=command_name,
@@ -568,12 +588,13 @@ def get_data(
     if modules.is_brand_available(get_user_command) and is_valid_args(get_user_command):
         demisto.debug(f"calling {command_name} command with brand {brand_name}")
         readable_outputs, outputs = cmd(get_user_command, additional_fields)
-        if len(outputs) == 1:  # contains only the source key
-            outputs["Status"] = f"User not found - userId: {arg_value}."
-        else:
-            outputs["Status"] = "found"
+        for output in outputs:
+            if len(output) == 1:  # contains only the source key
+                output["Status"] = f"User not found - userId: {arg_value}."
+            else:
+                output["Status"] = "found"
         return readable_outputs, outputs
-    return [], {}
+    return [], []
 
 
 """ MAIN FUNCTION """
@@ -620,7 +641,7 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
 
                 #################################
@@ -636,7 +657,7 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
 
                 #################################
@@ -652,7 +673,7 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
 
                 #################################
@@ -669,15 +690,16 @@ def main():
                 )
                 if readable_output and outputs:
                     users_readables.extend(readable_output)
-                    if outputs.get("id") and additional_fields:
-                        msgraph_user_get_manager_command = Command(
-                            brand="Microsoft Graph User",
-                            name="msgraph-user-get-manager",
-                            args={"user": user_name},
-                        )
-                        manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
-                        outputs["AdditionalFields"].extend(manager_output)
-                    users_outputs.append(outputs)
+                    for output in outputs:
+                        if output.get("id") and additional_fields:
+                            msgraph_user_get_manager_command = Command(
+                                brand="Microsoft Graph User",
+                                name="msgraph-user-get-manager",
+                                args={"user": user_name},
+                            )
+                            manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
+                            output["AdditionalFields"].extend(manager_output)
+                    users_outputs.extend(outputs)
 
                 #################################
                 ### Running for Prismacloud v2 ###
@@ -692,9 +714,9 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
-                
+
                 #################################
                 ### Running for Okta IAM ###
                 #################################
@@ -703,14 +725,14 @@ def main():
                     brand_name="Okta IAM",
                     command_name="iam-get-user",
                     arg_name="user-profile",
-                    arg_value=f"{{\"login\":\"{user_name}\"}}",
+                    arg_value=f'{{"login":"{user_name}"}}',
                     cmd=iam_get_user,
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
-                
+
                 #################################
                 ### Running for AWS-ILM ###
                 #################################
@@ -719,12 +741,12 @@ def main():
                     brand_name="AWS-ILM",
                     command_name="iam-get-user",
                     arg_name="user-profile",
-                    arg_value=f"{{\"login\":\"{user_name}\"}}",
+                    arg_value=f'{{"login":"{user_name}"}}',
                     cmd=iam_get_user,
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
 
             else:
@@ -743,7 +765,7 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
 
             #################################
@@ -759,7 +781,7 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
 
         #################################
@@ -781,7 +803,7 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
 
             #################################
@@ -806,7 +828,7 @@ def main():
                     )
                     manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
                     outputs["AdditionalFields"].extend(manager_output)
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
 
             #################################
             ### Running for Azure Risky Users	 ###
@@ -821,9 +843,9 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
-                
+
             #################################
             ### Running for Okta IAM ###
             #################################
@@ -832,14 +854,14 @@ def main():
                 brand_name="Okta IAM",
                 command_name="iam-get-user",
                 arg_name="user-profile",
-                arg_value=f"{{\"id\":\"{user_id}\"}}",
+                arg_value=f'{{"id":"{user_id}"}}',
                 cmd=iam_get_user,
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
-            
+
             #################################
             ### Running for AWS-ILM ###
             #################################
@@ -848,14 +870,14 @@ def main():
                 brand_name="AWS-ILM",
                 command_name="iam-get-user",
                 arg_name="user-profile",
-                arg_value=f"{{\"id\":\"{user_id}\"}}",
+                arg_value=f'{{"id":"{user_id}"}}',
                 cmd=iam_get_user,
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
-            
+
             #################################
             ### Running for GSuiteAdmin ###
             #################################
@@ -869,7 +891,7 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
 
         #################################
@@ -891,9 +913,9 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
-        
+
         #################################
         ### Running for Okta IAM ###
         #################################
@@ -902,14 +924,14 @@ def main():
             brand_name="Okta IAM",
             command_name="iam-get-user",
             arg_name="user-profile",
-            arg_value=f"{{\"email\":\"{user_email}\"}}",
+            arg_value=f'{{"email":"{user_email}"}}',
             cmd=iam_get_user,
             additional_fields=additional_fields,
         )
         if readable_output and outputs:
-            users_outputs.append(outputs)
+            users_outputs.extend(outputs)
             users_readables.extend(readable_output)
-        
+
         #################################
         ### Running for AWS-ILM ###
         #################################
@@ -918,14 +940,14 @@ def main():
             brand_name="AWS-ILM",
             command_name="iam-get-user",
             arg_name="user-profile",
-            arg_value=f"{{\"email\":\"{user_email}\"}}",
+            arg_value=f'{{"email":"{user_email}"}}',
             cmd=iam_get_user,
             additional_fields=additional_fields,
         )
         if readable_output and outputs:
-            users_outputs.append(outputs)
+            users_outputs.extend(outputs)
             users_readables.extend(readable_output)
-        
+
         #################################
         ### Running for GSuiteAdmin ###
         #################################
@@ -939,7 +961,7 @@ def main():
             additional_fields=additional_fields,
         )
         if readable_output and outputs:
-            users_outputs.append(outputs)
+            users_outputs.extend(outputs)
             users_readables.extend(readable_output)
 
         if verbose:

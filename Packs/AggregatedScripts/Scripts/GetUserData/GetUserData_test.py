@@ -20,7 +20,7 @@ from GetUserData import (
     prisma_cloud_get_user,
     azure_get_risky_user,
     iam_get_user,
-    gsuite_get_user
+    gsuite_get_user,
 )
 from pytest_mock import MockerFixture
 
