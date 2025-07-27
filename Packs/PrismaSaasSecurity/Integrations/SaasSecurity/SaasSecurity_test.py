@@ -208,13 +208,13 @@ def test_get_incidents_input(mocker, client):
 
 @freeze_time("2021-08-24 18:04:00")
 def test_get_incident_command_401(mocker, client):
-    """ Check that in a case of 401 error, a second call to get a forced access token is made.
-        Given:
-            - The command arguments.
-        When:
-            - Running the command saas-security-incidents-get.
-        Then:
-            - The function for generating an access token is called once.
+    """Check that in a case of 401 error, a second call to get a forced access token is made.
+    Given:
+        - The command arguments.
+    When:
+        - Running the command saas-security-incidents-get.
+    Then:
+        - The function for generating an access token is called once.
     """
     from SaasSecurity import get_incidents_command
 
@@ -230,12 +230,15 @@ def test_get_incident_command_401(mocker, client):
     res_401.status_code = 401
     res_401.reason = "Unauthorized"
 
-    http_request = mocker.patch.object(BaseClient, "_http_request", side_effect=[DemistoException("Error in API call [401] - Unauthorized", res=MockException(401)), get_incidents])
+    http_request = mocker.patch.object(
+        BaseClient,
+        "_http_request",
+        side_effect=[DemistoException("Error in API call [401] - Unauthorized", res=MockException(401)), get_incidents],
+    )
 
     get_incidents_command(client, args)
 
     assert http_request.call_count == 2
-
 
 
 def test_get_incidents_command(client, requests_mock):
