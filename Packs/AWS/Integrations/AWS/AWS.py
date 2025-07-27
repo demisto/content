@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date
+from datetime import date, datetime, timedelta
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -33,6 +33,8 @@ class AWSServices(str, Enum):
     EKS = "eks"
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
+    CE = "ce"
+    BUDGETS = "budgets"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -1061,6 +1063,188 @@ class RDS:
 class CloudTrail:
     service = AWSServices.CloudTrail
 
+class Ce:
+    service = AWSServices.CE
+    @staticmethod
+    def billing_cost_usage_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        metrics = argToList(args.get("metrics", "UsageQuantity"))
+        start_date = args.get("start_date")
+        end_date = args.get("end_date")
+        granularity = args.get("granularity", "Daily").upper()
+        aws_services = argToList(args.get("aws_services"))
+        token = args.get("next_page_token")
+
+        # Defaults
+        today = datetime.now().date()
+        if not start_date:
+            start_date = (today - timedelta(days=7)).isoformat()
+        if not end_date:
+            end_date = today.isoformat()
+
+        request = {
+            "TimePeriod": {"Start": start_date, "End": end_date},
+            "Granularity": granularity,
+            "Metrics": metrics,
+        }
+        if aws_services:
+            request["Filter"] = {
+                "Dimensions": {
+                    "Key": "SERVICE",
+                    "MatchOptions": ["EQUALS"],
+                    "Values": aws_services,
+                }
+            }
+        if token:
+            request["NextPageToken"] = token
+        response = client.get_cost_and_usage(**request)
+        results = []
+        for group in response.get("ResultsByTime", []):
+            for g in group.get("Groups", [{}]):
+                service = g.get("Keys", [None])[0] if g.get("Keys") else None
+                for metric in metrics:
+                    amount = g.get("Metrics", {}).get(metric, {}).get("Amount")
+                    unit = g.get("Metrics", {}).get(metric, {}).get("Unit")
+                    results.append({
+                        "Service": service,
+                        "StartDate": group.get("TimePeriod", {}).get("Start"),
+                        "EndDate": group.get("TimePeriod", {}).get("End"),
+                        "Amount": amount,
+                        "Unit": unit,
+                    })
+        next_token = response.get("NextPageToken")
+        outputs = {"AWS.BillingUsage": results}
+        if next_token:
+            outputs["AWS.Billing.UsageNextToken"] = next_token
+        readable = tableToMarkdown("AWS Billing Usage", results, headers=["Service", "StartDate", "EndDate", "Amount", "Unit"])
+        if next_token:
+            readable += f"\nNext Page Token: {next_token}"
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def billing_forecast_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        from datetime import datetime, timedelta
+        metrics = args.get("metrics")
+        if isinstance(metrics, str):
+            metrics = [metrics]
+        start_date = args.get("start_date")
+        end_date = args.get("end_date")
+        granularity = args.get("granularity", "Daily").upper()
+        aws_services = args.get("aws_services")
+        if isinstance(aws_services, str):
+            aws_services = [aws_services]
+        token = args.get("next_page_token")
+
+        today = datetime.now().date()
+        if not start_date:
+            start_date = (today - timedelta(days=7)).isoformat()
+        if not end_date:
+            end_date = today.isoformat()
+
+        results = []
+        outputs = {}
+        for metric in metrics:
+            request = {
+                "TimePeriod": {"Start": start_date, "End": end_date},
+                "Granularity": granularity,
+                "Metric": metric,
+            }
+            if aws_services:
+                request["Filter"] = {
+                    "Dimensions": {
+                        "Key": "SERVICE",
+                        "MatchOptions": ["EQUALS"],
+                        "Values": aws_services,
+                    }
+                }
+            if token:
+                request["NextPageToken"] = token
+            response = client.get_cost_forecast(**request)
+            forecast = response.get("ForecastResultsByTime", [])
+            for entry in forecast:
+                results.append({
+                    "Service": aws_services[0] if aws_services else None,
+                    "StartDate": entry.get("TimePeriod", {}).get("Start"),
+                    "EndDate": entry.get("TimePeriod", {}).get("End"),
+                    "TotalAmount": entry.get("MeanValue"),
+                    "TotalUnit": response.get("Unit"),
+                })
+            next_token = response.get("NextPageToken")
+            if next_token:
+                outputs["AWS.Billing.ForecastNextToken"] = next_token
+        outputs["AWS.BillingForecast"] = results
+        readable = tableToMarkdown("AWS Billing Forecast", results, headers=["Service", "StartDate", "EndDate", "TotalAmount", "TotalUnit"])
+        if outputs.get("AWS.Billing.ForecastNextToken"):
+            readable += f"\nNext Page Token: {outputs['AWS.Billing.ForecastNextToken']}"
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
+
+
+class Budgets:
+    service = AWSServices.BUDGETS
+    @staticmethod
+    def billing_budgets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        max_results = int(args.get("max_result", 50))
+        token = args.get("next_page_token")
+        request = {"MaxResults": max_results}
+        if token:
+            request["NextToken"] = token
+        response = client.describe_budgets(**request)
+        budgets = response.get("Budgets", [])
+        results = []
+        for b in budgets:
+            budget_limit = b.get("BudgetLimit", {})
+            actual_spend = b.get("CalculatedSpend", {}).get("ActualSpend", {})
+            results.append({
+                "BudgetName": b.get("BudgetName"),
+                "BudgetType": b.get("BudgetType"),
+                "BudgetLimitAmount": budget_limit.get("Amount"),
+                "BudgetLimitUnit": budget_limit.get("Unit"),
+                "ActualSpendAmount": actual_spend.get("Amount"),
+                "ActualSpendUnit": actual_spend.get("Unit"),
+                "TimePeriod": f"{b.get('TimePeriod', {}).get('Start')} - {b.get('TimePeriod', {}).get('End')}"
+            })
+        outputs = {"AWS.BillingBudget": results}
+        next_token = response.get("NextToken")
+        if next_token:
+            outputs["AWS.Billing.BudgetNextToken"] = next_token
+        readable = tableToMarkdown("AWS Budgets", results, headers=["BudgetName", "BudgetType", "BudgetLimitAmount", "BudgetLimitUnit", "ActualSpendAmount", "ActualSpendUnit", "TimePeriod"])
+        if next_token:
+            readable += f"\nNext Page Token: {next_token}"
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def billing_budget_notification_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        budget_name = args.get("budget_name")
+        max_results = int(args.get("max_result", 50))
+        token = args.get("next_page_token")
+        request = {"BudgetName": budget_name, "MaxResults": max_results}
+        if token:
+            request["NextToken"] = token
+        response = client.describe_notifications_for_budget(**request)
+        outputs = {"AWS.BillingNotification": response.get("Notifications", [])}
+        next_token = response.get("NextToken")
+        if next_token:
+            outputs["AWS.Billing.NotificationNextToken"] = next_token
+        readable = tableToMarkdown(f"Notifications for Budget: {budget_name}", response.get("Notifications", []))
+        if next_token:
+            readable += f"\nNext Page Token: {next_token}"
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
+
     @staticmethod
     def start_logging_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -1133,6 +1317,10 @@ class CloudTrail:
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
+    "aws-billing-cost-usage-list": Ce.billing_cost_usage_list_command,
+    "aws-billing-forecast-list": Ce.billing_forecast_list_command,
+    "aws-billing-budgets-list": Budgets.billing_budgets_list_command,
+    "aws-billing-budget-notification-list": Budgets.billing_budget_notification_list_command,
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,

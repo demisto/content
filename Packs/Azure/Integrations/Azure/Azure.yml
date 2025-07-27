@@ -1738,6 +1738,111 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
+  - name: azure-billing-usage-list
+    description: Returns actual usage and cost details for a given time period, optionally filtered by service name.
+    arguments:
+      - name: subscription_id
+        description: Azure sub to run the command on - will be sent as scope parameter - /subscriptions/{subscriptionId}/
+        required: true
+      - name: expand_result
+        description: Whether to expand the result. Default - false
+        required: false
+        type: Boolean
+      - name: filter
+        description: Optional filter for the API. API argument - $filter
+        required: false
+      - name: metric
+        description: Metric to retrieve. Actual API values [actualcost, amortizedcost, usage]
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - Actual Cost
+          - Amortized Cost
+          - Usage
+      - name: max_results
+        description: Maximum results to return. Default - 50, Max - 1000
+        required: false
+        type: Number
+      - name: next_page_token
+        description: Next page token for pagination. Use value from Azure.Billing.UsageNextToken.
+        required: false
+    outputs:
+      - contextPath: Azure.BillingUsage.Name
+        description: Name
+        type: string
+      - contextPath: Azure.BillingUsage.Product
+        description: Product
+        type: string
+      - contextPath: Azure.BillingUsage.MeterName
+        description: Meter Name
+        type: string
+      - contextPath: Azure.BillingUsage.PayGCostUSD
+        description: PayG Cost (USD)
+        type: number
+      - contextPath: Azure.BillingUsage.UsageQuantity
+        description: Usage Quantity
+        type: number
+      - contextPath: Azure.BillingUsage.PeriodStartDate
+        description: Period Start Date
+        type: date
+      - contextPath: Azure.BillingUsage.PeriodEndDate
+        description: Period End Date
+        type: date
+      - contextPath: Azure.Billing.UsageNextToken
+        description: Next page token for pagination
+        type: string
+
+  - name: azure-billing-forecast-list
+    description: Returns cost forecast for a subscription over a given time range.
+    arguments:
+      - name: subscription_id
+        description: Azure sub to run the command on
+        required: true
+      - name: filter
+        description: Optional filter for the API. API argument - $filter
+        required: false
+    outputs:
+      - contextPath: Azure.BillingForecast.Name
+        description: Name
+        type: string
+      - contextPath: Azure.BillingForecast.TimePeriod
+        description: Time Period
+        type: string
+      - contextPath: Azure.BillingForecast.Charge
+        description: Charge
+        type: number
+      - contextPath: Azure.BillingForecast.Currency
+        description: Currency
+        type: string
+      - contextPath: Azure.BillingForecast.Grain
+        description: Grain
+        type: string
+
+  - name: azure-billing-budgets-list
+    description: Lists configured budgets at the subscription or resource group scope.
+    arguments:
+      - name: subscription_id
+        description: Azure sub to run the command on - will be sent as scope parameter - /subscriptions/{subscriptionId}/
+        required: true
+      - name: budget_name
+        description: Name of the budget. Optional; if provided, returns a specific budget.
+        required: false
+    outputs:
+      - contextPath: Azure.BillingBudget.BudgetName
+        description: Budget Name
+        type: string
+      - contextPath: Azure.BillingBudget.ResourceType
+        description: Resource Type
+        type: string
+      - contextPath: Azure.BillingBudget.TimePeriod
+        description: Time Period
+        type: string
+      - contextPath: Azure.BillingBudget.Amount
+        description: Amount
+        type: number
+      - contextPath: Azure.BillingBudget.CurrentSpend
+        description: Current Spend
+        type: number
   isfetch: false
   runonce: false
   script: '-'

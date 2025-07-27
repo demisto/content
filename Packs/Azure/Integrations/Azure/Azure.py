@@ -95,6 +95,10 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.DocumentDB/databaseAccounts/write",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
+    "Microsoft.Consumption/usageDetails/read",
+    "Microsoft.Consumption/forecast/read",
+    "Microsoft.Consumption/budgets/read"
+    
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -1934,6 +1938,126 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
     )
 
 
+def azure_billing_usage_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Returns actual usage and cost details for a given time period, optionally filtered by service name.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    expand = args.get("expand_result")
+    filter_ = args.get("filter")
+    metric = args.get("metric")
+    max_results = int(args.get("max_results", 50))
+    next_page_token = args.get("next_page_token")
+
+    scope = f"/subscriptions/{subscription_id}"
+    url = f"{scope}/providers/Microsoft.Consumption/usageDetails"
+    api_version = "2021-10-01"
+    params_ = {"api-version": api_version, "$top": max_results}
+    if expand:
+        params_["$expand"] = expand
+    if filter_:
+        params_["$filter"] = filter_
+    if metric:
+        params_["metric"] = metric.lower().replace(" ", "")
+    if next_page_token:
+        params_["$skiptoken"] = next_page_token
+
+    res = client.http_request("GET", url_suffix=url, params=params_)
+    items = res.get("value", [])
+    results = []
+    for item in items:
+        results.append({
+            "Name": item.get("name"),
+            "Product": item.get("properties", {}).get("productName"),
+            "MeterName": item.get("properties", {}).get("meterName"),
+            "PayGCostUSD": item.get("properties", {}).get("paygCost", {}).get("amount"),
+            "UsageQuantity": item.get("properties", {}).get("quantity"),
+            "PeriodStartDate": item.get("properties", {}).get("usageStart"),
+            "PeriodEndDate": item.get("properties", {}).get("usageEnd"),
+        })
+    outputs = {"Azure.Billing.Usage": results}
+    next_token = res.get("nextLink")
+    if next_token:
+        # Azure returns a full URL in nextLink; extract the skiptoken
+        from urllib.parse import parse_qs, urlparse
+        qs = parse_qs(urlparse(next_token).query)
+        skiptoken = qs.get("$skiptoken", [None])[0]
+        if skiptoken:
+            outputs["Azure.Billing.UsageNextToken"] = skiptoken
+    readable = tableToMarkdown("Azure Billing Usage", results, headers=["Name", "Product", "MeterName", "PayGCostUSD", "UsageQuantity", "PeriodStartDate", "PeriodEndDate"])
+    if outputs.get("Azure.Billing.UsageNextToken"):
+        readable += f"\nNext Page Token: {outputs['Azure.Billing.UsageNextToken']}"
+    return CommandResults(
+        readable_output=readable,
+        outputs=outputs,
+        raw_response=res,
+    )
+
+def azure_billing_forecast_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Returns cost forecast for a subscription over a given time range.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    filter_ = args.get("filter")
+    scope = f"/subscriptions/{subscription_id}"
+    url = f"{scope}/providers/Microsoft.Consumption/forecasts"
+    api_version = "2021-10-01"
+    params_ = {"api-version": api_version}
+    if filter_:
+        params_["$filter"] = filter_
+    res = client.http_request("GET", url_suffix=url, params=params_)
+    items = res.get("value", [])
+    results = []
+    for item in items:
+        results.append({
+            "Name": item.get("name"),
+            "TimePeriod": item.get("properties", {}).get("usageDate"),
+            "Charge": item.get("properties", {}).get("charge"),
+            "Currency": item.get("properties", {}).get("currency"),
+            "Grain": item.get("properties", {}).get("grain"),
+        })
+    outputs = {"Azure.BillingForecast": results}
+    readable = tableToMarkdown("Azure Billing Forecast", results, headers=["Name", "TimePeriod", "Charge", "Currency", "Grain"])
+    return CommandResults(
+        readable_output=readable,
+        outputs=outputs,
+        raw_response=res,
+    )
+
+def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Lists configured budgets at the subscription or resource group scope.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    budget_name = args.get("budget_name")
+    scope = f"/subscriptions/{subscription_id}"
+    api_version = "2021-10-01"
+    if budget_name:
+        url = f"{scope}/providers/Microsoft.Consumption/budgets/{budget_name}"
+        res = client.http_request("GET", url_suffix=url, params={"api-version": api_version})
+        items = [res]
+    else:
+        url = f"{scope}/providers/Microsoft.Consumption/budgets"
+        res = client.http_request("GET", url_suffix=url, params={"api-version": api_version})
+        items = res.get("value", [])
+    results = []
+    for item in items:
+        results.append({
+            "BudgetName": item.get("name"),
+            "ResourceType": item.get("type"),
+            "TimePeriod": str(item.get("properties", {}).get("timePeriod")),
+            "Amount": item.get("properties", {}).get("amount"),
+            "CurrentSpend": item.get("properties", {}).get("currentSpend", {}).get("amount"),
+        })
+    outputs = {"Azure.BillingBudget": results}
+    readable = tableToMarkdown("Azure Budgets", results, headers=["BudgetName", "ResourceType", "TimePeriod", "Amount", "CurrentSpend"])
+    return CommandResults(
+        readable_output=readable,
+        outputs=outputs,
+        raw_response=res,
+    )
+
+
 def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
     """Currently not supported in the integration
     Remove a member from a group by group id and user id.
@@ -2073,6 +2197,9 @@ def main():
     try:
         commands_with_params_and_args = {
             "azure-nsg-security-rule-update": update_security_rule_command,
+            "azure-billing-usage-list": azure_billing_usage_list_command,
+            "azure-billing-forecast-list": azure_billing_forecast_list_command,
+            "azure-billing-budgets-list": azure_billing_budgets_list_command,
             "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
