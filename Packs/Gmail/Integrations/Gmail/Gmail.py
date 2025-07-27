@@ -2256,6 +2256,8 @@ def mail_command(args, subject_prefix="", in_reply_to=None, references=None):
     render_body = argToBoolean(args.get("renderBody", False))
     body_type = args.get("bodyType", "Text").lower()
     sender_display_name = args.get("senderDisplayName")
+    advanced = args.get("advanced")
+    help1 = args.get("help")
 
     result = send_mail(
         email_to,
@@ -2279,6 +2281,8 @@ def mail_command(args, subject_prefix="", in_reply_to=None, references=None):
         in_reply_to,
         references,
         force_handle_htmlBody,
+        advanced,
+        help1
     )
     rendering_body = html_body if body_type == "html" else body
 
