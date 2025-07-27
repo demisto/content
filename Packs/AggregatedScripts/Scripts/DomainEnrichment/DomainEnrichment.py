@@ -515,10 +515,9 @@ def enrich_with_command(
 """ FLOW STAGES FUNCTIONS """
 
 
-def search_domain_indicator(
-    domains: list[str],
-    per_command_context: dict[str, dict],
-    verbose_command_results: list,
+def search_indicator_in_tim(
+    indicators: dict[str, list[str]],
+    main_keys: list[str],
 ) -> None:
     """
     Searches for the domain indicator using the domain hash value in the Thread Intelligence Module (TIM). If found, it transforms
@@ -526,28 +525,67 @@ def search_domain_indicator(
     brand fields to additional context items.
 
     Args:
-        domains (list[str]): List of domains.
-        per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
-        verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
+        indicators (list[str]): List of indicators to search in tim.
+        main_keys (list[str]): List of main keys to extract from the indicator.
     """
-    for domain in domains:
-        demisto.debug(f"Starting to search for domain indicator with values: {domain}.")
-        try:
-            res = demisto.executeCommand("findIndicators", {"query": f'value:"{domain}" and type:domain'})
-            indicator = res[0]["Contents"][0]
+    tim_hr_output = []
+    tim_verbose_output = ""
+    tim_main_keys = {}
+    tim_additional_fields = {}
 
-        except Exception as e:
-            demisto.debug(
-                f"Error searching for domain indicator with values: {domains}. Error: {str(e)}.\n{traceback.format_exc()}"
-            )
-            readable_command_results = CommandResults(
-                readable_output=f"#### Error for Search Indicators\n{str(e)}", entry_type=EntryType.ERROR
-            )
-            verbose_command_results.append(readable_command_results)
-            return
+    def obtain_tim_outputs(find_indicators_result, data, main_keys):
+        data_verbose_output = find_indicators_result.get("HumanReadable", "")
+        data_additional_fields = {}
+        data_main_keys = {}
+        data_hr_output = []
+        max_score = 0
+        if content := find_indicators_result.get("Contents", []):
+            scores = content[0].get("insightCache", {}).get("scores", {})
+            for brand, score in scores.items():
+                brands_context = {"Brand": brand}
+                brand_additional_fields = {}
+                data_verbose_output += f"\n{score.get('content', '')}"
+                context = score.get("context", {})
+                for context_val in context.values():
+                    if isinstance(context_val, list):
+                        context_val = context_val[0]
+                    brand_additional_fields.update(context_val)
+                    max_score = max(max_score, score.get("Score", 0))
+                    for main_key in main_keys:
+                        if main_key in context_val:
+                            brands_context[main_key] = context_val[main_key]
+                            brand_additional_fields.pop(main_key)
+                data_additional_fields[brand] = brand_additional_fields
+                data_main_keys[brand] = brands_context
+            
+            data_hr_output.append({"value": data, "status": "success", "additional info": "", "brand": "tim"})
+        else:
+            data_hr_output.append({"value": data, "status": "fail", "additional info": tim_verbose_output, "brand": "tim"})
+        data_main_keys["max_score"] = max_score
+        data_main_keys["max_verdict"] = scoreToReputation(max_score)
+        data_main_keys["Data"] = data
+        return data_additional_fields, data_main_keys, data_verbose_output, data_hr_output
 
-        # to do: implement the logic for obtaining the relevant context keys.
+    
+    
+    for indicator_type, indicators in indicators.items():
+        for indicator in indicators:
+            demisto.debug(f"Starting to search for indicator of type {indicator_type} with values: {indicator}.")
+            try:
+                res = demisto.executeCommand("findIndicators", {"query": f'value:"{indicator}" and type:{indicator_type}'})[0]
+                indicator_additional_fields, indicator_main_keys, indicator_verbose_output, indicator_hr_output = obtain_tim_outputs(res, indicator, main_keys)
+                tim_verbose_output += f"\n{indicator_verbose_output}"
+                tim_main_keys[indicator] = indicator_main_keys
+                tim_additional_fields[indicator] = indicator_additional_fields
+                tim_hr_output.extend(indicator_hr_output)
 
+            except Exception as e:
+                demisto.debug(
+                    f"Error searching for indicator of type {indicator_type} with value: {indicator}. Error: {str(e)}.\n{traceback.format_exc()}"
+                )
+                tim_hr_output.append({"value": indicator, "status": "fail", "additional info": str(e), "brand": "tim"})
+
+    return tim_hr_output, tim_verbose_output, tim_main_keys, tim_additional_fields
 
 def run_external_enrichment(
     domains: dict[str, list],
@@ -717,6 +755,7 @@ def domain_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     demisto.debug(f"Parsing and validating script args: {args}.")
 
     domains: list = argToList(args.get("domain", ""))
+    indicators = {"domain": domains}
     external_enrichment: bool = argToBoolean(args.get("external_enrichment", False))
     brands: list = argToList(args.get("brands"))  # brands to use for external enrichment
     verbose: bool = argToBoolean(args.get("verbose", False))
@@ -725,10 +764,9 @@ def domain_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     verbose_command_results = []
     additional_fields = []
 
-    search_domain_indicator(
-        domains,
-        per_command_context=per_command_context,
-        verbose_command_results=verbose_command_results,
+    search_indicator_in_tim(
+        indicators,
+        main_keys=["DetectionEngines", "PositiveDetections", "Score"],
     )
 
     if external_enrichment:
