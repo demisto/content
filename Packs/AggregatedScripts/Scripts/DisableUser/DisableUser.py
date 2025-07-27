@@ -38,8 +38,8 @@ def get_module_command_func(
             "Active Directory Query v2": run_active_directory_query_v2,
             "Microsoft Graph User": run_microsoft_graph_user,
             "Okta v2": run_okta_v2,
-            "Okta IAM": run_okta_iam,
-            "AWS-ILM": run_aws_ilm,
+            "Okta IAM": run_iam_disable_user,
+            "AWS-ILM": run_iam_disable_user,
             "GSuiteAdmin": run_gsuiteadmin,
         }[module]
     except KeyError:
@@ -95,43 +95,21 @@ def run_okta_v2(user: User, using: str) -> list[CmdFuncRes]:
     return func_res
 
 
-def run_okta_iam(user: User, using: str) -> list[CmdFuncRes]:
+def run_iam_disable_user(user: User, using: str) -> list[CmdFuncRes]:
     res_cmd = execute_command(
         "iam-disable-user",
         {"user-profile": f"{{\"email\":\"{user['Email']}\"}}", "using": using},
     )
     return [
         CmdFuncRes(
-            Disabled=bool(dict_safe_get(res, ("IAM", "Vendor", "active"))),
+            Disabled=(not dict_safe_get(res, ("Contents", "IAM", "Vendor", "active"))),
             Result=(
                 "Failed"
-                if is_error(res) or dict_safe_get(res, ("IAM", "Vendor", "success"))
+                if is_error(res) or not dict_safe_get(res, ("Contents", "IAM", "Vendor", "success"))
                 else "Success"
             ),
             Message=str(
-                dict_safe_get(res, ("IAM", "Vendor", "errorMessage"))
-                or res.get("HumanReadable")
-            ),
-        )
-        for res in res_cmd
-    ]
-
-
-def run_aws_ilm(user: User, using: str) -> list[CmdFuncRes]:
-    res_cmd = execute_command(
-        "iam-disable-user",
-        {"user-profile": f"{{\"email\":\"{user['Email']}\"}}", "using": using},
-    )
-    return [
-        CmdFuncRes(
-            Disabled=bool(dict_safe_get(res, ("IAM", "Vendor", "active"))),
-            Result=(
-                "Failed"
-                if is_error(res) or dict_safe_get(res, ("IAM", "Vendor", "success"))
-                else "Success"
-            ),
-            Message=str(
-                dict_safe_get(res, ("IAM", "Vendor", "errorMessage"))
+                dict_safe_get(res, ("Contents", "IAM", "Vendor", "errorMessage"))
                 or res.get("HumanReadable")
             ),
         )
@@ -146,7 +124,7 @@ def run_gsuiteadmin(user: User, using: str) -> list[CmdFuncRes]:
     )
     return [
         CmdFuncRes(
-            Disabled=bool(dict_safe_get(res, ["Contents", "suspended"])),
+            Disabled=bool(dict_safe_get(res, ("Contents", "suspended"))),
             Result="Failed" if is_error(res) else "Success",
             Message=str(res.get("HumanReadable") or res.get("Contents")),
         )
@@ -197,9 +175,9 @@ def main():
 
         if args.get("verbose"):
             return_results(HUMAN_READABLES)
-        # import sys; sys.exit()
+
         if any(res["Disabled"] for res in outputs):
-            
+
             return_results(
                 CommandResults(
                     outputs_prefix="DisableUser",

@@ -7,8 +7,7 @@ from DisableUser import (
     run_active_directory_query_v2,
     run_microsoft_graph_user,
     run_okta_v2,
-    run_okta_iam,
-    run_aws_ilm,
+    run_iam_disable_user,
     run_gsuiteadmin,
     validate_input,
     get_users,
@@ -22,22 +21,31 @@ from DisableUser import (
 
 @pytest.fixture(autouse=True)
 def clear_human_readables():
-    del HUMAN_READABLES[:]
-    yield
+    HUMAN_READABLES.clear()
 
 
 @pytest.fixture
 def mock_demisto():
-    """Mocks demisto object for tests."""
     with patch("DisableUser.demisto") as mock_demisto_obj:
         yield mock_demisto_obj
 
 
 @pytest.fixture
 def mock_execute_command():
-    """Mocks execute_command function."""
     with patch("DisableUser.execute_command") as mock_exec_cmd:
         yield mock_exec_cmd
+
+
+@pytest.fixture
+def mock_return_results():
+    with patch("DisableUser.return_results") as mock_rr_cmd:
+        yield mock_rr_cmd
+
+
+@pytest.fixture
+def mock_return_error():
+    with patch("DisableUser.return_error") as mock_re_cmd:
+        yield mock_re_cmd
 
 
 def test_execute_command_success(mock_demisto):
@@ -84,8 +92,8 @@ def test_get_module_command_func_valid_module():
     )
     assert get_module_command_func("Microsoft Graph User") == run_microsoft_graph_user
     assert get_module_command_func("Okta v2") == run_okta_v2
-    assert get_module_command_func("Okta IAM") == run_okta_iam
-    assert get_module_command_func("AWS-ILM") == run_aws_ilm
+    assert get_module_command_func("Okta IAM") == run_iam_disable_user
+    assert get_module_command_func("AWS-ILM") == run_iam_disable_user
     assert get_module_command_func("GSuiteAdmin") == run_gsuiteadmin
 
 
@@ -300,14 +308,14 @@ def test_run_okta_iam_success(mock_execute_command):
     }
     mock_execute_command.return_value = [
         {
-            "IAM": {"Vendor": {"active": False, "success": True, "errorMessage": ""}},
+            "Contents": {"IAM": {"Vendor": {"active": False, "success": True, "errorMessage": ""}}},
             "HumanReadable": "User disabled.",
-            "Type": 1
+            "Type": 1,
         }
     ]
-    result = run_okta_iam(user, "inst1")
+    result = run_iam_disable_user(user, "inst1")
     expected: list[CmdFuncRes] = [
-        {"Disabled": False, "Result": "Success", "Message": "User disabled."}
+        {"Disabled": True, "Result": "Success", "Message": "User disabled."}
     ]
     assert result == expected
     mock_execute_command.assert_called_with(
@@ -333,80 +341,18 @@ def test_run_okta_iam_failure_error_message(mock_execute_command):
     mock_execute_command.return_value = [
         {
             "Type": 4,
-            "Contents": {"err": "Error"},
-            "IAM": {
+            "Contents": {"IAM": {
                 "Vendor": {
                     "active": True,
                     "success": False,
                     "errorMessage": "IAM error.",
                 }
             },
-        }
+        }}
     ]
-    result = run_okta_iam(user, "inst1")
+    result = run_iam_disable_user(user, "inst1")
     expected: list[CmdFuncRes] = [
-        {"Disabled": True, "Result": "Failed", "Message": "IAM error."}
-    ]
-    assert result == expected
-
-
-def test_run_aws_ilm_success(mock_execute_command):
-    """
-    Given: An AWS-ILM user and a mock execute_command simulating a successful disable.
-    When: run_aws_ilm is called.
-    Then: It should return a CmdFuncRes indicating success. Disabled should be False as per IAM standard for disabled users.
-    """
-    user: User = {
-        "ID": "1",
-        "Username": "testuser",
-        "Email": "test@example.com",
-        "Status": "found",
-        "Brand": "AWS-ILM",
-        "Instance": "inst1",
-    }
-    mock_execute_command.return_value = [
-        {
-            "IAM": {"Vendor": {"active": False, "success": True, "errorMessage": ""}},
-            "HumanReadable": "User disabled in AWS.",
-            "Type": 1
-        }
-    ]
-    result = run_aws_ilm(user, "inst1")
-    expected: list[CmdFuncRes] = [
-        {"Disabled": False, "Result": "Success", "Message": "User disabled in AWS."}
-    ]
-    assert result == expected
-    mock_execute_command.assert_called_with(
-        "iam-disable-user",
-        {"user-profile": '{"email":"test@example.com"}', "using": "inst1"},
-    )
-
-
-def test_run_aws_ilm_failure_human_readable(mock_execute_command):
-    """
-    Given: An AWS-ILM user and a mock execute_command simulating a failed disable with a human-readable error.
-    When: run_aws_ilm is called.
-    Then: It should return a CmdFuncRes indicating failure, with the human-readable error.
-    """
-    user: User = {
-        "ID": "1",
-        "Username": "testuser",
-        "Email": "test@example.com",
-        "Status": "found",
-        "Brand": "AWS-ILM",
-        "Instance": "inst1",
-    }
-    mock_execute_command.return_value = [
-        {
-            "Type": 4,
-            "Contents": {"err": "Error"},
-            "IAM": {"Vendor": {"active": True, "success": False, "errorMessage": ""}},
-            "HumanReadable": "AWS error.",
-        }
-    ]
-    result = run_aws_ilm(user, "inst1")
-    expected: list[CmdFuncRes] = [
-        {"Disabled": True, "Result": "Failed", "Message": "AWS error."}
+        {"Disabled": False, "Result": "Failed", "Message": "IAM error."}
     ]
     assert result == expected
 
@@ -426,7 +372,11 @@ def test_run_gsuiteadmin_success(mock_execute_command):
         "Instance": "inst1",
     }
     mock_execute_command.return_value = [
-        {"Contents": {"suspended": True}, "HumanReadable": "User suspended in GSuite.", "Type": 1}
+        {
+            "Contents": {"suspended": True},
+            "HumanReadable": "User suspended in GSuite.",
+            "Type": 1,
+        }
     ]
     result = run_gsuiteadmin(user, "inst1")
     expected: list[CmdFuncRes] = [
@@ -503,7 +453,7 @@ def test_validate_input_failure_no_args():
         validate_input({})
 
 
-def test_get_users_success(mock_execute_command, mock_demisto):
+def test_get_users_success(mock_execute_command, mock_return_error):
     """
     Given: A mock execute_command that returns a successful user data lookup.
     When: get_users is called with arguments.
@@ -512,7 +462,7 @@ def test_get_users_success(mock_execute_command, mock_demisto):
     mock_execute_command.return_value = [
         {
             "Type": 1,
-            "Contents": [
+            "Contents": {"UserData": [
                 {
                     "ID": "1",
                     "Username": "testuser",
@@ -521,7 +471,7 @@ def test_get_users_success(mock_execute_command, mock_demisto):
                     "Brand": "AD",
                     "Instance": "inst1",
                 }
-            ],
+            ]},
             "HumanReadable": "User data HR",
         }
     ]
@@ -539,23 +489,22 @@ def test_get_users_success(mock_execute_command, mock_demisto):
     assert users == expected_users
     assert HUMAN_READABLES == ["User data HR"]
     mock_execute_command.assert_called_with("get-user-data", {"user_name": "testuser"})
-    mock_demisto.return_error.assert_not_called()
+    mock_return_error.assert_not_called()
 
 
-def test_get_users_failure(mock_execute_command, mock_demisto):
+def test_get_users_failure(mock_execute_command, mock_return_error):
     """
     Given: A mock execute_command that returns an error for user data lookup.
     When: get_users is called.
     Then: It should call demisto.return_error with the appropriate error message.
     """
     mock_execute_command.return_value = [
-        {"Type": 4, "Contents": {"UserData": "User not found"}}
+        {"Type": 4, "Contents": {"UserData": "User not found"}, "HumanReadable": "User not found"}
     ]
-    mock_demisto.return_error = MagicMock()
     with patch("DisableUser.get_error", return_value="User not found error"):
         get_users({"user_name": "nonexistent"})
-    mock_demisto.return_error.assert_called_once_with("User not found error")
-    assert HUMAN_READABLES == []
+    mock_return_error.assert_called_once_with("User not found error")
+    assert HUMAN_READABLES == ["User not found"]
 
 
 def test_disable_users_single_user_success(mock_execute_command):
@@ -574,7 +523,9 @@ def test_disable_users_single_user_success(mock_execute_command):
             "Instance": "inst1",
         }
     ]
-    mock_execute_command.return_value = [{"Contents": "User testuser was disabled", "Type": 1}]
+    mock_execute_command.return_value = [
+        {"Contents": "User testuser was disabled", "Type": 1}
+    ]
     results = disable_users(users)
     expected_results = [
         {
@@ -655,7 +606,7 @@ def test_disable_users_multiple_users_mixed_results(mock_execute_command):
             return [
                 {
                     "HumanReadable": f'user: "{args["user"]}" account has been disabled successfully.',
-                    "Type": 1
+                    "Type": 1,
                 }
             ]
         return []
@@ -697,30 +648,31 @@ def test_disable_users_multiple_users_mixed_results(mock_execute_command):
     )
 
 
-def test_main_failure_no_user_disabled(mock_demisto, mock_execute_command):
+def test_main_failure_no_user_disabled(mock_demisto, mock_execute_command, mock_return_results):
     """
     Given: `demisto.args` specifies a user.
     When: `main` function is called, and `get_users` succeeds but `disable_users` results in no user being truly 'Disabled'.
     Then: `demisto.return_results` should be called once with a `CommandResults` of `EntryType.ERROR`.
     """
     mock_demisto.args.return_value = {"user_name": "testuser"}
-    mock_demisto.return_results = MagicMock()
     mock_demisto.error = MagicMock()
 
     mock_execute_command.side_effect = [
         [
             {
                 "Type": 1,
-                "Contents": {"UserData": [
-                    {
-                        "ID": "1",
-                        "Username": "testuser",
-                        "Email": "test@example.com",
-                        "Status": "found",
-                        "Brand": "Active Directory Query v2",
-                        "Instance": "inst1",
-                    }
-                ]},
+                "Contents": {
+                    "UserData": [
+                        {
+                            "ID": "1",
+                            "Username": "testuser",
+                            "Email": "test@example.com",
+                            "Status": "found",
+                            "Brand": "Active Directory Query v2",
+                            "Instance": "inst1",
+                        }
+                    ]
+                },
                 "HumanReadable": "User data HR",
             }
         ],
@@ -729,8 +681,8 @@ def test_main_failure_no_user_disabled(mock_demisto, mock_execute_command):
 
     main()
 
-    mock_demisto.return_results.assert_called_once()
-    command_results_call_args = mock_demisto.return_results.call_args_list[0].args[0]
+    mock_return_results.assert_called_once()
+    command_results_call_args = mock_return_results.call_args_list[0].args[0]
     assert isinstance(command_results_call_args, CommandResults)
     assert command_results_call_args.entry_type == EntryType.ERROR
     assert command_results_call_args.content_format == EntryFormat.MARKDOWN
