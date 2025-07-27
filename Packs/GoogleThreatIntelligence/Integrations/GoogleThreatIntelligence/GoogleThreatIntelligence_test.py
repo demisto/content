@@ -1537,8 +1537,14 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                     "name": "Name 1",
                     "description": "Description 1",
                     "last_modification_date": 1718719985,
-                    "targeted_regions": ["UK", "FR"],
-                    "targeted_industries": ["Industry 1", "Industry 2"],
+                    "targeted_regions_hierarchy": [
+                        {"country_iso2": "UK"},
+                        {"country_iso2": "FR"},
+                    ],
+                    "targeted_industries_tree": [
+                        {"industry_group": "Industry 1"},
+                        {"industry_group": "Industry 2"},
+                    ],
                 },
             },
             {
@@ -1547,7 +1553,9 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                     "name": "Name 2",
                     "description": "Description 2",
                     "last_modification_date": 1718720000,
-                    "targeted_regions": ["FR"],
+                    "targeted_regions_hierarchy": [
+                        {"country_iso2": "FR"},
+                    ],
                     "targeted_industries": [],
                 },
             },
@@ -1580,8 +1588,9 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                 filter_query += "%28collection_type%3Amalware-family%20OR%20collection_type%3Asoftware-tookit%29"
             else:
                 filter_query += f"collection_type%3A{collection_type}"
+            args = f"filter={filter_query}&exclude_attributes=aggregations"
             requests_mock.get(
-                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections?filter={filter_query}",
+                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/associations?{args}",
                 json=data_json,
             )
 

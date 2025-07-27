@@ -13,8 +13,9 @@
     "CONTRIBUTION_TL": "JasBeilin",
     "CONTRIBUTION_SECURITY_REVIEWER": [""],
     "ON_CALL_DEVS": [
-        "tcarmeli",
-        "YairGlick"
+        "jbabazadeh",
+        "YairGlick",
+        "aedri"
     ],
     "DOC_REVIEWER": "richardbluestone",
     "TIM_REVIEWER": "MosheEichler",
