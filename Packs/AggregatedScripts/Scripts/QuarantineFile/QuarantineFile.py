@@ -1,4 +1,4 @@
-from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
+from DemistoClassApiModule import * # type:ignore [no-redef]  # noqa:E402
 
 from typing import Any
 
@@ -131,9 +131,12 @@ class EndpointBrandMapper:
         cmd = Command(name="get-endpoint-data", args=command_args)
         raw_response = cmd.execute()
         demisto.debug(f"[EndpointBrandMapper] Received RAW response from get-endpoint-data command: {raw_response}")
-        # entry_context = Command.parse_entry_context(raw_response)
-        # endpoint_data = entry_context[0].get("EndpointData", []) if entry_context else []
-        endpoint_data = raw_response[1]["Contents"]
+
+        if not raw_response or not isinstance(raw_response[0].get('Contents'), list):
+            demisto.debug("[EndpointBrandMapper] 'get-endpoint-data' did not return valid 'Contents'.")
+            return []
+
+        endpoint_data = raw_response[0].get('Contents', [])
         demisto.debug(f"[EndpointBrandMapper] Fetched data for {len(endpoint_data)} endpoints.")
         demisto.debug(f"[EndpointBrandMapper] Endpoint data: {endpoint_data}")
         return endpoint_data
@@ -141,6 +144,7 @@ class EndpointBrandMapper:
     def _process_endpoint_data(self, endpoint_data: list) -> dict:
         """
         Parses endpoint data to group online endpoints and create results for offline/unfound ones.
+        This method handles duplicate entries by prioritizing successful, online results.
         Args:
             endpoint_data (list): A list of endpoint data objects from the API.
         Returns:
@@ -148,40 +152,47 @@ class EndpointBrandMapper:
         """
         demisto.debug(f"[EndpointBrandMapper] Processing raw endpoint data for {len(endpoint_data)} entries.")
         online_endpoints = {}
-        processed_ids = set()
+        all_found_ids = set()
 
+        # First pass: find all successful, online endpoints. These take precedence.
         for result in endpoint_data:
             endpoint_id = result.get("ID")
-            if not endpoint_id:
-                demisto.debug("[EndpointBrandMapper] Found a result with no ID. Skipping.")
+            if not endpoint_id or endpoint_id in online_endpoints:
                 continue
 
-            processed_ids.add(endpoint_id)
+            if result.get("Message") == "Command successful" and result.get("Status") == "Online":
+                demisto.debug(f"[EndpointBrandMapper] Found 'Online' status for endpoint {endpoint_id}.")
+                online_endpoints[endpoint_id] = result.get("Brand")
 
+        # Second pass: Create failure results for any endpoint that was found, but not as 'Online'.
+        for result in endpoint_data:
+            endpoint_id = result.get("ID")
+            if not endpoint_id or endpoint_id in all_found_ids:
+                continue
+
+            all_found_ids.add(endpoint_id)
+
+            # If an endpoint was successfully found as 'Online', we don't need to process it here as a failure.
+            if endpoint_id in online_endpoints:
+                continue
+
+            # This endpoint was found, but wasn't 'Online'. Create a failure result.
             if result.get("Message") == "Command successful":
-                if result.get("Status") == "Online":
-                    demisto.debug(f"[EndpointBrandMapper] Endpoint {endpoint_id} is Online. Brand: {result.get('Brand')}")
-                    online_endpoints[endpoint_id] = result.get("Brand")
-                else:
-                    demisto.debug(f"[EndpointBrandMapper] Endpoint {endpoint_id} is not Online. Status: {result.get('Status')}")
-                    self.initial_results.append({
-                        "endpoint_id": endpoint_id, "file_path": self.script_args.get(QuarantineOrchestrator.FILE_PATH),
-                        "file_hash": self.script_args.get(QuarantineOrchestrator.FILE_HASH), "status": "Failed",
-                        "message": f"Failed to quarantine file. Endpoint status is '{result.get('Status', 'Unknown')}'.",
-                        "brand": result.get("Brand", "Unknown")
-                    })
-            else:
-                demisto.debug(
-                    f"[EndpointBrandMapper] Command failed for endpoint {endpoint_id}. Message: {result.get('Message')}")
-                self.initial_results.append({
-                    "endpoint_id": endpoint_id, "file_path": self.script_args.get(QuarantineOrchestrator.FILE_PATH),
-                    "file_hash": self.script_args.get(QuarantineOrchestrator.FILE_HASH), "status": "Failed",
-                    "message": result.get("Message", "Failed to get endpoint data."), "brand": result.get("Brand", "Unknown")
-                })
+                message = f"Failed to quarantine file. Endpoint status is '{result.get('Status', 'Unknown')}'."
+            else:  # The command itself failed for this endpoint in this brand context
+                message = result.get("Message", "Failed to get endpoint data.")
 
-        unprocessed_ids = [eid for eid in self.endpoint_ids_to_map if eid not in processed_ids]
+            demisto.debug(f"[EndpointBrandMapper] Creating failure result for endpoint {endpoint_id}. Reason: {message}")
+            self.initial_results.append({
+                "endpoint_id": endpoint_id, "file_path": self.script_args.get(QuarantineOrchestrator.FILE_PATH),
+                "file_hash": self.script_args.get(QuarantineOrchestrator.FILE_HASH), "status": "Failed",
+                "message": message, "brand": result.get("Brand", "Unknown")
+            })
+
+        # Final step: handle endpoints that were in the input but never appeared in the response at all.
+        unprocessed_ids = [eid for eid in self.endpoint_ids_to_map if eid not in all_found_ids]
         if unprocessed_ids:
-            demisto.debug(f"[EndpointBrandMapper] Endpoints not found in response: {unprocessed_ids}")
+            demisto.debug(f"[EndpointBrandMapper] Endpoints not found in any response: {unprocessed_ids}")
             for endpoint_id in unprocessed_ids:
                 self.initial_results.append({
                     "endpoint_id": endpoint_id, "file_path": self.script_args.get(QuarantineOrchestrator.FILE_PATH),
@@ -467,6 +478,11 @@ class QuarantineOrchestrator:
     def _get_final_results(self) -> PollResult:
         """Formats and returns the final report."""
         demisto.debug("[Orchestrator] Formatting final results.")
+        # Clean up the context keys before returning the final result
+        demisto.debug("[Orchestrator] Cleaning up context keys.")
+        keys_to_delete = f"{self.CONTEXT_PENDING_JOBS},{self.CONTEXT_COMPLETED_RESULTS}"
+        demisto.executeCommand("DeleteContext", {"key": keys_to_delete})
+
         final_readable_output = tableToMarkdown(
             name=f"Quarantine File Results for: {self.args.get(self.FILE_PATH)}",
             headers=["endpoint_id", "status", "message", "brand"],
