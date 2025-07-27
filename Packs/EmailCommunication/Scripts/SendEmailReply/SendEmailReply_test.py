@@ -1540,7 +1540,7 @@ def test_demisto_custom_markdown_syntax(input_md, expected_html, test_id):
 def test_format_body_raw_checkbox_true(mocker):
     """
     Given
-    - An incident with the checkbox 'Send Body as Raw (No Markdown)' checked
+    - An incident with the checkbox 'Send Body as Raw Text (No Markdown)' checked
     When
     - The format_body function is called with a markdown-formatted body
     Then

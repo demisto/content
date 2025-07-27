@@ -17,7 +17,7 @@ For the "**Email Threads**" layout:
 
 - Email message details (recipients, subject, email body, etc.) are set in Incident fields, as well as extracted from any previous messages on the same email thread.
 - Outbound email subjects will include a unique message ID and a custom subject line set when the first message in the thread is created.
-- If you include any Markdown in the body, the script will send it as HTML even if body_type argument is set to "text". To send the body without applying Markdown formatting, check the ***Send Body as Raw (No Markdown)*** checkbox.
+- If you include any Markdown in the body, the script will send it as HTML even if body_type argument is set to "text". To send the body without applying Markdown formatting, check the ***Send Body as Raw Text (No Markdown)*** checkbox.
 
 
 ## Permissions
