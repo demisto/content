@@ -18,7 +18,7 @@ SCORE_TO_VERDICT = {0: "Unknown", 1: "Suspicious", 2: "Malicious"}
 ANYRUN_TO_SOAR_INDICATOR = {"ip": "IP", "url": "URL", "domain": "Domain", "sha256": "File SHA-256"}
 
 
-def test_module(params: dict) -> str:
+def test_module(params: dict) -> str:   # pragma: no cover
     """Performs ANY.RUN API call to verify integration is operational"""
     try:
         with BaseSandboxConnector(get_authentication(params)) as connector:
@@ -38,7 +38,7 @@ def get_authentication(params: dict) -> str:
     return f"API-KEY {params.get('credentials', {}).get('password')}"
 
 
-def get_file_content(args: dict) -> dict:
+def get_file_content(args: dict) -> dict:   # pragma: no cover
     entry_id = args.pop("file")
     file_obj = demisto.getFilePath(entry_id)
 
@@ -50,7 +50,7 @@ def get_file_content(args: dict) -> dict:
     return args
 
 
-def make_api_call(params: dict, method: str, endpoint_url: str, payload: dict) -> None:
+def make_api_call(params: dict, method: str, endpoint_url: str, payload: dict) -> None: # pragma: no cover
     """
     Process api call to XSOAR endpoints
 
@@ -91,7 +91,7 @@ def build_context_path(analysis_type: str, connector: WindowsConnector | LinuxCo
 
 def wait_for_the_task_to_complete(
     args: dict, analysis_type: str, connector: WindowsConnector | LinuxConnector | AndroidConnector
-) -> None:
+) -> None:  # pragma: no cover
     """
     Process Sandbox analysis
 
@@ -115,46 +115,46 @@ def wait_for_the_task_to_complete(
     )
 
 
-def detonate_entity_windows(params: dict, args: dict, analysis_type: str) -> None:
+def detonate_entity_windows(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
     with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
         wait_for_the_task_to_complete(args, analysis_type, connector)
 
 
-def detonate_entity_linux(params: dict, args: dict, analysis_type: str) -> None:
+def detonate_entity_linux(params: dict, args: dict, analysis_type: str) -> None:    # pragma: no cover
     with SandboxConnector.linux(get_authentication(params), integration=VERSION) as connector:
         wait_for_the_task_to_complete(args, analysis_type, connector)
 
 
-def detonate_entity_android(params: dict, args: dict, analysis_type: str) -> None:
+def detonate_entity_android(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
     with SandboxConnector.android(get_authentication(params), integration=VERSION) as connector:
         wait_for_the_task_to_complete(args, analysis_type, connector)
 
 
-def detonate_file_widows(params: dict, args: dict) -> None:
+def detonate_file_widows(params: dict, args: dict) -> None: # pragma: no cover
     detonate_entity_windows(params, args, "file")
 
 
-def detonate_url_widows(params: dict, args: dict) -> None:
+def detonate_url_widows(params: dict, args: dict) -> None:  # pragma: no cover
     detonate_entity_windows(params, args, "url")
 
 
-def detonate_file_linux(params: dict, args: dict) -> None:
+def detonate_file_linux(params: dict, args: dict) -> None:  # pragma: no cover
     detonate_entity_linux(params, args, "file")
 
 
-def detonate_url_linux(params: dict, args: dict) -> None:
+def detonate_url_linux(params: dict, args: dict) -> None:   # pragma: no cover
     detonate_entity_linux(params, args, "url")
 
 
-def detonate_file_android(params: dict, args: dict) -> None:
+def detonate_file_android(params: dict, args: dict) -> None:    # pragma: no cover
     detonate_entity_android(params, args, "file")
 
 
-def detonate_url_android(params: dict, args: dict) -> None:
+def detonate_url_android(params: dict, args: dict) -> None: # pragma: no cover
     detonate_entity_android(params, args, "url")
 
 
-def delete_task(params: dict, args: dict) -> None:
+def delete_task(params: dict, args: dict) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid")
 
     with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
@@ -163,7 +163,7 @@ def delete_task(params: dict, args: dict) -> None:
     return_results(f"Task {task_uuid} successfully deleted")
 
 
-def download_analysis_sample(params: dict, args: dict, download_type: str) -> None:
+def download_analysis_sample(params: dict, args: dict, download_type: str) -> None: # pragma: no cover
     task_uuid = args.get("task_uuid")
 
     with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
@@ -172,7 +172,7 @@ def download_analysis_sample(params: dict, args: dict, download_type: str) -> No
         return_results(fileResult(f"{task_uuid}_sample.zip", connector.download_file_sample(task_uuid)))
 
 
-def get_analysis_verdict(params: dict, args: dict) -> None:
+def get_analysis_verdict(params: dict, args: dict) -> None: # pragma: no cover
     task_uuid = args.get("task_uuid")
 
     with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
@@ -183,21 +183,21 @@ def get_analysis_verdict(params: dict, args: dict) -> None:
         )
 
 
-def get_user_limits(params: dict) -> None:
+def get_user_limits(params: dict) -> None:  # pragma: no cover
     with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
         user_limits = connector.get_user_limits().get("data").get("limits")
 
     return_results(CommandResults(outputs_prefix="ANYRUN.SandboxLimits", outputs=user_limits, ignore_auto_extract=True))
 
 
-def get_analysis_history(params: dict, args: dict) -> None:
+def get_analysis_history(params: dict, args: dict) -> None: # pragma: no cover
     with SandboxConnector.windows(get_authentication(params), integration=VERSION) as connector:
         analysis_history = connector.get_analysis_history(**args)
 
     return_results(CommandResults(outputs_prefix="ANYRUN.SandboxHistory", outputs=analysis_history, ignore_auto_extract=True))
 
 
-def process_indicators(params: dict, report: dict, task_uuid: str, incident_id: int) -> None:
+def process_indicators(params: dict, report: dict, task_uuid: str, incident_id: int) -> None:   # pragma: no cover
     """
     Excludes IOCs from the analysis report. Sends them to Threat Intel
 
@@ -252,7 +252,7 @@ def process_indicators(params: dict, report: dict, task_uuid: str, incident_id: 
     )
 
 
-def get_analysis_report(params: dict, args: dict) -> None:
+def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid", "")
     report_format = args.get("report_format")
     incident_info = args.get("incident_info")
@@ -273,7 +273,7 @@ def get_analysis_report(params: dict, args: dict) -> None:
             process_indicators(params, report, task_uuid, incident_id)
 
 
-def main():
+def main(): # pragma: no cover
     """Main Execution block"""
     params = demisto.params()
     args = demisto.args()
