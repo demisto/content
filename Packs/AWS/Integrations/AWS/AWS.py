@@ -778,6 +778,62 @@ class EC2:
                 raise DemistoException(f"Security group {group_id} not found.")
             raise DemistoException(f"Failed to revoke egress rule: {e}")
 
+    @staticmethod
+    def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modify the specified attribute of an Amazon Machine Image (AMI).
+        """
+
+        return CommandResults(readable_output="Image attribute successfully modified")
+
+    @staticmethod
+    def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modify the specified attribute of an Amazon Machine Image (AMI).
+        """
+
+        return CommandResults(readable_output="Image attribute successfully modified")
+
+    @staticmethod
+    def describe_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modify the specified attribute of an Amazon Machine Image (AMI).
+        """
+
+        return CommandResults(readable_output="Image attribute successfully modified")
+
+    @staticmethod
+    def authorize_security_group_ingress_rule_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modify the specified attribute of an Amazon Machine Image (AMI).
+        """
+
+        return CommandResults(readable_output="Image attribute successfully modified")
+
+    @staticmethod
+    def authorize_security_group_egress_rule_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modify the specified attribute of an Amazon Machine Image (AMI).
+        """
+
+        return CommandResults(readable_output="Image attribute successfully modified")
+
+    @staticmethod
+    def revoke_security_group_ingress_rule_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modify the specified attribute of an Amazon Machine Image (AMI).
+        """
+
+        return CommandResults(readable_output="Image attribute successfully modified")
+
+    @staticmethod
+    def revoke_security_group_egress_rule_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modify the specified attribute of an Amazon Machine Image (AMI).
+        """
+
+        return CommandResults(readable_output="Image attribute successfully modified")
+
 
 class EKS:
     service = AWSServices.EKS
