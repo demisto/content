@@ -1,0 +1,54 @@
+args:
+- description: List of agent IDs of the endpoint to isolate.
+  name: endpoint_id
+  isArray: true
+- description: List of agent IPs of the endpoint to isolate.
+  name: endpoint_ip
+  isArray: true
+- description: List of agent hostnames of the endpoint to isolate.
+  name: endpoint_name
+  isArray: true
+- description: |-
+    Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Cortex Core - IR, CrowdstrikeFalcon, FireEyeHX v2'.
+  name: brands
+  auto: PREDEFINED
+  predefined:
+  - 'Cortex Core - IR'
+  - 'CrowdstrikeFalcon'
+  - 'FireEyeHX v2'
+  - 'Microsoft Defender Advanced Threat Protection'
+- description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
+  name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+comment: This script isolates endpoints using multiple integrations and returns a success or failure message.
+commonfields:
+  id: isolate-endpoint
+  version: -1
+name: isolate-endpoint
+outputs:
+- contextPath: IsolateEndpointResults.EndpointName
+  description: The endpoint's hostname.
+  type: String
+- contextPath: IsolateEndpointResults.Results
+  description: The full results of the isolation.
+  type: Array
+- contextPath: IsolateEndpointResults.Results.Result
+  description: The result of the isolation.
+  type: String
+- contextPath: IsolateEndpointResults.Results.Brand
+  description: The used brand for the isolation.
+  type: String
+- contextPath: IsolateEndpointResults.Results.Message
+  description: An informative message for the isolation results.
+  type: String
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
