@@ -11355,10 +11355,13 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 *arguments: any additional arguments to the command function.
                 **kwargs: additional keyword arguments to the command function.
             """
+            demisto.debug(f"Running command {name} with args: {args}")
+            demisto.debug(f"requires_polling_arg: {requires_polling_arg}, polling_arg_name: {polling_arg_name}")
             if not requires_polling_arg or argToBoolean(args.get(polling_arg_name, False)):
+                demisto.debug(f"Running command {name} with polling")
                 ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
-
+                demisto.debug(f"Poll result: {poll_result}")
                 should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
                     else poll_result.continue_to_poll()
                 if not should_poll:
@@ -11369,10 +11372,12 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 poll_args['hide_polling_output'] = True
 
                 poll_response = poll_result.partial_result or CommandResults(readable_output=readable_output)
+                demisto.debug(f"Creating scheduled command for {name} with args: {poll_args}")
                 poll_response.scheduled_command = ScheduledCommand(command=name, next_run_in_seconds=interval,
                                                                    args=poll_args, timeout_in_seconds=timeout)
                 return poll_response
             else:
+                demisto.debug(f"Running command {name} without polling")
                 return func(args, *arguments, **kwargs).response
 
         return inner
