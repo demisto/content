@@ -154,7 +154,6 @@ def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker, last_run
         assert not incidents
 
 
-@freeze_time("2021-08-24 18:04:00")
 def test_fetch_incidents_input(mocker, client):
     """
     Test the inputs to the fetch incidents flow, and verify that they are of the correct format.
@@ -181,7 +180,6 @@ def test_fetch_incidents_input(mocker, client):
     http_request.assert_called_with("GET", url_suffix="/incident/api/incidents/delta", params=expected_params)
 
 
-@freeze_time("2021-08-24 18:04:00")
 def test_get_incidents_input(mocker, client):
     """
     Test the inputs to the get_incidents_command, and verify that they are being sent in the correct format.
@@ -206,7 +204,6 @@ def test_get_incidents_input(mocker, client):
     http_request.assert_called_with("GET", url_suffix="/incident/api/incidents/delta", params=expected_params)
 
 
-@freeze_time("2021-08-24 18:04:00")
 def test_get_incident_command_401(mocker, client):
     """Check that in a case of 401 error, a second call to get a forced access token is made.
     Given:
