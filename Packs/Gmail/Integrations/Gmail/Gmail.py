@@ -2256,6 +2256,8 @@ def mail_command(args, subject_prefix="", in_reply_to=None, references=None):
     render_body = argToBoolean(args.get("renderBody", False))
     body_type = args.get("bodyType", "Text").lower()
     sender_display_name = args.get("senderDisplayName")
+    if html_body:
+        body_type = "html"
 
     result = send_mail(
         email_to,
