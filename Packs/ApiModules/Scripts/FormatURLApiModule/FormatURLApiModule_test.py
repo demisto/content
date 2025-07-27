@@ -265,6 +265,8 @@ FORMAT_HEX = [
     ("foo.bar/baz%26bar", "foo.bar/baz&bar"),  # disable-secrets-detection
     ("https://foo.com/?key=foo%26bar", "https://foo.com/?key=foo&bar"),  # disable-secrets-detection
     ("https%3A//foo.com/?key=foo%26bar", "https://foo.com/?key=foo&bar"),  # disable-secrets-detection
+    ("https://foo.com/?key=foo%26bar%2F%2Fwww.foo.com", "https://foo.com/?key=foo&bar//www.foo.com"),  # disable-secrets-detection
+    ("http://foo.r.us.me/L0/http:%2F%2Fwww.foo.com", "http://foo.r.us.me/L0/http://www.foo.com"),  # disable-secrets-detection
 ]
 
 FAILS = [
