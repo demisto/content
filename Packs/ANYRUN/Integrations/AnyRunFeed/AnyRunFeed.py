@@ -84,7 +84,7 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
                 "modified": indicator.get("modified"),
                 "last_seen": indicator.get("modified"),
                 "vendor": "ANY.RUN",
-                "source": "ANY.RUN TI Feeds",
+                "source": "ANY.RUN TI Feed",
             },
         }
 

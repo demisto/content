@@ -1,15 +1,15 @@
-Threat Intelligence Feeds provide data on the known indicators of compromise: malicious IPs, URLs, Domains
+Threat Intelligence Feed provide data on the known indicators of compromise: malicious IPs, URLs, Domains
 
 ## Generate Basic auth token
 
 Please Contact your ANY.RUN account manager to get your basic token
 
-## Configure ANY.RUN Feeds in Cortex
+## Configure ANY.RUN Feed in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ANY.RUN.
 3. Click **Add instance** to create and configure a new integration instance.
-4. Insert ANY.RUN TI Feeds Basic Token into the **Password** parameter
+4. Insert ANY.RUN TI Feed Basic Token into the **Password** parameter
 5. Click **Test** to validate the URLs, token, and connection.
 
 | **Parameter**    | **Description**                                                                                                                                                | **Required** |

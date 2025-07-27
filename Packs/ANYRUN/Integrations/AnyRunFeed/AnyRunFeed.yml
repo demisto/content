@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: ANY.RUN TI Feeds
+  id: ANY.RUN TI Feed
   version: -1
 configuration:
 - display: Username.
@@ -96,8 +96,8 @@ configuration:
   section: Collect
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 description: Threat Intelligence Feeds provide data on the known indicators of compromise such as malicious IPs, URLs, Domains.
-display: ANY.RUN TI Feeds
-name: ANY.RUN TI Feeds
+display: ANY.RUN TI Feed
+name: ANY.RUN TI Feed
 script:
   dockerimage: demisto/anyrun-sdk:1.0.0.3970895
   subtype: python3

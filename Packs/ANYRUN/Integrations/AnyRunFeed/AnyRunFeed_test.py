@@ -32,7 +32,7 @@ def test_convert_indicators_returns_valid_demisto_indicators(indicators: list[di
                 "modified": "2025-05-17T20:15:39.130Z",
                 "last_seen": "2025-05-17T20:15:39.130Z",
                 "vendor": "ANY.RUN",
-                "source": "ANY.RUN TI Feeds",
+                "source": "ANY.RUN TI Feed",
             },
         }
     ]
