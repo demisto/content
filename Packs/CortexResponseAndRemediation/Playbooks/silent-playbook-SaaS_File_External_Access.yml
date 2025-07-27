@@ -559,7 +559,7 @@ tasks:
     task:
       id: aa508004-a077-4482-a8cd-ef3b5b3353d0
       version: -1
-      name: Has the Actor IP returned?
+      name: Check Actor IP
       description: ''
       type: condition
       iscommand: false
@@ -782,7 +782,7 @@ tasks:
     task:
       id: 47c384da-bfcb-4b9a-bbaa-0b78e0ee8f42
       version: -1
-      name: Has a User returned?
+      name: Check for Users
       type: condition
       iscommand: false
       brand: ""
@@ -3779,7 +3779,7 @@ tasks:
     task:
       id: 8d270c13-6697-4300-b138-3c08db3c0597
       version: -1
-      name: Has a File Sharer User returned?
+      name: Check for File Sharer User
       type: condition
       iscommand: false
       brand: ""
@@ -3891,7 +3891,7 @@ tasks:
     task:
       id: 387e48fb-379a-413a-8767-aed07ce85936
       version: -1
-      name: Is the result back and at least 5?
+      name: Check Visits Count
       description: If there were 5 or more views by the same **actor user**, it looks suspicious.
       type: condition
       iscommand: false
@@ -3996,7 +3996,7 @@ tasks:
     task:
       id: 080bd3af-ac00-46ee-8c10-5b555733d97d
       version: -1
-      name: Is the result back and at least 10?
+      name: Check Link Creations Count
       description: If the **sharer user** creates 10 or more anonymous links, it looks suspicious.
       type: condition
       iscommand: false
@@ -4338,7 +4338,7 @@ tasks:
     task:
       id: bff29851-21f6-4fe7-851a-b267a7d5888d
       version: -1
-      name: Has a Owner/Sharer User returned?
+      name: Check for File Owner/Sharer User
       type: condition
       iscommand: false
       brand: ""
@@ -4386,7 +4386,7 @@ tasks:
     task:
       id: dc89bd29-5d8c-42e5-b914-f9187d89bed6
       version: -1
-      name: Was the link forgotten?
+      name: Check for Forgotten Link
       description: Verify the file's sharing link hasn't been **forgotten** by checking if its **share date** is *less than a week old*.
       type: condition
       iscommand: false
