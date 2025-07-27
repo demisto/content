@@ -178,7 +178,7 @@ def test_fetch_incidents_input(mocker, client):
     http_request = mocker.patch.object(client, "http_request", return_value=get_incidents)
 
     fetch_incidents(client, first_fetch_time, fetch_limit, "", fetch_severity, "", "")
-    http_request.assert_called_with("GET", url_suffix="incident/api/incidents/delta", params=expected_params)
+    http_request.assert_called_with("GET", url_suffix="/incident/api/incidents/delta", params=expected_params)
 
 
 @freeze_time("2021-08-24 18:04:00")
@@ -203,7 +203,7 @@ def test_get_incidents_input(mocker, client):
     http_request = mocker.patch.object(client, "http_request", return_value=get_incidents)
 
     get_incidents_command(client, args)
-    http_request.assert_called_with("GET", url_suffix="incident/api/incidents/delta", params=expected_params)
+    http_request.assert_called_with("GET", url_suffix="/incident/api/incidents/delta", params=expected_params)
 
 
 @freeze_time("2021-08-24 18:04:00")

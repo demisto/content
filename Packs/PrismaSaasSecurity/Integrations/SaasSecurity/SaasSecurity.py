@@ -172,7 +172,7 @@ class Client(BaseClient):
         to_time: str = None,
         app_ids: str = None,
         state: str = None,
-        severity: str = None,
+        severity: list = None,
         status: str = None,
         next_page: str = None,
     ):
@@ -189,6 +189,11 @@ class Client(BaseClient):
         url_suffix = next_page or "/incident/api/incidents/delta"
         state = state if state != "All" else None
 
+        severity_str = ""
+        if severity:  # validate that the severities are of type double
+            severity_arr_double = [f"{sev}.0" if ".0" not in sev else sev for sev in severity]
+            severity_str = ",".join(severity_arr_double)
+
         params = (
             {
                 "limit": limit,
@@ -196,7 +201,7 @@ class Client(BaseClient):
                 "to": to_time,
                 "app_ids": app_ids,
                 "state": state,
-                "severities": severity,
+                "severities": severity_str,
                 "status": status,
             }
             if not next_page
@@ -317,7 +322,7 @@ def test_module(
     is_fetch: bool = False,
     first_fetch_time: str = None,
     state: str = None,
-    severity: str = None,
+    severity: list = None,
     status: str = None,
     app_ids: str = None,
 ) -> str:
@@ -354,11 +359,7 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     status = ",".join(STATUS_MAP.get(x) for x in argToList(args.get("status", [])))  # type: ignore[misc]
     next_page = args.get("next_page")
 
-    # validate that the severities are of type double
-    severity_arr_double = [f"{sev}.0" if ".0" not in sev else sev for sev in severity_arr]
-    severity = ",".join(severity_arr_double)
-
-    raw_res = client.get_incidents(limit, from_time, to_time, app_ids, state, severity, status, next_page)
+    raw_res = client.get_incidents(limit, from_time, to_time, app_ids, state, severity_arr, status, next_page)
     incidents = raw_res.get("resources", [])
 
     # The API always returns the nextPage field with value in it even if there are no more incidents to retrieve.
@@ -524,22 +525,22 @@ def fetch_incidents(
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_run_time")
 
-    fetch_severity_str = ",".join(fetch_severity) if fetch_severity else ""
-    demisto.debug(f"{fetch_severity_str=}")
+    fetch_severity_arr = fetch_severity if isinstance(fetch_severity, list) else argToList(fetch_severity)
+    demisto.debug(f"{fetch_severity_arr=}")
 
     if last_fetch is None:
         last_fetch = dateparser.parse(first_fetch_time, settings={"TIMEZONE": "UTC"})
         last_fetch = last_fetch.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + "Z"  # format ex: 2021-08-23T09:26:25.872Z
 
     demisto.debug(
-        f"Calling get_incidents with {fetch_limit=}, {last_fetch=}, {fetch_state=}, {fetch_severity_str=}, {fetch_status=}"
+        f"Calling get_incidents with {fetch_limit=}, {last_fetch=}, {fetch_state=}, {fetch_severity_arr=}, {fetch_status=}"
     )
     current_fetch = last_fetch
     results = client.get_incidents(
         limit=fetch_limit,
         from_time=last_fetch,
         state=fetch_state,
-        severity=fetch_severity_str,
+        severity=fetch_severity_arr,
         status=fetch_status,
         app_ids=fetch_app_ids,
     ).get("resources", [])
