@@ -5283,6 +5283,61 @@ script:
       description: The query results for process_excecution_powershell query_purpose.
       type: String
     polling: true
+  - arguments:
+    - description: Device name to look for. Device Name or Device ID must be entered.
+      name: device_name
+      defaultValue: ''
+    - description: Device ID to look for.Device Name or Device ID must be entered.
+      name: device_id
+      defaultValue: ''
+    - name: sha1
+      description: SHA1 hash to look for. One of SHA1, SHA256 or MD5 must be filled
+      defaultValue: ''
+    - name: sha256
+      description: SHA256 hash to look for. One of SHA1, SHA256 or MD5 must be filled
+      defaultValue: ''
+    - name: md5
+      description: MD5 hash to look for. One of SHA1, SHA256 or MD5 must be filled
+      defaultValue: ''
+    - description: Filename of the process ancestry entrypoint.
+      name: file_name
+      defaultValue: ''
+    - description: Process ID of the process ancestry entrypoint.
+      required: true
+      name: file_pid
+    - description: Process Creation Time of the process ancestry entrypoint.
+      required: true
+      name: process_creation_time
+    - name: time_range
+      description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
+    - defaultValue: '10'
+      description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
+      name: timeout
+    - defaultValue: 'false'
+      description: Show the query as part of the entry result.
+      name: show_query
+    description: Gets the full process ancestry if the data is available in the MDE hunting database.
+    name: microsoft-atp-advanced-hunting-process-ancestry
+    outputs:
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.parent_process
+      description: The query results for parent_process query_purposeThe query results.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.grandparent_process
+      description: The query results for grandparent_process query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_details
+      description: The query results for process_details query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.beaconing_evidence
+      description: The query results for beaconing_evidence query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.powershell_execution_unsigned_files
+      description: The query results for powershell_execution_unsigned_files query_purpose.
+      type: String
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
+      description: The query results for process_excecution_powershell query_purpose.
+      type: String
+    polling: true
   - name: microsoft-atp-advanced-hunting-network-connections
     description: Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
     arguments:

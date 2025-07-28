@@ -4924,6 +4924,99 @@ def process_details_command(client, args):  # pragma: no cover
         readable_output=readable_output, outputs_prefix=f"MicrosoftATP.HuntProcessDetails.Result.{query_purpose}", outputs=results
     )
 
+def iterate_ancestry(client,     timeout = None,
+    time_range = None,
+    device_name=None,
+    file_name=None,
+    file_pid=None,
+    sha1=None,
+    sha256=None,
+    md5=None,
+    device_id=None,
+    process_creation_time=None,):
+    # prepare query
+
+    if not(md5 or sha1 or sha256 or file_name):
+        raise DemistoException(f"At least one hashtype or filename/process name must be specified.")
+    if not(device_name or device_id):
+        raise DemistoException(f"At least device name or device id must be specified.")
+    query = "DeviceProcessEvents"
+    if device_name:
+        query += f'| where DeviceName == "{device_name}"'
+    if device_id:
+        query += f'| where DeviceID == "{device_id}"'
+    query += f'| where ProcessId == "{file_pid}"'
+    if sha1:
+        query += f'| where SHA1 == "{sha1}"'
+    if sha256:
+        query += f'| where SHA256 == "{sha256}"'
+    if md5:
+        query += f'| where MD5 == "{md5}"'
+    if file_name:
+        query += f'| where FileName == "{file_name}"'
+    query += f'| extend timediff = datetime_diff("second", datetime({process_creation_time}), Timestamp)'
+    query += '| order by timediff asc'
+    query += '| limit 1'
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    return response.get("Results"), query
+
+
+def process_ancestry_command(client, args):  # pragma: no cover
+    timeout = int(args.pop("timeout", 10))
+    time_range = args.pop("time_range", None)
+    device_name = args.get("device_name")
+    file_name = args.get("file_name")
+    file_pid = args.get("file_pid")
+    sha1 = args.get("sha1")
+    sha256 = args.get("sha256")
+    md5 = args.get("md5")
+    device_id = args.get("device_id")
+    process_creation_time = args.get("process_creation_time")
+    show_query = argToBoolean(args.pop("show_query", False))
+    process_chain = None
+    queries = "### Queries Used\n"
+    while True:
+        results, query = iterate_ancestry(
+            client,
+            timeout=timeout,
+            time_range=time_range,
+            device_name=device_name,
+            file_name=file_name,
+            file_pid=file_pid,
+            sha1=sha1,
+            sha256=sha256,
+            md5=md5,
+            device_id=device_id,
+            process_creation_time=process_creation_time,
+        )
+        queries += f"{query}\n"
+        if results:
+            result = results[0]
+            last_result = result
+            if not process_chain:
+                process_chain = f'{result["FileName"]}[{result["ProcessId"]}]'
+            process_chain = f'{result["InitiatingProcessFileName"]}[{result["InitiatingProcessId"]}] > {process_chain}'
+            file_name = result["InitiatingProcessFileName"]
+            file_pid = result["InitiatingProcessId"]
+            process_creation_time = result["InitiatingProcessCreationTime"]
+            md5 = None
+            sha1 = None
+            sha256 = None
+        else:
+            process_chain = f'{last_result["InitiatingProcessParentFileName"]}[{last_result["InitiatingProcessParentId"]}] > {process_chain}'
+            break
+
+    readable_output = f"### Process Ancestry\n{process_chain}"
+    if show_query:
+        readable_output = f"{queries}\n{readable_output}"
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"MicrosoftATP.HuntProcessAncestry.Result",
+        outputs=process_chain,
+    )
+
 
 def network_connections_command(client, args):  # pragma: no cover
     # prepare query
@@ -6393,6 +6486,8 @@ def main():  # pragma: no cover
             return_results(file_origin_command(client, args))
         elif command == "microsoft-atp-advanced-hunting-process-details":
             return_results(process_details_command(client, args))
+        elif command == "microsoft-atp-advanced-hunting-process-ancestry":
+            return_results(process_ancestry_command(client, args))
         elif command == "microsoft-atp-advanced-hunting-network-connections":
             return_results(network_connections_command(client, args))
         elif command == "microsoft-atp-advanced-hunting-privilege-escalation":
