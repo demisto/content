@@ -127,7 +127,7 @@ def get_users(args: dict) -> list[User]:
     if is_error(res):
         return_error(get_error(res))
     HUMAN_READABLES.append(res[0]["HumanReadable"])
-    return cast(list[User], res[0]["Contents"]["UserData"])
+    return cast(list[User], res[0]["Contents"])
 
 
 def disable_users(users: list[User]) -> list[dict]:

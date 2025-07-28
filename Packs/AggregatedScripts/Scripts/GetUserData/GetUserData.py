@@ -285,13 +285,11 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
     human_readable_list = []
     entry_context_list = []
     for entry in res:
-        entry_context = entry.get("EntryContext", {})
+        entry_context_list.append(entry.get("EntryContext", {}) | {"instance": entry.get("ModuleName")})
         if is_error(entry):
             errors_command_results.extend(prepare_human_readable(command_name, args, get_error(entry), is_error=True))
         else:
             human_readable_list.append(entry.get("HumanReadable") or "")
-            entry_context["instance"] = entry.get("ModuleName")
-        entry_context_list.append(entry_context)
     human_readable = "\n".join(human_readable_list)
     demisto.debug(f"Finished executing command: {command_name}")
     return entry_context_list, human_readable, errors_command_results
@@ -580,7 +578,7 @@ def get_data(
         demisto.debug(f"calling {command_name} command with brand {brand_name}")
         readable_outputs, outputs = cmd(get_user_command, additional_fields)
         for output in outputs:
-            if set(output) == {"Source", "Brand"}:  # contains only the source and brand keys
+            if set(output) == {"Source", "Brand", "Instance"}:  # contains only the source and brand keys
                 output["Status"] = f"User not found - userId: {arg_value}."
             else:
                 output["Status"] = "found"

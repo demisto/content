@@ -736,6 +736,7 @@ def test_run_execute_command_error(mocker: MockerFixture):
                 "Type": 4,
                 "Contents": "Error occurred",
                 "ContentsFormat": "text",
+                "ModuleName": "inst1",
             }
         ],
     )
@@ -754,7 +755,7 @@ def test_run_execute_command_error(mocker: MockerFixture):
     entry_context, human_readable, errors = run_execute_command("test-command", {"arg1": "value1"})
 
     # Assert the results
-    assert entry_context == [{}]
+    assert entry_context == [{"instance": "inst1"}]
     assert human_readable == ""
     assert len(errors) == 1
     assert isinstance(errors[0], CommandResults)
