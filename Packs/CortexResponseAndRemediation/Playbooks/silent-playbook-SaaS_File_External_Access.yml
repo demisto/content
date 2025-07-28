@@ -1604,7 +1604,7 @@ tasks:
       '#default#':
       - "52"
       True Positive:
-      - "39"
+      - "100"
     separatecontext: false
     conditions:
     - label: True Positive
@@ -1690,8 +1690,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2235
+          "x": 449,
+          "y": 2352
         }
       }
     note: false
@@ -1759,8 +1759,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2357
+          "x": 449,
+          "y": 2474
         }
       }
     note: false
@@ -1798,8 +1798,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 214,
-          "y": 2502
+          "x": 213,
+          "y": 2619
         }
       }
     note: false
@@ -1852,8 +1852,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 214,
-          "y": 2749
+          "x": 213,
+          "y": 2866
         }
       }
     note: false
@@ -1888,8 +1888,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 449,
-          "y": 2877
+          "x": 448,
+          "y": 2994
         }
       }
     note: false
@@ -2328,8 +2328,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1089,
-          "y": 2999
+          "x": 1088,
+          "y": 3116
         }
       }
     note: false
@@ -2383,8 +2383,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1089,
-          "y": 3246
+          "x": 1088,
+          "y": 3363
         }
       }
     note: false
@@ -2455,8 +2455,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 676,
-          "y": 2999
+          "x": 675,
+          "y": 3116
         }
       }
     note: false
@@ -2510,8 +2510,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 676,
-          "y": 3246
+          "x": 675,
+          "y": 3363
         }
       }
     note: false
@@ -2582,8 +2582,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4,
-          "y": 2999
+          "x": 3,
+          "y": 3116
         }
       }
     note: false
@@ -2649,8 +2649,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4,
-          "y": 3118
+          "x": 3,
+          "y": 3235
         }
       }
     note: false
@@ -2703,8 +2703,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -199.5,
-          "y": 3376
+          "x": -200.5,
+          "y": 3493
         }
       }
     note: false
@@ -2731,8 +2731,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -442,
-          "y": 3627
+          "x": -443,
+          "y": 3750
         }
       }
     note: false
@@ -2768,8 +2768,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 449,
-          "y": 3504
+          "x": 448,
+          "y": 3621
         }
       }
     note: false
@@ -3359,8 +3359,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 676,
-          "y": 2502
+          "x": 675,
+          "y": 2619
         }
       }
     note: false
@@ -3412,8 +3412,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 676,
-          "y": 2749
+          "x": 675,
+          "y": 2866
         }
       }
     note: false
@@ -3474,8 +3474,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 214,
-          "y": 3376
+          "x": 213,
+          "y": 3493
         }
       }
     note: false
@@ -3550,8 +3550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1089,
-          "y": 2502
+          "x": 1088,
+          "y": 2619
         }
       }
     note: false
@@ -3599,8 +3599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1089,
-          "y": 2620
+          "x": 1088,
+          "y": 2737
         }
       }
     note: false
@@ -3675,8 +3675,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -199.5,
-          "y": 2502
+          "x": -200.5,
+          "y": 2619
         }
       }
     note: false
@@ -3713,8 +3713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -199.5,
-          "y": 2620
+          "x": -200.5,
+          "y": 2737
         }
       }
     note: false
@@ -4141,8 +4141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 214,
-          "y": 2620
+          "x": 213,
+          "y": 2737
         }
       }
     note: false
@@ -4196,8 +4196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 676,
-          "y": 2620
+          "x": 675,
+          "y": 2737
         }
       }
     note: false
@@ -4256,8 +4256,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -199.5,
-          "y": 3246
+          "x": -200.5,
+          "y": 3363
         }
       }
     note: false
@@ -4320,8 +4320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 214,
-          "y": 3246
+          "x": 213,
+          "y": 3363
         }
       }
     note: false
@@ -4431,6 +4431,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: aad8a058-56b3-4b21-8ff5-08751191a427
+    type: regular
+    task:
+      id: aad8a058-56b3-4b21-8ff5-08751191a427
+      version: -1
+      name: Increase Alert Severity to Medium
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 2228
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -4439,8 +4473,7 @@ view: |-
       "25_27_Drive": 0.9,
       "25_37_#default#": 0.1,
       "32_37_#default#": 0.14,
-      "38_39_True Positive": 0.58,
-      "38_52_#default#": 0.19,
+      "38_52_#default#": 0.17,
       "3_11_#default#": 0.18,
       "40_43_#default#": 0.78,
       "44_53_#default#": 0.9,
@@ -4457,7 +4490,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3427,
+        "height": 3550,
         "width": 5770,
         "x": -2252,
         "y": 260
