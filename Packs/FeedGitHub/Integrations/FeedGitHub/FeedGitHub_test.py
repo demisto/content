@@ -41,7 +41,8 @@ def test_get_content_files_from_repo(mocker):
     When:
      - Calling get_content_files_from_repo to fetch the content of the relevant files.
     Then:
-     - Returns the content of the relevant files matching the expected results.
+     - Assert one HTTP request is made to get the contents of the file with the relevant extension.
+     - Assert the returned content of the relevant files matches the expected results.
     """
     from FeedGitHub import get_content_files_from_repo
 
@@ -62,8 +63,11 @@ def test_get_content_files_from_repo(mocker):
             b"- 167.172.154[.]189 port 80 - GET /36.ps1\n"
         ).decode("utf-8")
     }
-    mocker.patch.object(client, "_http_request", return_value=return_data)
+    mock_http_request = mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
+
+    assert mock_http_request.call_count == 1  # One .txt file in all relevant committed files
+    assert mock_http_request.call_args.kwargs == {"method": "GET", "full_url": relevant_files[1]["contents_url"]}
     assert content_files == util_load_json("test_data/get_content-files-from-repo-result.json")
 
 
