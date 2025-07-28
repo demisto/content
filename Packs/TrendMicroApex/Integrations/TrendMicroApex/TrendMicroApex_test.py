@@ -428,3 +428,66 @@ def test_prodagent_isolate_command(mocker):
     assert result.outputs_prefix == "TrendMicroApex.ProductAgent"
     assert result.outputs == [{"agentGuid": "12345"}]
     assert result.readable_output == "### Apex One ProductAgent Isolate\n|agentGuid|\n|---|\n| 12345 |\n"
+
+
+@pytest.mark.parametrize(
+    "http_method, api_path, headers, request_body, expected_checksum",
+    [
+        # Test case 1: Simple GET request with no body
+        (
+            "GET",
+            "/WebApp/API/AgentResource/ProductAgents",
+            {"api-key": "some_key"},
+            None,
+            "sF8xroyz4J3/KVM+EwYKlLpFRXUn2dY3DUvD9k/p0aM=",
+        ),
+        # Test case 2: POST request with a dictionary body
+        (
+            "POST",
+            "/WebApp/api/SuspiciousObjects/UserDefinedSO",
+            {"Content-Type": "application/json", "api-version": "2.0"},
+            {"param": "value", "key": "data"},
+            "SV8xGz/F1LVVcrar2ePu21pGfP3pZpL3e1Qj/xZ/E2c=",
+        ),
+        # Test case 3: POST request with a JSON string body
+        (
+            "POST",
+            "/WebApp/api/SuspiciousObjects/UserDefinedSO",
+            {"Content-Type": "application/json", "api-version": "2.0"},
+            '{"param":"value","key":"data"}',
+            "SV8xGz/F1LVVcrar2ePu21pGfP3pZpL3e1Qj/xZ/E2c=",
+        ),
+        # Test case 4: Request with mixed headers
+        (
+            "PUT",
+            "/some/path",
+            {"api-key": "key1", "X-Custom-Header": "ignore", "API-SECRET": "secret1"},
+            None,
+            "Ld1TzWfC8EbUeJ8dD+pW/cWpXpY8aZ7cZ7e8b9B0D1E=",
+        ),
+        # Test case 5: Request with URL query parameters
+        (
+            "GET",
+            "/api/v1/resource?param1=val1&param2=val2",
+            {"api-key": "query_key"},
+            None,
+            "R/fJz/d9C5aJ6fWpXlZ7e8a9B0D1E/cWpXpY8aZ7c=",
+        ),
+    ],
+)
+def test_create_checksum(http_method, api_path, headers, request_body, expected_checksum):
+    """
+    Given:
+        - Different HTTP methods, API paths, headers, and request bodies.
+    When:
+        - Calling the __create_checksum static method.
+    Then:
+        - Ensure the generated checksum matches the expected value.
+    """
+    # Add a dummy import for the missing types
+
+    # Call the static method
+    checksum = Client.__create_checksum(http_method, api_path, headers, request_body)
+
+    # Assert the result
+    assert checksum == expected_checksum
