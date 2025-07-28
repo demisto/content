@@ -184,6 +184,9 @@ script:
     - contextPath: GreyNoise.IP.metadata.source_country_code
       description: The country code of the IP source country.
       type: string
+    - contextPath: GreyNoise.IP.metadata.tor
+      description: Whether the device is a known Tor exit node.
+      type: boolean
     - contextPath: GreyNoise.IP.tor
       description: Whether the device is a known Tor exit node.
       type: boolean
@@ -259,6 +262,9 @@ script:
     - contextPath: GreyNoise.IP.metadata.source_city
       description: The city where the IP is geographically located.
       type: string
+    - contextPath: GreyNoise.IP.metadata.tor
+      description: Whether the device is a known Tor exit node.
+      type: boolean
     - contextPath: GreyNoise.IP.tor
       description: Whether the device is a known Tor exit node.
       type: boolean
@@ -593,6 +599,9 @@ script:
     - contextPath: GreyNoise.IP.metadata.source_country_code
       description: The country code of the IP source country.
       type: string
+    - contextPath: GreyNoise.IP.metadata.tor
+      description: Whether the device is a known Tor exit node  .
+      type: boolean
     - contextPath: GreyNoise.IP.tor
       description: Whether the device is a known Tor exit node.
       type: boolean

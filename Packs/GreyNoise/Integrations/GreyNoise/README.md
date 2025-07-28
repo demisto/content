@@ -75,6 +75,7 @@ Runs reputation on IPs.
 | GreyNoise.IP.metadata.source_city | string | The city where the IP is geographically located. |
 | GreyNoise.IP.metadata.source_country | string | The full name of the IP source country. |
 | GreyNoise.IP.metadata.source_country_code | string | The country code of the IP source country. |
+| GreyNoise.IP.metadata.tor | boolean | Whether the device is a known Tor exit node. |
 | GreyNoise.IP.tor | boolean | Whether the device is a known Tor exit node. |
 | GreyNoise.IP.raw_data.hassh.fingerprint | string | HASSH hash fingerprint string. |
 | GreyNoise.IP.raw_data.hassh.port | number | TCP port connection where the HASSH hash was identified. |
