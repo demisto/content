@@ -324,7 +324,8 @@ def test_create_user_with_additional_fields():
         "Email": "full@test.com",
         "ID": "123",
         "RiskLevel": "Low",
-        "Source": "FullTestSource", "Brand": "FullTestSource",
+        "Source": "FullTestSource",
+        "Brand": "FullTestSource",
         "Username": "fulluser",
     }
 
@@ -359,7 +360,8 @@ def test_create_user_without_additional_fields():
         "Email": "full@test.com",
         "ID": "123",
         "RiskLevel": "Low",
-        "Source": "FullTestSource", "Brand": "FullTestSource",
+        "Source": "FullTestSource",
+        "Brand": "FullTestSource",
         "Username": "fulluser",
     }
 
@@ -383,7 +385,12 @@ def test_create_user_with_single_item_list():
 
     result = create_user(source=source, username=username, groups=groups, additional_fields=True)
 
-    assert result == {"AdditionalFields": {"groups": ["singlegroup"]}, "Source": "SingleListSource", "Brand": "SingleListSource", "Username": "listuser"}
+    assert result == {
+        "AdditionalFields": {"groups": ["singlegroup"]},
+        "Source": "SingleListSource",
+        "Brand": "SingleListSource",
+        "Username": "listuser",
+    }
 
 
 def test_create_user_with_empty_fields():
@@ -692,7 +699,7 @@ def test_run_execute_command_success(mocker: MockerFixture):
                 "ContentsFormat": "json",
                 "HumanReadable": "Command executed successfully",
                 "EntryContext": {"ContextKey": "ContextValue"},
-                "ModuleName": "inst1"
+                "ModuleName": "inst1",
             }
         ],
     )
@@ -795,7 +802,16 @@ def test_run_execute_command_multiple_entries(mocker: MockerFixture):
     entry_context, human_readable, errors = run_execute_command("test-command", {"arg1": "value1"})
 
     # Assert the results
-    assert entry_context == [{"Context1": "Value1", "instance": "inst1",}, {"Context2": "Value2", "instance": "inst2",}]
+    assert entry_context == [
+        {
+            "Context1": "Value1",
+            "instance": "inst1",
+        },
+        {
+            "Context2": "Value2",
+            "instance": "inst2",
+        },
+    ]
     assert human_readable == "First entry\nSecond entry"
     assert errors == []
     demisto.debug.assert_called_with("Finished executing command: test-command")
@@ -821,18 +837,21 @@ class TestGetUserData:
             "userAccountControlFields": {"ACCOUNTDISABLE": False},
             "manager": ["CN=Manager,OU=Users,DC=example,DC=com"],
         }
-        expected_user = [{
-            "AdditionalFields": {
-                "displayName": "AD User",
-                "manager": "CN=Manager,OU=Users,DC=example,DC=com",
-                "memberOf": ["Group1", "Group2"],
-                "sAMAccountName": "ad_user",
-                "userAccountControlFields": {"ACCOUNTDISABLE": False},
-            },
-            "Email": "ad_user@example.com",
-            "Source": "Active Directory Query v2", "Brand": "Active Directory Query v2",
-            "Username": "ad_user",
-        }]
+        expected_user = [
+            {
+                "AdditionalFields": {
+                    "displayName": "AD User",
+                    "manager": "CN=Manager,OU=Users,DC=example,DC=com",
+                    "memberOf": ["Group1", "Group2"],
+                    "sAMAccountName": "ad_user",
+                    "userAccountControlFields": {"ACCOUNTDISABLE": False},
+                },
+                "Email": "ad_user@example.com",
+                "Source": "Active Directory Query v2",
+                "Brand": "Active Directory Query v2",
+                "Username": "ad_user",
+            }
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -868,18 +887,21 @@ class TestGetUserData:
             "manager": ["CN=Manager,OU=Users,DC=example,DC=com"],
             "whenCreated": ["2024-11-05 09:11:18+00:00"],
         }
-        expected_account = [{
-            "AdditionalFields": {
-                "displayName": "AD User",
-                "manager": "CN=Manager,OU=Users,DC=example,DC=com",
-                "memberOf": "Group1",
-                "sAMAccountName": "ad_user",
-                "userAccountControlFields": {"ACCOUNTDISABLE": False},
-                "whenCreated": "2024-11-05 09:11:18+00:00",
-            },
-            "Email": "ad_user@example.com",
-            "Source": "Active Directory Query v2", "Brand": "Active Directory Query v2",
-        }]
+        expected_account = [
+            {
+                "AdditionalFields": {
+                    "displayName": "AD User",
+                    "manager": "CN=Manager,OU=Users,DC=example,DC=com",
+                    "memberOf": "Group1",
+                    "sAMAccountName": "ad_user",
+                    "userAccountControlFields": {"ACCOUNTDISABLE": False},
+                    "whenCreated": "2024-11-05 09:11:18+00:00",
+                },
+                "Email": "ad_user@example.com",
+                "Source": "Active Directory Query v2",
+                "Brand": "Active Directory Query v2",
+            }
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -914,13 +936,16 @@ class TestGetUserData:
             "Status": "ACTIVE",
             "Manager": "Okta Manager",
         }
-        expected_account = [{
-            "AdditionalFields": {"DisplayName": "Okta User", "Manager": "Okta Manager", "Status": "ACTIVE"},
-            "Email": "okta@example.com",
-            "ID": "101112",
-            "Source": "Okta v2", "Brand": "Okta v2",
-            "Username": "okta_user",
-        }]
+        expected_account = [
+            {
+                "AdditionalFields": {"DisplayName": "Okta User", "Manager": "Okta Manager", "Status": "ACTIVE"},
+                "Email": "okta@example.com",
+                "ID": "101112",
+                "Source": "Okta v2",
+                "Brand": "Okta v2",
+                "Username": "okta_user",
+            }
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -985,19 +1010,22 @@ class TestGetUserData:
             "TelephoneNumber": "123-456-7890",
             "Type": "Member",
         }
-        expected_account = [{
-            "AdditionalFields": {
-                "DisplayName": "Graph User",
-                "JobTitle": "Developer",
-                "Office": "HQ",
-                "TelephoneNumber": "123-456-7890",
-                "Type": "Member",
-            },
-            "Email": "graph@example.com",
-            "ID": "131415",
-            "Source": "Microsoft Graph User", "Brand": "Microsoft Graph User",
-            "Username": "graph_user",
-        }]
+        expected_account = [
+            {
+                "AdditionalFields": {
+                    "DisplayName": "Graph User",
+                    "JobTitle": "Developer",
+                    "Office": "HQ",
+                    "TelephoneNumber": "123-456-7890",
+                    "Type": "Member",
+                },
+                "Email": "graph@example.com",
+                "ID": "131415",
+                "Source": "Microsoft Graph User",
+                "Brand": "Microsoft Graph User",
+                "Username": "graph_user",
+            }
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1052,7 +1080,15 @@ class TestGetUserData:
         outputs_key_field = "PaloAltoNetworksXDR"
         command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name})
         mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
-        expected_account = [{"ID": "xdr_user", "RiskLevel": "HIGH", "Source": "Cortex XDR - IR", "Brand": "Cortex XDR - IR", "Username": "xdr_user"}]
+        expected_account = [
+            {
+                "ID": "xdr_user",
+                "RiskLevel": "HIGH",
+                "Source": "Cortex XDR - IR",
+                "Brand": "Cortex XDR - IR",
+                "Username": "xdr_user",
+            }
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1081,7 +1117,15 @@ class TestGetUserData:
         user_name = "azure_user"
         command = Command("Azure Risky Users", "azure-risky-user-get", {"user_id": user_name})
         mock_outputs = {"id": "azure_user", "riskLevel": "HIGH"}
-        expected_account = [{"ID": "azure_user", "RiskLevel": "HIGH", "Source": "Azure Risky Users", "Brand": "Azure Risky Users", "Username": "azure_user"}]
+        expected_account = [
+            {
+                "ID": "azure_user",
+                "RiskLevel": "HIGH",
+                "Source": "Azure Risky Users",
+                "Brand": "Azure Risky Users",
+                "Username": "azure_user",
+            }
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1109,7 +1153,9 @@ class TestGetUserData:
         """
         command = Command("PrismaCloud v2", "prisma-cloud-users-list", {"usernames": "prisma_user"})
         mock_outputs = {"email": "user_email.com", "username": "prisma_user"}
-        expected_account = [{"Email": "user_email.com", "Source": "PrismaCloud v2", "Brand": "PrismaCloud v2", "Username": "prisma_user"}]
+        expected_account = [
+            {"Email": "user_email.com", "Source": "PrismaCloud v2", "Brand": "PrismaCloud v2", "Username": "prisma_user"}
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1137,7 +1183,9 @@ class TestGetUserData:
         """
         command = Command("Okta IAM", "iam-get-user", {"user-profile": "user"})
         mock_outputs = {"email": "user_email.com", "username": "name_user", "id": "user_id"}
-        expected_account = [{"Email": "user_email.com", "Source": "Okta IAM", "Brand": "Okta IAM", "Username": "name_user", "ID": "user_id"}]
+        expected_account = [
+            {"Email": "user_email.com", "Source": "Okta IAM", "Brand": "Okta IAM", "Username": "name_user", "ID": "user_id"}
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1165,7 +1213,9 @@ class TestGetUserData:
         """
         command = Command("GSuiteAdmin", "gsuite-user-get", {"user": "user"})
         mock_outputs = {"primaryEmail": "user_email.com", "fullName": "name_user", "id": "user_id"}
-        expected_account = [{"Email": "user_email.com", "Source": "GSuiteAdmin", "Brand": "GSuiteAdmin", "Username": "name_user", "ID": "user_id"}]
+        expected_account = [
+            {"Email": "user_email.com", "Source": "GSuiteAdmin", "Brand": "GSuiteAdmin", "Username": "name_user", "ID": "user_id"}
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1299,7 +1349,9 @@ def test_get_data_with_found_user(mocker: MockerFixture):
     mocker.patch.object(Modules, "is_brand_available", return_value=True)
 
     # Mock other necessary functions
-    mock_get_user = mocker.patch("GetUserData.ad_get_user", return_value=(["test"], [{"Source": "test", "Brand": "test", "Username": "test user"}]))
+    mock_get_user = mocker.patch(
+        "GetUserData.ad_get_user", return_value=(["test"], [{"Source": "test", "Brand": "test", "Username": "test user"}])
+    )
 
     result = get_data(
         modules=modules,
