@@ -4958,7 +4958,7 @@ def iterate_ancestry(client,     timeout = None,
     query += '| order by timediff asc'
     query += '| limit 1'
 
-    # send request + handle result
+    # send request + return results and query used
     response = client.get_advanced_hunting(query, timeout, time_range)
     return response.get("Results"), query
 
@@ -4976,6 +4976,8 @@ def process_ancestry_command(client, args):  # pragma: no cover
     process_creation_time = args.get("process_creation_time")
     show_query = argToBoolean(args.pop("show_query", False))
     process_chain = None
+    process_json = []
+    process_depth = 0
     queries = "### Queries Used\n"
     while True:
         results, query = iterate_ancestry(
@@ -4997,7 +4999,29 @@ def process_ancestry_command(client, args):  # pragma: no cover
             last_result = result
             if not process_chain:
                 process_chain = f'{result["FileName"]}[{result["ProcessId"]}]'
+                process_json.append(
+                    {
+                        "FileName": result["FileName"],
+                        "ProcessId": result["ProcessId"],
+                        "ParentFileName": result["InitiatingProcessFileName"],
+                        "ParentPID": result["InitiatingProcessId"],
+                        "Depth": process_depth,
+                    }
+                )
+                process_depth += 1
             process_chain = f'{result["InitiatingProcessFileName"]}[{result["InitiatingProcessId"]}] > {process_chain}'
+            process_json.append(
+                {
+                    "FileName": result["InitiatingProcessFileName"],
+                    "ProcessId": result["InitiatingProcessId"],
+                    "ChildFileName": process_json[len(process_json) - 1]["FileName"],
+                    "ChildPID": process_json[len(process_json) - 1]["ProcessId"],
+                    "ParentFileName": result["InitiatingProcessParentFileName"],
+                    "ParentPID": result["InitiatingProcessParentId"],
+                    "Depth": process_depth,
+                }
+            )
+            process_depth += 1
             file_name = result["InitiatingProcessFileName"]
             file_pid = result["InitiatingProcessId"]
             process_creation_time = result["InitiatingProcessCreationTime"]
@@ -5006,6 +5030,15 @@ def process_ancestry_command(client, args):  # pragma: no cover
             sha256 = None
         else:
             process_chain = f'{last_result["InitiatingProcessParentFileName"]}[{last_result["InitiatingProcessParentId"]}] > {process_chain}'
+            process_json.append(
+                {
+                    "FileName": last_result["InitiatingProcessParentFileName"],
+                    "ProcessId": last_result["InitiatingProcessParentId"],
+                    "ChildFileName": process_json[len(process_json)-1]["FileName"],
+                    "ChildPID": process_json[len(process_json)-1]["ProcessId"],
+                    "Depth": process_depth,
+                }
+            )
             break
 
     readable_output = f"### Process Ancestry\n{process_chain}"
@@ -5014,7 +5047,7 @@ def process_ancestry_command(client, args):  # pragma: no cover
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"MicrosoftATP.HuntProcessAncestry.Result",
-        outputs=process_chain,
+        outputs=process_json,
     )
 
 
